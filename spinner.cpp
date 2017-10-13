@@ -66,6 +66,11 @@ int Spinner::value() const
 
 void Spinner::setValue(int value)
 {
+    // fix by jscl: when the year is 1900, and the month is January.
+    // click preBtn, the year will be 1899, 1899 < m_min(m_min=1900)
+    if (value <= m_min)
+        value = m_min;
+
     if (value != m_value) {
         m_value = value;
         m_label->setText(QString::number(m_value));
