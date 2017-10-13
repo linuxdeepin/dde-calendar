@@ -52,6 +52,10 @@ private:
     int m_min = INT_MIN;
     int m_max = INT_MAX;
 
+    // add by jscl:do not load png everytime
+    bool m_preBtnState = true;
+    bool m_nextBtnState = true;
+
     void setPrevButtonDisabled(bool disabled) const;
     void setNextButtonDisabled(bool disabled) const;
 };
