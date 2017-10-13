@@ -183,9 +183,8 @@ void InfoView::increaseMonth(bool increase)
         m_yearSpinner->setValue(year);
     }
 
-    if (month != m_monthSpinner->value()) {
-        m_monthSpinner->setValue(month);
-    }
+    // fix by jscl: must be run
+    m_monthSpinner->setValue(month);
 }
 
 void InfoView::setTodayButtonVisible(bool visible) const
