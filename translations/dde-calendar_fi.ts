@@ -9,12 +9,12 @@
     <message>
         <location filename="../main.cpp" line="40"/>
         <source>Deepin Calendar</source>
-        <translation>Deepin-kalenteri</translation>
+        <translation>Deepin kalenteri</translation>
     </message>
     <message>
         <location filename="../main.cpp" line="42"/>
         <source>Calendar is a date tool.</source>
-        <translation>Kalenteri on päivämäärätyökalu. </translation>
+        <translation>Kalenteri on päivämäärä työkalu.</translation>
     </message>
 </context>
 <context>

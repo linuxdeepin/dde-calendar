@@ -1,20 +1,20 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="mn" version="2.1">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="sw" version="2.1">
 <context>
     <name>CalendarWindow</name>
     <message>
         <location filename="../calendarwindow.cpp" line="203"/>
         <source>First Day of Week</source>
-        <translation>Долоо хоногийн эхний өдөр</translation>
+        <translation>Siku mwanza wa juma</translation>
     </message>
     <message>
         <location filename="../main.cpp" line="40"/>
         <source>Deepin Calendar</source>
-        <translation>Деепин Хуанли</translation>
+        <translation>Kalenda ya Deepin</translation>
     </message>
     <message>
         <location filename="../main.cpp" line="42"/>
         <source>Calendar is a date tool.</source>
-        <translation>Хуанли нь огноо, цагалбарын хэрэгсэл.</translation>
+        <translation>Kalenda ni chombo ya tarehe</translation>
     </message>
 </context>
 <context>
@@ -22,7 +22,7 @@
     <message>
         <location filename="../infoview.cpp" line="24"/>
         <source>Today</source>
-        <translation>Өнөөдөр</translation>
+        <translation>Leo</translation>
     </message>
 </context>
 </TS>
