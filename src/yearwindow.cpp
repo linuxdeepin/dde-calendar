@@ -24,6 +24,7 @@
 #include <DPalette>
 #include <DHiDPIHelper>
 #include <QMenuBar>
+#include <QMouseEvent>
 #include "schcedulesearchview.h"
 DGUI_USE_NAMESPACE
 CYearWindow::CYearWindow(QWidget *parent): QMainWindow (parent)
