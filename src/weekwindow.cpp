@@ -29,6 +29,7 @@
 #include <DHiDPIHelper>
 #include "schcedulesearchview.h"
 #include "todybutton.h"
+#include <scheduledatamanage.h>
 
 DGUI_USE_NAMESPACE
 CWeekWindow::CWeekWindow(QWidget *parent): QMainWindow (parent)
@@ -85,7 +86,9 @@ void CWeekWindow::initUI()
     m_today->setText(QCoreApplication::translate("today", "Today", "Today"));
     m_today->setFixedSize(DDEWeekCalendar::WTodayWindth, DDEWeekCalendar::WTodayHeight);
     DPalette todaypa = m_today->palette();
-    todaypa.setColor(DPalette::ButtonText, QColor("#0098FF"));
+    QColor todayColor = CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
+//    todaypa.setColor(DPalette::ButtonText, QColor("#0098FF"));
+    todaypa.setColor(DPalette::ButtonText, todayColor);
     todaypa.setColor(DPalette::Dark, Qt::white);
     todaypa.setColor(DPalette::Light, Qt::white);
     QColor sbcolor("#002A57");
@@ -269,7 +272,9 @@ void CWeekWindow::setTheMe(int type)
         m_contentBackground->setBackgroundRole(DPalette::Background);
 
         DPalette todaypa = m_today->palette();
-        todaypa.setColor(DPalette::ButtonText, QColor("#1D81EC"));
+        QColor todayColor = CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
+        todaypa.setColor(DPalette::ButtonText, todayColor);
+//        todaypa.setColor(DPalette::ButtonText, QColor("#1D81EC"));
         todaypa.setColor(DPalette::Dark, Qt::white);
         todaypa.setColor(DPalette::Light, Qt::white);
         QColor sbcolor("#002A57");
@@ -281,7 +286,8 @@ void CWeekWindow::setTheMe(int type)
         QColor todaypress = "#000000";
         todaypress.setAlphaF(0.2);
         m_today->setBColor("#FFFFFF", todayhover, todaypress, "#FFFFFF", todayhover, todaypress);
-        m_today->setTColor("#1D81EC", "#001A2E", "#0081FF");
+//        m_today->setTColor("#1D81EC", "#001A2E", "#0081FF");
+        m_today->setTColor(todayColor, "#001A2E", "#0081FF");
         m_today->setshadowColor(sbcolor);
 
         DPalette prevpa = m_prevButton->palette();
@@ -314,7 +320,9 @@ void CWeekWindow::setTheMe(int type)
         m_contentBackground->setBackgroundRole(DPalette::Background);
 
         DPalette todaypa = m_today->palette();
-        todaypa.setColor(DPalette::ButtonText, QColor("#0081FF"));
+        QColor todayColor = CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
+        todaypa.setColor(DPalette::ButtonText, todayColor);
+//        todaypa.setColor(DPalette::ButtonText, QColor("#0081FF"));
         todaypa.setColor(DPalette::Dark, "#414141");
         todaypa.setColor(DPalette::Light, "#484848");
         QColor sbcolor("#000000");
@@ -322,7 +330,8 @@ void CWeekWindow::setTheMe(int type)
         todaypa.setColor(DPalette::Shadow, sbcolor);
         m_today->setPalette(todaypa);
         m_today->setBColor("#484848", "#727272", "#242424", "#414141", "#535353", "#282828");
-        m_today->setTColor("#0081FF", "#FFFFFF", "#0081FF");
+//        m_today->setTColor("#0081FF", "#FFFFFF", "#0081FF");
+        m_today->setTColor(todayColor, "#FFFFFF", "#0081FF");
         m_today->setshadowColor(sbcolor);
 
         DPalette prevpa = m_prevButton->palette();
@@ -393,6 +402,7 @@ void CWeekWindow::slotReturnTodayUpdate()
 
 void CWeekWindow::slotupdateSchedule(int id)
 {
+    Q_UNUSED(id);
     m_scheduleView->slotupdateSchedule();
     //m_scheduleView->setTime(QTime::currentTime());
 }
@@ -452,10 +462,12 @@ void CWeekWindow::slotCurrentWeek(QDate date, QDate currentDate)
 
 void CWeekWindow::slotcurrentDateLunarChanged(QVector<QDate> vdate, QVector<CaLunarDayInfo> vdetail, int type)
 {
-    int i = 0;
-    for (; i < vdate.count(); i++) {
-        if (vdate.at(i) == QDate::currentDate())
+    int offset = 0;
+    for (int i = 0; i < vdate.count(); ++i) {
+        if (vdate.at(i) == m_currentdate) {
+            offset =i;
             break;
+        }
     }
     if (m_currentdate == QDate::currentDate()) {
         m_today->setText(QCoreApplication::translate("today", "Today", "Today"));
@@ -469,7 +481,7 @@ void CWeekWindow::slotcurrentDateLunarChanged(QVector<QDate> vdate, QVector<CaLu
     //     m_today->setEnabled(false);
     // }
     if (!vdate.isEmpty()) {
-        CaLunarDayInfo detail = vdetail.at(0);
+        CaLunarDayInfo detail = vdetail.at(offset);
         if (type == 1) {
             int yearnum = vdate.at(0).year();
             if (yearnum < 1900) yearnum = 1900;
@@ -516,15 +528,9 @@ void CWeekWindow::slotScheduleHide()
 
 void CWeekWindow::resizeEvent(QResizeEvent *event)
 {
-    int sleftMagin = 0.093 * width() + 0.5;
-    int stopMagin = 0.1797 * height() + 0.5;
-
-    int headh = height() * 0.0924 + 0.5;
-    int sh = height() - headh - 78;
-    int topmagin = height() * 0.0193 + 0.5;
-    int buttonmagin = topmagin;
-
-    int dw = width() * 0.4186 + 0.5;
+    qreal sleftMagin = 0.093 * width() + 0.5;
+    qreal headh = height() * 0.0924 + 0.5;
+    qreal dw = width() * 0.4186 + 0.5;
     int dh = 36;
 //    int space = (width() - dw) / 2 - 220;
 
@@ -543,29 +549,30 @@ void CWeekWindow::resizeEvent(QResizeEvent *event)
 
     //m_spaceitem->changeSize(space, 36, QSizePolicy::Fixed, QSizePolicy::Fixed);
     if (!m_searchfalg) {
-        m_weekview->setFixedSize(dw, dh);
+        m_weekview->setFixedSize(qRound(dw), dh);
     } else {
         //m_weekview->setwindowFixw(dw, width() - 0.2325 * width() + 0.5 - 220 - 260);
-        m_weekview->setFixedSize(dw - 100, dh);
+        m_weekview->setFixedSize(qRound(dw - 100), dh);
     }
     //m_weekview->setFixedHeight(dh);
 
     // m_weekview->setFixedSize(dw, dh);
 
     //m_weekHeadView->setFixedSize(width() * 0.9802 + 0.5, headh);
-    m_weekHeadView->setMounthLabelWidth(sleftMagin + 1, width() * 0.9802 + 0.5);
+    m_weekHeadView->setMounthLabelWidth(qRound(sleftMagin + 1), qRound(width() * 0.9802 + 0.5));
     // m_weekHeadView->setFixedHeight(headh);
     //m_weekHeadView->setFixedSize(width() * 0.9802 + 0.5, headh);
-    m_weekHeadView->setFixedSize(width() - winframe, headh);
+    m_weekHeadView->setFixedSize(width() - winframe, qRound(headh));
 //    m_scheduleView->setviewMagin(sleftMagin, stopMagin, 0, 0);
     //m_schceduleSearchView->setFixedWidth(0.2325 * width() + 0.5);
     //m_scheduleView->setFixedSize(width() * 0.9802 + 0.5, sh);
-    m_scheduleView->setFixedSize(width() - winframe, sh - 10);
+//    m_scheduleView->setFixedSize(width() - winframe, qRound(sh - 10));
     QMainWindow::resizeEvent(event);
 }
 
 void CWeekWindow::mousePressEvent(QMouseEvent *event)
 {
+    Q_UNUSED(event);
     slotScheduleHide();
 }
 

@@ -27,6 +27,7 @@
 #include <QMouseEvent>
 #include <DHiDPIHelper>
 #include <QDebug>
+#include "scheduledatamanage.h"
 DGUI_USE_NAMESPACE
 CMonthDayView::CMonthDayView(QWidget *parent) : DFrame(parent)
 {
@@ -233,6 +234,9 @@ void CMonthRect::setRect(qreal x, qreal y, qreal w, qreal h)
 
 void CMonthRect::paintItem(QPainter *painter, const QRectF &rect)
 {
+    m_selectColor = CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
+    if (m_Date.year()<1900)
+        return;
     const bool isCurrentDay = (m_Date.month() == QDate::currentDate().month()
                                && m_Date.year() == QDate::currentDate().year());
 
@@ -241,24 +245,32 @@ void CMonthRect::paintItem(QPainter *painter, const QRectF &rect)
 
     const QString dayNum = QString::number(m_Date.month());
 
+//    const qreal r = rect.width() > rect.height() ? rect.height() * 0.9 : rect.width() * 0.9 ;
+//    const qreal x = rect.x()+(rect.width() - r) / 2;
+//    const qreal y = rect.y()+(rect.height() - r) / 2;
+//    QRectF fillRect = QRectF(x, y, r, r);
+
     if (m_SelectRect ==this) {
-        QRectF fillRect((rect.width() - 36) / 2 +rect.x(),
-                        (rect.height() - 36) / 2 + 4+rect.y(),
-                        36,
-                        36);
-        QPixmap pixmap;
-        if (m_themetype == 2)
-            pixmap = DHiDPIHelper::loadNxPixmap(":/resources/icon/darkchoose30X30_checked .svg");
-        else {
-            pixmap = DHiDPIHelper::loadNxPixmap(":/resources/icon/choose30X30_checked .svg");
-        }
-        pixmap.setDevicePixelRatio(m_DevicePixelRatio);
-        painter->save();
-        painter->setRenderHint(QPainter::Antialiasing);
-        painter->setRenderHint(QPainter::HighQualityAntialiasing);
-        painter->setRenderHint(QPainter::SmoothPixmapTransform);
-        painter->drawPixmap(fillRect.toRect(), pixmap);
-        painter->restore();
+        QRectF fillRect((rect.width() - 36) / 2 +rect.x() + 6,
+                        (rect.height() - 36) / 2 + 7 +rect.y(),
+                        24,
+                        24);
+//        QPixmap pixmap;
+//        if (m_themetype == 2)
+//            pixmap = DHiDPIHelper::loadNxPixmap(":/resources/icon/darkchoose30X30_checked .svg");
+//        else {
+//            pixmap = DHiDPIHelper::loadNxPixmap(":/resources/icon/choose30X30_checked .svg");
+//        }
+//        pixmap.setDevicePixelRatio(m_DevicePixelRatio);
+//        painter->save();
+//        painter->setRenderHint(QPainter::Antialiasing);
+//        painter->setRenderHint(QPainter::HighQualityAntialiasing);
+//        painter->setRenderHint(QPainter::SmoothPixmapTransform);
+//        painter->drawPixmap(fillRect.toRect(), pixmap);
+//        painter->restore();
+        painter->setBrush(QBrush(m_selectColor));
+        painter->setPen(Qt::NoPen);
+        painter->drawEllipse(fillRect);
         painter->setRenderHint(QPainter::HighQualityAntialiasing);
         painter->setPen(m_currentDayTextColor);
         painter->setFont(m_dayNumFont);
@@ -288,7 +300,8 @@ void CMonthRect::setTheMe(int type)
         m_defaultTextColor = Qt::black;
         m_backgrounddefaultColor = Qt::white;
         m_currentDayTextColor = Qt::white;
-        m_backgroundcurrentDayColor = "#0081FF";
+//        m_backgroundcurrentDayColor = "#0081FF";
+        m_backgroundcurrentDayColor = CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
         m_fillColor = "#FFFFFF";
         frameclor = m_fillColor;
         m_fillColor.setAlphaF(0);
@@ -298,7 +311,7 @@ void CMonthRect::setTheMe(int type)
         framecolor.setAlphaF(0.5);
         m_backgrounddefaultColor = framecolor;
         m_currentDayTextColor = "#C0C6D4";
-        m_backgroundcurrentDayColor = "#0059D2";
+        m_backgroundcurrentDayColor = CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
         m_fillColor = "#FFFFFF";
         m_fillColor.setAlphaF(0.05);
         frameclor = m_fillColor;

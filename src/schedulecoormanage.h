@@ -33,11 +33,11 @@ public:
     {
         return m_rightmagin;
     }
-    QRect getDrawRegion(QDateTime begintime, QDateTime endtime);
-    QRect getDrawRegion(QDateTime begintime, QDateTime endtime, int index, int coount);
-    QRect getDrawRegion(QDate date, QDateTime begintime, QDateTime endtime, int index, int coount, int maxNum, int type = 0);
+    QRectF getDrawRegion(QDateTime begintime, QDateTime endtime);
+    QRectF getDrawRegion(QDateTime begintime, QDateTime endtime, int index, int coount);
+    QRectF getDrawRegion(QDate date, QDateTime begintime, QDateTime endtime, int index, int coount, int maxNum, int type = 0);
     QRectF getDrawRegionF(QDateTime begintime, QDateTime endtime);
-    QRect getAllDayDrawRegion(QDate begin, QDate end);
+    QRectF getAllDayDrawRegion(QDate begin, QDate end);
     QDateTime getDate(QPointF pos);
     QDate getsDate(QPointF pos);
     float getHeight(QTime time);
@@ -50,7 +50,7 @@ private:
     int                  m_height;
     QDate                m_begindate;
     QDate                m_enddate;
-    int                  m_totalDay;
+    qint64                  m_totalDay;
     int                  m_rightmagin = 0;
 };
 

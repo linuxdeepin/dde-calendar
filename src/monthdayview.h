@@ -100,6 +100,7 @@ private:
     static QColor                       m_fillColor;
     static QFont                        m_dayNumFont;
     static CMonthRect                  *m_SelectRect;
+    QColor                              m_selectColor;
 };
 
 #endif // MONTDAYVIEW_H

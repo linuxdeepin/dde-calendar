@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="pl">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="pl" version="2.1">
 <context>
     <name>CDayMonthView</name>
     <message>
@@ -97,7 +95,7 @@
     <name>CMonthSchceduleNumButton</name>
     <message>
         <source>%1 more</source>
-        <translation type="unfinished">Jeszcze %1</translation>
+        <translation>Jeszcze %1</translation>
     </message>
 </context>
 <context>
@@ -457,7 +455,7 @@
     <name>CScheduleView</name>
     <message>
         <source>ALL DAY</source>
-        <translation type="unfinished"></translation>
+        <translation>CAŁY DZIEŃ</translation>
     </message>
 </context>
 <context>
@@ -541,58 +539,51 @@
     <name>DragInfoGraphicsView</name>
     <message>
         <source>Edit</source>
-        <translation type="unfinished">Edycja</translation>
+        <translation>Edycja</translation>
     </message>
     <message>
         <source>Delete</source>
-        <translation type="unfinished">Usuń</translation>
+        <translation>Usuń</translation>
     </message>
     <message>
         <source>New event</source>
-        <translation type="unfinished">New event</translation>
+        <translation>Nowe wydarzenie</translation>
     </message>
     <message>
         <source>You are deleting an event.</source>
-        <translation type="unfinished">Usuwasz wydarzenie.</translation>
+        <translation>Usuwasz wydarzenie.</translation>
     </message>
     <message>
         <source>Are you sure you want to delete this event?</source>
-        <translation type="unfinished">Czy na pewno chcesz usunąć to wydarzenie?</translation>
+        <translation>Czy na pewno chcesz usunąć to wydarzenie?</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished">Anuluj</translation>
+        <translation>Anuluj</translation>
     </message>
     <message>
         <source>Do you want to delete all occurrences of this event, or only the selected occurrence?</source>
-        <translation type="unfinished">Czy chcesz usunąć wszystkie wystąpienia tego zdarzenia, czy tylko wybrane wystąpienie?</translation>
+        <translation>Czy chcesz usunąć wszystkie wystąpienia tego zdarzenia, czy tylko wybrane wystąpienie?</translation>
     </message>
     <message>
         <source>Delete All</source>
-        <translation type="unfinished">Usuń wszystko</translation>
+        <translation>Usuń wszystko</translation>
     </message>
     <message>
         <source>Delete Only This Event</source>
-        <translation type="unfinished">Usuń tylko to wydarzenie</translation>
+        <translation>Usuń tylko to wydarzenie</translation>
     </message>
     <message>
         <source>Do you want to delete this and all future occurrences of this event, or only the selected occurrence?</source>
-        <translation type="unfinished">Czy chcesz usunąć to i wszystkie przyszłe wystąpienia tego zdarzenia, czy tylko wybrane wystąpienie?</translation>
+        <translation>Czy chcesz usunąć to i wszystkie przyszłe wystąpienia tego zdarzenia, czy tylko wybrane wystąpienie?</translation>
     </message>
     <message>
         <source>Delete All Future Events</source>
-        <translation type="unfinished">Usuń wszystkie przyszłe zdarzenia</translation>
+        <translation>Usuń wszystkie przyszłe zdarzenia</translation>
     </message>
     <message>
         <source>New Event</source>
-        <translation type="unfinished">Nowe wydarzenie</translation>
-    </message>
-</context>
-<context>
-    <name>InfoView</name>
-    <message>
-        <source>Today</source>
-        <translation>Dzisiaj</translation>
+        <translation>Nowe wydarzenie</translation>
     </message>
 </context>
 <context>

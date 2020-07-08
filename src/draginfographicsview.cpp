@@ -1,3 +1,23 @@
+/*
+* Copyright (C) 2019 ~ 2020 Uniontech Software Technology Co.,Ltd.
+*
+* Author:     uniontech  <uniontech@uniontech.com>
+*
+* Maintainer: uniontech  <chenhaifeng@uniontech.com>
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 #include "draginfographicsview.h"
 
 #include <DMenu>
@@ -8,11 +28,13 @@
 
 #include "schceduledlg.h"
 #include "schcedulectrldlg.h"
+#include "myschceduleview.h"
 
 DragInfoGraphicsView::DragInfoGraphicsView(DWidget *parent)
     :DGraphicsView (parent),
      m_Scene(new QGraphicsScene(this)),
-     m_rightMenu(new DMenu(this))
+     m_rightMenu(new DMenu(this)),
+     m_MoveDate(QDateTime::currentDateTime())
 {
     setFrameShape(QFrame::NoFrame);
     setScene(m_Scene);
@@ -28,8 +50,8 @@ DragInfoGraphicsView::DragInfoGraphicsView(DWidget *parent)
     m_createAction = new QAction(tr("New event"), this);
     connect(m_createAction, &QAction::triggered, this,
             static_cast<void (DragInfoGraphicsView::*)()>(&DragInfoGraphicsView::slotCreate));
-    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     this->setViewportMargins(0, 0, 0, 0);
     setMouseTracking(true);
     viewport()->setMouseTracking(true);
@@ -48,9 +70,9 @@ DragInfoGraphicsView::~DragInfoGraphicsView()
 void DragInfoGraphicsView::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() != Qt::LeftButton) {
-        m_press = false;
-        m_DragStatus =NONE;
-        emit signalScheduleShow(false);
+//        m_press = false;
+//        m_DragStatus =NONE;
+//        emit signalScheduleShow(false);
         return;
     }
 
@@ -61,7 +83,6 @@ void DragInfoGraphicsView::mousePressEvent(QMouseEvent *event)
         setPressSelectInfo(infoitem->getData());
         m_press = true;
         DragInfoItem::setPressFlag(true);
-        emit signalScheduleShow(true, infoitem->getData());
     } else {
         emit signalScheduleShow(false);
     }
@@ -71,40 +92,10 @@ void DragInfoGraphicsView::mousePressEvent(QMouseEvent *event)
 
 void DragInfoGraphicsView::mouseReleaseEvent(QMouseEvent *event)
 {
-    Q_UNUSED(event);
-    setCursor(Qt::ArrowCursor);
-    m_press = false;
-    DragInfoItem::setPressFlag(false);
-    switch (m_DragStatus) {
-    case IsCreate:
-        if (MeetCreationConditions(m_MoveDate)) {
-            emit signalViewtransparentFrame(1);
-            CSchceduleDlg dlg(1, this);
-            dlg.setData(m_DragScheduleInfo);
-            if (dlg.exec() == DDialog::Accepted) {
-            } else {
-                setPressSelectInfo(ScheduleDtailInfo());
-            }
-            emit signalViewtransparentFrame(0);
-        }
-        break;
-    case ChangeBegin:
-        if (!IsEqualtime(m_MoveDate,m_InfoBeginTime)) {
-            updateScheduleInfo(m_DragScheduleInfo);
-        }
-
-        break;
-    case ChangeEnd:
-        if (!IsEqualtime(m_MoveDate,m_InfoEndTime)) {
-            updateScheduleInfo(m_DragScheduleInfo);
-        }
-        break;
-    default:
-        break;
+    if (event->button() ==Qt::RightButton) {
+        return;
     }
-    m_DragStatus = NONE;
-    emit signalsUpdateShcedule();
-    update();
+    mouseReleaseScheduleUpdate();
 }
 
 
@@ -187,7 +178,6 @@ void DragInfoGraphicsView::mouseMoveEvent(QMouseEvent *event)
     default:
         break;
     }
-
 }
 
 void DragInfoGraphicsView::wheelEvent(QWheelEvent *event)
@@ -197,6 +187,10 @@ void DragInfoGraphicsView::wheelEvent(QWheelEvent *event)
 
 void DragInfoGraphicsView::contextMenuEvent(QContextMenuEvent *event)
 {
+    DGraphicsView::contextMenuEvent(event);
+    if (m_DragStatus ==IsCreate) {
+        return;
+    }
     emit signalScheduleShow(false);
     m_press = false;
     m_DragStatus =NONE;
@@ -220,6 +214,15 @@ void DragInfoGraphicsView::contextMenuEvent(QContextMenuEvent *event)
             } else if (action_t == m_deleteAction) {
                 DeleteItem(infoitem->getData());
             }
+        } else {
+            emit signalViewtransparentFrame(1);
+            CMySchceduleView dlg(infoitem->getData(), this);
+            dlg.exec();
+            emit signalViewtransparentFrame(0);
+
+//            qDebug()<<"setFocus";
+//            emit signalViewtransparentFrame(1);
+//            this->setFocus(Qt::MouseFocusReason);
         }
     } else {
         RightClickToCreate(listItem,event->pos());
@@ -229,21 +232,18 @@ void DragInfoGraphicsView::contextMenuEvent(QContextMenuEvent *event)
 void DragInfoGraphicsView::dragEnterEvent(QDragEnterEvent *event)
 {
     if (event->mimeData()->hasFormat("Info")) {
-        if (event->source() !=this) {
-            QJsonParseError json_error;
-            QString str = event->mimeData()->data("Info");
-            QJsonDocument jsonDoc(QJsonDocument::fromJson(str.toLocal8Bit(), &json_error));
-            if (json_error.error != QJsonParseError::NoError) {
-                event->ignore();
-            }
-            QJsonObject rootobj = jsonDoc.object();
-            ScheduleDtailInfo info =
-                CScheduleDataManage::getScheduleDataManage()->getscheduleDataCtrl()->JsonObjectToInfo(rootobj);
-            if (info.rpeat>0) {
-                event->ignore();
-            } else {
-                event->accept();
-            }
+        QJsonParseError json_error;
+        QString str = event->mimeData()->data("Info");
+        QJsonDocument jsonDoc(QJsonDocument::fromJson(str.toLocal8Bit(), &json_error));
+        if (json_error.error != QJsonParseError::NoError) {
+            event->ignore();
+        }
+        QJsonObject rootobj = jsonDoc.object();
+        ScheduleDtailInfo info =
+            CScheduleDataManage::getScheduleDataManage()->getscheduleDataCtrl()->JsonObjectToInfo(rootobj);
+        if ((event->source() !=this && info.rpeat >0) ||
+                info.type.ID ==4) {
+            event->ignore();
         } else {
             event->accept();
         }
@@ -251,13 +251,14 @@ void DragInfoGraphicsView::dragEnterEvent(QDragEnterEvent *event)
     } else {
         event->ignore();
     }
+
 }
 
 void DragInfoGraphicsView::dragLeaveEvent(QDragLeaveEvent *event)
 {
     Q_UNUSED(event);
     upDateInfoShow();
-    m_MoveDate = m_MoveDate.addMonths(2);
+    m_MoveDate = m_MoveDate.addMonths(-2);
 }
 
 void DragInfoGraphicsView::dragMoveEvent(QDragMoveEvent *event)
@@ -290,8 +291,26 @@ void DragInfoGraphicsView::dropEvent(QDropEvent *event)
             emit signalsUpdateShcedule();
         }
         m_DragStatus = NONE;
-        m_MoveDate = m_MoveDate.addMonths(2);
+        m_MoveDate = m_MoveDate.addMonths(-2);
     }
+}
+
+bool DragInfoGraphicsView::event(QEvent *e)
+{
+    if (e->type() ==QEvent::Leave) {
+        if (m_DragStatus ==IsCreate ||
+                m_DragStatus == ChangeBegin ||
+                m_DragStatus == ChangeEnd)
+            mouseReleaseScheduleUpdate();
+    }
+    return DGraphicsView::event(e);
+}
+
+void DragInfoGraphicsView::keyPressEvent(QKeyEvent *event)
+{
+    if (event->key() == Qt::Key_Left || event->key() ==Qt::Key_Right)
+        return;
+    DGraphicsView::keyPressEvent(event);
 }
 
 void DragInfoGraphicsView::slotCreate()
@@ -324,13 +343,15 @@ void DragInfoGraphicsView::DragPressEvent(const QPoint &pos, DragInfoItem *item)
 
     m_MoveDate = m_PressDate.addMonths(-2);
     if (item != nullptr) {
-        if (item->getData().type.ID == 4)
+        PosInItem mpressstatus = getPosInItem(pos,item->boundingRect());
+        if (mpressstatus != MIDDLE && item->getData().type.ID == 4) {
             return;
+        }
         m_DragScheduleInfo = item->getData();
         m_PressScheduleInfo = item->getData();
         m_InfoBeginTime = m_DragScheduleInfo.beginDateTime;
         m_InfoEndTime = m_DragScheduleInfo.endDateTime;
-        switch (getPosInItem(pos,item->boundingRect())) {
+        switch (mpressstatus) {
         case TOP:
             m_DragStatus = ChangeBegin;
             setCursor(Qt::SplitVCursor);
@@ -348,6 +369,7 @@ void DragInfoGraphicsView::DragPressEvent(const QPoint &pos, DragInfoItem *item)
             setCursor(Qt::SplitHCursor);
             break;
         default:
+            ShowSchedule(item);
             m_DragStatus = ChangeWhole;
             QMimeData *mimeData = new QMimeData();
             mimeData->setText(m_DragScheduleInfo.titleName);
@@ -370,6 +392,55 @@ void DragInfoGraphicsView::DragPressEvent(const QPoint &pos, DragInfoItem *item)
     }
 }
 
+void DragInfoGraphicsView::mouseReleaseScheduleUpdate()
+{
+    setCursor(Qt::ArrowCursor);
+    m_press = false;
+    DragInfoItem::setPressFlag(false);
+    bool isUpdateInfo = false;
+    switch (m_DragStatus) {
+    case IsCreate:
+        if (MeetCreationConditions(m_MoveDate)) {
+            //如果不添加会进入leaveEvent事件内的条件
+            m_DragStatus = NONE;
+
+            emit signalViewtransparentFrame(1);
+            CSchceduleDlg dlg(1, this);
+            dlg.setData(m_DragScheduleInfo);
+            if (dlg.exec() == DDialog::Accepted) {
+            } else {
+                setPressSelectInfo(ScheduleDtailInfo());
+            }
+            emit signalViewtransparentFrame(0);
+            isUpdateInfo = true;
+        }
+        break;
+    case ChangeBegin:
+        if (!IsEqualtime(m_MoveDate,m_InfoBeginTime)) {
+            //如果不添加会进入leaveEvent事件内的条件
+            m_DragStatus = NONE;
+            updateScheduleInfo(m_DragScheduleInfo);
+            isUpdateInfo = true;
+        }
+        break;
+    case ChangeEnd:
+        if (!IsEqualtime(m_MoveDate,m_InfoEndTime)) {
+            //如果不添加会进入leaveEvent事件内的条件
+            m_DragStatus = NONE;
+            updateScheduleInfo(m_DragScheduleInfo);
+            isUpdateInfo = true;
+        }
+        break;
+    default:
+        break;
+    }
+    m_DragStatus = NONE;
+    if (isUpdateInfo) {
+        emit signalsUpdateShcedule();
+    }
+    update();
+}
+
 void DragInfoGraphicsView::DeleteItem(const ScheduleDtailInfo &info)
 {
     emit signalViewtransparentFrame(1);
@@ -377,22 +448,22 @@ void DragInfoGraphicsView::DeleteItem(const ScheduleDtailInfo &info)
         CSchceduleCtrlDlg msgBox(this);
         msgBox.setText(tr("You are deleting an event."));
         msgBox.setInformativeText(tr("Are you sure you want to delete this event?"));
-        DPushButton *noButton = msgBox.addPushButton(tr("Cancel"));
-        DPushButton *yesButton = msgBox.addPushButton(tr("Delete"), 1);
-        msgBox.updatesize();
-        DPalette pa = yesButton->palette();
-        if (m_themetype == 0 || m_themetype == 1) {
-            pa.setColor(DPalette::ButtonText, Qt::red);
-        } else {
-            pa.setColor(DPalette::ButtonText, "#FF5736");
-        }
-        yesButton->setPalette(pa);
+        /*QAbstractButton *noButton = */msgBox.addPushButton(tr("Cancel"), true);
+        /*QAbstractButton *yesButton = */msgBox.addWaringButton(tr("Delete"), true);
+//        msgBox.updatesize();
+//        DPalette pa = yesButton->palette();
+//        if (m_themetype == 0 || m_themetype == 1) {
+//            pa.setColor(DPalette::ButtonText, Qt::red);
+//        } else {
+//            pa.setColor(DPalette::ButtonText, "#FF5736");
+//        }
+//        yesButton->setPalette(pa);
         msgBox.exec();
 
-        if (msgBox.clickButton() == noButton) {
+        if (msgBox.clickButton() == 0) {
             emit signalViewtransparentFrame(0);
             return;
-        } else if (msgBox.clickButton() == yesButton) {
+        } else if (msgBox.clickButton() == 1) {
             CScheduleDataManage::getScheduleDataManage()->getscheduleDataCtrl()->deleteScheduleInfoById(info.id);
         }
     } else {
@@ -400,29 +471,29 @@ void DragInfoGraphicsView::DeleteItem(const ScheduleDtailInfo &info)
             CSchceduleCtrlDlg msgBox(this);
             msgBox.setText(tr("You are deleting an event."));
             msgBox.setInformativeText(tr("Do you want to delete all occurrences of this event, or only the selected occurrence?"));
-            DPushButton *noButton = msgBox.addPushButton(tr("Cancel"));
-            DPushButton *yesallbutton = msgBox.addPushButton(tr("Delete All"));
-            DPushButton *yesButton = msgBox.addPushButton(tr("Delete Only This Event"));
-            msgBox.updatesize();
-            DPalette pa = yesButton->palette();
-            if (m_themetype == 0 || m_themetype == 1) {
-                pa.setColor(DPalette::ButtonText, Qt::white);
-                pa.setColor(DPalette::Dark, QColor("#25B7FF"));
-                pa.setColor(DPalette::Light, QColor("#0098FF"));
-            } else {
-                pa.setColor(DPalette::ButtonText, "#B8D3FF");
-                pa.setColor(DPalette::Dark, QColor("#0056C1"));
-                pa.setColor(DPalette::Light, QColor("#004C9C"));
-            }
-            yesButton->setPalette(pa);
+            /*QAbstractButton *noButton = */msgBox.addPushButton(tr("Cancel"));
+            /*QAbstractButton *yesallbutton = */msgBox.addPushButton(tr("Delete All"));
+            /*QAbstractButton *yesButton = */msgBox.addsuggestButton(tr("Delete Only This Event"));
+//            msgBox.updatesize();
+//            DPalette pa = yesButton->palette();
+//            if (m_themetype == 0 || m_themetype == 1) {
+//                pa.setColor(DPalette::ButtonText, Qt::white);
+//                pa.setColor(DPalette::Dark, QColor("#25B7FF"));
+//                pa.setColor(DPalette::Light, QColor("#0098FF"));
+//            } else {
+//                pa.setColor(DPalette::ButtonText, "#B8D3FF");
+//                pa.setColor(DPalette::Dark, QColor("#0056C1"));
+//                pa.setColor(DPalette::Light, QColor("#004C9C"));
+//            }
+//            yesButton->setPalette(pa);
             msgBox.exec();
 
-            if (msgBox.clickButton() == noButton) {
+            if (msgBox.clickButton() == 0) {
                 emit signalViewtransparentFrame(0);
                 return;
-            } else if (msgBox.clickButton() == yesallbutton) {
+            } else if (msgBox.clickButton() == 1) {
                 CScheduleDataManage::getScheduleDataManage()->getscheduleDataCtrl()->deleteScheduleInfoById(info.id);
-            } else if (msgBox.clickButton() == yesButton) {
+            } else if (msgBox.clickButton() == 2) {
 
                 ScheduleDtailInfo newschedule;
                 CScheduleDataManage::getScheduleDataManage()->getscheduleDataCtrl()->getScheduleInfoById(info.id, newschedule);
@@ -433,34 +504,34 @@ void DragInfoGraphicsView::DeleteItem(const ScheduleDtailInfo &info)
             CSchceduleCtrlDlg msgBox(this);
             msgBox.setText(tr("You are deleting an event."));
             msgBox.setInformativeText(tr("Do you want to delete this and all future occurrences of this event, or only the selected occurrence?"));
-            DPushButton *noButton = msgBox.addPushButton(tr("Cancel"));
-            DPushButton *yesallbutton = msgBox.addPushButton(tr("Delete All Future Events"));
-            DPushButton *yesButton = msgBox.addPushButton(tr("Delete Only This Event"));
-            msgBox.updatesize();
-            DPalette pa = yesButton->palette();
-            if (m_themetype == 0 || m_themetype == 1) {
-                pa.setColor(DPalette::ButtonText, Qt::white);
-                pa.setColor(DPalette::Dark, QColor("#25B7FF"));
-                pa.setColor(DPalette::Light, QColor("#0098FF"));
-            } else {
-                pa.setColor(DPalette::ButtonText, "#B8D3FF");
-                pa.setColor(DPalette::Dark, QColor("#0056C1"));
-                pa.setColor(DPalette::Light, QColor("#004C9C"));
-            }
-            yesButton->setPalette(pa);
+            /*QAbstractButton *noButton = */msgBox.addPushButton(tr("Cancel"));
+            /*QAbstractButton *yesallbutton = */msgBox.addPushButton(tr("Delete All Future Events"));
+            /*QAbstractButton *yesButton = */msgBox.addsuggestButton(tr("Delete Only This Event"));
+//            msgBox.updatesize();
+//            DPalette pa = yesButton->palette();
+//            if (m_themetype == 0 || m_themetype == 1) {
+//                pa.setColor(DPalette::ButtonText, Qt::white);
+//                pa.setColor(DPalette::Dark, QColor("#25B7FF"));
+//                pa.setColor(DPalette::Light, QColor("#0098FF"));
+//            } else {
+//                pa.setColor(DPalette::ButtonText, "#B8D3FF");
+//                pa.setColor(DPalette::Dark, QColor("#0056C1"));
+//                pa.setColor(DPalette::Light, QColor("#004C9C"));
+//            }
+//            yesButton->setPalette(pa);
             msgBox.exec();
 
-            if (msgBox.clickButton() == noButton) {
+            if (msgBox.clickButton() == 0) {
                 emit signalViewtransparentFrame(0);
                 return;
-            } else if (msgBox.clickButton() == yesallbutton) {
+            } else if (msgBox.clickButton() == 1) {
                 ScheduleDtailInfo newschedule;
                 CScheduleDataManage::getScheduleDataManage()->getscheduleDataCtrl()->getScheduleInfoById(info.id, newschedule);
                 newschedule.enddata.type = 2;
                 newschedule.enddata.date = info.beginDateTime.addDays(-1);
                 CScheduleDataManage::getScheduleDataManage()->getscheduleDataCtrl()->updateScheduleInfo(newschedule);
 
-            } else if (msgBox.clickButton() == yesButton) {
+            } else if (msgBox.clickButton() == 2) {
                 ScheduleDtailInfo newschedule;
                 CScheduleDataManage::getScheduleDataManage()->getscheduleDataCtrl()->getScheduleInfoById(info.id, newschedule);
                 newschedule.ignore.append(info.beginDateTime);
@@ -519,5 +590,13 @@ ScheduleDtailInfo DragInfoGraphicsView::getScheduleInfo(const QDateTime &beginDa
     info.rpeat = 0;
 
     return info;
+}
+
+void DragInfoGraphicsView::ShowSchedule(DragInfoItem *infoitem)
+{
+    if (infoitem ==nullptr)
+        return;
+    emit signalScheduleShow(true, infoitem->getData());
+
 }
 

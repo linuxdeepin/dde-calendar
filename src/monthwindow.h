@@ -48,7 +48,6 @@ public:
     void setTheMe(int type = 0);
     void setSearchWFlag(bool flag);
     void clearSearch();
-    void setSearchText(QString str);
 public slots:
     void previousMonth();
     void nextMonth();
@@ -92,7 +91,6 @@ private:
     QLabel                  *m_YearLunarLabel;
     QSpacerItem             *m_spaceitem;
     DWidget                 *m_gridWidget;
-    QString                 m_searchText;
     bool                    m_searchfalg = false;
     QHBoxLayout             *m_tmainLayout;
 };

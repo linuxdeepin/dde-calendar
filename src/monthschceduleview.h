@@ -113,7 +113,7 @@ public:
     {
         return m_scheduleShowItem;
     }
-    void updateSchedule(const bool isCreate,const ScheduleDtailInfo &info = ScheduleDtailInfo());
+    void updateSchedule(const bool isNormalDisplay,const ScheduleDtailInfo &info = ScheduleDtailInfo());
     void clearItem();
 private:
     void setMaxNum();

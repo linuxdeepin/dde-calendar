@@ -1,0 +1,104 @@
+<RCC>
+    <qresource prefix="/">
+        <file>resources/dde-calendar.qss</file>
+        <file>resources/icon/dde-calendar.svg</file>
+        <file>resources/icon/dde-calendar_96.png</file>
+        <file>resources/icon/dde-calendar_48.png</file>
+        <file>resources/icon/next_disabled.svg</file>
+        <file>resources/icon/next_hover.svg</file>
+        <file>resources/icon/next_normal.svg</file>
+        <file>resources/icon/next_press.svg</file>
+        <file>resources/icon/previous_disabled.svg</file>
+        <file>resources/icon/previous_hover.svg</file>
+        <file>resources/icon/previous_normal.svg</file>
+        <file>resources/icon/previous_press.svg</file>
+        <file>resources/icon/today_hover.svg</file>
+        <file>resources/icon/today_normal.svg</file>
+        <file>resources/icon/today_press.svg</file>
+        <file>resources/icon/dde-ji.svg</file>
+        <file>resources/icon/dde-ban.svg</file>
+        <file>resources/icon/dde-logo.svg</file>
+        <file>resources/icon/dde-xiu.svg</file>
+        <file>resources/icon/dde-yi.svg</file>
+        <file>resources/icon/dde-choose24.svg</file>
+        <file>resources/icon/dde-choose30.svg</file>
+        <file>resources/icon/choose20X20_checked .svg</file>
+        <file>resources/icon/icon_ji.svg</file>
+        <file>resources/icon/icon_type_life.svg</file>
+        <file>resources/icon/type_xiu.svg</file>
+        <file>resources/icon/search_type_work.svg</file>
+        <file>resources/icon/icon_type_other.svg</file>
+        <file>resources/icon/choose30X30_checked .svg</file>
+        <file>resources/icon/icon_yi.svg</file>
+        <file>resources/icon/search_type_life.svg</file>
+        <file>resources/icon/search_type_other.svg</file>
+        <file>resources/icon/type_ban_bg.svg</file>
+        <file>resources/icon/type_ban.svg</file>
+        <file>resources/icon/icon_type_work.svg</file>
+        <file>resources/icon/data_line_checked.svg</file>
+        <file>resources/icon/type_xiu_bg.svg</file>
+        <file>resources/icon/data_day_line.svg</file>
+        <file>resources/icon/checkbox_checked .svg</file>
+        <file>resources/icon/checkbox_unchecked .svg</file>
+        <file>resources/icon/uos_logo.svg</file>
+        <file>resources/icon/oval.svg</file>
+        <file>resources/icon/darkchoose30X30_checked .svg</file>
+        <file>resources/icon/darkchoose20X20_checked .svg</file>
+        <file>resources/icon/dark_ban_bg.svg</file>
+        <file>resources/icon/dark_xiu_bg.svg</file>
+        <file>resources/icon/ban.svg</file>
+        <file>resources/icon/xiu.svg</file>
+        <file>resources/icon/warning.svg</file>
+        <file>resources/DynamicIcon/day5.svg</file>
+        <file>resources/DynamicIcon/calendar_bg.svg</file>
+        <file>resources/DynamicIcon/day1.svg</file>
+        <file>resources/DynamicIcon/day2.svg</file>
+        <file>resources/DynamicIcon/day3.svg</file>
+        <file>resources/DynamicIcon/day4.svg</file>
+        <file>resources/DynamicIcon/day6.svg</file>
+        <file>resources/DynamicIcon/day7.svg</file>
+        <file>resources/DynamicIcon/day8.svg</file>
+        <file>resources/DynamicIcon/day9.svg</file>
+        <file>resources/DynamicIcon/day10.svg</file>
+        <file>resources/DynamicIcon/day11.svg</file>
+        <file>resources/DynamicIcon/day12.svg</file>
+        <file>resources/DynamicIcon/day13.svg</file>
+        <file>resources/DynamicIcon/day14.svg</file>
+        <file>resources/DynamicIcon/day15.svg</file>
+        <file>resources/DynamicIcon/day16.svg</file>
+        <file>resources/DynamicIcon/day17.svg</file>
+        <file>resources/DynamicIcon/day18.svg</file>
+        <file>resources/DynamicIcon/day19.svg</file>
+        <file>resources/DynamicIcon/day20.svg</file>
+        <file>resources/DynamicIcon/day21.svg</file>
+        <file>resources/DynamicIcon/day22.svg</file>
+        <file>resources/DynamicIcon/day23.svg</file>
+        <file>resources/DynamicIcon/day24.svg</file>
+        <file>resources/DynamicIcon/day25.svg</file>
+        <file>resources/DynamicIcon/day26.svg</file>
+        <file>resources/DynamicIcon/day27.svg</file>
+        <file>resources/DynamicIcon/day28.svg</file>
+        <file>resources/DynamicIcon/day29.svg</file>
+        <file>resources/DynamicIcon/day30.svg</file>
+        <file>resources/DynamicIcon/day31.svg</file>
+        <file>resources/DynamicIcon/month1.svg</file>
+        <file>resources/DynamicIcon/month2.svg</file>
+        <file>resources/DynamicIcon/month3.svg</file>
+        <file>resources/DynamicIcon/month4.svg</file>
+        <file>resources/DynamicIcon/month5.svg</file>
+        <file>resources/DynamicIcon/month6.svg</file>
+        <file>resources/DynamicIcon/month7.svg</file>
+        <file>resources/DynamicIcon/month8.svg</file>
+        <file>resources/DynamicIcon/month9.svg</file>
+        <file>resources/DynamicIcon/month10.svg</file>
+        <file>resources/DynamicIcon/month11.svg</file>
+        <file>resources/DynamicIcon/month12.svg</file>
+        <file>resources/DynamicIcon/week1.svg</file>
+        <file>resources/DynamicIcon/week2.svg</file>
+        <file>resources/DynamicIcon/week3.svg</file>
+        <file>resources/DynamicIcon/week4.svg</file>
+        <file>resources/DynamicIcon/week5.svg</file>
+        <file>resources/DynamicIcon/week6.svg</file>
+        <file>resources/DynamicIcon/week7.svg</file>
+    </qresource>
+</RCC>

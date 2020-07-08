@@ -56,8 +56,8 @@ signals:
     void signalViewtransparentFrame(int type);
     void signalScheduleUpdate(int id = 0);
 public slots:
-    void slotCancelBt();
-    void slotOkBt();
+    void slotCancelBt(int buttonIndex, QString buttonName);
+    void slotOkBt(int buttonIndex, QString buttonName);
     void slotTextChange();
     void slotendrepeatTextchange();
     void slotBDateEidtInfo(const QDate &date);
@@ -107,8 +107,8 @@ private:
     DWidget *m_endrepeattimesWidget;
     DDateEdit *m_endRepeatDate = nullptr;
     DWidget *m_endrepeatWidget;
-    DPushButton *m_cancelBt = nullptr;
-    DSuggestButton *m_OkBt = nullptr;
+//    DPushButton *m_cancelBt = nullptr;
+//    DSuggestButton *m_OkBt = nullptr;
     // CCalendarTimeEidt                *m_bCalendarTimeEidt;
     // CCalendarTimeEidt                *m_eCalendarTimeEidt;
     // CCustomCalendarWidget            *m_bCustomDateW;

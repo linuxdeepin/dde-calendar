@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="fr">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="fr" version="2.1">
 <context>
     <name>CDayMonthView</name>
     <message>
@@ -78,7 +76,7 @@
     </message>
     <message>
         <source>Delete All</source>
-        <translation>Supprimer tout</translation>
+        <translation>Tout supprimer</translation>
     </message>
     <message>
         <source>Delete Only This Event</source>
@@ -86,7 +84,7 @@
     </message>
     <message>
         <source>Do you want to delete this and all future occurrences of this event, or only the selected occurrence?</source>
-        <translation>Voulez-vous supprimer cette occurrence et toutes les occurrences futures de cet événement, ou uniquement l&apos;occurrence sélectionnée ?</translation>
+        <translation>Voulez-vous supprimer cette occurence et toutes celles futures, ou uniquement l&apos;occurrence de l&apos;événement sélectionnée ?</translation>
     </message>
     <message>
         <source>Delete All Future Events</source>
@@ -97,7 +95,7 @@
     <name>CMonthSchceduleNumButton</name>
     <message>
         <source>%1 more</source>
-        <translation type="unfinished">%1 de plus</translation>
+        <translation>%1 de plus</translation>
     </message>
 </context>
 <context>
@@ -261,15 +259,15 @@
     </message>
     <message>
         <source>Type:</source>
-        <translation>Type :</translation>
+        <translation>Type:</translation>
     </message>
     <message>
         <source>All Day:</source>
-        <translation>Toute la journée :</translation>
+        <translation>Toute la journée:</translation>
     </message>
     <message>
         <source>Remind Me:</source>
-        <translation>Rappelez-moi :</translation>
+        <translation>Rappelez-moi:</translation>
     </message>
     <message>
         <source>Repeat:</source>
@@ -297,7 +295,7 @@
     </message>
     <message>
         <source>End Repeat:</source>
-        <translation>Fin de répétition :</translation>
+        <translation>Fin de répétition:</translation>
     </message>
     <message>
         <source>After</source>
@@ -357,11 +355,11 @@
     </message>
     <message>
         <source>Ends:</source>
-        <translation>Fin :</translation>
+        <translation>Fin:</translation>
     </message>
     <message>
         <source>Description:</source>
-        <translation>Description :</translation>
+        <translation>Description:</translation>
     </message>
     <message>
         <source>Description</source>
@@ -369,7 +367,7 @@
     </message>
     <message>
         <source>Starts:</source>
-        <translation>Départs :</translation>
+        <translation>Départs:</translation>
     </message>
     <message>
         <source>Work</source>
@@ -457,7 +455,7 @@
     <name>CScheduleView</name>
     <message>
         <source>ALL DAY</source>
-        <translation type="unfinished"></translation>
+        <translation>TOUTE LA JOURNÉE</translation>
     </message>
 </context>
 <context>
@@ -541,58 +539,51 @@
     <name>DragInfoGraphicsView</name>
     <message>
         <source>Edit</source>
-        <translation type="unfinished">Modifier</translation>
+        <translation>Éditer</translation>
     </message>
     <message>
         <source>Delete</source>
-        <translation type="unfinished">Supprimer</translation>
+        <translation>Supprimer</translation>
     </message>
     <message>
         <source>New event</source>
-        <translation type="unfinished">Nouvel événement</translation>
+        <translation>Nouvel événement</translation>
     </message>
     <message>
         <source>You are deleting an event.</source>
-        <translation type="unfinished"></translation>
+        <translation>Vous allez supprimez un événement.</translation>
     </message>
     <message>
         <source>Are you sure you want to delete this event?</source>
-        <translation type="unfinished"></translation>
+        <translation>Voulez-vous vraiment le supprimer ?</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished">Annuler</translation>
+        <translation>Annuler</translation>
     </message>
     <message>
         <source>Do you want to delete all occurrences of this event, or only the selected occurrence?</source>
-        <translation type="unfinished"></translation>
+        <translation>Voulez-vous supprimer toutes les occurrences de cet événement, ou uniquement l&apos;occurrence sélectionnée ?</translation>
     </message>
     <message>
         <source>Delete All</source>
-        <translation type="unfinished">Supprimer tout</translation>
+        <translation>Tout supprimer</translation>
     </message>
     <message>
         <source>Delete Only This Event</source>
-        <translation type="unfinished">Supprimer uniquement cet événement</translation>
+        <translation>Supprimer uniquement cet événement</translation>
     </message>
     <message>
         <source>Do you want to delete this and all future occurrences of this event, or only the selected occurrence?</source>
-        <translation type="unfinished"></translation>
+        <translation>Voulez-vous supprimer cette occurence et toutes celles futures, ou uniquement l&apos;occurrence de l&apos;événement sélectionnée ?</translation>
     </message>
     <message>
         <source>Delete All Future Events</source>
-        <translation type="unfinished">Supprimer tous les événements futurs</translation>
+        <translation>Supprimer tous les événements futurs</translation>
     </message>
     <message>
         <source>New Event</source>
-        <translation type="unfinished">Nouvel événement</translation>
-    </message>
-</context>
-<context>
-    <name>InfoView</name>
-    <message>
-        <source>Today</source>
-        <translation>Aujourd&apos;hui</translation>
+        <translation>Nouvel événement</translation>
     </message>
 </context>
 <context>

@@ -34,6 +34,7 @@ typedef struct _tagScheduleclassificationInfo {
     QDateTime begindate;
     QDateTime enddate;
     QVector<ScheduleDtailInfo> vData;
+
 } ScheduleclassificationInfo;
 
 class CScheduleCoorManage;
@@ -71,10 +72,13 @@ public:
     {
         m_sMaxNum = maxnum;
     }
+    void keepCenterOnScene();
 
     void scheduleClassificationType(QVector<ScheduleDtailInfo> &scheduleInfolist,
-                                    QVector<ScheduleclassificationInfo> &info);
+                                    QList<ScheduleclassificationInfo> &info);
     void mouseDoubleClickEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
 
 #ifndef QT_NO_WHEELEVENT
     void wheelEvent(QWheelEvent *event) Q_DECL_OVERRIDE;
@@ -148,6 +152,8 @@ private:
     int checkDay(int weekday);
     void TimeRound(QDateTime &dtime);
     QDateTime TimeRounding(const QDateTime &time);
+    void centerOnScene(const QPointF &pos);
+    void setSceneHeightScale(const QPointF &pos);
 public:
     void setTheMe(int type = 0) override;
 protected:
@@ -155,6 +161,7 @@ protected:
     bool MeetCreationConditions(const QDateTime &date) override;
     void upDateInfoShow(const DragStatus &status = NONE,const ScheduleDtailInfo &info =ScheduleDtailInfo())override;
     QDateTime getPosDate(const QPoint &p) override;
+    void ShowSchedule(DragInfoItem *infoitem) override;
     void MoveInfoProcess(ScheduleDtailInfo &info,const QPointF &pos) override;
     PosInItem getPosInItem(const QPoint &p,const QRectF &itemRect) override;
     ScheduleDtailInfo getScheduleInfo(const QDateTime &beginDate,const QDateTime &endDate) override;
@@ -173,10 +180,11 @@ private:
     QPen                            m_TBPen;           //垂直线画笔
     QVector<int>                    m_vLRLarge;        //大刻度像素位置
     QVector<int>                    m_vTBLarge;        //大刻度像素位置
-    float                           m_dayInterval;
-    float                           m_timeInterval;
+    qreal                           m_dayInterval;
+    qreal                           m_timeInterval;
     int                             m_firstWeekDay;
-    int                             m_totalDay;
+    qint64                             m_totalDay;
+    qreal                           m_sceneHeightScale =0;
 
     QColor                          m_weekcolor = "#4F9BFF";
     QColor                          m_currenttimecolor = "#F74444";

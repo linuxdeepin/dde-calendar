@@ -298,14 +298,14 @@ void CYearView::createYearSchceduleView(QWidget *parent)
 
 void CYearView::resizeEvent(QResizeEvent *event)
 {
-    int leftmagin = width() * 0.06435 + 0.5;
+    int leftmagin = qFloor(width() * 0.06435 + 0.5);
     int rightmagin = leftmagin;
-    int topmagin = height() * 0.02955 + 0.5;
-    int buttonmagin = height() * 0.044 + 0.5;
+    int topmagin = qFloor(height() * 0.02955 + 0.5);
+    int buttonmagin = qFloor(height() * 0.044 + 0.5);
 
     m_hhLayout->setContentsMargins(leftmagin, topmagin, rightmagin, buttonmagin);
 
-    m_momthFont.setPixelSize(16 + (height() - 159) / 16.75);
+    m_momthFont.setPixelSize(qFloor(16 + (height() - 159) / 16.75));
     m_currentMouth->setTextFont(m_momthFont);
     m_currentMouth->setFixedHeight(24 + (height() - 159) / 12);
     m_currentMouth->update();
@@ -325,7 +325,7 @@ void CYearView::mousePressEvent(QMouseEvent *event)
 
 void CYearView::paintEvent(QPaintEvent *e)
 {
-
+    Q_UNUSED(e);
     int labelwidth = width() - 2 * m_borderframew;
     int labelheight = height() - 2 * m_borderframew;
 
@@ -589,6 +589,9 @@ void CMonthDayRect::setRect(qreal x, qreal y, qreal w, qreal h)
 
 void CMonthDayRect::paintItem(QPainter *painter, const QRectF &rect)
 {
+    m_highColor = CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
+    if (m_date.year()<1900)
+        return;
     const bool isCurrentDay = m_date == QDate::currentDate() && m_isCurrentMonth;
     bool isSelectedCell  = false;
     if (isCurrentDay) {
@@ -638,23 +641,26 @@ void CMonthDayRect::paintItem(QPainter *painter, const QRectF &rect)
     } else {
         // draw selected cell background circle
         if (isSelectedCell) {
-            QRectF pixmapRect(QRectF(fillRect.x()-3,
-                                     fillRect.y(),
-                                     fillRect.width()+6,
-                                     fillRect.height()+6));
-            QPixmap pixmap;
-            if (m_themetype == 2)
-                pixmap = DHiDPIHelper::loadNxPixmap(":/resources/icon/darkchoose30X30_checked .svg");
-            else {
-                pixmap = DHiDPIHelper::loadNxPixmap(":/resources/icon/choose30X30_checked .svg");
-            }
-            pixmap.setDevicePixelRatio(m_DevicePixelRatio);
-            painter->save();
-            painter->setRenderHint(QPainter::Antialiasing);
-            painter->setRenderHint(QPainter::HighQualityAntialiasing);
-            painter->setRenderHint(QPainter::SmoothPixmapTransform);
-            painter->drawPixmap(pixmapRect.toRect(), pixmap);
-            painter->restore();
+//            QRectF pixmapRect(QRectF(fillRect.x()-3,
+//                                     fillRect.y(),
+//                                     fillRect.width()+6,
+//                                     fillRect.height()+6));
+//            QPixmap pixmap;
+//            if (m_themetype == 2)
+//                pixmap = DHiDPIHelper::loadNxPixmap(":/resources/icon/darkchoose30X30_checked .svg");
+//            else {
+//                pixmap = DHiDPIHelper::loadNxPixmap(":/resources/icon/choose30X30_checked .svg");
+//            }
+//            pixmap.setDevicePixelRatio(m_DevicePixelRatio);
+//            painter->save();
+//            painter->setRenderHint(QPainter::Antialiasing);
+//            painter->setRenderHint(QPainter::HighQualityAntialiasing);
+//            painter->setRenderHint(QPainter::SmoothPixmapTransform);
+//            painter->drawPixmap(pixmapRect.toRect(), pixmap);
+//            painter->restore();
+            painter->setBrush(QBrush(m_highColor));
+            painter->setPen(Qt::NoPen);
+            painter->drawEllipse(fillRect);
         }
         painter->setPen(Qt::SolidLine);
 

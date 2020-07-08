@@ -57,17 +57,6 @@ CGraphicsView::CGraphicsView(QWidget *parent, int viewType)
     m_TBFlag = true;
     m_margins = QMargins(0, 0, 0, 0);
 
-    int viewWidth = viewport()->width();
-    int viewHeight = viewport()->height();
-    // view 根据鼠标下的点作为锚点来定位 scene
-    setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
-    QPoint newCenter(viewWidth / 2,  viewHeight / 2 - 1000);
-    centerOn(mapToScene(newCenter));
-
-    // scene 在 view 的中心点作为锚点
-    setTransformationAnchor(QGraphicsView::AnchorViewCenter);
-    scrollBarValueChangedSlot();
-
     setLineWidth(0);
     m_timer = new QTimer(this);
     connect(m_timer, SIGNAL(timeout()), this, SLOT(scrollBarValueChangedSlot()));
@@ -93,6 +82,7 @@ CGraphicsView::~CGraphicsView()
 
 void CGraphicsView::setMargins(int left, int top, int right, int bottom)
 {
+    Q_UNUSED(top)
     m_margins = QMargins(left, 0, right, bottom);
     setViewportMargins(m_margins);
 }
@@ -145,30 +135,29 @@ void CGraphicsView::updateHigh()
 
 void CGraphicsView::setRange( int w, int h, QDate begindate, QDate enddate, int rightmagin)
 {
+    m_MoveDate.setDate(begindate.addMonths(-2));
     m_beginDate = begindate;
     m_endDate = enddate;
-    w = w - rightmagin;
+    w = w - rightmagin -2;
     m_Scene->setSceneRect(0, 0, w, h);
     m_coorManage->setRange(w, h, begindate, enddate, rightmagin);
     m_rightmagin = rightmagin;
-    int totalDay = begindate.daysTo(enddate) + 1;
+    qint64 totalDay = begindate.daysTo(enddate) + 1;
     m_dayInterval = w * 1.0 / totalDay;
     m_timeInterval = h / 24.0;
     m_totalDay = totalDay;
-    int viewWidth = viewport()->width();
-    int viewHeight = viewport()->height();
-    // view 根据鼠标下的点作为锚点来定位 scene
-    setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
-    QPoint newCenter(viewWidth / 2,  viewHeight / 2 - 2000);
-    centerOn(mapToScene(newCenter));
+    if (m_viewType ==0) {
+        int viewWidth = viewport()->width();
+        int viewHeight = viewport()->height();
+        QPoint newCenter(viewWidth / 2,  viewHeight / 2 - 2000);
 
-    // scene 在 view 的中心点作为锚点
-    setTransformationAnchor(QGraphicsView::AnchorViewCenter);
-    scrollBarValueChangedSlot();
+        centerOnScene(mapToScene(newCenter));
+    }
 }
 
 void CGraphicsView::setRange(QDate begin, QDate end)
 {
+    m_MoveDate.setDate(begin.addMonths(-2));
     m_beginDate = begin;
     m_endDate = end;
     getCoorManage()->setDateRange(begin, end);
@@ -211,7 +200,8 @@ void CGraphicsView::upDateInfoShow(const CGraphicsView::DragStatus &status, cons
     case ChangeBegin:
     case ChangeEnd: {
         int index = vListData.indexOf(info);
-        vListData[index] = info;
+        if (index >=0)
+            vListData[index] = info;
     }
     break;
     case ChangeWhole:
@@ -253,10 +243,11 @@ void CGraphicsView::upDateInfoShow(const CGraphicsView::DragStatus &status, cons
 //            }
             currentInfo.append(vListData.at(j));
         }
-        qSort(currentInfo.begin(), currentInfo.end(), MScheduleTimeThan);
+        std::sort(currentInfo.begin(), currentInfo.end(), MScheduleTimeThan);
+//        qSort(currentInfo.begin(), currentInfo.end(), MScheduleTimeThan);
         if (currentInfo.size()>0) {
             m_InfoMap[currentDate] = currentInfo;
-            QVector<ScheduleclassificationInfo> info;
+            QList<ScheduleclassificationInfo> info;
             scheduleClassificationType(currentInfo,info);
 
             for (int m = 0; m < info.count(); m++) {
@@ -296,6 +287,14 @@ void CGraphicsView::upDateInfoShow(const CGraphicsView::DragStatus &status, cons
 QDateTime CGraphicsView::getPosDate(const QPoint &p)
 {
     return TimeRounding(m_coorManage->getDate(mapToScene(p)));
+}
+
+void CGraphicsView::ShowSchedule(DragInfoItem *infoitem)
+{
+    CScheduleItem *scheduleitem = dynamic_cast<CScheduleItem *>(infoitem);
+    if (scheduleitem->getType() == 1)
+        return;
+    DragInfoGraphicsView::ShowSchedule(infoitem);
 }
 
 void CGraphicsView::MoveInfoProcess(ScheduleDtailInfo &info, const QPointF &pos)
@@ -348,7 +347,6 @@ void CGraphicsView::setSelectSchedule(const ScheduleDtailInfo &info)
         if (m_vScheduleItem.at(i)->getType() == 1)
             continue;
         if (m_vScheduleItem.at(i)->hasSelectSchedule(info)) {
-
             m_vScheduleItem.at(i)->setStartValue(0);
             m_vScheduleItem.at(i)->setEndValue(10);
             m_vScheduleItem.at(i)->startAnimation();
@@ -367,16 +365,19 @@ void CGraphicsView::clearSchdule()
     m_updateDflag = true;
 }
 
-void CGraphicsView::scheduleClassificationType(QVector<ScheduleDtailInfo> &scheduleInfolist, QVector<ScheduleclassificationInfo> &info)
+void CGraphicsView::scheduleClassificationType(QVector<ScheduleDtailInfo> &scheduleInfolist, QList<ScheduleclassificationInfo> &info)
 {
     QVector<ScheduleDtailInfo> schedulelist = scheduleInfolist;
     if (schedulelist.isEmpty())
         return;
 
     info.clear();
-    qSort(schedulelist.begin(), schedulelist.end(), MScheduleTimeThan);
+    std::sort(schedulelist.begin(), schedulelist.end(), MScheduleTimeThan);
+//    qSort(schedulelist.begin(), schedulelist.end(), MScheduleTimeThan);
+    QVector<int> containIndex;
+
+
     for (int k = 0; k < schedulelist.count(); k++) {
-        int i = 0;
         QDateTime endTime = schedulelist.at(k).endDateTime;
         QDateTime begTime = schedulelist.at(k).beginDateTime;
         if (begTime.date().daysTo(endTime.date())==0 && begTime.time().secsTo(endTime.time())<m_minTime) {
@@ -386,33 +387,41 @@ void CGraphicsView::scheduleClassificationType(QVector<ScheduleDtailInfo> &sched
                 endTime.time().second()==0) {
             endTime = endTime.addSecs(-1);
         }
+        containIndex.clear();
 
-        for (; i < info.count(); i++) {
+        for (int i = 0; i < info.count(); i++) {
             if ((schedulelist.at(k).beginDateTime >= info.at(i).begindate &&
                     schedulelist.at(k).beginDateTime <= info.at(i).enddate) ||
                     (endTime >= info.at(i).begindate &&
-                     endTime <= info.at(i).enddate) ||
-                    (schedulelist.at(k).beginDateTime >= info.at(i).begindate &&
-                     endTime <= info.at(i).enddate) ||
-                    (schedulelist.at(k).beginDateTime <= info.at(i).begindate &&
-                     endTime >= info.at(i).enddate)) {
-                break;
+                     endTime <= info.at(i).enddate) ) {
+                containIndex.append(i);
             }
         }
-        if (i == info.count()) {
+        if (containIndex.count()==0) {
             ScheduleclassificationInfo firstschedule;
             firstschedule.begindate = schedulelist.at(k).beginDateTime;
             firstschedule.enddate = endTime;
             firstschedule.vData.append(schedulelist.at(k));
             info.append(firstschedule);
         } else {
-            if (schedulelist.at(k).beginDateTime < info.at(i).begindate) {
-                info[i].begindate = schedulelist.at(k).beginDateTime;
+            ScheduleclassificationInfo &scheduleInfo = info[containIndex.at(0)];
+            int index = 0;
+            for (int i = 1; i < containIndex.count(); ++i) {
+                index = containIndex.at(i);
+                if (info.at(index).begindate < scheduleInfo.begindate)
+                    scheduleInfo.begindate = info.at(index).begindate;
+                if (info.at(index).enddate>scheduleInfo.enddate)
+                    scheduleInfo.enddate = info.at(index).enddate;
+                scheduleInfo.vData.append(info.at(index).vData);
             }
-            if (endTime > info.at(i).enddate) {
-                info[i].enddate = endTime;
+            for (int i = containIndex.count() -1; i >0; --i) {
+                info.removeAt(containIndex.at(i));
             }
-            info[i].vData.append(schedulelist.at(k));
+            if (schedulelist.at(k).beginDateTime < scheduleInfo.begindate)
+                scheduleInfo.begindate = schedulelist.at(k).beginDateTime;
+            if (endTime>scheduleInfo.enddate)
+                scheduleInfo.enddate = endTime;
+            scheduleInfo.vData.append(schedulelist.at(k));
         }
     }
 }
@@ -451,8 +460,30 @@ void CGraphicsView::mouseDoubleClickEvent( QMouseEvent *event )
         return;
     }
 }
+
+void CGraphicsView::mousePressEvent(QMouseEvent *event)
+{
+    CScheduleItem *item = dynamic_cast<CScheduleItem *>(itemAt(event->pos()));
+    if (item !=nullptr &&item->getType() ==1) {
+        emit signalScheduleShow(false);
+        return;
+    }
+    DragInfoGraphicsView::mousePressEvent(event);
+}
+
+void CGraphicsView::mouseMoveEvent(QMouseEvent *event)
+{
+    CScheduleItem *item = dynamic_cast<CScheduleItem *>(itemAt(event->pos()));
+    if (item !=nullptr &&item->getType() ==1) {
+        setCursor(Qt::ArrowCursor);
+        DGraphicsView::mouseMoveEvent(event);
+        return;
+    }
+    DragInfoGraphicsView::mouseMoveEvent(event);
+}
 void CGraphicsView::slotDoubleEvent(int type)
 {
+    Q_UNUSED(type);
     m_updateDflag  = true;
     emit signalsUpdateShcedule();
 }
@@ -496,14 +527,7 @@ void CGraphicsView::wheelEvent( QWheelEvent *event )
     int viewHeight = viewport()->height();
     QPoint newCenter(viewWidth / 2,  viewHeight / 2 - test);
     QPointF centerpos = mapToScene(newCenter);
-    // view 根据鼠标下的点作为锚点来定位 scene
-    setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
-    centerOn(centerpos.x(), centerpos.y());
-    // scene 在 view 的中心点作为锚点
-    setTransformationAnchor(QGraphicsView::AnchorViewCenter);
-
-    scrollBarValueChangedSlot();
-//    //DGraphicsView::wheelEvent(event);
+    centerOnScene(centerpos);
 }
 #endif
 
@@ -551,7 +575,6 @@ void CGraphicsView::paintEvent(QPaintEvent *event)
     QPainter t_painter(viewport());
     //t_painter.setCompositionMode(QPainter::CompositionMode_Difference  ); //设置混合模式
     int t_width = viewport()->width()  + 2;
-    int t_height = viewport()->height();
 //    //绘制垂直线
 //    if (m_TBFlag) {
 //        t_painter.save();
@@ -612,7 +635,6 @@ void CGraphicsView::scrollBarValueChangedSlot()
 {
     emit signalScheduleShow(false);
     QMutexLocker locker(&m_Mutex);
-    int viewWidth = viewport()->width();
     int viewHeight = viewport()->height();
     //QPoint newCenter(viewWidth / 2,  viewHeight / 2 );
     //QPointF centerpos = mapToScene(newCenter);
@@ -624,26 +646,26 @@ void CGraphicsView::scrollBarValueChangedSlot()
     QPointF leftToprealPos = mapToScene(QPoint(0, 0));
     QPointF leftBttomrealPos = mapToScene(QPoint(0, viewHeight));
 
-    for (float i = m_dayInterval; i < scene()->width(); i = i + m_dayInterval) {
-        m_vTBLarge.append(i);
+    for (qreal i = m_dayInterval; i < scene()->width(); i = i + m_dayInterval) {
+        m_vTBLarge.append(qFloor(i));
     }
-    float beginpos = (int)(leftToprealPos.y() / m_timeInterval) * m_timeInterval;
+    qreal beginpos = static_cast<qreal>(qFloor(leftToprealPos.y() / m_timeInterval) * m_timeInterval);
     if (beginpos < leftToprealPos.y()) {
         beginpos = (beginpos / m_timeInterval + 1) * m_timeInterval ;
     }
     QVector<int> vHours;
-    for (float i = beginpos; i < leftBttomrealPos.y(); i = i + m_timeInterval) {
+    for (qreal i = beginpos; i < leftBttomrealPos.y(); i = i + m_timeInterval) {
         QPoint point = mapFromScene(leftBttomrealPos.x(), i);
         m_vLRLarge.append(point.y());
-        vHours.append(i / m_timeInterval + 0.5);
+        vHours.append(qFloor(i / m_timeInterval + 0.5));
     }
-    float currentTime =  m_coorManage->getHeight(QTime::currentTime());
-    if (currentTime >= beginpos && currentTime <= leftBttomrealPos.y()) {
+    qreal currentTime =  static_cast<qreal>(m_coorManage->getHeight(QTime::currentTime()));
+    if (currentTime > beginpos && currentTime < leftBttomrealPos.y()) {
         //if (0) {
         m_cuttrnttimetype = 1;
         QPoint point = mapFromScene(leftBttomrealPos.x(), currentTime);
         m_vLRLarge.append(point.y());
-        vHours.append(currentTime / m_timeInterval + 0.5);
+        vHours.append(qFloor(currentTime / m_timeInterval + 0.5));
         emit signalsPosHours(m_vLRLarge, vHours, m_cuttrnttimetype);
     } else {
         m_cuttrnttimetype = 0;
@@ -757,6 +779,30 @@ QDateTime CGraphicsView::TimeRounding(const QDateTime &time)
     return QDateTime(time.date(),QTime(hours,minnutes*15,0));
 }
 
+void CGraphicsView::centerOnScene(const QPointF &pos)
+{
+    // view 根据鼠标下的点作为锚点来定位 scene
+    setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+    centerOn(pos);
+    // scene 在 view 的中心点作为锚点
+    setTransformationAnchor(QGraphicsView::AnchorViewCenter);
+    scrollBarValueChangedSlot();
+    setSceneHeightScale(pos);
+}
+
+void CGraphicsView::setSceneHeightScale(const QPointF &pos)
+{
+    m_sceneHeightScale = pos.y()/this->scene()->height();
+}
+
+void CGraphicsView::keepCenterOnScene()
+{
+    QPointF pos;
+    pos.setX(this->viewport()->width()/2);
+    pos.setY(this->scene()->height()*m_sceneHeightScale);
+    centerOnScene(pos);
+}
+
 
 /************************************************************************
 Function:       setLargeScaleInfo()
@@ -795,17 +841,11 @@ void CGraphicsView::setTime(QTime time)
 {
     int viewWidth = viewport()->width();
     int viewHeight = viewport()->height();
-    // view 根据鼠标下的点作为锚点来定位 scene
-    setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 
     QPoint newCenter(viewWidth / 2,  viewHeight / 2);
     QPointF centerpos = mapToScene(newCenter);
-    centerpos = QPointF(centerpos.x(), m_coorManage->getHeight(time));
-    centerOn(centerpos.x(), centerpos.y());
-
-    // scene 在 view 的中心点作为锚点
-    setTransformationAnchor(QGraphicsView::AnchorViewCenter);
-    scrollBarValueChangedSlot();
+    centerpos = QPointF(centerpos.x(), static_cast<qreal>(m_coorManage->getHeight(time)));
+    centerOnScene(centerpos);
 }
 
 void CGraphicsView::updateInfo()

@@ -22,38 +22,44 @@
 #include <QWidget>
 #include <DAboutDialog>
 #include <DHiDPIHelper>
-#include "yearwindow.h"
-#include "monthwindow.h"
-#include "dbuscalendar_adaptor.h"
 #include <QSizePolicy>
-#include "weekwindow.h"
-#include "daywindow.h"
 #include <DPalette>
-#include "scheduledatamanage.h"
-#include "myschceduleview.h"
-#include "creatorparschedule.h"
 #include <QMenuBar>
 #include <com_deepin_daemon_calendar_scheduler.h>
 #include <QJsonDocument>
 #include <QJsonParseError>
 #include <QJsonObject>
 #include <QMessageBox>
-#include "configsettings.h"
 #include <QShortcut>
-#include "shortcut.h"
-#include "schcedulesearchview.h"
 #include <QDesktopWidget>
 #include <QApplication>
 #include <DFontSizeManager>
+#include <DApplicationHelper>
+#include <DWidgetUtil>
+
+#include "yearwindow.h"
+#include "monthwindow.h"
+#include "dbuscalendar_adaptor.h"
+#include "weekwindow.h"
+#include "daywindow.h"
+#include "scheduledatamanage.h"
+#include "myschceduleview.h"
+#include "creatorparschedule.h"
+#include "configsettings.h"
+#include "shortcut.h"
+#include "schcedulesearchview.h"
+
+#include "cdynamicicon.h"
+
+
 DGUI_USE_NAMESPACE
-static const int CalendarMTitleHeight = 50;
+DWIDGET_USE_NAMESPACE
 
 static const int CalendarMWidth = 860;
 static const int CalendarMHeight = 634;
 
-static const int WorkViewWidth = 860;
-static const int WorkViewHeight = 584;
-Calendarmainwindow::Calendarmainwindow(QWidget *w): DMainWindow (w)
+Calendarmainwindow::Calendarmainwindow(QWidget *w)
+    : DMainWindow (w)
 {
     m_DataGetThread = new DbusDataGetThread(CScheduleDataManage::getScheduleDataManage()->getscheduleDataCtrl()->getDbus(),
                                             nullptr);
@@ -87,13 +93,18 @@ Calendarmainwindow::Calendarmainwindow(QWidget *w): DMainWindow (w)
     bool isOk = false;
     int state = CConfigSettings::value("base.state").toInt(&isOk);
     if (!arrybyte.isEmpty() && isOk) {
-        restoreGeometry(arrybyte);
-        setWindowState(static_cast<Qt::WindowStates >(state));
-    } else {
-        QDesktopWidget *w = QApplication::desktop();
-        move(w->screenGeometry(w->primaryScreen()).center() - geometry().center());
+        Qt::WindowStates winStates = static_cast<Qt::WindowStates >(state);
+        setWindowState(winStates);
+        if (winStates !=Qt::WindowState::WindowMaximized) {
+            restoreGeometry(arrybyte);
+        }
     }
+    Dtk::Widget::moveToCenter(this);
+}
 
+Calendarmainwindow::~Calendarmainwindow()
+{
+    CDynamicIcon::releaseInstance();
 }
 
 /*void Calendarmainwindow::Invoke(const QString &mothodName, const QString &content)
@@ -187,6 +198,15 @@ void Calendarmainwindow::slotGetScheduleInfoSuccess()
 {
     m_yearwindow->getScheduleInfo();
 }
+
+void Calendarmainwindow::slotDynamicIconUpdate()
+{
+    if (QDate::currentDate() !=CDynamicIcon::getInstance()->getDate()) {
+        CDynamicIcon::getInstance()->setDate(QDate::currentDate());
+        CDynamicIcon::getInstance()->setIcon();
+    }
+
+}
 void Calendarmainwindow::viewWindow(int type, QDateTime datetime)
 {
     if (type < 0 || type > m_stackWidget->count()) {
@@ -224,7 +244,7 @@ void Calendarmainwindow::viewWindow(int type, QDateTime datetime)
         m_dayButton->setFocus();
         m_dayButton->setChecked(true);
         m_DayWindow->setDate(datetime.date());
-        m_DayWindow->setTime(datetime.time());
+//        m_DayWindow->setTime(datetime.time());
         m_DayWindow->slotupdateSchedule(0);
         m_searchflag = true;
     }
@@ -376,6 +396,7 @@ void Calendarmainwindow::OpenSchedule(QString job)
 //        dlg.setSchedules(out);
         dlg.exec();
         m_DayWindow->slotupdateSchedule(0);
+        slotWUpdateShcedule(nullptr,0);
     }
 }
 
@@ -390,18 +411,19 @@ void Calendarmainwindow::RaiseWindow()
 }
 void Calendarmainwindow::initUI()
 {
+    m_DynamicIconUpdateTimer = new QTimer(this);
+    m_DynamicIconUpdateTimer->start(3000);
+
     QFrame *titleframe = new QFrame(this);
     titleframe->setObjectName("TitleBar");
     titleframe->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    //m_icon = new DLabel(this);
-    // m_icon->setFixedSize(32, 32);
-    //m_icon->setPixmap(DHiDPIHelper::loadNxPixmap(":/resources/icon/dde-logo.svg")
-    //.scaled(m_icon->size() * devicePixelRatioF()));
-    //m_icon->move(10, 9);
-    //titlebar()->setIcon(DHiDPIHelper::loadNxPixmap(":/resources/icon/dde-logo.svg")
-    //   .scaled(QSize(32, 32) * devicePixelRatioF()));
-    QIcon t_icon = QIcon::fromTheme("dde-calendar");
-    titlebar()->setIcon(t_icon);
+    CDynamicIcon::getInstance()->setTitlebar(this->titlebar());
+    CDynamicIcon::getInstance()->setIcon();
+
+
+
+
+
     QStringList titlelist;
     titlelist << tr("Y") << tr("M") << tr("W") << tr("D");
     m_buttonBox = new DButtonBox(this);
@@ -471,12 +493,14 @@ void Calendarmainwindow::initUI()
     //titleLayout->addWidget(m_icon);
     //titleLayout->addSpacing(18);
     titleLayout->addWidget(m_buttonBox);
+    titleLayout->addSpacing(52);
     // QSpacerItem *lspaceitem = new QSpacerItem(30, CalendarMTitleHeight, QSizePolicy::Expanding, QSizePolicy::Fixed);
     //titleLayout->addSpacerItem(lspaceitem);
     m_searchEdit = new DSearchEdit(this);
     DFontSizeManager::instance()->bind(m_searchEdit, DFontSizeManager::T6);
     m_searchEdit->setFixedHeight(36);
-    m_searchEdit->setFixedWidth(240);
+    m_searchEdit->setMinimumWidth(240);
+    m_searchEdit->setMaximumWidth(354);
     m_searchEdit->setFont(viewfont);
     titleLayout->addStretch();
     //QWidget *buttonW = new QWidget;
@@ -486,10 +510,12 @@ void Calendarmainwindow::initUI()
     titlebar->setFixedHeight(50);
     titlebar->addWidget(titleframe, Qt::AlignLeft | Qt::AlignVCenter);
     titlebar->setCustomWidget(m_searchEdit, true);
+
+
 //    titlebar->move(36, 3);
     m_stackWidget = new AnimationStackedWidget();
     m_stackWidget->setContentsMargins(0, 0, 0, 0);
-    m_stackWidget->setDuration(350);
+    m_stackWidget->setDuration(250);
 //    m_stackWidget->setMargin(0);
 //    m_stackWidget->setSpacing(0);
     //m_stackWidget->setFixedSize(WorkViewWidth, WorkViewHeight);
@@ -564,10 +590,11 @@ void Calendarmainwindow::initConnection()
     //监听当前应用主题切换事件
     connect(DGuiApplicationHelper::instance(), &DGuiApplicationHelper::themeTypeChanged, this, &Calendarmainwindow::slotTheme);
 
-    m_dbus = new __Scheduler("com.deepin.daemon.Calendar",
-                             "/com/deepin/daemon/Calendar/Scheduler",
-                             QDBusConnection::sessionBus(), this);
-    connect(m_dbus, &__Scheduler::JobsUpdated, this, &Calendarmainwindow::slotJobsUpdated);
+    m_dbus = new com::deepin::daemon::calendar::Scheduler("com.deepin.daemon.Calendar",
+                                                          "/com/deepin/daemon/Calendar/Scheduler",
+                                                          QDBusConnection::sessionBus(), this);
+    connect(m_dbus, &com::deepin::daemon::calendar::Scheduler::JobsUpdated,
+            this, &Calendarmainwindow::slotJobsUpdated);
     connect(m_schceduleSearchView, &CSchceduleSearchView::signalsUpdateShcedule, this, &Calendarmainwindow::slotTransitSearchSchedule);
     connect(m_schceduleSearchView, &CSchceduleSearchView::signalDate, this, &Calendarmainwindow::slotsearchDateSelect);
     connect(m_schceduleSearchView, &CSchceduleSearchView::signalSelectSchedule,
@@ -597,6 +624,11 @@ void Calendarmainwindow::initConnection()
             &CYearWindow::signalupdateschcedule,
             this,
             &Calendarmainwindow::getScheduleInfo);
+
+    connect(m_DynamicIconUpdateTimer,
+            &QTimer::timeout,
+            this,
+            &Calendarmainwindow::slotDynamicIconUpdate);
 }
 
 
@@ -640,7 +672,9 @@ void Calendarmainwindow::createview()
     m_stackWidget->addWidget(m_weekWindow);
 
     m_DayWindow = new CDayWindow;
-    m_DayWindow->setDate(QDate::currentDate());
+    QTimer::singleShot(500,[=] {
+        m_DayWindow->setDate(QDate::currentDate());
+    });
     m_stackWidget->addWidget(m_DayWindow);
 #else
     CYearWindow *yearwindow1 = new CYearWindow;
@@ -684,13 +718,15 @@ void Calendarmainwindow::setScheduleHide()
 void Calendarmainwindow::resizeEvent(QResizeEvent *event)
 {
     m_transparentFrame->resize(width(), height() - 50);
-    m_scheduleSearchViewMaxWidth = 0.2325 * width() + 0.5;
+    m_scheduleSearchViewMaxWidth = qRound(0.2325 * width() + 0.5);
     m_schceduleSearchView->setMaxWidth(m_scheduleSearchViewMaxWidth);
 //    if (m_opensearchflag) {
     setSearchWidth(m_scheduleSearchViewMaxWidth);
 //    }
     setScheduleHide();
     DMainWindow::resizeEvent(event);
+    CConfigSettings::setOption("base.geometry", saveGeometry());
+    CConfigSettings::setOption("base.state", int(windowState()));
 }
 
 void Calendarmainwindow::slotstackWClicked(QAbstractButton *bt)
@@ -742,7 +778,7 @@ void Calendarmainwindow::slotstackWClicked(QAbstractButton *bt)
     if (index != 0) {
         m_priindex = index;
     }
-    if (m_currentdate.year() <= 1900)
+    if (m_currentdate.year() < 1900)
         return;
     switch (index) {
     case 0: {
@@ -858,9 +894,9 @@ void Calendarmainwindow::slotStextfocusChanged(bool onFocus)
 
 void Calendarmainwindow::slotJobsUpdated(const QList<qlonglong> &Ids)
 {
+    Q_UNUSED(Ids);
     int index = m_stackWidget->currentIndex();
     if (index < 0 || index > m_stackWidget->count() - 1) {
-
         return;
     }
     switch (index) {
@@ -889,6 +925,7 @@ void Calendarmainwindow::slotSearchEdit()
 
 void Calendarmainwindow::slotTransitSearchSchedule(int id)
 {
+    Q_UNUSED(id);
     getScheduleInfo();
     int index = m_stackWidget->currentIndex();
     if (index < 0 || index > m_stackWidget->count() - 1) {
@@ -1033,12 +1070,16 @@ void Calendarmainwindow::slotViewSelectDate(QDate date)
 
 void Calendarmainwindow::slotViewtransparentFrame(int type)
 {
+    static int showFrameCount =0;
     if (type) {
         m_transparentFrame->resize(width(), height() - 50);
         m_transparentFrame->move(0, 50);
         m_transparentFrame->show();
+        ++showFrameCount;
     } else {
-        m_transparentFrame->hide();
+        if (showFrameCount==1)
+            m_transparentFrame->hide();
+        --showFrameCount;
     }
 
     int index = m_stackWidget->currentIndex();
@@ -1079,8 +1120,8 @@ void Calendarmainwindow::slotSetButtonBox()
 }
 void Calendarmainwindow::closeEvent(QCloseEvent *event)
 {
-    CConfigSettings::setOption("base.geometry", saveGeometry());
-    CConfigSettings::setOption("base.state", int(windowState()));
+//    CConfigSettings::setOption("base.geometry", saveGeometry());
+//    CConfigSettings::setOption("base.state", int(windowState()));
     QWidget::closeEvent(event);
 }
 
@@ -1100,6 +1141,7 @@ void Calendarmainwindow::changeEvent(QEvent *event)
 
 void Calendarmainwindow::mousePressEvent(QMouseEvent *event)
 {
+    Q_UNUSED(event);
     setScheduleHide();
 }
 

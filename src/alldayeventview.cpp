@@ -43,9 +43,10 @@
 
 DGUI_USE_NAMESPACE
 
-CAllDayEventWidgetItem::CAllDayEventWidgetItem(QRect rect, QGraphicsItem *parent /*= nullptr*/, int edittype)
+CAllDayEventWidgetItem::CAllDayEventWidgetItem(QRectF rect, QGraphicsItem *parent /*= nullptr*/, int edittype)
     : DragInfoItem (rect,parent)
 {
+    Q_UNUSED(edittype);
 
 }
 
@@ -168,6 +169,18 @@ bool CAllDayEventWeekView::MeetCreationConditions(const QDateTime &date)
     return  qAbs(date.daysTo(m_PressDate)<7);
 }
 
+void CAllDayEventWeekView::slotCreate(const QDateTime &date)
+{
+    emit signalViewtransparentFrame(1);
+    CSchceduleDlg dlg(1, this);
+    dlg.setDate(date);
+    dlg.setAllDay(true);
+    if (dlg.exec() == DDialog::Accepted) {
+        emit signalsUpdateShcedule();
+    }
+    emit signalViewtransparentFrame(0);
+}
+
 bool CAllDayEventWeekView::IsEqualtime(const QDateTime &timeFirst, const QDateTime &timeSecond)
 {
     return timeFirst.date() == timeSecond.date();
@@ -185,7 +198,9 @@ void CAllDayEventWeekView::RightClickToCreate(QGraphicsItem *listItem, const QPo
     Q_UNUSED(listItem);
     m_rightMenu->clear();
     m_rightMenu->addAction(m_createAction);
-    m_dianjiDay = m_coorManage->getsDate(mapFrom(this, pos));
+
+    m_createDate.setDate(m_coorManage->getsDate(mapFrom(this, pos)));
+    m_createDate.setTime(QTime::currentTime());
     m_rightMenu->exec(QCursor::pos());
 
 }
@@ -226,8 +241,10 @@ QDateTime CAllDayEventWeekView::getDragScheduleInfoEndTime(const QDateTime &move
 
 void CAllDayEventWeekView::setRange(int w, int h, QDate begindate, QDate enddate, int rightmagin)
 {
+    m_MoveDate.setDate(begindate.addMonths(-2));
     m_beginDate = begindate;
     m_endDate = enddate;
+    w -=2;
     m_coorManage->setRange(w, h, begindate, enddate, rightmagin);
     m_Scene->setSceneRect(0, 0, w, h);
     m_rightmagin = rightmagin;
@@ -237,6 +254,7 @@ void CAllDayEventWeekView::setRange(int w, int h, QDate begindate, QDate enddate
 
 void CAllDayEventWeekView::setRange(QDate begin, QDate end)
 {
+    m_MoveDate.setDate(begin.addMonths(-2));
     m_beginDate = begin;
     m_endDate = end;
     getCoorManage()->setDateRange(begin, end);
@@ -292,7 +310,8 @@ void CAllDayEventWeekView::upDateInfoShow(const DragStatus &status, const Schedu
     case ChangeBegin:
     case ChangeEnd: {
         int index = vListData.indexOf(info);
-        vListData[index] = info;
+        if (index >=0)
+            vListData[index] = info;
     }
     break;
     case ChangeWhole:
@@ -304,7 +323,8 @@ void CAllDayEventWeekView::upDateInfoShow(const DragStatus &status, const Schedu
     }
 
 
-    qSort(vListData.begin(), vListData.end());
+    std::sort(vListData.begin(), vListData.end());
+//    qSort(vListData.begin(), vListData.end());
 
     QVector<MScheduleDateRangeInfo> vMDaySchedule;
     for (int i = 0; i < vListData.count(); i++) {
@@ -323,7 +343,7 @@ void CAllDayEventWeekView::upDateInfoShow(const DragStatus &status, const Schedu
     }
     QVector<QVector<int> > vCfillSchedule;
     vCfillSchedule.resize(vListData.count());
-    int tNum = m_beginDate.daysTo(m_endDate) + 1;
+    int tNum = static_cast<int>(m_beginDate.daysTo(m_endDate) + 1);
     for (int i = 0; i < vListData.count(); i++) {
         vCfillSchedule[i].resize(tNum);
         vCfillSchedule[i].fill(-1);
@@ -332,8 +352,8 @@ void CAllDayEventWeekView::upDateInfoShow(const DragStatus &status, const Schedu
     for (int i = 0; i < vMDaySchedule.count(); i++) {
         if (vMDaySchedule[i].state)
             continue;
-        int bindex = m_beginDate.daysTo(vMDaySchedule[i].bdate);
-        int eindex = m_beginDate.daysTo(vMDaySchedule[i].edate);
+        int bindex = static_cast<int>(m_beginDate.daysTo(vMDaySchedule[i].bdate));
+        int eindex = static_cast<int>(m_beginDate.daysTo(vMDaySchedule[i].edate));
         int c = -1;
         for (int k = 0; k < vListData.count(); k++) {
             int t = 0;
@@ -440,18 +460,9 @@ void CAllDayEventWeekView::mouseDoubleClickEvent(QMouseEvent *event)
     DGraphicsView::mouseDoubleClickEvent(event);
     CAllDayEventWidgetItem *item = dynamic_cast<CAllDayEventWidgetItem *>(itemAt(event->pos()));
     if (item == nullptr) {
-        m_dianjiDay = m_coorManage->getsDate(mapFrom(this, event->pos()));
-        emit signalViewtransparentFrame(1);
-        CSchceduleDlg dlg(1, this);
-        QDateTime tDatatime;
-        tDatatime.setDate(m_dianjiDay);
-        tDatatime.setTime(QTime::currentTime());
-        dlg.setDate(tDatatime);
-        dlg.setAllDay(true);
-        if (dlg.exec() == DDialog::Accepted) {
-            emit signalsUpdateShcedule();
-        }
-        emit signalViewtransparentFrame(0);
+        m_createDate.setDate(m_coorManage->getsDate(mapFrom(this, event->pos())));
+        m_createDate.setTime(QTime::currentTime());
+        slotCreate(m_createDate);
     } else {
         emit signalViewtransparentFrame(1);
         m_updateDflag  = false;
@@ -494,7 +505,7 @@ void CAllDayEventWeekView::createItemWidget(int index, bool average)
     Q_UNUSED(average)
     for (int i = 0; i < m_vlistData[index].size(); ++i) {
         const ScheduleDtailInfo &info = m_vlistData[index].at(i);
-        QRect drawrect = m_coorManage->getAllDayDrawRegion(info.beginDateTime.date(), info.endDateTime.date());
+        QRectF drawrect = m_coorManage->getAllDayDrawRegion(info.beginDateTime.date(), info.endDateTime.date());
         drawrect.setY(3 + (itemHeight + 1)*index);
         drawrect.setHeight(itemHeight);
 

@@ -106,6 +106,9 @@ typedef struct _tagScheduleDtailInfo {
             if (type.ID == 4) return true;
             if (info.type.ID == 4) return false;
             if (beginDateTime == info.beginDateTime) {
+                if (titleName == info.titleName) {
+                    return id<info.id;
+                }
                 return titleName < info.titleName;
             } else {
                 return beginDateTime < info.beginDateTime;

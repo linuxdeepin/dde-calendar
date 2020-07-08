@@ -269,6 +269,7 @@ void CDayWindow::initConnection()
 
 void CDayWindow::slotupdateSchedule(int id)
 {
+    Q_UNUSED(id);
     m_daymonthView->setCurrentDate(m_currentdate);
     m_scheduleView->setRange(m_currentdate, m_currentdate);
     m_daymonthView->updateFlag();
@@ -314,12 +315,9 @@ void CDayWindow::slotScheduleHide()
 
 void CDayWindow::resizeEvent(QResizeEvent *event)
 {
-    int dw = 0.4046 * width();
+    Q_UNUSED(event);
+    qreal dw = 0.4046 * width();
     int dh = height() - 20;
-
-    int sleftMagin = 0.1046 * width() + 0.5;
-    int stopMagin = 0.17123 * height() + 0.5;
-    int sh = height() - 54;
     if (m_searchfalg) {
         m_mainLayout->setContentsMargins(10, 10, 0, 10);
     } else {
@@ -327,7 +325,7 @@ void CDayWindow::resizeEvent(QResizeEvent *event)
     }
     if (dw < 350)
         dw = 350;
-    m_daymonthView->setFixedSize(dw, dh);
+    m_daymonthView->setFixedSize(qRound(dw), dh);
 }
 
 void CDayWindow::slotcurrentDateLunarChanged(QDate date, CaHuangLiDayInfo detail, int type)

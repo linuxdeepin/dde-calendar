@@ -51,8 +51,10 @@ void CScheduleView::setviewMagin(int left, int top, int right, int bttom)
     m_leftMagin = left;
     m_topMagin = top;
     m_rightmagin = right;
-    m_graphicsView->setMargins(left, 0, right, bttom);
-    m_alldaylist->setMargins(left, 0, 0, 0);
+    m_layout->setContentsMargins(left,0,0,0);
+//    m_layout->setMargins(left,0,0,0);
+    m_graphicsView->setMargins(0, 0, right, bttom);
+    m_alldaylist->setMargins(0, 0, 0, 0);
 }
 
 void CScheduleView::setRange(int w, int h, QDate begin, QDate end)
@@ -120,6 +122,7 @@ void CScheduleView::setTheMe(int type)
 
 void CScheduleView::setLunarVisible(bool state)
 {
+    Q_UNUSED(state);
 //    m_alldaylist->setLunarVisible(state);
 }
 
@@ -166,7 +169,11 @@ void CScheduleView::slotsupdatescheduleD(QVector<ScheduleDateRangeInfo> &data)
                 if (scheduleInfolist.isEmpty()) {
                     m_graphicsView->setTime(QTime(13, 0));
                 } else {
-                    qSort(scheduleInfolist.begin(),scheduleInfolist.end(),
+//                    qSort(scheduleInfolist.begin(),scheduleInfolist.end(),
+//                    [](const ScheduleDtailInfo &s1, const ScheduleDtailInfo &s2) ->bool {
+//                        return s1.beginDateTime < s2.beginDateTime;
+//                    });
+                    std::sort(scheduleInfolist.begin(),scheduleInfolist.end(),
                     [](const ScheduleDtailInfo &s1, const ScheduleDtailInfo &s2) ->bool {
                         return s1.beginDateTime < s2.beginDateTime;
                     });
@@ -187,19 +194,6 @@ void CScheduleView::slotsupdatescheduleD(QVector<ScheduleDateRangeInfo> &data)
     setEnabled(true);
 }
 
-void CScheduleView::slotCreateSchedule()
-{
-    emit signalViewtransparentFrame(1);
-    CSchceduleDlg dlg(1, this);
-    QDateTime tDatatime;
-    tDatatime.setDate(m_currteDate);
-    tDatatime.setTime(QTime::currentTime());
-    dlg.setDate(tDatatime);
-    if (dlg.exec() == DDialog::Accepted) {
-        slotupdateSchedule();
-    }
-    emit signalViewtransparentFrame(0);
-}
 
 void CScheduleView::setDate(QDate date)
 {
@@ -358,16 +352,21 @@ void CScheduleView::paintEvent(QPaintEvent *event)
     painter.setPen(m_ALLDayColor);
     painter.drawText(QRect(0, 0, m_leftMagin - 2, m_topMagin - 2), Qt::AlignCenter, tr("ALL DAY"));
     painter.restore();
-    int t_width = width();
-    float intenval = 1.0 * (t_width - m_leftMagin) / m_TotalDay;
+
+    //绘制全天与非全天之间的直线
+    painter.setPen(m_linecolor);
+    painter.drawLine(0,m_topMagin,this->width(),m_topMagin);
+
+    int t_width = width()-2;
+    qreal intenval = 1.0 * (t_width - m_leftMagin) / m_TotalDay;
     if (m_TotalDay > 1) {
         painter.save();
         painter.setPen(Qt::SolidLine);
         painter.setPen(m_linecolor);
 
-        for (float i = intenval; i < width() - m_leftMagin; i = i + intenval) {
-            painter.drawLine(QPoint(i + m_leftMagin + 1, 1),
-                             QPoint(i + m_leftMagin + 1, this->height() + 1));
+        for (qreal i = intenval; i < width() - m_leftMagin; i = i + intenval) {
+            painter.drawLine(QPointF(i + m_leftMagin + 1, 1),
+                             QPointF(i + m_leftMagin + 1, this->height() + 1));
         }
 
         painter.restore();
@@ -377,12 +376,12 @@ void CScheduleView::paintEvent(QPaintEvent *event)
             painter.setBrush(m_weekColor);
             painter.setPen(Qt::NoPen);
             if (d == 6) {
-                painter.drawRect(QRect(m_leftMagin + i * intenval + 1, 0,
-                                       width() - m_leftMagin - i * intenval, this->height()));
+                painter.drawRect(QRectF(m_leftMagin + i * intenval + 1, 0,
+                                        width() - m_leftMagin - i * intenval, this->height()));
             }
             if (d == 7) {
                 painter.drawRect(
-                    QRect(m_leftMagin + i * intenval + 2, 0, intenval, this->height()));
+                    QRectF(m_leftMagin + i * intenval + 2, 0, intenval, this->height()));
             }
         }
         painter.restore();
@@ -413,21 +412,23 @@ void CScheduleView::resizeEvent(QResizeEvent *event)
     QFrame::resizeEvent(event);
     updateAllday();
     m_graphicsView->updateInfo();
-    m_graphicsView->update();
-    m_graphicsView->scene()->update();
+    m_graphicsView->keepCenterOnScene();
 }
 
 void CScheduleView::initUI()
 {
-    DHorizontalLine *m_hline = new DHorizontalLine;
+//    DHorizontalLine *m_hline = new DHorizontalLine;
     m_layout = new QVBoxLayout;
     m_layout->setSpacing(0);
     m_layout->setMargin(0);
     m_alldaylist = new CAllDayEventWeekView(this, 1);
 //    m_alldaylist->move(72, 5);
     m_layout->addWidget(m_alldaylist);
-    m_layout->addWidget(m_hline);
+    m_layout->addSpacing(1);
+//    m_layout->addWidget(m_hline);
     m_graphicsView = new CGraphicsView(this, m_viewType);
+    const int miniHeight = m_viewType ==0 ? 300 : 380;
+    m_graphicsView->setMinimumHeight(miniHeight);
 //    m_layout->setContentsMargins(0, m_space, 0, 0);
     connect(m_graphicsView, SIGNAL(signalsPosHours(QVector<int>, QVector<int>, int)), this,
             SLOT(slotPosHours(QVector<int>, QVector<int>, int)));
@@ -468,11 +469,6 @@ void CScheduleView::initConnection()
     connect(m_graphicsView,&CGraphicsView::signalSceneUpdate,
             this,&CScheduleView::slotUpdateScene);
 
-
-    QShortcut *shortcut = new QShortcut(this);
-    shortcut->setKey(QKeySequence(QLatin1String("Ctrl+N")));
-    connect(shortcut, SIGNAL(activated()), this, SLOT(slotCreateSchedule()));
-
     QShortcut *dshortcut = new QShortcut(this);
     dshortcut->setKey(QKeySequence(QLatin1String("Delete")));
     connect(dshortcut, SIGNAL(activated()), this, SLOT(slotDeleteitem()));
@@ -482,6 +478,8 @@ void CScheduleView::initConnection()
 }
 void CScheduleView::slotCtrlSchceduleUpdate(QDate date, int type)
 {
+    Q_UNUSED(date);
+    Q_UNUSED(type);
     updateSchedule();
 }
 
@@ -584,14 +582,15 @@ int CScheduleView::scheduleViewHegith()
 {
 //    rHeight = m_height * ((ScheduleET - ScheduleBT) / 86400.0)
 
-    int mheight = 0;
+    qreal mheight = 0;
     if (m_viewType == 0) {
         mheight = 24 * (0.0968 * height() + 0.5);
     } else {
         mheight = 24 * (0.083 * height() + 0.5);
     }
     //现在最小高度为20;
-    int m_minTime = (20.0/mheight)*86400;
+    mheight = mheight <500? 1035:mheight;
+    int m_minTime = qRound((20.0/mheight)*86400);
     m_graphicsView->setMinTime(m_minTime);
-    return  mheight;
+    return  qRound(mheight);
 }

@@ -45,8 +45,8 @@ signals:
     void signalsEditorDelete(int type = 0);
     void signalViewtransparentFrame(int type);
 public slots:
-    void slotEditBt();
-    void slotDeleteBt();
+    void slotEditBt(int buttonIndex, QString buttonName);
+    void slotDeleteBt(int buttonIndex, QString buttonName);
 private:
     void initUI();
     void initConnection();

@@ -74,6 +74,7 @@ void CYearSchceduleItem::setData( ScheduleDtailInfo vScheduleInfo)
 
 void CYearSchceduleItem::paintEvent( QPaintEvent *e )
 {
+    Q_UNUSED(e);
     int labelwidth = width();
     int labelheight = height();
 
@@ -217,10 +218,14 @@ void CYearSchceduleView::setData(QVector<ScheduleDtailInfo> &vListData)
         }
     }
 
-    qSort(valldayListData.begin(), valldayListData.end(), YScheduleDaysThan);
-    qSort(valldayListData.begin(), valldayListData.end(), YScheduleDateThan);
-    qSort(vDaylistdata.begin(), vDaylistdata.end(), YScheduleDaysThan);
-    qSort(vDaylistdata.begin(), vDaylistdata.end(), YScheduleDateThan);
+    std::sort(valldayListData.begin(), valldayListData.end(), YScheduleDaysThan);
+    std::sort(valldayListData.begin(), valldayListData.end(), YScheduleDateThan);
+    std::sort(vDaylistdata.begin(), vDaylistdata.end(), YScheduleDaysThan);
+    std::sort(vDaylistdata.begin(), vDaylistdata.end(), YScheduleDateThan);
+//    qSort(valldayListData.begin(), valldayListData.end(), YScheduleDaysThan);
+//    qSort(valldayListData.begin(), valldayListData.end(), YScheduleDateThan);
+//    qSort(vDaylistdata.begin(), vDaylistdata.end(), YScheduleDaysThan);
+//    qSort(vDaylistdata.begin(), vDaylistdata.end(), YScheduleDateThan);
 
     for (int i = 0; i < valldayListData.count(); i++) {
         QVector<ScheduleDtailInfo>::iterator iter = valldayListData.begin();
@@ -281,13 +286,6 @@ void CYearSchceduleView::clearData()
     m_vlistData.clear();
     m_soloDay.clear();
     return;
-    //remove
-    for (int i = 0; i < m_gradientItemList->count(); i++) {
-        QListWidgetItem *item11 = m_gradientItemList->takeItem(i);
-        m_gradientItemList->removeItemWidget(item11);
-    }
-    m_labellist.clear();
-    m_gradientItemList->clear();
 }
 
 int CYearSchceduleView::showWindow()
@@ -481,6 +479,7 @@ void CYearSchceduleView::createItemWidget(ScheduleDtailInfo info, int type)
 
 void CYearSchceduleView::paintEvent(QPaintEvent *event)
 {
+    Q_UNUSED(event);
 #if 0
     QPainter painter(this);
     painter.setRenderHints(QPainter::Antialia if (!m_soloDay.isEmpty()) {
@@ -904,8 +903,8 @@ void CYearSchceduleView::paintItem(ScheduleDtailInfo info, int index, int type)
 
 void CYearSchceduleView::paintItem()
 {
-    int labelwidth = width() - 40;
-    int labelheight = 45;
+//    int labelwidth = width() - 40;
+//    int labelheight = 45;
 
     QFont font/*(fontfamily)*/;
     font.setPixelSize(fontsize);
@@ -990,6 +989,7 @@ void CYearSchceduleOutView::adjustPosition(bool ad)
 
 void CYearSchceduleOutView::mousePressEvent(QMouseEvent *event)
 {
+    Q_UNUSED(event);
     QPoint pos = QCursor::pos();
     pos = this->mapFromGlobal(pos);
     QVector<QRect> rect_press;
@@ -1002,7 +1002,10 @@ void CYearSchceduleOutView::mousePressEvent(QMouseEvent *event)
             listShow = 5;
     }
     for (int i = 0; i < listShow; i++) {
-        rect_press.append(QRect(35, 20 + i * 30, width() - 50, 20));
+        if (this->arrowDirection() == DArrowRectangle::ArrowLeft)
+            rect_press.append(QRect(35, 20 + i * 30, width() - 50, 20));
+        else
+            rect_press.append(QRect(20, 20 + i * 30, width() - 50, 20));
     }
     for (int i = 0; i < listShow; i++) {
         if (rect_press.at(i).contains(pos)) {

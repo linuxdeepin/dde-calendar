@@ -92,10 +92,6 @@ CMonthView::CMonthView(QWidget *parent) : DWidget(parent)
 
     m_RemindWidget = new SchecduleRemindWidget(this);
 
-    QShortcut *shortcut = new QShortcut(this);
-    shortcut->setKey(QKeySequence(QLatin1String("Ctrl+N")));
-//    connect(shortcut, SIGNAL(activated()), this, SLOT(slotCreate()));
-//    connect(m_createAction, &QAction::triggered, this, &CMonthView::slotCreate);
     connect(scheduleDataCtrl, &CScheduleDataCtrl::signalsupdatescheduleD, this, &CMonthView::slotsupdatescheduleD);
     connect(this, &CMonthView::signalsupdatescheduleD, scheduleDataCtrl, &CScheduleDataCtrl::slotupdatescheduleD);
     setMouseTracking(true);
@@ -172,17 +168,18 @@ void CMonthView::resizeEvent(QResizeEvent *event)
 {
     DWidget::resizeEvent(event);
     int leftmagin = 10;
-    int topmagin = height() * 0.0193 + 0.5;
+    int topmagin = static_cast<int>(height() * 0.0193 + 0.5);
     topmagin = 10;
     m_leftmaagin = leftmagin;
     m_topmagin = topmagin;
     m_mainLayout->setContentsMargins(leftmagin, topmagin, 0, 10);
-    m_weekIndicator->setFixedSize(width()-leftmagin, height() * 0.1042 + 0.5);
+    m_weekIndicator->setFixedSize(width()-leftmagin, static_cast<int>(height() * 0.1042 + 0.5));
 }
 
 
 void CMonthView::mousePressEvent(QMouseEvent *event)
 {
+    Q_UNUSED(event);
     slotScheduleRemindWidget(false);
 }
 
@@ -199,13 +196,11 @@ void CMonthView::setCurrentDate(const QDate date)
     slotScheduleRemindWidget(false);
     qDebug() << "set current date " << date;
     if (date.year() < 1900) return;
-    bool flag = false;
     if (date.month() != m_currentDate.month()) {
         m_festivallist.clear();
         m_DBusInter->GetFestivalMonth(date.addMonths(-1).year(), date.addMonths(-1).month(), m_festivallist);
         m_DBusInter->GetFestivalMonth(date.year(), date.month(), m_festivallist);
         m_DBusInter->GetFestivalMonth(date.addMonths(1).year(), date.addMonths(1).month(), m_festivallist);
-        flag = true;
     }
     m_currentDate = date;
     m_MonthGraphicsView->setFestivalInfo(m_festivallist);

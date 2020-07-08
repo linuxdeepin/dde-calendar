@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="zh_CN">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="zh_CN" version="2.1">
 <context>
     <name>CDayMonthView</name>
     <message>
@@ -97,7 +95,7 @@
     <name>CMonthSchceduleNumButton</name>
     <message>
         <source>%1 more</source>
-        <translation type="unfinished">还有%1项</translation>
+        <translation>还有%1项</translation>
     </message>
 </context>
 <context>
@@ -457,7 +455,7 @@
     <name>CScheduleView</name>
     <message>
         <source>ALL DAY</source>
-        <translation type="unfinished"></translation>
+        <translation>全天</translation>
     </message>
 </context>
 <context>
@@ -541,58 +539,51 @@
     <name>DragInfoGraphicsView</name>
     <message>
         <source>Edit</source>
-        <translation type="unfinished">编辑</translation>
+        <translation>编辑</translation>
     </message>
     <message>
         <source>Delete</source>
-        <translation type="unfinished">删除</translation>
+        <translation>删除</translation>
     </message>
     <message>
         <source>New event</source>
-        <translation type="unfinished">新建日程</translation>
+        <translation>新建日程</translation>
     </message>
     <message>
         <source>You are deleting an event.</source>
-        <translation type="unfinished">您正在删除日程。</translation>
+        <translation>您正在删除日程。</translation>
     </message>
     <message>
         <source>Are you sure you want to delete this event?</source>
-        <translation type="unfinished">您确定要删除此日程吗？</translation>
+        <translation>您确定要删除此日程吗？</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished">取消</translation>
+        <translation>取消</translation>
     </message>
     <message>
         <source>Do you want to delete all occurrences of this event, or only the selected occurrence?</source>
-        <translation type="unfinished">您要删除此日程的所有重复，还是只删除所选重复？</translation>
+        <translation>您要删除此日程的所有重复，还是只删除所选重复？</translation>
     </message>
     <message>
         <source>Delete All</source>
-        <translation type="unfinished">全部删除</translation>
+        <translation>全部删除</translation>
     </message>
     <message>
         <source>Delete Only This Event</source>
-        <translation type="unfinished">仅删除此日程</translation>
+        <translation>仅删除此日程</translation>
     </message>
     <message>
         <source>Do you want to delete this and all future occurrences of this event, or only the selected occurrence?</source>
-        <translation type="unfinished">您要删除此日程的这个重复和所有将来重复，还是只删除所选重复？</translation>
+        <translation>您要删除此日程的这个重复和所有将来重复，还是只删除所选重复？</translation>
     </message>
     <message>
         <source>Delete All Future Events</source>
-        <translation type="unfinished">删除所有将来日程</translation>
+        <translation>删除所有将来日程</translation>
     </message>
     <message>
         <source>New Event</source>
-        <translation type="unfinished">新建日程</translation>
-    </message>
-</context>
-<context>
-    <name>InfoView</name>
-    <message>
-        <source>Today</source>
-        <translation>今天</translation>
+        <translation>新建日程</translation>
     </message>
 </context>
 <context>

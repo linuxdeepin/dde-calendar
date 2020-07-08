@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="sr">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="sr" version="2.1">
 <context>
     <name>CDayMonthView</name>
     <message>
@@ -97,7 +95,7 @@
     <name>CMonthSchceduleNumButton</name>
     <message>
         <source>%1 more</source>
-        <translation type="unfinished">Још %1</translation>
+        <translation>Још %1</translation>
     </message>
 </context>
 <context>
@@ -457,7 +455,7 @@
     <name>CScheduleView</name>
     <message>
         <source>ALL DAY</source>
-        <translation type="unfinished"></translation>
+        <translation>ЦЕО ДАН</translation>
     </message>
 </context>
 <context>
@@ -541,58 +539,51 @@
     <name>DragInfoGraphicsView</name>
     <message>
         <source>Edit</source>
-        <translation type="unfinished">Уреди</translation>
+        <translation>Уреди</translation>
     </message>
     <message>
         <source>Delete</source>
-        <translation type="unfinished">Обриши</translation>
+        <translation>Обриши</translation>
     </message>
     <message>
         <source>New event</source>
-        <translation type="unfinished">Нови догађај</translation>
+        <translation>Нови догађај</translation>
     </message>
     <message>
         <source>You are deleting an event.</source>
-        <translation type="unfinished">Бришете догађај.</translation>
+        <translation>Бришете догађај.</translation>
     </message>
     <message>
         <source>Are you sure you want to delete this event?</source>
-        <translation type="unfinished">Заиста желите да обришете овај догађај?</translation>
+        <translation>Заиста желите да обришете овај догађај?</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished">Откажи</translation>
+        <translation>Откажи</translation>
     </message>
     <message>
         <source>Do you want to delete all occurrences of this event, or only the selected occurrence?</source>
-        <translation type="unfinished">Желите ли да обришете све појаве овог догађаја или само изабрану ставку?</translation>
+        <translation>Желите ли да обришете све појаве овог догађаја или само изабрану ставку?</translation>
     </message>
     <message>
         <source>Delete All</source>
-        <translation type="unfinished">Обриши све</translation>
+        <translation>Обриши све</translation>
     </message>
     <message>
         <source>Delete Only This Event</source>
-        <translation type="unfinished">Обриши само овај догађај</translation>
+        <translation>Обриши само овај догађај</translation>
     </message>
     <message>
         <source>Do you want to delete this and all future occurrences of this event, or only the selected occurrence?</source>
-        <translation type="unfinished">Желите ли да обришете ову и све будуће појаве овог догађаја или само изабрану ставку?</translation>
+        <translation>Желите ли да обришете ову и све будуће појаве овог догађаја или само изабрану ставку?</translation>
     </message>
     <message>
         <source>Delete All Future Events</source>
-        <translation type="unfinished">Обриши све будуће догађаје</translation>
+        <translation>Обриши све будуће догађаје</translation>
     </message>
     <message>
         <source>New Event</source>
-        <translation type="unfinished">Нови догађај</translation>
-    </message>
-</context>
-<context>
-    <name>InfoView</name>
-    <message>
-        <source>Today</source>
-        <translation>Данас</translation>
+        <translation>Нови догађај</translation>
     </message>
 </context>
 <context>

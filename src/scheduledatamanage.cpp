@@ -44,6 +44,11 @@ CSchedulesColor CScheduleDataManage::getScheduleColorByType(int type)
     return color;
 }
 
+QColor CScheduleDataManage::getSystemActiveColor()
+{
+    return DGuiApplicationHelper::instance()->applicationPalette().highlight().color();
+}
+
 void CScheduleDataManage::setSearchResult(QVector<ScheduleDateRangeInfo> &vData)
 {
     m_vScheduleInfo = vData;

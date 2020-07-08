@@ -58,6 +58,7 @@ void CYearWindow::mousePressEvent(QMouseEvent *event)
 
 void CYearWindow::resizeEvent(QResizeEvent *event)
 {
+    Q_UNUSED(event);
     m_topWidget->setGeometry(0, 0, this->width(), DDEMonthCalendar::M_YTopHeight);
 
     if (m_searchfalg) {

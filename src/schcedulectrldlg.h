@@ -34,13 +34,14 @@ class CSchceduleCtrlDlg : public DDialog
     Q_OBJECT
 public:
     explicit CSchceduleCtrlDlg(QWidget *parent = nullptr);
-    DPushButton *addPushButton(QString btName, int type = 0);
-    DSuggestButton *addsuggestButton(QString btName, int type = 0);
+    QAbstractButton *addPushButton(QString btName, bool type = false);
+    QAbstractButton *addsuggestButton(QString btName, bool type = false);
+    QAbstractButton *addWaringButton(QString btName, bool type = false);
     void setTitleName(QString tileName);
     void setText(QString str);
     void setInformativeText(QString str);
-    DPushButton *clickButton();
-    void updatesize();
+    int clickButton();
+//    void updatesize();
 private:
     void initUI();
     void initConnection();
@@ -61,11 +62,7 @@ private:
     QHBoxLayout                      *m_btBoxLayout;
     QFont labelF;
     QFont labelT;
-    QString str_firstLabel;
-    QString str_seconLabel;
     QVector<QString> str_btName;
-    DPushButton *button;
-    DSuggestButton *suggestButton;
 };
 
 #endif // MYSCHCEDULEVIEW_H

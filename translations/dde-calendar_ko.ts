@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="ko">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="ko" version="2.1">
 <context>
     <name>CDayMonthView</name>
     <message>
@@ -97,7 +95,7 @@
     <name>CMonthSchceduleNumButton</name>
     <message>
         <source>%1 more</source>
-        <translation type="unfinished">%1 더</translation>
+        <translation>%1 더</translation>
     </message>
 </context>
 <context>
@@ -457,7 +455,7 @@
     <name>CScheduleView</name>
     <message>
         <source>ALL DAY</source>
-        <translation type="unfinished"></translation>
+        <translation>하루 종일</translation>
     </message>
 </context>
 <context>
@@ -541,58 +539,51 @@
     <name>DragInfoGraphicsView</name>
     <message>
         <source>Edit</source>
-        <translation type="unfinished">편집</translation>
+        <translation>편집</translation>
     </message>
     <message>
         <source>Delete</source>
-        <translation type="unfinished">삭제</translation>
+        <translation>삭제</translation>
     </message>
     <message>
         <source>New event</source>
-        <translation type="unfinished">새 이벤트</translation>
+        <translation>새 이벤트</translation>
     </message>
     <message>
         <source>You are deleting an event.</source>
-        <translation type="unfinished">이벤트를 삭제하는 중.</translation>
+        <translation>이벤트를 삭제하는 중.</translation>
     </message>
     <message>
         <source>Are you sure you want to delete this event?</source>
-        <translation type="unfinished">이 이벤트를 삭제하시겠습니까?</translation>
+        <translation>이 이벤트를 삭제하시겠습니까?</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished">취소</translation>
+        <translation>취소</translation>
     </message>
     <message>
         <source>Do you want to delete all occurrences of this event, or only the selected occurrence?</source>
-        <translation type="unfinished">이 이벤트의 모든 발생 항목을 삭제하시겠습니까, 아니면 선택한 발생 항목만 삭제하시겠습니까?</translation>
+        <translation>이 이벤트의 모든 발생 항목을 삭제하시겠습니까, 아니면 선택한 발생 항목만 삭제하시겠습니까?</translation>
     </message>
     <message>
         <source>Delete All</source>
-        <translation type="unfinished">모두 삭제</translation>
+        <translation>모두 삭제</translation>
     </message>
     <message>
         <source>Delete Only This Event</source>
-        <translation type="unfinished">이 이벤트만 삭제</translation>
+        <translation>이 이벤트만 삭제</translation>
     </message>
     <message>
         <source>Do you want to delete this and all future occurrences of this event, or only the selected occurrence?</source>
-        <translation type="unfinished">이 이벤트와 이 이벤트의 모든 향후 발생 항목을 삭제하시겠습니까? 아니면 선택한 발생 항목만 삭제하시겠습니까?</translation>
+        <translation>이 이벤트와 이 이벤트의 모든 향후 발생 항목을 삭제하시겠습니까? 아니면 선택한 발생 항목만 삭제하시겠습니까?</translation>
     </message>
     <message>
         <source>Delete All Future Events</source>
-        <translation type="unfinished">모든 향후 이벤트 삭제</translation>
+        <translation>모든 향후 이벤트 삭제</translation>
     </message>
     <message>
         <source>New Event</source>
-        <translation type="unfinished">새 이벤트</translation>
-    </message>
-</context>
-<context>
-    <name>InfoView</name>
-    <message>
-        <source>Today</source>
-        <translation>오늘</translation>
+        <translation>새 이벤트</translation>
     </message>
 </context>
 <context>

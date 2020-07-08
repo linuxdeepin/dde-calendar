@@ -1,3 +1,23 @@
+/*
+* Copyright (C) 2019 ~ 2020 Uniontech Software Technology Co.,Ltd.
+*
+* Author:     uniontech  <uniontech@uniontech.com>
+*
+* Maintainer: uniontech  <chenhaifeng@uniontech.com>
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 #include "monthgraphiview.h"
 #include <DHiDPIHelper>
 #include <QAction>
@@ -282,22 +302,22 @@ void CMonthGraphiview::DeleteItem(const ScheduleDtailInfo &info)
         CSchceduleCtrlDlg msgBox(this);
         msgBox.setText(tr("You are deleting an event."));
         msgBox.setInformativeText(tr("Are you sure you want to delete this event?"));
-        DPushButton *noButton = msgBox.addPushButton(tr("Cancel"));
-        DPushButton *yesButton = msgBox.addPushButton(tr("Delete"), 1);
-        msgBox.updatesize();
-        DPalette pa = yesButton->palette();
-        if (m_themetype == 0 || m_themetype == 1) {
-            pa.setColor(DPalette::ButtonText, Qt::red);
-        } else {
-            pa.setColor(DPalette::ButtonText, "#FF5736");
-        }
-        yesButton->setPalette(pa);
+        /* QAbstractButton *noButton = */msgBox.addPushButton(tr("Cancel"), true);
+        /*QAbstractButton *yesButton = */msgBox.addWaringButton(tr("Delete"), true);
+//        msgBox.updatesize();
+//        DPalette pa = yesButton->palette();
+//        if (m_themetype == 0 || m_themetype == 1) {
+//            pa.setColor(DPalette::ButtonText, Qt::red);
+//        } else {
+//            pa.setColor(DPalette::ButtonText, "#FF5736");
+//        }
+//        yesButton->setPalette(pa);
         msgBox.exec();
 
-        if (msgBox.clickButton() == noButton) {
+        if (msgBox.clickButton() == 0) {
             emit signalViewtransparentFrame(0);
             return;
-        } else if (msgBox.clickButton() == yesButton) {
+        } else if (msgBox.clickButton() == 1) {
             CScheduleDataManage::getScheduleDataManage()->getscheduleDataCtrl()->deleteScheduleInfoById(info.id);
         }
     } else {
@@ -305,29 +325,29 @@ void CMonthGraphiview::DeleteItem(const ScheduleDtailInfo &info)
             CSchceduleCtrlDlg msgBox(this);
             msgBox.setText(tr("You are deleting an event."));
             msgBox.setInformativeText(tr("Do you want to delete all occurrences of this event, or only the selected occurrence?"));
-            DPushButton *noButton = msgBox.addPushButton(tr("Cancel"));
-            DPushButton *yesallbutton = msgBox.addPushButton(tr("Delete All"));
-            DPushButton *yesButton = msgBox.addPushButton(tr("Delete Only This Event"));
-            msgBox.updatesize();
-            DPalette pa = yesButton->palette();
-            if (m_themetype == 0 || m_themetype == 1) {
-                pa.setColor(DPalette::ButtonText, Qt::white);
-                pa.setColor(DPalette::Dark, QColor("#25B7FF"));
-                pa.setColor(DPalette::Light, QColor("#0098FF"));
-            } else {
-                pa.setColor(DPalette::ButtonText, "#B8D3FF");
-                pa.setColor(DPalette::Dark, QColor("#0056C1"));
-                pa.setColor(DPalette::Light, QColor("#004C9C"));
-            }
-            yesButton->setPalette(pa);
+            /*QAbstractButton *noButton = */msgBox.addPushButton(tr("Cancel"));
+            /*QAbstractButton *yesallbutton = */msgBox.addPushButton(tr("Delete All"));
+            /*QAbstractButton *yesButton = */msgBox.addsuggestButton(tr("Delete Only This Event"));
+//            msgBox.updatesize();
+//            DPalette pa = yesButton->palette();
+//            if (m_themetype == 0 || m_themetype == 1) {
+//                pa.setColor(DPalette::ButtonText, Qt::white);
+//                pa.setColor(DPalette::Dark, QColor("#25B7FF"));
+//                pa.setColor(DPalette::Light, QColor("#0098FF"));
+//            } else {
+//                pa.setColor(DPalette::ButtonText, "#B8D3FF");
+//                pa.setColor(DPalette::Dark, QColor("#0056C1"));
+//                pa.setColor(DPalette::Light, QColor("#004C9C"));
+//            }
+//            yesButton->setPalette(pa);
             msgBox.exec();
 
-            if (msgBox.clickButton() == noButton) {
+            if (msgBox.clickButton() == 0) {
                 emit signalViewtransparentFrame(0);
                 return;
-            } else if (msgBox.clickButton() == yesallbutton) {
+            } else if (msgBox.clickButton() == 1) {
                 CScheduleDataManage::getScheduleDataManage()->getscheduleDataCtrl()->deleteScheduleInfoById(info.id);
-            } else if (msgBox.clickButton() == yesButton) {
+            } else if (msgBox.clickButton() == 2) {
 
                 ScheduleDtailInfo newschedule;
                 CScheduleDataManage::getScheduleDataManage()->getscheduleDataCtrl()->getScheduleInfoById(info.id, newschedule);
@@ -338,34 +358,34 @@ void CMonthGraphiview::DeleteItem(const ScheduleDtailInfo &info)
             CSchceduleCtrlDlg msgBox(this);
             msgBox.setText(tr("You are deleting an event."));
             msgBox.setInformativeText(tr("Do you want to delete this and all future occurrences of this event, or only the selected occurrence?"));
-            DPushButton *noButton = msgBox.addPushButton(tr("Cancel"));
-            DPushButton *yesallbutton = msgBox.addPushButton(tr("Delete All Future Events"));
-            DPushButton *yesButton = msgBox.addPushButton(tr("Delete Only This Event"));
-            msgBox.updatesize();
-            DPalette pa = yesButton->palette();
-            if (m_themetype == 0 || m_themetype == 1) {
-                pa.setColor(DPalette::ButtonText, Qt::white);
-                pa.setColor(DPalette::Dark, QColor("#25B7FF"));
-                pa.setColor(DPalette::Light, QColor("#0098FF"));
-            } else {
-                pa.setColor(DPalette::ButtonText, "#B8D3FF");
-                pa.setColor(DPalette::Dark, QColor("#0056C1"));
-                pa.setColor(DPalette::Light, QColor("#004C9C"));
-            }
-            yesButton->setPalette(pa);
+            /* QAbstractButton *noButton = */msgBox.addPushButton(tr("Cancel"));
+            /*QAbstractButton *yesallbutton = */msgBox.addPushButton(tr("Delete All Future Events"));
+            /* QAbstractButton *yesButton = */msgBox.addsuggestButton(tr("Delete Only This Event"));
+//            msgBox.updatesize();
+//            DPalette pa = yesButton->palette();
+//            if (m_themetype == 0 || m_themetype == 1) {
+//                pa.setColor(DPalette::ButtonText, Qt::white);
+//                pa.setColor(DPalette::Dark, QColor("#25B7FF"));
+//                pa.setColor(DPalette::Light, QColor("#0098FF"));
+//            } else {
+//                pa.setColor(DPalette::ButtonText, "#B8D3FF");
+//                pa.setColor(DPalette::Dark, QColor("#0056C1"));
+//                pa.setColor(DPalette::Light, QColor("#004C9C"));
+//            }
+//            yesButton->setPalette(pa);
             msgBox.exec();
 
-            if (msgBox.clickButton() == noButton) {
+            if (msgBox.clickButton() == 0) {
                 emit signalViewtransparentFrame(0);
                 return;
-            } else if (msgBox.clickButton() == yesallbutton) {
+            } else if (msgBox.clickButton() == 1) {
                 ScheduleDtailInfo newschedule;
                 CScheduleDataManage::getScheduleDataManage()->getscheduleDataCtrl()->getScheduleInfoById(info.id, newschedule);
                 newschedule.enddata.type = 2;
                 newschedule.enddata.date = info.beginDateTime.addDays(-1);
                 CScheduleDataManage::getScheduleDataManage()->getscheduleDataCtrl()->updateScheduleInfo(newschedule);
 
-            } else if (msgBox.clickButton() == yesButton) {
+            } else if (msgBox.clickButton() == 2) {
                 ScheduleDtailInfo newschedule;
                 CScheduleDataManage::getScheduleDataManage()->getscheduleDataCtrl()->getScheduleInfoById(info.id, newschedule);
                 newschedule.ignore.append(info.beginDateTime);
@@ -676,6 +696,7 @@ void CDayGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     Q_UNUSED(option);
     Q_UNUSED(widget);
     const int hh = 36;
+    m_currentColor = CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
     painter->setRenderHints(QPainter::Antialiasing);
     //绘制背景
     if (m_LunarVisible) {
@@ -718,17 +739,26 @@ void CDayGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *
         tfont.setPixelSize(20);
         painter->setFont(tfont);
         painter->setPen(m_dayNumCurrentColor);
-        QPixmap pixmap;
-        if (m_themetype == 2)
-            pixmap = DHiDPIHelper::loadNxPixmap(":/resources/icon/darkchoose30X30_checked .svg");
-        else {
-            pixmap = DHiDPIHelper::loadNxPixmap(":/resources/icon/choose30X30_checked .svg");
-        }
+
+//        QPixmap pixmap;
+//        if (m_themetype == 2)
+//            pixmap = DHiDPIHelper::loadNxPixmap(":/resources/icon/darkchoose30X30_checked .svg");
+//        else {
+//            pixmap = DHiDPIHelper::loadNxPixmap(":/resources/icon/choose30X30_checked .svg");
+//        }
 //        pixmap.setDevicePixelRatio(devicePixelRatioF());
+
+        painter->save();
+        painter->setRenderHint(QPainter::Antialiasing);
+        painter->setBrush(QBrush(m_currentColor));
+        painter->setPen(Qt::NoPen);
         if (m_LunarVisible)
-            painter->drawPixmap(fillRect.toRect(),pixmap);
+            painter->drawEllipse(QRectF(this->rect().x() + 6, this->rect().y() + 4, hh - 8, hh - 8));
+//            painter->drawPixmap(fillRect.toRect(),pixmap);
         else
-            painter->drawPixmap(QPointF((this->rect().width() - pixmap.width()) / 2 + this->rect().x(), this->rect().y()), pixmap);
+//            painter->drawPixmap(QPointF((this->rect().width() - pixmap.width()) / 2 + this->rect().x(), this->rect().y()), pixmap);
+            painter->drawEllipse(QRectF((this->rect().width() - hh + 8) / 2 + this->rect().x(), this->rect().y() + 4, hh - 8, hh - 8));
+        painter->restore();
     } else {
         painter->setPen(m_dayNumColor);
     }

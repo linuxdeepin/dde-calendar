@@ -31,7 +31,7 @@ public:
     void setFirstWeekDay(int weekday);
     void setCurrentDate(const QDate date);
     void setTheMe(int type = 0);
-    void setwindowFixw(int w, int rw);
+//    void setwindowFixw(int w, int rw);
     void setsearchfalg(bool flag);
 public slots:
     void cellClicked(QWidget *cell);

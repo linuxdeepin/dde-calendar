@@ -4,6 +4,7 @@ Priority: optional
 Maintainer: Deepin Packages Builder <packages@deepin.com>
 Build-Depends:
  debhelper (>=9),
+ cmake,
  pkg-config,
  qtbase5-dev,
  libdtkgui-dev,

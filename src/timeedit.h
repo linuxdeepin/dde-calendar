@@ -24,7 +24,6 @@
 #include <QTime>
 #include <QTimeEdit>
 DWIDGET_USE_NAMESPACE
-class CTimeVerticalScroll;
 class CTimeEdit : public DComboBox
 {
     Q_OBJECT

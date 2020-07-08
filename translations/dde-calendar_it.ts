@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="it">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="it" version="2.1">
 <context>
     <name>CDayMonthView</name>
     <message>
@@ -82,7 +80,7 @@
     </message>
     <message>
         <source>Delete Only This Event</source>
-        <translation>Elimina solo quello selezionato</translation>
+        <translation>Elimina solo questa occorrenza</translation>
     </message>
     <message>
         <source>Do you want to delete this and all future occurrences of this event, or only the selected occurrence?</source>
@@ -97,7 +95,7 @@
     <name>CMonthSchceduleNumButton</name>
     <message>
         <source>%1 more</source>
-        <translation type="unfinished">%1 in più</translation>
+        <translation>%1 in più</translation>
     </message>
 </context>
 <context>
@@ -457,7 +455,7 @@
     <name>CScheduleView</name>
     <message>
         <source>ALL DAY</source>
-        <translation type="unfinished"></translation>
+        <translation>Tutto il giorno</translation>
     </message>
 </context>
 <context>
@@ -542,58 +540,51 @@ Localizzazione italiana a cura di Massimo A. Carofano.</translation>
     <name>DragInfoGraphicsView</name>
     <message>
         <source>Edit</source>
-        <translation type="unfinished">Modifica</translation>
+        <translation>Modifica</translation>
     </message>
     <message>
         <source>Delete</source>
-        <translation type="unfinished">Elimina</translation>
+        <translation>Elimina</translation>
     </message>
     <message>
         <source>New event</source>
-        <translation type="unfinished">Nuovo evento</translation>
+        <translation>Nuovo evento</translation>
     </message>
     <message>
         <source>You are deleting an event.</source>
-        <translation type="unfinished">Stai eliminando un evento.</translation>
+        <translation>Stai eliminando un evento.</translation>
     </message>
     <message>
         <source>Are you sure you want to delete this event?</source>
-        <translation type="unfinished">Sicuro di voler eliminare questo evento?</translation>
+        <translation>Sicuro di voler eliminare questo evento?</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished">Annulla</translation>
+        <translation>Annulla</translation>
     </message>
     <message>
         <source>Do you want to delete all occurrences of this event, or only the selected occurrence?</source>
-        <translation type="unfinished">Desideri eliminare tutte le occorrenze di questo evento, oppure solo quella selezionata?</translation>
+        <translation>Desideri eliminare tutte le occorrenze di questo evento, oppure solo quella selezionata?</translation>
     </message>
     <message>
         <source>Delete All</source>
-        <translation type="unfinished">Eliminale tutte</translation>
+        <translation>Eliminale tutte</translation>
     </message>
     <message>
         <source>Delete Only This Event</source>
-        <translation type="unfinished"></translation>
+        <translation>Elimina solo questa occorrenza</translation>
     </message>
     <message>
         <source>Do you want to delete this and all future occurrences of this event, or only the selected occurrence?</source>
-        <translation type="unfinished"></translation>
+        <translation>Desideri eliminare questa e tutte le occorrenze successive di questo evento, oppure solo quella selezionata?</translation>
     </message>
     <message>
         <source>Delete All Future Events</source>
-        <translation type="unfinished">Tutte le occorrenze future</translation>
+        <translation>Tutte le occorrenze future</translation>
     </message>
     <message>
         <source>New Event</source>
-        <translation type="unfinished">Nuovo evento</translation>
-    </message>
-</context>
-<context>
-    <name>InfoView</name>
-    <message>
-        <source>Today</source>
-        <translation>Oggi</translation>
+        <translation>Nuovo evento</translation>
     </message>
 </context>
 <context>

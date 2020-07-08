@@ -25,6 +25,7 @@
 #include <DPalette>
 #include <DApplicationHelper>
 #include <DPalette>
+#include "scheduledatamanage.h"
 DGUI_USE_NAMESPACE
 CMonthWeekView::CMonthWeekView(QWidget *parent) : DWidget(parent)
 {
@@ -69,7 +70,9 @@ void CMonthWeekView::setList(int weekday)
         }
         if (d == 0) {
             QColor textbC(0, 66, 154);
-            label->setTextColor("#0887FF");
+            QColor colorSeven = CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
+//            label->setTextColor("#0887FF");
+            label->setTextColor(colorSeven);
             label->setBColor(textbC);
             m_weekData.append(qMakePair(label, 1));
 #if 0
@@ -86,7 +89,9 @@ void CMonthWeekView::setList(int weekday)
 #endif
         } else if (d == 6) {
             QColor textbC(0, 66, 154);
-            label->setTextColor("#0887FF");
+            QColor colorSix = CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
+//            label->setTextColor("#0887FF");
+            label->setTextColor(colorSix);
             label->setBColor(textbC);
             m_weekData.append(qMakePair(label, 1));
         } else {
@@ -127,10 +132,12 @@ void CMonthWeekView::setTheMe(int type)
     if (type == 0 || type == 1) {
         for (int i = 0; i < m_weekData.count(); i++) {
             if (m_weekData.at(i).second == 1) {
-                QColor textC = "#0887FF";
+//                QColor textC = "#0887FF";
+                QColor color = CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
                 QColor textbC("#75C18E");
                 textbC.setAlphaF(0.1);
-                m_weekData.at(i).first->setTextColor(textC);
+//                m_weekData.at(i).first->setTextColor(textC);
+                m_weekData.at(i).first->setTextColor(color);
                 m_weekData.at(i).first->setBColor(textbC);
             } else {
                 QColor textC = "#6F6F6F";
@@ -145,10 +152,12 @@ void CMonthWeekView::setTheMe(int type)
     } else if (type == 2) {
         for (int i = 0; i < m_weekData.count(); i++) {
             if (m_weekData.at(i).second == 1) {
-                QColor textC = "#0887FF";
+//                QColor textC = "#0887FF";
+                QColor color = CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
                 QColor textbC = "#82AEC1";
                 textbC.setAlphaF(0.10);
-                m_weekData.at(i).first->setTextColor(textC);
+//                m_weekData.at(i).first->setTextColor(textC);
+                m_weekData.at(i).first->setTextColor(color);
                 m_weekData.at(i).first->setBColor(textbC);
             } else {
                 QColor textC = "#C0C6D4";
@@ -198,7 +207,7 @@ int CMonthWeekView::checkDay(int weekday)
 
 void CMonthWeekView::resizeEvent(QResizeEvent *event)
 {
-    int tw = width() / 7.0 + 0.5;
+    int tw = static_cast<int>(width() / 7.0 + 0.5);
     int th = height();
     for (int i = 0; i < m_weekData.count(); i++) {
         if (m_weekData.at(i).second == 1) {

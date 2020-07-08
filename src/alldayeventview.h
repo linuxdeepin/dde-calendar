@@ -73,6 +73,7 @@ public:
 private:
 
     bool MeetCreationConditions(const QDateTime &date) override;
+    void slotCreate(const QDateTime &date) override;
     //判断时间是否相等
     bool IsEqualtime(const QDateTime &timeFirst,const QDateTime &timeSecond) override;
     //根据鼠标移动的距离判断是否创建日程
@@ -113,7 +114,7 @@ class CAllDayEventWidgetItem : public DragInfoItem
 {
     Q_OBJECT
 public:
-    explicit CAllDayEventWidgetItem(QRect rect, QGraphicsItem *parent = nullptr, int edittype = 0);
+    explicit CAllDayEventWidgetItem(QRectF rect, QGraphicsItem *parent = nullptr, int edittype = 0);
     bool hasSelectSchedule(const ScheduleDtailInfo &info);
 protected:
     void paintBackground(QPainter *painter,const QRectF &rect,const int isPixMap = false) override;

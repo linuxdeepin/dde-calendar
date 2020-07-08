@@ -30,7 +30,6 @@
 #include <DTitlebar>
 #include <DLabel>
 #include <QStackedWidget>
-#include <DSegmentedControl>
 #include <DButtonBox>
 #include <QStackedLayout>
 #include <QPropertyAnimation>
@@ -51,9 +50,10 @@ class CSchceduleSearchView;
 class Calendarmainwindow : public DMainWindow
 {
     Q_OBJECT
-    Q_PROPERTY(int schedulesearchWidth WRITE setSearchWidth)
+//    Q_PROPERTY(int schedulesearchWidth WRITE setSearchWidth)
 public:
     Calendarmainwindow(QWidget *w = nullptr);
+    ~Calendarmainwindow() override;
     //void Invoke(const QString &mothodName, const QString &content);
     bool analysisCreate(const QString &content, ScheduleDtailInfo &info);
     void viewWindow(int type, QDateTime datetime);
@@ -68,6 +68,7 @@ public slots:
     void onViewShortcut();
     void slotmaxminViewShortcut();
     void slotGetScheduleInfoSuccess();
+    void slotDynamicIconUpdate();
 private:
     void initUI();
     void initConnection();
@@ -131,6 +132,8 @@ private:
     QPropertyAnimation          *m_animation;
 
     DbusDataGetThread          *m_DataGetThread;
+
+    QTimer                      *m_DynamicIconUpdateTimer;
 
 };
 

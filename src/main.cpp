@@ -98,11 +98,6 @@ QString GetStyleSheetContent()
     }
 }
 
-QRect PrimaryRect()
-{
-    QDesktopWidget *w = QApplication::desktop();
-    return w->screenGeometry(w->primaryScreen());
-}
 #include "schedulesdbus.h"
 int main(int argc, char *argv[])
 {
@@ -117,29 +112,26 @@ int main(int argc, char *argv[])
     a.setApplicationName("dde-calendar");
     a.loadTranslator();
     //QLocale::setDefault(QLocale(QLocale::C, QLocale::UnitedStates));
-    a.setApplicationVersion(DApplication::buildVersion("1.1"));
+    a.setApplicationVersion(VERSION);
     //QList<QLocale> localeFallback = QList<QLocale>() << QLocale::system();
     // meta information that necessary to create the about dialog.
     a.setProductName(QApplication::translate("CalendarWindow", "Calendar"));
     QIcon t_icon = QIcon::fromTheme("dde-calendar");
-    //a.setProductIcon(DHiDPIHelper::loadNxPixmap(":/resources/icon/dde-logo.svg"));
     a.setProductIcon(t_icon);
     a.setApplicationDescription(QApplication::translate("CalendarWindow", "Calendar is a tool to view dates, and also a smart daily planner to schedule all things in life. "));
     a.setApplicationAcknowledgementPage("https://www.deepin.org/acknowledgments/dde-calendar");
-    //a.setTheme("light");
-    //a.setStyle("chameleon");
-    static const QDate buildDate = QLocale( QLocale::English ).toDate( QString(__DATE__).replace("  ", " 0"), "MMM dd yyyy");
-    QString t_date = buildDate.toString("MMdd");
-    // Version Time
-    a.setApplicationVersion(DApplication::buildVersion(t_date));
 
-    if (!a.setSingleInstance("dde-calendar", DApplication::UserScope)) {
+
+    DGuiApplicationHelper::setSingelInstanceInterval(-1);
+    if (!DGuiApplicationHelper::instance()->setSingleInstance(
+                a.applicationName(),
+                DGuiApplicationHelper::UserScope)) {
         qDebug() << "there's an dde-calendar instance running.";
         QProcess::execute("dbus-send --print-reply --dest=com.deepin.Calendar "
                           "/com/deepin/Calendar com.deepin.Calendar.RaiseWindow");
-
         return 0;
     }
+
     a.setAutoActivateWindows(true);
     CConfigSettings::init();
     // set theme
@@ -164,7 +156,6 @@ int main(int argc, char *argv[])
     //ww.setDate(QDate::currentDate());
     ww.slotTheme(getThemeTypeSetting());
     ww.viewWindow(viewtype, QDateTime::currentDateTime());
-    //ww.move(PrimaryRect().center() - ww.geometry().center());
     ww.show();
 
     //QDBusConnection dbus = QDBusConnection::sessionBus();

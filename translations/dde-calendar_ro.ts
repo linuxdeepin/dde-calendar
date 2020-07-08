@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="ro">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="ro" version="2.1">
 <context>
     <name>CDayMonthView</name>
     <message>
@@ -97,7 +95,7 @@
     <name>CMonthSchceduleNumButton</name>
     <message>
         <source>%1 more</source>
-        <translation type="unfinished">%1 mai mult</translation>
+        <translation>%1 mai mult</translation>
     </message>
 </context>
 <context>
@@ -457,7 +455,7 @@
     <name>CScheduleView</name>
     <message>
         <source>ALL DAY</source>
-        <translation type="unfinished"></translation>
+        <translation>TOATĂ ZIUA</translation>
     </message>
 </context>
 <context>
@@ -541,58 +539,51 @@
     <name>DragInfoGraphicsView</name>
     <message>
         <source>Edit</source>
-        <translation type="unfinished">Editare</translation>
+        <translation>Editare</translation>
     </message>
     <message>
         <source>Delete</source>
-        <translation type="unfinished">Ștergeți</translation>
+        <translation>Ștergeți</translation>
     </message>
     <message>
         <source>New event</source>
-        <translation type="unfinished">Eveniment nou</translation>
+        <translation>Eveniment nou</translation>
     </message>
     <message>
         <source>You are deleting an event.</source>
-        <translation type="unfinished">Ştergeţi un eveniment.</translation>
+        <translation>Ştergeţi un eveniment.</translation>
     </message>
     <message>
         <source>Are you sure you want to delete this event?</source>
-        <translation type="unfinished">Sigur doriţi să ştergeţi acest eveniment?</translation>
+        <translation>Sigur doriţi să ştergeţi acest eveniment?</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Anulează</translation>
     </message>
     <message>
         <source>Do you want to delete all occurrences of this event, or only the selected occurrence?</source>
-        <translation type="unfinished">Doriți să ștergeți toate aparițiile acestui eveniment sau doar evenimentul selectat?</translation>
+        <translation>Doriți să ștergeți toate aparițiile acestui eveniment sau doar evenimentul selectat?</translation>
     </message>
     <message>
         <source>Delete All</source>
-        <translation type="unfinished">Şterge tot</translation>
+        <translation>Şterge tot</translation>
     </message>
     <message>
         <source>Delete Only This Event</source>
-        <translation type="unfinished">Şterge doar acest eveniment</translation>
+        <translation>Şterge doar acest eveniment</translation>
     </message>
     <message>
         <source>Do you want to delete this and all future occurrences of this event, or only the selected occurrence?</source>
-        <translation type="unfinished">Doriți să ștergeți toate aparițiile acestui eveniment sau doar evenimentul selectat?</translation>
+        <translation>Doriți să ștergeți toate aparițiile acestui eveniment sau doar evenimentul selectat?</translation>
     </message>
     <message>
         <source>Delete All Future Events</source>
-        <translation type="unfinished">Şterge toate evenimentele viitoare</translation>
+        <translation>Şterge toate evenimentele viitoare</translation>
     </message>
     <message>
         <source>New Event</source>
-        <translation type="unfinished">Eveniment nou</translation>
-    </message>
-</context>
-<context>
-    <name>InfoView</name>
-    <message>
-        <source>Today</source>
-        <translation>Astăzi</translation>
+        <translation>Eveniment nou</translation>
     </message>
 </context>
 <context>

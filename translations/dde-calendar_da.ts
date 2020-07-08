@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="da">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="da" version="2.1">
 <context>
     <name>CDayMonthView</name>
     <message>
@@ -97,7 +95,7 @@
     <name>CMonthSchceduleNumButton</name>
     <message>
         <source>%1 more</source>
-        <translation type="unfinished">%1 mere</translation>
+        <translation>%1 mere</translation>
     </message>
 </context>
 <context>
@@ -337,15 +335,15 @@
     </message>
     <message>
         <source>Starts</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Ends</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Remind Me</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Repeat</source>
@@ -353,7 +351,7 @@
     </message>
     <message>
         <source>End Repeat</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Ends:</source>
@@ -457,7 +455,7 @@
     <name>CScheduleView</name>
     <message>
         <source>ALL DAY</source>
-        <translation type="unfinished"></translation>
+        <translation>HELE DAGEN</translation>
     </message>
 </context>
 <context>
@@ -541,58 +539,51 @@
     <name>DragInfoGraphicsView</name>
     <message>
         <source>Edit</source>
-        <translation type="unfinished">Rediger</translation>
+        <translation>Rediger</translation>
     </message>
     <message>
         <source>Delete</source>
-        <translation type="unfinished">Slet</translation>
+        <translation>Slet</translation>
     </message>
     <message>
         <source>New event</source>
-        <translation type="unfinished">Ny begivenhed</translation>
+        <translation>Ny begivenhed</translation>
     </message>
     <message>
         <source>You are deleting an event.</source>
-        <translation type="unfinished">Du er ved at slette en begivenhed.</translation>
+        <translation>Du er ved at slette en begivenhed.</translation>
     </message>
     <message>
         <source>Are you sure you want to delete this event?</source>
-        <translation type="unfinished">Er du sikker på, at du vil slette begivenheden?</translation>
+        <translation>Er du sikker på, at du vil slette begivenheden?</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished">Annuller</translation>
+        <translation>Annuller</translation>
     </message>
     <message>
         <source>Do you want to delete all occurrences of this event, or only the selected occurrence?</source>
-        <translation type="unfinished">Vil du slette alle forekomster af begivenheden eller kun den valgte forekomst?</translation>
+        <translation>Vil du slette alle forekomster af begivenheden eller kun den valgte forekomst?</translation>
     </message>
     <message>
         <source>Delete All</source>
-        <translation type="unfinished">Slet alle</translation>
+        <translation>Slet alle</translation>
     </message>
     <message>
         <source>Delete Only This Event</source>
-        <translation type="unfinished">Slet kun denne begivenhed</translation>
+        <translation>Slet kun denne begivenhed</translation>
     </message>
     <message>
         <source>Do you want to delete this and all future occurrences of this event, or only the selected occurrence?</source>
-        <translation type="unfinished">Vil du slette denne og alle fremtidige forekomster af begivenheden eller kun den valgte forekomst?</translation>
+        <translation>Vil du slette denne og alle fremtidige forekomster af begivenheden eller kun den valgte forekomst?</translation>
     </message>
     <message>
         <source>Delete All Future Events</source>
-        <translation type="unfinished">Slet alle fremtidige begivenheder</translation>
+        <translation>Slet alle fremtidige begivenheder</translation>
     </message>
     <message>
         <source>New Event</source>
-        <translation type="unfinished">Ny begivenhed</translation>
-    </message>
-</context>
-<context>
-    <name>InfoView</name>
-    <message>
-        <source>Today</source>
-        <translation>I dag</translation>
+        <translation>Ny begivenhed</translation>
     </message>
 </context>
 <context>

@@ -1,42 +1,40 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="el">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="el" version="2.1">
 <context>
     <name>CDayMonthView</name>
     <message>
         <source>Monday</source>
-        <translation type="unfinished"></translation>
+        <translation>Δευτέρα</translation>
     </message>
     <message>
         <source>Tuesday</source>
-        <translation type="unfinished"></translation>
+        <translation>Τρίτη</translation>
     </message>
     <message>
         <source>Wednesday</source>
-        <translation type="unfinished"></translation>
+        <translation>Τετάρτη</translation>
     </message>
     <message>
         <source>Thursday</source>
-        <translation type="unfinished"></translation>
+        <translation>Πέμπτη</translation>
     </message>
     <message>
         <source>Friday</source>
-        <translation type="unfinished"></translation>
+        <translation>Παρασκευή</translation>
     </message>
     <message>
         <source>Saturday</source>
-        <translation type="unfinished"></translation>
+        <translation>Σάββατο</translation>
     </message>
     <message>
         <source>Sunday</source>
-        <translation type="unfinished"></translation>
+        <translation>Κυριακή</translation>
     </message>
 </context>
 <context>
     <name>CDayWindow</name>
     <message>
         <source>Y</source>
-        <translation>Y</translation>
+        <translation>Ε</translation>
     </message>
     <message>
         <source>M</source>
@@ -44,71 +42,71 @@
     </message>
     <message>
         <source>D</source>
-        <translation type="unfinished"></translation>
+        <translation>Η</translation>
     </message>
 </context>
 <context>
     <name>CGraphicsView</name>
     <message>
         <source>New Event</source>
-        <translation type="unfinished"></translation>
+        <translation>Νέο Συμβάν</translation>
     </message>
 </context>
 <context>
     <name>CMonthGraphiview</name>
     <message>
         <source>Delete</source>
-        <translation type="unfinished">Διαγραφή</translation>
+        <translation>Διαγραφή</translation>
     </message>
     <message>
         <source>You are deleting an event.</source>
-        <translation type="unfinished"></translation>
+        <translation>Διαγράφεις ένα συμβάν.</translation>
     </message>
     <message>
         <source>Are you sure you want to delete this event?</source>
-        <translation type="unfinished"></translation>
+        <translation>Είστε σίγουρος ότι θέλετε να διαγράψετε αυτό το συμβάν;</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished">Ακύρωση</translation>
+        <translation>Ακύρωση</translation>
     </message>
     <message>
         <source>Do you want to delete all occurrences of this event, or only the selected occurrence?</source>
-        <translation type="unfinished"></translation>
+        <translation>Θέλετε να διαγράψετε όλες τις εμφανίσεις αυτού του συμβάντος ή μόνο την επιλεγμένη εμφάνιση;</translation>
     </message>
     <message>
         <source>Delete All</source>
-        <translation type="unfinished"></translation>
+        <translation>Διαγραφή όλων</translation>
     </message>
     <message>
         <source>Delete Only This Event</source>
-        <translation type="unfinished"></translation>
+        <translation>Διαγραφή Μόνο Αυτού του Συμβάντος</translation>
     </message>
     <message>
         <source>Do you want to delete this and all future occurrences of this event, or only the selected occurrence?</source>
-        <translation type="unfinished"></translation>
+        <translation>Θέλετε να διαγράψετε αυτό και όλες τις μελλοντικές εμφανίσεις αυτού του συμβάντος ή μόνο το επιλεγμένο συμβάν;</translation>
     </message>
     <message>
         <source>Delete All Future Events</source>
-        <translation type="unfinished"></translation>
+        <translation>Διαγραφή Όλων των Μελλοντικών Συμβάντων</translation>
     </message>
 </context>
 <context>
     <name>CMonthSchceduleNumButton</name>
     <message>
         <source>%1 more</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 περισσότερο</translation>
     </message>
 </context>
 <context>
     <name>CMonthView</name>
     <message>
         <source>New event</source>
-        <translation type="unfinished"></translation>
+        <translation>Νέο συμβάν</translation>
     </message>
     <message>
         <source>New Event</source>
-        <translation type="unfinished"></translation>
+        <translation>Νέο Συμβάν</translation>
     </message>
 </context>
 <context>
@@ -122,11 +120,11 @@
     <name>CMySchceduleView</name>
     <message>
         <source>You are deleting an event.</source>
-        <translation type="unfinished"></translation>
+        <translation>Διαγράφεις ένα συμβάν.</translation>
     </message>
     <message>
         <source>Are you sure you want to delete this event?</source>
-        <translation type="unfinished"></translation>
+        <translation>Είστε σίγουρος ότι θέλετε να διαγράψετε αυτό το συμβάν;</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -138,23 +136,23 @@
     </message>
     <message>
         <source>Do you want to delete all occurrences of this event, or only the selected occurrence?</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 περισσότερο</translation>
     </message>
     <message>
         <source>Delete All</source>
-        <translation type="unfinished"></translation>
+        <translation>Διαγραφή όλων</translation>
     </message>
     <message>
         <source>Delete Only This Event</source>
-        <translation type="unfinished"></translation>
+        <translation>Διαγραφή Μόνο Αυτού του Συμβάντος</translation>
     </message>
     <message>
         <source>Do you want to delete this and all future occurrences of this event, or only the selected occurrence?</source>
-        <translation type="unfinished"></translation>
+        <translation>Θέλετε να διαγράψετε αυτό και όλες τις μελλοντικές εμφανίσεις αυτού του συμβάντος ή μόνο το επιλεγμένο συμβάν;</translation>
     </message>
     <message>
         <source>My Event</source>
-        <translation type="unfinished"></translation>
+        <translation>Το Συμβάν Μου</translation>
     </message>
     <message>
         <source>Edit</source>
@@ -166,26 +164,26 @@
     </message>
     <message>
         <source>Delete All Future Events</source>
-        <translation type="unfinished"></translation>
+        <translation>Διαγραφή Όλων των Μελλοντικών Συμβάντων</translation>
     </message>
 </context>
 <context>
     <name>CSchceduleDlg</name>
     <message>
         <source>New Event</source>
-        <translation type="unfinished"></translation>
+        <translation>Νέο Συμβάν</translation>
     </message>
     <message>
         <source>Edit Event</source>
-        <translation type="unfinished"></translation>
+        <translation>Επεξεργασία Συμβάντος</translation>
     </message>
     <message>
         <source>All occurrences of a repeating event must have the same all-day status.</source>
-        <translation type="unfinished"></translation>
+        <translation>Όλες οι εμφανίσεις ενός επαναλαμβανόμενου συμβάντος πρέπει να έχουν την ίδια ολοήμερη κατάσταση.</translation>
     </message>
     <message>
         <source>Do you want to change all occurrences?</source>
-        <translation type="unfinished"></translation>
+        <translation>Θέλετε να αλλάξετε όλες τις εμφανίσεις;</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -193,35 +191,35 @@
     </message>
     <message>
         <source>Change All</source>
-        <translation type="unfinished"></translation>
+        <translation>Αλλαγή Όλων</translation>
     </message>
     <message>
         <source>You are changing the repeating rule of this event.</source>
-        <translation type="unfinished"></translation>
+        <translation>Αλλάζεις τον κανόνα επανάληψης αυτού του συμβάντος.</translation>
     </message>
     <message>
         <source>You are changing a repeating event.</source>
-        <translation type="unfinished"></translation>
+        <translation>Αλλάζεις ένα επαναλαμβανόμενο συμβάν.</translation>
     </message>
     <message>
         <source>Do you want to change only this occurrence of the event, or all occurrences?</source>
-        <translation type="unfinished"></translation>
+        <translation>Θέλετε να αλλάξετε μόνο αυτήν την εμφάνιση του συμβάντος ή όλες τις εμφανίσεις;</translation>
     </message>
     <message>
         <source>All</source>
-        <translation type="unfinished"></translation>
+        <translation>Όλα</translation>
     </message>
     <message>
         <source>Only This Event</source>
-        <translation type="unfinished"></translation>
+        <translation>Μόνο Αυτό το Συμβάν</translation>
     </message>
     <message>
         <source>Do you want to change only this occurrence of the event, or this and all future occurrences?</source>
-        <translation type="unfinished"></translation>
+        <translation>Θέλετε να αλλάξετε μόνο αυτήν την εμφάνιση του συμβάντος ή αυτήν και όλες τις μελλοντικές εμφανίσεις;</translation>
     </message>
     <message>
         <source>All Future Events</source>
-        <translation type="unfinished"></translation>
+        <translation>Όλα τα Μελλοντικά Συμβάντα</translation>
     </message>
     <message>
         <source>Never</source>
@@ -229,35 +227,35 @@
     </message>
     <message>
         <source>At time of event</source>
-        <translation type="unfinished"></translation>
+        <translation>Στην ώρα του συμβάντος</translation>
     </message>
     <message>
         <source>15 minutes before</source>
-        <translation type="unfinished"></translation>
+        <translation>15 λεπτά πριν</translation>
     </message>
     <message>
         <source>30 minutes before</source>
-        <translation type="unfinished"></translation>
+        <translation>30 λεπτά πριν</translation>
     </message>
     <message>
         <source>1 hour before</source>
-        <translation type="unfinished"></translation>
+        <translation>1 ώρα πριν</translation>
     </message>
     <message>
         <source>1 day before</source>
-        <translation type="unfinished"></translation>
+        <translation>1 ημέρα πριν</translation>
     </message>
     <message>
         <source>2 days before</source>
-        <translation type="unfinished"></translation>
+        <translation>2 ημέρες πριν</translation>
     </message>
     <message>
         <source>1 week before</source>
-        <translation type="unfinished"></translation>
+        <translation>1 εβδομάδα πριν</translation>
     </message>
     <message>
         <source>On start day (9:00 AM)</source>
-        <translation type="unfinished"></translation>
+        <translation>Στην έναρξη της ημέρας (9:00 ΠΜ)</translation>
     </message>
     <message>
         <source>Type:</source>
@@ -265,43 +263,43 @@
     </message>
     <message>
         <source>All Day:</source>
-        <translation type="unfinished"></translation>
+        <translation>Ολοήμερο:</translation>
     </message>
     <message>
         <source>Remind Me:</source>
-        <translation type="unfinished"></translation>
+        <translation>Υπενθύμισέ μου:</translation>
     </message>
     <message>
         <source>Repeat:</source>
-        <translation type="unfinished"></translation>
+        <translation>Επανάληψη:</translation>
     </message>
     <message>
         <source>Daily</source>
-        <translation type="unfinished"></translation>
+        <translation>Ημερήσιο</translation>
     </message>
     <message>
         <source>Weekdays</source>
-        <translation type="unfinished"></translation>
+        <translation>Ημέρες</translation>
     </message>
     <message>
         <source>Weekly</source>
-        <translation type="unfinished"></translation>
+        <translation>Εβδομαδιαίο</translation>
     </message>
     <message>
         <source>Monthly</source>
-        <translation type="unfinished"></translation>
+        <translation>Μηνιαίο</translation>
     </message>
     <message>
         <source>Yearly</source>
-        <translation type="unfinished"></translation>
+        <translation>Ετήσιο</translation>
     </message>
     <message>
         <source>End Repeat:</source>
-        <translation type="unfinished"></translation>
+        <translation>Τέλος Επανάληψης:</translation>
     </message>
     <message>
         <source>After</source>
-        <translation type="unfinished"></translation>
+        <translation>Μετά</translation>
     </message>
     <message>
         <source>On</source>
@@ -309,7 +307,7 @@
     </message>
     <message>
         <source>time(s)</source>
-        <translation type="unfinished"></translation>
+        <translation>φορά(ές)</translation>
     </message>
     <message>
         <source>Save</source>
@@ -317,11 +315,11 @@
     </message>
     <message>
         <source>New event</source>
-        <translation type="unfinished"></translation>
+        <translation>Νέο συμβάν</translation>
     </message>
     <message>
         <source>End time must be greater than start time</source>
-        <translation type="unfinished"></translation>
+        <translation>Το τέλος πρέπει να είναι μεγαλύτερο από την αρχική ώρα</translation>
     </message>
     <message>
         <source>OK</source>
@@ -333,19 +331,19 @@
     </message>
     <message>
         <source>All Day</source>
-        <translation type="unfinished"></translation>
+        <translation>Ολοήμερο</translation>
     </message>
     <message>
         <source>Starts</source>
-        <translation type="unfinished"></translation>
+        <translation>Αρχίζει</translation>
     </message>
     <message>
         <source>Ends</source>
-        <translation type="unfinished"></translation>
+        <translation>Τελειώνει</translation>
     </message>
     <message>
         <source>Remind Me</source>
-        <translation type="unfinished"></translation>
+        <translation>Υπενθύμισέ μου</translation>
     </message>
     <message>
         <source>Repeat</source>
@@ -353,15 +351,15 @@
     </message>
     <message>
         <source>End Repeat</source>
-        <translation type="unfinished"></translation>
+        <translation>Τέλος Επανάληψης</translation>
     </message>
     <message>
         <source>Ends:</source>
-        <translation type="unfinished"></translation>
+        <translation>Τελειώνει:</translation>
     </message>
     <message>
         <source>Description:</source>
-        <translation type="unfinished"></translation>
+        <translation>Περιγραφή:</translation>
     </message>
     <message>
         <source>Description</source>
@@ -369,15 +367,15 @@
     </message>
     <message>
         <source>Starts:</source>
-        <translation type="unfinished"></translation>
+        <translation>Αρχίζει:</translation>
     </message>
     <message>
         <source>Work</source>
-        <translation type="unfinished"></translation>
+        <translation>Εργασία</translation>
     </message>
     <message>
         <source>Life</source>
-        <translation type="unfinished"></translation>
+        <translation>Ζωή</translation>
     </message>
     <message>
         <source>Other</source>
@@ -396,7 +394,7 @@
     </message>
     <message>
         <source>D</source>
-        <translation type="unfinished"></translation>
+        <translation>Η</translation>
     </message>
 </context>
 <context>
@@ -411,11 +409,11 @@
     </message>
     <message>
         <source>You are deleting an event.</source>
-        <translation type="unfinished"></translation>
+        <translation>Διαγράφεις ένα συμβάν.</translation>
     </message>
     <message>
         <source>Are you sure you want to delete this event?</source>
-        <translation type="unfinished"></translation>
+        <translation>Είστε σίγουρος ότι θέλετε να διαγράψετε αυτό το συμβάν;</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -423,27 +421,27 @@
     </message>
     <message>
         <source>Do you want to delete all occurrences of this event, or only the selected occurrence?</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 περισσότερο</translation>
     </message>
     <message>
         <source>Delete All</source>
-        <translation type="unfinished"></translation>
+        <translation>Διαγραφή όλων</translation>
     </message>
     <message>
         <source>Delete Only This Event</source>
-        <translation type="unfinished"></translation>
+        <translation>Διαγραφή Μόνο Αυτού του Συμβάντος</translation>
     </message>
     <message>
         <source>Do you want to delete this and all future occurrences of this event, or only the selected occurrence?</source>
-        <translation type="unfinished"></translation>
+        <translation>Θέλετε να διαγράψετε αυτό και όλες τις μελλοντικές εμφανίσεις αυτού του συμβάντος ή μόνο το επιλεγμένο συμβάν;</translation>
     </message>
     <message>
         <source>Delete All Future Events</source>
-        <translation type="unfinished"></translation>
+        <translation>Διαγραφή Όλων των Μελλοντικών Συμβάντων</translation>
     </message>
     <message>
         <source>All Day</source>
-        <translation type="unfinished"></translation>
+        <translation>Ολοήμερο</translation>
     </message>
 </context>
 <context>
@@ -457,14 +455,14 @@
     <name>CScheduleView</name>
     <message>
         <source>ALL DAY</source>
-        <translation type="unfinished"></translation>
+        <translation>ΟΛΟΗΜΕΡΟ</translation>
     </message>
 </context>
 <context>
     <name>CWeekWindow</name>
     <message>
         <source>Week</source>
-        <translation type="unfinished"></translation>
+        <translation>Εβδομάδα</translation>
     </message>
     <message>
         <source>Y</source>
@@ -475,18 +473,18 @@
     <name>CYearSchceduleItem</name>
     <message>
         <source>All Day</source>
-        <translation type="unfinished"></translation>
+        <translation>Ολοήμερο</translation>
     </message>
 </context>
 <context>
     <name>CYearSchceduleView</name>
     <message>
         <source>All Day</source>
-        <translation type="unfinished"></translation>
+        <translation>Ολοήμερο</translation>
     </message>
     <message>
         <source>No event</source>
-        <translation type="unfinished"></translation>
+        <translation>Χωρίς συμβάν</translation>
     </message>
 </context>
 <context>
@@ -504,7 +502,7 @@
     </message>
     <message>
         <source>Calendar is a tool to view dates, and also a smart daily planner to schedule all things in life. </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -523,76 +521,69 @@
     </message>
     <message>
         <source>W</source>
-        <translation type="unfinished"></translation>
+        <translation>Β</translation>
     </message>
     <message>
         <source>D</source>
-        <translation type="unfinished"></translation>
+        <translation>Η</translation>
     </message>
 </context>
 <context>
     <name>CenterWidget</name>
     <message>
         <source>All Day</source>
-        <translation type="unfinished"></translation>
+        <translation>Ολοήμερο</translation>
     </message>
 </context>
 <context>
     <name>DragInfoGraphicsView</name>
     <message>
         <source>Edit</source>
-        <translation type="unfinished">Επεξεργασία</translation>
+        <translation>Επεξεργασία</translation>
     </message>
     <message>
         <source>Delete</source>
-        <translation type="unfinished">Διαγραφή</translation>
+        <translation>Διαγραφή</translation>
     </message>
     <message>
         <source>New event</source>
-        <translation type="unfinished"></translation>
+        <translation>Νέο συμβάν</translation>
     </message>
     <message>
         <source>You are deleting an event.</source>
-        <translation type="unfinished"></translation>
+        <translation>Διαγράφεις ένα συμβάν.</translation>
     </message>
     <message>
         <source>Are you sure you want to delete this event?</source>
-        <translation type="unfinished"></translation>
+        <translation>Είστε σίγουρος ότι θέλετε να διαγράψετε αυτό το συμβάν;</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished">Ακύρωση</translation>
+        <translation>Ακύρωση</translation>
     </message>
     <message>
         <source>Do you want to delete all occurrences of this event, or only the selected occurrence?</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 περισσότερο</translation>
     </message>
     <message>
         <source>Delete All</source>
-        <translation type="unfinished"></translation>
+        <translation>Διαγραφή όλων</translation>
     </message>
     <message>
         <source>Delete Only This Event</source>
-        <translation type="unfinished"></translation>
+        <translation>Διαγραφή Μόνο Αυτού του Συμβάντος</translation>
     </message>
     <message>
         <source>Do you want to delete this and all future occurrences of this event, or only the selected occurrence?</source>
-        <translation type="unfinished"></translation>
+        <translation>Θέλετε να διαγράψετε αυτό και όλες τις μελλοντικές εμφανίσεις αυτού του συμβάντος ή μόνο το επιλεγμένο συμβάν;</translation>
     </message>
     <message>
         <source>Delete All Future Events</source>
-        <translation type="unfinished"></translation>
+        <translation>Διαγραφή Όλων των Μελλοντικών Συμβάντων</translation>
     </message>
     <message>
         <source>New Event</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>InfoView</name>
-    <message>
-        <source>Today</source>
-        <translation>Σήμερα</translation>
+        <translation>Νέο Συμβάν</translation>
     </message>
 </context>
 <context>
@@ -619,7 +610,7 @@
     </message>
     <message>
         <source>Delete event</source>
-        <translation type="unfinished"></translation>
+        <translation>Διαγραφή συμβάντος</translation>
     </message>
     <message>
         <source>Copy</source>

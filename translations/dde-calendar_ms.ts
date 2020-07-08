@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="ms">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="ms" version="2.1">
 <context>
     <name>CDayMonthView</name>
     <message>
@@ -97,7 +95,7 @@
     <name>CMonthSchceduleNumButton</name>
     <message>
         <source>%1 more</source>
-        <translation type="unfinished">%1 lagi</translation>
+        <translation>%1 lagi</translation>
     </message>
 </context>
 <context>
@@ -337,15 +335,15 @@
     </message>
     <message>
         <source>Starts</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Ends</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Remind Me</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Repeat</source>
@@ -353,7 +351,7 @@
     </message>
     <message>
         <source>End Repeat</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Ends:</source>
@@ -457,7 +455,7 @@
     <name>CScheduleView</name>
     <message>
         <source>ALL DAY</source>
-        <translation type="unfinished"></translation>
+        <translation>SEPANJANG HARI</translation>
     </message>
 </context>
 <context>
@@ -541,58 +539,51 @@
     <name>DragInfoGraphicsView</name>
     <message>
         <source>Edit</source>
-        <translation type="unfinished">Sunting</translation>
+        <translation>Sunting</translation>
     </message>
     <message>
         <source>Delete</source>
-        <translation type="unfinished">Padam</translation>
+        <translation>Padam</translation>
     </message>
     <message>
         <source>New event</source>
-        <translation type="unfinished">Peristiwa baharu</translation>
+        <translation>Peristiwa baharu</translation>
     </message>
     <message>
         <source>You are deleting an event.</source>
-        <translation type="unfinished"></translation>
+        <translation>Anda telah memadam satu peristiwa.</translation>
     </message>
     <message>
         <source>Are you sure you want to delete this event?</source>
-        <translation type="unfinished">Anda pasti mahu memadam peristiwa ini?</translation>
+        <translation>Anda pasti mahu memadam peristiwa ini?</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished">Batal</translation>
+        <translation>Batal</translation>
     </message>
     <message>
         <source>Do you want to delete all occurrences of this event, or only the selected occurrence?</source>
-        <translation type="unfinished"></translation>
+        <translation>Anda pasti mahu memadam semua kemunculan peristiwa ini, atau hanya kemunculan terpilih?</translation>
     </message>
     <message>
         <source>Delete All</source>
-        <translation type="unfinished">Padam Semua</translation>
+        <translation>Padam Semua</translation>
     </message>
     <message>
         <source>Delete Only This Event</source>
-        <translation type="unfinished">Hanya Padam Peristiwa Ini</translation>
+        <translation>Hanya Padam Peristiwa Ini</translation>
     </message>
     <message>
         <source>Do you want to delete this and all future occurrences of this event, or only the selected occurrence?</source>
-        <translation type="unfinished"></translation>
+        <translation>Anda pasti mahu memadam peristiwa ini dan semua kemunculannya yang akan datang, atau hanya kemunculan terpilih?</translation>
     </message>
     <message>
         <source>Delete All Future Events</source>
-        <translation type="unfinished">Padam Semua Peristiwa Akan Datang</translation>
+        <translation>Padam Semua Peristiwa Akan Datang</translation>
     </message>
     <message>
         <source>New Event</source>
-        <translation type="unfinished">Peristiwa Baharu</translation>
-    </message>
-</context>
-<context>
-    <name>InfoView</name>
-    <message>
-        <source>Today</source>
-        <translation>Hari ini</translation>
+        <translation>Peristiwa Baharu</translation>
     </message>
 </context>
 <context>

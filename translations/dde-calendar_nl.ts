@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="nl">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="nl" version="2.1">
 <context>
     <name>CDayMonthView</name>
     <message>
@@ -97,7 +95,7 @@
     <name>CMonthSchceduleNumButton</name>
     <message>
         <source>%1 more</source>
-        <translation type="unfinished">%1 meer</translation>
+        <translation>%1 meer</translation>
     </message>
 </context>
 <context>
@@ -457,7 +455,7 @@
     <name>CScheduleView</name>
     <message>
         <source>ALL DAY</source>
-        <translation type="unfinished"></translation>
+        <translation>HELE DAG</translation>
     </message>
 </context>
 <context>
@@ -541,58 +539,51 @@
     <name>DragInfoGraphicsView</name>
     <message>
         <source>Edit</source>
-        <translation type="unfinished">Bewerken</translation>
+        <translation>Bewerken</translation>
     </message>
     <message>
         <source>Delete</source>
-        <translation type="unfinished">Verwijderen</translation>
+        <translation>Verwijderen</translation>
     </message>
     <message>
         <source>New event</source>
-        <translation type="unfinished">Nieuwe gebeurtenis</translation>
+        <translation>Nieuwe gebeurtenis</translation>
     </message>
     <message>
         <source>You are deleting an event.</source>
-        <translation type="unfinished">Je verwijdert een afspraak</translation>
+        <translation>Je verwijdert een afspraak</translation>
     </message>
     <message>
         <source>Are you sure you want to delete this event?</source>
-        <translation type="unfinished">Ben je zeker dat je deze afspraak wil verwijderen?</translation>
+        <translation>Ben je zeker dat je deze afspraak wil verwijderen?</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished">Annuleren</translation>
+        <translation>Annuleren</translation>
     </message>
     <message>
         <source>Do you want to delete all occurrences of this event, or only the selected occurrence?</source>
-        <translation type="unfinished"></translation>
+        <translation>Dit is een herhalende afspraak. Wil je alle afspraken verwijderen of enkel deze?</translation>
     </message>
     <message>
         <source>Delete All</source>
-        <translation type="unfinished">Verwijder ze allemaal</translation>
+        <translation>Verwijder ze allemaal</translation>
     </message>
     <message>
         <source>Delete Only This Event</source>
-        <translation type="unfinished">Verwijder enkel deze afspraak</translation>
+        <translation>Verwijder enkel deze afspraak</translation>
     </message>
     <message>
         <source>Do you want to delete this and all future occurrences of this event, or only the selected occurrence?</source>
-        <translation type="unfinished"></translation>
+        <translation>Wil je deze én toekomstige afspraken verwijderen, of enkel deze?</translation>
     </message>
     <message>
         <source>Delete All Future Events</source>
-        <translation type="unfinished">Verwijder alle toekomstige afspraken</translation>
+        <translation>Verwijder alle toekomstige afspraken</translation>
     </message>
     <message>
         <source>New Event</source>
-        <translation type="unfinished">Nieuwe afspraak</translation>
-    </message>
-</context>
-<context>
-    <name>InfoView</name>
-    <message>
-        <source>Today</source>
-        <translation>Vandaag</translation>
+        <translation>Nieuwe afspraak</translation>
     </message>
 </context>
 <context>

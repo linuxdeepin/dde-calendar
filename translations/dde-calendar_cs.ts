@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="cs">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="cs" version="2.1">
 <context>
     <name>CDayMonthView</name>
     <message>
@@ -74,7 +72,7 @@
     </message>
     <message>
         <source>Do you want to delete all occurrences of this event, or only the selected occurrence?</source>
-        <translation>Chcete smazat všechny výskyty této události, nebo jen vybraný výskyt?</translation>
+        <translation>Chcete smazat všechny výskyty této události, nebo jen ten vybraný?</translation>
     </message>
     <message>
         <source>Delete All</source>
@@ -86,7 +84,7 @@
     </message>
     <message>
         <source>Do you want to delete this and all future occurrences of this event, or only the selected occurrence?</source>
-        <translation>Chcete smazat tento a všechny výskyty této události, nebo jen vybraný výskyt?</translation>
+        <translation>Chcete smazat tento a všechny budoucí výskyty této události, nebo jen ten vybraný?</translation>
     </message>
     <message>
         <source>Delete All Future Events</source>
@@ -97,7 +95,7 @@
     <name>CMonthSchceduleNumButton</name>
     <message>
         <source>%1 more</source>
-        <translation type="unfinished">%1 více</translation>
+        <translation>%1 více</translation>
     </message>
 </context>
 <context>
@@ -457,7 +455,7 @@
     <name>CScheduleView</name>
     <message>
         <source>ALL DAY</source>
-        <translation type="unfinished"></translation>
+        <translation>CELÝ DEN</translation>
     </message>
 </context>
 <context>
@@ -541,58 +539,51 @@
     <name>DragInfoGraphicsView</name>
     <message>
         <source>Edit</source>
-        <translation type="unfinished">Upravit</translation>
+        <translation>Upravit</translation>
     </message>
     <message>
         <source>Delete</source>
-        <translation type="unfinished">Smazat</translation>
+        <translation>Smazat</translation>
     </message>
     <message>
         <source>New event</source>
-        <translation type="unfinished">Nová událost</translation>
+        <translation>Nová událost</translation>
     </message>
     <message>
         <source>You are deleting an event.</source>
-        <translation type="unfinished">Mažete událost.</translation>
+        <translation>Mažete událost.</translation>
     </message>
     <message>
         <source>Are you sure you want to delete this event?</source>
-        <translation type="unfinished">Opravdu chcete tuto událost smazat?</translation>
+        <translation>Opravdu chcete tuto událost smazat?</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished">Storno</translation>
+        <translation>Storno</translation>
     </message>
     <message>
         <source>Do you want to delete all occurrences of this event, or only the selected occurrence?</source>
-        <translation type="unfinished">Chcete smazat všechny výskyty této události, nebo jen vybraný výskyt?</translation>
+        <translation>Chcete smazat všechny výskyty této události, nebo jen ten vybraný?</translation>
     </message>
     <message>
         <source>Delete All</source>
-        <translation type="unfinished">Smazat vše</translation>
+        <translation>Smazat vše</translation>
     </message>
     <message>
         <source>Delete Only This Event</source>
-        <translation type="unfinished">Smazat jen tuto událost</translation>
+        <translation>Smazat jen tuto událost</translation>
     </message>
     <message>
         <source>Do you want to delete this and all future occurrences of this event, or only the selected occurrence?</source>
-        <translation type="unfinished">Chcete smazat tento a všechny výskyty této události, nebo jen vybraný výskyt?</translation>
+        <translation>Chcete smazat tento a všechny budoucí výskyty této události, nebo jen ten vybraný?</translation>
     </message>
     <message>
         <source>Delete All Future Events</source>
-        <translation type="unfinished">Smazat všechny budoucí události</translation>
+        <translation>Smazat všechny budoucí události</translation>
     </message>
     <message>
         <source>New Event</source>
-        <translation type="unfinished">Nová událost</translation>
-    </message>
-</context>
-<context>
-    <name>InfoView</name>
-    <message>
-        <source>Today</source>
-        <translation>Dnes</translation>
+        <translation>Nová událost</translation>
     </message>
 </context>
 <context>

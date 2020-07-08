@@ -22,12 +22,13 @@
 #include <QThread>
 #include <QDate>
 #include <QMutex>
+#include <DGuiApplicationHelper>
 
 #include "calendardbus.h"
 #include "schedulestructs.h"
 #include "dbusdatagetthread.h"
 
-
+DGUI_USE_NAMESPACE
 struct CSchedulesColor {
     int type;
     QColor gradientFromC;
@@ -61,6 +62,7 @@ public:
     CScheduleDataCtrl *getscheduleDataCtrl();
     CHuangliDayDataManage *getHuangliDayDataManage();
     CSchedulesColor getScheduleColorByType(int type);
+    QColor getSystemActiveColor();
     void setSearchResult(QVector<ScheduleDateRangeInfo> &vData);
     bool getSearchResult(ScheduleDtailInfo info);//true 高亮
     bool getSearchResult(QDate date);//true 高亮
