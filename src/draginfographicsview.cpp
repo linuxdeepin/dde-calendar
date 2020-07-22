@@ -22,6 +22,7 @@
 
 #include <DMenu>
 #include <QMimeData>
+#include <QMouseEvent>
 #include <QJsonParseError>
 #include <QJsonDocument>
 #include <QJsonObject>

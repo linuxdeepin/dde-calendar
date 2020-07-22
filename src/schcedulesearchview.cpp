@@ -28,6 +28,7 @@
 #include "schceduledlg.h"
 #include "scheduledatamanage.h"
 #include <DMessageBox>
+#include <QMouseEvent>
 #include <DPushButton>
 #include <DHiDPIHelper>
 #include <DPalette>
