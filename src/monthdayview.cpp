@@ -145,6 +145,8 @@ void CMonthWidget::resizeEvent(QResizeEvent *event)
 
 void CMonthWidget::mousePressEvent(QMouseEvent *event)
 {
+    if (event->button() ==Qt::RightButton)
+        return;
     int itemindex = getMousePosItem(event->pos());
     if (!(itemindex<0)) {
         if (m_MonthItem.at(itemindex)->getDate().year()<1900) {

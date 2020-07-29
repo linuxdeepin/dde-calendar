@@ -39,6 +39,7 @@ public slots:
     void slotnext();
 signals:
     void signalsSelectDate(QDate date, QDate currentDate);
+    void signalIsDragging(bool &isDragging);
 protected:
     void resizeEvent(QResizeEvent *event);
     void wheelEvent(QWheelEvent *event);

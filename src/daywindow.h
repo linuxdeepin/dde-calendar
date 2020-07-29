@@ -70,6 +70,7 @@ private slots:
     void slotcurrentDateLunarChanged(QDate date,  CaHuangLiDayInfo detail, int type = 0);
     void slotcurrentDateChanged(QDate date);
     void slotsearchDateSelect(QDate date);
+    void slotIsDragging(bool &isDragging);
 private:
     CDayMonthView     *m_daymonthView;
     DFrame *m_contentBackground = nullptr;

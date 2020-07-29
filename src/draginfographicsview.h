@@ -40,7 +40,9 @@ public:
 //鼠标位置
     enum PosInItem {LEFT,MIDDLE,RIGHT,TOP,BOTTOM};
     //鼠标移动状态
-    enum DragStatus {IsCreate,ChangeBegin,ChangeEnd,ChangeWhole,NONE};
+    enum DragStatus {IsCreate =0,ChangeBegin =1,ChangeEnd =2,ChangeWhole =3,NONE =4};
+
+    int getDragStatus() const;
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;

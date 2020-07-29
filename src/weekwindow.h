@@ -68,6 +68,7 @@ signals:
     void signalsViewSelectDate(QDate date);
 public slots:
     void slotReturnTodayUpdate();
+    void slotIsDragging(bool &isDragging);
 public slots:
     void slotupdateSchedule(int id = 0);
     void slotTransitSchedule(int id = 0);

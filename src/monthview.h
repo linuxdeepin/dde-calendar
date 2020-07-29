@@ -39,6 +39,10 @@ class CMonthView: public DWidget
     Q_OBJECT
 public:
     void setTheMe(int type = 0);
+    bool isDragging()const
+    {
+        return m_MonthGraphicsView->getDragStatus() !=4;
+    }
 public:
     explicit CMonthView(QWidget *parent = nullptr);
     ~CMonthView() Q_DECL_OVERRIDE;

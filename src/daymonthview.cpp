@@ -336,7 +336,10 @@ bool CDayMonthView::eventFilter(QObject *o, QEvent *e)
         if (e->type() == QEvent::Paint) {
             paintCell(cell);
         } else if (e->type() == QEvent::MouseButtonPress) {
-            cellClicked(cell);
+            QMouseEvent *mouseEvent = dynamic_cast<QMouseEvent *>(e);
+            if (mouseEvent->button() ==Qt::LeftButton) {
+                cellClicked(cell);
+            }
         }
     }
     return false;
@@ -882,6 +885,11 @@ void CDayMonthView::resizeEvent(QResizeEvent *event)
 
 void CDayMonthView::wheelEvent(QWheelEvent *event)
 {
+    //如果是拖拽则退出
+    bool isDragging = false;
+    emit signalIsDragging(isDragging);
+    if (isDragging)
+        return;
     if (event->delta() < 0) {
         m_currentDate = m_currentDate.addDays(1);
         if (m_currentDate == QDate::currentDate()) {

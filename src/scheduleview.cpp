@@ -146,6 +146,11 @@ void CScheduleView::updateHigh()
     m_alldaylist->updateHigh();
 }
 
+bool CScheduleView::IsDragging()
+{
+    return (m_graphicsView->getDragStatus()!=4) || (m_alldaylist->getDragStatus()!=4);
+}
+
 void CScheduleView::slotsupdatescheduleD(QVector<ScheduleDateRangeInfo> &data)
 {
     updateAllday();
@@ -386,6 +391,24 @@ void CScheduleView::paintEvent(QPaintEvent *event)
         }
         painter.restore();
     }
+
+//    painter.setBrush(Qt::red);
+//    const qreal radio = 8;
+//    QPainterPath path;
+////    const int path_x = this->x();
+////    const int path_y = this->y();
+////    const int path_
+//    path.moveTo(this->x(),this->y());
+//    path.lineTo(this->x(),this->height()-radio);
+//    path.arcTo(QRectF(this->width(),
+//                      this->height()-radio*2,
+//                      radio*2,radio*2),180,90);
+
+//    path.lineTo(this->width(),this->height());
+
+//    path.lineTo(this->width(),this->y());
+//    path.lineTo(this->x(),this->y());
+//    painter.drawPath(path);
     painter.end();
 }
 

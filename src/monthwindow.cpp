@@ -185,12 +185,16 @@ void CMonthWindow::clearSearch()
 
 void CMonthWindow::wheelEvent(QWheelEvent *e)
 {
-    QPoint numDegrees = e->angleDelta();
-    if (numDegrees.y()>0) {
-        nextMonth();
-    } else {
-        previousMonth();
+    //拖拽时禁用
+    if (!m_monthView->isDragging()) {
+        QPoint numDegrees = e->angleDelta();
+        if (numDegrees.y()>0) {
+            nextMonth();
+        } else {
+            previousMonth();
+        }
     }
+
 }
 
 void CMonthWindow::initUI()

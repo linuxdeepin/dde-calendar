@@ -45,6 +45,7 @@ public:
     void setTime(QTime time);
     void setSelectSchedule(const ScheduleDtailInfo &scheduleInfo);
     void updateHigh();
+    bool IsDragging();
 public slots:
     void slotsupdatescheduleD( QVector<ScheduleDateRangeInfo> &data);
 signals:

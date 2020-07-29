@@ -44,7 +44,7 @@ CSchceduleCtrlDlg::CSchceduleCtrlDlg(QWidget *parent) : DDialog(parent)
     }
 
     //setTitle(tr("My Schcedule"));
-    resize(403, 260);
+    resize(380, 260);
     setFocusPolicy(Qt::ClickFocus);
 }
 

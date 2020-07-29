@@ -261,6 +261,9 @@ void CDayWindow::initConnection()
             &CDayWindow::slotTransitSchedule);
     connect(m_daymonthView, &CDayMonthView::signalSchedulHide
             , this, &CDayWindow::slotScheduleHide);
+
+    connect(m_daymonthView,&CDayMonthView::signalIsDragging,
+            this,&CDayWindow::slotIsDragging);
     // connect(m_schceduleSearchView, &CSchceduleSearchView::signalsUpdateShcedule, this,
     // &CDayWindow::slotTransitSearchSchedule);
     // connect(m_schceduleSearchView, &CSchceduleSearchView::signalDate, this,
@@ -356,4 +359,9 @@ void CDayWindow::slotsearchDateSelect(QDate date)
 {
     setDate(date);
     slotupdateSchedule(1);
+}
+
+void CDayWindow::slotIsDragging(bool &isDragging)
+{
+    isDragging = m_scheduleView->IsDragging();
 }

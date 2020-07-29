@@ -258,6 +258,7 @@ void CWeekWindow::initConnection()
     connect(m_scheduleView, &CScheduleView::signalViewtransparentFrame, this, &CWeekWindow::signalViewtransparentFrame);
     connect(m_weekHeadView, &CWeekHeadView::signalsViewSelectDate, this, &CWeekWindow::signalsViewSelectDate);
     connect(m_weekHeadView, &CWeekHeadView::signaleSchedulHide, this, &CWeekWindow::slotScheduleHide);
+    connect(m_weekview,&CWeekView::signalIsDragging,this,&CWeekWindow::slotIsDragging);
     // connect(m_schceduleSearchView, &CSchceduleSearchView::signalsUpdateShcedule, this, &CWeekWindow::slotTransitSearchSchedule);
     // connect(m_schceduleSearchView, &CSchceduleSearchView::signalDate, this, &CWeekWindow::slotsearchDateSelect);
 
@@ -398,6 +399,11 @@ void CWeekWindow::updateHigh()
 void CWeekWindow::slotReturnTodayUpdate()
 {
     setDate(QDate::currentDate());
+}
+
+void CWeekWindow::slotIsDragging(bool &isDragging)
+{
+    isDragging = m_scheduleView->IsDragging();
 }
 
 void CWeekWindow::slotupdateSchedule(int id)

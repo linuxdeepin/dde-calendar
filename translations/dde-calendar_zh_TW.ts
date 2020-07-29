@@ -259,7 +259,7 @@
     </message>
     <message>
         <source>Type:</source>
-        <translation>Type:</translation>
+        <translation>類型：</translation>
     </message>
     <message>
         <source>All Day:</source>
@@ -327,7 +327,7 @@
     </message>
     <message>
         <source>Type</source>
-        <translation>Type</translation>
+        <translation>類型</translation>
     </message>
     <message>
         <source>All Day</source>
@@ -614,19 +614,19 @@
     </message>
     <message>
         <source>Copy</source>
-        <translation>Copy</translation>
+        <translation>複製</translation>
     </message>
     <message>
         <source>Cut</source>
-        <translation>Cut</translation>
+        <translation>剪下</translation>
     </message>
     <message>
         <source>Paste</source>
-        <translation>Paste</translation>
+        <translation>貼上</translation>
     </message>
     <message>
         <source>Select all</source>
-        <translation>Select all</translation>
+        <translation>全選</translation>
     </message>
     <message>
         <source>Delete</source>

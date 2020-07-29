@@ -227,12 +227,15 @@ bool CWeekView::eventFilter(QObject *o, QEvent *e)
         if (e->type() == QEvent::Paint) {
             paintCell(cell);
         } else if (e->type() == QEvent::MouseButtonPress) {
-            cellClicked(cell);
+            QMouseEvent *mouseEvent = dynamic_cast<QMouseEvent *>(e);
+            if (mouseEvent->button() ==Qt::LeftButton) {
+                cellClicked(cell);
+            }
         }
     }
-
     return false;
 }
+
 void CWeekView::cellClicked(QWidget *cell)
 {
     if (!m_cellSelectable)
@@ -345,9 +348,17 @@ void CWeekView::resizeEvent(QResizeEvent *event)
 }
 void CWeekView::wheelEvent(QWheelEvent *event)
 {
-    if (event->delta() < 0) {
-        slotnext();
-    } else {
-        slotprev();
+    Q_UNUSED(event);
+    bool isDragging = false;
+    //
+    emit signalIsDragging(isDragging);
+    //判断是否是拖拽状态
+    if (!isDragging) {
+        if (event->delta() < 0) {
+            slotnext();
+        } else {
+            slotprev();
+        }
     }
+
 }

@@ -41,7 +41,7 @@ CMySchceduleView::CMySchceduleView(const ScheduleDtailInfo &schduleInfo,QWidget 
     initUI();
     initConnection();
     //setTitle(tr("My Schcedule"));
-    setFixedSize(403, 160);
+    setFixedSize(380, 160);
     int themetype = CScheduleDataManage::getScheduleDataManage()->getTheme();
     if (themetype == 2) {
         DPalette anipa = palette();
@@ -80,14 +80,14 @@ void CMySchceduleView::AutoFeed(QString text)
     QString str;
     int h = fm.height();
     strList.clear();
-    if (titlewidth < 340) {
+    if (titlewidth < 330) {
         strList.append(strText);
         resultStr += strText;
 //        m_schceduleLabel->setFixedHeight(h);
     } else {
         for (int i = 0; i < strText.count(); i++) {
             str += strText.at(i);
-            if (fm.width(str) > 340) {
+            if (fm.width(str) > 330) {
                 str.remove(str.count() - 1,1);
                 strList.append(str);
                 resultStr += str + "\n";
@@ -437,8 +437,7 @@ void CMySchceduleView::initUI()
     m_Title->setPalette(titlepa);
     m_Title->setFont(labelTitle);
     m_Title->setText(tr("My Event"));
-    m_Title->move(148, 0);
-    m_Title->setAlignment(Qt::AlignCenter);
+    m_Title->move(137, 0);
 
 
 
@@ -449,7 +448,7 @@ void CMySchceduleView::initUI()
 
     area = new QScrollArea (this);
     area->setFrameShape(QFrame::NoFrame);
-    area->setFixedWidth(376);
+    area->setFixedWidth(363);
     DPalette pa = area->palette();
     if (themetype == 0 || themetype == 1) {
         pa.setColor(DPalette::WindowText, QColor("#2C4767"));
@@ -474,7 +473,7 @@ void CMySchceduleView::initUI()
 //    m_schceduleLabel->setWordWrap(true);
     m_schceduleLabel->setTextFormat(Qt::PlainText);//纯文本格式
     m_schceduleLabel->installEventFilter(this);
-    m_schceduleLabel->setFixedWidth(340);
+    m_schceduleLabel->setFixedWidth(330);
     m_schceduleLabel->setAlignment(Qt::AlignCenter);
     DFontSizeManager::instance()->bind(m_schceduleLabel,DFontSizeManager::T6);
 //    QFont labelF;
