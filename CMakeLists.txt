@@ -102,8 +102,8 @@ install(TARGETS dde-calendar DESTINATION bin)
 
 file(GLOB APP_QM_FILES "translations/*.qm")
 
-#install(FILES /usr/share/icons/bloom/apps/96/dde-calendar.svg
-#        DESTINATION /share/icons/hicolor/scalable/apps/)
+install(FILES assets/resources/icon/dde-calendar.svg
+        DESTINATION share/icons/hicolor/scalable/apps)
 install(FILES ${APP_QM_FILES} DESTINATION share/dde-calendar/translations)
 install(FILES ${APP_DESKTOP} DESTINATION share/applications)
 install(FILES ${APP_SERVICE} DESTINATION share/dbus-1/services)
