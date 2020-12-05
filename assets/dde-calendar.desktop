@@ -1,5 +1,6 @@
 [Desktop Entry]
 Categories=Application;Utility;Calendar;
+Keywords=calendar;date;deepin;dde;
 Comment=Calendar is a date tool.
 Exec=dde-calendar
 GenericName=Calendar
