@@ -77,6 +77,7 @@ typedef struct _tagScheduleDtailInfo {
     {
         type.ID = -1;
     }
+
     bool operator ==(const _tagScheduleDtailInfo &info)const
     {
         if (info.type.ID ==4) {
@@ -88,6 +89,7 @@ typedef struct _tagScheduleDtailInfo {
                    titleName == info.titleName;
         }
     }
+
     bool operator <(const _tagScheduleDtailInfo &info)const
     {
         if (beginDateTime.date() != endDateTime.date() &&
@@ -127,6 +129,7 @@ typedef struct _tagMScheduleDateRangeInfo {
     bool state;
     int  num;
     ScheduleDtailInfo tData;
+
     bool operator <(const _tagMScheduleDateRangeInfo &info)const
     {
         if (bdate == info.bdate) {
@@ -139,6 +142,7 @@ typedef struct _tagMScheduleDateRangeInfo {
             return bdate<info.bdate;
         }
     }
+
     bool operator ==(const _tagMScheduleDateRangeInfo &info)const
     {
         return bdate == info.bdate &&

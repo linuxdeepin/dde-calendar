@@ -22,19 +22,21 @@
 #include "configsettings.h"
 
 #include <DSettingsOption>
+#include <DStandardPaths>
 
 #include <QFile>
 #include <QFileInfo>
-#include <qsettingbackend.h>
-
 #include <QDebug>
 #include <QCoreApplication>
-#include <DStandardPaths>
+
+#include <qsettingbackend.h>
+
 DCORE_USE_NAMESPACE;
+
 QPointer<QSettings> CConfigSettings::m_settings = nullptr;
 
-CConfigSettings::CConfigSettings(QObject *parent) :
-    QObject(parent)
+CConfigSettings::CConfigSettings(QObject *parent)
+    : QObject(parent)
 {
 
 }

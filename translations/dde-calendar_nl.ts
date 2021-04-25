@@ -60,11 +60,11 @@
     </message>
     <message>
         <source>You are deleting an event.</source>
-        <translation>Je verwijdert een afspraak</translation>
+        <translation>Je verwijdert een afspraak.</translation>
     </message>
     <message>
         <source>Are you sure you want to delete this event?</source>
-        <translation>Ben je zeker dat je deze afspraak wil verwijderen?</translation>
+        <translation>Weet je zeker dat je deze afspraak wilt verwijderen?</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -72,37 +72,37 @@
     </message>
     <message>
         <source>Do you want to delete all occurrences of this event, or only the selected occurrence?</source>
-        <translation>Dit is een herhalende afspraak. Wil je alle afspraken verwijderen of enkel deze?</translation>
+        <translation>Wil je alle afspraken in de reeks verwijderen of enkel deze?</translation>
     </message>
     <message>
         <source>Delete All</source>
-        <translation>Verwijder ze allemaal</translation>
+        <translation>Reeks verwijderen</translation>
     </message>
     <message>
         <source>Delete Only This Event</source>
-        <translation>Verwijder enkel deze afspraak</translation>
+        <translation>Deze afspraak verwijderen</translation>
     </message>
     <message>
         <source>Do you want to delete this and all future occurrences of this event, or only the selected occurrence?</source>
-        <translation>Wil je deze én toekomstige afspraken verwijderen, of enkel deze?</translation>
+        <translation>Wil je deze en toekomstige afspraken verwijderen of enkel deze?</translation>
     </message>
     <message>
         <source>Delete All Future Events</source>
-        <translation>Verwijder alle toekomstige afspraken</translation>
+        <translation>Toekomstige afspraken verwijderen</translation>
     </message>
 </context>
 <context>
     <name>CMonthSchceduleNumButton</name>
     <message>
         <source>%1 more</source>
-        <translation>%1 meer</translation>
+        <translation>Nog %1 andere</translation>
     </message>
 </context>
 <context>
     <name>CMonthView</name>
     <message>
         <source>New event</source>
-        <translation>Nieuwe gebeurtenis</translation>
+        <translation>Nieuwe afspraak</translation>
     </message>
     <message>
         <source>New Event</source>
@@ -120,11 +120,11 @@
     <name>CMySchceduleView</name>
     <message>
         <source>You are deleting an event.</source>
-        <translation>Je verwijdert een afspraak</translation>
+        <translation>Je verwijdert een afspraak.</translation>
     </message>
     <message>
         <source>Are you sure you want to delete this event?</source>
-        <translation>Ben je zeker dat je deze afspraak wil verwijderen?</translation>
+        <translation>Weet je zeker dat je deze afspraak wilt verwijderen?</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -136,19 +136,19 @@
     </message>
     <message>
         <source>Do you want to delete all occurrences of this event, or only the selected occurrence?</source>
-        <translation>Dit is een herhalende afspraak. Wil je alle afspraken verwijderen of enkel deze?</translation>
+        <translation>Wil je alle afspraken in de reeks verwijderen of enkel deze?</translation>
     </message>
     <message>
         <source>Delete All</source>
-        <translation>Verwijder ze allemaal</translation>
+        <translation>Reeks verwijderen</translation>
     </message>
     <message>
         <source>Delete Only This Event</source>
-        <translation>Verwijder enkel deze afspraak</translation>
+        <translation>Deze afspraak verwijderen</translation>
     </message>
     <message>
         <source>Do you want to delete this and all future occurrences of this event, or only the selected occurrence?</source>
-        <translation>Wil je deze én toekomstige afspraken verwijderen, of enkel deze?</translation>
+        <translation>Wil je deze en toekomstige afspraken verwijderen of enkel deze?</translation>
     </message>
     <message>
         <source>My Event</source>
@@ -156,7 +156,7 @@
     </message>
     <message>
         <source>Edit</source>
-        <translation>Bewerken</translation>
+        <translation>Aanpassen</translation>
     </message>
     <message>
         <source>OK</source>
@@ -164,7 +164,7 @@
     </message>
     <message>
         <source>Delete All Future Events</source>
-        <translation>Verwijder alle toekomstige afspraken</translation>
+        <translation>Toekomstige afspraken verwijderen</translation>
     </message>
 </context>
 <context>
@@ -175,15 +175,15 @@
     </message>
     <message>
         <source>Edit Event</source>
-        <translation>Afspraak bewerken</translation>
+        <translation>Afspraak aanpassen</translation>
     </message>
     <message>
         <source>All occurrences of a repeating event must have the same all-day status.</source>
-        <translation>Alle herhalende afspraken moeten dezelfde &apos;hele dag&apos; status hebben</translation>
+        <translation>Alle afspraken in reeks moeten voorzien zijn van de status &apos;hele dag&apos;.</translation>
     </message>
     <message>
         <source>Do you want to change all occurrences?</source>
-        <translation>Wil je alle herhalende afspraken wijzigen?</translation>
+        <translation>Wil je alle afspraken in de reeks aanpassen?</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -191,35 +191,35 @@
     </message>
     <message>
         <source>Change All</source>
-        <translation>Wijzig alle</translation>
+        <translation>Reeks aanpassen</translation>
     </message>
     <message>
         <source>You are changing the repeating rule of this event.</source>
-        <translation>Je wijzigt de herhaalinstellingen voor deze afspraak</translation>
+        <translation>Je past de herhaalinstellingen van deze afspraak aan.</translation>
     </message>
     <message>
         <source>You are changing a repeating event.</source>
-        <translation>Je wijzigt een herhalende afspraak.</translation>
+        <translation>Je past een reeks afspraken aan.</translation>
     </message>
     <message>
         <source>Do you want to change only this occurrence of the event, or all occurrences?</source>
-        <translation>Wil je deze én toekomstige afspraken wijzigen, of enkel de deze?</translation>
+        <translation>Wil je deze en toekomstige afspraken aanpassen of enkel deze?</translation>
     </message>
     <message>
         <source>All</source>
-        <translation>Alle afspraken</translation>
+        <translation>Reeks</translation>
     </message>
     <message>
         <source>Only This Event</source>
-        <translation>Enkel deze afspraak</translation>
+        <translation>Deze afspraak</translation>
     </message>
     <message>
         <source>Do you want to change only this occurrence of the event, or this and all future occurrences?</source>
-        <translation>Wil je deze én toekomstige afspraken wijzigen, of enkel deze?</translation>
+        <translation>Wil je deze en toekomstige afspraken aanpassen of enkel deze?</translation>
     </message>
     <message>
         <source>All Future Events</source>
-        <translation>Alle toekomstige afspraken</translation>
+        <translation>Toekomstige afspraken</translation>
     </message>
     <message>
         <source>Never</source>
@@ -227,31 +227,31 @@
     </message>
     <message>
         <source>At time of event</source>
-        <translation>Bij de start</translation>
+        <translation>Bij aanvang</translation>
     </message>
     <message>
         <source>15 minutes before</source>
-        <translation>15 minuten voordien</translation>
+        <translation>15 minuten van tevoren</translation>
     </message>
     <message>
         <source>30 minutes before</source>
-        <translation>30 minuten voordien</translation>
+        <translation>30 minuten van tevoren</translation>
     </message>
     <message>
         <source>1 hour before</source>
-        <translation>1 uur voordien</translation>
+        <translation>1 uur van tevoren</translation>
     </message>
     <message>
         <source>1 day before</source>
-        <translation>1 dag voordien</translation>
+        <translation>1 dag van tevoren</translation>
     </message>
     <message>
         <source>2 days before</source>
-        <translation>2 dagen voordien</translation>
+        <translation>2 dagen van tevoren</translation>
     </message>
     <message>
         <source>1 week before</source>
-        <translation>1 week voordien</translation>
+        <translation>1 week van tevoren</translation>
     </message>
     <message>
         <source>On start day (9:00 AM)</source>
@@ -267,11 +267,11 @@
     </message>
     <message>
         <source>Remind Me:</source>
-        <translation>Herinner me:</translation>
+        <translation>Herinneren:</translation>
     </message>
     <message>
         <source>Repeat:</source>
-        <translation>Herhaal:</translation>
+        <translation>Herhalen:</translation>
     </message>
     <message>
         <source>Daily</source>
@@ -279,7 +279,7 @@
     </message>
     <message>
         <source>Weekdays</source>
-        <translation>Weekdagen</translation>
+        <translation>Werkdagen</translation>
     </message>
     <message>
         <source>Weekly</source>
@@ -295,7 +295,7 @@
     </message>
     <message>
         <source>End Repeat:</source>
-        <translation>Stop herhaling:</translation>
+        <translation>Herhaling eindigt op:</translation>
     </message>
     <message>
         <source>After</source>
@@ -303,7 +303,7 @@
     </message>
     <message>
         <source>On</source>
-        <translation>Aan</translation>
+        <translation>Op</translation>
     </message>
     <message>
         <source>time(s)</source>
@@ -315,11 +315,11 @@
     </message>
     <message>
         <source>New event</source>
-        <translation>Nieuwe gebeurtenis</translation>
+        <translation>Nieuwe afspraak</translation>
     </message>
     <message>
         <source>End time must be greater than start time</source>
-        <translation>Eindtijd moet later zijn dan begintijd</translation>
+        <translation>De eindtijd moet later zijn dan de begintijd</translation>
     </message>
     <message>
         <source>OK</source>
@@ -327,7 +327,7 @@
     </message>
     <message>
         <source>Type</source>
-        <translation>Type</translation>
+        <translation>Soort</translation>
     </message>
     <message>
         <source>All Day</source>
@@ -335,15 +335,15 @@
     </message>
     <message>
         <source>Starts</source>
-        <translation>Begin</translation>
+        <translation>Begint om</translation>
     </message>
     <message>
         <source>Ends</source>
-        <translation>einde</translation>
+        <translation>Eindigt om</translation>
     </message>
     <message>
         <source>Remind Me</source>
-        <translation>Herinner me</translation>
+        <translation>Herinneren</translation>
     </message>
     <message>
         <source>Repeat</source>
@@ -351,7 +351,7 @@
     </message>
     <message>
         <source>End Repeat</source>
-        <translation>Stop herhaling</translation>
+        <translation>Herhaling stoppen</translation>
     </message>
     <message>
         <source>Ends:</source>
@@ -401,7 +401,7 @@
     <name>CSchceduleSearchItem</name>
     <message>
         <source>Edit</source>
-        <translation>Bewerken</translation>
+        <translation>Aanpassen</translation>
     </message>
     <message>
         <source>Delete</source>
@@ -409,11 +409,11 @@
     </message>
     <message>
         <source>You are deleting an event.</source>
-        <translation>Je verwijdert een afspraak</translation>
+        <translation>Je verwijdert een afspraak.</translation>
     </message>
     <message>
         <source>Are you sure you want to delete this event?</source>
-        <translation>Ben je zeker dat je deze afspraak wil verwijderen?</translation>
+        <translation>Weet je zeker dat je deze afspraak wilt verwijderen?</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -421,23 +421,23 @@
     </message>
     <message>
         <source>Do you want to delete all occurrences of this event, or only the selected occurrence?</source>
-        <translation>Dit is een terugkerende afspraak. Wil je alle afspraken verwijderen of enkel deze?</translation>
+        <translation>Wil je alle afspraken in de reeks verwijderen of enkel deze?</translation>
     </message>
     <message>
         <source>Delete All</source>
-        <translation>Verwijder ze allemaal</translation>
+        <translation>Reeks verwijderen</translation>
     </message>
     <message>
         <source>Delete Only This Event</source>
-        <translation>Verwijder enkel deze afspraak</translation>
+        <translation>Deze afspraak verwijderen</translation>
     </message>
     <message>
         <source>Do you want to delete this and all future occurrences of this event, or only the selected occurrence?</source>
-        <translation>Wil je deze én toekomstige afspraken verwijderen, of enkel de deze?</translation>
+        <translation>Wil je deze en toekomstige afspraken verwijderen of enkel de deze?</translation>
     </message>
     <message>
         <source>Delete All Future Events</source>
-        <translation>Verwijder alle toekomstige afspraken</translation>
+        <translation>Toekomstige afspraken verwijderen</translation>
     </message>
     <message>
         <source>All Day</source>
@@ -502,7 +502,7 @@
     </message>
     <message>
         <source>Calendar is a tool to view dates, and also a smart daily planner to schedule all things in life. </source>
-        <translation>Calendar is een applicatie om je afspraken en planning te beheren, voor je werk én privé.</translation>
+        <translation>Met Kalender kun je je afspraken en planning beheren, zowel werk als privé.</translation>
     </message>
 </context>
 <context>
@@ -539,7 +539,7 @@
     <name>DragInfoGraphicsView</name>
     <message>
         <source>Edit</source>
-        <translation>Bewerken</translation>
+        <translation>Aanpassen</translation>
     </message>
     <message>
         <source>Delete</source>
@@ -547,15 +547,15 @@
     </message>
     <message>
         <source>New event</source>
-        <translation>Nieuwe gebeurtenis</translation>
+        <translation>Nieuwe afspraak</translation>
     </message>
     <message>
         <source>You are deleting an event.</source>
-        <translation>Je verwijdert een afspraak</translation>
+        <translation>Je verwijdert een afspraak.</translation>
     </message>
     <message>
         <source>Are you sure you want to delete this event?</source>
-        <translation>Ben je zeker dat je deze afspraak wil verwijderen?</translation>
+        <translation>Weet je zeker dat je deze afspraak wilt verwijderen?</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -563,23 +563,23 @@
     </message>
     <message>
         <source>Do you want to delete all occurrences of this event, or only the selected occurrence?</source>
-        <translation>Dit is een herhalende afspraak. Wil je alle afspraken verwijderen of enkel deze?</translation>
+        <translation>Wil je alle afspraken in de reeks verwijderen of enkel deze?</translation>
     </message>
     <message>
         <source>Delete All</source>
-        <translation>Verwijder ze allemaal</translation>
+        <translation>Reeks verwijderen</translation>
     </message>
     <message>
         <source>Delete Only This Event</source>
-        <translation>Verwijder enkel deze afspraak</translation>
+        <translation>Deze afspraak verwijderen</translation>
     </message>
     <message>
         <source>Do you want to delete this and all future occurrences of this event, or only the selected occurrence?</source>
-        <translation>Wil je deze én toekomstige afspraken verwijderen, of enkel deze?</translation>
+        <translation>Wil je deze en toekomstige afspraken verwijderen of enkel deze?</translation>
     </message>
     <message>
         <source>Delete All Future Events</source>
-        <translation>Verwijder alle toekomstige afspraken</translation>
+        <translation>Toekomstige afspraken verwijderen</translation>
     </message>
     <message>
         <source>New Event</source>
@@ -610,7 +610,7 @@
     </message>
     <message>
         <source>Delete event</source>
-        <translation>Verwijder afspraak</translation>
+        <translation>Afspraak verwijderen</translation>
     </message>
     <message>
         <source>Copy</source>

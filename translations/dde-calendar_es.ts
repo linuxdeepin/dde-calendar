@@ -375,7 +375,7 @@
     </message>
     <message>
         <source>Life</source>
-        <translation>Vida</translation>
+        <translation>Personal</translation>
     </message>
     <message>
         <source>Other</source>
@@ -502,7 +502,7 @@
     </message>
     <message>
         <source>Calendar is a tool to view dates, and also a smart daily planner to schedule all things in life. </source>
-        <translation>Calendario es una herramienta para ver fechas, y también un inteligente planificador para programar todas las cosas en la vida.</translation>
+        <translation>Calendario de Deepin es una herramienta para consultar fechas, y un conveniente planificador para agendar sus reuniones y eventos.</translation>
     </message>
 </context>
 <context>
@@ -521,7 +521,7 @@
     </message>
     <message>
         <source>W</source>
-        <translation>W</translation>
+        <translation>S</translation>
     </message>
     <message>
         <source>D</source>

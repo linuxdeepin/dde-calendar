@@ -259,19 +259,19 @@
     </message>
     <message>
         <source>Type:</source>
-        <translation>Type:</translation>
+        <translation>Type :</translation>
     </message>
     <message>
         <source>All Day:</source>
-        <translation>Toute la journée:</translation>
+        <translation>Toute la journée :</translation>
     </message>
     <message>
         <source>Remind Me:</source>
-        <translation>Rappelez-moi:</translation>
+        <translation>Rappelez-moi :</translation>
     </message>
     <message>
         <source>Repeat:</source>
-        <translation>Répéter:</translation>
+        <translation>Répéter :</translation>
     </message>
     <message>
         <source>Daily</source>
@@ -295,7 +295,7 @@
     </message>
     <message>
         <source>End Repeat:</source>
-        <translation>Fin de répétition:</translation>
+        <translation>Fin de répétition :</translation>
     </message>
     <message>
         <source>After</source>
@@ -355,11 +355,11 @@
     </message>
     <message>
         <source>Ends:</source>
-        <translation>Fin:</translation>
+        <translation>Fin :</translation>
     </message>
     <message>
         <source>Description:</source>
-        <translation>Description:</translation>
+        <translation>Description :</translation>
     </message>
     <message>
         <source>Description</source>
@@ -367,7 +367,7 @@
     </message>
     <message>
         <source>Starts:</source>
-        <translation>Départs:</translation>
+        <translation>Départs :</translation>
     </message>
     <message>
         <source>Work</source>

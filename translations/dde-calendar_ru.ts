@@ -335,11 +335,11 @@
     </message>
     <message>
         <source>Starts</source>
-        <translation>Начинается</translation>
+        <translation>Начало</translation>
     </message>
     <message>
         <source>Ends</source>
-        <translation>Заканчивается</translation>
+        <translation>Завершение</translation>
     </message>
     <message>
         <source>Remind Me</source>

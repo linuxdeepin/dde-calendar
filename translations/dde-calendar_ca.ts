@@ -124,7 +124,7 @@
     </message>
     <message>
         <source>Are you sure you want to delete this event?</source>
-        <translation>Esteu segur que voleu suprimir aquest esdeveniment?</translation>
+        <translation>Segur que voleu eliminar aquest esdeveniment?</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -413,7 +413,7 @@
     </message>
     <message>
         <source>Are you sure you want to delete this event?</source>
-        <translation>Esteu segur que voleu suprimir aquest esdeveniment?</translation>
+        <translation>Segur que voleu eliminar aquest esdeveniment?</translation>
     </message>
     <message>
         <source>Cancel</source>

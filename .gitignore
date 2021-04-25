@@ -37,3 +37,4 @@ debian/files
 debian/files
 debian/dde-calendar.substvars
 CMakeLists.txt.user
+*.user.*

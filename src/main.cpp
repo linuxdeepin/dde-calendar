@@ -18,19 +18,20 @@
  */
 
 #include "environments.h"
+#include "calendarmainwindow.h"
+#include "exportedinterface.h"
+#include "configsettings.h"
+#include "accessible/accessible.h"
+
+#include <DApplication>
+#include <DLog>
+#include <DHiDPIHelper>
 
 #include <QFile>
 #include <QDebug>
 #include <QDesktopWidget>
 #include <QDBusConnection>
-#include <DApplication>
-#include <DLog>
-#include <DHiDPIHelper>
-#include "calendarmainwindow.h"
-//#include "monthwindow.h"
-#include "yearwindow.h"
-#include "exportedinterface.h"
-#include "configsettings.h"
+
 DWIDGET_USE_NAMESPACE
 DCORE_USE_NAMESPACE
 /**********************复制部分**************************/
@@ -89,6 +90,7 @@ QString GetStyleSheetContent()
 {
     QFile file(":/resources/dde-calendar.qss");
     bool result = file.open(QFile::ReadOnly);
+
     if (result) {
         QString content(file.readAll());
         file.close();
@@ -101,19 +103,16 @@ QString GetStyleSheetContent()
 #include "schedulesdbus.h"
 int main(int argc, char *argv[])
 {
-    //DApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
-    DApplication::loadDXcbPlugin();
     DApplication a(argc, argv);
+    QAccessible::installFactory(accessibleFactory);
     g_appPath = QDir::homePath() + QDir::separator() + "." + qApp->applicationName();
     QDir t_appDir;
     t_appDir.mkpath(g_appPath);
     a.setOrganizationName("deepin");
     a.setApplicationName("dde-calendar");
     a.loadTranslator();
-    //QLocale::setDefault(QLocale(QLocale::C, QLocale::UnitedStates));
     a.setApplicationVersion(VERSION);
-    //QList<QLocale> localeFallback = QList<QLocale>() << QLocale::system();
     // meta information that necessary to create the about dialog.
     a.setProductName(QApplication::translate("CalendarWindow", "Calendar"));
     QIcon t_icon = QIcon::fromTheme("dde-calendar");
@@ -121,8 +120,8 @@ int main(int argc, char *argv[])
     a.setApplicationDescription(QApplication::translate("CalendarWindow", "Calendar is a tool to view dates, and also a smart daily planner to schedule all things in life. "));
     a.setApplicationAcknowledgementPage("https://www.deepin.org/acknowledgments/dde-calendar");
 
+    DGuiApplicationHelper::setSingleInstanceInterval(-1);
 
-    DGuiApplicationHelper::setSingelInstanceInterval(-1);
     if (!DGuiApplicationHelper::instance()->setSingleInstance(
                 a.applicationName(),
                 DGuiApplicationHelper::UserScope)) {
@@ -137,6 +136,7 @@ int main(int argc, char *argv[])
     // set theme
     bool isOk = false;
     int viewtype = CConfigSettings::value("base.view").toInt(&isOk);
+
     if (!isOk)
         viewtype = 2;
     DLogManager::registerConsoleAppender();
@@ -153,14 +153,10 @@ int main(int argc, char *argv[])
     QDBusConnection dbus = QDBusConnection::sessionBus();
     dbus.registerService("com.deepin.Calendar");
     dbus.registerObject("/com/deepin/Calendar", &ww);
-    //ww.setDate(QDate::currentDate());
     ww.slotTheme(getThemeTypeSetting());
     ww.viewWindow(viewtype, QDateTime::currentDateTime());
     ww.show();
 
-    //QDBusConnection dbus = QDBusConnection::sessionBus();
-    //dbus.registerService("com.deepin.Calendar");
-    //dbus.registerObject("/com/deepin/Calendar", &ww);
     //监听当前应用主题切换事件
     QObject::connect(DGuiApplicationHelper::instance(), &DGuiApplicationHelper::paletteTypeChanged,
     [] (DGuiApplicationHelper::ColorType type) {
@@ -169,10 +165,5 @@ int main(int argc, char *argv[])
         saveThemeTypeSetting(type);
         DGuiApplicationHelper::instance()->setPaletteType(type);
     });
-//    if (dbus.registerService("com.deepin.Calendar"), QDBusConnectionInterface::ReplaceExistingService, QDBusConnectionInterface::AllowReplacement) {
-
-
-//        return a.exec();
-//    }
     return a.exec();
 }

@@ -22,6 +22,7 @@
 #pragma once
 
 #include "singleton.h"
+
 #include <QSettings>
 
 class CConfigSettings : public QObject, public DCalendar::DSingleton<CConfigSettings>

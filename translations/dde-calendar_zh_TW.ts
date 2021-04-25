@@ -247,7 +247,7 @@
     </message>
     <message>
         <source>2 days before</source>
-        <translation>1天前</translation>
+        <translation>2天前</translation>
     </message>
     <message>
         <source>1 week before</source>
@@ -303,7 +303,7 @@
     </message>
     <message>
         <source>On</source>
-        <translation>開啟</translation>
+        <translation>於日期</translation>
     </message>
     <message>
         <source>time(s)</source>
@@ -379,7 +379,7 @@
     </message>
     <message>
         <source>Other</source>
-        <translation>其它</translation>
+        <translation>其他</translation>
     </message>
 </context>
 <context>
@@ -591,7 +591,7 @@
     <message>
         <source>Today</source>
         <comment>Return</comment>
-        <translation>同一日</translation>
+        <translation>今天</translation>
     </message>
 </context>
 <context>
@@ -599,7 +599,7 @@
     <message>
         <source>Today</source>
         <comment>Return Today</comment>
-        <translation>同一日</translation>
+        <translation>今天</translation>
     </message>
 </context>
 <context>
@@ -645,7 +645,7 @@
     <message>
         <source>Today</source>
         <comment>Today</comment>
-        <translation>同一日</translation>
+        <translation>今天</translation>
     </message>
 </context>
 </TS>

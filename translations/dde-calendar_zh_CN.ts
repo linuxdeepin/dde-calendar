@@ -27,7 +27,7 @@
     </message>
     <message>
         <source>Sunday</source>
-        <translation>星期日</translation>
+        <translation>星期天</translation>
     </message>
 </context>
 <context>

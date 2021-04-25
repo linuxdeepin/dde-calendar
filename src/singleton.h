@@ -24,8 +24,7 @@
 
 using namespace std;
 
-namespace DCalendar
-{
+namespace DCalendar {
 
 template <class T>
 class DSingleton
@@ -33,10 +32,9 @@ class DSingleton
 public:
     static inline T *instance()
     {
-        static T*  _instance = new T;
+        static T *_instance = new T;
         return _instance;
     }
-
 protected:
     DSingleton(void) {}
     ~DSingleton(void) {}
@@ -47,4 +45,4 @@ protected:
     }
 };
 
-}
+} // namespace DCalendar
