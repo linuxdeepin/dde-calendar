@@ -291,7 +291,6 @@ void CDayWindow::initUI()
     m_mainLayout = new QHBoxLayout;
     m_mainLayout->setMargin(0);
     m_mainLayout->setSpacing(0);
-    m_mainLayout->setContentsMargins(10, 10, 10, 10);
     m_mainLayout->addWidget(m_leftground);
 
     this->setLayout(m_mainLayout);
@@ -370,11 +369,6 @@ void CDayWindow::resizeEvent(QResizeEvent *event)
     qreal dw = 0.4 * width();
     int dh = height() - 20;
 
-    if (m_searchFlag) {
-        m_mainLayout->setContentsMargins(10, 10, 0, 10);
-    } else {
-        m_mainLayout->setContentsMargins(10, 10, 10, 10);
-    }
     m_daymonthView->setFixedSize(qRound(dw), dh);
 }
 

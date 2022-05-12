@@ -32,6 +32,12 @@
 CTitleWidget::CTitleWidget(QWidget *parent)
     : QWidget(parent)
 {
+    m_sidebarIcon = new DIconButton(this);
+    m_sidebarIcon->setFixedSize(QSize(36, 36));
+    m_sidebarIcon->setIconSize(QSize(16, 16));
+    setSidebarStatus(true);
+    connect(m_sidebarIcon, &DIconButton::clicked, this, &CTitleWidget::slotSidebarIconClicked);
+
     m_buttonBox = new CButtonBox(this);
     m_buttonBox->setObjectName("ButtonBox");
     m_buttonBox->setAccessibleName("ButtonBox");
@@ -122,6 +128,8 @@ CTitleWidget::CTitleWidget(QWidget *parent)
     {
         QHBoxLayout *layout = new QHBoxLayout;
         layout->setContentsMargins(0, 0, 0, 0);
+        layout->addWidget(m_sidebarIcon, Qt::AlignLeft);
+        layout->addSpacing(10);
         layout->addWidget(m_buttonBox, Qt::AlignLeft);
         layout->addStretch();
         layout->addWidget(m_searchEdit, Qt::AlignCenter);
@@ -143,6 +151,18 @@ void CTitleWidget::setShowState(CTitleWidget::Title_State state)
 {
     m_showState = state;
     stateUpdate();
+}
+
+void CTitleWidget::setSidebarStatus(bool status)
+{
+    m_sidebarstatus = status;
+    updateSidebarIconStatus();
+    emit signalSidebarStatusChange(m_sidebarstatus);
+}
+
+bool CTitleWidget::getSidevarStatus()
+{
+    return m_sidebarstatus;
 }
 
 DButtonBox *CTitleWidget::buttonBox() const
@@ -209,6 +229,11 @@ void CTitleWidget::normalStateUpdateSearchEditWidth()
     m_searchEdit->setMaximumWidth(searchWidth);
 }
 
+void CTitleWidget::updateSidebarIconStatus()
+{
+    m_sidebarIcon->setIcon(QIcon(":/resources/icon/calaendar_sidebar.svg"));
+}
+
 void CTitleWidget::resizeEvent(QResizeEvent *event)
 {
     QWidget::resizeEvent(event);
@@ -263,4 +288,9 @@ void CTitleWidget::slotSearchEditFocusChanged(bool onFocus)
         m_searchPush->show();
         setFocusProxy(m_buttonBox);
     }
+}
+
+void CTitleWidget::slotSidebarIconClicked()
+{
+    setSidebarStatus(!m_sidebarstatus);
 }

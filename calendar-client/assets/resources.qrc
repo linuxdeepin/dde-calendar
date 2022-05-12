@@ -104,5 +104,8 @@
         <file>resources/icon/edit.svg</file>
         <file>resources/icon/create_black.svg</file>
         <file>resources/icon/create_white.svg</file>
+        <file>resources/icon/calaendar_sidebar.svg</file>
+        <file>resources/icon/icon_refresh.svg</file>
+        <file>resources/icon/icon_warning_light.svg</file>
     </qresource>
 </RCC>

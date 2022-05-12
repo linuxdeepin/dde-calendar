@@ -32,9 +32,9 @@ public:
     explicit CScheduleBaseWidget(QWidget *parent = nullptr);
     ~CScheduleBaseWidget();
     //设置选择时间
-    bool setSelectDate(const QDate &selectDate, const bool isSwitchYear = false);
+    static bool setSelectDate(const QDate &selectDate, const bool isSwitchYear = false);
     //获取选择时间
-    QDate getSelectDate() const;
+    static QDate getSelectDate();
     //设置当前时间
     virtual void setCurrentDateTime(const QDateTime &currentDate);
     //获取当前时间
@@ -44,7 +44,7 @@ public:
     //更新所有数据，显示时间和日程数据
     void updateData();
     //更新dbus数据
-    void updateDBusData();
+    static void updateDBusData();
     //更新界面搜索日程显示
     virtual void updateSearchScheduleInfo();
     //设置年显示

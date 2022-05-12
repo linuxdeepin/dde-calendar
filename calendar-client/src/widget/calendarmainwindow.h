@@ -43,6 +43,7 @@ class CYearWindow;
 class CMonthWindow;
 class CWeekWindow;
 class CDayWindow;
+class SidebarView;
 class CScheduleSearchView;
 class AnimationStackedWidget;
 class CScheduleDataManage;
@@ -104,6 +105,8 @@ private slots:
     //设置最大大小
     void slotSetMaxSize(int size = 0);
     void slotSearchFocusSwitch();
+    //账户侧边栏状态发生改变事件
+    void slotSidebarStatusChange(bool);
 
 private:
     DLabel *m_icon = nullptr;
@@ -115,6 +118,7 @@ private:
     CWeekWindow *m_weekWindow = nullptr;
     CDayWindow *m_DayWindow = nullptr;
     CTitleWidget *m_titleWidget = nullptr;
+    SidebarView *m_sidebarView = nullptr;
     bool m_searchflag = false;
     CScheduleSearchView *m_scheduleSearchView = nullptr;
     DFrame *m_contentBackground = nullptr;

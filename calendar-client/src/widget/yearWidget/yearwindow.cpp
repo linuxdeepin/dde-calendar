@@ -113,13 +113,6 @@ void CYearWindow::resizeEvent(QResizeEvent *event)
 {
     Q_UNUSED(event);
     m_topWidget->setGeometry(0, 0, this->width(), DDEMonthCalendar::M_YTopHeight);
-    if (m_searchFlag) {
-        m_tMainLayout->setContentsMargins(10, 0, 2, 0);
-        m_topWidget->setContentsMargins(10, 0, 2, 0);
-    } else {
-        m_tMainLayout->setContentsMargins(10, 0, 10, 0);
-        m_topWidget->setContentsMargins(10, 0, 10, 0);
-    }
 }
 
 void CYearWindow::mouseMoveEvent(QMouseEvent *event)
@@ -387,7 +380,7 @@ void CYearWindow::initUI()
     m_tMainLayout = new QVBoxLayout;
     m_tMainLayout->setMargin(0);
     m_tMainLayout->setSpacing(0);
-    m_tMainLayout->setContentsMargins(10, 0, 10, 0);
+    m_tMainLayout->setContentsMargins(0, 0, 0, 0);
     m_tMainLayout->addLayout(hhLayout);
     this->setLayout(m_tMainLayout);
 
@@ -721,7 +714,6 @@ YearFrame::YearFrame(DWidget *parent)
     QGridLayout *gridLayout = new QGridLayout;
     gridLayout->setMargin(0);
     gridLayout->setSpacing(8);
-    gridLayout->setContentsMargins(0, 0, 0, 0);
 
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 4; j++) {
@@ -778,11 +770,9 @@ YearFrame::YearFrame(DWidget *parent)
     QVBoxLayout *hhLayout = new QVBoxLayout;
     hhLayout->setMargin(0);
     hhLayout->setSpacing(0);
-    hhLayout->setContentsMargins(0, 0, 0, 0);
     hhLayout->addWidget(m_topWidget);
     hhLayout->addLayout(gridLayout);
     this->setLayout(hhLayout);
-    setContentsMargins(0, 0, 0, 10);
 }
 
 YearFrame::~YearFrame()

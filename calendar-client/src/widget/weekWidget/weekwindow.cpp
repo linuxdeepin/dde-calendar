@@ -166,21 +166,14 @@ void CWeekWindow::initUI()
     QVBoxLayout *hhLayout = new QVBoxLayout;
     hhLayout->setMargin(0);
     hhLayout->setSpacing(0);
-    hhLayout->setContentsMargins(0, 0, 0, 0);
     hhLayout->addLayout(yeartitleLayout);
     hhLayout->addLayout(m_mainHLayout);
 
     m_tMainLayout = new QHBoxLayout;
     m_tMainLayout->setMargin(0);
     m_tMainLayout->setSpacing(0);
-    m_tMainLayout->setContentsMargins(0, 0, 10, 0);
     m_tMainLayout->addLayout(hhLayout);
 
-    QVBoxLayout *ssLayout = new QVBoxLayout;
-    ssLayout->setMargin(0);
-    ssLayout->setSpacing(0);
-    ssLayout->setContentsMargins(0, 0, 0, 10);
-    m_tMainLayout->addLayout(ssLayout);
     this->setLayout(m_tMainLayout);
 
     setTabOrder(m_weekview, m_today);
@@ -511,14 +504,6 @@ void CWeekWindow::resizeEvent(QResizeEvent *event)
     qreal dw = width() * 0.4186 + 0.5;
     int dh = 36;
     int winframe = 10;
-    m_mainHLayout->setContentsMargins(10, 20, 0, 10);
-
-    if (m_searchFlag) {
-        m_tMainLayout->setContentsMargins(0, 0, 0, 0);
-    } else {
-        winframe += 10;
-        m_tMainLayout->setContentsMargins(0, 0, 10, 0);
-    }
 
     //添加1个按钮的宽度 36。原来m_weekview 不包含前后按钮(若加2个按钮的宽度，会导致窗口缩小的时候按钮显示不全)
     if (!m_searchFlag) {

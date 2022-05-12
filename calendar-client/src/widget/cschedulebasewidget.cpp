@@ -53,7 +53,7 @@ bool CScheduleBaseWidget::setSelectDate(const QDate &selectDate, const bool isSw
         //更新其它视图界面显示
         for (int i = 0; i < m_calendarManager->getShowWidgetSize(); ++i) {
             //如果为当前视图则不更新
-            if (m_calendarManager->getShowWidget(i) == this || m_calendarManager->getShowWidget(i) == nullptr)
+            if (m_calendarManager->getShowWidget(i) == nullptr)
                 continue;
             m_calendarManager->getShowWidget(i)->setYearData();
             m_calendarManager->getShowWidget(i)->updateShowDate();
@@ -67,7 +67,7 @@ bool CScheduleBaseWidget::setSelectDate(const QDate &selectDate, const bool isSw
  * @brief CScheduleBaseWidget::getSelectDate    获取选择时间
  * @return
  */
-QDate CScheduleBaseWidget::getSelectDate() const
+QDate CScheduleBaseWidget::getSelectDate()
 {
     return m_calendarManager->getCalendarDateDataManage()->getSelectDate();
 }

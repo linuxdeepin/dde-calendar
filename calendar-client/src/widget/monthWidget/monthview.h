@@ -123,8 +123,6 @@ private:
     int                             m_firstWeekDay = 0;
     QAction                         *m_createAction = nullptr; // 创建日程
     QVBoxLayout                     *m_mainLayout = nullptr;
-    int m_leftMargin = 0;
-    int m_topMargin = 0;
     bool                            m_sflag = true;
     ScheduleRemindWidget *m_remindWidget = nullptr;
 

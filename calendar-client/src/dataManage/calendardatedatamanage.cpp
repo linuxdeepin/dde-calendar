@@ -40,7 +40,7 @@ CalendarDateDataManager::CalendarDateDataManager()
  * @brief setSelectDate     设置选择时间
  * @param selectDate        选择时间
  */
-void CalendarDateDataManager::setSelectDate(const QDate &selectDate, const bool isSwitchYear)
+void CalendarDateDataManager::setSelectDate(const QDate &selectDate, bool isSwitchYear)
 {
     m_selectDate = selectDate;
     if (isSwitchYear || m_showDateRange.startDate > m_selectDate || m_showDateRange.stopDate < m_selectDate) {

@@ -39,7 +39,7 @@ class CalendarDateDataManager
 public:
     explicit CalendarDateDataManager();
     //设置选择时间
-    void setSelectDate(const QDate &selectDate, const bool isSwitchYear = false);
+    void setSelectDate(const QDate &selectDate, bool isSwitchYear = false);
     //获取选择时间
     QDate getSelectDate() const;
     //设置当前时间

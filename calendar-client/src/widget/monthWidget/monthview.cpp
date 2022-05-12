@@ -58,7 +58,6 @@ CMonthView::CMonthView(QWidget *parent) : DWidget(parent)
     m_mainLayout = new QVBoxLayout;
     m_mainLayout->setMargin(0);
     m_mainLayout->setSpacing(0);
-    m_mainLayout->setContentsMargins(10, 0, 0, 10);
     m_mainLayout->addWidget(m_weekIndicator);
     m_mainLayout->addWidget(m_monthGraphicsView);
 
@@ -107,12 +106,8 @@ void CMonthView::slotScheduleRemindWidget(const bool isShow, const ScheduleDataI
 void CMonthView::resizeEvent(QResizeEvent *event)
 {
     DWidget::resizeEvent(event);
-    int leftMargin = 10;
-    int topMargin = 10;
-    m_leftMargin = leftMargin;
-    m_topMargin = topMargin;
-    m_mainLayout->setContentsMargins(leftMargin, topMargin, 0, 10);
-    m_weekIndicator->setFixedSize(width() - leftMargin, static_cast<int>(height() * 0.1042 + 0.5));
+    QMargins margins = m_mainLayout->contentsMargins();
+    m_weekIndicator->setFixedSize(width() - margins.left(), static_cast<int>(height() * 0.1042 + 0.5));
 }
 
 void CMonthView::mousePressEvent(QMouseEvent *event)

@@ -338,13 +338,11 @@ void CMonthWindow::initUI()
     m_tMainLayout = new QHBoxLayout;
     m_tMainLayout->setMargin(0);
     m_tMainLayout->setSpacing(0);
-    m_tMainLayout->setContentsMargins(0, 0, 10, 0);
     m_tMainLayout->addLayout(hhLayout);
 
     QVBoxLayout *ssLayout = new QVBoxLayout;
     ssLayout->setMargin(0);
     ssLayout->setSpacing(0);
-    ssLayout->setContentsMargins(0, 10, 0, 10);
     m_tMainLayout->addLayout(ssLayout);
 
     this->setLayout(m_tMainLayout);
@@ -440,11 +438,6 @@ void CMonthWindow::resizeEvent(QResizeEvent *event)
 {
     qreal dw = width() * 0.5023 + 0.5;
     int dh = 36;
-    if (m_searchFlag) {
-        m_tMainLayout->setContentsMargins(0, 0, 0, 0);
-    } else {
-        m_tMainLayout->setContentsMargins(0, 0, 10, 0);
-    }
     m_monthDayView->setFixedSize(qRound(dw), dh);
     QWidget::resizeEvent(event);
 }
