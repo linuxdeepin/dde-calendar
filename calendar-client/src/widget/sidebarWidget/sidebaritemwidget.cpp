@@ -163,16 +163,18 @@ SidebarItemWidget* SidebarItemWidget::getTopLevelWidget(QString& title)
     SidebarItemWidget* item = new SidebarItemWidget();
     item->m_headType = HeadIcon;
     item->setFixedHeight(36);
-    item->m_titleLabel->setText(title);
-    DFontSizeManager::instance()->bind(item->m_titleLabel, DFontSizeManager::T5);
+    DFontSizeManager::instance()->bind(item->m_titleLabel, DFontSizeManager::T6);
     item->m_titleLabel->setElideMode(Qt::ElideRight);
-    QFont labelF("Microsoft Sans Serif");
+    //设置初始字体大小
+    DFontSizeManager::instance()->setFontGenericPixelSize(static_cast<quint16>(DFontSizeManager::fontPixelSize(QFont())));
+    QFont labelF = DFontSizeManager::instance()->t6();
     labelF.setWeight(QFont::Normal);
     item->m_titleLabel->setFont(labelF);
     QPalette palette = item->m_titleLabel->palette();
     palette.setBrush(QPalette::Text, QColor("#526A7F"));
     item->m_titleLabel->setPalette(palette);
     item->m_titleLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    item->m_titleLabel->setText(title);
 
     item->m_headIconButton = new DIconButton(item);
     item->m_headIconButton->setFlat(true);
@@ -199,10 +201,12 @@ SidebarItemWidget* SidebarItemWidget::getLocalWidget(JobTypeInfo& info)
     item->layout()->setSpacing(9);
     item->layout()->setContentsMargins(5, 0, 0, 0);
     qobject_cast<QBoxLayout*>(item->layout())->addStretch(1);
-    item->m_titleLabel->setText(info.getJobTypeName());
-    DFontSizeManager::instance()->bind(item->m_titleLabel, DFontSizeManager::T4);
+    //绑定字体大小
+    DFontSizeManager::instance()->bind(item->m_titleLabel, DFontSizeManager::T5);
     item->m_titleLabel->setElideMode(Qt::ElideRight);
-    QFont labelF("Microsoft Sans Serif");
+    //设置初始字体大小
+    DFontSizeManager::instance()->setFontGenericPixelSize(static_cast<quint16>(DFontSizeManager::fontPixelSize(QFont())));
+    QFont labelF = DFontSizeManager::instance()->t5();
     labelF.setWeight(QFont::Normal);
     item->m_titleLabel->setFont(labelF);
     item->m_titleLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
@@ -210,6 +214,7 @@ SidebarItemWidget* SidebarItemWidget::getLocalWidget(JobTypeInfo& info)
     tPalette.setBrush(QPalette::Text, QColor("#001A2E"));
     item->m_titleLabel->setPalette(tPalette);
     item->m_titleLabel->setMaximumWidth(120);
+    item->m_titleLabel->setText(info.getJobTypeName());
 
     item->m_rearIconButton->hide();
 

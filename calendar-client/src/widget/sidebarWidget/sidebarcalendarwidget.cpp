@@ -66,7 +66,12 @@ void SidebarCalendarWidget::initView()
     m_weekWidget->setLayout(weekLayout);
     QLocale locale;
     for (int i = Qt::Monday; i <= Qt::Sunday; ++i) {
-        QLabel *label = new QLabel(locale.dayName(i, QLocale::ShortFormat).right(1));
+        //从周日开始
+        int index = i-1;
+        if (index == 0) {
+            index = Qt::Sunday;
+        }
+        QLabel *label = new QLabel(locale.dayName(index, QLocale::ShortFormat).right(1));
         label->setAlignment(Qt::AlignCenter);
         weekLayout->addWidget(label);
     }
