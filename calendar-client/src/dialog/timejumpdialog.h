@@ -61,8 +61,8 @@ private:
     void initView();
     void initConnect();
     void initData();
-    //更新天编辑器数字范围
-    void updateDayEditRange() const;
+    //获取当月最大天数
+    int getMaxDayNum();
 
 private:
     QDate m_date;

@@ -43,7 +43,7 @@ void TimeJumpDialog::initView()
     m_dayEdit = new CTimeLineEdit(EditDay, this);
     m_jumpButton = new DSuggestButton(tr("Go"), this);
 
-    m_yearEdit->setFixedSize(70, 36);
+    m_yearEdit->setFixedSize(98, 36);
     m_monthEdit->setFixedSize(70, 36);
     m_dayEdit->setFixedSize(70, 36);
     m_jumpButton->setFixedSize(82, 36);
@@ -60,6 +60,7 @@ void TimeJumpDialog::initView()
     QWidget *wgt = new QWidget();
     wgt->setLayout(hLayout);
     setContent(wgt);
+
 }
 
 void TimeJumpDialog::initConnect()
@@ -75,10 +76,10 @@ void TimeJumpDialog::initConnect()
 
 void TimeJumpDialog::initData()
 {
-    m_yearEdit->setNumberRange(1900, 2100);
-    m_monthEdit->setNumberRange(1, 12);
+    m_yearEdit->setRange(1900, 2100);
+    m_monthEdit->setRange(1, 12);
     //设置天编辑器限制范围
-    updateDayEditRange();
+    m_dayEdit->setRange(1, getMaxDayNum());
     m_yearEdit->setNum(m_date.year());
     m_monthEdit->setNum(m_date.month());
     m_dayEdit->setNum(m_date.day());
@@ -115,18 +116,17 @@ void TimeJumpDialog::showPopup(const QDate& date, int x, int y)
 }
 
 /**
- * @brief TimeJumpDialog::updateDayEditRange
- * 设置天编辑器数字范围
+ * @brief TimeJumpDialog::getMaxDayNum
+ * 获取当月最大天数
  */
-void TimeJumpDialog::updateDayEditRange() const
+int TimeJumpDialog::getMaxDayNum()
 {
     static int dayNum[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
     int maxDay = dayNum[m_date.month()-1];
-    if (m_date.month() == 2
-            && (m_date.year() % 400 == 0 || (m_date.year() % 4 == 0 && m_date.year() % 100 != 0))) {
+    if (m_date.month() == 2  && QDate::isLeapYear(m_date.year())) {
         maxDay = 29;
     }
-    m_dayEdit->setNumberRange(1, maxDay);
+    return maxDay;
 }
 
 /**
@@ -140,13 +140,27 @@ void TimeJumpDialog::slotEditNumChange(int id, int num)
     switch (id) {
     case EditYear:
         //更改年
-        m_date.setDate(num, m_date.month(), m_date.day());
-        updateDayEditRange();
+    {
+        //因直接设置一年的年月日可能会造成更改月或年后该日期不存在导致的日期错误，
+        //所以变化年或者月时先将日变为1，后续再根据实际情况更改日日期
+        int day = m_date.day();
+        m_date.setDate(num, m_date.month(), 1);
+        int maxDay = getMaxDayNum();
+        day = day > maxDay ? maxDay : day;
+        m_date.setDate(m_date.year(), m_date.month(), day);
+        m_dayEdit->setRange(1, maxDay);
+    }
         break;
     case EditMonth:
         //更改月
-        m_date.setDate(m_date.year(), num, m_date.day());
-        updateDayEditRange();
+    {
+        int day = m_date.day();
+        m_date.setDate(m_date.year(), num, 1);
+        int maxDay = getMaxDayNum();
+        day = day > maxDay ? maxDay : day;
+        m_date.setDate(m_date.year(), m_date.month(), day);
+        m_dayEdit->setRange(1, maxDay);
+    }
         break;
     case EditDay:
         //更改日

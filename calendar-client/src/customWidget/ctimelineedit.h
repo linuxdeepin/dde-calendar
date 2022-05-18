@@ -21,10 +21,12 @@
 #ifndef CTIMELINEEDIT_H
 #define CTIMELINEEDIT_H
 
-#include <QLineEdit>
+#include <DSpinBox>
+
+DWIDGET_USE_NAMESPACE
 
 //时间数字编辑器
-class CTimeLineEdit : public QLineEdit
+class CTimeLineEdit : public DSpinBox
 {
     Q_OBJECT
 public:
@@ -44,27 +46,22 @@ signals:
     void signalDateJump(int id, int num);
 
 public slots:
-    void slotAddBtnClicked();
-    void slotSubBtnClicked();
     //编辑完成事件
     void slotEditingFinished();
 
 protected:
-    void showEvent(QShowEvent *event) override;
-    bool eventFilter(QObject *, QEvent *) override;
-    void keyPressEvent(QKeyEvent *event) override;
+    //重写步状态
+    StepEnabled stepEnabled() const override;
+    //重写步事件
+    void stepBy(int steps) override;
 
 private:
     void initView();
 
 private:
     int m_num = 0;      //当前显示的数字
-    int m_maxNum = 100; //最大显示的数字
-    int m_minMun = 0;   //最小显示的数字
 
     const int m_id = 0; //控件id
-
-    QWidget *m_arrowWidget = nullptr;   //箭头控件区域
 
 };
 

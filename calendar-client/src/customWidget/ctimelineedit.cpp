@@ -19,64 +19,18 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "ctimelineedit.h"
-#include <DStyle>
-#include <QPushButton>
-#include <QVBoxLayout>
-#include <QKeyEvent>
 
-DWIDGET_USE_NAMESPACE
-
-CTimeLineEdit::CTimeLineEdit(int id, QWidget *parent) : QLineEdit(parent)
+CTimeLineEdit::CTimeLineEdit(int id, QWidget *parent) : DSpinBox(parent)
   , m_id(id)
 {
     initView();
-    //设置输入框输入限制在0到9之间
-    QRegExp reg("^[0-9]*$");
-    QValidator *validator = new QRegExpValidator(reg, this);
-    setValidator(validator);
-
-    connect(this, &QLineEdit::editingFinished, this, &CTimeLineEdit::slotEditingFinished);
+    connect(this, &CTimeLineEdit::editingFinished, this, &CTimeLineEdit::slotEditingFinished);
 }
 
 void CTimeLineEdit::initView()
 {
-    QPushButton *addBtn = new QPushButton(this);
-    QPushButton *subBtn = new QPushButton(this);
-    addBtn->setIcon(DStyle().standardIcon(DStyle::SP_ArrowUp));
-    addBtn->setFixedSize(16, 16);
-    addBtn->setIconSize(QSize(12, 12));
-    addBtn->setFlat(true);
-    subBtn->setIcon(DStyle().standardIcon(DStyle::SP_ArrowDown));
-    subBtn->setFixedSize(16, 16);
-    subBtn->setIconSize(QSize(12, 12));
-    subBtn->setFlat(true);
-
-    connect(addBtn, &QPushButton::clicked, this, &CTimeLineEdit::slotAddBtnClicked);
-    connect(subBtn, &QPushButton::clicked, this, &CTimeLineEdit::slotSubBtnClicked);
-
-    QVBoxLayout *vLayout = new QVBoxLayout(this);
-    vLayout->setMargin(0);
-    vLayout->setSpacing(2);
-    vLayout->addWidget(addBtn);
-    vLayout->addWidget(subBtn);
-    m_arrowWidget = new QWidget(this);
-    m_arrowWidget->setLayout(vLayout);
-    m_arrowWidget->move(width(), 0);
-
-    //设置事件代理
-    m_arrowWidget->installEventFilter(this);
-}
-
-/**
- * @brief CTimeLineEdit::showEvent
- * 控件显示事件
- * @param event
- */
-void CTimeLineEdit::showEvent(QShowEvent *event)
-{
-    QLineEdit::showEvent(event);
-    //调整箭头控件位置，因初始化时不能获取控件的确定大小
-    m_arrowWidget->move(width()-20, 0);
+    //启用嵌入式的样式
+    setEnabledEmbedStyle(true);
 }
 
 /**
@@ -87,14 +41,7 @@ void CTimeLineEdit::showEvent(QShowEvent *event)
  */
 void CTimeLineEdit::setNumberRange(int min, int max)
 {
-    m_minMun = min;
-    m_maxNum = max;
-    int num = m_num;
-    m_num = m_num > m_minMun? m_num:m_minMun;
-    m_num = m_num < m_maxNum? m_num:m_maxNum;
-    if (num != m_num) {
-        setText(QString("%1").arg(m_num));
-    }
+    setRange(min, max);
 }
 
 /**
@@ -105,9 +52,9 @@ void CTimeLineEdit::setNumberRange(int min, int max)
 void CTimeLineEdit::setNum(int num)
 {
     m_num = num;
-    m_num = m_num > m_minMun? m_num:m_minMun;
-    m_num = m_num < m_maxNum? m_num:m_maxNum;
-    setText(QString("%1").arg(m_num));
+    m_num = m_num > minimum()? m_num:minimum();
+    m_num = m_num < maximum()? m_num:maximum();
+    setValue(num);
     emit signalNumChange(m_id, m_num);
 }
 
@@ -125,9 +72,9 @@ void CTimeLineEdit::setNum(int num, bool canCarry)
     }
 
     //若没有超过限制范围则不必发送时间跳转事件
-    if (num >= m_minMun && num <= m_maxNum) {
+    if (num >= minimum() && num <= maximum()) {
         m_num = num;
-        setText(QString("%1").arg(m_num));
+        setValue(m_num);
         emit signalNumChange(m_id, m_num);
         return;
     }
@@ -136,51 +83,29 @@ void CTimeLineEdit::setNum(int num, bool canCarry)
     emit signalDateJump(m_id, num - m_num);
 }
 
-void CTimeLineEdit::slotAddBtnClicked()
-{
-    setNum(m_num + 1, true);
-}
-
-void CTimeLineEdit::slotSubBtnClicked()
-{
-    setNum(m_num - 1, true);
-}
-
 void CTimeLineEdit::slotEditingFinished()
 {
-    setNum(text().toInt());
+    setNum(value());
 }
 
 /**
- * @brief CTimeLineEdit::eventFilter
- * 事件过滤器
- * @param obj
- * @param event
+ * @brief CTimeLineEdit::stepEnabled
+ * 因考虑到数字可以进位和退位，不存在真实的数字变化限制，因此返回up和down状态都可用
  * @return
  */
-bool CTimeLineEdit::eventFilter(QObject *obj, QEvent *event)
+CTimeLineEdit::StepEnabled CTimeLineEdit::stepEnabled() const
 {
-    //当鼠标滑动进入箭头区域时鼠标样式显示为正常箭头状态，离开后显示为输入状态，其他情况由父布局去控制
-    if (m_arrowWidget == obj && (event->type() == QEvent::Enter)) {
-        setCursor(Qt::ArrowCursor);
-    } else if (m_arrowWidget == obj && (event->type() == QEvent::Leave)) {
-        setCursor(Qt::IBeamCursor);
-    }
-    return QLineEdit::eventFilter(obj, event);
+    return CTimeLineEdit::StepUpEnabled|CTimeLineEdit::StepDownEnabled;
 }
 
 /**
- * @brief CTimeLineEdit::keyPressEvent
- * 按键点击事件
- * @param event
+ * @brief CTimeLineEdit::stepBy
+ * 捕捉步长跳转事件，进行对数字变化的自定义
+ * @param steps 步长（数字变化后应为的值与变化前的值的差值）
  */
-void CTimeLineEdit::keyPressEvent(QKeyEvent *event)
+void CTimeLineEdit::stepBy(int steps)
 {
-    //捕捉上方向键和下方向键进行数字改变
-    if (event->key() == Qt::Key_Up) {
-        slotAddBtnClicked();
-    } else if (event->key() == Qt::Key_Down) {
-        slotSubBtnClicked();
-    }
-    QLineEdit::keyPressEvent(event);
+    setNum(value() + steps, true);
+    //因为已自定义处理步长，因此再次调用父类的方法实现默认效果，并将其步长传入0
+    DSpinBox::stepBy(0);
 }
