@@ -23,6 +23,9 @@ CalendarManager *CScheduleBaseWidget::m_calendarManager = nullptr;
 CScheduleBaseWidget::CScheduleBaseWidget(QWidget *parent)
     : QWidget(parent)
 {
+    m_dialogIconButton = new CDialogIconButton(this);
+    m_dialogIconButton->setFixedSize(QSize(16, 16));
+
     if (m_calendarManager == nullptr) {
         m_calendarManager = CalendarManager::getInstance();
         //获取一年的日程信息

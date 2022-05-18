@@ -301,6 +301,7 @@ void CMonthWindow::initUI()
     yeartitleLayout->setSpacing(0);
     yeartitleLayout->setContentsMargins(21, 20, 8, 10);
     yeartitleLayout->addWidget(m_YearLabel);
+    yeartitleLayout->addWidget(m_dialogIconButton);
 
     QHBoxLayout *yeartitleLayout1 = new QHBoxLayout;
     yeartitleLayout1->setMargin(0);

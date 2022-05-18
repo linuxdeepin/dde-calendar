@@ -240,6 +240,7 @@ void CDayWindow::initUI()
     ypa.setColor(DPalette::WindowText, QColor("#3B3B3B"));
     m_YearLabel->setPalette(ypa);
     titleLayout->addWidget(m_YearLabel);
+    titleLayout->addWidget(m_dialogIconButton);
     m_LunarLabel = new QLabel();
     titleLayout->addSpacing(15);
     m_LunarLabel->setFixedHeight(DDEDayCalendar::D_YLabelHeight);
