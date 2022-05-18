@@ -25,9 +25,9 @@
 #include <QDebug>
 
 bool DragInfoItem::m_press = false;
-ScheduleDataInfo DragInfoItem::m_HoverInfo;
-ScheduleDataInfo DragInfoItem::m_pressInfo;
-QVector<ScheduleDataInfo>    DragInfoItem::m_searchScheduleInfo;
+DSchedule DragInfoItem::m_HoverInfo;
+DSchedule DragInfoItem::m_pressInfo;
+QVector<DSchedule> DragInfoItem::m_searchScheduleInfo;
 
 DragInfoItem::DragInfoItem(QRectF rect, QGraphicsItem *parent)
     : CFocusItem(parent)
@@ -59,12 +59,12 @@ DragInfoItem::~DragInfoItem()
 
 }
 
-void DragInfoItem::setData(const ScheduleDataInfo &vScheduleInfo)
+void DragInfoItem::setData(const DSchedule &vScheduleInfo)
 {
     m_vScheduleInfo = vScheduleInfo;
 }
 
-ScheduleDataInfo DragInfoItem::getData() const
+DSchedule DragInfoItem::getData() const
 {
     return  m_vScheduleInfo;
 }
@@ -78,7 +78,7 @@ void DragInfoItem::setPressFlag(const bool flag)
  * @brief DragInfoItem::setPressSchedule        记录选中日程
  * @param pressSchedule
  */
-void DragInfoItem::setPressSchedule(const ScheduleDataInfo &pressSchedule)
+void DragInfoItem::setPressSchedule(const DSchedule &pressSchedule)
 {
     m_pressInfo = pressSchedule;
 }
@@ -87,7 +87,7 @@ void DragInfoItem::setPressSchedule(const ScheduleDataInfo &pressSchedule)
  * @brief DragInfoItem::getPressSchedule        获取选中日程
  * @return
  */
-ScheduleDataInfo DragInfoItem::getPressSchedule()
+DSchedule DragInfoItem::getPressSchedule()
 {
     return  m_pressInfo;
 }
@@ -96,7 +96,7 @@ ScheduleDataInfo DragInfoItem::getPressSchedule()
  * @brief DragInfoItem::setSearchScheduleInfo       设置搜索日程新
  * @param searchScheduleInfo
  */
-void DragInfoItem::setSearchScheduleInfo(const QVector<ScheduleDataInfo> &searchScheduleInfo)
+void DragInfoItem::setSearchScheduleInfo(const QVector<DSchedule> &searchScheduleInfo)
 {
     m_searchScheduleInfo = searchScheduleInfo;
 }
@@ -151,7 +151,7 @@ void DragInfoItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 void DragInfoItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
     Q_UNUSED(event);
-    m_HoverInfo = ScheduleDataInfo();
+    m_HoverInfo = DSchedule();
     update();
 }
 

@@ -71,11 +71,10 @@ find_package(DtkGui REQUIRED)
 find_package(DFrameworkdbus REQUIRED)
 
 include_directories(${Qt5Gui_PRIVATE_INCLUDE_DIRS})
-include_directories(../calendar-basicstruct/)
 # Tell CMake to create the executable
 add_executable(${PROJECT_NAME} ${Calendar_SRC} ${APP_QRC})
 
-target_include_directories(${PROJECT_NAME} PUBLIC ${DtkWidget_INCLUDE_DIRS} ${OBJECT_BINARY_DIR})
+target_include_directories(${PROJECT_NAME} PUBLIC ${DtkWidget_INCLUDE_DIRS} ${OBJECT_BINARY_DIR} ../calendar-common/src)
 target_link_libraries(${PROJECT_NAME}
     ${DtkWidget_LIBRARIES}
     ${DtkCore_LIBRARIES}
@@ -84,7 +83,7 @@ target_link_libraries(${PROJECT_NAME}
     ${Qt5Svg_LIBRARIES}
     ${Qt5DBus_LIBRARIES}
     ${DFrameworkdbus_LIBRARIES}
-    basestruct
+    commondata
 )
 
 set(CMAKE_INSTALL_PREFIX /usr)

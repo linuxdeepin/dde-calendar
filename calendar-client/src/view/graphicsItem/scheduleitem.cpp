@@ -56,7 +56,7 @@ CScheduleItem::~CScheduleItem()
  * @param date
  * @param totalNum
  */
-void CScheduleItem::setData(const ScheduleDataInfo &info, QDate date, int totalNum)
+void CScheduleItem::setData(const DSchedule &info, QDate date, int totalNum)
 {
     m_vScheduleInfo = info;
     m_totalNum = totalNum;
@@ -69,7 +69,7 @@ void CScheduleItem::setData(const ScheduleDataInfo &info, QDate date, int totalN
  * @param info
  * @return
  */
-bool CScheduleItem::hasSelectSchedule(const ScheduleDataInfo &info)
+bool CScheduleItem::hasSelectSchedule(const DSchedule &info)
 {
     return info == m_vScheduleInfo;
 }
@@ -174,13 +174,16 @@ void CScheduleItem::timeFormatChanged(int value)
 void CScheduleItem::paintBackground(QPainter *painter, const QRectF &rect, const bool isPixMap)
 {
     Q_UNUSED(isPixMap);
-    CSchedulesColor gdColor = CScheduleDataManage::getScheduleDataManage()->getScheduleColorByType(m_vScheduleInfo.getType());
+    //TODO:根据日程类型获取颜色
+    CSchedulesColor gdColor; //= CScheduleDataManage::getScheduleDataManage()->getScheduleColorByType(m_vScheduleInfo.getType());
 
     QColor textPenColor = CScheduleDataManage::getScheduleDataManage()->getTextColor();
     //判断是否为选中日程
     if (m_vScheduleInfo == m_pressInfo) {
         //判断当前日程是否为拖拽移动日程
-        if (m_vScheduleInfo.getIsMoveInfo() == m_pressInfo.getIsMoveInfo()) {
+        //TODO:拖拽日程
+        //        if (m_vScheduleInfo.getIsMoveInfo() == m_pressInfo.getIsMoveInfo()) {
+        if (false) {
             m_vHighflag = true;
         } else {
             painter->setOpacity(0.4);
@@ -258,12 +261,12 @@ void CScheduleItem::paintBackground(QPainter *painter, const QRectF &rect, const
         font = DFontSizeManager::instance()->get(DFontSizeManager::T8, font);
 
         //绘制日程起始时间
-        if (m_vScheduleInfo.getBeginDateTime().date() == getDate()) {
+        if (m_vScheduleInfo.dtStart().date() == getDate()) {
             painter->save();
             painter->setFont(font);
             painter->setPen(gdColor.orginalColor);
 
-            QTime stime = m_vScheduleInfo.getBeginDateTime().time();
+            QTime stime = m_vScheduleInfo.dtStart().time();
             QString str = stime.toString("AP " + m_timeFormat);
             QFontMetrics fontMetrics(font);
             qreal drawTextWidth = rect.width() - m_offset * 2;
@@ -311,7 +314,7 @@ void CScheduleItem::paintBackground(QPainter *painter, const QRectF &rect, const
         splitText(font,
                   textRect.width() - tMargin - 8,
                   textRect.height() - 20,
-                  m_vScheduleInfo.getTitleName(),
+                  m_vScheduleInfo.summary(),
                   liststr, fm);
 
         for (int i = 0; i < liststr.count(); i++) {

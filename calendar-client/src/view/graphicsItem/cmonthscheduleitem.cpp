@@ -48,14 +48,17 @@ void CMonthScheduleItem::paintBackground(QPainter *painter, const QRectF &rect, 
     qreal labelheight = rect.height();
     m_font = DFontSizeManager::instance()->get(m_sizeType, m_font);
     int themetype = CScheduleDataManage::getScheduleDataManage()->getTheme();
-    CSchedulesColor gdColor = CScheduleDataManage::getScheduleDataManage()->getScheduleColorByType(m_vScheduleInfo.getType());
+    //TODO:根据类型获取颜色
+    CSchedulesColor gdColor; //= CScheduleDataManage::getScheduleDataManage()->getScheduleColorByType(m_vScheduleInfo.getType());
     QColor brushColor = gdColor.normalColor;
     QColor textcolor = CScheduleDataManage::getScheduleDataManage()->getTextColor();
 
     //判断是否为选中日程
     if (m_vScheduleInfo == m_pressInfo) {
         //判断当前日程是否为拖拽移动日程
-        if (m_vScheduleInfo.getIsMoveInfo() == m_pressInfo.getIsMoveInfo()) {
+        //TODO:判断是否为拖拽日程
+        //        if (m_vScheduleInfo.getIsMoveInfo() == m_pressInfo.getIsMoveInfo()) {
+        if (false) {
             m_vHighflag = true;
         } else {
             painter->setOpacity(0.4);
@@ -101,7 +104,7 @@ void CMonthScheduleItem::paintBackground(QPainter *painter, const QRectF &rect, 
     painter->setPen(textcolor);
     QFontMetrics fm = painter->fontMetrics();
 
-    QString tSTitleName = m_vScheduleInfo.getTitleName();
+    QString tSTitleName = m_vScheduleInfo.summary();
     tSTitleName.replace("\n", "");
     QString str = tSTitleName;
     //右侧偏移8

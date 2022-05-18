@@ -22,8 +22,8 @@
 #define SCHEDULETASK_H
 
 #include "cscheduledbus.h"
-#include "src/scheduledatainfo.h"
-#include "src/calendardatastruct.h"
+#include "dschedule.h"
+#include "huangliData/dbusdatastruct.h"
 
 #include <QObject>
 #include <QThread>
@@ -48,7 +48,7 @@ public:
     //判断是否含有这个时间段的日程信息
     bool hasScheduleInfo(const QDate &startDate, const QDate &stopDate);
     //获取缓存中日程信息
-    QMap<QDate, QVector<ScheduleDataInfo> > getScheduleInfo(const QDate &startDate, const QDate &stopDate);
+    QMap<QDate, QVector<DSchedule>> getScheduleInfo(const QDate &startDate, const QDate &stopDate);
     //获取日期是否含有日程标志
     QMap<QDate, bool> getDateHasSchedule() const;
     //获取缓存中农历信息
@@ -56,11 +56,11 @@ public:
     //获取缓存中班休信息
     QMap<QDate, int> getFestivalInfo(const QDate &startDate, const QDate &stopDate);
     //获取搜索信息
-    QMap<QDate, QVector<ScheduleDataInfo> > getSearchScheduleInfo(const QString &key, const QDateTime &startTime, const QDateTime &endTime);
+    QMap<QDate, QVector<DSchedule>> getSearchScheduleInfo(const QString &key, const QDateTime &startTime, const QDateTime &endTime);
     //获取缓存中搜索结果
-    QMap<QDate, QVector<ScheduleDataInfo> > getSearchScheduleInfo() const;
+    QMap<QDate, QVector<DSchedule>> getSearchScheduleInfo() const;
     //获取缓存搜到的日程
-    QVector<ScheduleDataInfo> getSearchScheduleInfoVector() const;
+    QVector<DSchedule> getSearchScheduleInfoVector() const;
     //清空搜索日程
     void clearSearchScheduleInfo();
 private:
@@ -79,7 +79,7 @@ signals:
     void jobsTypeOrColorUpdate();
 public slots:
     //接收查询的日程信息
-    void slotGetSchedule(const QMap<QDate, QVector<ScheduleDataInfo> > &scheduleInfo, const QMap<QDate, bool> &hasSchedule);
+    void slotGetSchedule(const QMap<QDate, QVector<DSchedule>> &scheduleInfo, const QMap<QDate, bool> &hasSchedule);
     //接收农历信息
     void slotGetLunar(const QMap<QDate, CaHuangLiDayInfo> &lunarInfo, const QMap<QDate, int> &festivalInfo);
 private:
@@ -87,7 +87,7 @@ private:
     CScheduleDBus                   *m_DBusManager = nullptr;
     DataGetWork                     *m_work = nullptr;
     //一年的日程信息
-    QMap<QDate, QVector<ScheduleDataInfo> >     m_queryScheduleInfo{};
+    QMap<QDate, QVector<DSchedule>> m_queryScheduleInfo {};
     //一年是否含有日程
     QMap<QDate, bool>               m_fullInfo{};
     //一年的黄历信息
@@ -95,8 +95,8 @@ private:
     //一年的班休信息
     QMap<QDate, int>                m_festivalInfo{};
     //搜索的日程信息
-    QMap<QDate, QVector<ScheduleDataInfo> >      m_searchScheduleInfo{};
-    QVector<ScheduleDataInfo>           m_searchScheduleInfoVector{};
+    QMap<QDate, QVector<DSchedule>> m_searchScheduleInfo {};
+    QVector<DSchedule> m_searchScheduleInfoVector {};
 };
 
 
@@ -117,7 +117,7 @@ private:
     //根据时间获取班休信息
     char getFestivalInfoByDate(const QDate &date, const QVector<FestivalInfo> &festivalInfo);
 signals:
-    void signalGetSchedule(const QMap<QDate, QVector<ScheduleDataInfo> > &scheduleInfo, const QMap<QDate, bool> &hasSchedule);
+    void signalGetSchedule(const QMap<QDate, QVector<DSchedule>> &scheduleInfo, const QMap<QDate, bool> &hasSchedule);
     void signalGetLunar(const QMap<QDate, CaHuangLiDayInfo> &lunarInfo, const QMap<QDate, int> &festivalInfo);
 public slots:
     // 开始查询

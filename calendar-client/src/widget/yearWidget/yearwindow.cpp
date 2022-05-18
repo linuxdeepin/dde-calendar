@@ -515,7 +515,7 @@ void CYearWindow::updateShowLunar()
 void CYearWindow::updateSearchScheduleInfo()
 {
     //获取搜索日程信息
-    QMap<QDate, QVector<ScheduleDataInfo> > _searchSchedule = m_calendarManager->getScheduleTask()->getSearchScheduleInfo();
+    QMap<QDate, QVector<DSchedule>> _searchSchedule = m_calendarManager->getScheduleTask()->getSearchScheduleInfo();
     m_yearWidget->setSearchSchedule(_searchSchedule);
 }
 
@@ -523,7 +523,7 @@ void CYearWindow::updateSearchScheduleInfo()
  * @brief CYearWindow::setSelectSearchScheduleInfo      设置选中搜索日程
  * @param info
  */
-void CYearWindow::setSelectSearchScheduleInfo(const ScheduleDataInfo &info)
+void CYearWindow::setSelectSearchScheduleInfo(const DSchedule &info)
 {
     Q_UNUSED(info);
 }
@@ -651,9 +651,9 @@ void CYearWindow::slotMousePress(const QDate &selectDate, const int pressType)
     switch (pressType) {
     case 0: {
         // 0:单击
-        QVector<ScheduleDataInfo> _scheduleInfo {};
+        QVector<DSchedule> _scheduleInfo {};
         //获取选择日期的日程信息
-        QMap<QDate, QVector<ScheduleDataInfo> > showInfo = m_calendarManager->getScheduleTask()->getScheduleInfo(selectDate, selectDate);
+        QMap<QDate, QVector<DSchedule>> showInfo = m_calendarManager->getScheduleTask()->getScheduleInfo(selectDate, selectDate);
         if (showInfo.begin() != showInfo.end()) {
             _scheduleInfo = showInfo.begin().value();
         }
@@ -886,7 +886,7 @@ void YearFrame::setTheMe(int type)
  * @brief YearFrame::setSearchSchedule      设置搜索日程
  * @param searchInfo
  */
-void YearFrame::setSearchSchedule(const QMap<QDate, QVector<ScheduleDataInfo> > &searchInfo)
+void YearFrame::setSearchSchedule(const QMap<QDate, QVector<DSchedule>> &searchInfo)
 {
     QDate _startDate;
     QDate _stopDate;

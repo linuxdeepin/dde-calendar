@@ -72,9 +72,9 @@ bool CScheduleTask::hasScheduleInfo(const QDate &startDate, const QDate &stopDat
  * @param stopDate                              结束时间
  * @return
  */
-QMap<QDate, QVector<ScheduleDataInfo> > CScheduleTask::getScheduleInfo(const QDate &startDate, const QDate &stopDate)
+QMap<QDate, QVector<DSchedule>> CScheduleTask::getScheduleInfo(const QDate &startDate, const QDate &stopDate)
 {
-    QMap<QDate, QVector<ScheduleDataInfo> > _resultInfo{};
+    QMap<QDate, QVector<DSchedule>> _resultInfo {};
     qint64 _offsetDay = startDate.daysTo(stopDate);
     QDate _infoDate = startDate;
     for (int i = 0; i <= _offsetDay; ++i) {
@@ -142,13 +142,13 @@ QMap<QDate, int> CScheduleTask::getFestivalInfo(const QDate &startDate, const QD
  * @param endTime                                       结束时间
  * @return
  */
-QMap<QDate, QVector<ScheduleDataInfo> > CScheduleTask::getSearchScheduleInfo(const QString &key, const QDateTime &startTime, const QDateTime &endTime)
+QMap<QDate, QVector<DSchedule>> CScheduleTask::getSearchScheduleInfo(const QString &key, const QDateTime &startTime, const QDateTime &endTime)
 {
     m_searchScheduleInfo.clear();
     m_searchScheduleInfoVector.clear();
-    m_DBusManager->QueryJobs(key, startTime, endTime, m_searchScheduleInfo);
+    //    m_DBusManager->QueryJobs(key, startTime, endTime, m_searchScheduleInfo);
     //获取搜索到的日程信息
-    QMap<QDate, QVector<ScheduleDataInfo> >::const_iterator _iterator = nullptr;
+    QMap<QDate, QVector<DSchedule>>::const_iterator _iterator = nullptr;
     for (_iterator = m_searchScheduleInfo.constBegin(); _iterator != m_searchScheduleInfo.constEnd(); ++_iterator) {
         for (int i = 0; i < _iterator->size(); ++i) {
             if (!m_searchScheduleInfoVector.contains(_iterator.value().at(i))) {
@@ -165,7 +165,7 @@ QMap<QDate, QVector<ScheduleDataInfo> > CScheduleTask::getSearchScheduleInfo(con
  * @brief CScheduleTask::getSearchScheduleInfo      获取缓存中搜索结果
  * @return
  */
-QMap<QDate, QVector<ScheduleDataInfo> > CScheduleTask::getSearchScheduleInfo() const
+QMap<QDate, QVector<DSchedule>> CScheduleTask::getSearchScheduleInfo() const
 {
     return m_searchScheduleInfo;
 }
@@ -174,7 +174,7 @@ QMap<QDate, QVector<ScheduleDataInfo> > CScheduleTask::getSearchScheduleInfo() c
  * @brief CScheduleTask::getSearchScheduleInfoVector    获取缓存搜到的日程
  * @return
  */
-QVector<ScheduleDataInfo> CScheduleTask::getSearchScheduleInfoVector() const
+QVector<DSchedule> CScheduleTask::getSearchScheduleInfoVector() const
 {
     return m_searchScheduleInfoVector;
 }
@@ -205,7 +205,7 @@ void CScheduleTask::addQueryRange(const QDate &startDate, const QDate &stopDate,
  * @param scheduleInfo
  * @param hasSchedule
  */
-void CScheduleTask::slotGetSchedule(const QMap<QDate, QVector<ScheduleDataInfo> > &scheduleInfo, const QMap<QDate, bool> &hasSchedule)
+void CScheduleTask::slotGetSchedule(const QMap<QDate, QVector<DSchedule>> &scheduleInfo, const QMap<QDate, bool> &hasSchedule)
 {
     m_queryScheduleInfo = scheduleInfo;
     m_fullInfo = hasSchedule;
@@ -269,11 +269,11 @@ void DataGetWork::startQuery()
  */
 void DataGetWork::queryScheduleInfo(const QueryRange &queryRange)
 {
-    QMap<QDate, QVector<ScheduleDataInfo> > _queryScheduleInfo{};
+    QMap<QDate, QVector<DSchedule>> _queryScheduleInfo {};
     QMap<QDate, bool> _dateHasSchedule{};
     //查询日程数据
     m_DataManage->GetJobs(queryRange._startDate, queryRange._stopDate, _queryScheduleInfo);
-    QMap<QDate, QVector<ScheduleDataInfo> >::const_iterator _infoIter = _queryScheduleInfo.constBegin();
+    QMap<QDate, QVector<DSchedule>>::const_iterator _infoIter = _queryScheduleInfo.constBegin();
     //遍历确认这些日期是否包含日程
     for (; _infoIter != _queryScheduleInfo.constEnd(); ++_infoIter) {
         _queryScheduleInfo[_infoIter.key()] = _infoIter.value();

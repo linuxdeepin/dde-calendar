@@ -80,7 +80,7 @@ public:
     //更新界面搜索日程显示
     void updateSearchScheduleInfo() override;
     //设置选中搜索日程
-    void setSelectSearchScheduleInfo(const ScheduleDataInfo &info) override;
+    void setSelectSearchScheduleInfo(const DSchedule &info) override;
 signals:
     /**
      * @brief signalsWUpdateShcedule
@@ -163,7 +163,7 @@ public:
     //设置不同主题颜色
     void setTheMe(int type = 0);
     //设置搜索日程
-    void setSearchSchedule(const QMap<QDate, QVector<ScheduleDataInfo> > &searchInfo);
+    void setSearchSchedule(const QMap<QDate, QVector<DSchedule>> &searchInfo);
     void setViewFocus(int index);
     int getViewFocusIndex();
 private:

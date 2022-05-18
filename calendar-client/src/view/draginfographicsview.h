@@ -22,7 +22,7 @@
 #define DRAGINFOGRAPHICSVIEW_H
 #include "graphicsItem/draginfoitem.h"
 #include "../widget/touchgestureoperation.h"
-#include "src/scheduledatainfo.h"
+#include "dschedule.h"
 #include "cgraphicsscene.h"
 
 #include <DGraphicsView>
@@ -61,7 +61,8 @@ public:
     int getDragStatus() const;
     void setShowRadius(bool leftShow = false, bool rightShow = false);
     //判断是否满足拖拽条件
-    bool isCanDragge(const ScheduleDataInfo &info);
+    bool isCanDragge(const DSchedule &info);
+
 protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
@@ -79,9 +80,9 @@ protected:
 private:
     void slotCreate();
     //设置点击选中日程
-    void setPressSelectInfo(const ScheduleDataInfo &info);
+    void setPressSelectInfo(const DSchedule &info);
     //拖拽更新日程信息
-    void updateScheduleInfo(const ScheduleDataInfo &info);
+    void updateScheduleInfo(const DSchedule &info);
     void DragPressEvent(const QPoint &pos, DragInfoItem *item);
     //鼠标左击释放数据处理
     void mouseReleaseScheduleUpdate();
@@ -107,10 +108,11 @@ private:
 
 protected:
     //删除日程
-    void DeleteItem(const ScheduleDataInfo &info);
+    void DeleteItem(const DSchedule &info);
+
 public:
     //设置搜索选中日程
-    virtual void setSelectSearchSchedule(const ScheduleDataInfo &scheduleInfo);
+    virtual void setSelectSearchSchedule(const DSchedule &scheduleInfo);
     //初始化点击日程
     void pressScheduleInit();
     QDate getCurrentDate() const;
@@ -121,11 +123,11 @@ protected:
     virtual void slotCreate(const QDateTime &date);
     //符合创建条件
     virtual bool MeetCreationConditions(const QDateTime &date) = 0;
-    virtual void upDateInfoShow(const DragStatus &status = NONE, const ScheduleDataInfo &info = ScheduleDataInfo()) = 0;
+    virtual void upDateInfoShow(const DragStatus &status = NONE, const DSchedule &info = DSchedule()) = 0;
     virtual QDateTime getPosDate(const QPoint &p) = 0;
-    virtual void MoveInfoProcess(ScheduleDataInfo &info, const QPointF &pos) = 0;
+    virtual void MoveInfoProcess(DSchedule &info, const QPointF &pos) = 0;
     virtual PosInItem getPosInItem(const QPoint &p, const QRectF &itemRect) = 0;
-    virtual ScheduleDataInfo getScheduleInfo(const QDateTime &beginDate, const QDateTime &endDate);
+    virtual DSchedule getScheduleInfo(const QDateTime &beginDate, const QDateTime &endDate);
     virtual void ShowSchedule(DragInfoItem *infoitem);
     //设置主题
     virtual void setTheMe(int type = 0);
@@ -169,7 +171,7 @@ signals:
      * @param isShow                    是否显示
      * @param out                       显示的日程信息
      */
-    void signalScheduleShow(const bool isShow, const ScheduleDataInfo &out = ScheduleDataInfo());
+    void signalScheduleShow(const bool isShow, const DSchedule &out = DSchedule());
     //scene更新
     void signalSceneUpdate();
     void signalSwitchPrePage();
@@ -205,13 +207,13 @@ protected:
     QDateTime                           m_MoveDate;
     QPoint                              m_PressPos;
     //保证月，周/日全天和非全天的拖拽日程为同一个
-    static ScheduleDataInfo m_DragScheduleInfo;
+    static DSchedule m_DragScheduleInfo;
     static bool m_hasUpdateMark; //拖拽后是否需要更新显示标志
     QDateTime                           m_InfoBeginTime;
     QDateTime                           m_InfoEndTime;
     QDrag *m_Drag = nullptr;
     //点击的原始info
-    ScheduleDataInfo                    m_PressScheduleInfo;
+    DSchedule m_PressScheduleInfo;
     QRectF                              m_PressRect;
     /**
      * @brief m_TouchBeginPoint     触摸开始坐标

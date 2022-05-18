@@ -19,7 +19,7 @@
 #ifndef SCHEDULEITEM_H
 #define SCHEDULEITEM_H
 
-#include "src/scheduledatainfo.h"
+#include "dschedule.h"
 #include "draginfoitem.h"
 
 #include <QGraphicsItem>
@@ -35,14 +35,14 @@ public:
     CScheduleItem(QRectF rect, QGraphicsItem *parent = nullptr, int type = 0);
     ~CScheduleItem() override;
     //设置显示数据
-    void setData(const ScheduleDataInfo &info, QDate date, int totalNum);
+    void setData(const DSchedule &info, QDate date, int totalNum);
     //是否含有选中日程
-    bool hasSelectSchedule(const ScheduleDataInfo &info);
+    bool hasSelectSchedule(const DSchedule &info);
     int getType()
     {
         return m_type;
     }
-    ScheduleDataInfo getData() const
+    DSchedule getData() const
     {
         return m_vScheduleInfo;
     }

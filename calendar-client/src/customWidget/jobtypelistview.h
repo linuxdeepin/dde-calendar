@@ -32,7 +32,7 @@ private:
      * @brief addJobTypeItem 添加item
      * @return 返回item的高度
      */
-    int addJobTypeItem(const JobTypeInfo &info);//新增一行【日程类型】数据
+    int addJobTypeItem(const DScheduleType &info); //新增一行【日程类型】数据
 
 signals:
     /**

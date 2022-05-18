@@ -24,7 +24,9 @@
 #include "cradiobutton.h"
 #include "colorWidget/colorpickerWidget.h"
 #include "scheduledatamanage.h"
-#include "src/scheduledatainfo.h"
+#include "dschedule.h"
+#include "dtypecolor.h"
+
 #include <QWidget>
 #include <QColor>
 #include <QButtonGroup>
@@ -38,12 +40,6 @@ class ColorSeletorWidget : public QWidget
 public:
     explicit ColorSeletorWidget(QWidget *parent = nullptr);
 
-    //色彩类别
-    enum ColorType{
-        TypeSystem = 1, //系统默认
-        TypeUser = 7    //用户自定义
-    };
-
     /**
      * @brief reset
      * 重置
@@ -53,11 +49,11 @@ public:
      * @brief getSelectColor
      * @return 当前已选在的色彩
      */
-    JobTypeColorInfo getSelectedColorInfo();
+    DTypeColor getSelectedColorInfo();
     /**
      * @brief setUserColor 设置用户自定义的色彩
      */
-    void setUserColor(const JobTypeColorInfo&);
+    void setUserColor(const DTypeColor &);
     /**
      * @brief setSelectedColorByIndex 设置选择的色彩控件
      * @param index 色彩控件位置
@@ -72,7 +68,7 @@ public:
      * @brief selectColor 设置选择的色彩控件
      * @param color 色彩
      */
-    void setSelectedColor(const JobTypeColorInfo& color);
+    void setSelectedColor(const DTypeColor &color);
     /**
      * @brief initColorButton
      * 初始化色彩控件
@@ -82,7 +78,7 @@ public:
 
 signals:
     //选择的色彩改变信号
-    void signalColorChange(JobTypeColorInfo);
+    void signalColorChange(DTypeColor);
 
 public slots:
     //色彩控件点击信号
@@ -95,13 +91,13 @@ private:
     void initView();
 
     //添加色彩控件
-    void addColor(const JobTypeColorInfo&);
+    void addColor(const DTypeColor &);
 
 private:
-    QMap<int, JobTypeColorInfo> m_colorEntityMap;    //所有色彩实体
+    QMap<int, DTypeColor> m_colorEntityMap; //所有色彩实体
     QHBoxLayout *m_colorLayout = nullptr;     //色彩控件布局类
     QButtonGroup *m_colorGroup = nullptr;     //所有色彩控件
-    JobTypeColorInfo m_colorInfo;             //当前已选择的色彩
+    DTypeColor m_colorInfo; //当前已选择的色彩
     CRadioButton *m_userColorBtn = nullptr; //用户自定义的色彩控件
     int m_userColorBtnId = -1; //用户自定义的色彩控件id
 };

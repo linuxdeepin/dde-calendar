@@ -21,7 +21,7 @@
 #ifndef JOBTYPECOMBOBOX_H
 #define JOBTYPECOMBOBOX_H
 
-#include "src/scheduledatainfo.h"
+#include "dschedule.h"
 #include "scheduledatamanage.h"
 #include "cpushbutton.h"
 
@@ -37,8 +37,8 @@ public:
     explicit JobTypeComboBox(QWidget *parent = nullptr);
     ~JobTypeComboBox() override;
     bool updateJobType();
-    int getCurrentJobTypeNo();
-    void setCurrentJobTypeNo(int strJobTypeNo);
+    QString getCurrentJobTypeNo();
+    void setCurrentJobTypeNo(QString strJobTypeNo);
 
     void setAlert(bool isAlert);
     bool isAlert() const;
@@ -73,7 +73,7 @@ private:
 private:
     QWidget *m_customWidget {nullptr};
     CPushButton *m_addBtn {nullptr};
-    QList<JobTypeInfo> m_lstJobType;
+    QList<DScheduleType> m_lstJobType;
     int m_hoverSelectedIndex = -1; //鼠标悬停的选项下标
     int m_itemNumIndex = 0; //item数量
     DAlertControl *m_control {nullptr};

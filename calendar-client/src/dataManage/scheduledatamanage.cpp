@@ -24,18 +24,19 @@
 
 CScheduleDataManage *CScheduleDataManage::m_vscheduleDataManage = new CScheduleDataManage;
 
-CSchedulesColor CScheduleDataManage::getScheduleColorByType(int type)
+CSchedulesColor CScheduleDataManage::getScheduleColorByType(const QString &type)
 {
     CSchedulesColor color;
-    JobTypeColorInfo colorinfo;
+    DTypeColor colorinfo;
     bool isOk = false;
     if (type != 4) {
         //如果不是节假日
-        JobTypeInfo typeInfo;
+        //TODO: 类型编号改为string
+        DScheduleType typeInfo(nullptr);
         //根据类型获取日程类型信息getJobTypeByNo
         isOk = JobTypeInfoManager::instance()->getJobTypeByNo(type, typeInfo);
         //根据类型关联的颜色编号获取对应的颜色
-        colorinfo = typeInfo.getColorInfo();
+        colorinfo = typeInfo.typeColor();
 
     } else {
         //节假日 颜色变化为2
@@ -43,7 +44,7 @@ CSchedulesColor CScheduleDataManage::getScheduleColorByType(int type)
     }
 
     if (isOk) {
-        color.orginalColor = QColor(colorinfo.getColorHex());
+        color.orginalColor = QColor(colorinfo.colorCode());
         color.normalColor = color.orginalColor;
         color.normalColor.setAlphaF(0.2);
         color.pressColor = color.orginalColor;
@@ -118,8 +119,8 @@ JobTypeInfoManager *JobTypeInfoManager::instance()
  */
 bool JobTypeInfoManager::isSysJobTypeColor(int colorTypeNo)
 {
-    for (JobTypeColorInfo jobTypeColorInfo : m_lstJobTypeColor) {
-        if ((jobTypeColorInfo.getTypeNo() == colorTypeNo) && (jobTypeColorInfo.getAuthority() == 1)) { //设定1为展示权限
+    for (DTypeColor typecolor : m_lstJobTypeColor) {
+        if ((typecolor.colorID() == colorTypeNo) && (typecolor.privilege() == 1)) { //设定1为展示权限
             return true;
         }
     }
@@ -131,11 +132,11 @@ bool JobTypeInfoManager::isSysJobTypeColor(int colorTypeNo)
  * @param jobTypeColorInfo    颜色信息
  * @return                    操作结果
  */
-bool JobTypeInfoManager::getSysJobTypeColor(int colorTypeNo, JobTypeColorInfo &jobTypeColorInfo)
+bool JobTypeInfoManager::getSysJobTypeColor(int colorTypeNo, DTypeColor &jobTypeColorInfo)
 {
-    for (JobTypeColorInfo _jobTypeColorInfo : m_lstJobTypeColor) {
-        if ((_jobTypeColorInfo.getTypeNo() == colorTypeNo) && (_jobTypeColorInfo.getAuthority() == 1)) { //设定1为展示权限
-            jobTypeColorInfo = _jobTypeColorInfo;
+    for (DTypeColor typecolor : m_lstJobTypeColor) {
+        if ((typecolor.colorID() == colorTypeNo) && (typecolor.privilege() == 1)) { //设定1为展示权限
+            jobTypeColorInfo = typecolor;
             return true;
         }
     }
@@ -143,10 +144,10 @@ bool JobTypeInfoManager::getSysJobTypeColor(int colorTypeNo, JobTypeColorInfo &j
 }
 
 //查询日程类型
-bool JobTypeInfoManager::getJobTypeByNo(int iNo, JobTypeInfo &jobType)
+bool JobTypeInfoManager::getJobTypeByNo(QString iNo, DScheduleType &jobType)
 {
-    for (JobTypeInfo &jb : m_lstJobType) {
-        if (jb.getJobTypeNo() == iNo) {
+    for (DScheduleType &jb : m_lstJobType) {
+        if (jb.typeID() == iNo) {
             jobType = jb;
             return true;
         }
@@ -154,10 +155,10 @@ bool JobTypeInfoManager::getJobTypeByNo(int iNo, JobTypeInfo &jobType)
     return false;
 }
 //查询日程类型颜色
-bool JobTypeInfoManager::getJobTypeColorByNo(int iNo, JobTypeColorInfo &jobType)
+bool JobTypeInfoManager::getJobTypeColorByNo(int iNo, DTypeColor &jobType)
 {
-    for (JobTypeColorInfo &color : m_lstJobTypeColor) {
-        if (color.getTypeNo() == iNo) {
+    for (DTypeColor &color : m_lstJobTypeColor) {
+        if (color.colorID() == iNo) {
             jobType = color;
             return true;
         }
@@ -168,46 +169,47 @@ bool JobTypeInfoManager::getJobTypeColorByNo(int iNo, JobTypeColorInfo &jobType)
 //查询日程类型名称是否重复
 bool JobTypeInfoManager::isJobTypeNameUsed(QString strName)
 {
-    for (JobTypeInfo &jb : m_lstJobType) {
-        if (jb.getJobTypeName() == strName) {
+    for (DScheduleType &jb : m_lstJobType) {
+        if (jb.displayName() == strName) {
             return true;
         }
     }
     return false;
 }
 
-bool JobTypeInfoManager::isJobTypeNameUsed(const JobTypeInfo &info)
+bool JobTypeInfoManager::isJobTypeNameUsed(const DScheduleType &info)
 {
-    for (JobTypeInfo &jb : m_lstJobType) {
+    for (DScheduleType &jb : m_lstJobType) {
         //
-        if (jb.getJobTypeName() == info.getJobTypeName() && jb.getJobTypeNo() != info.getJobTypeNo()) {
+        if (jb.displayName() == info.displayName() && jb.typeID() != info.typeID()) {
             return true;
         }
     }
     return false;
 }
 //获取自定义日程类型下一个编号
-int JobTypeInfoManager::getNextTypeNo()
-{
-    int typeNo = 1;
+//TODO:代办
+//int JobTypeInfoManager::getNextTypeNo()
+//{
+//    int typeNo = 1;
 
-    for (JobTypeInfo &job : m_lstJobType) {
-        if (job.getJobTypeNo() >= typeNo) {
-            typeNo = job.getJobTypeNo() + 1;
-        }
-    }
-    if (4 == typeNo) { //节日类型占用
-        typeNo += 1;
-    }
-    return typeNo;
-}
+//    for (DScheduleType &job : m_lstJobType) {
+//        if (job.getJobTypeNo() >= typeNo) {
+//            typeNo = job.getJobTypeNo() + 1;
+//        }
+//    }
+//    if (4 == typeNo) { //节日类型占用
+//        typeNo += 1;
+//    }
+//    return typeNo;
+//}
 //获取自定义日程类型颜色下一个编号
 int JobTypeInfoManager::getNextColorTypeNo()
 {
     int colorTypeNo = 1;
-    for (JobTypeColorInfo &jobColor : m_lstJobTypeColor) {
-        if (jobColor.getTypeNo() >= colorTypeNo) {
-            colorTypeNo = jobColor.getTypeNo() + 1;
+    for (DTypeColor &jobColor : m_lstJobTypeColor) {
+        if (jobColor.colorID() >= colorTypeNo) {
+            colorTypeNo = jobColor.colorID() + 1;
         }
     }
     return colorTypeNo;

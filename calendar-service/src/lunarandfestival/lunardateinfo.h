@@ -23,7 +23,7 @@
 
 #include "lunarandfestival.h"
 #include "method_interface.h"
-#include "src/commondatastruct.h"
+#include "dschedule.h"
 
 #include <QDate>
 #include <QMap>
@@ -35,7 +35,7 @@
 class LunarDateInfo
 {
 public:
-    explicit LunarDateInfo(const Job &job);
+    explicit LunarDateInfo(const DSchedule &job);
     /**
      * @brief getRRuleStartDate         获取重复农历日程开始时间(公历)集
      * @param beginDate                 查询的起始时间
@@ -73,7 +73,7 @@ private:
      * @param rule                  重复规则
      * @return
      */
-    stRRuleOptions ParseRRule(const QString &rule);
+    //    stRRuleOptions ParseRRule(const QString &rule);
 
     /**
      * @brief isWithinTimeFrame     是否在查询时间范围内
@@ -92,8 +92,8 @@ private:
     bool addSolarMap(QMap<int, QDate> &solarMap, QDate &nextDate, int &count, const int addDays);
 
 private:
-    Job m_job;
-    stRRuleOptions m_options;
+    DSchedule m_job;
+    //    stRRuleOptions m_options;
     QDate m_queryStartDate;
     QDate m_queryEndDate;
     qint64 m_dateInterval; //日程开始结束间隔天数

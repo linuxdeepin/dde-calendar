@@ -38,7 +38,7 @@ ScheduleTypeEditDlg::ScheduleTypeEditDlg(QWidget *parent)
     init();
 }
 
-ScheduleTypeEditDlg::ScheduleTypeEditDlg(const JobTypeInfo &jobTypeOld, QWidget *parent)
+ScheduleTypeEditDlg::ScheduleTypeEditDlg(const DScheduleType &jobTypeOld, QWidget *parent)
     : DDialog(parent)
     , m_jobTypeOld(jobTypeOld)
     , m_jobTypeNew(jobTypeOld)
@@ -126,20 +126,22 @@ void ScheduleTypeEditDlg::initView()
 void ScheduleTypeEditDlg::initData()
 {
     m_titleLabel->setText(m_title);
-    m_lineEdit->setText(m_jobTypeOld.getJobTypeName());
-    m_typeText = m_jobTypeOld.getJobTypeName();//编辑时要初始化数据
-    this->getButton(1)->setEnabled(!m_jobTypeOld.getJobTypeName().isEmpty());//如果是新增，则保存按钮默认不可用
+    m_lineEdit->setText(m_jobTypeOld.displayName());
+    m_typeText = m_jobTypeOld.displayName(); //编辑时要初始化数据
+    this->getButton(1)->setEnabled(!m_jobTypeOld.displayName().isEmpty()); //如果是新增，则保存按钮默认不可用
 
     //将用户上一次选择的自定义颜色添加进去
     QString colorName = CConfigSettings::getInstance()->value("LastUserColor", "").toString();
     if (!colorName.isEmpty()) {
-        m_colorSeletor->setUserColor(JobTypeColorInfo(0, colorName, 7));
+        //TODO:设置颜色
+        //        m_colorSeletor->setUserColor(JobTypeColorInfo(0, colorName, 7));
     }
 
     switch (m_dialogType) {
     case DialogEditType: {
         //编辑日程类型
-        m_colorSeletor->setSelectedColor(m_jobTypeOld.getColorInfo());
+        //TODO:设置颜色
+        //        m_colorSeletor->setSelectedColor(m_jobTypeOld.getColorInfo());
     } break;
     default: {
         //默认新建日程，选中上一次选中的颜色
@@ -188,7 +190,7 @@ void ScheduleTypeEditDlg::slotEditTextChanged(const QString &strName)
         this->getButton(1)->setEnabled(false);
         return;
     }
-    m_jobTypeNew.setJobTypeName(tStitlename);
+    m_jobTypeNew.setDisplayName(tStitlename);
     //在编辑日程状态下不对编辑的日程类型名做重名处理
     bool isUsed = m_dialogType == DialogEditType ? JobTypeInfoManager::instance()->isJobTypeNameUsed(m_jobTypeNew)
                                                  : JobTypeInfoManager::instance()->isJobTypeNameUsed(tStitlename);
@@ -222,7 +224,8 @@ void ScheduleTypeEditDlg::slotBtnCancel()
 void ScheduleTypeEditDlg::slotBtnNext()
 {
     //先修改颜色
-    m_jobTypeNew.setColorInfo(m_colorSeletor->getSelectedColorInfo());
+    //TODO:设置颜色
+    //    m_jobTypeNew.setColorInfo(m_colorSeletor->getSelectedColorInfo());
 
     CScheduleOperation so;
     //更新或创建日程类型

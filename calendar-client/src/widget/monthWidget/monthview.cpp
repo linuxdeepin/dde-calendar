@@ -72,20 +72,20 @@ CMonthView::~CMonthView()
 {
 }
 
-void CMonthView::setSelectSchedule(const ScheduleDataInfo &scheduleInfo)
+void CMonthView::setSelectSchedule(const DSchedule &scheduleInfo)
 {
     m_monthGraphicsView->setSelectSearchSchedule(scheduleInfo);
 }
 
-void CMonthView::slotScheduleRemindWidget(const bool isShow, const ScheduleDataInfo &out)
+void CMonthView::slotScheduleRemindWidget(const bool isShow, const DSchedule &out)
 {
     if (isShow) {
         //获取当前鼠标位置
         QVariant variant;
         CalendarGlobalEnv::getGlobalEnv()->getValueByKey(DDECalendar::CursorPointKey, variant);
         QPoint remindPos = variant.value<QPoint>();
-        CSchedulesColor gdColor = CScheduleDataManage::getScheduleDataManage()->getScheduleColorByType(
-                                      out.getType());
+        //TODO:根据类型获取颜色
+        CSchedulesColor gdColor; //= CScheduleDataManage::getScheduleDataManage()->getScheduleColorByType(out.getType());
         m_remindWidget->setData(out, gdColor);
         //获取屏幕大小
         QRect desktopRect = QApplication::desktop()->rect();
@@ -167,7 +167,7 @@ void CMonthView::setFestival(const QMap<QDate, int> &festivalInfo)
  * @brief CMonthView::setScheduleInfo       设置显示日程
  * @param scheduleInfo
  */
-void CMonthView::setScheduleInfo(const QMap<QDate, QVector<ScheduleDataInfo> > &scheduleInfo)
+void CMonthView::setScheduleInfo(const QMap<QDate, QVector<DSchedule>> &scheduleInfo)
 {
     m_monthGraphicsView->setScheduleInfo(scheduleInfo);
 }
@@ -176,7 +176,7 @@ void CMonthView::setScheduleInfo(const QMap<QDate, QVector<ScheduleDataInfo> > &
  * @brief CMonthView::setSearchScheduleInfo     设置搜索日程
  * @param searchScheduleInfo
  */
-void CMonthView::setSearchScheduleInfo(const QVector<ScheduleDataInfo> &searchScheduleInfo)
+void CMonthView::setSearchScheduleInfo(const QVector<DSchedule> &searchScheduleInfo)
 {
     m_monthGraphicsView->setSearchScheduleInfo(searchScheduleInfo);
 }
@@ -209,18 +209,19 @@ void CMonthView::setLunarVisible(bool visible)
     m_monthGraphicsView->setLunarVisible(visible);
 }
 
-ScheduleDataInfo CMonthView::getScheduleInfo(const QDate &beginDate, const QDate &endDate)
+DSchedule CMonthView::getScheduleInfo(const QDate &beginDate, const QDate &endDate)
 {
-    ScheduleDataInfo info;
+    DSchedule info;
     if (beginDate.daysTo(endDate) > 0) {
-        info.setBeginDateTime(QDateTime(beginDate, QTime(0, 0, 0)));
-        info.setEndDateTime(QDateTime(endDate, QTime(23, 59, 59)));
+        info.setDtStart(QDateTime(beginDate, QTime(0, 0, 0)));
+        info.setDtEnd(QDateTime(endDate, QTime(23, 59, 59)));
     } else {
-        info.setBeginDateTime(QDateTime(endDate, QTime(0, 0, 0)));
-        info.setEndDateTime(QDateTime(beginDate, QTime(23, 59, 00)));
+        info.setDtStart(QDateTime(endDate, QTime(0, 0, 0)));
+        info.setDtEnd(QDateTime(beginDate, QTime(23, 59, 00)));
     }
-    info.setTitleName(tr("New Event"));
+    info.setSummary(tr("New Event"));
     info.setAllDay(true);
-    info.setRemindData(RemindData(1, QTime(9, 0)));
+    //TODO:设置提醒规则
+    //    info.setRemindData(RemindData(1, QTime(9, 0)));
     return info;
 }

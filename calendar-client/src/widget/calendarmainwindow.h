@@ -20,7 +20,7 @@
 #ifndef CALENDARMAINWINDOW_H
 #define CALENDARMAINWINDOW_H
 
-#include "src/scheduledatainfo.h"
+#include "dschedule.h"
 #include "jobtypelistview.h"
 
 #include <DLabel>
@@ -90,7 +90,7 @@ private slots:
     void slotStextfocusChanged(bool onFocus);
     void slotSearchEdit();
     //单击搜索日程动画设置
-    void slotSearchSelectSchedule(const ScheduleDataInfo &scheduleInfo);
+    void slotSearchSelectSchedule(const DSchedule &scheduleInfo);
     //添加视图阴影
     void slotViewtransparentFrame(const bool isShow);
     //启用buttonbox

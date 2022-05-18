@@ -21,7 +21,7 @@
 #ifndef DRAGINFOITEM_H
 #define DRAGINFOITEM_H
 #include "scheduledatamanage.h"
-#include "src/scheduledatainfo.h"
+#include "dschedule.h"
 #include "cfocusitem.h"
 
 #include <DFontSizeManager>
@@ -41,8 +41,8 @@ class DragInfoItem : public CFocusItem
 public:
     explicit DragInfoItem(QRectF rect, QGraphicsItem *parent = nullptr);
     ~DragInfoItem() override;
-    void setData(const ScheduleDataInfo  &vScheduleInfo);
-    ScheduleDataInfo getData() const;
+    void setData(const DSchedule &vScheduleInfo);
+    DSchedule getData() const;
 
     void setFont(DFontSizeManager::SizeType type);
     void setOffset(const int &offset);
@@ -60,11 +60,11 @@ public:
 public:
     static void setPressFlag(const bool flag);
     //设置选中日程
-    static void setPressSchedule(const ScheduleDataInfo &pressSchedule);
+    static void setPressSchedule(const DSchedule &pressSchedule);
     //获取选中日程
-    static ScheduleDataInfo getPressSchedule();
+    static DSchedule getPressSchedule();
     //设置搜索日程
-    static void setSearchScheduleInfo(const QVector<ScheduleDataInfo> &searchScheduleInfo);
+    static void setSearchScheduleInfo(const QVector<DSchedule> &searchScheduleInfo);
 public slots:
     void animationFinished();
 protected:
@@ -75,7 +75,7 @@ protected:
     virtual void paintBackground(QPainter *painter, const QRectF &rect, const bool isPixMap = false) = 0;
 
 protected:
-    ScheduleDataInfo                   m_vScheduleInfo;
+    DSchedule m_vScheduleInfo;
     QFont                               m_font;
     bool                                m_vSelectflag = false;
     bool                                m_vHoverflag = false;
@@ -88,9 +88,9 @@ protected:
     QPropertyAnimation *m_properAnimationSecond = nullptr;
     QSequentialAnimationGroup *m_Group = nullptr;
     static bool                         m_press;
-    static ScheduleDataInfo             m_HoverInfo;
-    static ScheduleDataInfo             m_pressInfo;
-    static QVector<ScheduleDataInfo>    m_searchScheduleInfo;
+    static DSchedule m_HoverInfo;
+    static DSchedule m_pressInfo;
+    static QVector<DSchedule> m_searchScheduleInfo;
 };
 
 #endif // DRAGINFOITEM_H

@@ -20,14 +20,14 @@
 */
 #ifndef SCHEDULEDATERANGEINFO_H
 #define SCHEDULEDATERANGEINFO_H
-#include "src/scheduledatainfo.h"
+#include "dschedule.h"
 
 typedef struct _tagMScheduleDateRangeInfo {
     QDate bdate;
     QDate edate;
     bool state;
     int  num;
-    ScheduleDataInfo tData;
+    DSchedule tData;
 
     bool operator <(const _tagMScheduleDateRangeInfo &info)const
     {

@@ -21,11 +21,11 @@
 #ifndef CALENDARHUANGLI_H
 #define CALENDARHUANGLI_H
 
-#include "dbmanager/huanglidatabase.h"
+#include "dhuanglidatabase.h"
 
 #include <QObject>
 
-class HuangLiDataBase;
+class DHuangLiDataBase;
 
 class CalendarHuangLi : public QObject
 {
@@ -33,19 +33,14 @@ class CalendarHuangLi : public QObject
 public:
     explicit CalendarHuangLi(QObject *parent = nullptr);
 
-    QString GetFestivalMonth(quint32 year, quint32 month);
-    QString GetHuangLiDay(quint32 year, quint32 month, quint32 day);
-    QString GetHuangLiMonth(quint32 year, quint32 month, bool fill);
-    CaLunarDayInfo GetLunarInfoBySolar(quint32 year, quint32 month, quint32 day);
-    CaLunarMonthInfo GetLunarCalendarMonth(quint32 year, quint32 month, bool fill);
+    QString getFestivalMonth(quint32 year, quint32 month);
+    QString getHuangLiDay(quint32 year, quint32 month, quint32 day);
+    QString getHuangLiMonth(quint32 year, quint32 month, bool fill);
+    CaLunarDayInfo getLunarInfoBySolar(quint32 year, quint32 month, quint32 day);
+    CaLunarMonthInfo getLunarCalendarMonth(quint32 year, quint32 month, bool fill);
 
 private:
-signals:
-
-public slots:
-
-private:
-    HuangLiDataBase *m_database;
+    DHuangLiDataBase *m_database;
 };
 
 #endif // CALENDARHUANGLI_H

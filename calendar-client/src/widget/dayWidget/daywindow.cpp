@@ -156,7 +156,7 @@ void CDayWindow::updateShowDate(const bool isUpdateBar)
 void CDayWindow::updateShowSchedule()
 {
     //获取一天的日程信息
-    QMap<QDate, QVector<ScheduleDataInfo> > _weekScheduleInfo = m_calendarManager->getScheduleTask()->getScheduleInfo(getSelectDate(), getSelectDate());
+    QMap<QDate, QVector<DSchedule>> _weekScheduleInfo = m_calendarManager->getScheduleTask()->getScheduleInfo(getSelectDate(), getSelectDate());
     //设置显示日程信息
     m_scheduleView->setShowScheduleInfo(_weekScheduleInfo);
     //获取界面显示定位时间位置
@@ -190,12 +190,12 @@ void CDayWindow::updateShowLunar()
  * @brief CDayWindow::setSelectSearchScheduleInfo       设置选中日程
  * @param info
  */
-void CDayWindow::setSelectSearchScheduleInfo(const ScheduleDataInfo &info)
+void CDayWindow::setSelectSearchScheduleInfo(const DSchedule &info)
 {
-    if (info.getAllDay()) {
+    if (info.allDay()) {
         setTime();
     } else {
-        m_scheduleView->setTime(info.getBeginDateTime().time());
+        m_scheduleView->setTime(info.dtStart().time());
     }
 
     m_scheduleView->setSelectSchedule(info);
@@ -309,17 +309,17 @@ void CDayWindow::initConnection()
  * @brief CDayWindow::setMakeTime       界面显示定位时间位置
  * @param info
  */
-void CDayWindow::setMakeTime(QMap<QDate, QVector<ScheduleDataInfo> > &info)
+void CDayWindow::setMakeTime(QMap<QDate, QVector<DSchedule>> &info)
 {
     if (info.contains(getSelectDate())) {
-        QVector<ScheduleDataInfo> _scheduleVector = info[getSelectDate()];
+        QVector<DSchedule> _scheduleVector = info[getSelectDate()];
         //设置当前第一个非全天默认时间
         QDateTime firstscheduleBeginTime(getSelectDate().addDays(1), QTime(0, 0, 0));
         //获取非全天日程
         for (int i = 0 ; i < _scheduleVector.size(); ++i) {
-            if (!_scheduleVector.at(i).getAllDay()) {
-                if (firstscheduleBeginTime > _scheduleVector.at(i).getBeginDateTime()) {
-                    firstscheduleBeginTime = _scheduleVector.at(i).getBeginDateTime();
+            if (!_scheduleVector.at(i).allDay()) {
+                if (firstscheduleBeginTime > _scheduleVector.at(i).dtStart()) {
+                    firstscheduleBeginTime = _scheduleVector.at(i).dtStart();
                 }
             }
         }

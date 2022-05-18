@@ -39,12 +39,12 @@ CYearScheduleView::~CYearScheduleView()
 {
 }
 
-bool YScheduleDateThan(const ScheduleDataInfo &s1, const ScheduleDataInfo &s2)
+bool YScheduleDateThan(const DSchedule &s1, const DSchedule &s2)
 {
-    QDate bDate1 = s1.getBeginDateTime().date();
-    QDate eDate1 = s1.getEndDateTime().date();
-    QDate bDate2 = s2.getBeginDateTime().date();
-    QDate eDate2 = s2.getEndDateTime().date();
+    QDate bDate1 = s1.dtStart().date();
+    QDate eDate1 = s1.dtEnd().date();
+    QDate bDate2 = s2.dtStart().date();
+    QDate eDate2 = s2.dtEnd().date();
 
     if (bDate1 != eDate1 && bDate2 == eDate2) {
         return true;
@@ -53,24 +53,24 @@ bool YScheduleDateThan(const ScheduleDataInfo &s1, const ScheduleDataInfo &s2)
     } else if (bDate1 != eDate1 && bDate2 != eDate2) {
         return bDate1 < bDate2;
     } else {
-        if (s1.getBeginDateTime() == s2.getBeginDateTime()) {
-            return s1.getTitleName() < s2.getTitleName();
+        if (s1.dtStart() == s2.dtStart()) {
+            return s1.summary() < s2.summary();
         } else {
-            return s1.getBeginDateTime() < s2.getBeginDateTime();
+            return s1.dtStart() < s2.dtStart();
         }
     }
 }
-bool YScheduleDaysThan(const ScheduleDataInfo &s1, const ScheduleDataInfo &s2)
+bool YScheduleDaysThan(const DSchedule &s1, const DSchedule &s2)
 {
-    return s1.getBeginDateTime().date().daysTo(s1.getEndDateTime().date()) > s2.getBeginDateTime().date().daysTo(s2.getEndDateTime().date());
+    return s1.dtStart().date().daysTo(s1.dtEnd().date()) > s2.dtStart().date().daysTo(s2.dtEnd().date());
 }
 
-void CYearScheduleView::setData(QVector<ScheduleDataInfo> &vListData)
+void CYearScheduleView::setData(QVector<DSchedule> &vListData)
 {
-    QVector<ScheduleDataInfo> valldayListData, vDaylistdata;
+    QVector<DSchedule> valldayListData, vDaylistdata;
 
     for (int i = 0; i < vListData.count(); i++) {
-        if (vListData.at(i).getAllDay()) {
+        if (vListData.at(i).allDay()) {
             valldayListData.append(vListData.at(i));
         } else {
             vDaylistdata.append(vListData.at(i));
@@ -83,9 +83,11 @@ void CYearScheduleView::setData(QVector<ScheduleDataInfo> &vListData)
     std::sort(vDaylistdata.begin(), vDaylistdata.end(), YScheduleDateThan);
 
     for (int i = 0; i < valldayListData.count(); i++) {
-        QVector<ScheduleDataInfo>::iterator iter = valldayListData.begin();
-        if (valldayListData.at(i).getType() == DDECalendar::FestivalTypeID) {
-            ScheduleDataInfo moveDate;
+        QVector<DSchedule>::iterator iter = valldayListData.begin();
+        //        if (valldayListData.at(i).getType() == DDECalendar::FestivalTypeID) {
+        //TODO:类型判断
+        if (false) {
+            DSchedule moveDate;
             moveDate = valldayListData.at(i);
             valldayListData.removeAt(i);
             valldayListData.insert(iter, moveDate);
@@ -97,18 +99,19 @@ void CYearScheduleView::setData(QVector<ScheduleDataInfo> &vListData)
     m_vlistData.append(vDaylistdata);
 
     if (m_vlistData.size() > DDEYearCalendar::YearScheduleListMaxcount) {
-        QVector<ScheduleDataInfo> vTListData;
+        QVector<DSchedule> vTListData;
         for (int i = 0; i < 4; i++) {
-            if (m_vlistData.at(i).getBeginDateTime().date() != m_vlistData.at(i).getEndDateTime().date() && !m_vlistData.at(i).getAllDay()) {
-                if (m_vlistData.at(i).getBeginDateTime().date() != m_currentDate) {
+            if (m_vlistData.at(i).dtStart().date() != m_vlistData.at(i).dtEnd().date() && !m_vlistData.at(i).allDay()) {
+                if (m_vlistData.at(i).dtStart().date() != m_currentDate) {
                     m_vlistData[i].setAllDay(true);
                 }
             }
             vTListData.append(m_vlistData.at(i));
         }
-        ScheduleDataInfo info;
-        info.setTitleName("......");
-        info.setID(-1);
+        DSchedule info;
+        info.setSummary("......");
+        //TODO:设置类型
+        //        info.setID(-1);
         vTListData.append(info);
         m_vlistData = vTListData;
     }
@@ -209,15 +212,18 @@ void CYearScheduleView::paintEvent(QPaintEvent *event)
     }
 }
 
-void CYearScheduleView::paintItem(QPainter &painter, ScheduleDataInfo info, int index)
+void CYearScheduleView::paintItem(QPainter &painter, DSchedule info, int index)
 {
     int labelwidth = width() - 30;
     int bHeight = index * 29 + 10;
     int labelheight = 28;
-    ScheduleDataInfo &gd = info;
-    CSchedulesColor gdColor = CScheduleDataManage::getScheduleDataManage()->getScheduleColorByType(gd.getType());
+    DSchedule &gd = info;
+    //TODO:根据类型获取颜色
+    CSchedulesColor gdColor; //= CScheduleDataManage::getScheduleDataManage()->getScheduleColorByType(gd.getType());
 
-    if (gd.getID() == -1) {
+    //TODO:判断是否为。。。
+    //        if (info.getID() != -1) {
+    if (false) {
         QString str = "...";
 
         painter.save();
@@ -226,7 +232,9 @@ void CYearScheduleView::paintItem(QPainter &painter, ScheduleDataInfo info, int 
         painter.drawText(QRect(25, bHeight, labelwidth - 80, labelheight - 2), Qt::AlignLeft | Qt::AlignVCenter, str);
         painter.restore();
     } else {
-        if (info.getID() != -1) {
+        //TODO:判断是否为。。。
+        //        if (info.getID() != -1) {
+        if (true) {
             //圆点m_solocolor
             painter.save();
             painter.setBrush(QBrush(gdColor.orginalColor));
@@ -241,7 +249,7 @@ void CYearScheduleView::paintItem(QPainter &painter, ScheduleDataInfo info, int 
         painter.setPen(m_btTextColor);
         painter.setFont(m_textfont);
         QFontMetrics fm = painter.fontMetrics();
-        QString tSTitleName = gd.getTitleName();
+        QString tSTitleName = gd.summary();
         tSTitleName.replace("\n", "");
         str = tSTitleName;
         int tilenameW = labelwidth - 80;
@@ -262,18 +270,20 @@ void CYearScheduleView::paintItem(QPainter &painter, ScheduleDataInfo info, int 
 
         painter.restore();
 
-        if (info.getID() != -1) {
+        //TODO:判断是否为。。。
+        //        if (info.getID() != -1) {
+        if (true) {
             //右边时间
             painter.save();
             painter.setPen(m_btimecolor);
             painter.setFont(m_textfont);
-            if (info.getAllDay()) {
+            if (info.allDay()) {
                 str = tr("All Day");
             } else {
-                if (m_currentDate > info.getBeginDateTime().date()) {
+                if (m_currentDate > info.dtStart().date()) {
                     str = tr("All Day");
                 } else {
-                    str = info.getBeginDateTime().time().toString(m_timeFormat);
+                    str = info.dtStart().time().toString(m_timeFormat);
                 }
             }
             painter.drawText(QRect(width() - 70, bHeight, 57, labelheight - 2), Qt::AlignRight | Qt::AlignVCenter, str);
@@ -307,7 +317,7 @@ CYearScheduleOutView::CYearScheduleOutView(QWidget *parent)
     this->setContent(yearscheduleview);
 }
 
-void CYearScheduleOutView::setData(QVector<ScheduleDataInfo> &vListData)
+void CYearScheduleOutView::setData(QVector<DSchedule> &vListData)
 {
     list_count = vListData.size();
     yearscheduleview->setData(vListData);
@@ -372,7 +382,9 @@ void CYearScheduleOutView::mousePressEvent(QMouseEvent *event)
             //跳转到周视图
         } else {
             //如果日程类型不为节假日或纪念日则显示编辑框
-            if (scheduleinfoList.at(currentIndex).getType() != DDECalendar::FestivalTypeID) {
+            //TODO:日程类型判断
+            //            if (scheduleinfoList.at(currentIndex).getType() != DDECalendar::FestivalTypeID) {
+            if (true) {
                 //因为提示框会消失，所以设置CScheduleDlg的父类为主窗口
                 CScheduleDlg dlg(0, qobject_cast<QWidget *>(this->parent()));
                 dlg.setData(scheduleinfoList.at(currentIndex));

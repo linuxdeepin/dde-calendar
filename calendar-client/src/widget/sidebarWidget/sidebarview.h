@@ -36,7 +36,7 @@ signals:
 
 public slots:
     //自定义itemWidget控件状态改变事件
-    void slotItemWidgetStatusChange(bool status, int id);
+    void slotItemWidgetStatusChange(bool status, QString id);
 
 protected:
     void paintEvent(QPaintEvent *event) override;
@@ -47,7 +47,7 @@ private:
     void initData();
 
     //重置本地日程类型item
-    void resetJobTypeChildItem(QTreeWidgetItem* parentItem);
+    void resetJobTypeChildItem(QTreeWidgetItem *parentItem);
 
 private:
     QTreeWidget *m_treeWidget = nullptr;        //树结构

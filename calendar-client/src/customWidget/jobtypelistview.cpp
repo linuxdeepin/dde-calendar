@@ -10,7 +10,6 @@
 #include <QPainter>
 #include <QHeaderView>
 
-Q_DECLARE_METATYPE(JobTypeInfo)
 //Qt::UserRole + 1,会影响item的高度
 static const int RoleJobTypeInfo = Qt::UserRole + 2;
 static const int RoleJobTypeEditable = Qt::UserRole + 3;
@@ -126,7 +125,7 @@ bool JobTypeListView::updateJobType()
 {
     m_modelJobType->removeRows(0, m_modelJobType->rowCount());//先清理
     m_iIndexCurrentHover = -1;
-    QList<JobTypeInfo> lstJobType = JobTypeInfoManager::instance()->getJobTypeList();
+    QList<DScheduleType> lstJobType = JobTypeInfoManager::instance()->getJobTypeList();
     int viewHeight = 0;
     for (int i = 0; i < lstJobType.size(); i++) {
         viewHeight += addJobTypeItem(lstJobType[i]);
@@ -143,12 +142,13 @@ bool JobTypeListView::canAdd()
     return JobTypeInfoManager::instance()->getJobTypeList().count() < 20;
 }
 
-int JobTypeListView::addJobTypeItem(const JobTypeInfo &info)
+int JobTypeListView::addJobTypeItem(const DScheduleType &info)
 {
     int itemHeight = 0;
     DStandardItem *item = new DStandardItem;
     item->setData(QVariant::fromValue(info), RoleJobTypeInfo);
-    item->setData(info.getAuthority() > 1, RoleJobTypeEditable);
+    //TODO:根据日程类型权限设置显示数据
+    //    item->setData(info.getAuthority() > 1, RoleJobTypeEditable);
     item->setData(false, RoleJobTypeLine);
 
     //首个 非默认日程类型，前面 添加分割线
@@ -179,7 +179,7 @@ void JobTypeListView::slotUpdateJobType()
     if (!item)
         return;
 
-    JobTypeInfo info = item->data(RoleJobTypeInfo).value<JobTypeInfo>();
+    DScheduleType info = item->data(RoleJobTypeInfo).value<DScheduleType>();
     ScheduleTypeEditDlg a(info, this);
     a.exec();
     updateJobType();//更新item
@@ -192,8 +192,9 @@ void JobTypeListView::slotDeleteJobType()
     if (!item)
         return;
 
-    JobTypeInfo info = item->data(RoleJobTypeInfo).value<JobTypeInfo>();
-    int typeNo = info.getJobTypeNo();
+    DScheduleType info = item->data(RoleJobTypeInfo).value<DScheduleType>();
+    //TODO:获取日程编号
+    QString &&typeNo = info.typeID();
 
     CScheduleOperation so;
     if (so.isJobTypeUsed(typeNo)) {
@@ -229,12 +230,12 @@ void JobTypeListViewStyle::paint(QPainter *painter, const QStyleOptionViewItem &
     }
     opt.rect.adjust(0, 5, 0, -5);
     DStyledItemDelegate::paint(painter, opt, index);
-    JobTypeInfo info = index.data(RoleJobTypeInfo).value<JobTypeInfo>();
+    DScheduleType info = index.data(RoleJobTypeInfo).value<DScheduleType>();
 
     //draw icon
     painter->save();
     painter->setPen(QPen(QColor(0, 0, 0, int(255 * 0.1)), 2));
-    painter->setBrush(QColor(info.getColorHex()));
+    painter->setBrush(QColor(info.typeColor().colorCode()));
     painter->drawEllipse(QRect(opt.rect.x() + 12, opt.rect.y() + 10, 16, 16));
 
     //draw text
@@ -242,15 +243,15 @@ void JobTypeListViewStyle::paint(QPainter *painter, const QStyleOptionViewItem &
     QFontMetrics fontMetr(painter->font());
 
     //如果为焦点,且不为系统自带颜色
-    if (opt.state & QStyle::State_HasFocus && !info.getColorInfo().isSysColorInfo()) {
+    if (opt.state & QStyle::State_HasFocus && !info.typeColor().isSysColorInfo()) {
     }
 
-    JobTypeListView *view = qobject_cast<JobTypeListView*>(parent());
+    JobTypeListView *view = qobject_cast<JobTypeListView *>(parent());
     //如果当前的index为hover状态则空出图标位置
     if (view && view->m_iIndexCurrentHover == index.row()) {
-        painter->drawText(opt.rect.adjusted(38, 0, -60, 0), Qt::AlignVCenter | Qt::AlignLeft, info.getJobTypeName());
+        painter->drawText(opt.rect.adjusted(38, 0, -60, 0), Qt::AlignVCenter | Qt::AlignLeft, info.displayName());
     } else {
-        painter->drawText(opt.rect.adjusted(38, 0, -10, 0), Qt::AlignVCenter | Qt::AlignLeft, info.getJobTypeName());
+        painter->drawText(opt.rect.adjusted(38, 0, -10, 0), Qt::AlignVCenter | Qt::AlignLeft, info.displayName());
     }
 
     painter->restore();

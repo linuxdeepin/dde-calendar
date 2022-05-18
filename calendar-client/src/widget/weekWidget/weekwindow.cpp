@@ -358,7 +358,7 @@ void CWeekWindow::updateShowDate(const bool isUpdateBar)
  */
 void CWeekWindow::updateShowSchedule()
 {
-    QMap<QDate, QVector<ScheduleDataInfo> > _weekScheduleInfo = m_calendarManager->getScheduleTask()->getScheduleInfo(m_startDate, m_stopDate);
+    QMap<QDate, QVector<DSchedule>> _weekScheduleInfo = m_calendarManager->getScheduleTask()->getScheduleInfo(m_startDate, m_stopDate);
     m_scheduleView->setShowScheduleInfo(_weekScheduleInfo);
 }
 
@@ -377,7 +377,7 @@ void CWeekWindow::updateShowLunar()
  * @brief CWeekWindow::setSelectSearchScheduleInfo      设置选中搜索日程
  * @param info
  */
-void CWeekWindow::setSelectSearchScheduleInfo(const ScheduleDataInfo &info)
+void CWeekWindow::setSelectSearchScheduleInfo(const DSchedule &info)
 {
     m_scheduleView->setSelectSchedule(info);
 }

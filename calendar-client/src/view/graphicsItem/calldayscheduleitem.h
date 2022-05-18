@@ -22,13 +22,14 @@
 #define CALLDAYSCHEDULEITEM_H
 
 #include "draginfoitem.h"
+#include "dschedule.h"
 
 class CAllDayScheduleItem : public DragInfoItem
 {
     Q_OBJECT
 public:
     explicit CAllDayScheduleItem(QRectF rect, QGraphicsItem *parent = nullptr);
-    bool hasSelectSchedule(const ScheduleDataInfo &info);
+    bool hasSelectSchedule(const DSchedule &info);
 
 protected:
     void paintBackground(QPainter *painter, const QRectF &rect, const bool isPixMap = false) override;

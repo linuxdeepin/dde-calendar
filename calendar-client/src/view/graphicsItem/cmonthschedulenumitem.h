@@ -22,7 +22,7 @@
 #define CMONTHSCHEDULENUMITEM_H
 
 #include "cfocusitem.h"
-#include "src/scheduledatainfo.h"
+#include "dschedule.h"
 #include "scheduledaterangeinfo.h"
 
 #include <DFontSizeManager>

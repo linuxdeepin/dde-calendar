@@ -22,7 +22,8 @@
 #define SCHEDULETYPEEDITDLG_H
 
 #include "colorseletorwidget.h"
-#include "src/scheduledatainfo.h"
+#include "dschedule.h"
+#include "dscheduletype.h"
 
 #include <DDialog>
 #include <DLineEdit>
@@ -36,7 +37,7 @@ public:
     //新增
     explicit ScheduleTypeEditDlg(QWidget *parent = nullptr);
     //iJobTypeNo==0 ？ 新增 or 修改
-    explicit ScheduleTypeEditDlg(const JobTypeInfo &jobTypeOld, QWidget *parent = nullptr);
+    explicit ScheduleTypeEditDlg(const DScheduleType &jobTypeOld, QWidget *parent = nullptr);
 
 private:
     enum DialogType { //对话框类型
@@ -78,8 +79,8 @@ private:
     void initData();
 
 private:
-    JobTypeInfo m_jobTypeOld;       //被修改的日程类型
-    JobTypeInfo m_jobTypeNew;       //修改后的日程类型
+    DScheduleType m_jobTypeOld; //被修改的日程类型
+    DScheduleType m_jobTypeNew; //修改后的日程类型
     QString m_title = "";   //弹窗名
     DLineEdit *m_lineEdit = nullptr;    //编辑器
     QLabel *m_titleLabel = nullptr;     //弹窗名控件

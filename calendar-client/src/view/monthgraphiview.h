@@ -21,9 +21,9 @@
 #ifndef MONTHGRAPHIVIEW_H
 #define MONTHGRAPHIVIEW_H
 
-#include "src/scheduledatainfo.h"
-#include "src/lunardatastruct.h"
-#include "src/dbusdatastruct.h"
+#include "dschedule.h"
+#include "huangliData/lunardatastruct.h"
+#include "huangliData/dbusdatastruct.h"
 #include "draginfographicsview.h"
 #include "view/graphicsItem/cmonthdayitem.h"
 
@@ -57,11 +57,12 @@ public:
     //设置是否显示农历信息
     void setLunarVisible(bool visible);
     //设置日程信息
-    void setScheduleInfo(const QMap<QDate, QVector<ScheduleDataInfo> > &info);
+    void setScheduleInfo(const QMap<QDate, QVector<DSchedule>> &info);
     //设置搜索选中日程
-    void setSelectSearchSchedule(const ScheduleDataInfo &scheduleInfo) override;
+    void setSelectSearchSchedule(const DSchedule &scheduleInfo) override;
     //设置搜索日程信息
-    void setSearchScheduleInfo(const QVector<ScheduleDataInfo> &searchScheduleInfo);
+    void setSearchScheduleInfo(const QVector<DSchedule> &searchScheduleInfo);
+
 private:
     void updateSize();
     void updateLunar();
@@ -87,12 +88,12 @@ private:
     //根据鼠标移动的距离判断是否创建日程
     bool JudgeIsCreate(const QPointF &pos)  override;
     void RightClickToCreate(QGraphicsItem *listItem, const QPoint &pos) override;
-    void MoveInfoProcess(ScheduleDataInfo &info, const QPointF &pos) override;
+    void MoveInfoProcess(DSchedule &info, const QPointF &pos) override;
     QDateTime getDragScheduleInfoBeginTime(const QDateTime &moveDateTime) override;
     QDateTime getDragScheduleInfoEndTime(const QDateTime &moveDateTime) override;
     PosInItem getPosInItem(const QPoint &p, const QRectF &itemRect)override;
     QDateTime getPosDate(const QPoint &p)override;
-    void upDateInfoShow(const DragStatus &status = NONE, const ScheduleDataInfo &info = ScheduleDataInfo())override;
+    void upDateInfoShow(const DragStatus &status = NONE, const DSchedule &info = DSchedule()) override;
     /**
      * @brief slideEvent            触摸滑动事件处理
      * @param startPoint            触摸开始坐标
@@ -111,6 +112,6 @@ private:
     QMap<QDate, int>                    m_festivallist;
     int                                 m_currentMonth;
     CMonthScheduleView                  *m_MonthScheduleView = nullptr;
-    QMap<QDate, QVector<ScheduleDataInfo>> m_schedulelistdata;
+    QMap<QDate, QVector<DSchedule>> m_schedulelistdata;
 };
 #endif // MONTHGRAPHIVIEW_H

@@ -22,6 +22,8 @@
 #define ITEMWIDGET_H
 
 #include "scheduledatamanage.h"
+#include "dscheduletype.h"
+
 #include <DIconButton>
 #include <DLabel>
 #include <QWidget>
@@ -46,21 +48,21 @@ public:
     };
 
     //获取顶层item控件，有箭头
-    static SidebarItemWidget* getTopLevelWidget(QString&, QIcon&);
-    static SidebarItemWidget* getTopLevelWidget(QString&);
+    static SidebarItemWidget *getTopLevelWidget(QString &, QIcon &);
+    static SidebarItemWidget *getTopLevelWidget(QString &);
     //获取子层本地日程item控件，有复选框
-    static SidebarItemWidget* getLocalWidget(JobTypeInfo&);
+    static SidebarItemWidget *getLocalWidget(DScheduleType &);
 
     //设置选中状态
     void setSelectStatus(bool);
     //切换状态
     void switchState();
     //设置item
-    void setItem(QTreeWidgetItem*);
+    void setItem(QTreeWidgetItem *);
 
 signals:
     //状态改变信号
-    void signalStatusChange(bool status, int id = -1);
+    void signalStatusChange(bool status, QString id = "");
 
 public slots:
     //头部控件点击事件
@@ -76,20 +78,20 @@ private:
     void initView();
 
     //设置头部控件内容
-    void setHeadWidget(QWidget*);
+    void setHeadWidget(QWidget *);
 
 private:
     QString m_title = "";   //标题
     QIcon m_icon;       //尾部控件显示的icon
-    int m_id = -1;      //数据id
+    QString m_id = ""; //数据id
 
     HeadType m_headType = HeadInvalid;  //控件类型
     bool m_selectStatus = false;    //选中状态
-    QTreeWidgetItem* m_item = nullptr;  //关联的item
+    QTreeWidgetItem *m_item = nullptr; //关联的item
 
     QHBoxLayout *m_headLayout = nullptr;    //头部控件布局
     QWidget *m_headWidget = nullptr;    //头部控件显示区域
-    DLabel *m_titleLabel =nullptr;      //标题显示区域
+    DLabel *m_titleLabel = nullptr; //标题显示区域
     QCheckBox *m_checkBox = nullptr;    //复选框
     DIconButton *m_rearIconButton = nullptr;    //尾部icon控件
     DIconButton *m_headIconButton = nullptr;    //头部icon控件

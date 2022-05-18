@@ -18,12 +18,16 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include <QCoreApplication>
+
+#include "dservicemanager.h"
+#include "ddatabasemanagement.h"
+
 #include <DLog>
+
 #include <QDBusConnection>
 #include <QDBusError>
 #include <QTranslator>
-#include "calendarservice.h"
+#include <QCoreApplication>
 
 const static QString CalendarServiceTranslationsDir = "/usr/share/dde-calendar/translations";
 
@@ -51,7 +55,6 @@ bool loadTranslator(QCoreApplication *app, QList<QLocale> localeFallback = QList
             }
         }
     }
-
     return bsuccess;
 }
 
@@ -63,24 +66,14 @@ int main(int argc, char *argv[])
 
     Dtk::Core::DLogManager::registerConsoleAppender();
     Dtk::Core::DLogManager::registerFileAppender();
-
+    qInfo() << "test";
+    //加载翻译
     if (!loadTranslator(&a)) {
         qDebug() << "loadtranslator failed";
     }
-    qDebug() << "write log to" << Dtk::Core::DLogManager::getlogFilePath();
-    QDBusConnection sessionBus = QDBusConnection::sessionBus();
-    if (!sessionBus.registerService(CalendarServiceName)) {
-        qCritical() << "registerService failed:" << sessionBus.lastError();
-        exit(0x0001);
-    }
-    CalendarService service;
+    //TODO: 数据库迁移
+    DDataBaseManagement dbManagement;
 
-    qDebug() << "sessionBus.registerService success" << Dtk::Core::DLogManager::getlogFilePath();
-    if (!sessionBus.registerObject(CalendarPath,
-                                   &service,
-                                   QDBusConnection::ExportAllSlots | QDBusConnection::ExportAllSignals | QDBusConnection::ExportAllProperties)) {
-        qCritical() << "registerObject failed:" << sessionBus.lastError();
-        exit(0x0002);
-    }
+    DServiceManager serviceManager;
     return a.exec();
 }

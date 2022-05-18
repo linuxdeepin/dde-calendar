@@ -21,9 +21,9 @@
 #ifndef CSCHEDULEDBUS_H
 #define CSCHEDULEDBUS_H
 
-#include "src/scheduledatainfo.h"
-#include "src/dbusdatastruct.h"
-#include "src/lunardatastruct.h"
+#include "dschedule.h"
+#include "huangliData/lunardatastruct.h"
+#include "huangliData/dbusdatastruct.h"
 
 #include <QDBusAbstractInterface>
 #include <QDBusPendingReply>
@@ -48,17 +48,17 @@ public:
     }
 public:
     //创建日程
-    qint64 CreateJob(const ScheduleDataInfo &info);
+    qint64 CreateJob(const DSchedule &info);
     //根据开始结束日期获取日程
-    bool GetJobs(const QDate &startDate, const QDate &endDate, QMap<QDate, QVector<ScheduleDataInfo> > &info);
+    bool GetJobs(const QDate &startDate, const QDate &endDate, QMap<QDate, QVector<DSchedule>> &info);
     //根据日程id 获取日程
-    bool GetJob(qint64 jobId, ScheduleDataInfo &out);
+    bool GetJob(qint64 jobId, DSchedule &out);
     //更新日程信息
-    bool UpdateJob(const ScheduleDataInfo &info);
+    bool UpdateJob(const DSchedule &info);
     //删除日程
     bool DeleteJob(qint64 jobId);
     //查询日程
-    bool QueryJobs(QString key, QDateTime starttime, QDateTime endtime, QMap<QDate, QVector<ScheduleDataInfo> > &out);
+    bool QueryJobs(QString key, QDateTime starttime, QDateTime endtime, QMap<QDate, QVector<DSchedule>> &out);
     //查询日程
     bool QueryJobs(QString key, QDateTime starttime, QDateTime endtime, QString &outStr);
     //获取节假日班休信息

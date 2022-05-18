@@ -27,7 +27,7 @@ CAllDayScheduleItem::CAllDayScheduleItem(QRectF rect, QGraphicsItem *parent)
 {
 }
 
-bool CAllDayScheduleItem::hasSelectSchedule(const ScheduleDataInfo &info)
+bool CAllDayScheduleItem::hasSelectSchedule(const DSchedule &info)
 {
     return info == m_vScheduleInfo;
 }
@@ -37,7 +37,8 @@ void CAllDayScheduleItem::paintBackground(QPainter *painter, const QRectF &rect,
     Q_UNUSED(isPixMap);
     m_font = DFontSizeManager::instance()->get(m_sizeType, m_font);
     painter->setRenderHints(QPainter::Antialiasing);
-    CSchedulesColor gdColor = CScheduleDataManage::getScheduleDataManage()->getScheduleColorByType(m_vScheduleInfo.getType());
+    //TODO:根据日程类型获取类型颜色
+    CSchedulesColor gdColor; //= CScheduleDataManage::getScheduleDataManage()->getScheduleColorByType(m_vScheduleInfo.getType());
     QRectF drawrect = rect;
 
     QColor textcolor = CScheduleDataManage::getScheduleDataManage()->getTextColor();
@@ -45,7 +46,9 @@ void CAllDayScheduleItem::paintBackground(QPainter *painter, const QRectF &rect,
     //判断是否为选中日程
     if (m_vScheduleInfo == m_pressInfo) {
         //判断当前日程是否为拖拽移动日程
-        if (m_vScheduleInfo.getIsMoveInfo() == m_pressInfo.getIsMoveInfo()) {
+        //TODO:判断是否为移动日程
+        //        if (m_vScheduleInfo.getIsMoveInfo() == m_pressInfo.getIsMoveInfo()) {
+        if (false) {
             m_vHighflag = true;
         } else {
             painter->setOpacity(0.4);
@@ -82,7 +85,7 @@ void CAllDayScheduleItem::paintBackground(QPainter *painter, const QRectF &rect,
     painter->setFont(m_font);
     painter->setPen(textcolor);
     QFontMetrics fm = painter->fontMetrics();
-    QString tSTitleName = m_vScheduleInfo.getTitleName();
+    QString tSTitleName = m_vScheduleInfo.summary();
     tSTitleName.replace("\n", "");
     QString str = tSTitleName;
     QString tStr;

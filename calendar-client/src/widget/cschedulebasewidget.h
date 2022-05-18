@@ -57,7 +57,7 @@ public:
     //更新农历信息显示
     virtual void updateShowLunar() = 0;
     //设置选中搜索日程
-    virtual void setSelectSearchScheduleInfo(const ScheduleDataInfo &info) = 0;
+    virtual void setSelectSearchScheduleInfo(const DSchedule &info) = 0;
     //删除选中日程
     virtual void deleteselectSchedule();
 protected:

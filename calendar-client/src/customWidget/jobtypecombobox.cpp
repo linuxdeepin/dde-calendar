@@ -50,18 +50,18 @@ JobTypeComboBox::~JobTypeComboBox()
     return;
 }
 
-int JobTypeComboBox::getCurrentJobTypeNo()
+QString JobTypeComboBox::getCurrentJobTypeNo()
 {
     if (this->currentIndex() < 0 || this->currentIndex() >= m_lstJobType.size()) {
-        return -1;
+        return QString();
     }
-    return m_lstJobType[this->currentIndex()].getJobTypeNo();
+    return m_lstJobType[this->currentIndex()].typeID();
 }
 
-void JobTypeComboBox::setCurrentJobTypeNo(int strJobTypeNo)
+void JobTypeComboBox::setCurrentJobTypeNo(QString strJobTypeNo)
 {
     for (int i = 0; i < m_lstJobType.size(); i++) {
-        if (strJobTypeNo == m_lstJobType[i].getJobTypeNo()) {
+        if (strJobTypeNo == m_lstJobType[i].typeID()) {
             this->setCurrentIndex(i);
             break;
         }
@@ -125,15 +125,15 @@ bool JobTypeComboBox::updateJobType()
 
     clear(); //更新前先清空原有列表
     for (m_itemNumIndex = 0; m_itemNumIndex < m_lstJobType.size(); m_itemNumIndex++) {
-        strColorHex = m_lstJobType[m_itemNumIndex].getColorHex();
-        strJobType = m_lstJobType[m_itemNumIndex].getJobTypeName();
+        strColorHex = m_lstJobType[m_itemNumIndex].typeColor().colorCode();
+        strJobType = m_lstJobType[m_itemNumIndex].displayName();
 
         if (strColorHex.isEmpty() || strJobType.isEmpty()) {
             m_lstJobType.removeAt(m_itemNumIndex);
             m_itemNumIndex--;
             continue;
         }
-        addJobTypeItem(m_itemNumIndex, m_lstJobType[m_itemNumIndex].getColorHex(), m_lstJobType[m_itemNumIndex].getJobTypeName());
+        addJobTypeItem(m_itemNumIndex, m_lstJobType[m_itemNumIndex].typeColor().colorCode(), m_lstJobType[m_itemNumIndex].displayName());
     }
     return true;
 }

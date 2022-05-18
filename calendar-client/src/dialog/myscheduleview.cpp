@@ -34,7 +34,7 @@
 #include <QtMath>
 
 DGUI_USE_NAMESPACE
-CMyScheduleView::CMyScheduleView(const ScheduleDataInfo &schduleInfo, QWidget *parent)
+CMyScheduleView::CMyScheduleView(const DSchedule &schduleInfo, QWidget *parent)
     : DCalendarDDialog(parent)
 {
     setContentsMargins(0, 0, 0, 0);
@@ -59,7 +59,7 @@ void CMyScheduleView::slotAutoFeed(const QFont &font)
     if (nullptr == m_timeLabel || nullptr == m_scheduleLabel) {
         return;
     }
-    QString strText = m_scheduleInfo.getTitleName();
+    QString strText = m_scheduleInfo.summary();
     QString resultStr = nullptr;
     QFont labelF;
     labelF.setWeight(QFont::Medium);
@@ -101,7 +101,7 @@ void CMyScheduleView::slotAutoFeed(const QFont &font)
     area->setFixedHeight(m_scheduleLabelH);
     m_scheduleLabel->setText(resultStr);
 
-    if (m_scheduleInfo.getIsLunar()) {
+    if (m_scheduleInfo.isLunar()) {
         QString timeName = m_timeLabel->text();
         int index = timeName.indexOf("~");
         //重新计算法字符串像素长度
@@ -181,20 +181,21 @@ void CMyScheduleView::setPaletteTextColor(QWidget *widget, QColor textColor)
  */
 void CMyScheduleView::updateDateTimeFormat()
 {
-    if (m_scheduleInfo.getType() == DDECalendar::FestivalTypeID) {
-        m_timeLabel->setText(m_scheduleInfo.getBeginDateTime().toString(m_dateFormat));
-    } else {
-        QString beginName = getDataByFormat(m_scheduleInfo.getBeginDateTime().date(), m_dateFormat) + " " + m_scheduleInfo.getBeginDateTime().time().toString(m_timeFormat);
-        QString endName = getDataByFormat(m_scheduleInfo.getEndDateTime().date(), m_dateFormat) + " " + m_scheduleInfo.getEndDateTime().time().toString(m_timeFormat);
-        m_timeLabel->setText(beginName + " ~ " + endName);
-    }
+    //TODO:获取类型
+    //    if (m_scheduleInfo.getType() == DDECalendar::FestivalTypeID) {
+    //        m_timeLabel->setText(m_scheduleInfo.dtStart().toString(m_dateFormat));
+    //    } else {
+    //        QString beginName = getDataByFormat(m_scheduleInfo.dtStart().date(), m_dateFormat) + " " + m_scheduleInfo.dtStart().time().toString(m_timeFormat);
+    //        QString endName = getDataByFormat(m_scheduleInfo.dtEnd().date(), m_dateFormat) + " " + m_scheduleInfo.dtEnd().time().toString(m_timeFormat);
+    //        m_timeLabel->setText(beginName + " ~ " + endName);
+    //    }
     slotAutoFeed();
 }
 
 QString CMyScheduleView::getDataByFormat(const QDate &date, QString format)
 {
     QString name = date.toString(format);
-    if (m_scheduleInfo.getIsLunar()) {
+    if (m_scheduleInfo.isLunar()) {
         //接入农历时间
         name += CScheduleDBus::getInstance()->getHuangLiShortName(date);
     }
@@ -289,7 +290,9 @@ void CMyScheduleView::initUI()
     mainLayout->addSpacing(5);
     mainLayout->addWidget(m_timeLabel);
 
-    if (m_scheduleInfo.getType() == DDECalendar::FestivalTypeID) {
+    //TODO:日程类型判断
+    //    if (m_scheduleInfo.getType() == DDECalendar::FestivalTypeID) {
+    if (false) {
         addButton(tr("OK", "button"), false, DDialog::ButtonNormal);
         QAbstractButton *button_ok = getButton(0);
         button_ok->setFixedSize(360, 36);
@@ -320,7 +323,9 @@ void CMyScheduleView::initConnection()
     QObject::connect(DGuiApplicationHelper::instance(), &DGuiApplicationHelper::themeTypeChanged,
                      this,
                      &CMyScheduleView::setLabelTextColor);
-    if (m_scheduleInfo.getType() == DDECalendar::FestivalTypeID) {
+    //TODO:日程类型判断
+    //    if (m_scheduleInfo.getType() == DDECalendar::FestivalTypeID) {
+    if (false) {
         connect(this, &DDialog::buttonClicked, this, &CMyScheduleView::close);
     } else {
         connect(this, &DDialog::buttonClicked, this, &CMyScheduleView::slotBtClick);

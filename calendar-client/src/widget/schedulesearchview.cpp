@@ -88,7 +88,7 @@ void CScheduleSearchItem::setTimeC(QColor tColor, QFont font)
     m_timefont = font;
 }
 
-void CScheduleSearchItem::setData(ScheduleDataInfo vScheduleInfo, QDate date)
+void CScheduleSearchItem::setData(DSchedule vScheduleInfo, QDate date)
 {
     m_ScheduleInfo = vScheduleInfo;
     m_date = date;
@@ -182,8 +182,9 @@ void CScheduleSearchItem::slotSchotCutClicked()
     //选中该item时才可以使用快捷键
     if (m_tabFocus) {
         //节日日程不能使用
-        if (m_ScheduleInfo.getType() == DDECalendar::FestivalTypeID)
-            return;
+        //TODO:日程类型判断
+        //        if (m_ScheduleInfo.getType() == DDECalendar::FestivalTypeID)
+        //            return;
         m_rightMenu->clear();
         m_rightMenu->addAction(m_editAction);
         m_rightMenu->addAction(m_deleteAction);
@@ -198,7 +199,7 @@ void CScheduleSearchItem::slotSchotCutClicked()
 void CScheduleSearchItem::paintEvent(QPaintEvent *e)
 {
     Q_UNUSED(e);
-    int labelRightX = width()-2;    //绘制区域x方向右边界坐标点
+    int labelRightX = width() - 2; //绘制区域x方向右边界坐标点
     int labelBottomY = height();    //绘制区域y方向下边界坐标点
     QPainter painter(this);
     QColor bColor = m_Backgroundcolor;
@@ -272,18 +273,19 @@ void CScheduleSearchItem::paintEvent(QPaintEvent *e)
 
     QString datestr;
 
-    datestr = m_ScheduleInfo.getBeginDateTime().toString(m_timeFormat)
-              + "-" + m_ScheduleInfo.getEndDateTime().toString(m_timeFormat);
+    datestr = m_ScheduleInfo.dtStart().toString(m_timeFormat)
+              + "-" + m_ScheduleInfo.dtEnd().toString(m_timeFormat);
 
     int flag = Qt::AlignLeft | Qt::AlignVCenter;
 
-    if (m_ScheduleInfo.getAllDay()) {
+    if (m_ScheduleInfo.allDay()) {
         datestr = tr("All Day");
     }
     painter.drawText(QRect(12, 8, m_durationSize, labelBottomY - 16), flag, datestr);
 
     painter.save();
-    const CSchedulesColor &gdColor = CScheduleDataManage::getScheduleDataManage()->getScheduleColorByType(m_ScheduleInfo.getType());
+    //TODO:根据日程类型获取颜色
+    const CSchedulesColor gdColor; //= CScheduleDataManage::getScheduleDataManage()->getScheduleColorByType(m_ScheduleInfo.getType());
     bColor = gdColor.orginalColor;
     QPen pen(bColor);
     pen.setWidth(2);
@@ -298,7 +300,7 @@ void CScheduleSearchItem::paintEvent(QPaintEvent *e)
     QFontMetrics fm = painter.fontMetrics();
     //整个label宽度-文字起始位置
     int tilenameW = labelRightX - m_borderframewX - (m_durationSize + 26);
-    QString tSTitleName = m_ScheduleInfo.getTitleName();
+    QString tSTitleName = m_ScheduleInfo.summary();
     tSTitleName.replace("\n", "");
     QString str = tSTitleName;
     QString tStr;
@@ -327,8 +329,8 @@ void CScheduleSearchItem::paintEvent(QPaintEvent *e)
         painter.setBrush(CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor());
         QPainterPath path;
         int w = 2; //边框宽度
-        path.addRect(m_borderframewX, m_borderframewY, labelRightX-m_borderframewX, labelBottomY - m_borderframewY);
-        path.addRect(m_borderframewX+w, m_borderframewY+w, labelRightX-2*w-m_borderframewX, labelBottomY-2*w - m_borderframewY);
+        path.addRect(m_borderframewX, m_borderframewY, labelRightX - m_borderframewX, labelBottomY - m_borderframewY);
+        path.addRect(m_borderframewX + w, m_borderframewY + w, labelRightX - 2 * w - m_borderframewX, labelBottomY - 2 * w - m_borderframewY);
         painter.drawPath(path);
     }
 
@@ -337,9 +339,9 @@ void CScheduleSearchItem::paintEvent(QPaintEvent *e)
 void CScheduleSearchItem::contextMenuEvent(QContextMenuEvent *event)
 {
     Q_UNUSED(event);
-
-    if (m_ScheduleInfo.getType() == DDECalendar::FestivalTypeID)
-        return;
+    //TODO:判断是否为节假日日程
+    //    if (m_ScheduleInfo.getType() == DDECalendar::FestivalTypeID)
+    //        return;
     //在有些环境中弹出右击菜单不会触发leaveEvent，主动更新leave对应的事件处理
     m_mouseStatus = M_NONE;
     update();
@@ -554,7 +556,10 @@ void CScheduleSearchView::deleteSchedule()
 {
     currentDItemIndex = m_scheduleSearchItem.indexOf(m_selectItem);
     //如果存在该item且为节日日程不可操作
-    if (currentDItemIndex >= 0 && m_selectItem->getData().getType() != DDECalendar::FestivalTypeID) {
+    if (currentDItemIndex >= 0
+        //TODO:日程类型判断
+        //            && m_selectItem->getData().getType() != DDECalendar::FestivalTypeID
+    ) {
         m_selectItem->slotDelete();
     }
 }
@@ -580,17 +585,17 @@ void CScheduleSearchView::updateDateShow()
     //找最近日程
     QDate tCurrentData = QDate::currentDate();
     //搜索日程过滤排序
-    QMap<QDate, QVector<ScheduleDataInfo> > m_showData;
+    QMap<QDate, QVector<DSchedule>> m_showData;
     qint64 offset = 1000;
     QDate topdate = tCurrentData;
-    QMap<QDate, QVector<ScheduleDataInfo> >::const_iterator  _iterator = m_vlistData.constBegin();
-    QVector<ScheduleDataInfo> _showInfo{};
+    QMap<QDate, QVector<DSchedule>>::const_iterator _iterator = m_vlistData.constBegin();
+    QVector<DSchedule> _showInfo {};
     for (; _iterator != m_vlistData.constEnd(); ++_iterator) {
         qint64 d = qAbs(_iterator.key().daysTo(tCurrentData));
         _showInfo.clear();
         for (int i = 0 ; i < _iterator.value().size(); ++i) {
             //如果开始时间日期为显示日期则显示,跨天日程只显示一个
-            if (_iterator.value().at(i).getBeginDateTime().date() == _iterator.key() || _iterator == m_vlistData.constBegin()) {
+            if (_iterator.value().at(i).dtStart().date() == _iterator.key() || _iterator == m_vlistData.constBegin()) {
                 _showInfo.append(_iterator.value().at(i));
             }
         }
@@ -606,7 +611,7 @@ void CScheduleSearchView::updateDateShow()
         }
     }
     tCurrentData = topdate;
-    QMap<QDate, QVector<ScheduleDataInfo> >::const_iterator  _showIterator = m_showData.constBegin();
+    QMap<QDate, QVector<DSchedule>>::const_iterator _showIterator = m_showData.constBegin();
     for (; _showIterator != m_showData.constEnd(); ++_showIterator) {
         //创建显示日期项
         QListWidgetItem *dateItem = createItemWidget(_showIterator.key());
@@ -675,9 +680,9 @@ void CScheduleSearchView::updateDateShow()
     }
 }
 
-void CScheduleSearchView::createItemWidget(ScheduleDataInfo info, QDate date, int rtype)
+void CScheduleSearchView::createItemWidget(DSchedule info, QDate date, int rtype)
 {
-    ScheduleDataInfo &gd = info;
+    DSchedule &gd = info;
 
     CScheduleSearchItem *gwi = new CScheduleSearchItem(this);
     QFont font;
@@ -752,7 +757,7 @@ void CScheduleSearchView::slotsetSearch(QString str)
     updateDateShow();
 }
 
-void CScheduleSearchView::slotSelectSchedule(const ScheduleDataInfo &scheduleInfo)
+void CScheduleSearchView::slotSelectSchedule(const DSchedule &scheduleInfo)
 {
     emit signalSelectSchedule(scheduleInfo);
 }

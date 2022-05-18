@@ -124,9 +124,9 @@ void CScheduleView::setTime(QTime time)
     m_graphicsView->setTime(time);
 }
 
-void CScheduleView::setSelectSchedule(const ScheduleDataInfo &scheduleInfo)
+void CScheduleView::setSelectSchedule(const DSchedule &scheduleInfo)
 {
-    if (scheduleInfo.getAllDay()) {
+    if (scheduleInfo.allDay()) {
         m_alldaylist->setSelectSearchSchedule(scheduleInfo);
     } else {
         m_graphicsView->setSelectSearchSchedule(scheduleInfo);
@@ -153,7 +153,7 @@ void CScheduleView::setCurrentDate(const QDateTime &currentDate)
  * @brief CScheduleView::setShowScheduleInfo        设置显示日程
  * @param scheduleInfo
  */
-void CScheduleView::setShowScheduleInfo(const QMap<QDate, QVector<ScheduleDataInfo> > &scheduleInfo)
+void CScheduleView::setShowScheduleInfo(const QMap<QDate, QVector<DSchedule>> &scheduleInfo)
 {
     m_showSchedule = scheduleInfo;
     updateSchedule();
@@ -480,16 +480,17 @@ void CScheduleView::slotCurrentScheduleDate(QDate date)
     emit signalsCurrentScheduleDate(date);
 }
 
-void CScheduleView::slotScheduleShow(const bool isShow, const ScheduleDataInfo &out)
+void CScheduleView::slotScheduleShow(const bool isShow, const DSchedule &out)
 {
     if (isShow) {
         QVariant variant;
         CalendarGlobalEnv::getGlobalEnv()->getValueByKey(DDECalendar::CursorPointKey, variant);
         QPoint pos22 = variant.value<QPoint>();
-        CSchedulesColor gdColor = CScheduleDataManage::getScheduleDataManage()->getScheduleColorByType(
-                                      out.getType());
+        //TODO:根据日程类型获取颜色
+        //        CSchedulesColor gdColor = CScheduleDataManage::getScheduleDataManage()->getScheduleColorByType(
+        //                                      out.getType());
         QDesktopWidget *w = QApplication::desktop();
-        m_ScheduleRemindWidget->setData(out, gdColor);
+        //        m_ScheduleRemindWidget->setData(out, gdColor);
 
         if ((pos22.x() + m_ScheduleRemindWidget->width() + 15) > w->width()) {
             m_ScheduleRemindWidget->setDirection(DArrowRectangle::ArrowRight);
@@ -537,13 +538,13 @@ void CScheduleView::updateSchedule()
 {
     //获取一个月的日程信息
     m_graphicsView->clearSchedule();
-    QVector<ScheduleDataInfo> allInfo;
-    QVector<ScheduleDataInfo> nonAllInfo;
+    QVector<DSchedule> allInfo;
+    QVector<DSchedule> nonAllInfo;
 
-    QMap<QDate, QVector<ScheduleDataInfo> >::const_iterator _iterator = m_showSchedule.constBegin();
+    QMap<QDate, QVector<DSchedule>>::const_iterator _iterator = m_showSchedule.constBegin();
     for (; _iterator != m_showSchedule.constEnd(); ++_iterator) {
         for (int i = 0; i < _iterator->size(); ++i) {
-            if (_iterator.value().at(i).getAllDay()) {
+            if (_iterator.value().at(i).allDay()) {
                 if (!allInfo.contains(_iterator.value().at(i))) {
                     allInfo.append(_iterator.value().at(i));
                 }

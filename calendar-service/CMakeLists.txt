@@ -32,6 +32,7 @@ set(LINK_LIBS
     Qt5::DBus
     Qt5::Sql
     ${DtkCore_LIBRARIES}
+    commondata
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -46,14 +47,17 @@ file(GLOB_RECURSE CALENDARSERVICE_SRCS ${CMAKE_CURRENT_LIST_DIR}/src/*.cpp)
 #添加资源文件
 QT5_ADD_RESOURCES(CALENDARSERVICE_SRCS ${APP_QRC})
 
-include_directories(../calendar-basicstruct/)
 
 #后端程序自动退出宏控制
 add_definitions(-DCALENDAR_SERVICE_AUTO_EXIT)
 
 add_executable(${PROJECT_NAME} ${CALENDARSERVICE_SRCS})
 
-target_link_libraries(${PROJECT_NAME} ${LINK_LIBS} basestruct)
+target_include_directories(${PROJECT_NAME} PUBLIC ${DtkWidget_INCLUDE_DIRS} ${OBJECT_BINARY_DIR} ../calendar-common/src)
+
+target_link_libraries(${PROJECT_NAME}
+    ${LINK_LIBS}
+    )
 
 set(CMAKE_INSTALL_PREFIX /usr)
 

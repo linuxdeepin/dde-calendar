@@ -30,11 +30,11 @@ const QString DBus_TimeDate_Path = "/com/deepin/daemon/Timedate";
 CalendarManager *CalendarManager::m_scheduleManager = nullptr;
 CalendarManager *CalendarManager::getInstance()
 {
-    ScheduleDataInfo::registerMetaType();
+    DSchedule::registerMetaType();
     CaHuangLiDayInfo::registerMetaType();
     if (m_scheduleManager == nullptr) {
         m_scheduleManager = new  CalendarManager;
-        qRegisterMetaType<QMap<QDate, QVector<ScheduleDataInfo> > >("QMap<QDate,QVector<ScheduleDataInfo> >");
+        qRegisterMetaType<QMap<QDate, QVector<DSchedule>>>("QMap<QDate,QVector<DSchedule> >");
         qRegisterMetaType<QMap<QDate, bool>>("QMap<QDate,bool>");
         qRegisterMetaType<QMap<QDate, CaHuangLiDayInfo> >("QMap<QDate, CaHuangLiDayInfo>");
         qRegisterMetaType<QMap<QDate, int>>("QMap<QDate, int>");

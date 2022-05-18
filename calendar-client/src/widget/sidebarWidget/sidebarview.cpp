@@ -83,7 +83,7 @@ void SidebarView::initData()
     m_treeWidget->addTopLevelItem(localItem);
     localItem->setSizeHint(0, QSize(200, 30));
     QString localName = tr("Local Calendar");
-    SidebarItemWidget* localWidget = SidebarItemWidget::getTopLevelWidget(localName);
+    SidebarItemWidget *localWidget = SidebarItemWidget::getTopLevelWidget(localName);
     m_treeWidget->setItemWidget(localItem, 0, localWidget);
     localWidget->setItem(localItem);
 
@@ -91,7 +91,7 @@ void SidebarView::initData()
     QTreeWidgetItem *unionItem = new QTreeWidgetItem();
     m_treeWidget->addTopLevelItem(unionItem);
     QIcon unionIcon(":/resources/icon/icon_refresh.svg");
-    SidebarItemWidget* unionWidget = SidebarItemWidget::getTopLevelWidget(unionName, unionIcon);
+    SidebarItemWidget *unionWidget = SidebarItemWidget::getTopLevelWidget(unionName, unionIcon);
     m_treeWidget->setItemWidget(unionItem, 0, unionWidget);
     unionWidget->setItem(unionItem);
 
@@ -104,14 +104,14 @@ void SidebarView::initData()
  * 重置本地日程类型选项
  * @param parentItem
  */
-void SidebarView::resetJobTypeChildItem(QTreeWidgetItem* parentItem)
+void SidebarView::resetJobTypeChildItem(QTreeWidgetItem *parentItem)
 {
     QTreeWidgetItem *item;
     for (auto info : JobTypeInfoManager::instance()->getJobTypeList()) {
         item = new QTreeWidgetItem(parentItem);
-        item->setTextAlignment(0, Qt::AlignVCenter|Qt::AlignLeft);
+        item->setTextAlignment(0, Qt::AlignVCenter | Qt::AlignLeft);
         parentItem->addChild(item);
-        SidebarItemWidget* widget = SidebarItemWidget::getLocalWidget(info);
+        SidebarItemWidget *widget = SidebarItemWidget::getLocalWidget(info);
         m_treeWidget->setItemWidget(item, 0, widget);
         connect(widget, &SidebarItemWidget::signalStatusChange, this, &SidebarView::slotItemWidgetStatusChange);
     }
@@ -123,7 +123,7 @@ void SidebarView::resetJobTypeChildItem(QTreeWidgetItem* parentItem)
  * @param status 状态
  * @param id    id
  */
-void SidebarView::slotItemWidgetStatusChange(bool status, int id)
+void SidebarView::slotItemWidgetStatusChange(bool status, QString id)
 {
     Q_UNUSED(status)
     Q_UNUSED(id)
@@ -140,7 +140,7 @@ void SidebarView::paintEvent(QPaintEvent *event)
     //绘制圆角
     painter.drawRoundedRect(0, 0, width(), height(), radius, radius);
     //绘制右侧直角
-    painter.drawRect(radius, 0, width()-radius, height());
+    painter.drawRect(radius, 0, width() - radius, height());
 
     QWidget::paintEvent(event);
 }

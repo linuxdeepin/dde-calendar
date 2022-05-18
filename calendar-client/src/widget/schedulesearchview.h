@@ -19,7 +19,7 @@
 #ifndef SCHEDULESEARCHVIEW_H
 #define SCHEDULESEARCHVIEW_H
 
-#include "src/scheduledatainfo.h"
+#include "dschedule.h"
 
 #include <DLabel>
 #include <DMenu>
@@ -48,14 +48,14 @@ public:
     bool getScheduleStatus();
     void deleteSchedule();
 signals:
-    void signalSelectSchedule(const ScheduleDataInfo &scheduleInfo);
+    void signalSelectSchedule(const DSchedule &scheduleInfo);
     void signalScheduleHide();
     void signalSelectCurrentItem();
     void signalSchotCutClicked();
 public slots:
     //需要搜索日程关键字
     void slotsetSearch(QString str);
-    void slotSelectSchedule(const ScheduleDataInfo &scheduleInfo);
+    void slotSelectSchedule(const DSchedule &scheduleInfo);
     //更新搜索信息
     void updateSearch();
     void slotSelectCurrentItem(CScheduleSearchItem *item, bool itemFocusOut);
@@ -69,12 +69,12 @@ protected:
 
 private:
     void updateDateShow();
-    void createItemWidget(ScheduleDataInfo info, QDate date, int rtype);
+    void createItemWidget(DSchedule info, QDate date, int rtype);
     QListWidgetItem *createItemWidget(QDate date);
 private:
     CScheduleListWidget *m_gradientItemList = nullptr; //下拉列表窗
     bool m_widgetFlag;
-    QMap<QDate, QVector<ScheduleDataInfo> > m_vlistData;
+    QMap<QDate, QVector<DSchedule>> m_vlistData;
     QVector<DLabel *> m_labellist;
     int m_type;
     QDate m_currentDate;
@@ -120,18 +120,18 @@ public:
     void setBackgroundColor(QColor color1);
     void setText(QColor tColor, QFont font);
     void setTimeC(QColor tColor, QFont font);
-    void setData(ScheduleDataInfo vScheduleInfo, QDate date);
+    void setData(DSchedule vScheduleInfo, QDate date);
     void setRoundtype(int rtype);
     void setTheMe(int type = 0);
     void setDurationSize(QFont font);
-    const ScheduleDataInfo &getData() const
+    const DSchedule &getData() const
     {
         return m_ScheduleInfo;
     }
 signals:
     void signalsDelete(CScheduleSearchItem *item);
     void signalsEdit(CScheduleSearchItem *item);
-    void signalSelectSchedule(const ScheduleDataInfo &scheduleInfo);
+    void signalSelectSchedule(const DSchedule &scheduleInfo);
     void signalSelectCurrentItem(CScheduleSearchItem *item, bool focusOutStatus);
 public slots:
     void slotEdit();
@@ -156,7 +156,7 @@ private:
         QColor timeColor;
         QColor textColor;
     };
-    ScheduleDataInfo m_ScheduleInfo;
+    DSchedule m_ScheduleInfo;
     QAction *m_editAction = nullptr;
     QAction *m_deleteAction = nullptr;
     QColor m_Backgroundcolor;

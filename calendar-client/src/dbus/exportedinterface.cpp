@@ -36,7 +36,7 @@ ExportedInterface::ExportedInterface(QObject *parent)
 
 QVariant ExportedInterface::invoke(const QString &action, const QString &parameters) const
 {
-    ScheduleDataInfo info;
+    DSchedule info;
     Exportpara para;
     QString tstr = parameters;
     CScheduleOperation _scheduleOperation;
@@ -60,11 +60,11 @@ QVariant ExportedInterface::invoke(const QString &action, const QString &paramet
         return QVariant(qstr);
     } else if (action == "CANCEL") {
         //对外接口删除日程
-        QMap<QDate, QVector<ScheduleDataInfo> > out;
-//        //口查询日程
+        QMap<QDate, QVector<DSchedule>> out;
+        //        //口查询日程
         if (_scheduleOperation.queryScheduleInfo(para.ADTitleName, para.ADStartTime, para.ADEndTime, out)) {
             //删除查询到的日程
-            QMap<QDate, QVector<ScheduleDataInfo> >::const_iterator _iterator = nullptr;
+            QMap<QDate, QVector<DSchedule>>::const_iterator _iterator = nullptr;
             for (_iterator = out.constBegin(); _iterator != out.constEnd(); ++_iterator) {
                 for (int i = 0 ; i < _iterator.value().size(); ++i) {
                     _scheduleOperation.deleteOnlyInfo(_iterator.value().at(i));
@@ -77,7 +77,7 @@ QVariant ExportedInterface::invoke(const QString &action, const QString &paramet
     return QVariant(true);
 }
 
-bool ExportedInterface::analysispara(QString &parameters, ScheduleDataInfo &info, Exportpara &para) const
+bool ExportedInterface::analysispara(QString &parameters, DSchedule &info, Exportpara &para) const
 {
     QJsonParseError json_error;
     QJsonDocument jsonDoc(QJsonDocument::fromJson(parameters.toLocal8Bit(), &json_error));
@@ -86,7 +86,8 @@ bool ExportedInterface::analysispara(QString &parameters, ScheduleDataInfo &info
         return false;
     }
     QJsonObject rootObj = jsonDoc.object();
-    info = ScheduleDataInfo::JsonToSchedule(rootObj);
+    //TODO:数据反序列化
+    //    info = ScheduleDataInfo::JsonToSchedule(rootObj);
 
     if (rootObj.contains("ViewName")) {
         para.viewType = rootObj.value("ViewName").toInt();

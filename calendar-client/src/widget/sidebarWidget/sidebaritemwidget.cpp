@@ -22,7 +22,8 @@
 #include <DFontSizeManager>
 #include <QVBoxLayout>
 
-SidebarItemWidget::SidebarItemWidget(QWidget *parent): QWidget (parent)
+SidebarItemWidget::SidebarItemWidget(QWidget *parent)
+    : QWidget(parent)
 {
     initView();
 }
@@ -103,7 +104,7 @@ void SidebarItemWidget::switchState()
  * 设置关联的item
  * @param item 待关联的item
  */
-void SidebarItemWidget::setItem(QTreeWidgetItem* item)
+void SidebarItemWidget::setItem(QTreeWidgetItem *item)
 {
     m_item = item;
     //连接状态切换事件
@@ -121,7 +122,7 @@ void SidebarItemWidget::setItem(QTreeWidgetItem* item)
  * 设置头部控件
  * @param widget
  */
-void SidebarItemWidget::setHeadWidget(QWidget* widget)
+void SidebarItemWidget::setHeadWidget(QWidget *widget)
 {
     if (m_headLayout) {
         m_headLayout->deleteLater();
@@ -142,9 +143,9 @@ void SidebarItemWidget::setHeadWidget(QWidget* widget)
  * @param icon 尾部icon
  * @return 顶层选项控件
  */
-SidebarItemWidget* SidebarItemWidget::getTopLevelWidget(QString& title, QIcon& icon)
+SidebarItemWidget *SidebarItemWidget::getTopLevelWidget(QString &title, QIcon &icon)
 {
-    SidebarItemWidget* item = getTopLevelWidget(title);
+    SidebarItemWidget *item = getTopLevelWidget(title);
     //设置尾部控件
     item->m_rearIconButton->setIcon(icon);
     item->m_rearIconButton->show();
@@ -158,9 +159,9 @@ SidebarItemWidget* SidebarItemWidget::getTopLevelWidget(QString& title, QIcon& i
  * @param icon 尾部icon
  * @return 顶层选项控件
  */
-SidebarItemWidget* SidebarItemWidget::getTopLevelWidget(QString& title)
+SidebarItemWidget *SidebarItemWidget::getTopLevelWidget(QString &title)
 {
-    SidebarItemWidget* item = new SidebarItemWidget();
+    SidebarItemWidget *item = new SidebarItemWidget();
     item->m_headType = HeadIcon;
     item->setFixedHeight(36);
     DFontSizeManager::instance()->bind(item->m_titleLabel, DFontSizeManager::T6);
@@ -192,15 +193,15 @@ SidebarItemWidget* SidebarItemWidget::getTopLevelWidget(QString& title)
  * @param info 本地日程类型
  * @return 子层选项控件
  */
-SidebarItemWidget* SidebarItemWidget::getLocalWidget(JobTypeInfo& info)
+SidebarItemWidget *SidebarItemWidget::getLocalWidget(DScheduleType &info)
 {
-    SidebarItemWidget* item = new SidebarItemWidget();
-    item->m_id = info.getJobTypeNo();
+    SidebarItemWidget *item = new SidebarItemWidget();
+    item->m_id = info.typeID();
     item->setFixedHeight(40);
     item->m_headType = HeadCheckBox;
     item->layout()->setSpacing(9);
     item->layout()->setContentsMargins(5, 0, 0, 0);
-    qobject_cast<QBoxLayout*>(item->layout())->addStretch(1);
+    qobject_cast<QBoxLayout *>(item->layout())->addStretch(1);
     //绑定字体大小
     DFontSizeManager::instance()->bind(item->m_titleLabel, DFontSizeManager::T5);
     item->m_titleLabel->setElideMode(Qt::ElideRight);
@@ -214,13 +215,13 @@ SidebarItemWidget* SidebarItemWidget::getLocalWidget(JobTypeInfo& info)
     tPalette.setBrush(QPalette::Text, QColor("#001A2E"));
     item->m_titleLabel->setPalette(tPalette);
     item->m_titleLabel->setMaximumWidth(120);
-    item->m_titleLabel->setText(info.getJobTypeName());
+    item->m_titleLabel->setText(info.displayName());
 
     item->m_rearIconButton->hide();
 
     item->m_checkBox = new QCheckBox(item);
     QPalette palette = item->m_checkBox->palette();
-    palette.setBrush(QPalette::Highlight, QColor(info.getColorInfo().getColorHex()));
+    palette.setBrush(QPalette::Highlight, QColor(info.typeColor().colorCode()));
     item->m_checkBox->setPalette(palette);
     connect(item->m_checkBox, &QCheckBox::clicked, item, &SidebarItemWidget::slotHeadWidgetClicked);
     item->setHeadWidget(item->m_checkBox);

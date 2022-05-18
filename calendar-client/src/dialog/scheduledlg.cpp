@@ -77,36 +77,37 @@ CScheduleDlg::~CScheduleDlg()
 {
 }
 
-void CScheduleDlg::setData(const ScheduleDataInfo &info)
+void CScheduleDlg::setData(const DSchedule &info)
 {
     m_ScheduleDataInfo = info;
-    m_typeComBox->setCurrentJobTypeNo(info.getType());
+
+    m_typeComBox->setCurrentJobTypeNo(info.scheduleType());
     if (m_type == 1) {
         //如果为新建则设置为提示信息
-        m_textEdit->setPlaceholderText(info.getTitleName());
+        m_textEdit->setPlaceholderText(info.summary());
     } else {
         //如果为编辑则显示
-        m_textEdit->setPlainText(info.getTitleName());
+        m_textEdit->setPlainText(info.summary());
         //光标移动到文末
         m_textEdit->moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
     }
 
-    m_beginDateEdit->setDate(info.getBeginDateTime().date());
-    m_beginTimeEdit->setTime(info.getBeginDateTime().time());
-    m_endDateEdit->setDate(info.getEndDateTime().date());
-    m_endTimeEdit->setTime(info.getEndDateTime().time());
-    m_allDayCheckbox->setChecked(info.getAllDay());
-    m_endRepeatDate->setMinimumDate(info.getBeginDateTime().date());
+    m_beginDateEdit->setDate(info.dtStart().date());
+    m_beginTimeEdit->setTime(info.dtStart().time());
+    m_endDateEdit->setDate(info.dtEnd().date());
+    m_endTimeEdit->setTime(info.dtEnd().time());
+    m_allDayCheckbox->setChecked(info.allDay());
+    m_endRepeatDate->setMinimumDate(info.dtStart().date());
 
-    m_currentDate = info.getBeginDateTime();
-    m_EndDate = info.getEndDateTime();
+    m_currentDate = info.dtStart();
+    m_EndDate = info.dtEnd();
 
     updateEndTimeListAndTimeDiff(m_currentDate, m_EndDate);
-    slotallDayStateChanged(info.getAllDay());
+    slotallDayStateChanged(info.allDay());
     //根据是否为农历更新重复选项
-    updateRepeatCombox(info.getIsLunar());
+    updateRepeatCombox(info.isLunar());
     initRmindRpeatUI();
-    setShowState(info.getIsLunar());
+    setShowState(info.isLunar());
 }
 
 void CScheduleDlg::setDate(const QDateTime &date)
@@ -152,7 +153,7 @@ void CScheduleDlg::setAllDay(bool flag)
  */
 bool CScheduleDlg::clickOkBtn()
 {
-    ScheduleDataInfo _newSchedule = m_ScheduleDataInfo;
+    DSchedule _newSchedule = m_ScheduleDataInfo;
     QDateTime beginDateTime, endDateTime;
     beginDateTime.setDate(m_beginDateEdit->date());
     beginDateTime.setTime(m_beginTimeEdit->getTime());
@@ -172,23 +173,24 @@ bool CScheduleDlg::clickOkBtn()
     }
 
     if (m_textEdit->toPlainText().isEmpty()) {
-        _newSchedule.setTitleName(m_textEdit->placeholderText());
+        _newSchedule.setSummary(m_textEdit->placeholderText());
     } else {
-        _newSchedule.setTitleName(m_textEdit->toPlainText());
+        _newSchedule.setSummary(m_textEdit->toPlainText());
     }
 
-    if (_newSchedule.getTitleName().isEmpty()) {
+    if (_newSchedule.summary().isEmpty()) {
         return false;
     }
     //如果类型选项不为负数则设置日程类型
-    if (m_typeComBox->isEditable()) {
-        JobTypeInfo jobType(0, m_typeComBox->lineEdit()->text(), m_colorSeletorWideget->getSelectedColorInfo());
-        //创建日程类型
-        if (CScheduleOperation().createJobType(jobType)) {
-            _newSchedule.setType(jobType.getJobTypeNo());
-        }
-    } else if (m_typeComBox->currentIndex() >= 0)
-        _newSchedule.setType(m_typeComBox->getCurrentJobTypeNo());
+    //TODO:创建日程类型
+    //    if (m_typeComBox->isEditable()) {
+    //        JobTypeInfo jobType(0, m_typeComBox->lineEdit()->text(), m_colorSeletorWideget->getSelectedColorInfo());
+    //        //创建日程类型
+    //        if (CScheduleOperation().createJobType(jobType)) {
+    //            _newSchedule.setType(jobType.getJobTypeNo());
+    //        }
+    //    } else if (m_typeComBox->currentIndex() >= 0)
+    //        _newSchedule.setType(m_typeComBox->getCurrentJobTypeNo());
 
     if (beginDateTime > endDateTime) {
         DCalendarDDialog *prompt = new DCalendarDDialog(this);
@@ -198,102 +200,103 @@ bool CScheduleDlg::clickOkBtn()
         prompt->exec();
         return false;
     }
-    if (m_type == 1)
-        _newSchedule.setID(0) ;
+    //TODO:设置日程id
+    //    if (m_type == 1)
+    //        _newSchedule.setID(0) ;
     _newSchedule.setAllDay(m_allDayCheckbox->isChecked());
+    //TODO:重复规则和提醒规则
+    //    RemindData _remindData;
+    //    if (_newSchedule.allDay()) {
+    //        _remindData.setRemindTime(QTime(9, 0));
+    //        switch (m_rmindCombox->currentIndex()) {
+    //        case 1:
+    //            _remindData.setRemindNum(DDECalendar::OnStartDay);
+    //            break;
+    //        case 2:
+    //            _remindData.setRemindNum(DDECalendar::OneDayBeforeWithDay);
+    //            break;
+    //        case 3:
+    //            _remindData.setRemindNum(DDECalendar::TwoDayBeforeWithDay);
+    //            break;
+    //        case 4:
+    //            _remindData.setRemindNum(DDECalendar::OneWeekBeforeWithDay);
+    //            break;
+    //        default:
+    //            break;
+    //        }
+    //    } else {
+    //        switch (m_rmindCombox->currentIndex()) {
+    //        case 1:
+    //            _remindData.setRemindNum(DDECalendar::AtTimeOfEvent);
+    //            break;
+    //        case 2:
+    //            _remindData.setRemindNum(DDECalendar::FifteenMinutesBefore);
+    //            break;
+    //        case 3:
+    //            _remindData.setRemindNum(DDECalendar::ThirtyMinutesBefore);
+    //            break;
+    //        case 4:
+    //            _remindData.setRemindNum(DDECalendar::OneHourBefore);
+    //            break;
+    //        case 5:
+    //            _remindData.setRemindNum(DDECalendar::OneDayBeforeWithMinutes);
+    //            break;
+    //        case 6:
+    //            _remindData.setRemindNum(DDECalendar::TwoDayBeforeWithMinutes);
+    //            break;
+    //        case 7:
+    //            _remindData.setRemindNum(DDECalendar::OneWeekBeforeWithMinutes);
+    //            break;
+    //        default:
+    //            break;
+    //        }
+    //    }
+    //    _newSchedule.setRemindData(_remindData);
 
-    RemindData _remindData;
-    if (_newSchedule.getAllDay()) {
-        _remindData.setRemindTime(QTime(9, 0));
-        switch (m_rmindCombox->currentIndex()) {
-        case 1:
-            _remindData.setRemindNum(DDECalendar::OnStartDay);
-            break;
-        case 2:
-            _remindData.setRemindNum(DDECalendar::OneDayBeforeWithDay);
-            break;
-        case 3:
-            _remindData.setRemindNum(DDECalendar::TwoDayBeforeWithDay);
-            break;
-        case 4:
-            _remindData.setRemindNum(DDECalendar::OneWeekBeforeWithDay);
-            break;
-        default:
-            break;
-        }
-    } else {
-        switch (m_rmindCombox->currentIndex()) {
-        case 1:
-            _remindData.setRemindNum(DDECalendar::AtTimeOfEvent);
-            break;
-        case 2:
-            _remindData.setRemindNum(DDECalendar::FifteenMinutesBefore);
-            break;
-        case 3:
-            _remindData.setRemindNum(DDECalendar::ThirtyMinutesBefore);
-            break;
-        case 4:
-            _remindData.setRemindNum(DDECalendar::OneHourBefore);
-            break;
-        case 5:
-            _remindData.setRemindNum(DDECalendar::OneDayBeforeWithMinutes);
-            break;
-        case 6:
-            _remindData.setRemindNum(DDECalendar::TwoDayBeforeWithMinutes);
-            break;
-        case 7:
-            _remindData.setRemindNum(DDECalendar::OneWeekBeforeWithMinutes);
-            break;
-        default:
-            break;
-        }
-    }
-    _newSchedule.setRemindData(_remindData);
+    //    RepetitionRule _repetitionRule;
+    //    //根据是否为农历日程，设置对应的重复规则
+    //    RepetitionRule::RRuleID ruleID;
+    //    if (_newSchedule.getIsLunar()) {
+    //        switch (m_beginrepeatCombox->currentIndex()) {
+    //        case 1:
+    //            //每月
+    //            ruleID = RepetitionRule::RRule_EVEMONTH;
+    //            break;
+    //        case 2: {
+    //            //每年
+    //            ruleID = RepetitionRule::RRule_EVEYEAR;
+    //        } break;
+    //        default:
+    //            //默认不重复
+    //            ruleID = RepetitionRule::RRule_NONE;
+    //            break;
+    //        }
 
-    RepetitionRule _repetitionRule;
-    //根据是否为农历日程，设置对应的重复规则
-    RepetitionRule::RRuleID ruleID;
-    if (_newSchedule.getIsLunar()) {
-        switch (m_beginrepeatCombox->currentIndex()) {
-        case 1:
-            //每月
-            ruleID = RepetitionRule::RRule_EVEMONTH;
-            break;
-        case 2: {
-            //每年
-            ruleID = RepetitionRule::RRule_EVEYEAR;
-        } break;
-        default:
-            //默认不重复
-            ruleID = RepetitionRule::RRule_NONE;
-            break;
-        }
+    //    } else {
+    //        ruleID = static_cast<RepetitionRule::RRuleID>(m_beginrepeatCombox->currentIndex());
+    //    }
+    //    _repetitionRule.setRuleId(ruleID);
+    //    if (_repetitionRule.getRuleId() > 0) {
+    //        _repetitionRule.setRuleType(static_cast<RepetitionRule::RRuleEndType>
+    //                                    (m_endrepeatCombox->currentIndex()));
+    //        if (m_endrepeatCombox->currentIndex() == 1) {
+    //            if (m_endrepeattimes->text().isEmpty()) {
+    //                return false;
+    //            }
+    //            _repetitionRule.setEndCount(m_endrepeattimes->text().toInt());
+    //        } else if (m_endrepeatCombox->currentIndex() == 2) {
+    //            QDateTime endrpeattime = beginDateTime;
+    //            endrpeattime.setDate(m_endRepeatDate->date());
 
-    } else {
-        ruleID = static_cast<RepetitionRule::RRuleID>(m_beginrepeatCombox->currentIndex());
-    }
-    _repetitionRule.setRuleId(ruleID);
-    if (_repetitionRule.getRuleId() > 0) {
-        _repetitionRule.setRuleType(static_cast<RepetitionRule::RRuleEndType>
-                                    (m_endrepeatCombox->currentIndex()));
-        if (m_endrepeatCombox->currentIndex() == 1) {
-            if (m_endrepeattimes->text().isEmpty()) {
-                return false;
-            }
-            _repetitionRule.setEndCount(m_endrepeattimes->text().toInt());
-        } else if (m_endrepeatCombox->currentIndex() == 2) {
-            QDateTime endrpeattime = beginDateTime;
-            endrpeattime.setDate(m_endRepeatDate->date());
-
-            if (beginDateTime > endrpeattime) {
-                return false;
-            }
-            _repetitionRule.setEndDate(endrpeattime);
-        }
-    }
-    _newSchedule.setRepetitionRule(_repetitionRule);
-    _newSchedule.setBeginDateTime(beginDateTime);
-    _newSchedule.setEndDateTime(endDateTime);
+    //            if (beginDateTime > endrpeattime) {
+    //                return false;
+    //            }
+    //            _repetitionRule.setEndDate(endrpeattime);
+    //        }
+    //    }
+    //    _newSchedule.setRepetitionRule(_repetitionRule);
+    _newSchedule.setDtStart(beginDateTime);
+    _newSchedule.setDtEnd(endDateTime);
     CScheduleOperation _scheduleOperation(this);
 
     if (m_type == 1) {
@@ -469,10 +472,10 @@ void CScheduleDlg::slotallDayStateChanged(int state)
         m_endTimeEdit->setVisible(true);
 
         if (m_type == 0) {
-            m_beginDateEdit->setDate(m_ScheduleDataInfo.getBeginDateTime().date());
-            m_beginTimeEdit->setTime(m_ScheduleDataInfo.getBeginDateTime().time());
-            m_endDateEdit->setDate(m_ScheduleDataInfo.getEndDateTime().date());
-            m_endTimeEdit->setTime(m_ScheduleDataInfo.getEndDateTime().time());
+            m_beginDateEdit->setDate(m_ScheduleDataInfo.dtStart().date());
+            m_beginTimeEdit->setTime(m_ScheduleDataInfo.dtStart().time());
+            m_endDateEdit->setDate(m_ScheduleDataInfo.dtEnd().date());
+            m_endTimeEdit->setTime(m_ScheduleDataInfo.dtEnd().time());
         } else {
             m_beginDateEdit->setDate(m_currentDate.date());
             m_beginTimeEdit->setTime(m_currentDate.time());
@@ -489,9 +492,9 @@ void CScheduleDlg::slotallDayStateChanged(int state)
         m_endTimeEdit->setVisible(false);
 
         if (m_type == 0) {
-            m_beginDateEdit->setDate(m_ScheduleDataInfo.getBeginDateTime().date());
+            m_beginDateEdit->setDate(m_ScheduleDataInfo.dtStart().date());
             m_beginTimeEdit->setTime(QTime(0, 0));
-            m_endDateEdit->setDate(m_ScheduleDataInfo.getEndDateTime().date());
+            m_endDateEdit->setDate(m_ScheduleDataInfo.dtEnd().date());
             m_endTimeEdit->setTime(QTime(23, 59));
         } else {
             m_beginDateEdit->setDate(m_currentDate.date());
@@ -1158,77 +1161,79 @@ void CScheduleDlg::initJobTypeComboBox()
 
 void CScheduleDlg::initRmindRpeatUI()
 {
-    if (m_ScheduleDataInfo.getAllDay()) {
-        if (m_ScheduleDataInfo.getRemindData().getRemindNum() > -1) {
-            if (m_ScheduleDataInfo.getRemindData().getRemindNum() == DDECalendar::OnStartDay) {
-                m_rmindCombox->setCurrentIndex(1);
-            } else if (m_ScheduleDataInfo.getRemindData().getRemindNum() == DDECalendar::OneDayBeforeWithDay) {
-                m_rmindCombox->setCurrentIndex(2);
-            } else if (m_ScheduleDataInfo.getRemindData().getRemindNum() == DDECalendar::TwoDayBeforeWithDay) {
-                m_rmindCombox->setCurrentIndex(3);
-            } else if (m_ScheduleDataInfo.getRemindData().getRemindNum() == DDECalendar::OneWeekBeforeWithDay) {
-                m_rmindCombox->setCurrentIndex(4);
-            }
-        } else {
-            m_rmindCombox->setCurrentIndex(0);
-        }
-    } else {
-        if (m_ScheduleDataInfo.getRemindData().getRemindNum() > -1) {
-            if (m_ScheduleDataInfo.getRemindData().getRemindNum() == DDECalendar::AtTimeOfEvent) {
-                m_rmindCombox->setCurrentIndex(1);
-            } else if (m_ScheduleDataInfo.getRemindData().getRemindNum() == DDECalendar::FifteenMinutesBefore) {
-                m_rmindCombox->setCurrentIndex(2);
-            } else if (m_ScheduleDataInfo.getRemindData().getRemindNum() == DDECalendar::ThirtyMinutesBefore) {
-                m_rmindCombox->setCurrentIndex(3);
-            } else if (m_ScheduleDataInfo.getRemindData().getRemindNum() == DDECalendar::OneHourBefore) {
-                m_rmindCombox->setCurrentIndex(4);
-            } else if (m_ScheduleDataInfo.getRemindData().getRemindNum() ==
-                       DDECalendar::OneDayBeforeWithMinutes) {
-                m_rmindCombox->setCurrentIndex(5);
-            } else if (m_ScheduleDataInfo.getRemindData().getRemindNum() ==
-                       DDECalendar::TwoDayBeforeWithMinutes) {
-                m_rmindCombox->setCurrentIndex(6);
-            } else if (m_ScheduleDataInfo.getRemindData().getRemindNum() ==
-                       DDECalendar::OneWeekBeforeWithMinutes) {
-                m_rmindCombox->setCurrentIndex(7);
-            }
-        } else {
-            m_rmindCombox->setCurrentIndex(0);
-        }
-    }
-    slotbRpeatactivated(m_ScheduleDataInfo.getRepetitionRule().getRuleId());
-    RepetitionRule::RRuleID ruleID = m_ScheduleDataInfo.getRepetitionRule().getRuleId();
-    if (m_ScheduleDataInfo.getIsLunar()) {
-        switch (ruleID) {
-        case RepetitionRule::RRule_EVEYEAR:
-            m_beginrepeatCombox->setCurrentIndex(2);
-            break;
-        case RepetitionRule::RRule_EVEMONTH:
-            m_beginrepeatCombox->setCurrentIndex(1);
-            break;
-        default:
-            m_beginrepeatCombox->setCurrentIndex(0);
-            break;
-        }
-    } else {
-        m_beginrepeatCombox->setCurrentIndex(ruleID);
-    }
+    //TODO:等待提醒规则
+    //    if (m_ScheduleDataInfo.getAllDay()) {
+    //        if (m_ScheduleDataInfo.getRemindData().getRemindNum() > -1) {
+    //            if (m_ScheduleDataInfo.getRemindData().getRemindNum() == DDECalendar::OnStartDay) {
+    //                m_rmindCombox->setCurrentIndex(1);
+    //            } else if (m_ScheduleDataInfo.getRemindData().getRemindNum() == DDECalendar::OneDayBeforeWithDay) {
+    //                m_rmindCombox->setCurrentIndex(2);
+    //            } else if (m_ScheduleDataInfo.getRemindData().getRemindNum() == DDECalendar::TwoDayBeforeWithDay) {
+    //                m_rmindCombox->setCurrentIndex(3);
+    //            } else if (m_ScheduleDataInfo.getRemindData().getRemindNum() == DDECalendar::OneWeekBeforeWithDay) {
+    //                m_rmindCombox->setCurrentIndex(4);
+    //            }
+    //        } else {
+    //            m_rmindCombox->setCurrentIndex(0);
+    //        }
+    //    } else {
+    //        if (m_ScheduleDataInfo.getRemindData().getRemindNum() > -1) {
+    //            if (m_ScheduleDataInfo.getRemindData().getRemindNum() == DDECalendar::AtTimeOfEvent) {
+    //                m_rmindCombox->setCurrentIndex(1);
+    //            } else if (m_ScheduleDataInfo.getRemindData().getRemindNum() == DDECalendar::FifteenMinutesBefore) {
+    //                m_rmindCombox->setCurrentIndex(2);
+    //            } else if (m_ScheduleDataInfo.getRemindData().getRemindNum() == DDECalendar::ThirtyMinutesBefore) {
+    //                m_rmindCombox->setCurrentIndex(3);
+    //            } else if (m_ScheduleDataInfo.getRemindData().getRemindNum() == DDECalendar::OneHourBefore) {
+    //                m_rmindCombox->setCurrentIndex(4);
+    //            } else if (m_ScheduleDataInfo.getRemindData().getRemindNum() ==
+    //                       DDECalendar::OneDayBeforeWithMinutes) {
+    //                m_rmindCombox->setCurrentIndex(5);
+    //            } else if (m_ScheduleDataInfo.getRemindData().getRemindNum() ==
+    //                       DDECalendar::TwoDayBeforeWithMinutes) {
+    //                m_rmindCombox->setCurrentIndex(6);
+    //            } else if (m_ScheduleDataInfo.getRemindData().getRemindNum() ==
+    //                       DDECalendar::OneWeekBeforeWithMinutes) {
+    //                m_rmindCombox->setCurrentIndex(7);
+    //            }
+    //        } else {
+    //            m_rmindCombox->setCurrentIndex(0);
+    //        }
+    //    }
+    //TODO:等待重复规则
+    //    slotbRpeatactivated(m_ScheduleDataInfo.getRepetitionRule().getRuleId());
+    //    RepetitionRule::RRuleID ruleID = m_ScheduleDataInfo.getRepetitionRule().getRuleId();
+    //    if (m_ScheduleDataInfo.getIsLunar()) {
+    //        switch (ruleID) {
+    //        case RepetitionRule::RRule_EVEYEAR:
+    //            m_beginrepeatCombox->setCurrentIndex(2);
+    //            break;
+    //        case RepetitionRule::RRule_EVEMONTH:
+    //            m_beginrepeatCombox->setCurrentIndex(1);
+    //            break;
+    //        default:
+    //            m_beginrepeatCombox->setCurrentIndex(0);
+    //            break;
+    //        }
+    //    } else {
+    //        m_beginrepeatCombox->setCurrentIndex(ruleID);
+    //    }
 
-    if (m_ScheduleDataInfo.getRepetitionRule().getRuleId() != 0) {
-        if (m_ScheduleDataInfo.getRepetitionRule().getRuleType() == 0) {
-            m_endrepeatCombox->setCurrentIndex(0);
-        } else if (m_ScheduleDataInfo.getRepetitionRule().getRuleType() == 1) {
-            m_endrepeatCombox->setCurrentIndex(1);
-            m_endrepeattimes->setText(QString::number(m_ScheduleDataInfo.getRepetitionRule().getEndCount()));
-        } else if (m_ScheduleDataInfo.getRepetitionRule().getRuleType() == 2) {
-            m_endrepeatCombox->setCurrentIndex(2);
-            m_endRepeatDate->setDate(m_ScheduleDataInfo.getRepetitionRule().getEndDate().date());
-        }
-        m_endrepeatWidget->show();
-        sloteRpeatactivated(m_ScheduleDataInfo.getRepetitionRule().getRuleType());
-    } else {
-        m_endrepeatWidget->hide();
-    }
+    //    if (m_ScheduleDataInfo.getRepetitionRule().getRuleId() != 0) {
+    //        if (m_ScheduleDataInfo.getRepetitionRule().getRuleType() == 0) {
+    //            m_endrepeatCombox->setCurrentIndex(0);
+    //        } else if (m_ScheduleDataInfo.getRepetitionRule().getRuleType() == 1) {
+    //            m_endrepeatCombox->setCurrentIndex(1);
+    //            m_endrepeattimes->setText(QString::number(m_ScheduleDataInfo.getRepetitionRule().getEndCount()));
+    //        } else if (m_ScheduleDataInfo.getRepetitionRule().getRuleType() == 2) {
+    //            m_endrepeatCombox->setCurrentIndex(2);
+    //            m_endRepeatDate->setDate(m_ScheduleDataInfo.getRepetitionRule().getEndDate().date());
+    //        }
+    //        m_endrepeatWidget->show();
+    //        sloteRpeatactivated(m_ScheduleDataInfo.getRepetitionRule().getRuleType());
+    //    } else {
+    //        m_endrepeatWidget->hide();
+    //    }
 }
 
 void CScheduleDlg::setTheMe(const int type)
@@ -1263,14 +1268,15 @@ void CScheduleDlg::setTabFouseOrder()
 //    setTabOrder(m_endTimeEdit, m_rmindCombox);
     setTabOrder(m_rmindCombox, m_beginrepeatCombox);
     setTabOrder(m_beginrepeatCombox, m_endrepeatCombox);
-    //结束于次数，设置tab顺序
-    if (m_ScheduleDataInfo.getRepetitionRule().getRuleType() ==
-            RepetitionRule::RRuleEndType::RRuleType_FREQ)
-        setTabOrder(m_endrepeatCombox, m_endrepeattimes);
-    //结束于日期，设置tab顺序
-    if (m_ScheduleDataInfo.getRepetitionRule().getRuleType() ==
-            RepetitionRule::RRuleEndType::RRuleType_DATE)
-        setTabOrder(m_endrepeatCombox, m_endRepeatDate);
+    //TODO:获取重复规则
+    //    //结束于次数，设置tab顺序
+    //    if (m_ScheduleDataInfo.getRepetitionRule().getRuleType() ==
+    //            RepetitionRule::RRuleEndType::RRuleType_FREQ)
+    //        setTabOrder(m_endrepeatCombox, m_endrepeattimes);
+    //    //结束于日期，设置tab顺序
+    //    if (m_ScheduleDataInfo.getRepetitionRule().getRuleType() ==
+    //            RepetitionRule::RRuleEndType::RRuleType_DATE)
+    //        setTabOrder(m_endrepeatCombox, m_endRepeatDate);
 }
 
 void CScheduleDlg::updateIsOneMoreDay(const QDateTime &begin, const QDateTime &end)
@@ -1370,7 +1376,8 @@ void CScheduleDlg::initColor()
     //将用户上一次选择的自定义颜色添加进去
     QString colorName = CConfigSettings::getInstance()->value("LastUserColor", "").toString();
     if (!colorName.isEmpty()) {
-        m_colorSeletorWideget->setUserColor(JobTypeColorInfo(0, colorName, 7));
+        //TODO:设置颜色
+        //        m_colorSeletorWideget->setUserColor(JobTypeColorInfo(0, colorName, 7));
     }
 
     //选中上一次选中的颜色

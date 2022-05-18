@@ -46,7 +46,7 @@
 #include <QPainterPath>
 
 //定义拖拽日程
-ScheduleDataInfo DragInfoGraphicsView::m_DragScheduleInfo;
+DSchedule DragInfoGraphicsView::m_DragScheduleInfo;
 bool DragInfoGraphicsView::m_hasUpdateMark = false;
 
 DragInfoGraphicsView::DragInfoGraphicsView(DWidget *parent)
@@ -272,18 +272,18 @@ void DragInfoGraphicsView::mouseMoveEvent(QMouseEvent *event)
             m_MoveDate = gDate;
             //获取日程开始时间
             QDateTime _beginTime = getDragScheduleInfoBeginTime(m_MoveDate);
-            m_DragScheduleInfo.setBeginDateTime(_beginTime);
-            m_DragScheduleInfo.setEndDateTime(m_InfoEndTime);
+            m_DragScheduleInfo.setDtStart(_beginTime);
+            m_DragScheduleInfo.setDtEnd(m_InfoEndTime);
             upDateInfoShow(ChangeBegin, m_DragScheduleInfo);
         }
         break;
     case ChangeEnd:
         if (!IsEqualtime(m_MoveDate, gDate)) {
             m_MoveDate = gDate;
-            m_DragScheduleInfo.setBeginDateTime(m_InfoBeginTime);
+            m_DragScheduleInfo.setDtStart(m_InfoBeginTime);
             //获取结束时间
             QDateTime _endTime = getDragScheduleInfoEndTime(m_MoveDate);
-            m_DragScheduleInfo.setEndDateTime(_endTime);
+            m_DragScheduleInfo.setDtEnd(_endTime);
             upDateInfoShow(ChangeEnd, m_DragScheduleInfo);
         }
         break;
@@ -330,7 +330,9 @@ void DragInfoGraphicsView::contextMenuEvent(QContextMenuEvent *event)
     DragInfoItem *infoitem = dynamic_cast<DragInfoItem *>(listItem);
 
     if (infoitem != nullptr) {
-        if (infoitem->getData().getType() != DDECalendar::FestivalTypeID) {
+        //TODO:是否为节假日日程判断
+        //        if (infoitem->getData().getType() != DDECalendar::FestivalTypeID) {
+        if (true) {
             m_rightMenu->clear();
             m_rightMenu->addAction(m_editAction);
             m_rightMenu->addAction(m_deleteAction);
@@ -365,16 +367,17 @@ void DragInfoGraphicsView::dragEnterEvent(QDragEnterEvent *event)
             event->ignore();
         }
         QJsonObject rootobj = jsonDoc.object();
-        ScheduleDataInfo info = ScheduleDataInfo::JsonToSchedule(rootobj);
+        //TODO: 数据修改
+        //        DSchedule info = ScheduleDataInfo::JsonToSchedule(rootobj);
 
-        //如果该日程是不能被拖拽的则忽略不接受
-        if ((event->source() != this && info.getRepetitionRule().getRuleId() > 0) || !isCanDragge(info)) {
-            event->ignore();
-        } else {
-            event->accept();
-            //设置被修改的日程原始信息
-            m_PressScheduleInfo = info;
-        }
+        //        //如果该日程是不能被拖拽的则忽略不接受
+        //        if ((event->source() != this && info.getRepetitionRule().getRuleId() > 0) || !isCanDragge(info)) {
+        //            event->ignore();
+        //        } else {
+        //            event->accept();
+        //            //设置被修改的日程原始信息
+        //            m_PressScheduleInfo = info;
+        //        }
     } else {
         event->ignore();
     }
@@ -401,8 +404,9 @@ void DragInfoGraphicsView::dragMoveEvent(QDragMoveEvent *event)
     if (!IsEqualtime(m_MoveDate, gDate)) {
         m_MoveDate = gDate;
         QJsonObject rootobj = jsonDoc.object();
-        m_DragScheduleInfo = ScheduleDataInfo::JsonToSchedule(rootobj);
-        m_DragScheduleInfo.setIsMoveInfo(true);
+        //TODO: 数据修改
+        //        m_DragScheduleInfo = ScheduleDataInfo::JsonToSchedule(rootobj);
+        //        m_DragScheduleInfo.setIsMoveInfo(true);
         MoveInfoProcess(m_DragScheduleInfo, event->posF());
         DragInfoItem::setPressSchedule(m_DragScheduleInfo);
     }
@@ -482,7 +486,7 @@ void DragInfoGraphicsView::slotCreate()
  * @brief DragInfoGraphicsView::setPressSelectInfo      设置点击选中日程
  * @param info
  */
-void DragInfoGraphicsView::setPressSelectInfo(const ScheduleDataInfo &info)
+void DragInfoGraphicsView::setPressSelectInfo(const DSchedule &info)
 {
     DragInfoItem::setPressSchedule(info);
 }
@@ -491,7 +495,7 @@ void DragInfoGraphicsView::setPressSelectInfo(const ScheduleDataInfo &info)
  * @brief DragInfoGraphicsView::updateScheduleInfo      拖拽更新日程信息
  * @param info
  */
-void DragInfoGraphicsView::updateScheduleInfo(const ScheduleDataInfo &info)
+void DragInfoGraphicsView::updateScheduleInfo(const DSchedule &info)
 {
     QVariant variant;
     //获取主窗口指针
@@ -523,8 +527,8 @@ void DragInfoGraphicsView::DragPressEvent(const QPoint &pos, DragInfoItem *item)
         }
         m_DragScheduleInfo = item->getData();
         m_PressScheduleInfo = item->getData();
-        m_InfoBeginTime = m_DragScheduleInfo.getBeginDateTime();
-        m_InfoEndTime = m_DragScheduleInfo.getEndDateTime();
+        m_InfoBeginTime = m_DragScheduleInfo.dtStart();
+        m_InfoEndTime = m_DragScheduleInfo.dtEnd();
         switch (mpressstatus) {
         case TOP:
             m_DragStatus = ChangeBegin;
@@ -546,8 +550,9 @@ void DragInfoGraphicsView::DragPressEvent(const QPoint &pos, DragInfoItem *item)
             ShowSchedule(item);
             m_DragStatus = ChangeWhole;
             QMimeData *mimeData = new QMimeData();
-            mimeData->setText(m_DragScheduleInfo.getTitleName());
-            mimeData->setData("Info", ScheduleDataInfo::ScheduleToJsonStr(m_DragScheduleInfo).toUtf8());
+            mimeData->setText(m_DragScheduleInfo.summary());
+            //TODO:数据转换
+            //            mimeData->setData("Info", ScheduleDataInfo::ScheduleToJsonStr(m_DragScheduleInfo).toUtf8());
 
             if (m_Drag == nullptr) {
                 m_Drag = new QDrag(this);
@@ -588,7 +593,7 @@ void DragInfoGraphicsView::mouseReleaseScheduleUpdate()
                 updateInfo();
             }
             //设置选中日程为无效日程
-            setPressSelectInfo(ScheduleDataInfo());
+            setPressSelectInfo(DSchedule());
         }
         break;
     case ChangeBegin:
@@ -614,9 +619,9 @@ void DragInfoGraphicsView::mouseReleaseScheduleUpdate()
 
 void DragInfoGraphicsView::mousePress(const QPoint &point)
 {
-    setPressSelectInfo(ScheduleDataInfo());
+    setPressSelectInfo(DSchedule());
     //设置拖拽日程为无效日程
-    m_DragScheduleInfo = ScheduleDataInfo();
+    m_DragScheduleInfo = DSchedule();
     pressScheduleInit();
     QGraphicsItem *listItem = itemAt(point);
     DragInfoItem *infoitem = dynamic_cast<DragInfoItem *>(listItem);
@@ -657,7 +662,7 @@ void DragInfoGraphicsView::stopTouchAnimation()
  * @brief DragInfoGraphicsView::DeleteItem      删除日程
  * @param info
  */
-void DragInfoGraphicsView::DeleteItem(const ScheduleDataInfo &info)
+void DragInfoGraphicsView::DeleteItem(const DSchedule &info)
 {
     //删除日程
     CScheduleOperation _scheduleOperation(this);
@@ -668,7 +673,7 @@ void DragInfoGraphicsView::DeleteItem(const ScheduleDataInfo &info)
  * @brief DragInfoGraphicsView::setSelectSearchSchedule     设置选中搜索日程
  * @param scheduleInfo
  */
-void DragInfoGraphicsView::setSelectSearchSchedule(const ScheduleDataInfo &scheduleInfo)
+void DragInfoGraphicsView::setSelectSearchSchedule(const DSchedule &scheduleInfo)
 {
     setPressSelectInfo(scheduleInfo);
 }
@@ -703,22 +708,23 @@ void DragInfoGraphicsView::slotCreate(const QDateTime &date)
     }
 }
 
-ScheduleDataInfo DragInfoGraphicsView::getScheduleInfo(const QDateTime &beginDate, const QDateTime &endDate)
+DSchedule DragInfoGraphicsView::getScheduleInfo(const QDateTime &beginDate, const QDateTime &endDate)
 {
-    ScheduleDataInfo info;
+    DSchedule info;
 
     if (beginDate.daysTo(endDate) > 0) {
-        info.setBeginDateTime(QDateTime(beginDate.date(), QTime(0, 0, 0)));
-        info.setEndDateTime(QDateTime(endDate.date(), QTime(23, 59, 59)));
+        info.setDtStart(QDateTime(beginDate.date(), QTime(0, 0, 0)));
+        info.setDtEnd(QDateTime(endDate.date(), QTime(23, 59, 59)));
     } else {
-        info.setBeginDateTime(QDateTime(endDate.date(), QTime(0, 0, 0)));
-        info.setEndDateTime(QDateTime(beginDate.date(), QTime(23, 59, 00)));
+        info.setDtStart(QDateTime(endDate.date(), QTime(0, 0, 0)));
+        info.setDtEnd(QDateTime(beginDate.date(), QTime(23, 59, 00)));
     }
-    info.setTitleName(tr("New Event"));
+    info.setSummary(tr("New Event"));
     info.setAllDay(true);
-    info.setRemindData(RemindData(1, QTime(9, 0)));
-    info.setID(0);
-    info.setRecurID(0);
+    //TODO:设置提醒规则，
+    //    info.setRemindData(RemindData(1, QTime(9, 0)));
+    //    info.setID(0);
+    //    info.setRecurID(0);
     return info;
 }
 
@@ -785,11 +791,12 @@ void DragInfoGraphicsView::slideEvent(QPointF &startPoint, QPointF &stopPort)
 void DragInfoGraphicsView::updateInfo()
 {
     //如果拖拽日程有效则更新为不是移动日程
-    if (m_DragScheduleInfo.isValid() && m_DragScheduleInfo.getID() != 0) {
-        m_DragScheduleInfo.setIsMoveInfo(false);
-        //设置选择日程状态
-        setPressSelectInfo(m_DragScheduleInfo);
-    }
+    //TODO: 判断是否更新
+    //    if (m_DragScheduleInfo.isValid() && m_DragScheduleInfo.getID() != 0) {
+    //        m_DragScheduleInfo.setIsMoveInfo(false);
+    //        //设置选择日程状态
+    //        setPressSelectInfo(m_DragScheduleInfo);
+    //    }
 }
 
 int DragInfoGraphicsView::getDragStatus() const
@@ -803,11 +810,13 @@ void DragInfoGraphicsView::setShowRadius(bool leftShow, bool rightShow)
     m_rightShowRadius = rightShow;
 }
 
-bool DragInfoGraphicsView::isCanDragge(const ScheduleDataInfo &info)
+bool DragInfoGraphicsView::isCanDragge(const DSchedule &info)
 {
-    if (info.getType() == DDECalendar::FestivalTypeID)
+    //TODO:是否为节假日日程判断
+    //        if (infoitem->getData().getType() != DDECalendar::FestivalTypeID) {
+    if (true)
         return false;
-    if (info.getIsLunar() && !QLocale::system().name().startsWith("zh_"))
+    if (info.isLunar() && !QLocale::system().name().startsWith("zh_"))
         return false;
     return true;
 }
@@ -818,7 +827,7 @@ bool DragInfoGraphicsView::isCanDragge(const ScheduleDataInfo &info)
 void DragInfoGraphicsView::slotDeleteItem()
 {
     //获取选中日程
-    ScheduleDataInfo _pressSchedule = DragInfoItem::getPressSchedule();
+    DSchedule _pressSchedule = DragInfoItem::getPressSchedule();
     //根据焦点状态获取当前焦点的item
     CSceneBackgroundItem *backgroundItem = dynamic_cast<CSceneBackgroundItem *>(m_Scene->getCurrentFocusItem());
     if (backgroundItem != nullptr) {
@@ -831,11 +840,14 @@ void DragInfoGraphicsView::slotDeleteItem()
     }
 
     //判断是否有效,如果为有效日程且日程类型不为节日或纪念日则删除
-    if (_pressSchedule.isValid() && _pressSchedule.getType() != 4) {
+    if (_pressSchedule.isValid()
+        //TODO:是否为节假日日程判断
+        //           && _pressSchedule.getType() != 4
+    ) {
         CScheduleOperation _scheduleOperation(this);
         _scheduleOperation.deleteSchedule(_pressSchedule);
         //设置选择日程为无效日程
-        setPressSelectInfo(ScheduleDataInfo());
+        setPressSelectInfo(DSchedule());
         //设置拖拽日程为无效日程
         m_DragScheduleInfo = DragInfoItem::getPressSchedule();
     }
@@ -867,7 +879,9 @@ void DragInfoGraphicsView::slotContextMenu(CFocusItem *item)
     DragInfoItem *infoitem = dynamic_cast<DragInfoItem *>(item);
     if (infoitem != nullptr) {
         //如果为节假日则退出不展示右击菜单
-        if (infoitem->getData().getType() == DDECalendar::FestivalTypeID)
+        //TODO:是否为节假日日程判断
+        //        if (infoitem->getData().getType() != DDECalendar::FestivalTypeID) {
+        if (false)
             return;
         //快捷键调出右击菜单
         m_Scene->setIsContextMenu(true);
@@ -912,7 +926,7 @@ void DragInfoGraphicsView::setSceneCurrentItemFocus(const QDate &focusDate)
  */
 void DragInfoGraphicsView::pressScheduleInit()
 {
-    m_PressScheduleInfo = ScheduleDataInfo();
+    m_PressScheduleInfo = DSchedule();
 }
 
 QDate DragInfoGraphicsView::getCurrentDate() const

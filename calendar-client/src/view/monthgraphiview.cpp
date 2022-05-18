@@ -138,7 +138,7 @@ void CMonthGraphicsview::setLunarVisible(bool visible)
  * @brief CMonthGraphicsview::setScheduleInfo 设置日程信息
  * @param info
  */
-void CMonthGraphicsview::setScheduleInfo(const QMap<QDate, QVector<ScheduleDataInfo>> &info)
+void CMonthGraphicsview::setScheduleInfo(const QMap<QDate, QVector<DSchedule>> &info)
 {
     m_schedulelistdata = info;
     updateInfo();
@@ -148,7 +148,7 @@ void CMonthGraphicsview::setScheduleInfo(const QMap<QDate, QVector<ScheduleDataI
  * @brief CMonthGraphicsview::setSelectSearchSchedule     设置选择搜索日程
  * @param scheduleInfo
  */
-void CMonthGraphicsview::setSelectSearchSchedule(const ScheduleDataInfo &scheduleInfo)
+void CMonthGraphicsview::setSelectSearchSchedule(const DSchedule &scheduleInfo)
 {
     DragInfoGraphicsView::setSelectSearchSchedule(scheduleInfo);
     //获取所有的日程item
@@ -171,7 +171,7 @@ void CMonthGraphicsview::setSelectSearchSchedule(const ScheduleDataInfo &schedul
  * @brief CMonthGraphicsview::setSearchScheduleInfo       设置搜索日程信息
  * @param searchScheduleInfo
  */
-void CMonthGraphicsview::setSearchScheduleInfo(const QVector<ScheduleDataInfo> &searchScheduleInfo)
+void CMonthGraphicsview::setSearchScheduleInfo(const QVector<DSchedule> &searchScheduleInfo)
 {
     DragInfoItem::setSearchScheduleInfo(searchScheduleInfo);
     this->scene()->update();
@@ -314,7 +314,7 @@ QDateTime CMonthGraphicsview::getPosDate(const QPoint &p)
                       QTime(0, 0, 0));
 }
 
-void CMonthGraphicsview::upDateInfoShow(const CMonthGraphicsview::DragStatus &status, const ScheduleDataInfo &info)
+void CMonthGraphicsview::upDateInfoShow(const CMonthGraphicsview::DragStatus &status, const DSchedule &info)
 {
     switch (status) {
     case NONE:
@@ -484,11 +484,11 @@ void CMonthGraphicsview::RightClickToCreate(QGraphicsItem *listItem, const QPoin
     }
 }
 
-void CMonthGraphicsview::MoveInfoProcess(ScheduleDataInfo &info, const QPointF &pos)
+void CMonthGraphicsview::MoveInfoProcess(DSchedule &info, const QPointF &pos)
 {
     qint64 offset       = m_PressDate.daysTo(m_MoveDate);
-    info.setBeginDateTime(info.getBeginDateTime().addDays(offset));
-    info.setEndDateTime(info.getEndDateTime().addDays(offset));
+    info.setDtStart(info.dtStart().addDays(offset));
+    info.setDtEnd(info.dtEnd().addDays(offset));
     qreal y = 0;
     QRectF rect = this->sceneRect();
 

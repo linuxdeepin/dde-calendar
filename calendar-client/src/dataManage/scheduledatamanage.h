@@ -18,7 +18,8 @@
  */
 #ifndef SCHEDULEDATAMANAGE_H
 #define SCHEDULEDATAMANAGE_H
-#include "src/scheduledatainfo.h"
+#include "dschedule.h"
+#include "dscheduletype.h"
 
 #include <DGuiApplicationHelper>
 
@@ -39,7 +40,7 @@ class CScheduleDataManage
 {
 public:
     static CScheduleDataManage *getScheduleDataManage();
-    CSchedulesColor getScheduleColorByType(int type);
+    CSchedulesColor getScheduleColorByType(const QString &type);
     static QColor getSystemActiveColor();
     static QColor getTextColor();
     void setTheMe(int type = 0);
@@ -66,12 +67,12 @@ public:
      */
     void updateInfo();
     //查询列表、返回列表
-    QList<JobTypeInfo> getJobTypeList()
+    QList<DScheduleType> getJobTypeList()
     {
         return m_lstJobType;
     }
 
-    QList<JobTypeColorInfo> getJobTypeColorList()
+    QList<DTypeColor> getJobTypeColorList()
     {
         return  m_lstJobTypeColor;
     }
@@ -85,22 +86,22 @@ public:
     /**
      * @brief getSysJobTypeColor  获取指定编号的默认颜色
      * @param colorTypeNo         颜色类型编号
-     * @param jobTypeColorInfo    颜色信息
+     * @param DTypeColor    颜色信息
      * @return                    操作结果
      */
-    bool getSysJobTypeColor(int colorTypeNo, JobTypeColorInfo &jobTypeColorInfo);
+    bool getSysJobTypeColor(int colorTypeNo, DTypeColor &DTypeColor);
     //查询日程类型
-    bool getJobTypeByNo(int iNo, JobTypeInfo &jobType);
+    bool getJobTypeByNo(QString iNo, DScheduleType &jobType);
     //查询日程类型颜色
-    bool getJobTypeColorByNo(int iNo, JobTypeColorInfo &jobType);
+    bool getJobTypeColorByNo(int iNo, DTypeColor &jobType);
 
     //查询日程类型名称是否重复
     bool isJobTypeNameUsed(QString strName);
     //根据日程类型信息判断修改的日程类型名称是否与其它日程类型名称重复
-    bool isJobTypeNameUsed(const JobTypeInfo &info);
+    bool isJobTypeNameUsed(const DScheduleType &info);
 
     //获取自定义日程类型下一个编号
-    int getNextTypeNo();
+    //    int getNextTypeNo();
     //获取自定义日程类型颜色下一个编号
     int getNextColorTypeNo();
 
@@ -109,8 +110,8 @@ public:
     //通知单,移除回调函数
     void removeFromNoticeBill(QObject *obj);
 private:
-    QList<JobTypeInfo> m_lstJobType;
-    QList<JobTypeColorInfo> m_lstJobTypeColor;
+    QList<DScheduleType> m_lstJobType;
+    QList<DTypeColor> m_lstJobTypeColor;
     QMap<QObject *, QByteArray> noticeObjBill;//当日程类型改变时，会触发notice对应的回调函数
 };
 #endif // SCHEDULEVIEW_H
