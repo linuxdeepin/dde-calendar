@@ -22,6 +22,7 @@
 #include "daymonthview.h"
 #include "constants.h"
 #include "dayhuangliview.h"
+#include "configsettings.h"
 
 #include <DPalette>
 #include <DHorizontalLine>
@@ -265,8 +266,12 @@ void CDayMonthView::initUI()
     m_upLayout->setSpacing(0);
     m_upLayout->setContentsMargins(22, 9, 0, 7);
     m_upLayout->addLayout(titleLayout);
+
+    m_weekWidget = new CWeekWidget();
+    m_weekWidget->setMaximumHeight(40);
     m_dayMonthWidget = new CDayMonthWidget();
-    m_upLayout->addWidget(m_dayMonthWidget);
+    m_upLayout->addWidget(m_weekWidget, 1);
+    m_upLayout->addWidget(m_dayMonthWidget, 6);
 
     //中间部分
     QVBoxLayout *midLayout = new QVBoxLayout;
@@ -492,8 +497,8 @@ CDayMonthWidget::CDayMonthWidget(QWidget *parent)
     m_gridLayout->setMargin(0);
     m_gridLayout->setSpacing(0);
     m_dayNumFont.setPixelSize(DDECalendar::FontSizeTwelve);
-    for (int r = 0; r != 6; ++r) {
-        for (int c = 0; c != 7; ++c) {
+    for (int r = 0; r < 6; ++r) {
+        for (int c = 0; c < 7; ++c) {
             QWidget *cell = new QWidget;
             cell->installEventFilter(this);
             m_gridLayout->addWidget(cell, r, c, 1, 1);
@@ -557,7 +562,6 @@ const QDate CDayMonthWidget::getCellDate(int pos)
 void CDayMonthWidget::paintCell(QWidget *cell)
 {
     const QRect rect = cell->rect();
-
     const int pos = m_cellList.indexOf(cell);
     const bool isSelectedCell = pos == m_selectedCell;
     const bool isCurrentDay = getCellDate(pos) == m_currentDate;
@@ -619,7 +623,7 @@ void CDayMonthWidget::paintCell(QWidget *cell)
             painter.setPen(pen);
             painter.setBrush(QBrush(m_ceventColor));
             painter.setPen(Qt::NoPen);
-            int r = cell->width() * (4 / 25);
+            int r = int(cell->width() * (4.0 / 25));
             if (r < 4) {
                 r = 4;
             } else if (r > 7) {

@@ -80,6 +80,7 @@ Calendarmainwindow::Calendarmainwindow(int index, QWidget *w)
     setContentsMargins(QMargins(0, 0, 0, 0));
     initUI();
     initConnection();
+    initData();
     setMinimumSize(CalendarMWidth, CalendarMHeight);
     setWindowTitle(tr("Calendar"));
     new CalendarAdaptor(this);
@@ -454,6 +455,12 @@ void Calendarmainwindow::initConnection()
     connect(m_titleWidget, &CTitleWidget::signalSidebarStatusChange, this, &Calendarmainwindow::slotSidebarStatusChange);
 }
 
+void Calendarmainwindow::initData()
+{
+    //根据配置设置侧边栏状态
+    m_titleWidget->setSidebarStatus(gSetting->getUserSidebarStatus());
+}
+
 /**
  * @brief Calendarmainwindow::createview        创建视图
  */
@@ -763,6 +770,8 @@ void Calendarmainwindow::slotSidebarStatusChange(bool status)
 {
     //设置账户侧边栏显示状态
     m_sidebarView->setVisible(status);
+    //将状态保存在配置文件中
+    gSetting->setUserSidebarStatus(status);
 }
 
 void Calendarmainwindow::mouseMoveEvent(QMouseEvent *event)

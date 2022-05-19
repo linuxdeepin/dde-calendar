@@ -21,6 +21,7 @@
 
 #include "yearview.h"
 #include "constants.h"
+#include "configsettings.h"
 
 #include <DHiDPIHelper>
 #include <DPalette>
@@ -63,6 +64,8 @@ CYearView::CYearView(QWidget *parent)
     m_currentMouth->show();
     m_currentMouth->installEventFilter(this);
 
+    m_weekWidget = new CWeekWidget(this);
+
     m_monthView = new MonthBrefWidget(this);
     connect(m_monthView,
             &MonthBrefWidget::signalPressDate,
@@ -75,7 +78,8 @@ CYearView::CYearView(QWidget *parent)
 
     m_hhLayout = new QVBoxLayout;
     m_hhLayout->addLayout(separatorLineLayout);
-    m_hhLayout->addWidget(m_monthView);
+    m_hhLayout->addWidget(m_weekWidget, 1);
+    m_hhLayout->addWidget(m_monthView, 6);
     m_hhLayout->setMargin(0);
     m_hhLayout->setSpacing(0);
     m_hhLayout->setContentsMargins(13, 10, 10, 10);

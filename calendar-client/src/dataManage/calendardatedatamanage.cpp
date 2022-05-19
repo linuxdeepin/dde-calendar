@@ -19,11 +19,10 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "calendardatedatamanage.h"
-
+#include "configsettings.h"
 #include <QtMath>
 
 const int MonthMaxDay = 42;
-Qt::DayOfWeek     CalendarDateDataManager::m_weekFirstDay = Qt::Sunday;
 /**
  * @brief CalendarDateDataManage    构造函数
  * @param parent
@@ -128,7 +127,7 @@ QVector<QDate> CalendarDateDataManager::getWeekDate(const QDate &date)
  */
 void CalendarDateDataManager::setWeekFirstDay(const Qt::DayOfWeek &firstDay)
 {
-    m_weekFirstDay = firstDay;
+    gSetting->setFirstDayOfWeek(firstDay);
     setYearBeginAndEndDate(m_showDateRange.showYear);
 }
 /**
@@ -137,7 +136,7 @@ void CalendarDateDataManager::setWeekFirstDay(const Qt::DayOfWeek &firstDay)
  */
 Qt::DayOfWeek CalendarDateDataManager::getWeekFirstDay()
 {
-    return  m_weekFirstDay;
+    return  gSetting->getFirstDayOfWeek();
 }
 /**
  * @brief setWeekDayFormatByID          设置周显示格式
@@ -183,7 +182,7 @@ ShowDateRange CalendarDateDataManager::getShowDateRange() const
 QDate CalendarDateDataManager::getFirstDayOfWeek(const QDate &date)
 {
     //根据选择时间周工作日和每周第一天的周工作日得到偏移量
-    int _offset = date.dayOfWeek() - m_weekFirstDay;
+    int _offset = date.dayOfWeek() - gSetting->getFirstDayOfWeek();
     //根据偏移量获取需要添加还有减去的偏移天数
     const int _offsetDay = _offset < 0 ? _offset + 7 : _offset;
     //返回这周第一天的日期

@@ -21,6 +21,8 @@
 #ifndef SIDEBARCALENDARWIDGET_H
 #define SIDEBARCALENDARWIDGET_H
 
+#include "cweekwidget.h"
+
 #include <DLabel>
 #include <DPushButton>
 #include <QWidget>
@@ -60,7 +62,7 @@ private:
 private:
 
     QWidget* m_headWidget = nullptr;    //头部控件
-    QWidget* m_weekWidget = nullptr;    //周显示区域控件
+    CWeekWidget* m_weekWidget = nullptr;    //周显示区域控件
     QWidget* m_keyWidget = nullptr;     //日期按钮区域控件
     QGridLayout* m_keyLayout = nullptr; //按钮布局
 

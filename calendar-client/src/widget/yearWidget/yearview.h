@@ -24,6 +24,7 @@
 #include "customframe.h"
 #include "monthbrefwidget.h"
 #include "scheduledatamanage.h"
+#include "cweekwidget.h"
 
 #include <DWidget>
 
@@ -63,15 +64,14 @@ public slots:
     void slotDoubleClickDate(const QDate &date);
     //鼠标单击日期，显示日程浮框
     void slotPressClickDate(const QDate &date);
-private:
+protected:
     //过滤器，双击年视图下的月份跳转到月视图。
     bool eventFilter(QObject *o, QEvent *e) override;
-protected:
     //更新月份框的高度
     void resizeEvent(QResizeEvent *event) override;
-protected:
     //绘制每个月的背景
     void paintEvent(QPaintEvent *e) override;
+
 private:
     CustomFrame         *m_currentMouth = nullptr;
     QVector<QDate>      m_days{};
@@ -88,5 +88,6 @@ private:
     const int           m_borderframew = 0;
     QVector<bool>       m_vlineflag; //节假日和日程标识
     MonthBrefWidget     *m_monthView = nullptr;
+    CWeekWidget         *m_weekWidget = nullptr; //周显示区域
 };
 #endif // YEARVIEW_H

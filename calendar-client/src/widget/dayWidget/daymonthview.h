@@ -20,6 +20,7 @@
 #define DAYMONTHVIEW_H
 #include "customframe.h"
 #include "huangliData/dbusdatastruct.h"
+#include "cweekwidget.h"
 
 #include <DWidget>
 #include <DImageButton>
@@ -76,6 +77,7 @@ protected:
     void resizeEvent(QResizeEvent *event) override;
     void wheelEvent(QWheelEvent *event) override;
     void paintEvent(QPaintEvent *e) override;
+
 private:
     DIconButton      *m_prevButton = nullptr;
     DIconButton      *m_nextButton = nullptr;
@@ -106,6 +108,8 @@ private:
     CDayMonthWidget *m_dayMonthWidget;
     const int m_radius = 8;
     bool m_searchflag = false;
+
+    CWeekWidget *m_weekWidget = nullptr; //周视图显示区域
 };
 
 class CDayMonthWidget : public QWidget

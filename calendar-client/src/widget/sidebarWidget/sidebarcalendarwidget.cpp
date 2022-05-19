@@ -40,7 +40,6 @@ void SidebarCalendarWidget::initView()
     m_previousPage = new QPushButton();
     m_nextPage->setIcon(DStyle().standardIcon(QStyle::SP_ArrowRight));
     m_previousPage->setIcon(DStyle().standardIcon(QStyle::SP_ArrowLeft));
-    m_dateLabel->setMinimumWidth(70);
     m_nextPage->setFixedSize(20, 20);
     m_previousPage->setFixedSize(20, 20);
     m_nextPage->setIconSize(QSize(10,10));
@@ -59,22 +58,9 @@ void SidebarCalendarWidget::initView()
     m_headWidget->setLayout(headLayout);
     m_headWidget->setMinimumHeight(30);
 
-    m_weekWidget = new QWidget(this);
-    QHBoxLayout *weekLayout = new QHBoxLayout();
-    weekLayout->setMargin(0);
-    weekLayout->setSpacing(0);
-    m_weekWidget->setLayout(weekLayout);
-    QLocale locale;
-    for (int i = Qt::Monday; i <= Qt::Sunday; ++i) {
-        //从周日开始
-        int index = i-1;
-        if (index == 0) {
-            index = Qt::Sunday;
-        }
-        QLabel *label = new QLabel(locale.dayName(index, QLocale::ShortFormat).right(1));
-        label->setAlignment(Qt::AlignCenter);
-        weekLayout->addWidget(label);
-    }
+    m_weekWidget = new CWeekWidget(this);
+    m_weekWidget->setAutoFontSizeByWindow(false);
+    m_weekWidget->setFirstDay(Qt::Sunday);
 
     m_keyWidget = new QWidget(this);
     m_keyLayout = new QGridLayout();
@@ -94,8 +80,8 @@ void SidebarCalendarWidget::initView()
     this->setLayout(mainLayout);
     mainLayout->addSpacing(6);
     mainLayout->addWidget(m_headWidget);
-    mainLayout->addWidget(m_weekWidget);
-    mainLayout->addWidget(m_keyWidget, 1);
+    mainLayout->addWidget(m_weekWidget, 1);
+    mainLayout->addWidget(m_keyWidget, 6);
 }
 
 /**

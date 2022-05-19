@@ -85,17 +85,6 @@ private:
      */
     QDate m_selectDate;
     /**
-     * @brief m_firstDay          每周第一天
-     * 1  周一
-     * 2  周二
-     * 3  周三
-     * 4  周四
-     * 5  周五
-     * 6  周六
-     * 7  周日
-     */
-    static Qt::DayOfWeek     m_weekFirstDay;
-    /**
      * @brief m_weekDayFormat          周显示格式
      * ddd  周一
      * dddd  星期一

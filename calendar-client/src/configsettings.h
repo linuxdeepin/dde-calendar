@@ -25,8 +25,9 @@
 #include <QSettings>
 #include <QPointer>
 
-class CConfigSettings
+class CConfigSettings : QObject
 {
+    Q_OBJECT
 public:
     static CConfigSettings *getInstance();
     void sync();
@@ -54,6 +55,22 @@ public:
      */
     bool contains(const QString &key) const;
     CConfigSettings *operator->() const ;
+
+    void initSetting();
+
+    //一周首日
+    Qt::DayOfWeek getFirstDayOfWeek();
+    void setFirstDayOfWeek(int);
+
+    //账户侧边栏显示状态
+    bool getUserSidebarStatus();
+    void setUserSidebarStatus(bool);
+
+signals:
+    void signalFirstDayOfWeekChange();
+
+public slots:
+
 protected:
     CConfigSettings();
     ~CConfigSettings();
@@ -62,6 +79,11 @@ protected:
     void releaseInstance();
 private:
     QPointer<QSettings> m_settings;
+
+    int m_firstDayOfWeek = Qt::Sunday;   //一周首日
+    bool m_userSidebarStatus = true;    //账户侧边栏显示状态
 };
+
+#define gSetting CConfigSettings::getInstance()
 
 #endif // CCONFIGSETTINGS_H
