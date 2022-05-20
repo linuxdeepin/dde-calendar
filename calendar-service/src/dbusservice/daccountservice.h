@@ -23,11 +23,15 @@
 
 #include "dservicebase.h"
 
+#include <QSharedPointer>
+
 class DAccountService : public DServiceBase
 {
     Q_OBJECT
     Q_CLASSINFO("D-Bus Interface", "com.deepin.dataserver.Account_Loalend") //getInterface()) //"com.deepin.dataserver.Account_Loalend"
 public:
+    typedef QSharedPointer<DAccountService> Ptr;
+
     DAccountService(const QString &path, const QString &interface, QObject *parent = nullptr);
 
     /**

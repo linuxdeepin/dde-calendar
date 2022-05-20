@@ -38,7 +38,7 @@ public:
     ~JobTypeComboBox() override;
     bool updateJobType();
     QString getCurrentJobTypeNo();
-    void setCurrentJobTypeNo(QString strJobTypeNo);
+    void setCurrentJobTypeNo(const QString &strJobTypeNo);
 
     void setAlert(bool isAlert);
     bool isAlert() const;

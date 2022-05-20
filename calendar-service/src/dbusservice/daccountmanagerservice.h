@@ -29,6 +29,9 @@
 /**
  * @brief The DAccountManagerService class      帐户管理服务
  */
+
+//帐户类型总数，若支持的类型增加则需要修改
+const int accountTypeCount = 3;
 class DAccountManagerService : public DServiceBase
 {
     Q_OBJECT
@@ -41,7 +44,6 @@ public:
      * @return
      */
     Q_SCRIPTABLE QString getAccountList();
-
     //稍后提醒相关接口
     Q_SCRIPTABLE void remindJob(const QString &scheduleID, const qint64 recurID);
 
@@ -61,16 +63,21 @@ public:
     Q_SCRIPTABLE void notifyMsgHanding(const QString &accountID, const QString &scheduleID, const qint64 recurID, const qint32 operationNum);
     Q_SCRIPTABLE void downloadByAccountID(const QString &accountID);
     Q_SCRIPTABLE void uploadNetWorkAccountData();
+    //设置通用设置
+    Q_SCRIPTABLE QString getCalendarGeneralSettings();
+    //获取通用设置
+    Q_SCRIPTABLE void setCalendarGeneralSettings(const QString &cgSet);
 
+private:
 signals:
     Q_SCRIPTABLE void accountUpdate(const QStringList &accountIDs);
+    Q_SCRIPTABLE void calendarGeneralSettingsUpdate(const QString &cgSet);
 public slots:
     //TODO：监听网络帐户管理信号和Union ID登陆退出状态
 private:
     QString getUnionIDAccount();
-
 private:
-    QMap<QString, DAccountService *> m_AccountServiceMap;
+    QMap<QString, DAccountService::Ptr> m_AccountServiceMap[accountTypeCount];
 };
 
 #endif // ACCOUNTMANAGERSERVICE_H

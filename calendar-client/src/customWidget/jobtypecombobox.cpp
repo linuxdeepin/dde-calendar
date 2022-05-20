@@ -58,7 +58,7 @@ QString JobTypeComboBox::getCurrentJobTypeNo()
     return m_lstJobType[this->currentIndex()].typeID();
 }
 
-void JobTypeComboBox::setCurrentJobTypeNo(QString strJobTypeNo)
+void JobTypeComboBox::setCurrentJobTypeNo(const QString &strJobTypeNo)
 {
     for (int i = 0; i < m_lstJobType.size(); i++) {
         if (strJobTypeNo == m_lstJobType[i].typeID()) {

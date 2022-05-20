@@ -28,7 +28,8 @@ DHuangLiDataBase::DHuangLiDataBase(QObject *parent)
     : DDataBase(parent)
 {
     setDBPath("/usr/share/dde-calendar/data/huangli.db");
-    openHuangliDatabase();
+    setConnectionName("HuangLi");
+    dbOpen();
 }
 
 QString DHuangLiDataBase::queryFestivalList(quint32 year, quint8 month)
@@ -98,9 +99,10 @@ QList<stHuangLi> DHuangLiDataBase::queryHuangLiByDays(const QList<stDay> &days)
     return infos;
 }
 
-bool DHuangLiDataBase::openHuangliDatabase()
+void DHuangLiDataBase::initDBData()
 {
-    m_database = QSqlDatabase::addDatabase("QSQLITE", "HuangLi");
-    m_database.setDatabaseName(getDBPath());
-    return m_database.open();
+}
+
+void DHuangLiDataBase::createDB()
+{
 }

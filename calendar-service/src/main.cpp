@@ -66,12 +66,12 @@ int main(int argc, char *argv[])
 
     Dtk::Core::DLogManager::registerConsoleAppender();
     Dtk::Core::DLogManager::registerFileAppender();
-    qInfo() << "test";
+
     //加载翻译
     if (!loadTranslator(&a)) {
         qDebug() << "loadtranslator failed";
     }
-    //TODO: 数据库迁移
+
     DDataBaseManagement dbManagement;
 
     DServiceManager serviceManager;

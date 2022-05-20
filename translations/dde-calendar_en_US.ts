@@ -32,37 +32,37 @@
 <context>
     <name>CDayMonthView</name>
     <message>
-        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="47"/>
+        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="48"/>
         <source>Monday</source>
         <translation>Monday</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="48"/>
+        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="49"/>
         <source>Tuesday</source>
         <translation>Tuesday</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="49"/>
+        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="50"/>
         <source>Wednesday</source>
         <translation>Wednesday</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="50"/>
+        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="51"/>
         <source>Thursday</source>
         <translation>Thursday</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="51"/>
+        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="52"/>
         <source>Friday</source>
         <translation>Friday</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="52"/>
+        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="53"/>
         <source>Saturday</source>
         <translation>Saturday</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="53"/>
+        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="54"/>
         <source>Sunday</source>
         <translation>Sunday</translation>
     </message>
@@ -624,7 +624,7 @@
         <translation>Week</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/weekWidget/weekwindow.cpp" line="319"/>
+        <location filename="../calendar-client/src/widget/weekWidget/weekwindow.cpp" line="320"/>
         <source>Y</source>
         <translation>Y</translation>
     </message>
@@ -646,7 +646,7 @@
 <context>
     <name>CYearWindow</name>
     <message>
-        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="627"/>
+        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="628"/>
         <source>Y</source>
         <translation>Y</translation>
     </message>
@@ -667,12 +667,12 @@
 <context>
     <name>Calendarmainwindow</name>
     <message>
-        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="84"/>
+        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="85"/>
         <source>Calendar</source>
         <translation>Calendar</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="349"/>
+        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="350"/>
         <source>Manage</source>
         <translation type="unfinished"></translation>
     </message>
@@ -749,7 +749,7 @@
 <context>
     <name>Return</name>
     <message>
-        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="623"/>
+        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="624"/>
         <source>Today</source>
         <comment>Return</comment>
         <translation>Today</translation>
@@ -758,9 +758,9 @@
 <context>
     <name>Return Today</name>
     <message>
-        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="382"/>
+        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="387"/>
         <location filename="../calendar-client/src/widget/monthWidget/monthwindow.cpp" line="136"/>
-        <location filename="../calendar-client/src/widget/weekWidget/weekwindow.cpp" line="316"/>
+        <location filename="../calendar-client/src/widget/weekWidget/weekwindow.cpp" line="317"/>
         <source>Today</source>
         <comment>Return Today</comment>
         <translation>Today</translation>
@@ -863,9 +863,17 @@
     </message>
 </context>
 <context>
+    <name>TimeJumpDialog</name>
+    <message>
+        <location filename="../calendar-client/src/dialog/timejumpdialog.cpp" line="44"/>
+        <source>Go</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>YearFrame</name>
     <message>
-        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="941"/>
+        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="942"/>
         <source>Y</source>
         <translation>Y</translation>
     </message>
@@ -873,14 +881,14 @@
 <context>
     <name>today</name>
     <message>
-        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="224"/>
-        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="380"/>
+        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="225"/>
+        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="385"/>
         <location filename="../calendar-client/src/widget/monthWidget/monthwindow.cpp" line="134"/>
         <location filename="../calendar-client/src/widget/monthWidget/monthwindow.cpp" line="262"/>
         <location filename="../calendar-client/src/widget/weekWidget/weekwindow.cpp" line="69"/>
-        <location filename="../calendar-client/src/widget/weekWidget/weekwindow.cpp" line="314"/>
+        <location filename="../calendar-client/src/widget/weekWidget/weekwindow.cpp" line="315"/>
         <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="278"/>
-        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="621"/>
+        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="622"/>
         <source>Today</source>
         <comment>Today</comment>
         <translation>Today</translation>

@@ -52,3 +52,11 @@ void DAccountManagerService::downloadByAccountID(const QString &accountID)
 void DAccountManagerService::uploadNetWorkAccountData()
 {
 }
+
+QString DAccountManagerService::getCalendarGeneralSettings()
+{
+}
+
+void DAccountManagerService::setCalendarGeneralSettings(const QString &cgSet)
+{
+}

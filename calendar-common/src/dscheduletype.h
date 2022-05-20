@@ -48,10 +48,11 @@ public:
     Q_DECLARE_FLAGS(Privileges, Privilege)
 
     typedef QSharedPointer<DScheduleType> Ptr;
+    typedef QVector<DScheduleType::Ptr> List;
 
     DScheduleType();
-    explicit DScheduleType(DAccount *parent);
-    DAccount *account() const;
+    explicit DScheduleType(const QString &accountID);
+    QString accountID() const;
 
     Privilege privilege() const;
     void setPrivilege(const Privilege &privilege);
@@ -91,9 +92,14 @@ public:
 
     static bool fromJsonString(DScheduleType::Ptr &scheduleType, const QString &jsonStr);
     static bool toJsonString(const DScheduleType::Ptr &scheduleType, QString &jsonStr);
+    static bool fromJsonListString(DScheduleType::List &stList, const QString &jsonStr);
+    static bool toJsonListString(const DScheduleType::List &stList, QString &jsonStr);
+
+    int syncTag() const;
+    void setSyncTag(int syncTag);
 
 private:
-    DAccount *m_account;
+    QString m_accountID;
     QString m_typeID;
     QString m_typeName; //类型名称
     QString m_displayName; //类型显示名称
@@ -106,6 +112,7 @@ private:
     QDateTime m_dtDelete; //删除时间
     ShowState m_showState; //类型下日程显示状态
     int m_deleted; //是否被删除
+    int m_syncTag; //同步标识
 };
 
 Q_DECLARE_METATYPE(DScheduleType)

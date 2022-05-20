@@ -22,42 +22,56 @@
 #define DACCOUNTDATABASE_H
 
 #include "ddatabase.h"
+#include "daccount.h"
+#include "dschedule.h"
+#include "dscheduletype.h"
 
 class DAccountDataBase : public DDataBase
 {
     Q_OBJECT
 public:
-    explicit DAccountDataBase(QObject *parent = nullptr);
-    //初始化数据库数据，只有在创建表的时候才需要
-    void initDBData();
-    virtual void dbOpen(const QString &connectionName);
-    QString createSchedule(const QString &schedule);
-    bool updateSchedule(const QString &schedule);
-    bool deleteScheduleByScheduleID(const QString &scheduleID);
-    bool deleteSchedulesByScheduleTypeID(const QString &typeID);
-    QString querySchedulesWithParameter(const QString &params);
+    explicit DAccountDataBase(const DAccount::Ptr &account, QObject *parent = nullptr);
+    //初始化数据库数据，会创建数据库文件和相关数据表
+    void initDBData() override;
+    ///////////////日程信息
+    //创建日程
+    QString createSchedule(const DSchedule::Ptr &schedule);
+    bool updateSchedule(const DSchedule::Ptr &schedule);
+    bool deleteScheduleByScheduleID(const QString &scheduleID, const int isDeleted = 0);
+    bool deleteSchedulesByScheduleTypeID(const QString &typeID, const int isDeleted = 0);
+    QString querySchedulesWithParameter(const QString &params, const int isDeleted = 0);
 
+    ///////////////类型信息
     /**
      * @brief createScheduleType        创建日程类型
      * @param typeInfo
      * @return
      */
-    QString createScheduleType(const QString &typeInfo);
-    virtual QString getScheduleTypeByID(const QString &typeID);
-    virtual QString getScheduleTypeList();
-    bool scheduleTypeByUsed(const QString &typeID);
-    bool deleteScheduleTypeByID(const QString &typeID);
-    bool updateScheduleType(const QString &typeInfo);
-    QString getAccountInfo();
+    QString createScheduleType(const DScheduleType::Ptr &scheduleType);
+    virtual DScheduleType::Ptr getScheduleTypeByID(const QString &typeID, const int isDeleted = 0);
+    virtual DScheduleType::List getScheduleTypeList(const int isDeleted = 0);
+    bool scheduleTypeByUsed(const QString &typeID, const int isDeleted = 0);
+    bool deleteScheduleTypeByID(const QString &typeID, const int isDeleted = 0);
+    bool updateScheduleType(const DScheduleType::Ptr &scheduleType);
+    ///////////////帐户信息
+    DAccount::Ptr getAccountInfo();
+    void setAccountInfo(const DAccount::Ptr &account);
 
-private:
     bool addTypeColor(const int typeColorNo, const QString &strColorHex, const int privilege);
+    void deleteTypeColor();
+
+protected:
+    virtual void initScheduleType();
 
 private:
+    void createDB() override;
     //初始化日程数据库
-    virtual void initScheduleDB();
-    virtual void initScheduleType();
-    virtual void initTypeColor();
+    void initScheduleDB();
+    void initTypeColor();
+    void initAccountDB();
+
+private:
+    DAccount::Ptr m_account;
 };
 
 #endif // DACCOUNTDATABASE_H

@@ -32,39 +32,39 @@ class DSchedule : public KCalendarCore::Event
 {
 public:
     typedef QSharedPointer<DSchedule> Ptr;
+    typedef QVector<DSchedule::Ptr> List;
 
     DSchedule();
-    QString scheduleType() const;
-    void setScheduleType(const QString &scheduleType);
-
-    bool isLunar() const;
-    void setIsLunar(bool isLunar);
+    QString scheduleTypeID() const;
+    void setScheduleTypeID(const QString &typeID);
 
     bool isValid() const;
 
-    bool operator=(const DSchedule &schedule) const;
+    DSchedule &operator=(const DSchedule &schedule);
 
     bool operator==(const DSchedule &schedule) const;
 
     bool operator<(const DSchedule &schedule) const;
 
     bool operator>(const DSchedule &schedule) const;
-    //TODO:需要做json序列化和反序列化，ics的数据的转换
-    static bool fromJsonString(const DSchedule::Ptr &schedule, const QString &string);
-    static bool toJsonString(const DSchedule::Ptr &schedule, const QString &string);
-    static bool fromIcsString(const DSchedule::Ptr &schedule, const QString &string);
-    static bool toIcsString(const DSchedule::Ptr &schedule, const QString &string);
 
-    static void registerMetaType();
+    static bool fromJsonString(DSchedule::Ptr &schedule, const QString &json);
+    static bool toJsonString(const DSchedule::Ptr &schedule, QString &json);
+
+    static bool fromIcsString(DSchedule::Ptr &schedule, const QString &string);
+    static QString toIcsString(const DSchedule::Ptr &schedule);
 
 public:
     //日程信息调试打印
     friend QDebug operator<<(QDebug debug, const DSchedule &scheduleJsonData);
 
+    QString fileName() const;
+    void setFileName(const QString &fileName);
+
 private:
-    bool m_isLunar;
+    QString m_fileName; //日程对应文件名称
     //日程类型
-    QString m_scheduleType;
+    QString m_scheduleTypeID;
 };
 
 #endif // DSCHEDULE_H

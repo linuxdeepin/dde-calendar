@@ -101,7 +101,7 @@ void CMyScheduleView::slotAutoFeed(const QFont &font)
     area->setFixedHeight(m_scheduleLabelH);
     m_scheduleLabel->setText(resultStr);
 
-    if (m_scheduleInfo.isLunar()) {
+    if (m_scheduleInfo.lunnar()) {
         QString timeName = m_timeLabel->text();
         int index = timeName.indexOf("~");
         //重新计算法字符串像素长度
@@ -195,7 +195,7 @@ void CMyScheduleView::updateDateTimeFormat()
 QString CMyScheduleView::getDataByFormat(const QDate &date, QString format)
 {
     QString name = date.toString(format);
-    if (m_scheduleInfo.isLunar()) {
+    if (m_scheduleInfo.lunnar()) {
         //接入农历时间
         name += CScheduleDBus::getInstance()->getHuangLiShortName(date);
     }

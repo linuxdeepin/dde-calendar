@@ -104,6 +104,7 @@ public:
 
     /**
       Create or modify a non-KDE or non-standard custom calendar property.
+      创建或修改非KDE或非标准自定义日历属性。
 
       @param name Full property name
       @param value The property's value. A call with a value of QString()
@@ -126,6 +127,7 @@ public:
 
     /**
       Return the value of a non-KDE or non-standard custom calendar property.
+      返回非KDE或非标准自定义日历属性的值。
 
       @param name Full property name
       @return Property value, or QString() if (and only if) the property

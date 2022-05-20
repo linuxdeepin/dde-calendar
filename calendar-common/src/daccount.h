@@ -23,17 +23,19 @@
 
 #include <QString>
 #include <QSharedPointer>
+#include <QDateTime>
 
 //帐户信息
 class DAccount
 {
 public:
     enum Type {
-        Local_Account, //本地帐户
-        UnionID_Account, //union id 帐户
-        CalDav_Account //caldav通用协议帐户
+        Account_Local, //本地帐户
+        Account_UnionID, //union id 帐户
+        Account_CalDav //caldav通用协议帐户
     };
     typedef QSharedPointer<DAccount> Ptr;
+    typedef QVector<DAccount::Ptr> List;
 
     explicit DAccount(Type type);
     QString displayName() const;
@@ -56,14 +58,59 @@ public:
 
     bool isNetWorkAccount();
 
+    int syncTag() const;
+    void setSyncTag(int syncTag);
+
+    int syncState() const;
+    void setSyncState(int syncState);
+
+    QString avatar() const;
+    void setAvatar(const QString &avatar);
+
+    QString description() const;
+    void setDescription(const QString &description);
+
+    QDateTime dtCreate() const;
+    void setDtCreate(const QDateTime &dtCreate);
+
+    QDateTime dtDelete() const;
+    void setDtDelete(const QDateTime &dtDelete);
+
+    QDateTime dtUpdate() const;
+    void setDtUpdate(const QDateTime &dtUpdate);
+
+    bool toJsonString(const DAccount::Ptr &account, QString &jsonStr);
+    bool fromJsonString(const DAccount::Ptr &account, const QString &jsonStr);
+
+    QString dbName() const;
+    void setDbName(const QString &dbName);
+
+    QString cloudPath() const;
+    void setCloudPath(const QString &cloudPath);
+
+    int syncFreq() const;
+    void setSyncFreq(int syncFreq);
+
+    int intervalTime() const;
+    void setIntervalTime(int intervalTime);
+
 private:
     QString m_displayName; //显示名称
     QString m_accountID; //帐户id
     QString m_accountName; //帐户名称
+    QString m_dbName; //对应的数据库名称
     QString m_dbusPath; //dbus路径
     Type m_accountType; //帐户类型
-    QString m_avatar;
-    QString m_description;
+    QString m_avatar; //头像
+    QString m_description; //描述
+    int m_syncTag; //同步标识,用来与云端标识比对
+    int m_syncState; //同步状态
+    QDateTime m_dtCreate;
+    QDateTime m_dtDelete;
+    QDateTime m_dtUpdate;
+    QString m_cloudPath;
+    int m_syncFreq; //同步频率
+    int m_intervalTime; //当同步频率为自定义时，才有效，单位（min）
 
     bool m_isExpandDisplay; //左侧帐户列表信息是否展开显示
 };

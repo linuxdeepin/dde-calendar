@@ -183,6 +183,10 @@ public:
     */
     void setAllDay(bool allDay) override;
 
+    //设置是否为农历日程
+    void setLunnar(bool lunnar);
+    bool lunnar() const;
+
     /**
       @copydoc
       IncidenceBase::dateTime()

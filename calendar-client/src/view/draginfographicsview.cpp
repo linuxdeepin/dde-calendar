@@ -816,7 +816,7 @@ bool DragInfoGraphicsView::isCanDragge(const DSchedule &info)
     //        if (infoitem->getData().getType() != DDECalendar::FestivalTypeID) {
     if (true)
         return false;
-    if (info.isLunar() && !QLocale::system().name().startsWith("zh_"))
+    if (info.lunnar() && !QLocale::system().name().startsWith("zh_"))
         return false;
     return true;
 }

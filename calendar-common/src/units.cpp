@@ -34,3 +34,8 @@ QDateTime dtConvert(const QDateTime &datetime)
     dt.setOffsetFromUtc(dt.offsetFromUtc());
     return dt;
 }
+
+QDateTime dtFromString(const QString &st)
+{
+    return QDateTime::fromString(st, Qt::ISODate);
+}

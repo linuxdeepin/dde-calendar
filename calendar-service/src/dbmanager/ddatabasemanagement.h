@@ -28,6 +28,7 @@
  * @brief The DDataBaseManagement class
  * 数据库初始化 ，管理数据的创建和对旧版本的数据迁移
  */
+
 class DDataBaseManagement
 {
 public:
@@ -42,14 +43,6 @@ private:
 
     //数据库所在文件夹是否存在，若不存在则创建该文件夹
     bool databaseExists(const QString &databasePath);
-    //创建帐户管理数据库
-    void createAccountManagerDB(const QString &databasePath);
-    //创建本地数据库
-    void createLocalAccountDB(const QString &databasePath);
-    //初始化帐户管理数据库
-    void initAccountManagerDB(const QString &databasePath);
-    //初始化本地帐户数据库
-    void initLocalAccountDB(const QString &databasePath);
 
 private:
     //新数据库路径地址

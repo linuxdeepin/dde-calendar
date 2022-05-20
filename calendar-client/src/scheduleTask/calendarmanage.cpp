@@ -30,7 +30,6 @@ const QString DBus_TimeDate_Path = "/com/deepin/daemon/Timedate";
 CalendarManager *CalendarManager::m_scheduleManager = nullptr;
 CalendarManager *CalendarManager::getInstance()
 {
-    DSchedule::registerMetaType();
     CaHuangLiDayInfo::registerMetaType();
     if (m_scheduleManager == nullptr) {
         m_scheduleManager = new  CalendarManager;

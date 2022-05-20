@@ -81,7 +81,7 @@ void CScheduleDlg::setData(const DSchedule &info)
 {
     m_ScheduleDataInfo = info;
 
-    m_typeComBox->setCurrentJobTypeNo(info.scheduleType());
+    m_typeComBox->setCurrentJobTypeNo(info.scheduleTypeID());
     if (m_type == 1) {
         //如果为新建则设置为提示信息
         m_textEdit->setPlaceholderText(info.summary());
@@ -105,9 +105,9 @@ void CScheduleDlg::setData(const DSchedule &info)
     updateEndTimeListAndTimeDiff(m_currentDate, m_EndDate);
     slotallDayStateChanged(info.allDay());
     //根据是否为农历更新重复选项
-    updateRepeatCombox(info.isLunar());
+    updateRepeatCombox(info.lunnar());
     initRmindRpeatUI();
-    setShowState(info.isLunar());
+    setShowState(info.lunnar());
 }
 
 void CScheduleDlg::setDate(const QDateTime &date)
@@ -164,11 +164,11 @@ bool CScheduleDlg::clickOkBtn()
     switch (m_calendarCategoryRadioGroup->checkedId()) {
     case 1:
         //农历日程
-        _newSchedule.setIsLunar(true);
+        _newSchedule.setLunnar(true);
         break;
     default:
         //公历日程
-        _newSchedule.setIsLunar(false);
+        _newSchedule.setLunnar(false);
         break;
     }
 

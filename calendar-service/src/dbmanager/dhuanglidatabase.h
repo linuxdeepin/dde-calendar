@@ -34,8 +34,11 @@ public:
     QString queryFestivalList(quint32 year, quint8 month);
     QList<stHuangLi> queryHuangLiByDays(const QList<stDay> &days);
 
-private:
-    bool openHuangliDatabase();
+    void initDBData() override;
+
+protected:
+    //创建数据库
+    void createDB() override;
 };
 
 #endif // DHUANGLIDATABASE_H

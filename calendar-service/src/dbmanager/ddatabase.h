@@ -29,14 +29,27 @@ class DDataBase : public QObject
     Q_OBJECT
 public:
     explicit DDataBase(QObject *parent = nullptr);
+    virtual ~DDataBase();
 
     QString getDBPath() const;
     void setDBPath(const QString &DBPath);
     static QString createUuid();
 
+    QString getConnectionName() const;
+    void setConnectionName(const QString &connectionName);
+
+    //初始化数据库数据，会创建数据库文件和相关数据表
+    virtual void initDBData();
+    void dbOpen();
+
+protected:
+    //创建数据库
+    virtual void createDB() = 0;
+
 protected:
     QSqlDatabase m_database;
     QString m_DBPath;
+    QString m_connectionName;
 };
 
 #endif // DDATABASE_H

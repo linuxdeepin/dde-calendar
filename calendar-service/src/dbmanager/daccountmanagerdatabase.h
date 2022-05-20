@@ -24,6 +24,7 @@
 #include "daccount.h"
 #include "dschedule.h"
 #include "ddatabase.h"
+#include "dcalendargeneralsettings.h"
 
 #include <QObject>
 
@@ -33,17 +34,28 @@ class DAccountManagerDataBase : public DDataBase
 public:
     explicit DAccountManagerDataBase(QObject *parent = nullptr);
 
+    //初始化数据库数据，只有在创建表的时候才需要
+    void initDBData() override;
+
+    ///////////////帐户
     //获取所有帐户信息
-    QList<DAccount> getAccountList();
+    DAccount::List getAccountList();
+
     //根据帐户id获取帐户信息
-    DAccount getAccountByID(const QString &accountID);
+    DAccount::Ptr getAccountByID(const QString &accountID);
     //添加帐户信息
-    QString addAccountInfo(const DAccount &accountInfo);
+    QString addAccountInfo(const DAccount::Ptr &accountInfo);
     //更新帐户信息
-    bool updateAccountInfo(const DAccount &accountInfo);
+    bool updateAccountInfo(const DAccount::Ptr &accountInfo);
     //根据帐户id删除对应帐户
     bool deleteAccountInfo(const QString &accountID);
 
+    ///////////////通用设置
+
+    DCalendarGeneralSettings::Ptr getCalendarGeneralSettings();
+    void setCalendarGeneralSettings(const DCalendarGeneralSettings::Ptr &cgSet);
+
+    ////////////////任务
     /**
      * @brief saveRemindJob     存储提醒日程的相关信息
      * @param job               提醒日程
@@ -116,6 +128,15 @@ public:
      * @param notifyid              通知ID
      */
     void updateNotifyID(const QString &job, int notifyid);
+    void setLoaclDB(const QString &loaclDB);
+
+protected:
+    //创建数据库
+    void createDB() override;
+    void initAccountManagerDB();
+
+private:
+    QString m_loaclDB;
 };
 
 #endif // DACCOUNTMANAGERDATABASE_H

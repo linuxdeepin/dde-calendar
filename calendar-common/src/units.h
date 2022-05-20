@@ -25,6 +25,7 @@
 #include <QDateTime>
 
 QString dtToString(const QDateTime &dt);
+QDateTime dtFromString(const QString &st);
 
 //时间转换，
 QDateTime dtConvert(const QDateTime &datetime);

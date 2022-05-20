@@ -29,16 +29,28 @@
 #include <QDebug>
 
 DScheduleType::DScheduleType()
+    : DScheduleType("")
 {
 }
 
-DScheduleType::DScheduleType(DAccount *parent)
+DScheduleType::DScheduleType(const QString &accountID)
+    : m_accountID(accountID)
+    , m_typeID("")
+    , m_typeName("")
+    , m_displayName("")
+    , m_typePath("")
+    , m_typeColor(DTypeColor())
+    , m_description("")
+    , m_privilege(None)
+    , m_showState(Show)
+    , m_deleted(0)
+    , m_syncTag(0)
 {
 }
 
-DAccount *DScheduleType::account() const
+QString DScheduleType::accountID() const
 {
-    return m_account;
+    return m_accountID;
 }
 
 DScheduleType::Privilege DScheduleType::privilege() const
@@ -163,7 +175,7 @@ void DScheduleType::setDeleted(int deleted)
 
 bool DScheduleType::fromJsonString(DScheduleType::Ptr &scheduleType, const QString &jsonStr)
 {
-    //TODO:反序列化
+    //反序列化
     QJsonParseError jsonError;
     QJsonDocument jsonDoc(QJsonDocument::fromJson(jsonStr.toLocal8Bit(), &jsonError));
     if (jsonError.error != QJsonParseError::NoError) {
@@ -234,7 +246,7 @@ bool DScheduleType::fromJsonString(DScheduleType::Ptr &scheduleType, const QStri
 
 bool DScheduleType::toJsonString(const DScheduleType::Ptr &scheduleType, QString &jsonStr)
 {
-    //TODO:序列化
+    //序列化
     QJsonObject rootObject;
     rootObject.insert("typeID", scheduleType->typeID());
     rootObject.insert("typeName", scheduleType->typeName());
@@ -259,4 +271,127 @@ bool DScheduleType::toJsonString(const DScheduleType::Ptr &scheduleType, QString
     jsonDoc.setObject(rootObject);
     jsonStr = QString::fromUtf8(jsonDoc.toJson(QJsonDocument::Compact));
     return true;
+}
+
+bool DScheduleType::fromJsonListString(DScheduleType::List &stList, const QString &jsonStr)
+{
+    QJsonParseError jsonError;
+    QJsonDocument jsonDoc(QJsonDocument::fromJson(jsonStr.toLocal8Bit(), &jsonError));
+    if (jsonError.error != QJsonParseError::NoError) {
+        qWarning() << "error:" << jsonError.errorString();
+        return false;
+    }
+    QJsonObject rootObj = jsonDoc.object();
+    if (rootObj.contains("scheduleType")) {
+        QJsonArray jsonArray = rootObj.value("scheduleType").toArray();
+        for (auto ja : jsonArray) {
+            QJsonObject typeObject = ja.toObject();
+            DScheduleType::Ptr scheduleType = DScheduleType::Ptr(new DScheduleType);
+            if (typeObject.contains("typeID")) {
+                scheduleType->setTypeID(typeObject.value("typeID").toString());
+            }
+
+            if (typeObject.contains("typeName")) {
+                scheduleType->setTypeID(typeObject.value("typeName").toString());
+            }
+
+            if (typeObject.contains("displayName")) {
+                scheduleType->setTypeID(typeObject.value("displayName").toString());
+            }
+
+            if (typeObject.contains("typePath")) {
+                scheduleType->setTypeID(typeObject.value("typePath").toString());
+            }
+
+            if (typeObject.contains("TypeColor")) {
+                QJsonObject colorObject = typeObject.value("TypeColor").toObject();
+                DTypeColor typeColor;
+                if (colorObject.contains("colorID")) {
+                    typeColor.setColorID(colorObject.value("colorID").toInt());
+                }
+                if (colorObject.contains("colorCode")) {
+                    typeColor.setColorCode(colorObject.value("colorCode").toString());
+                }
+                if (colorObject.contains("privilege")) {
+                    typeColor.setPrivilege(static_cast<DTypeColor::Privilege>(colorObject.value("privilege").toInt()));
+                }
+                scheduleType->setTypeColor(typeColor);
+            }
+
+            if (typeObject.contains("description")) {
+                scheduleType->setDescription(typeObject.value("description").toString());
+            }
+
+            if (typeObject.contains("privilege")) {
+                scheduleType->setPrivilege(static_cast<Privilege>(typeObject.value("privilege").toInt()));
+            }
+
+            if (typeObject.contains("dtCreate")) {
+                scheduleType->setDtCreate(QDateTime::fromString(typeObject.value("dtCreate").toString(), Qt::ISODate));
+            }
+
+            if (typeObject.contains("dtDelete")) {
+                scheduleType->setDtDelete(QDateTime::fromString(typeObject.value("dtDelete").toString(), Qt::ISODate));
+            }
+
+            if (typeObject.contains("dtUpdate")) {
+                scheduleType->setDtUpdate(QDateTime::fromString(typeObject.value("dtUpdate").toString(), Qt::ISODate));
+            }
+
+            if (typeObject.contains("showState")) {
+                scheduleType->setShowState(static_cast<ShowState>(typeObject.value("showState").toInt()));
+            }
+
+            if (typeObject.contains("isDeleted")) {
+                scheduleType->setDeleted(typeObject.value("isDeleted").toInt());
+            }
+            stList.append(scheduleType);
+        }
+    }
+    return true;
+}
+
+bool DScheduleType::toJsonListString(const DScheduleType::List &stList, QString &jsonStr)
+{
+    //序列化
+    QJsonObject rootObject;
+    QJsonArray jsonArray;
+
+    for (auto &scheduleType : stList) {
+        QJsonObject typeObject;
+        typeObject.insert("typeID", scheduleType->typeID());
+        typeObject.insert("typeName", scheduleType->typeName());
+        typeObject.insert("displayName", scheduleType->displayName());
+        typeObject.insert("typePath", scheduleType->typePath());
+        //类型颜色信息
+        QJsonObject colorObject;
+        colorObject.insert("colorID", scheduleType->typeColor().colorID());
+        colorObject.insert("colorCode", scheduleType->typeColor().colorCode());
+        colorObject.insert("privilege", scheduleType->typeColor().privilege());
+        typeObject.insert("TypeColor", colorObject);
+
+        typeObject.insert("description", scheduleType->description());
+        typeObject.insert("privilege", scheduleType->privilege());
+        typeObject.insert("dtCreate", dtToString(scheduleType->dtCreate()));
+        typeObject.insert("dtDelete", dtToString(scheduleType->dtDelete()));
+        typeObject.insert("dtUpdate", dtToString(scheduleType->dtUpdate()));
+        typeObject.insert("showState", scheduleType->showState());
+        typeObject.insert("isDeleted", scheduleType->deleted());
+        jsonArray.append(typeObject);
+    }
+    rootObject.insert("scheduleType", jsonArray);
+    QJsonDocument jsonDoc;
+    jsonDoc.setObject(rootObject);
+    jsonStr = QString::fromUtf8(jsonDoc.toJson(QJsonDocument::Compact));
+    return true;
+}
+
+int DScheduleType::syncTag() const
+{
+    return m_syncTag;
+}
+
+void DScheduleType::setSyncTag(int syncTag)
+{
+    m_syncTag = syncTag;
 }

@@ -37,6 +37,7 @@ public:
     Transparency mTransparency = Opaque;
     bool mMultiDayValid = false;
     bool mMultiDay = false;
+    bool mIsLunnar = false; //是否为农历
 };
 //@endcond
 
@@ -227,6 +228,20 @@ void Event::setAllDay(bool allday)
         setFieldDirty(FieldDtEnd);
         Incidence::setAllDay(allday);
     }
+}
+
+void Event::setLunnar(bool lunnar)
+{
+    if (d->mIsLunnar == lunnar)
+        return;
+    update();
+    d->mIsLunnar = lunnar;
+    updated();
+}
+
+bool Event::lunnar() const
+{
+    return d->mIsLunnar;
 }
 
 bool Event::accept(Visitor &v, const IncidenceBase::Ptr &incidence)

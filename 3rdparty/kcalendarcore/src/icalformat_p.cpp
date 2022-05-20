@@ -38,6 +38,8 @@ using namespace KCalendarCore;
 static const char APP_NAME_FOR_XPROPERTIES[] = "KCALCORE";
 static const char ENABLED_ALARM_XPROPERTY[] = "ENABLED";
 static const char IMPLEMENTATION_VERSION_XPROPERTY[] = "X-KDE-ICAL-IMPLEMENTATION-VERSION";
+//EVENT农历日程标识
+static const char VEVENT_LUNNAR_XPROPERTY[] = "X-DDE-ICAL-LUNNAR";
 
 /* Static helpers */
 /*
@@ -298,6 +300,19 @@ icalcomponent *ICalFormatImpl::writeEvent(const Event::Ptr &event, TimeZoneList 
     case Event::Opaque:
         icalcomponent_add_property(vevent, icalproperty_new_transp(ICAL_TRANSP_OPAQUE));
         break;
+    }
+
+    //农历
+    if (event->lunnar()) {
+        event->setNonKDECustomProperty(VEVENT_LUNNAR_XPROPERTY, QStringLiteral("TRUE"));
+    }
+
+    // Custom properties
+    const QMap<QByteArray, QString> custom = event->customProperties();
+    for (QMap<QByteArray, QString>::ConstIterator c = custom.begin(); c != custom.end(); ++c) {
+        icalproperty *p = icalproperty_new_x(c.value().toUtf8().constData());
+        icalproperty_set_x_name(p, c.key().constData());
+        icalcomponent_add_property(vevent, p);
     }
 
     return vevent;
@@ -1214,7 +1229,6 @@ Event::Ptr ICalFormatImpl::readEvent(icalcomponent *vevent, const ICalTimeZoneCa
             }
             break;
         }
-
         default:
             // TODO: do something about unknown properties?
             break;
@@ -1229,10 +1243,18 @@ Event::Ptr ICalFormatImpl::readEvent(icalcomponent *vevent, const ICalTimeZoneCa
         event->setDtEnd(event->dtStart());
     }
 
+    //全天
     QString msade = event->nonKDECustomProperty("X-MICROSOFT-CDO-ALLDAYEVENT");
     if (!msade.isEmpty()) {
         bool allDay = (msade == QLatin1String("TRUE"));
         event->setAllDay(allDay);
+    }
+
+    //农历
+    QString lunnar = event->nonKDECustomProperty(VEVENT_LUNNAR_XPROPERTY);
+    if (!lunnar.isEmpty()) {
+        bool isLunnar = (lunnar == QLatin1String("TRUE"));
+        event->setLunnar(isLunnar);
     }
 
     if (d->mCompat) {

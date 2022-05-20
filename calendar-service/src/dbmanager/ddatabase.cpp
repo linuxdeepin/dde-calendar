@@ -25,6 +25,11 @@
 DDataBase::DDataBase(QObject *parent)
     : QObject(parent)
     , m_DBPath("")
+    , m_connectionName("")
+{
+}
+
+DDataBase::~DDataBase()
 {
 }
 
@@ -41,4 +46,32 @@ void DDataBase::setDBPath(const QString &DBPath)
 QString DDataBase::createUuid()
 {
     return QUuid::createUuid().toString(QUuid::WithoutBraces);
+}
+
+QString DDataBase::getConnectionName() const
+{
+    return m_connectionName;
+}
+
+void DDataBase::setConnectionName(const QString &connectionName)
+{
+    m_connectionName = connectionName;
+}
+
+void DDataBase::initDBData()
+{
+    createDB();
+}
+
+void DDataBase::dbOpen()
+{
+    QStringList cntNames = QSqlDatabase::connectionNames();
+    if (cntNames.contains(getConnectionName())) {
+        m_database = QSqlDatabase::database(getConnectionName());
+    } else {
+        m_database = QSqlDatabase::addDatabase("QSQLITE", getConnectionName());
+    }
+    if (!m_database.isOpen())
+        m_database.open();
+    m_database.setDatabaseName(getDBPath());
 }
