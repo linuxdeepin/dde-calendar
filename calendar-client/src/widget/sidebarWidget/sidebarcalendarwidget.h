@@ -75,7 +75,7 @@ private:
 
 
 //日历按键类
-class SidebarCalendarKeyButton : public QWidget
+class SidebarCalendarKeyButton : public QPushButton
 {
     Q_OBJECT
 public:

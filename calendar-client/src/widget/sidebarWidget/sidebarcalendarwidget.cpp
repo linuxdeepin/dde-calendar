@@ -125,10 +125,13 @@ void SidebarCalendarWidget::setKeyDate(QDate date)
     QString fd = "yyyy年MM月";
     m_dateLabel->setText(date.toString(fd));
     SidebarCalendarKeyButton::setDisplayedMonth(date);
-    qint64 day = date.day();
-    date = date.addDays(1-day);
-    int weekDay = date.dayOfWeek();
-    date = date.addDays(-weekDay);
+
+    //获取当月第一天
+    date = QDate(date.year(), date.month(), 1);
+    int firstday = Qt::Sunday;
+    int day = date.dayOfWeek();
+    //计算当前月日历第一天该显示的时间
+    date = date.addDays(-(day-firstday+7)%7);
     for (SidebarCalendarKeyButton* btn : m_keyButtonList) {
         btn->setDate(date);
         date = date.addDays(1);
@@ -179,10 +182,10 @@ void SidebarCalendarWidget::slotPreviousPageClicked()
 }
 
 SidebarCalendarKeyButton::SidebarCalendarKeyButton(QWidget *parent)
-    : QWidget(parent)
+    : QPushButton(parent)
 {
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    setMinimumSize(QSize(25, 25));
+    setMinimumSize(QSize(10, 10));
 }
 
 /**
@@ -289,30 +292,29 @@ void SidebarCalendarKeyButton::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
-    painter.setPen(Qt::NoPen);
-    int r = width() > height()?width():height();
-    QRect rect(0, 0, r, r); //绘制区域
-    QString df = "yyyy/MM/dd";
 
-    if (m_displayedDate.toString(df) == m_selectedData.toString(df)) {
+
+    qreal w = this->width();
+    qreal h = this->height();
+    const qreal r = w > h ? h: w;
+    QRectF rectf(qRound((w-r)/2), qRound((h-r)/2), r, r);   //绘制区域
+
+    if (m_displayedDate == m_selectedData) {
+        painter.setPen(Qt::NoPen);
         painter.setBrush(DPaletteHelper::instance()->palette(this).highlight());
         //绘制高亮背景
-        painter.drawEllipse(rect);
+        painter.drawEllipse(rectf);
         //设置高亮下的字体颜色
-        painter.setPen(QColor("#FFFFFF"));
-    } else if (m_displayedDate.year() == m_displayedMonth.year() && m_displayedDate.month() == m_displayedMonth.month()){
+        painter.setPen(DPaletteHelper::instance()->palette(this).highlightedText().color());
+    } else if (!(m_displayedDate.year() == m_displayedMonth.year() && m_displayedDate.month() == m_displayedMonth.month())){
         //设置正常显示状态下的字体颜色
-        painter.setPen(QColor("#414D68"));
-    } else {
-        //设置置灰状态下的字体颜色
-        painter.setPen(QColor("#414D6866"));
+        painter.setOpacity(0.3);
     }
-
     //获取待绘制的文字
-    QString text = QString("%1").arg(m_displayedDate.day());
+    QString text = QString::number(m_displayedDate.day());
 
     //绘制文字
-    painter.drawText(rect, text, QTextOption(Qt::AlignCenter));
+    painter.drawText(rectf, text, QTextOption(Qt::AlignCenter));
     QWidget::paintEvent(event);
 }
 

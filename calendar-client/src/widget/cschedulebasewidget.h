@@ -33,7 +33,8 @@ public:
     explicit CScheduleBaseWidget(QWidget *parent = nullptr);
     ~CScheduleBaseWidget();
     //设置选择时间
-    static bool setSelectDate(const QDate &selectDate, const bool isSwitchYear = false);
+    static bool setSelectDate(const QDate &selectDate, const bool isSwitchYear = false, const QWidget *widget = nullptr);
+    static bool setSelectDate(const QDate &selectDate, const QWidget *widget);
     //获取选择时间
     static QDate getSelectDate();
     //设置当前时间

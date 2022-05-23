@@ -578,26 +578,26 @@ void CYearWindow::switchYear(const int offsetYear)
     if (m_StackedWidget->IsRunning())
         return;
     _selectData = _selectData.addYears(offsetYear);
-    //设置选择时间，如果成功则切换
-    if (setSelectDate(_selectData, true)) {
-        int index = m_StackedWidget->currentIndex();
-        //当前选中的monthview的index
-        int currentYearViewIndex = qobject_cast<YearFrame *>(m_StackedWidget->widget(index))->getViewFocusIndex();
-        index = qAbs(index + offsetYear) % 2;
-        m_yearWidget = qobject_cast<YearFrame *>(m_StackedWidget->widget(index));
-        //设置年视图翻页后选中的monthview
-        m_yearWidget->setViewFocus(currentYearViewIndex);
-        //设置显示时间
-        m_yearWidget->setShowDate(getSelectDate());
-        updateData();
-        if (offsetYear > 0) {
-            //下一年
-            m_StackedWidget->setNext();
-        } else {
-            //上一年
-            m_StackedWidget->setPre();
-        }
+    //获取当前显示控件的位置
+    int index = m_StackedWidget->currentIndex();
+    //当前选中的monthview的index
+    int currentYearViewIndex = qobject_cast<YearFrame *>(m_StackedWidget->widget(index))->getViewFocusIndex();
+    index = qAbs(index + offsetYear) % 2;
+    m_yearWidget = qobject_cast<YearFrame *>(m_StackedWidget->widget(index));
+    //设置年视图翻页后选中的monthview
+    m_yearWidget->setViewFocus(currentYearViewIndex);
+    //设置显示时间
+    m_yearWidget->setShowDate(_selectData);
+    updateData();
+    if (offsetYear > 0) {
+        //下一年
+        m_StackedWidget->setNext();
+    } else {
+        //上一年
+        m_StackedWidget->setPre();
     }
+    //切换试图开始后再进行时间切换
+    setSelectDate(_selectData);
 }
 
 /**
@@ -643,7 +643,7 @@ void CYearWindow::slotMousePress(const QDate &selectDate, const int pressType)
     if (!selectDate.isValid())
         return;
     //设置选择时间
-    setSelectDate(selectDate);
+    setSelectDate(selectDate, this);
     setYearData();
     switch (pressType) {
     case 0: {

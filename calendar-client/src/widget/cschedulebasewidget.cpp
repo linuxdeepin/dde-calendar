@@ -48,7 +48,7 @@ CScheduleBaseWidget::~CScheduleBaseWidget()
  * @brief CScheduleBaseWidget::setSelectDate    设置选择时间
  * @param selectDate
  */
-bool CScheduleBaseWidget::setSelectDate(const QDate &selectDate, const bool isSwitchYear)
+bool CScheduleBaseWidget::setSelectDate(const QDate &selectDate, const bool isSwitchYear, const QWidget *widget)
 {
     bool _result = false;    //选择时间必须大于等于1900年
     if (selectDate.year() >= 1900) {
@@ -57,7 +57,7 @@ bool CScheduleBaseWidget::setSelectDate(const QDate &selectDate, const bool isSw
         //更新其它视图界面显示
         for (int i = 0; i < m_calendarManager->getShowWidgetSize(); ++i) {
             //如果为当前视图则不更新
-            if (m_calendarManager->getShowWidget(i) == nullptr)
+            if (m_calendarManager->getShowWidget(i) == nullptr || m_calendarManager->getShowWidget(i) == widget)
                 continue;
             m_calendarManager->getShowWidget(i)->setYearData();
             m_calendarManager->getShowWidget(i)->updateShowDate();
@@ -65,6 +65,11 @@ bool CScheduleBaseWidget::setSelectDate(const QDate &selectDate, const bool isSw
         updateDBusData();
     }
     return _result;
+}
+
+bool CScheduleBaseWidget::setSelectDate(const QDate &selectDate, const QWidget *widget)
+{
+    return setSelectDate(selectDate, false, widget);
 }
 
 /**
