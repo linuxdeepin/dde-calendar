@@ -43,12 +43,14 @@ public:
     explicit CYearView(QWidget *parent = nullptr);
     //根据系统主题类型，设置颜色
     void setTheMe(int type = 0);
-    //设置显示时间
-    void setShowDate(const QDate &showMonth, const QVector<QDate> &showDate);
-    //设置日期是否含有日程标志
-    void setHasScheduleFlag(const QVector<bool> &hasScheduleFlag);
-    //设置日期是否含有搜索日程
-    void setHasSearchScheduleFlag(const QVector<bool> &hasSearchScheduleFlag);
+    //设置显示的月
+    void setShowMonthDate(const QDate &showMonth);
+    //获取显示的月
+    QDate getShowMonthDate();
+    //设置含有日程的日期集合
+    void setHasScheduleSet(const QSet<QDate> &hasScheduleSet);
+    //设置含有搜索日程的日期集合
+    void setHasSearchScheduleSet(const QSet<QDate> &hasScheduleSet);
     //获取这个月开始结束时间
     bool getStartAndStopDate(QDate &startDate, QDate &stopDate);
 signals:
@@ -75,7 +77,7 @@ protected:
 private:
     CustomFrame         *m_currentMouth = nullptr;
     QVector<QDate>      m_days{};
-    QDate               m_showMonth;
+    QDate               m_showMonthDate;
     QFont               m_momthFont;
     QColor              m_currentDayTextColor = "#2ca7f8";
     QColor              m_weekendsTextColor = Qt::black;

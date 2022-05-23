@@ -65,6 +65,7 @@ CYearView::CYearView(QWidget *parent)
     m_currentMouth->installEventFilter(this);
 
     m_weekWidget = new CWeekWidget(this);
+//    m_weekWidget->setMinimumHeight(20);
 
     m_monthView = new MonthBrefWidget(this);
     connect(m_monthView,
@@ -121,36 +122,37 @@ void CYearView::setTheMe(int type)
         m_bnormalColor.setAlphaF(0.05);
         m_currentMouth->setTextColor(QColor("#BF1D63"));
     }
-    m_monthView->setTheMe(type);
     QColor monthcolor = Qt::white;
     monthcolor.setAlphaF(0);
     m_currentMouth->setBColor(monthcolor);
 }
 
-void CYearView::setShowDate(const QDate &showMonth, const QVector<QDate> &showDate)
+void CYearView::setShowMonthDate(const QDate &showMonth)
 {
-    m_showMonth = showMonth;
-    m_currentMouth->setTextStr(QLocale::system().monthName(m_showMonth.month(), QLocale::ShortFormat));
-    m_days = showDate;
-    m_monthView->setDate(m_showMonth.month(), showDate);
+    m_showMonthDate = QDate(showMonth.year(), showMonth.month(), 1);
+    m_currentMouth->setTextStr(QLocale::system().monthName(m_showMonthDate.month(), QLocale::ShortFormat));
+    m_monthView->setShowMonthDate(m_showMonthDate);
+}
+
+//获取显示的月
+QDate CYearView::getShowMonthDate()
+{
+    return m_showMonthDate;
 }
 
 /**
- * @brief CYearView::setHasScheduleFlag     设置日期是否含有日程标志
- * @param hasScheduleFlag
+ * @brief CYearView::setHasScheduleSet
+ * @param hasScheduleSet
+ * 设置含有日程的集合
  */
-void CYearView::setHasScheduleFlag(const QVector<bool> &hasScheduleFlag)
+void CYearView::setHasScheduleSet(const QSet<QDate> &hasScheduleSet)
 {
-    m_monthView->setLintFlag(hasScheduleFlag);
+    m_monthView->setHasScheduleDateSet(hasScheduleSet);
 }
 
-/**
- * @brief CYearView::setHasSearchScheduleFlag       设置日期是否含有搜索日程
- * @param hasSearchScheduleFlag
- */
-void CYearView::setHasSearchScheduleFlag(const QVector<bool> &hasSearchScheduleFlag)
+void CYearView::setHasSearchScheduleSet(const QSet<QDate> &hasScheduleSet)
 {
-    m_monthView->setSearchScheduleFlag(hasSearchScheduleFlag);
+    m_monthView->setHasSearchScheduleSet(hasScheduleSet);
 }
 
 /**
@@ -161,10 +163,9 @@ void CYearView::setHasSearchScheduleFlag(const QVector<bool> &hasSearchScheduleF
  */
 bool CYearView::getStartAndStopDate(QDate &startDate, QDate &stopDate)
 {
-    if (m_days.isEmpty())
-        return false;
-    startDate = m_days.first();
-    stopDate = m_days.last();
+    startDate = m_showMonthDate;
+    stopDate = m_showMonthDate.addMonths(1);
+    stopDate = stopDate.addDays(-1);
     return true;
 }
 
@@ -180,7 +181,7 @@ bool CYearView::eventFilter(QObject *o, QEvent *e)
 
     if (cell == m_currentMouth) {
         if (e->type() == QEvent::MouseButtonDblClick) {
-            emit signalMousePress(m_showMonth, 2);
+            emit signalMousePress(m_showMonthDate, 2);
         }
     }
     return false;

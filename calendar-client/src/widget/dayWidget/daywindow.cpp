@@ -182,7 +182,7 @@ void CDayWindow::updateShowSchedule()
 void CDayWindow::updateShowLunar()
 {
     CaHuangLiDayInfo _huangLiInfo = getLunarInfo();
-    m_LunarLabel->setText(_huangLiInfo.mLunarMonthName + _huangLiInfo.mLunarDayName);
+    m_LunarLabel->setText(tr("Lunar") + _huangLiInfo.mLunarMonthName + _huangLiInfo.mLunarDayName);
     m_daymonthView->setHuangLiInfo(_huangLiInfo);
 }
 

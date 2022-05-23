@@ -24,10 +24,12 @@
 #include <QLocale>
 #include <QPainter>
 
-CWeekWidget::CWeekWidget(QWidget *parent) : QWidget(parent)
+CWeekWidget::CWeekWidget(QWidget *parent) : QPushButton(parent)
   , m_firstDay(gSetting->getFirstDayOfWeek())
 {
-
+    setMinimumHeight(10);
+    setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    setFocusPolicy(Qt::NoFocus);
 }
 
 void CWeekWidget::setFirstDay(Qt::DayOfWeek first)
@@ -56,17 +58,15 @@ void CWeekWidget::paintEvent(QPaintEvent *event)
         //字体跟随界面大小
         qreal w = this->width() / 7;
         qreal h = this->height();
-        const qreal r = w > h ? h * 0.7 : w * 0.7;
+        const qreal r = w > h ? h : w ;
         //根据高度和宽度设置时间字体的大小
         QFont font;
         font.setPixelSize(qRound(DDECalendar::FontSizeTwelve + (r - 18) * 6 / 17.0));
         painter.setFont(font);
-
     }
 
-    painter.setPen(Qt::SolidLine);
     QLocale locale;
-    int setp = (width())/7;
+    qreal setp = (width())/7.0;
     //获取一周首日
     int firstDay = m_firstDay;
     if (m_autoFirstDay) {
@@ -79,7 +79,7 @@ void CWeekWidget::paintEvent(QPaintEvent *event)
             index = Qt::Sunday;
         }
         QString text = locale.dayName(index, QLocale::ShortFormat).right(1);
-        QRect rect((i-Qt::Monday)*setp, 0, setp, height());
+        QRectF rect((i-Qt::Monday)*setp, 0, setp, height());
         painter.drawText(rect, Qt::AlignCenter, text);
     }
 }

@@ -19,6 +19,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "cschedulebasewidget.h"
+#include "monthbrefwidget.h"
 CalendarManager *CScheduleBaseWidget::m_calendarManager = nullptr;
 CScheduleBaseWidget::CScheduleBaseWidget(QWidget *parent)
     : QWidget(parent)

@@ -21,9 +21,9 @@
 #ifndef CWEEKWIDGET_H
 #define CWEEKWIDGET_H
 
-#include <QWidget>
+#include <QPushButton>
 
-class CWeekWidget : public QWidget
+class CWeekWidget : public QPushButton
 {
     Q_OBJECT
 public:

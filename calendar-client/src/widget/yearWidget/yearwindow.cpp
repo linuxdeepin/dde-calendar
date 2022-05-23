@@ -481,9 +481,8 @@ void CYearWindow::setSearchWFlag(bool flag)
 void CYearWindow::updateShowDate(const bool isUpdateBar)
 {
     Q_UNUSED(isUpdateBar);
-    QMap<int, QVector<QDate> > _yearShowData = m_calendarManager->getCalendarDateDataManage()->getYearDate();
     m_scheduleView->setTimeFormat(m_calendarManager->getCalendarDateDataManage()->getTimeFormat());
-    m_yearWidget->setShowDate(getSelectDate(), _yearShowData);
+    m_yearWidget->setShowDate(getSelectDate());
 }
 
 /**
@@ -588,10 +587,8 @@ void CYearWindow::switchYear(const int offsetYear)
         m_yearWidget = qobject_cast<YearFrame *>(m_StackedWidget->widget(index));
         //设置年视图翻页后选中的monthview
         m_yearWidget->setViewFocus(currentYearViewIndex);
-        //获取一年的显示时间
-        QMap<int, QVector<QDate> > _yearShowData = m_calendarManager->getCalendarDateDataManage()->getYearDate();
         //设置显示时间
-        m_yearWidget->setShowDate(getSelectDate(), _yearShowData);
+        m_yearWidget->setShowDate(getSelectDate());
         updateData();
         if (offsetYear > 0) {
             //下一年
@@ -786,15 +783,13 @@ YearFrame::~YearFrame()
  * @param selectDate                    选择的时间
  * @param showDate                      需要显示一年的时间
  */
-void YearFrame::setShowDate(const QDate &selectDate, const QMap<int, QVector<QDate> > &showDate)
+void YearFrame::setShowDate(const QDate &selectDate)
 {
-    //判断是否显示12个月
-    Q_ASSERT(showDate.size() == 12);
     m_selectDate = selectDate;
     QDate _showMonth(m_selectDate.year(), 1, 1);
     for (int i = 0; i < DDEYearCalendar::FrameSizeOfEveryYear; i++) {
         QDate _setShowMonth = _showMonth.addMonths(i);
-        m_monthViewList.at(i)->setShowDate(_setShowMonth, showDate[i + 1]);
+        m_monthViewList.at(i)->setShowMonthDate(_setShowMonth);
     }
     //更新显示界面
     update();
@@ -821,21 +816,18 @@ void YearFrame::setDateHasScheduleSign(const QMap<QDate, bool> &hasSchedule)
     QDate _stopDate;
     QDate _getDate;
     qint64 _offset = 0;
-    QVector<bool> _hasScheduleVector{};
+    QSet<QDate> _hasScheduleSet{};
     for (int i = 0; i < m_monthViewList.size(); ++i) {
         //如果时间有效
         if (m_monthViewList.at(i)->getStartAndStopDate(_startDate, _stopDate)) {
             _offset = _startDate.daysTo(_stopDate) + 1;
-            _hasScheduleVector.clear();
+            _hasScheduleSet.clear();
             for (int j = 0 ; j < _offset; ++j) {
-                _getDate = _startDate.addDays(j);
-                if (hasSchedule.contains(_getDate)) {
-                    _hasScheduleVector.append(hasSchedule[_getDate]);
-                } else {
-                    _hasScheduleVector.append(false);
+                if (hasSchedule.contains(_startDate.addDays(j))) {
+                    _hasScheduleSet.insert(_getDate);
                 }
             }
-            m_monthViewList.at(i)->setHasScheduleFlag(_hasScheduleVector);
+            m_monthViewList.at(i)->setHasScheduleSet(_hasScheduleSet);
         }
     }
 }
@@ -892,24 +884,21 @@ void YearFrame::setSearchSchedule(const QMap<QDate, QVector<DSchedule>> &searchI
     QDate _stopDate;
     QDate _getDate;
     qint64 _offset = 0;
-    QVector<bool> _hasSearchScheduleVector{};
+    QSet<QDate> _hasSearchScheduleSet{};
     for (int i = 0; i < m_monthViewList.size(); ++i) {
         //如果时间有效
         if (m_monthViewList.at(i)->getStartAndStopDate(_startDate, _stopDate)) {
             _offset = _startDate.daysTo(_stopDate) + 1;
-            _hasSearchScheduleVector.clear();
+            _hasSearchScheduleSet.clear();
             for (int j = 0 ; j < _offset; ++j) {
                 _getDate = _startDate.addDays(j);
                 if (searchInfo.contains(_getDate) && searchInfo[_getDate].size() > 0) {
-                    _hasSearchScheduleVector.append(true);
-                } else {
-                    _hasSearchScheduleVector.append(false);
+                    _hasSearchScheduleSet.insert(_getDate);
                 }
             }
-            m_monthViewList.at(i)->setHasSearchScheduleFlag(_hasSearchScheduleVector);
+            m_monthViewList.at(i)->setHasSearchScheduleSet(_hasSearchScheduleSet);
         }
     }
-
 }
 
 /**

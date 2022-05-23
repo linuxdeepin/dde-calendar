@@ -21,47 +21,86 @@
 #ifndef MONTHBREFWIDGET_H
 #define MONTHBREFWIDGET_H
 
+#include "cschedulebasewidget.h"
 #include <QWidget>
+#include <QPushButton>
 #include <QDate>
+#include <QSet>
 
-class CMonthDayRect;
+class CMonthDayRectWidget;
+
 class MonthBrefWidget : public QWidget
 {
     Q_OBJECT
 public:
     explicit MonthBrefWidget(QWidget *parent = nullptr);
     ~MonthBrefWidget() override;
-    //设置每个月的日期
-    void setDate(const int showMonth, const QVector<QDate> &showDate);
-    //根据系统主题设置颜色
-    void setTheMe(int type = 0);
-    //设置是否有日程的标志
-    void setLintFlag(const QVector<bool> &lineFlag);
-    //设置是否有搜索日程
-    void setSearchScheduleFlag(const QVector<bool> &searchFlag);
-private:
-    //设置每天的日期所在矩形框的大小
-    void updateSize();
-    //获取点击日期的索引
-    int getMousePosItem(const QPointF &pos);
+
+    //当月所有日期共有数据
+    struct GlobalData {
+
+    private:
+        QDate m_showMonthDate;
+        static QDate m_selectedMonth; //选中的月
+        static QDate m_selectedDate; //选中的日期
+        bool m_scheduleDateFlag[32] = {false};  //是否有日程
+        bool m_searchedDateFlag[32] = {false};  //是否有选中日程
+    public:
+        //设置选中的日期
+        void setSelectedDate(const QDate& date) {
+            m_selectedDate = date;
+            m_selectedMonth = m_showMonthDate;
+        }
+
+        //判断是否是选中的日期
+        bool isSelectedDate(const QDate& date) {
+            //当全局日期不等于此类静态日期时（其他界面更改日期的情况下），采用全局时间做判断
+            if (CScheduleBaseWidget::getSelectDate() != m_selectedDate) {
+                return  (isBelongMonth(date) && date == CScheduleBaseWidget::getSelectDate());
+            }
+            //用此类静态日期做判断（内部界面操作）
+            return m_showMonthDate == m_selectedMonth && date == m_selectedDate;
+        }
+
+        //判断日期是否是本月内的日期
+        bool isBelongMonth(const QDate& date) {
+            return  (m_showMonthDate.year() == date.year() && m_showMonthDate.month() == date.month());
+        }
+
+        //判断该日期是否含有日程
+        bool isHasScheduleByDate(const QDate& date) {
+            if (isBelongMonth(date)) {
+                return m_scheduleDateFlag[date.day()];
+            }
+            return false;
+        }
+
+        //判断该日期是否含有被搜索的日程
+        bool isHasSearchedByDate(const QDate& date) {
+            if (isBelongMonth(date)) {
+                return m_searchedDateFlag[date.day()];
+            }
+            return false;
+        }
+
+        friend MonthBrefWidget;
+    };
+
+    //设置显示的月
+    void setShowMonthDate(const QDate& monthDate);
+    //设置含有日程的日期集合
+    void setHasScheduleDateSet(const QSet<QDate> &hasScheduleSet);
+    //设置含有搜索日程的日期集合
+    void setHasSearchScheduleSet(const QSet<QDate> &hasScheduleSet);
+
 protected:
-    //设置每天的日期所在矩形框的大小
-    void resizeEvent(QResizeEvent *event) override;
-    //鼠标单击事件，单击日期显示当天的日程和节日。
+    //鼠标按下事件
     void mousePressEvent(QMouseEvent *event) override;
-    //鼠标双击事件，双击跳转到上次打开的视图
-    void mouseDoubleClickEvent(QMouseEvent *event) override;
     //鼠标释放事件
     void mouseReleaseEvent(QMouseEvent *event) override;
     //鼠标移动事件，设置hover状态
     void mouseMoveEvent(QMouseEvent *event) override;
-    //绘制日期以及当天状态
-    void paintEvent(QPaintEvent *event) override;
-    //离开事件，设置当前选中的日期为空
-    void leaveEvent(QEvent *event) override;
-private:
-    //鼠标点击触发事件
-    void mousePress(const QPoint &point);
+
 signals:
     /**
      * @brief signalPressDate 鼠标点击日期的信号
@@ -74,87 +113,62 @@ signals:
      */
     void signalDoubleClickDate(const QDate &date);
 private:
-    QVector<CMonthDayRect *>        m_DayItem;
-    int m_currentMonth = 1;
-    bool                            m_press = false;
-    int m_pressIndex = 0;
+    QVector<CMonthDayRectWidget *>        m_DayItem;
+    GlobalData *m_globalData = nullptr;
+
     //触摸状态 0：原始  1：点击  2：移动
     int         m_touchState{0};
     //触摸点击坐标
     QPoint      m_touchBeginPoint;
 };
 
-
-class CMonthDayRect
+/**
+ * @brief The CMonthDayRectWidget class
+ * 单个日期显示控件
+ */
+class CMonthDayRectWidget : public QPushButton
 {
+    Q_OBJECT
 public:
-    /**
-     * @brief The CellEventType enum
-     */
-    enum CellEventType {
-        CellNormal = 0,
-        Cellhover = 1,
-        CellPress = 2
-    };
-    /**
-     * @brief The CellColor struct
-     */
-    struct CellColor {
-        QColor normalColor;
-        QColor hoverColor;
-        QColor pressColor;
-    };
-    CMonthDayRect();
-    ~CMonthDayRect();
-    //设置某一天的时间
+
+    explicit CMonthDayRectWidget(MonthBrefWidget::GlobalData* globalData, QWidget *parent = nullptr);
+    //设置当天的时间
     void setDate(const QDate &date);
-    //获取某一天的时间
+    //获取当天的时间
     QDate getDate()const;
-    //设置某一天的状态，CellEventType
-    void setCellEvent(const CellEventType &type);
-    //设置是否是当前月
-    void setIsCurrentMonth(const bool isCurrMonth);
-    //当天日期所在的矩形
-    QRectF rect() const;
-    //设置当天日期的矩形
-    void setRect(const QRectF &rect);
-    //设置当天日期的矩形
-    inline void setRect(qreal x, qreal y, qreal w, qreal h);
-    //绘制年视图一天的所有状态并展示出来。
-    void paintItem(QPainter *painter, const QRectF &rect);
-    //设置是否有日程的标志
-    void setLineFlag(const bool flag);
-    //设置是否有搜索日程标志
-    void setSearchScheduleFlag(const bool flag);
-    //根据系统主题类型设置颜色
-    static void setTheMe(int type = 0);
-    //设置显示缩放比例
-    static void setDevicePixelRatio(const qreal pixel);
-    //设置当前天
-    static void setCurrentRect(CMonthDayRect *currrect);
-    void setSystemActiveColor(const QColor &activeColor);
+
+signals:
+    /**
+     * @brief signalPressDate 鼠标点击日期的信号
+     * @param date 传递时间参数
+     */
+    void signalClicked(const QDate &date);
+    /**
+     * @brief signalDoubleClick 鼠标双击日期的信号
+     * @param date 传递时间参数
+     */
+    void signalDoubleClick(const QDate &date);
+
+protected:
+    //鼠标按下事件
+    void mousePressEvent(QMouseEvent *event) override;
+    //鼠标双击事件
+    void mouseDoubleClickEvent(QMouseEvent *event) override;
+    //鼠标释放事件
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    //绘制日期以及当天状态
+    void paintEvent(QPaintEvent *event) override;
+    //鼠标进入事件
+    void enterEvent(QEvent *event) override;
+    //离开事件，设置当前选中的日期为空
+    void leaveEvent(QEvent *event) override;
+
 private:
-    QFont                   m_dayNumFont;
-    QFont                   m_hightFont;
-    int                     m_themetype = 0;
-    CellEventType           m_cellEventType {CellNormal};
-    QColor                  m_highColor = "#0081FF";
-    QColor                  m_highTextColor = "#FFFFFF";
-    bool                    m_vlineflag = false;
-    bool                    m_searchScheduleFlag{false};
-    QColor                  m_currentDayTextColor = "#2ca7f8";
+    QDate m_date;       //当前位置显示的日期
+    bool m_pressed = false;     //按下状态
+    bool m_hovered = false;     //悬浮状态
 
-    static QColor                   m_defaultTextColor;
-    static QColor                   m_selectedTextColor;
-    static QColor                   m_notCurrentTextColor;
-    static CellColor                m_currentColor;
-    static QColor                   m_ceventColor;
-    static CMonthDayRect            *m_CurrentRect;
-    static qreal                    m_DevicePixelRatio;
-
-    QRectF                  m_rect;
-    QDate                   m_date;
-    bool                    m_isCurrentMonth = false;
+    MonthBrefWidget::GlobalData* m_globaldata = nullptr;
 };
 
 

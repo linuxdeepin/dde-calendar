@@ -155,7 +155,7 @@ public:
     explicit YearFrame(DWidget *parent = nullptr);
     ~YearFrame() override;
     //设置显示时间
-    void setShowDate(const QDate &selectDate, const QMap<int, QVector<QDate> > &showDate);
+    void setShowDate(const QDate &selectDate);
     //设置阴历年显示
     void setLunarYearDate(const QString &lunar = "");
     //设置日期是否存在日程
