@@ -25,6 +25,7 @@
 #include "dschedule.h"
 #include "ddatabase.h"
 #include "dcalendargeneralsettings.h"
+#include "dreminddata.h"
 
 #include <QObject>
 
@@ -57,29 +58,29 @@ public:
 
     ////////////////任务
     /**
-     * @brief saveRemindJob     存储提醒日程的相关信息
-     * @param job               提醒日程
+     * @brief createRemindInfo          存储提醒日程的相关信息
+     * @param remind
      */
-    void saveRemindJob(const DSchedule &job);
+    void createRemindInfo(const DRemindData::Ptr &remind);
 
     /**
      * @brief updateRemindJob       更新对应的稍后提醒日程
      * @param job                   日程信息
      */
-    void updateRemindJob(const DSchedule &job);
+    void updateRemindInfo(const DRemindData::Ptr &remind);
 
     /**
      * @brief deleteRemindJobs      根据日程id删除提醒日程信息
      * @param Ids                   日程id集
      */
-    void deleteRemindJobs(const QStringList &jobIDs);
+    void deleteRemindInfos(const QStringList &jobIDs);
 
     /**
-     * @brief deleteRemindJobs      根据日程id和重复id删除提醒日程信息
-     * @param jobID                 日程id
+     * @brief deleteRemindInfo      根据日程id和重复id删除提醒日程信息
+     * @param scheduleID            日程id
      * @param recurid               重复id
      */
-    void deleteRemindJobs(const QString &jobID, const qint64 recurid);
+    void deleteRemindInfo(const QString &scheduleID, const QDateTime &recurid);
 
     /**
      * @brief getValidRemindJob     获取未提醒的稍后提醒日程

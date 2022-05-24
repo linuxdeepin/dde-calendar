@@ -191,6 +191,27 @@ void DAccountManagerDataBase::setCalendarGeneralSettings(const DCalendarGeneralS
     }
 }
 
+void DAccountManagerDataBase::createRemindInfo(const DRemindData::Ptr &remind)
+{
+    QString strSql("INSERT INTO remindTask                              \
+                   (accountID, scheduleID, recurID,remindCount,notifyID        \
+                    , dtRemind, dtStart, dtEnd)                         \
+                   VALUES(?,?,?,?,?,?,?,?);");
+    QSqlQuery query(m_database);
+    query.prepare(strSql);
+    query.addBindValue(remind->accountID());
+    query.addBindValue(remind->scheduleID());
+    query.addBindValue(dtToString(remind->dtRemind()));
+    query.addBindValue(remind->remindCount());
+    query.addBindValue(remind->notifyid());
+    query.addBindValue(remind->dtRemind());
+    query.addBindValue(remind->dtStart());
+    query.addBindValue(remind->dtEnd());
+    if (!query.exec()) {
+        qWarning() << Q_FUNC_INFO << query.lastError();
+    }
+}
+
 void DAccountManagerDataBase::createDB()
 {
     dbOpen();
@@ -249,7 +270,8 @@ void DAccountManagerDataBase::createDB()
                               accountID TEXT NOT NULL,              \
                               scheduleID TEXT NOT NULL,             \
                               recurID DATETIME ,                    \
-                              notifyID integer ,                    \
+                              remindCount INTEGER,                  \
+                              notifyID INTEGER ,                    \
                               dtRemind DATETIME NOT NULL,           \
                               dtStart DATETIME NOT NULL,            \
                               dtEnd DATETIME NOT NULL)");

@@ -45,8 +45,10 @@ public:
       The unit of time used to define the duration.
     */
     enum Type {
-        Seconds, /**< duration is a number of seconds */
-        Days, /**< duration is a number of days */
+        Seconds,
+        /**< duration is a number of seconds */ //秒
+        Days,
+        /**< duration is a number of days */ //天
     };
 
     /**

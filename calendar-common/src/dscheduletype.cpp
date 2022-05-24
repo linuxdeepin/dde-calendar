@@ -73,6 +73,26 @@ void DScheduleType::setTypeColor(const DTypeColor &typeColor)
     m_typeColor = typeColor;
 }
 
+void DScheduleType::setColorID(const int colorID)
+{
+    m_typeColor.setColorID(colorID);
+}
+
+int DScheduleType::getColorID() const
+{
+    return m_typeColor.colorID();
+}
+
+void DScheduleType::setColorCode(const QString &colorCode)
+{
+    m_typeColor.setColorCode(colorCode);
+}
+
+QString DScheduleType::getColorCode() const
+{
+    return m_typeColor.colorCode();
+}
+
 QString DScheduleType::typeID() const
 {
     return m_typeID;

@@ -71,7 +71,7 @@ void DDataBase::dbOpen()
     } else {
         m_database = QSqlDatabase::addDatabase("QSQLITE", getConnectionName());
     }
+    m_database.setDatabaseName(getDBPath());
     if (!m_database.isOpen())
         m_database.open();
-    m_database.setDatabaseName(getDBPath());
 }

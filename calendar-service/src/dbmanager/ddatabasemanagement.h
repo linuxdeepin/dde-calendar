@@ -21,6 +21,10 @@
 #ifndef DDATABASEMANAGEMENT_H
 #define DDATABASEMANAGEMENT_H
 
+#include "dschedule.h"
+#include "dscheduletype.h"
+#include "dreminddata.h"
+
 #include <QString>
 #include <QSqlDatabase>
 
@@ -42,7 +46,20 @@ private:
     void setOldDatabasePath(const QString &oldDatabasePath);
 
     //数据库所在文件夹是否存在，若不存在则创建该文件夹
-    bool databaseExists(const QString &databasePath);
+    bool databaseExists(const QString &databasePath, bool create = true);
+
+    //旧数据库jab表是否存在是否为农历日程字段
+    bool hasLunnarField(QSqlDatabase &db);
+    //存在日程类型相关数据
+    bool hasTypeDB(QSqlDatabase &db);
+    //存在提醒任务表
+    bool hasRemindDB(QSqlDatabase &db);
+
+    DScheduleType::List queryOldJobTypeData(QSqlDatabase &db);
+    DSchedule::List queryOldJobData(QSqlDatabase &db, const bool haslunar);
+
+    QVector<DTypeColor> queryOldTypeColorData(QSqlDatabase &db);
+    DRemindData::List querOldRemindData(QSqlDatabase &db);
 
 private:
     //新数据库路径地址
@@ -52,7 +69,8 @@ private:
     QString m_newDatabaseName;
     QString m_oldDatabaseName;
 
-    QSqlDatabase m_database;
+    QMap<int, QString> m_typeMap;
+    QMap<int, QString> m_schedule;
 };
 
 #endif // DDATABASEMANAGEMENT_H

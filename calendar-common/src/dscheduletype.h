@@ -38,14 +38,14 @@ public:
         None = 0x0, //不可读不可写
         Read = 0x1, //可读
         Write = 0x2, //可编辑
+        Delete = 0x4 //可删除
     };
+    Q_DECLARE_FLAGS(Privileges, Privilege)
 
     enum ShowState {
         Show,
         Hide
     };
-
-    Q_DECLARE_FLAGS(Privileges, Privilege)
 
     typedef QSharedPointer<DScheduleType> Ptr;
     typedef QVector<DScheduleType::Ptr> List;
@@ -59,6 +59,11 @@ public:
 
     DTypeColor typeColor() const;
     void setTypeColor(const DTypeColor &typeColor);
+
+    void setColorID(const int colorID);
+    int getColorID() const;
+    void setColorCode(const QString &colorCode);
+    QString getColorCode() const;
 
     QString typeID() const;
     void setTypeID(const QString &typeID);
