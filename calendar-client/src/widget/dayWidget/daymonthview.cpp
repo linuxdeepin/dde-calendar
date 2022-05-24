@@ -40,6 +40,7 @@
 #include <QPainterPath>
 #include <QMouseEvent>
 #include <QtGlobal>
+#include <QDrag>
 
 DGUI_USE_NAMESPACE
 CDayMonthView::CDayMonthView(QWidget *parent)
@@ -723,9 +724,15 @@ void CDayMonthWidget::mousePressEvent(QMouseEvent *event)
 
 void CDayMonthWidget::cellClicked(QWidget *cell)
 {
+    QDrag* drag = new QDrag(this);
+    QMimeData *data = new QMimeData;
+
     const int pos = m_cellList.indexOf(cell);
     if (pos == -1)
         return;
+    drag->setMimeData(data);
+    data->setImageData(m_selectedCell);
+    drag->exec(Qt::MoveAction);
     setSelectedCell(pos);
 }
 

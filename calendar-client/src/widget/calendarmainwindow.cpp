@@ -450,6 +450,8 @@ void Calendarmainwindow::initConnection()
     connect(m_weekWindow, &CWeekWindow::signalSwitchView, this, &Calendarmainwindow::slotSwitchView);
     //按钮关联新建日程
     connect(m_newScheduleBtn, &DToolButton::clicked, this, &Calendarmainwindow::slotNewSchedule);
+    //拖拽事件新建日程
+    connect(m_DayWindow, &CDayWindow::signalNewSlot,this,&Calendarmainwindow::slotNewSchedule);
 
     connect(qApp, &QGuiApplication::applicationStateChanged, this, &Calendarmainwindow::slotapplicationStateChanged);
     connect(m_titleWidget, &CTitleWidget::signalSidebarStatusChange, this, &Calendarmainwindow::slotSidebarStatusChange);
