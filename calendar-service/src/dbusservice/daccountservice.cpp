@@ -38,12 +38,12 @@ QString DAccountService::getScheduleTypeList()
 
 QString DAccountService::getScheduleTypeByID(const QString &typeID)
 {
-    //TODO:获取类型和颜色
+    return m_accountModel->getScheduleTypeByID(typeID);
 }
 
 QString DAccountService::createScheduleType(const QString &typeInfo)
 {
-    //TODO:创建类型和颜色
+    return m_accountModel->createScheduleType(typeInfo);
 }
 
 bool DAccountService::updateScheduleType(const QString &typeInfo)

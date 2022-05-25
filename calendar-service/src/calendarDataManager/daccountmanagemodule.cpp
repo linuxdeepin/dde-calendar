@@ -58,10 +58,17 @@ QString DAccountManageModule::getAccountList()
 
 QString DAccountManageModule::getCalendarGeneralSettings()
 {
+    QString cgSetStr;
+    DCalendarGeneralSettings::Ptr cgSet = m_accountManagerDB->getCalendarGeneralSettings();
+    DCalendarGeneralSettings::toJsonString(cgSet, cgSetStr);
+    return cgSetStr;
 }
 
 void DAccountManageModule::setCalendarGeneralSettings(const QString &cgSet)
 {
+    DCalendarGeneralSettings::Ptr cgSetPtr = DCalendarGeneralSettings::Ptr(new DCalendarGeneralSettings);
+    DCalendarGeneralSettings::fromJsonString(cgSetPtr, cgSet);
+    m_accountManagerDB->setCalendarGeneralSettings(cgSetPtr);
 }
 
 void DAccountManageModule::unionIDDataMerging()

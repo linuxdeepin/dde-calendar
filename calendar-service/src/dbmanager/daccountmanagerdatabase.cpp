@@ -173,7 +173,8 @@ DCalendarGeneralSettings::Ptr DAccountManagerDataBase::getCalendarGeneralSetting
     DCalendarGeneralSettings::Ptr cgSet(new DCalendarGeneralSettings);
     QString strSql("SELECT  firstDayOfWeek, timeShowType        \
                    FROM calendargeneralsettings WHERE id = 1");
-    QSqlQuery query(strSql);
+    QSqlQuery query(m_database);
+    query.prepare(strSql);
     if (query.exec() && query.next()) {
         cgSet->setFirstDayOfWeek(static_cast<Qt::DayOfWeek>(query.value("firstDayOfWeek").toInt()));
         cgSet->setTimeShowType(static_cast<DCalendarGeneralSettings::TimeShowType>(query.value("timeShowType").toInt()));

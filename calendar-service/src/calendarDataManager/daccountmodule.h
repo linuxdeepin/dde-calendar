@@ -38,8 +38,13 @@ public:
 
     explicit DAccountModule(const DAccount::Ptr &account, QObject *parent = nullptr);
 
+    //获取帐户信息
     QString getAccountInfo();
+
+    //获取类型
     QString getScheduleTypeList();
+    QString getScheduleTypeByID(const QString &typeID);
+    QString createScheduleType(const QString &typeInfo);
 
     DAccount::Ptr account() const;
 

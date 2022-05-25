@@ -408,6 +408,8 @@ DAccount::Ptr DAccountDataBase::getAccountInfo()
         m_account->setSyncFreq(query.value("syncFreq").toInt());
         m_account->setIntervalTime(query.value("intervalTime").toInt());
         m_account->setSyncTag(query.value("syncTag").toInt());
+    } else {
+        qWarning() << query.lastError();
     }
     if (query.isActive()) {
         query.finish();
@@ -472,8 +474,6 @@ void DAccountDataBase::createDB()
     if (!file.exists()) {
         m_database.open();
         m_database.close();
-    } else {
-        return;
     }
     //将权限修改为600（对文件的所有者可以读写，其他用户不可读不可写）
     if (!file.setPermissions(QFile::WriteOwner | QFile::ReadOwner)) {

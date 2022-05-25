@@ -50,6 +50,25 @@ QString DAccountModule::getScheduleTypeList()
     return typeListStr;
 }
 
+QString DAccountModule::getScheduleTypeByID(const QString &typeID)
+{
+    DScheduleType::Ptr scheduleType = m_accountDB->getScheduleTypeByID(typeID);
+    QString typeStr;
+    DScheduleType::toJsonString(scheduleType, typeStr);
+    return typeStr;
+}
+
+QString DAccountModule::createScheduleType(const QString &typeInfo)
+{
+    DScheduleType::Ptr scheduleType;
+    DScheduleType::fromJsonString(scheduleType, typeInfo);
+    //如果颜色为用户自定义则需要在数据库中记录
+    if (scheduleType->typeColor().privilege() == DTypeColor::PriUser) {
+        m_accountDB->addTypeColor(scheduleType->typeColor().colorID(), scheduleType->typeColor().colorCode(), 7);
+    }
+    return m_accountDB->createScheduleType(scheduleType);
+}
+
 DAccount::Ptr DAccountModule::account() const
 {
     return m_account;
