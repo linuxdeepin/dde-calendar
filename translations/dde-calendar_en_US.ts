@@ -84,6 +84,11 @@
         <source>D</source>
         <translation>D</translation>
     </message>
+    <message>
+        <location filename="../calendar-client/src/widget/dayWidget/daywindow.cpp" line="185"/>
+        <source>Lunar</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>CGraphicsView</name>
@@ -615,6 +620,11 @@
         <source>D</source>
         <translation>D</translation>
     </message>
+    <message>
+        <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="108"/>
+        <source>Search events and festivals</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>CWeekWindow</name>
@@ -646,7 +656,7 @@
 <context>
     <name>CYearWindow</name>
     <message>
-        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="628"/>
+        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="625"/>
         <source>Y</source>
         <translation>Y</translation>
     </message>
@@ -749,7 +759,7 @@
 <context>
     <name>Return</name>
     <message>
-        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="624"/>
+        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="621"/>
         <source>Today</source>
         <comment>Return</comment>
         <translation>Today</translation>
@@ -873,7 +883,7 @@
 <context>
     <name>YearFrame</name>
     <message>
-        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="942"/>
+        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="931"/>
         <source>Y</source>
         <translation>Y</translation>
     </message>
@@ -888,7 +898,7 @@
         <location filename="../calendar-client/src/widget/weekWidget/weekwindow.cpp" line="69"/>
         <location filename="../calendar-client/src/widget/weekWidget/weekwindow.cpp" line="315"/>
         <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="278"/>
-        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="622"/>
+        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="619"/>
         <source>Today</source>
         <comment>Today</comment>
         <translation>Today</translation>

@@ -42,6 +42,9 @@ public:
     virtual void initDBData();
     void dbOpen();
 
+    //判断数据库是否存在
+    bool dbFileExists();
+
 protected:
     //创建数据库
     virtual void createDB() = 0;

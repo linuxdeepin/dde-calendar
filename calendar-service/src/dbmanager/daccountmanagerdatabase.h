@@ -28,11 +28,14 @@
 #include "dreminddata.h"
 
 #include <QObject>
+#include <QSharedPointer>
 
 class DAccountManagerDataBase : public DDataBase
 {
     Q_OBJECT
 public:
+    typedef QSharedPointer<DAccountManagerDataBase> Ptr;
+
     explicit DAccountManagerDataBase(QObject *parent = nullptr);
 
     //初始化数据库数据，只有在创建表的时候才需要

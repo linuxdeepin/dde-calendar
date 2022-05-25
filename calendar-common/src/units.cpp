@@ -21,6 +21,7 @@
 #include "units.h"
 
 #include <QTimeZone>
+#include <QStandardPaths>
 
 QString dtToString(const QDateTime &dt)
 {
@@ -38,4 +39,9 @@ QDateTime dtConvert(const QDateTime &datetime)
 QDateTime dtFromString(const QString &st)
 {
     return QDateTime::fromString(st, Qt::ISODate);
+}
+
+QString getDBPath()
+{
+    return QStandardPaths::writableLocation(QStandardPaths::HomeLocation).append("/.config/deepin/dde-calendar-service");
 }

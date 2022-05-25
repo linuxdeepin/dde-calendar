@@ -26,10 +26,14 @@
 #include "dschedule.h"
 #include "dscheduletype.h"
 
+#include <QSharedPointer>
+
 class DAccountDataBase : public DDataBase
 {
     Q_OBJECT
 public:
+    typedef QSharedPointer<DAccountDataBase> Ptr;
+
     explicit DAccountDataBase(const DAccount::Ptr &account, QObject *parent = nullptr);
     //初始化数据库数据，会创建数据库文件和相关数据表
     void initDBData() override;

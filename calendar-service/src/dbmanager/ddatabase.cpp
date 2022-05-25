@@ -21,6 +21,7 @@
 #include "ddatabase.h"
 
 #include <QUuid>
+#include <QFile>
 
 DDataBase::DDataBase(QObject *parent)
     : QObject(parent)
@@ -74,4 +75,11 @@ void DDataBase::dbOpen()
     m_database.setDatabaseName(getDBPath());
     if (!m_database.isOpen())
         m_database.open();
+}
+
+bool DDataBase::dbFileExists()
+{
+    QFile file;
+    file.setFileName(getDBPath());
+    return file.exists();
 }

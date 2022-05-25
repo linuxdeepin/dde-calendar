@@ -20,17 +20,20 @@
 */
 #include "daccountservice.h"
 
-DAccountService::DAccountService(const QString &path, const QString &interface, QObject *parent)
+DAccountService::DAccountService(const QString &path, const QString &interface, const DAccount::Ptr &account, QObject *parent)
     : DServiceBase(path, interface, parent)
+    , m_accountModel(new DAccountModule(account))
 {
 }
 
 QString DAccountService::getAccountInfo()
 {
+    return m_accountModel->getAccountInfo();
 }
 
 QString DAccountService::getScheduleTypeList()
 {
+    return m_accountModel->getScheduleTypeList();
 }
 
 QString DAccountService::getScheduleTypeByID(const QString &typeID)

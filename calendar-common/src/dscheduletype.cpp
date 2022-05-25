@@ -195,6 +195,9 @@ void DScheduleType::setDeleted(int deleted)
 
 bool DScheduleType::fromJsonString(DScheduleType::Ptr &scheduleType, const QString &jsonStr)
 {
+    if (scheduleType.isNull()) {
+        scheduleType = DScheduleType::Ptr(new DScheduleType);
+    }
     //反序列化
     QJsonParseError jsonError;
     QJsonDocument jsonDoc(QJsonDocument::fromJson(jsonStr.toLocal8Bit(), &jsonError));
@@ -266,6 +269,10 @@ bool DScheduleType::fromJsonString(DScheduleType::Ptr &scheduleType, const QStri
 
 bool DScheduleType::toJsonString(const DScheduleType::Ptr &scheduleType, QString &jsonStr)
 {
+    if (scheduleType.isNull()) {
+        qWarning() << "hold a reference to a null pointer.";
+        return false;
+    }
     //序列化
     QJsonObject rootObject;
     rootObject.insert("typeID", scheduleType->typeID());

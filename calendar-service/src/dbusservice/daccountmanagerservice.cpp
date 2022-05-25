@@ -19,18 +19,20 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "daccountmanagerservice.h"
+#include "units.h"
 
 #include <QMetaType>
 #include <QDBusMetaType>
 
 DAccountManagerService::DAccountManagerService(QObject *parent)
     : DServiceBase(serviceBasePath + "/AccountManager", serviceBaseName + ".AccountManager", parent)
+    , m_accountManager(new DAccountManageModule(this))
 {
 }
 
 QString DAccountManagerService::getAccountList()
 {
-    return QString();
+    return m_accountManager->getAccountList();
 }
 
 void DAccountManagerService::remindJob(const QString &scheduleID, const qint64 recurID)
@@ -55,8 +57,10 @@ void DAccountManagerService::uploadNetWorkAccountData()
 
 QString DAccountManagerService::getCalendarGeneralSettings()
 {
+    return m_accountManager->getCalendarGeneralSettings();
 }
 
 void DAccountManagerService::setCalendarGeneralSettings(const QString &cgSet)
 {
+    m_accountManager->setCalendarGeneralSettings(cgSet);
 }

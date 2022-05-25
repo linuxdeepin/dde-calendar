@@ -20,11 +20,13 @@
 */
 #include "dservicemanager.h"
 
+#include "dhuangliservice.h"
+#include "daccountmanagerservice.h"
+#include "units.h"
+
 #include <QDBusConnection>
 #include <QDBusError>
 
-#include "dhuangliservice.h"
-#include "daccountmanagerservice.h"
 
 DServiceManager::DServiceManager(QObject *parent)
     : QObject(parent)
@@ -39,14 +41,14 @@ DServiceManager::DServiceManager(QObject *parent)
     QDBusConnection::RegisterOptions options = QDBusConnection::ExportAllSlots | QDBusConnection::ExportAllSignals | QDBusConnection::ExportAllProperties;
     //创建黄历服务
     DServiceBase *huangliService = new class DHuangliService(this);
-    if (!sessionBus.registerObject(huangliService->getPath(), huangliService, options)) {
+    if (!sessionBus.registerObject(huangliService->getPath(), huangliService->getInterface(), huangliService, options)) {
         qCritical() << "registerObject huangliService failed:" << sessionBus.lastError();
         exit(0x0002);
     }
 
     //创建帐户管理服务
     DServiceBase *accountManagerService = new class DAccountManagerService(this);
-    if (!sessionBus.registerObject(accountManagerService->getPath(), accountManagerService, options)) {
+    if (!sessionBus.registerObject(accountManagerService->getPath(), accountManagerService->getInterface(), accountManagerService, options)) {
         qCritical() << "registerObject  accountManagerService failed:" << sessionBus.lastError();
         exit(0x0003);
     }

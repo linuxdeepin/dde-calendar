@@ -24,8 +24,14 @@
 #include <QString>
 #include <QDateTime>
 
+const QString serviceBaseName = "com.deepin.dataserver.Calendar";
+const QString serviceBasePath = "/com/deepin/dataserver/Calendar";
+
 QString dtToString(const QDateTime &dt);
 QDateTime dtFromString(const QString &st);
+
+//获取新数据库路径
+QString getDBPath();
 
 //时间转换，
 QDateTime dtConvert(const QDateTime &datetime);

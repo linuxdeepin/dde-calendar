@@ -48,7 +48,7 @@ DDataBaseManagement::DDataBaseManagement()
     QString oldDbPatch = QStandardPaths::writableLocation(QStandardPaths::HomeLocation).append("/.config/deepin/dde-daemon/calendar");
     setOldDatabasePath(oldDbPatch);
     //新文件路径
-    QString newDbPatch = QStandardPaths::writableLocation(QStandardPaths::HomeLocation).append("/.config/deepin/dde-calendar-service");
+    QString newDbPatch = getDBPath();
     setNewDatabasePath(newDbPatch);
     QString newDB(newDatabasePath() + "/" + m_newDatabaseName);
     //如果新数据库不存在

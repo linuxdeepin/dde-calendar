@@ -34,6 +34,7 @@ class DHuangliService : public DServiceBase
     Q_CLASSINFO("D-Bus Interface", "com.deepin.dataserver.HuangLi")
 public:
     explicit DHuangliService(QObject *parent = nullptr);
+public slots:
     Q_SCRIPTABLE QString getFestivalMonth(quint32 year, quint32 month);
     Q_SCRIPTABLE QString getHuangLiDay(quint32 year, quint32 month, quint32 day);
     Q_SCRIPTABLE QString getHuangLiMonth(quint32 year, quint32 month, bool fill);

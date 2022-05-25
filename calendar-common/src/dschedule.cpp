@@ -64,6 +64,9 @@ bool DSchedule::operator>(const DSchedule &schedule) const
 
 bool DSchedule::fromJsonString(DSchedule::Ptr &schedule, const QString &json)
 {
+    if (schedule.isNull()) {
+        schedule = DSchedule::Ptr(new DSchedule);
+    }
     QJsonParseError jsonError;
     QJsonDocument jsonDoc(QJsonDocument::fromJson(json.toLocal8Bit(), &jsonError));
     if (jsonError.error != QJsonParseError::NoError) {
@@ -84,6 +87,10 @@ bool DSchedule::fromJsonString(DSchedule::Ptr &schedule, const QString &json)
 
 bool DSchedule::toJsonString(const DSchedule::Ptr &schedule, QString &json)
 {
+    if (schedule.isNull()) {
+        qWarning() << "hold a reference to a null pointer.";
+        return false;
+    }
     QJsonObject rootObject;
     rootObject.insert("type", schedule->scheduleTypeID());
     rootObject.insert("schedule", toIcsString(schedule));

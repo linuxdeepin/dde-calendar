@@ -24,9 +24,6 @@
 #include <QObject>
 #include <QDBusContext>
 
-const QString serviceBaseName = "com.deepin.dataserver";
-const QString serviceBasePath = "/com/deepin/dataserver";
-
 /**
  * @brief The serviceBase class     服务基类
  */

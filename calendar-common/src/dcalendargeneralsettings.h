@@ -46,8 +46,8 @@ public:
     TimeShowType timeShowType() const;
     void setTimeShowType(const TimeShowType &timeShowType);
 
-    static void toJsonString(const DCalendarGeneralSettings &cgSet, QString &jsonStr);
-    static bool fromJsonString(DCalendarGeneralSettings &cgSet, const QString &jsonStr);
+    static void toJsonString(const DCalendarGeneralSettings::Ptr &cgSet, QString &jsonStr);
+    static bool fromJsonString(DCalendarGeneralSettings::Ptr &cgSet, const QString &jsonStr);
 
 private:
     Qt::DayOfWeek m_firstDayOfWeek; //一周首日

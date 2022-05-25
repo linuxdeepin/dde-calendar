@@ -22,7 +22,7 @@
 #define ACCOUNTMANAGERSERVICE_H
 
 #include "dservicebase.h"
-#include "daccountservice.h"
+#include "daccountmanagemodule.h"
 
 #include <QString>
 
@@ -30,15 +30,13 @@
  * @brief The DAccountManagerService class      帐户管理服务
  */
 
-//帐户类型总数，若支持的类型增加则需要修改
-const int accountTypeCount = 3;
 class DAccountManagerService : public DServiceBase
 {
     Q_OBJECT
     Q_CLASSINFO("D-Bus Interface", "com.deepin.dataserver.AccountManager")
 public:
     explicit DAccountManagerService(QObject *parent = nullptr);
-
+public slots:
     /**
      * @brief getAccountList        获取帐户列表
      * @return
@@ -63,21 +61,19 @@ public:
     Q_SCRIPTABLE void notifyMsgHanding(const QString &accountID, const QString &scheduleID, const qint64 recurID, const qint32 operationNum);
     Q_SCRIPTABLE void downloadByAccountID(const QString &accountID);
     Q_SCRIPTABLE void uploadNetWorkAccountData();
-    //设置通用设置
-    Q_SCRIPTABLE QString getCalendarGeneralSettings();
     //获取通用设置
+    Q_SCRIPTABLE QString getCalendarGeneralSettings();
+    //设置通用设置
     Q_SCRIPTABLE void setCalendarGeneralSettings(const QString &cgSet);
 
-private:
 signals:
     Q_SCRIPTABLE void accountUpdate(const QStringList &accountIDs);
     Q_SCRIPTABLE void calendarGeneralSettingsUpdate(const QString &cgSet);
-public slots:
-    //TODO：监听网络帐户管理信号和Union ID登陆退出状态
+
 private:
     QString getUnionIDAccount();
 private:
-    QMap<QString, DAccountService::Ptr> m_AccountServiceMap[accountTypeCount];
+    DAccountManageModule::Ptr m_accountManager;
 };
 
 #endif // ACCOUNTMANAGERSERVICE_H

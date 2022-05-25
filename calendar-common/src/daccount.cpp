@@ -181,6 +181,10 @@ void DAccount::setDtUpdate(const QDateTime &dtUpdate)
 
 bool DAccount::toJsonString(const DAccount::Ptr &account, QString &jsonStr)
 {
+    if (account.isNull()) {
+        qWarning() << "hold a reference to a null pointer.";
+        return false;
+    }
     QJsonObject rootObj;
     rootObj.insert("accountID", account->accountID());
     rootObj.insert("displayName", account->displayName());
@@ -199,8 +203,12 @@ bool DAccount::toJsonString(const DAccount::Ptr &account, QString &jsonStr)
     return true;
 }
 
-bool DAccount::fromJsonString(const DAccount::Ptr &account, const QString &jsonStr)
+bool DAccount::fromJsonString(Ptr &account, const QString &jsonStr)
 {
+    if (account.isNull()) {
+        account = DAccount::Ptr(new DAccount);
+    }
+
     QJsonParseError jsonError;
     QJsonDocument jsonDoc(QJsonDocument::fromJson(jsonStr.toLocal8Bit(), &jsonError));
     if (jsonError.error != QJsonParseError::NoError) {
@@ -244,6 +252,49 @@ bool DAccount::fromJsonString(const DAccount::Ptr &account, const QString &jsonS
     return true;
 }
 
+bool DAccount::toJsonListString(const DAccount::List &accountList, QString &jsonStr)
+{
+    QJsonArray jsArr;
+    foreach (auto account, accountList) {
+        QJsonObject jsonAccount;
+        QString strAccount;
+        toJsonString(account, strAccount);
+        jsonAccount.insert("account", strAccount);
+        jsArr.append(jsonAccount);
+    }
+    QJsonObject jsObj;
+    jsObj.insert("accounts", jsArr);
+    QJsonDocument jsonDoc;
+    jsonDoc.setObject(jsObj);
+    jsonStr = QString::fromUtf8(jsonDoc.toJson(QJsonDocument::Compact));
+    return true;
+}
+
+bool DAccount::fromJsonListString(List &accountList, const QString &jsonStr)
+{
+    QJsonParseError jsonError;
+    QJsonDocument jsonDoc(QJsonDocument::fromJson(jsonStr.toLocal8Bit(), &jsonError));
+    if (jsonError.error != QJsonParseError::NoError) {
+        qWarning() << "error:" << jsonError.errorString();
+        return false;
+    }
+    QJsonObject rootObj = jsonDoc.object();
+    if (rootObj.contains("accounts")) {
+        QJsonArray jsArr = rootObj.value("accounts").toArray();
+        foreach (auto ja, jsArr) {
+            QJsonObject jsObj = ja.toObject();
+            DAccount::Ptr account = DAccount::Ptr(new DAccount);
+            QString strAcc = jsObj.value("account").toString();
+            if (fromJsonString(account, strAcc)) {
+                accountList.append(account);
+            } else {
+                qWarning() << "format failed:" << strAcc;
+            }
+        }
+    }
+    return true;
+}
+
 QString DAccount::dbName() const
 {
     return m_dbName;
@@ -282,4 +333,14 @@ int DAccount::intervalTime() const
 void DAccount::setIntervalTime(int intervalTime)
 {
     m_intervalTime = intervalTime;
+}
+
+QString DAccount::dbusInterface() const
+{
+    return m_dbusInterface;
+}
+
+void DAccount::setDbusInterface(const QString &dbusInterface)
+{
+    m_dbusInterface = dbusInterface;
 }

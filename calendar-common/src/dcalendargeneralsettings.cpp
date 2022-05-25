@@ -51,17 +51,17 @@ void DCalendarGeneralSettings::setTimeShowType(const TimeShowType &timeShowType)
     m_timeShowType = timeShowType;
 }
 
-void DCalendarGeneralSettings::toJsonString(const DCalendarGeneralSettings &cgSet, QString &jsonStr)
+void DCalendarGeneralSettings::toJsonString(const Ptr &cgSet, QString &jsonStr)
 {
     QJsonObject rootObject;
-    rootObject.insert("firstDayOfWeek", cgSet.firstDayOfWeek());
-    rootObject.insert("TimeShowType", cgSet.timeShowType());
+    rootObject.insert("firstDayOfWeek", cgSet->firstDayOfWeek());
+    rootObject.insert("TimeShowType", cgSet->timeShowType());
     QJsonDocument jsonDoc;
     jsonDoc.setObject(rootObject);
     jsonStr = QString::fromUtf8(jsonDoc.toJson(QJsonDocument::Compact));
 }
 
-bool DCalendarGeneralSettings::fromJsonString(DCalendarGeneralSettings &cgSet, const QString &jsonStr)
+bool DCalendarGeneralSettings::fromJsonString(Ptr &cgSet, const QString &jsonStr)
 {
     QJsonParseError jsonError;
     QJsonDocument jsonDoc(QJsonDocument::fromJson(jsonStr.toLocal8Bit(), &jsonError));
@@ -72,11 +72,11 @@ bool DCalendarGeneralSettings::fromJsonString(DCalendarGeneralSettings &cgSet, c
 
     QJsonObject rootObj = jsonDoc.object();
     if (rootObj.contains("firstDayOfWeek")) {
-        cgSet.setFirstDayOfWeek(static_cast<Qt::DayOfWeek>(rootObj.value("firstDayOfWeek").toInt()));
+        cgSet->setFirstDayOfWeek(static_cast<Qt::DayOfWeek>(rootObj.value("firstDayOfWeek").toInt()));
     }
 
     if (rootObj.contains("TimeShowType")) {
-        cgSet.setTimeShowType(static_cast<TimeShowType>(rootObj.value("TimeShowType").toInt()));
+        cgSet->setTimeShowType(static_cast<TimeShowType>(rootObj.value("TimeShowType").toInt()));
     }
     return true;
 }

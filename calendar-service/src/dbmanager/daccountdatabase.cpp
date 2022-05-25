@@ -167,11 +167,14 @@ QString DAccountDataBase::querySchedulesWithParameter(const QString &params, con
 
 void DAccountDataBase::initDBData()
 {
-    createDB();
-    initTypeColor();
-    initScheduleDB();
-    initScheduleType();
-    initAccountDB();
+    //如果不存在对应的数据库则创建
+    if (!dbFileExists()) {
+        createDB();
+        initTypeColor();
+        initScheduleDB();
+        initScheduleType();
+        initAccountDB();
+    }
 }
 
 QString DAccountDataBase::createScheduleType(const DScheduleType::Ptr &scheduleType)
@@ -277,7 +280,7 @@ DScheduleType::List DAccountDataBase::getScheduleTypeList(const int isDeleted)
                inner join typeColor tc on                               \
                    st.typeColorID = tc.ColorID                          \
                WHERE                                                    \
-                   st.isDeleteD = ?");
+                   st.isDeleted = ?");
     QSqlQuery query(m_database);
     query.prepare(strSql);
     query.addBindValue(isDeleted);
@@ -469,6 +472,8 @@ void DAccountDataBase::createDB()
     if (!file.exists()) {
         m_database.open();
         m_database.close();
+    } else {
+        return;
     }
     //将权限修改为600（对文件的所有者可以读写，其他用户不可读不可写）
     if (!file.setPermissions(QFile::WriteOwner | QFile::ReadOwner)) {
@@ -588,7 +593,11 @@ DScheduleType::List DAccountDataBase::initSysType()
         workType->setPrivilege(DScheduleType::Read);
         workType->setTypeName(tr("Work"));
         workType->setDisplayName(tr("Work"));
-        workType->setColorID(1);
+        DTypeColor workColor;
+        workColor.setColorID(1);
+        workColor.setColorCode("#ff5e97");
+        workColor.setPrivilege(DTypeColor::PriSystem);
+        workType->setTypeColor(workColor);
         workType->setShowState(DScheduleType::Show);
         typeList.append(workType);
 
@@ -599,7 +608,11 @@ DScheduleType::List DAccountDataBase::initSysType()
         lifeType->setPrivilege(DScheduleType::Read);
         lifeType->setTypeName(tr("Life"));
         lifeType->setDisplayName(tr("Life"));
-        lifeType->setColorID(7);
+        DTypeColor lifeColor;
+        lifeColor.setColorID(7);
+        lifeColor.setColorCode("#5d51ff");
+        lifeColor.setPrivilege(DTypeColor::PriSystem);
+        lifeType->setTypeColor(lifeColor);
         lifeType->setShowState(DScheduleType::Show);
         typeList.append(lifeType);
 
@@ -610,7 +623,11 @@ DScheduleType::List DAccountDataBase::initSysType()
         otherType->setPrivilege(DScheduleType::Read);
         otherType->setTypeName(tr("Other"));
         otherType->setDisplayName(tr("Other"));
-        otherType->setColorID(4);
+        DTypeColor otherColor;
+        otherColor.setColorID(4);
+        otherColor.setColorCode("#5bdd80");
+        otherColor.setPrivilege(DTypeColor::PriSystem);
+        otherType->setTypeColor(otherColor);
         otherType->setShowState(DScheduleType::Show);
         typeList.append(otherType);
     }

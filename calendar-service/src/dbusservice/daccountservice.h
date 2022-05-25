@@ -22,18 +22,19 @@
 #define ACCOUNTSERVICE_H
 
 #include "dservicebase.h"
+#include "daccountmodule.h"
 
 #include <QSharedPointer>
 
 class DAccountService : public DServiceBase
 {
     Q_OBJECT
-    Q_CLASSINFO("D-Bus Interface", "com.deepin.dataserver.Account_Loalend") //getInterface()) //"com.deepin.dataserver.Account_Loalend"
+    Q_CLASSINFO("D-Bus Interface", "com.deepin.dataserver.account")
 public:
     typedef QSharedPointer<DAccountService> Ptr;
 
-    DAccountService(const QString &path, const QString &interface, QObject *parent = nullptr);
-
+    DAccountService(const QString &path, const QString &interface, const DAccount::Ptr &account, QObject *parent = nullptr);
+public slots:
     /**
      * @brief getAccountInfo        获取帐户信息
      * @return
@@ -125,6 +126,8 @@ signals:
     //TODO: 日程更新信号，日程颜色更新信号
 
 public slots:
+private:
+    DAccountModule::Ptr m_accountModel;
 };
 
 #endif // ACCOUNTSERVICE_H

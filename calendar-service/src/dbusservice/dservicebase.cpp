@@ -22,7 +22,6 @@
 
 DServiceBase::DServiceBase(const QString &path, const QString &interface, QObject *parent)
     : QObject(parent)
-    , QDBusContext()
     , m_path(path)
     , m_interface(interface)
 {

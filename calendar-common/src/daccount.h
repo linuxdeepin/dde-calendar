@@ -37,7 +37,7 @@ public:
     typedef QSharedPointer<DAccount> Ptr;
     typedef QVector<DAccount::Ptr> List;
 
-    explicit DAccount(Type type);
+    explicit DAccount(Type type = Account_Local);
     QString displayName() const;
     void setDisplayName(const QString &displayName);
 
@@ -79,8 +79,10 @@ public:
     QDateTime dtUpdate() const;
     void setDtUpdate(const QDateTime &dtUpdate);
 
-    bool toJsonString(const DAccount::Ptr &account, QString &jsonStr);
-    bool fromJsonString(const DAccount::Ptr &account, const QString &jsonStr);
+    static bool toJsonString(const DAccount::Ptr &account, QString &jsonStr);
+    static bool fromJsonString(DAccount::Ptr &account, const QString &jsonStr);
+    static bool toJsonListString(const DAccount::List &accountList, QString &jsonStr);
+    static bool fromJsonListString(DAccount::List &accountList, const QString &jsonStr);
 
     QString dbName() const;
     void setDbName(const QString &dbName);
@@ -94,12 +96,16 @@ public:
     int intervalTime() const;
     void setIntervalTime(int intervalTime);
 
+    QString dbusInterface() const;
+    void setDbusInterface(const QString &dbusInterface);
+
 private:
     QString m_displayName; //显示名称
     QString m_accountID; //帐户id
     QString m_accountName; //帐户名称
     QString m_dbName; //对应的数据库名称
     QString m_dbusPath; //dbus路径
+    QString m_dbusInterface; //dbus接口
     Type m_accountType; //帐户类型
     QString m_avatar; //头像
     QString m_description; //描述
