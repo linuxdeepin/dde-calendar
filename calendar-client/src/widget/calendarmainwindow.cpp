@@ -85,6 +85,8 @@ Calendarmainwindow::Calendarmainwindow(int index, QWidget *w)
     setWindowTitle(tr("Calendar"));
     new CalendarAdaptor(this);
     resize(CalendarMWidth, CalendarMHeight);
+    //接受释放
+    this->setAcceptDrops(true);
     //接收点击焦点
     setFocusPolicy(Qt::ClickFocus);
     QShortcut *shortcut = new QShortcut(this);
@@ -450,8 +452,6 @@ void Calendarmainwindow::initConnection()
     connect(m_weekWindow, &CWeekWindow::signalSwitchView, this, &Calendarmainwindow::slotSwitchView);
     //按钮关联新建日程
     connect(m_newScheduleBtn, &DToolButton::clicked, this, &Calendarmainwindow::slotNewSchedule);
-    //拖拽事件新建日程
-    connect(m_DayWindow, &CDayWindow::signalNewSlot,this,&Calendarmainwindow::slotNewSchedule);
 
     connect(qApp, &QGuiApplication::applicationStateChanged, this, &Calendarmainwindow::slotapplicationStateChanged);
     connect(m_titleWidget, &CTitleWidget::signalSidebarStatusChange, this, &Calendarmainwindow::slotSidebarStatusChange);
@@ -852,15 +852,60 @@ void Calendarmainwindow::slotOpenSettingDialog()
             }
             return nullptr;
         });
-        QString strJson = QString(R"(
-                                  {"groups":[{"key":"setting_base","name":"Manage calendar","groups":[{"key":"event_types","name":"Event types","options":[{"key":"JobTypeListView","type":"JobTypeListView","name":"JobTypeListView","default":""}]}]}]}
-                                  )");
 
-        auto settings = Dtk::Core::DSettings::fromJson(strJson.toLatin1());
+        QString strJson = QString(R"(
+                                  {"groups":[
+                                      {
+                                          "key":"setting_account",
+                                          "name":"Account setting",
+                                          "groups":[
+                                              {
+                                                  "key":"account",
+                                                  "name":"Account",
+                                                  "default":""
+                                              }
+                                          ]
+                                      },
+                                  {
+                                      "key":"setting_base",
+                                      "name":"Manage calendar",
+                                      "groups":[
+                                          {
+                                              "key":"event_types",
+                                               "name":"Event types",
+                                               "options":[
+                                                   {
+                                                       "key":"JobTypeListView",
+                                                       "type":"JobTypeListView",
+                                                       "name":"JobTypeListView",
+                                                       "default":""
+                                                   }
+                                               ]
+                                           }
+                                       ]
+                                   },
+                                   {
+                                       "key":"setting_common",
+                                       "name":"Common setting",
+                                       "groups":[
+                                           {
+                                               "key":"common",
+                                               "name":"Common",
+                                               "default":""
+                                           }
+                                       ]
+                                   }
+                               ]
+                           }
+                       )");
+
+        auto settings= Dtk::Core::DSettings::fromJson(strJson.toLatin1());
+
         //settings->setBackend(&backend);
         m_dsdSetting->setObjectName("SettingDialog");
 
         m_dsdSetting->updateSettings(settings);
+
         //恢复默认设置按钮不显示
         m_dsdSetting->setResetVisible(false);
 
@@ -899,7 +944,31 @@ void Calendarmainwindow::slotOpenSettingDialog()
     }
     //内容定位到顶端
     m_dsdSetting->exec();
-    //使用晚后释放
+    //使用完后释放
     delete m_dsdSetting;
     m_dsdSetting = nullptr;
+}
+
+/**
+ * @brief CDayWindow::dragEnterEvent      拖拽进入事件
+ * @param event
+ */
+void Calendarmainwindow::dragEnterEvent(QDragEnterEvent *event)
+{
+    event->acceptProposedAction();
+}
+
+/**
+ * @brief CDayWindow::dropEvent          拖拽释放事件
+ * @param event
+ */
+void Calendarmainwindow::dropEvent(QDropEvent *event)
+{
+    m_startPos = event->pos();
+    slotNewSchedule();
+}
+
+void Calendarmainwindow::slotCommonSetting()
+{
+
 }

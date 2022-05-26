@@ -720,19 +720,28 @@ void CDayMonthWidget::mousePressEvent(QMouseEvent *event)
 {
     QWidget::mousePressEvent(event);
     m_isFocus = false;
+    if (event->button() & Qt::LeftButton)
+        m_startPos = event->pos();
+}
+
+void CDayMonthWidget::mouseMoveEvent(QMouseEvent *event)
+{
+    QDrag* drag = new QDrag(this);
+    QMimeData *data = new QMimeData;
+    drag->setMimeData(data);
+    data->setImageData(m_selectedCell);
+    if (event->buttons() & Qt::LeftButton) {
+        int distance = (event->pos() - m_startPos).manhattanLength();
+        if (distance >= 15)
+              drag->exec(Qt::MoveAction);
+    }
 }
 
 void CDayMonthWidget::cellClicked(QWidget *cell)
 {
-    QDrag* drag = new QDrag(this);
-    QMimeData *data = new QMimeData;
-
     const int pos = m_cellList.indexOf(cell);
     if (pos == -1)
         return;
-    drag->setMimeData(data);
-    data->setImageData(m_selectedCell);
-    drag->exec(Qt::MoveAction);
     setSelectedCell(pos);
 }
 

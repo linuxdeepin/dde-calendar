@@ -36,7 +36,6 @@ CDayWindow::CDayWindow(QWidget *parent)
 {
     initUI();
     initConnection();
-    this->setAcceptDrops(true);
     setLunarVisible(m_calendarManager->getShowLunar());
 }
 
@@ -395,25 +394,4 @@ void CDayWindow::slotSwitchPrePage()
 void CDayWindow::slotSwitchNextPage()
 {
     slotChangeSelectDate(getSelectDate().addDays(1));
-}
-
-/**
- * @brief CDayWindow::dragEnterEvent      拖拽进入事件
- * @param event
- */
-void CDayWindow::dragEnterEvent(QDragEnterEvent *event)
-{
-    event->acceptProposedAction();
-}
-
-/**
- * @brief CDayWindow::dropEvent          拖拽释放事件
- * @param event
- */
-void CDayWindow::dropEvent(QDropEvent *event)
-{
-    QList<QUrl> urls = event->mimeData()->urls();
-    if (urls.isEmpty()) {
-        emit signalNewSlot();
-    }
 }

@@ -80,10 +80,6 @@ private slots:
     void slotSwitchPrePage();
     //切换选择时间
     void slotSwitchNextPage();
-    //拖拽释放事件
-    void dropEvent(QDropEvent *event) override;
-    //拖拽进入事件
-    void dragEnterEvent(QDragEnterEvent *event) override;
 signals:
     //拖拽结束信号
     void signalNewSlot();

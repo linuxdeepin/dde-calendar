@@ -468,6 +468,7 @@ void CScheduleDlg::slotallDayStateChanged(int state)
         m_rmindCombox->addItem(tr("1 day before"));
         m_rmindCombox->addItem(tr("2 days before"));
         m_rmindCombox->addItem(tr("1 week before"));
+        m_rmindCombox->setCurrentIndex(2);
         m_beginTimeEdit->setVisible(true);
         m_endTimeEdit->setVisible(true);
 

@@ -101,6 +101,7 @@ private slots:
     //新建日程
     void slotNewSchedule();
     void slotOpenSettingDialog();
+    void slotCommonSetting();
     //快捷键删除选中日程
     void slotDeleteitem();
     //设置最大大小
@@ -108,6 +109,10 @@ private slots:
     void slotSearchFocusSwitch();
     //账户侧边栏状态发生改变事件
     void slotSidebarStatusChange(bool);
+    //拖拽释放事件
+    void dropEvent(QDropEvent *event) override;
+    //拖拽进入事件
+    void dragEnterEvent(QDragEnterEvent *event) override;
 
 private:
     DLabel *m_icon = nullptr;
@@ -136,6 +141,7 @@ private:
     int m_defaultIndex;
     bool m_setButtonFocus {false};
     bool m_isNormalStateShow {true}; //是否为正常状态显示
+    QPoint m_startPos;
 };
 
 #endif // CALENDARMAINWINDOW_H
