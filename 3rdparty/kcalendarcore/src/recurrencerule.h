@@ -181,17 +181,23 @@ public:
     /**
      * Returns -1 if the event recurs infinitely, 0 if the end date is set,
      * otherwise the total number of recurrences, including the initial occurrence.
+     * 如果事件无限重复，则返回-1；如果设置了结束日期，则返回0；否则返回包括初始事件在内的重复总数。
      */
     Q_REQUIRED_RESULT int duration() const;
 
     /** Sets the total number of times the event is to occur, including both the
-     * first and last. */
+     * first and last.
+     * 设置事件发生的总次数，包括第一次和最后一次。
+     */
     void setDuration(int duration);
 
     /** Returns the number of recurrences up to and including the date/time specified. */
+    //返回指定日期/时间之前（包括指定日期/时间）的复发次数
     Q_REQUIRED_RESULT int durationTo(const QDateTime &dt) const;
 
-    /** Returns the number of recurrences up to and including the date specified. */
+    /** Returns the number of recurrences up to and including the date specified.
+     * 返回指定日期之前（包括指定日期）的重复次数。
+     */
     Q_REQUIRED_RESULT int durationTo(const QDate &date) const;
 
     /**
@@ -221,7 +227,7 @@ public:
     /** Returns true if the date/time specified is one at which the event will
      * recur. Times are rounded down to the nearest minute to determine the result.
      * The start date/time returns true only if it actually matches the rule.
-     *
+     *  如果指定的日期/时间是事件将重复出现的日期/时间，则返回 true。时间向下舍入到最接近的分钟以确定结果。开始日期/时间仅当实际与规则匹配时才返回 true。
      * @param dt the date+time to check for recurrency
      */
     Q_REQUIRED_RESULT bool recursAt(const QDateTime &dt) const;

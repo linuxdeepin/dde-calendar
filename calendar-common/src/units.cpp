@@ -45,3 +45,13 @@ QString getDBPath()
 {
     return QStandardPaths::writableLocation(QStandardPaths::HomeLocation).append("/.config/deepin/dde-calendar-service");
 }
+
+QDate dateFromString(const QString &date)
+{
+    return QDate::fromString(date, Qt::ISODate);
+}
+
+QString dateToString(const QDate &date)
+{
+    return date.toString("yyyy-MM-dd");
+}

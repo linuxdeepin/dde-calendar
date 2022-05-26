@@ -114,6 +114,50 @@ bool DAccountDataBase::updateSchedule(const DSchedule::Ptr &schedule)
     return resbool;
 }
 
+DSchedule::Ptr DAccountDataBase::getScheduleByScheduleID(const QString &scheduleID)
+{
+    QString strSql("SELECT  scheduleID, scheduleTypeID, summary, description, allDay, dtStart, dtEnd,   \
+                   isAlarm,titlePinyin,isLunar, ics, fileName, dtCreate, dtUpdate, dtDelete, isDeleted  \
+                   FROM schedules WHERE  scheduleID  = ? ;");
+    QSqlQuery query(m_database);
+    query.prepare(strSql);
+    query.addBindValue(scheduleID);
+    DSchedule::Ptr schedule = DSchedule::Ptr(new DSchedule);
+    if (query.exec()) {
+        if (query.next()) {
+            QString &&icsStr = query.value("ics").toString();
+            DSchedule::fromIcsString(schedule, icsStr);
+        }
+    } else {
+        qWarning() << Q_FUNC_INFO << query.lastError();
+        return nullptr;
+    }
+    if (query.isActive()) {
+        query.finish();
+    }
+    return schedule;
+}
+
+QStringList DAccountDataBase::getScheduleIDListByTypeID(const QString &typeID)
+{
+    QStringList scheduleIDList;
+    QString strSql("SELECT scheduleID FROM schedules WHERE  scheduleTypeID  = ?;");
+    QSqlQuery query(m_database);
+    query.prepare(strSql);
+    query.addBindValue(typeID);
+    if (query.exec()) {
+        while (query.next()) {
+            scheduleIDList.append(query.value("scheduleID").toString());
+        }
+    } else {
+        qWarning() << Q_FUNC_INFO << query.lastError();
+    }
+    if (query.isActive()) {
+        query.finish();
+    }
+    return scheduleIDList;
+}
+
 bool DAccountDataBase::deleteScheduleByScheduleID(const QString &scheduleID, const int isDeleted)
 {
     QString strSql;
@@ -160,9 +204,74 @@ bool DAccountDataBase::deleteSchedulesByScheduleTypeID(const QString &typeID, co
     return resBool;
 }
 
-QString DAccountDataBase::querySchedulesWithParameter(const QString &params, const int isDeleted)
+DSchedule::List DAccountDataBase::querySchedulesByKey(const QString &key)
 {
-    //TODO:根据条件获取数据
+    DSchedule::List scheduleList;
+    QString strSql("SELECT  scheduleID, scheduleTypeID, summary, description, allDay, dtStart, dtEnd,   \
+                   isAlarm,titlePinyin,isLunar, ics, fileName, dtCreate, dtUpdate, dtDelete, isDeleted  \
+                   FROM schedules");
+    //如果关键字不为空，添加查询条件
+    if (!key.isEmpty()) {
+        strSql += " WHERE  summary  = ? ;";
+    }
+    QSqlQuery query(m_database);
+    query.prepare(strSql);
+    if (!key.isEmpty()) {
+        query.addBindValue(key);
+    }
+
+    if (query.exec()) {
+        if (query.next()) {
+            DSchedule::Ptr schedule = DSchedule::Ptr(new DSchedule);
+            QString &&icsStr = query.value("ics").toString();
+            DSchedule::fromIcsString(schedule, icsStr);
+            scheduleList.append(schedule);
+        }
+    } else {
+        qWarning() << Q_FUNC_INFO << query.lastError();
+    }
+    if (query.isActive()) {
+        query.finish();
+    }
+    return scheduleList;
+}
+
+DSchedule::List DAccountDataBase::querySchedulesByRRule(const QString &key, const ushort &rruleType)
+{
+    DSchedule::List scheduleList;
+    QString strSql("SELECT  scheduleID, scheduleTypeID, summary, description, allDay, dtStart, dtEnd,   \
+                   isAlarm,titlePinyin,isLunar, ics, fileName, dtCreate, dtUpdate, dtDelete, isDeleted  \
+                   FROM schedules WHERE  summary  = ? ;");
+    QSqlQuery query(m_database);
+    query.prepare(strSql);
+    query.addBindValue(key);
+
+    if (query.exec()) {
+        if (query.next()) {
+            DSchedule::Ptr schedule = DSchedule::Ptr(new DSchedule);
+            QString &&icsStr = query.value("ics").toString();
+            DSchedule::fromIcsString(schedule, icsStr);
+            //如果存在重复规则
+            if (schedule->recurs()) {
+                //如果为需要获取的重复规则
+                if (rruleType == schedule->recurrence()->recurrenceType()) {
+                    scheduleList.append(schedule);
+                } else if (rruleType > 7) {
+                    //如果为工作日
+                    if (schedule->recurrence()->recurrenceType() == 4) {
+                        //TODO:判断是否为周一至周五
+                        QList<KCalendarCore::RecurrenceRule::WDayPos> lisetDayPos = schedule->recurrence()->defaultRRuleConst()->byDays();
+                    }
+                }
+            }
+        }
+    } else {
+        qWarning() << Q_FUNC_INFO << query.lastError();
+    }
+    if (query.isActive()) {
+        query.finish();
+    }
+    return scheduleList;
 }
 
 void DAccountDataBase::initDBData()

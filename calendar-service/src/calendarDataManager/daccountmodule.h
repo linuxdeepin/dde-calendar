@@ -23,6 +23,7 @@
 
 #include "daccount.h"
 #include "daccountdatabase.h"
+#include "dschedule.h"
 
 #include <QObject>
 #include <QSharedPointer>
@@ -45,10 +46,23 @@ public:
     QString getScheduleTypeList();
     QString getScheduleTypeByID(const QString &typeID);
     QString createScheduleType(const QString &typeInfo);
+    bool deleteScheduleTypeByID(const QString &typeID);
+    bool scheduleTypeByUsed(const QString &typeID);
+
+    //日程信息
+    QString createSchedule(const QString &scheduleInfo);
+    bool updateSchedule(const QString &scheduleInfo);
+    QString getScheduleByScheduleID(const QString &scheduleID);
+    bool deleteScheduleByScheduleID(const QString &scheduleID);
+    QString querySchedulesWithParameter(const QString &params);
 
     DAccount::Ptr account() const;
 
+private:
+    QMap<QDate, DSchedule::List> getScheduleTimesOn(const QDateTime &dtStart, const QDateTime &dtEnd, const DSchedule::List &scheduleList, bool extend = true);
+
 signals:
+    //
 
 public slots:
 private:

@@ -52,33 +52,37 @@ bool DAccountService::updateScheduleType(const QString &typeInfo)
 
 bool DAccountService::deleteScheduleTypeByID(const QString &typeID)
 {
-    //TODO:删除类型(弱删除)和颜色
+    m_accountModel->deleteScheduleTypeByID(typeID);
 }
 
 bool DAccountService::scheduleTypeByUsed(const QString &typeID)
 {
+    return m_accountModel->scheduleTypeByUsed(typeID);
 }
 
 QString DAccountService::createSchedule(const QString &scheduleInfo)
 {
+    return m_accountModel->createSchedule(scheduleInfo);
 }
 
 bool DAccountService::updateSchedule(const QString &scheduleInfo)
 {
+    return m_accountModel->updateSchedule(scheduleInfo);
+}
+
+QString DAccountService::getScheduleByScheduleID(const QString &scheduleID)
+{
+    return m_accountModel->getScheduleByScheduleID(scheduleID);
 }
 
 bool DAccountService::deleteScheduleByScheduleID(const QString &scheduleID)
 {
-    //(弱删除)
-}
-
-bool DAccountService::deleteSchedulesByScheduleTypeID(const QString &typeID)
-{
-    //(弱删除)
+    return m_accountModel->deleteScheduleByScheduleID(scheduleID);
 }
 
 QString DAccountService::querySchedulesWithParameter(const QString &params)
 {
+    return m_accountModel->querySchedulesWithParameter(params);
 }
 
 void DAccountService::updateAccountInfo(const QString &accountInfo)

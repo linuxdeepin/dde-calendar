@@ -41,9 +41,17 @@ public:
     //创建日程
     QString createSchedule(const DSchedule::Ptr &schedule);
     bool updateSchedule(const DSchedule::Ptr &schedule);
+    //根据日程id获取日程信息
+    DSchedule::Ptr getScheduleByScheduleID(const QString &scheduleID);
+
+    //根据日程类型ID获取日程id列表
+    QStringList getScheduleIDListByTypeID(const QString &typeID);
     bool deleteScheduleByScheduleID(const QString &scheduleID, const int isDeleted = 0);
     bool deleteSchedulesByScheduleTypeID(const QString &typeID, const int isDeleted = 0);
-    QString querySchedulesWithParameter(const QString &params, const int isDeleted = 0);
+    //根据关键字查询一定范围内的日程
+    DSchedule::List querySchedulesByKey(const QString &key);
+    //根据重复规则查询一定范围内的日程
+    DSchedule::List querySchedulesByRRule(const QString &key, const ushort &rruleType);
 
     ///////////////类型信息
     /**

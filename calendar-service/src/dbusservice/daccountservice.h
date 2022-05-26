@@ -96,6 +96,13 @@ public slots:
     Q_SCRIPTABLE bool updateSchedule(const QString &scheduleInfo);
 
     /**
+     * @brief getScheduleByScheduleID       根据日程id获取日程信息
+     * @param scheduleID                    日程id
+     * @return                              日程信息
+     */
+    Q_SCRIPTABLE QString getScheduleByScheduleID(const QString &scheduleID);
+
+    /**
      * @brief deleteScheduleByScheduleID      根据日程ID删除日程
      * @param ScheduleID                 日程ID
      * @return                      是否成功，true:删除成功
@@ -103,16 +110,9 @@ public slots:
     Q_SCRIPTABLE bool deleteScheduleByScheduleID(const QString &scheduleID);
 
     /**
-     * @brief deleteSchedulesByScheduleTypeID 根据日程类型ID删除日程
-     * @param typeID                日程类型ID
-     * @return                      是否成功，true:删除成功
-     */
-    Q_SCRIPTABLE bool deleteSchedulesByScheduleTypeID(const QString &typeID);
-
-    /**
-     * @brief querySchedulesWithParameter        根据查询参数查询日程
-     * @param params                        具体的查询参数
-     * @return                              查询到的日程集
+     * @brief querySchedulesWithParameter       根据查询参数查询日程
+     * @param params                            具体的查询参数
+     * @return                                  查询到的日程集
      */
     Q_SCRIPTABLE QString querySchedulesWithParameter(const QString &params);
 

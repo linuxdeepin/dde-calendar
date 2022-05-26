@@ -30,6 +30,9 @@ const QString serviceBasePath = "/com/deepin/dataserver/Calendar";
 QString dtToString(const QDateTime &dt);
 QDateTime dtFromString(const QString &st);
 
+QString dateToString(const QDate &date);
+QDate dateFromString(const QString &date);
+
 //获取新数据库路径
 QString getDBPath();
 

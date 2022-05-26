@@ -31,10 +31,18 @@
 class DSchedule : public KCalendarCore::Event
 {
 public:
+    //TODO:提醒规则
+
+    //TODO:重复规则
+
     typedef QSharedPointer<DSchedule> Ptr;
     typedef QVector<DSchedule::Ptr> List;
 
     DSchedule();
+    DSchedule(const DSchedule &schedule);
+
+    DSchedule *clone() const override;
+
     QString scheduleTypeID() const;
     void setScheduleTypeID(const QString &typeID);
 
@@ -53,6 +61,10 @@ public:
 
     static bool fromIcsString(DSchedule::Ptr &schedule, const QString &string);
     static QString toIcsString(const DSchedule::Ptr &schedule);
+
+    //
+    static QMap<QDate, DSchedule::List> fromMapString(const QString &json);
+    static QString toMapString(const QMap<QDate, DSchedule::List> &scheduleMap);
 
 public:
     //日程信息调试打印

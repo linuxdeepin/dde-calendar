@@ -22,12 +22,24 @@
 
 #include "icalformat.h"
 #include "memorycalendar.h"
+#include "units.h"
 
 #include <QtDBus/QtDBus>
 
 DSchedule::DSchedule()
     : KCalendarCore::Event()
 {
+}
+
+DSchedule::DSchedule(const DSchedule &schedule)
+    : KCalendarCore::Event(schedule)
+{
+    this->setScheduleTypeID(schedule.scheduleTypeID());
+}
+
+DSchedule *DSchedule::clone() const
+{
+    return new DSchedule(*this);
 }
 
 QString DSchedule::scheduleTypeID() const
@@ -122,6 +134,54 @@ QString DSchedule::toIcsString(const DSchedule::Ptr &schedule)
     KCalendarCore::MemoryCalendar::Ptr _cal(new KCalendarCore::MemoryCalendar(nullptr));
     _cal->addEvent(schedule);
     return icalformat.toString(_cal.staticCast<KCalendarCore::Calendar>());
+}
+
+QMap<QDate, DSchedule::List> DSchedule::fromMapString(const QString &json)
+{
+    QMap<QDate, DSchedule::List> scheduleMap;
+    QJsonParseError jsonError;
+    QJsonDocument jsonDoc(QJsonDocument::fromJson(json.toLocal8Bit(), &jsonError));
+    if (jsonError.error != QJsonParseError::NoError) {
+        qWarning() << "error:" << jsonError.errorString();
+        return scheduleMap;
+    }
+    QJsonArray rootArray = jsonDoc.array();
+    QDate date;
+    foreach (auto jsonValue, rootArray) {
+        QJsonObject jsonObj = jsonValue.toObject();
+        if (jsonObj.contains("Date")) {
+            date = dateFromString(jsonObj.value("Date").toString());
+        }
+        if (jsonObj.contains("schedule")) {
+            QJsonArray jsonArray = jsonObj.value("schedule").toArray();
+            foreach (auto scheduleValue, jsonArray) {
+                QString scheduleStr = scheduleValue.toString();
+                DSchedule::Ptr schedule = DSchedule::Ptr(new DSchedule);
+                DSchedule::fromIcsString(schedule, scheduleStr);
+                scheduleMap[date].append(schedule);
+            }
+        }
+    }
+    return scheduleMap;
+}
+
+QString DSchedule::toMapString(const QMap<QDate, DSchedule::List> &scheduleMap)
+{
+    QJsonArray rootArray;
+    QMap<QDate, DSchedule::List>::const_iterator iter = scheduleMap.constBegin();
+    for (; iter != scheduleMap.constEnd(); ++iter) {
+        QJsonObject jsonObj;
+        jsonObj.insert("Date", dateToString(iter.key()));
+        QJsonArray jsonArray;
+        foreach (auto &schedule, iter.value()) {
+            jsonArray.append(DSchedule::toIcsString(schedule));
+        }
+        jsonObj.insert("schedule", jsonArray);
+        rootArray.append(jsonObj);
+    }
+    QJsonDocument jsonDoc;
+    jsonDoc.setArray(rootArray);
+    return QString::fromUtf8(jsonDoc.toJson(QJsonDocument::Compact));
 }
 
 QString DSchedule::fileName() const

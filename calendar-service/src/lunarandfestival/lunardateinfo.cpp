@@ -28,11 +28,11 @@
 //农历一年最少有363天
 const int LunarYearMiniDays = 353;
 
-LunarDateInfo::LunarDateInfo(const DSchedule &job)
-    : m_job(job)
+LunarDateInfo::LunarDateInfo(KCalendarCore::RecurrenceRule *rruleStr, const qint64 interval)
+    : m_recurenceRule(rruleStr)
+    , m_dateInterval(interval)
 {
-    //    m_options = ParseRRule(m_job.RRule);
-    //    m_dateInterval = m_job.Start.daysTo(m_job.End);
+    m_rruleType = ParseRRule(m_recurenceRule->rrule());
 }
 
 QMap<int, QDate> LunarDateInfo::getRRuleStartDate(const QDate &beginDate, const QDate &endDate, const QDate &solarDate)
@@ -50,20 +50,20 @@ QMap<int, QDate> LunarDateInfo::getRRuleStartDate(const QDate &beginDate, const 
         m_queryStartDate = solarDate;
     }
     //如果是农历日程
-    //TODO:重复类型
-    //    switch (m_options.rpeat) {
-    //    case RepeatType::RepeatMonthly:
-    //        //每月
-    //        solar = getAllNextMonthLunarDayBySolar(solarDate);
-    //        break;
-    //    case RepeatType::RepeatYearly:
-    //        //每年
-    //        solar = getAllNextYearLunarDayBySolar(solarDate);
-    //        break;
-    //    default:
-    //        //默认不重复
-    //        break;
-    //    }
+    //TODO: 重复类型
+    switch (m_rruleType) {
+    case RRule_Month:
+        //每月
+        solar = getAllNextMonthLunarDayBySolar(solarDate);
+        break;
+    case RRule_Year:
+        //每年
+        solar = getAllNextYearLunarDayBySolar(solarDate);
+        break;
+    default:
+        //默认不重复
+        break;
+    }
 
     return solar;
 }
@@ -194,42 +194,21 @@ lunarInfo LunarDateInfo::getNextMonthLunarDay(QDate &nextDate, const lunarInfo &
  * @param rule 规则字符串
  * @return stRRuleOptions 包含重复规则相关字段的结构体
  */
-//stRRuleOptions LunarDateInfo::ParseRRule(const QString &rule)
-//{
-//    //无规则的不走这里判断所以此处默认rule不为空
-//    //局部变量初始化
-//    stRRuleOptions options {};
-//    QStringList rruleslist = rule.split(";", QString::SkipEmptyParts);
-//    //rpeat重复规则 0 无  1 每天 2 每个工作日 3 每周 4每月 5每年
-//    //type结束重复类型 0 永不 1  多少次结束  2 结束日期
-//    if (rruleslist.contains("FREQ=DAILY") && rruleslist.contains("BYDAY=MO,TU,WE,TH,FR")) {
-//        options.rpeat = RepeatWorkDay;
-//    } else if (rruleslist.contains("FREQ=DAILY")) {
-//        options.rpeat = RepeatDaily;
-//    } else if (rruleslist.contains("FREQ=WEEKLY")) {
-//        options.rpeat = RepeatWeekly;
-//    } else if (rruleslist.contains("FREQ=MONTHLY")) {
-//        options.rpeat = RepeatMonthly;
-//    } else if (rruleslist.contains("FREQ=YEARLY")) {
-//        options.rpeat = RepeatYearly;
-//    }
-
-//    for (int i = 0; i < rruleslist.count(); i++) {
-//        if (rruleslist.at(i).contains("COUNT=")) {
-//            QStringList liststr = rruleslist.at(i).split("=", QString::SkipEmptyParts);
-//            options.type = RepeatOverCount;
-//            options.tcount = liststr.at(1).toInt() - 1;
-//        }
-
-//        if (rruleslist.at(i).contains("UNTIL=")) {
-//            QStringList liststr = rruleslist.at(i).split("=", QString::SkipEmptyParts);
-//            options.type = RepeatOverUntil;
-//            options.overdate = QDateTime::fromString(liststr.at(1).left(liststr.at(1).count() - 1), "yyyyMMddThhmmss");
-//            options.overdate = options.overdate.addDays(1);
-//        }
-//    }
-//    return options;
-//}
+LunarDateInfo::LunnarRRule LunarDateInfo::ParseRRule(const QString &rule)
+{
+    //无规则的不走这里判断所以此处默认rule不为空
+    //局部变量初始化
+    LunnarRRule options = RRule_None;
+    QStringList rruleslist = rule.split(";", QString::SkipEmptyParts);
+    //rpeat重复规则 0 无  1 每天 2 每个工作日 3 每周 4每月 5每年
+    //type结束重复类型 0 永不 1  多少次结束  2 结束日期
+    if (rruleslist.contains("FREQ=MONTHLY")) {
+        options = RRule_Month;
+    } else if (rruleslist.contains("FREQ=YEARLY")) {
+        options = RRule_Year;
+    }
+    return options;
+}
 
 bool LunarDateInfo::isWithinTimeFrame(const QDate &solarDate)
 {
@@ -246,22 +225,21 @@ bool LunarDateInfo::addSolarMap(QMap<int, QDate> &solarMap, QDate &nextDate, int
     }
     count++;
     //TODO:重复规则截止限制
-    //当结束重复为按多少次结束判断时，检查重复次数是否达到，达到则退出
-    //当重复次数达到最大限制直接返回
-    //options.tcount表示重复的次数，而count表示总次数，所以这里不能有“=”
-    //    if ((m_options.type == RepeatOverCount && m_options.tcount < count)
-    //            || count > RECURENCELIMIT) {
-    //        return true;
-    //    }
+    //    当结束重复为按多少次结束判断时，检查重复次数是否达到，达到则退出
+    //    当重复次数达到最大限制直接返回
+    //    duration > 0 表示结束与次数
+    if ((m_recurenceRule->duration() > 0 && m_recurenceRule->duration() < count) || count > RECURENCELIMIT) {
+        return true;
+    }
 
-    //    //更新查询开始时间
-    //    nextDate = nextDate.addDays(addDays);
+    //更新查询开始时间
+    nextDate = nextDate.addDays(addDays);
 
-    //    //判断next是否有效,时间大于RRule的until
-    //    //判断next是否大于查询的截止时间,这里应该比较date，而不是datetime，如果是非全天的日程，这个设计具体时间的问题，会导致返回的job个数出现问题
-    //    if ((m_options.type == RepeatOverUntil && nextDate >= m_options.overdate.date())
-    //            || nextDate > m_queryEndDate) {
-    //        return true;
-    //    }
+    //判断next是否有效,时间大于RRule的until
+    //判断next是否大于查询的截止时间,这里应该比较date，而不是datetime，如果是非全天的日程，这个设计具体时间的问题，会导致返回的job个数出现问题
+    if ((m_recurenceRule->duration() == 0 && nextDate >= m_recurenceRule->endDt().date())
+        || nextDate > m_queryEndDate) {
+        return true;
+    }
     return false;
 }

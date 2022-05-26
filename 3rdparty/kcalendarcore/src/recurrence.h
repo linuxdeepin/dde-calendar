@@ -267,6 +267,7 @@ public:
     /**
      * Returns -1 if the event recurs infinitely, 0 if the end date is set,
      * otherwise the total number of recurrences, including the initial occurrence.
+     * 如果事件无限重复，则返回-1；如果设置了结束日期，则返回0；否则返回包括初始事件在内的重复总数。
      */
     Q_REQUIRED_RESULT int duration() const;
 
@@ -290,7 +291,7 @@ public:
     Q_REQUIRED_RESULT QDateTime endDateTime() const;
 
     /** Returns the date of the last recurrence.
-     * 返回上次重复的日期。
+     * 返回最后一次重复的日期。
      * An invalid date is returned if the recurrence has no end.
      */
     Q_REQUIRED_RESULT QDate endDate() const;
