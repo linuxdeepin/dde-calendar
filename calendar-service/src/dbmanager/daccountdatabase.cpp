@@ -211,13 +211,28 @@ DSchedule::List DAccountDataBase::querySchedulesByKey(const QString &key)
                    isAlarm,titlePinyin,isLunar, ics, fileName, dtCreate, dtUpdate, dtDelete, isDeleted  \
                    FROM schedules");
     //如果关键字不为空，添加查询条件
-    if (!key.isEmpty()) {
-        strSql += " WHERE  summary  = ? ;";
+    pinyinsearch *psearch = pinyinsearch::getPinPinSearch();
+    QMap<QString, QString> sqlBindValue;
+    QString strKey = key.trimmed();
+    if (psearch->CanQueryByPinyin(key)) {
+        //可以按照拼音查询
+        QString pinyin = psearch->CreatePinyinQuery(strKey.toLower());
+        strSql += QString(" where instr(UPPER(summary), UPPER(:key)) OR titlePinyin LIKE :pinyin");
+        sqlBindValue[":key"] = key;
+        sqlBindValue[":pinyin"] = pinyin;
+    } else if (!key.isEmpty()) {
+        //按照key查询
+        strSql += QString(" where instr(UPPER(summary), UPPER(:key))");
+        sqlBindValue[":key"] = key;
     }
+
+    strSql.append(QString(" order by :strsort "));
+    sqlBindValue[":strsort"] = "dtStart asc";
+
     QSqlQuery query(m_database);
     query.prepare(strSql);
-    if (!key.isEmpty()) {
-        query.addBindValue(key);
+    for (auto iter = sqlBindValue.constBegin(); iter != sqlBindValue.constEnd(); iter++) {
+        query.bindValue(iter.key(), iter.value());
     }
 
     if (query.exec()) {
@@ -501,15 +516,35 @@ bool DAccountDataBase::updateScheduleType(const DScheduleType::Ptr &scheduleType
     return res;
 }
 
+QString DAccountDataBase::getFestivalTypeID()
+{
+    QString strSql("SELECT typeID FROM scheduleType WHERE  privilege = 0;");
+    QSqlQuery query(m_database);
+    query.prepare(strSql);
+    QString typeID("");
+    if (query.exec()) {
+        if (query.next()) {
+            typeID = query.value("typeID").toString();
+        }
+    } else {
+        qWarning() << "updateScheduleType error:" << query.lastError();
+    }
+    if (query.isActive()) {
+        query.finish();
+    }
+    return typeID;
+}
+
 DAccount::Ptr DAccountDataBase::getAccountInfo()
 {
-    QString strSql("SELECT syncState, accountName, displayName, cloudPath,      \
-                   accountType, syncFreq, intervalTime, syncTag          \
+    QString strSql("SELECT syncState,accountState, accountName, displayName, cloudPath,      \
+                   accountType, syncFreq, intervalTime, syncTag ,dtLastUpdate         \
                    FROM account WHERE id = 1;");
     QSqlQuery query(m_database);
     query.prepare(strSql);
     if (query.exec() && query.next()) {
-        m_account->setSyncState(query.value("syncState").toInt());
+        m_account->setSyncState(static_cast<DAccount::AccountSyncState>(query.value("syncState").toInt()));
+        m_account->setAccountState(static_cast<DAccount::AccountState>(query.value("accountState").toInt()));
         m_account->setAccountName(query.value("accountName").toString());
         m_account->setDisplayName(query.value("displayName").toString());
         m_account->setCloudPath(query.value("cloudPath").toString());
@@ -517,6 +552,7 @@ DAccount::Ptr DAccountDataBase::getAccountInfo()
         m_account->setSyncFreq(query.value("syncFreq").toInt());
         m_account->setIntervalTime(query.value("intervalTime").toInt());
         m_account->setSyncTag(query.value("syncTag").toInt());
+        m_account->setDtLastSync(dtFromString(query.value("dtLastUpdate").toString()));
     } else {
         qWarning() << query.lastError();
     }
@@ -529,12 +565,13 @@ DAccount::Ptr DAccountDataBase::getAccountInfo()
 void DAccountDataBase::setAccountInfo(const DAccount::Ptr &account)
 {
     QString strSql("UPDATE account                                                              \
-                   SET syncState=?, accountName=?, displayName=?,                               \
+                   SET syncState=?, accountState = ?,accountName=?, displayName=?,                               \
                   cloudPath=?, accountType=?, syncFreq=?, intervalTime=?, syncTag=?             \
-                   WHERE id=1;");
+                  ,dtLastUpdate = ? WHERE id=1;");
     QSqlQuery query(m_database);
     query.prepare(strSql);
     query.addBindValue(account->syncState());
+    query.addBindValue(account->accountState());
     query.addBindValue(account->accountName());
     query.addBindValue(account->displayName());
     query.addBindValue(account->cloudPath());
@@ -542,6 +579,7 @@ void DAccountDataBase::setAccountInfo(const DAccount::Ptr &account)
     query.addBindValue(account->syncFreq());
     query.addBindValue(account->intervalTime());
     query.addBindValue(account->syncTag());
+    query.addBindValue(account->dtLastSync());
     if (!query.exec()) {
         qWarning() << query.lastError();
     }
@@ -573,6 +611,29 @@ bool DAccountDataBase::addTypeColor(const int typeColorNo, const QString &strCol
     return res;
 }
 
+DTypeColor::List DAccountDataBase::getSysColor()
+{
+    QString strSql("SELECT ColorID, ColorHex, privilege FROM typeColor WHERE  privilege =1;");
+    QSqlQuery query(m_database);
+    query.prepare(strSql);
+    DTypeColor::List typeColorList;
+    if (query.exec()) {
+        while (query.next()) {
+            DTypeColor::Ptr color = DTypeColor::Ptr(new DTypeColor);
+            color->setColorID(query.value("ColorID").toInt());
+            color->setColorCode(query.value("ColorHex").toString());
+            color->setPrivilege(static_cast<DTypeColor::Privilege>(query.value("privilege").toInt()));
+            typeColorList.append(color);
+        }
+    } else {
+        qWarning() << __FUNCTION__ << query.lastError();
+    }
+    if (query.isActive()) {
+        query.finish();
+    }
+    return typeColorList;
+}
+
 void DAccountDataBase::createDB()
 {
     dbOpen();
@@ -595,13 +656,15 @@ void DAccountDataBase::createDB()
         QString createAccountSql("CREATE table account(                 \
                                  id integer not null primary key,       \
                                  syncState integer not null,            \
+                                 accountState integer not null,         \
                                  accountName text not null,             \
                                  displayName text not null,             \
                                  cloudPath text not null,               \
                                  accountType integer not null,          \
                                  syncFreq integer not null,             \
                                  intervalTime integer,                  \
-                                 syncTag    integer                     \
+                                 syncTag    integer,                    \
+                                 dtLastUpdate DATETIME                  \
                                 )");
         res = query.exec(createAccountSql);
         if (!res) {
@@ -761,10 +824,10 @@ void DAccountDataBase::initAccountDB()
     QString strSql("INSERT                                  \
                    INTO                                     \
                    account                                  \
-               (syncState,accountName,                      \
+               (syncState,accountState,accountName,         \
                    displayName,cloudPath,accountType,       \
                    syncFreq,intervalTime,syncTag)           \
-               VALUES(0,?,?,'',0,0,0,0);");
+               VALUES(0,0,?,?,'',0,0,0,0);");
     QSqlQuery query(m_database);
     query.prepare(strSql);
     query.addBindValue("localAccount");

@@ -22,6 +22,7 @@
 
 #include <QTimeZone>
 #include <QStandardPaths>
+#include <QLocale>
 
 QString dtToString(const QDateTime &dt)
 {
@@ -54,4 +55,9 @@ QDate dateFromString(const QString &date)
 QString dateToString(const QDate &date)
 {
     return date.toString("yyyy-MM-dd");
+}
+
+bool isChineseEnv()
+{
+    return QLocale::system().name().startsWith("zh_");
 }

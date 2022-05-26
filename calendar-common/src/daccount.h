@@ -34,6 +34,22 @@ public:
         Account_UnionID, //union id 帐户
         Account_CalDav //caldav通用协议帐户
     };
+
+    enum AccountState {
+        Account_Close = 0x0, //日历同步总开关被关闭(控制中心)
+        Account_Open = 0x1, //日历同步总开关开启
+        Account_Calendar = 0x2, //同步日程
+        Account_Setting = 0x4, //同步通用设置
+    };
+    Q_DECLARE_FLAGS(AccountStates, AccountState)
+
+    enum AccountSyncState {
+        Sync_Normal, //正常
+        Sync_NetworkAnomaly, //网络异常
+        Sync_ServerException, //服务器异常
+        Sync_StorageFull, //存储已满
+    };
+
     typedef QSharedPointer<DAccount> Ptr;
     typedef QVector<DAccount::Ptr> List;
 
@@ -61,8 +77,8 @@ public:
     int syncTag() const;
     void setSyncTag(int syncTag);
 
-    int syncState() const;
-    void setSyncState(int syncState);
+    AccountSyncState syncState() const;
+    void setSyncState(AccountSyncState syncState);
 
     QString avatar() const;
     void setAvatar(const QString &avatar);
@@ -99,6 +115,12 @@ public:
     QString dbusInterface() const;
     void setDbusInterface(const QString &dbusInterface);
 
+    AccountState accountState() const;
+    void setAccountState(const AccountState &accountState);
+
+    QDateTime dtLastSync() const;
+    void setDtLastSync(const QDateTime &dtLastSync);
+
 private:
     QString m_displayName; //显示名称
     QString m_accountID; //帐户id
@@ -110,10 +132,12 @@ private:
     QString m_avatar; //头像
     QString m_description; //描述
     int m_syncTag; //同步标识,用来与云端标识比对
-    int m_syncState; //同步状态
+    AccountState m_accountState; //帐户状态
+    AccountSyncState m_syncState; //同步状态
     QDateTime m_dtCreate;
     QDateTime m_dtDelete;
     QDateTime m_dtUpdate;
+    QDateTime m_dtLastSync; //最后一次同步时间
     QString m_cloudPath;
     int m_syncFreq; //同步频率
     int m_intervalTime; //当同步频率为自定义时，才有效，单位（min）

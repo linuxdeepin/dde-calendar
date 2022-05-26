@@ -50,9 +50,19 @@ public:
     //设置通用设置
     void setCalendarGeneralSettings(const QString &cgSet);
 
+    //若日历打开则后端不自动退出
+    void calendarOpen(const bool &isOpen);
+
+    int getfirstDayOfWeek();
+    void setFirstDayOfWeek(const int firstday);
+    int getTimeFormatType();
+    void setTimeFormatType(const int timeType);
+
 private:
     void unionIDDataMerging();
 signals:
+    void firstDayOfWeekChange(const int firstDay);
+    void timeFormatTypeChange(const int timeType);
 
 public slots:
     //TODO：监听网络帐户管理信号和Union ID登陆退出状态
@@ -62,6 +72,7 @@ private:
     DUnionIDDbus::Ptr m_unionIDDbus;
     DAccount::List m_accountList;
     QMap<QString, DAccountService::Ptr> m_AccountServiceMap[accountTypeCount];
+    DCalendarGeneralSettings::Ptr m_generalSetting;
 };
 
 #endif // DACCOUNTMANAGEMODULE_H

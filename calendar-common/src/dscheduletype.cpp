@@ -211,15 +211,15 @@ bool DScheduleType::fromJsonString(DScheduleType::Ptr &scheduleType, const QStri
     }
 
     if (rootObj.contains("typeName")) {
-        scheduleType->setTypeID(rootObj.value("typeName").toString());
+        scheduleType->setTypeName(rootObj.value("typeName").toString());
     }
 
     if (rootObj.contains("displayName")) {
-        scheduleType->setTypeID(rootObj.value("displayName").toString());
+        scheduleType->setDisplayName(rootObj.value("displayName").toString());
     }
 
     if (rootObj.contains("typePath")) {
-        scheduleType->setTypeID(rootObj.value("typePath").toString());
+        scheduleType->setTypePath(rootObj.value("typePath").toString());
     }
 
     if (rootObj.contains("TypeColor")) {

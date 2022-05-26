@@ -36,7 +36,10 @@ QDate dateFromString(const QString &date);
 //获取新数据库路径
 QString getDBPath();
 
-//时间转换，
+//是否为中文环境
+bool isChineseEnv();
+
+//时间转换
 QDateTime dtConvert(const QDateTime &datetime);
 
 #endif // UNITS_H

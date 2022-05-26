@@ -34,6 +34,8 @@ class DAccountManagerService : public DServiceBase
 {
     Q_OBJECT
     Q_CLASSINFO("D-Bus Interface", "com.deepin.dataserver.AccountManager")
+    Q_PROPERTY(int firstDayOfWeek READ getfirstDayOfWeek WRITE setFirstDayOfWeek)
+    Q_PROPERTY(int timeFormatType READ getTimeFormatType WRITE setTimeFormatType)
 public:
     explicit DAccountManagerService(QObject *parent = nullptr);
 public slots:
@@ -66,12 +68,17 @@ public slots:
     //设置通用设置
     Q_SCRIPTABLE void setCalendarGeneralSettings(const QString &cgSet);
 
+    //日历打开关闭
+    Q_SCRIPTABLE void calendarOpen(const bool &isOpen);
+
 signals:
     Q_SCRIPTABLE void accountUpdate(const QStringList &accountIDs);
-    Q_SCRIPTABLE void calendarGeneralSettingsUpdate(const QString &cgSet);
-
 private:
-    QString getUnionIDAccount();
+    int getfirstDayOfWeek();
+    void setFirstDayOfWeek(const int firstday);
+    int getTimeFormatType();
+    void setTimeFormatType(const int timeType);
+
 private:
     DAccountManageModule::Ptr m_accountManager;
 };

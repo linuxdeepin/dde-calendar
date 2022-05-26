@@ -54,7 +54,7 @@ DAccount::List DAccountManagerDataBase::getAccountList()
             account->setAccountID(query.value("accountID").toString());
             account->setAccountName(query.value("accountName").toString());
             account->setDisplayName(query.value("displayName").toString());
-            account->setSyncState(query.value("syncState").toInt());
+            account->setSyncState(static_cast<DAccount::AccountSyncState>(query.value("syncState").toInt()));
             account->setAvatar(query.value("accountAvatar").toString());
             account->setDescription(query.value("accountDescription").toString());
             account->setDbName(query.value("dbName").toString());
@@ -83,7 +83,7 @@ DAccount::Ptr DAccountManagerDataBase::getAccountByID(const QString &accountID)
         account->setAccountID(accountID);
         account->setAccountName(query.value("accountName").toString());
         account->setDisplayName(query.value("displayName").toString());
-        account->setSyncState(query.value("syncState").toInt());
+        account->setSyncState(static_cast<DAccount::AccountSyncState>(query.value("syncState").toInt()));
         account->setAvatar(query.value("accountAvatar").toString());
         account->setDescription(query.value("accountDescription").toString());
         account->setDbName(query.value("dbName").toString());

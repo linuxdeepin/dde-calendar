@@ -37,7 +37,8 @@ DAccount::DAccount(DAccount::Type type)
     , m_avatar("")
     , m_description("")
     , m_syncTag(0)
-    , m_syncState(0)
+    , m_accountState(Account_Close)
+    , m_syncState(Sync_Normal)
     , m_syncFreq(0)
     , m_intervalTime(0)
     , m_isExpandDisplay(true)
@@ -119,12 +120,12 @@ void DAccount::setSyncTag(int syncTag)
     m_syncTag = syncTag;
 }
 
-int DAccount::syncState() const
+DAccount::AccountSyncState DAccount::syncState() const
 {
     return m_syncState;
 }
 
-void DAccount::setSyncState(int syncState)
+void DAccount::setSyncState(AccountSyncState syncState)
 {
     m_syncState = syncState;
 }
@@ -190,13 +191,16 @@ bool DAccount::toJsonString(const DAccount::Ptr &account, QString &jsonStr)
     rootObj.insert("displayName", account->displayName());
     rootObj.insert("accountName", account->accountName());
     rootObj.insert("dbusPath", account->dbusPath());
+    rootObj.insert("dbusInterface", account->dbusInterface());
     rootObj.insert("type", account->accountType());
     rootObj.insert("avatar", account->avatar());
     rootObj.insert("description", account->description());
     rootObj.insert("syncTag", account->syncTag());
+    rootObj.insert("accountState", account->accountState());
     rootObj.insert("syncState", account->syncState());
     rootObj.insert("dtCreate", dtToString(account->dtCreate()));
     rootObj.insert("dbName", account->dbName());
+    rootObj.insert("dtLastSync", dtToString(account->dtLastSync()));
     QJsonDocument jsonDoc;
     jsonDoc.setObject(rootObj);
     jsonStr = QString::fromUtf8(jsonDoc.toJson(QJsonDocument::Compact));
@@ -228,6 +232,10 @@ bool DAccount::fromJsonString(Ptr &account, const QString &jsonStr)
     if (rootObj.contains("dbusPath")) {
         account->setDbusPath(rootObj.value("dbusPath").toString());
     }
+    if (rootObj.contains("dbusInterface")) {
+        account->setDbusInterface(rootObj.value("dbusInterface").toString());
+    }
+
     if (rootObj.contains("type")) {
         account->setAccountType(static_cast<DAccount::Type>(rootObj.value("type").toInt()));
     }
@@ -240,14 +248,20 @@ bool DAccount::fromJsonString(Ptr &account, const QString &jsonStr)
     if (rootObj.contains("syncTag")) {
         account->setSyncTag(rootObj.value("syncTag").toInt());
     }
+    if (rootObj.contains("accountState")) {
+        account->setAccountState(static_cast<AccountState>(rootObj.value("accountState").toInt()));
+    }
     if (rootObj.contains("syncState")) {
-        account->setSyncState(rootObj.value("syncState").toInt());
+        account->setSyncState(static_cast<AccountSyncState>(rootObj.value("syncState").toInt()));
     }
     if (rootObj.contains("dtCreate")) {
         account->setDtCreate(dtFromString(rootObj.value("dtCreate").toString()));
     }
     if (rootObj.contains("dbName")) {
         account->setDbName(rootObj.value("dbName").toString());
+    }
+    if (rootObj.contains("dtLastSync")) {
+        account->setDtLastSync(dtFromString(rootObj.value("dtLastSync").toString()));
     }
     return true;
 }
@@ -343,4 +357,24 @@ QString DAccount::dbusInterface() const
 void DAccount::setDbusInterface(const QString &dbusInterface)
 {
     m_dbusInterface = dbusInterface;
+}
+
+DAccount::AccountState DAccount::accountState() const
+{
+    return m_accountState;
+}
+
+void DAccount::setAccountState(const AccountState &accountState)
+{
+    m_accountState = accountState;
+}
+
+QDateTime DAccount::dtLastSync() const
+{
+    return m_dtLastSync;
+}
+
+void DAccount::setDtLastSync(const QDateTime &dtLastSync)
+{
+    m_dtLastSync = dtLastSync;
 }

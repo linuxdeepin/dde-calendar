@@ -65,6 +65,8 @@ public:
     bool scheduleTypeByUsed(const QString &typeID, const int isDeleted = 0);
     bool deleteScheduleTypeByID(const QString &typeID, const int isDeleted = 0);
     bool updateScheduleType(const DScheduleType::Ptr &scheduleType);
+    //获取节假日类型ID
+    QString getFestivalTypeID();
     ///////////////帐户信息
     DAccount::Ptr getAccountInfo();
     void setAccountInfo(const DAccount::Ptr &account);
@@ -72,6 +74,8 @@ public:
     ///////////////////类型颜色
     bool addTypeColor(const int typeColorNo, const QString &strColorHex, const int privilege);
     void deleteTypeColor();
+    //获取内置类型颜色
+    DTypeColor::List getSysColor();
 
 protected:
     virtual void initScheduleType();

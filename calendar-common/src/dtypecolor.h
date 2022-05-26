@@ -22,6 +22,8 @@
 #define DTYPECOLOR_H
 
 #include <QString>
+#include <QSharedPointer>
+#include <QVector>
 
 /**
  * @brief The DTypeColor class
@@ -36,6 +38,10 @@ public:
         PriSystem = 1, //系统默认
         PriUser = 7 //用户自定义
     };
+
+    typedef QSharedPointer<DTypeColor> Ptr;
+    typedef QVector<Ptr> List;
+
     DTypeColor();
 
     QString colorCode() const;
@@ -48,6 +54,9 @@ public:
     void setPrivilege(const Privilege &privilege);
 
     bool isSysColorInfo();
+
+    static List fromJsonString(const QString &colorJson);
+    static QString toJsonString(const List &colorList);
 
 private:
     int m_colorID;

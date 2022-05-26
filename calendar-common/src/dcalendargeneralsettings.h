@@ -40,6 +40,10 @@ public:
     typedef QSharedPointer<DCalendarGeneralSettings> Ptr;
 
     DCalendarGeneralSettings();
+    DCalendarGeneralSettings(const DCalendarGeneralSettings &setting);
+
+    DCalendarGeneralSettings *clone() const;
+
     Qt::DayOfWeek firstDayOfWeek() const;
     void setFirstDayOfWeek(const Qt::DayOfWeek &firstDayOfWeek);
 

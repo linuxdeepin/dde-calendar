@@ -24,6 +24,9 @@
 #include "dschedulequerypar.h"
 #include "memorycalendar.h"
 #include "lunardateinfo.h"
+#include "lunarmanager.h"
+
+#include <QStringList>
 
 DAccountModule::DAccountModule(const DAccount::Ptr &account, QObject *parent)
     : QObject(parent)
@@ -104,6 +107,7 @@ QString DAccountModule::createSchedule(const QString &scheduleInfo)
     DSchedule::Ptr schedule;
     DSchedule::fromJsonString(schedule, scheduleInfo);
     //TODO:根据是否为网络帐户判断是否需要
+    //TODO:根据是否为提醒日程更新提醒任务
     if (m_account->isNetWorkAccount()) {
     }
     return m_accountDB->createSchedule(schedule);
@@ -111,6 +115,8 @@ QString DAccountModule::createSchedule(const QString &scheduleInfo)
 
 bool DAccountModule::updateSchedule(const QString &scheduleInfo)
 {
+    //TODO:根据是否为网络帐户判断是否需要
+    //TODO:根据是否为提醒日程更新提醒任务,修改前的和修改后的
     DSchedule::Ptr schedule;
     DSchedule::fromJsonString(schedule, scheduleInfo);
     return m_accountDB->updateSchedule(schedule);
@@ -127,6 +133,7 @@ QString DAccountModule::getScheduleByScheduleID(const QString &scheduleID)
 bool DAccountModule::deleteScheduleByScheduleID(const QString &scheduleID)
 {
     //TODO:根据是否为网络判断是否需要弱删除
+    //TODO:根据是否为提醒日程更新提醒任务,
     if (m_account->isNetWorkAccount()) {
     } else {
     }
@@ -147,8 +154,10 @@ QString DAccountModule::querySchedulesWithParameter(const QString &params)
     }
 
     bool extend = queryPar->queryType() == DScheduleQueryPar::Query_None;
-    //TODO:根据条件判断是否需要添加节假日日程
-    //    scheduleList.append()
+    //根据条件判断是否需要添加节假日日程
+    if (isChineseEnv() && extend) {
+        scheduleList.append(getFestivalSchedule(queryPar->dtStart(), queryPar->dtEnd(), queryPar->key()));
+    }
 
     //获取一定范围内的日程
     QMap<QDate, DSchedule::List> scheduleMap = getScheduleTimesOn(queryPar->dtStart(), queryPar->dtEnd(), scheduleList, extend);
@@ -157,6 +166,12 @@ QString DAccountModule::querySchedulesWithParameter(const QString &params)
         //TODO:
     }
     return DSchedule::toMapString(scheduleMap);
+}
+
+QString DAccountModule::getSysColors()
+{
+    DTypeColor::List colorList = m_accountDB->getSysColor();
+    return DTypeColor::toJsonString(colorList);
 }
 
 DAccount::Ptr DAccountModule::account() const
@@ -181,7 +196,7 @@ QMap<QDate, DSchedule::List> DAccountModule::getScheduleTimesOn(const QDateTime 
         if (schedule->recurs()) {
             //如果为农历日程
             if (schedule->lunnar()) {
-                //TODO:农历重复日程计算
+                //农历重复日程计算
                 LunarDateInfo lunardate(schedule->recurrence()->defaultRRuleConst(), interval);
 
                 QMap<int, QDate> ruleStartDate = lunardate.getRRuleStartDate(dtStart.date(), dtEnd.date(), schedule->dtStart().date());
@@ -237,7 +252,7 @@ QMap<QDate, DSchedule::List> DAccountModule::getScheduleTimesOn(const QDateTime 
             //普通日程
             //如果在查询时间范围内
             if (!(schedule->dtEnd() < dtStart || schedule->dtStart() > dtEnd)) {
-                if (extend) {
+                if (extend && schedule->isMultiDay()) {
                     //需要扩展的天数
                     int extenddays = static_cast<int>(schedule->dtStart().daysTo(schedule->dtEnd()));
                     for (int i = 0; i <= extenddays; ++i) {
@@ -250,4 +265,28 @@ QMap<QDate, DSchedule::List> DAccountModule::getScheduleTimesOn(const QDateTime 
         }
     }
     return m_scheduleMap;
+}
+
+DSchedule::List DAccountModule::getFestivalSchedule(const QDateTime &dtStart, const QDateTime &dtEnd, const QString &key)
+{
+    QList<stDayFestival> festivaldays = GetFestivalsInRange(dtStart, dtEnd);
+    if (!key.isEmpty()) {
+        festivaldays = FilterDayFestival(festivaldays, key);
+    }
+    DSchedule::List scheduleList;
+    foreach (stDayFestival festivalDay, festivaldays) {
+        foreach (QString festival, festivalDay.Festivals) {
+            if (!festival.isEmpty()) {
+                DSchedule::Ptr schedule = DSchedule::Ptr(new DSchedule);
+                schedule->setSummary(festival);
+                schedule->setAllDay(true);
+                schedule->setDtStart(QDateTime(QDate(festivalDay.date.date()), QTime(0, 0)));
+                schedule->setDtEnd(QDateTime(QDate(festivalDay.date.date()), QTime(23, 59)));
+                schedule->setUid(DDataBase::createUuid());
+                schedule->setScheduleTypeID(m_accountDB->getFestivalTypeID());
+                scheduleList.append(schedule);
+            }
+        }
+    }
+    return scheduleList;
 }

@@ -56,10 +56,14 @@ public:
     bool deleteScheduleByScheduleID(const QString &scheduleID);
     QString querySchedulesWithParameter(const QString &params);
 
+    //内置颜色
+    QString getSysColors();
+
     DAccount::Ptr account() const;
 
 private:
     QMap<QDate, DSchedule::List> getScheduleTimesOn(const QDateTime &dtStart, const QDateTime &dtEnd, const DSchedule::List &scheduleList, bool extend = true);
+    DSchedule::List getFestivalSchedule(const QDateTime &dtStart, const QDateTime &dtEnd, const QString &key);
 
 signals:
     //

@@ -47,6 +47,7 @@ DAccountManageModule::DAccountManageModule(QObject *parent)
             m_AccountServiceMap[account->accountType()].insert(account->accountID(), accountService);
         }
     }
+    m_generalSetting = m_accountManagerDB->getCalendarGeneralSettings();
 }
 
 QString DAccountManageModule::getAccountList()
@@ -59,8 +60,8 @@ QString DAccountManageModule::getAccountList()
 QString DAccountManageModule::getCalendarGeneralSettings()
 {
     QString cgSetStr;
-    DCalendarGeneralSettings::Ptr cgSet = m_accountManagerDB->getCalendarGeneralSettings();
-    DCalendarGeneralSettings::toJsonString(cgSet, cgSetStr);
+    m_generalSetting = m_accountManagerDB->getCalendarGeneralSettings();
+    DCalendarGeneralSettings::toJsonString(m_generalSetting, cgSetStr);
     return cgSetStr;
 }
 
@@ -68,7 +69,48 @@ void DAccountManageModule::setCalendarGeneralSettings(const QString &cgSet)
 {
     DCalendarGeneralSettings::Ptr cgSetPtr = DCalendarGeneralSettings::Ptr(new DCalendarGeneralSettings);
     DCalendarGeneralSettings::fromJsonString(cgSetPtr, cgSet);
-    m_accountManagerDB->setCalendarGeneralSettings(cgSetPtr);
+    if (m_generalSetting != cgSetPtr) {
+        m_accountManagerDB->setCalendarGeneralSettings(cgSetPtr);
+        DCalendarGeneralSettings::Ptr tmpSetting = DCalendarGeneralSettings::Ptr(m_generalSetting->clone());
+        m_generalSetting = cgSetPtr;
+        if (tmpSetting->firstDayOfWeek() != m_generalSetting->firstDayOfWeek()) {
+            emit firstDayOfWeekChange(m_generalSetting->firstDayOfWeek());
+        }
+        if (tmpSetting->timeShowType() != m_generalSetting->timeShowType()) {
+            emit timeFormatTypeChange(m_generalSetting->timeShowType());
+        }
+    }
+}
+
+void DAccountManageModule::calendarOpen(const bool &isOpen)
+{
+    //TODO:根据日历的打开关闭设置是否自动退出
+}
+
+int DAccountManageModule::getfirstDayOfWeek()
+{
+    return static_cast<int>(m_generalSetting->firstDayOfWeek());
+}
+
+void DAccountManageModule::setFirstDayOfWeek(const int firstday)
+{
+    if (m_generalSetting->firstDayOfWeek() != firstday) {
+        m_generalSetting->setFirstDayOfWeek(static_cast<Qt::DayOfWeek>(firstday));
+        m_accountManagerDB->setCalendarGeneralSettings(m_generalSetting);
+    }
+}
+
+int DAccountManageModule::getTimeFormatType()
+{
+    return static_cast<int>(m_generalSetting->timeShowType());
+}
+
+void DAccountManageModule::setTimeFormatType(const int timeType)
+{
+    if (m_generalSetting->timeShowType() != timeType) {
+        m_generalSetting->setTimeShowType(static_cast<DCalendarGeneralSettings::TimeShowType>(timeType));
+        m_accountManagerDB->setCalendarGeneralSettings(m_generalSetting);
+    }
 }
 
 void DAccountManageModule::unionIDDataMerging()

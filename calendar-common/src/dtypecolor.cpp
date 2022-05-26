@@ -20,6 +20,11 @@
 */
 #include "dtypecolor.h"
 
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QJsonArray>
+#include <QDebug>
+
 DTypeColor::DTypeColor()
 {
 }
@@ -56,4 +61,46 @@ void DTypeColor::setPrivilege(const Privilege &privilege)
 
 bool DTypeColor::isSysColorInfo()
 {
+}
+
+DTypeColor::List DTypeColor::fromJsonString(const QString &colorJson)
+{
+    DTypeColor::List colorList;
+    QJsonParseError jsonError;
+    QJsonDocument jsonDoc(QJsonDocument::fromJson(colorJson.toLocal8Bit(), &jsonError));
+    if (jsonError.error != QJsonParseError::NoError) {
+        qWarning() << "error:" << jsonError.errorString();
+        return colorList;
+    }
+    QJsonArray rootArr = jsonDoc.array();
+    foreach (auto json, rootArr) {
+        QJsonObject colorObj = json.toObject();
+        DTypeColor::Ptr typeColor = DTypeColor::Ptr(new DTypeColor);
+        if (colorObj.contains("colorID")) {
+            typeColor->setColorID(colorObj.value("colorID").toInt());
+        }
+        if (colorObj.contains("colorCode")) {
+            typeColor->setColorCode(colorObj.value("colorCode").toString());
+        }
+        if (colorObj.contains("privilege")) {
+            typeColor->setPrivilege(static_cast<Privilege>(colorObj.value("privilege").toInt()));
+        }
+        colorList.append(typeColor);
+    }
+    return colorList;
+}
+
+QString DTypeColor::toJsonString(const DTypeColor::List &colorList)
+{
+    QJsonArray rootArr;
+    foreach (auto color, colorList) {
+        QJsonObject colorObj;
+        colorObj.insert("colorID", color->colorID());
+        colorObj.insert("colorCode", color->colorCode());
+        colorObj.insert("privilege", color->privilege());
+        rootArr.append(colorObj);
+    }
+    QJsonDocument jsonDoc;
+    jsonDoc.setArray(rootArr);
+    return QString::fromUtf8(jsonDoc.toJson(QJsonDocument::Compact));
 }

@@ -85,6 +85,11 @@ QString DAccountService::querySchedulesWithParameter(const QString &params)
     return m_accountModel->querySchedulesWithParameter(params);
 }
 
+QString DAccountService::getSysColors()
+{
+    return m_accountModel->getSysColors();
+}
+
 void DAccountService::updateAccountInfo(const QString &accountInfo)
 {
 }

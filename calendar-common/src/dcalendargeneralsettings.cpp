@@ -31,6 +31,17 @@ DCalendarGeneralSettings::DCalendarGeneralSettings()
 {
 }
 
+DCalendarGeneralSettings::DCalendarGeneralSettings(const DCalendarGeneralSettings &setting)
+    : m_firstDayOfWeek(setting.firstDayOfWeek())
+    , m_timeShowType(setting.timeShowType())
+{
+}
+
+DCalendarGeneralSettings *DCalendarGeneralSettings::clone() const
+{
+    return new DCalendarGeneralSettings(*this);
+}
+
 Qt::DayOfWeek DCalendarGeneralSettings::firstDayOfWeek() const
 {
     return m_firstDayOfWeek;

@@ -31,9 +31,31 @@
 class DSchedule : public KCalendarCore::Event
 {
 public:
-    //TODO:提醒规则
+    //提醒规则
+    enum AlarmType {
+        Alarm_None, //从不
+        Alarm_Begin, //日程开始时
+        Alarm_15Min_Front, //提前15分钟
+        Alarm_30Min_Front, //提前30分钟
+        Alarm_1Hour_Front, //提前1小时
+        Alarm_1Day_Front, //提前1天
+        Alarm_2Day_Front, //提前2天
+        Alarm_1Week_Front, //提前1周
+        Alarm_9Hour_After, //日程当天9点(全天)
+        Alarm_15Hour_Front, //一天前（全天），为日程开始前15小时
+        Alarm_39Hour_Front, //2天前（全天），为日程开始前39小时
+        Alarm_159Hour_Front, //一周前(全天)，为日程开始前159小时
+    };
 
-    //TODO:重复规则
+    //重复规则
+    enum RRuleType {
+        RRule_None, //从不
+        RRule_Day, //每天
+        RRule_Work, //每工作日
+        RRule_Week, //每周
+        RRule_Month, //每月
+        RRule_Year, //每年
+    };
 
     typedef QSharedPointer<DSchedule> Ptr;
     typedef QVector<DSchedule::Ptr> List;
@@ -56,6 +78,13 @@ public:
 
     bool operator>(const DSchedule &schedule) const;
 
+    void setAlarmType(const AlarmType &alarmType);
+    AlarmType getAlarmType();
+
+    //设置重复规则，若有重复规则，规则的截止次数或日期通过RecurrenceRule::duration 判断为永不，结束与次数还是结束与日期
+    void setRRuleType(const RRuleType &rtype);
+    RRuleType getRRuleType();
+
     static bool fromJsonString(DSchedule::Ptr &schedule, const QString &json);
     static bool toJsonString(const DSchedule::Ptr &schedule, QString &json);
 
@@ -65,6 +94,9 @@ public:
     //
     static QMap<QDate, DSchedule::List> fromMapString(const QString &json);
     static QString toMapString(const QMap<QDate, DSchedule::List> &scheduleMap);
+
+private:
+    QMap<int, AlarmType> getAlarmMap();
 
 public:
     //日程信息调试打印

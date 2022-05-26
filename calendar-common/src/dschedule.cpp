@@ -26,6 +26,11 @@
 
 #include <QtDBus/QtDBus>
 
+#define Duration_Min 60
+#define Duration_Hour 60 * 60
+#define Duration_Day 24 * 60 * 60
+#define Duration_Week 7 * 24 * 60 * 60
+
 DSchedule::DSchedule()
     : KCalendarCore::Event()
 {
@@ -72,6 +77,105 @@ bool DSchedule::operator<(const DSchedule &schedule) const
 
 bool DSchedule::operator>(const DSchedule &schedule) const
 {
+}
+
+void DSchedule::setAlarmType(const DSchedule::AlarmType &alarmType)
+{
+    //如果提醒规则没有变化则退出
+    if (alarmType == getAlarmType()) {
+        return;
+    }
+
+    //清除提醒规则
+    this->clearAlarms();
+    QMap<int, AlarmType> alarmMap = getAlarmMap();
+    QMap<int, AlarmType>::const_iterator iter = alarmMap.constBegin();
+    for (; iter != alarmMap.constEnd(); ++iter) {
+        if (iter.value() == alarmType) {
+            KCalendarCore::Alarm::Ptr alarm = KCalendarCore::Alarm::Ptr(new KCalendarCore::Alarm(this));
+            alarm->setEnabled(true);
+            alarm->setType(KCalendarCore::Alarm::Display);
+            alarm->setDisplayAlarm(this->summary());
+            KCalendarCore::Duration duration(iter.key());
+            alarm->setStartOffset(duration);
+            addAlarm(alarm);
+            break;
+        }
+    }
+}
+
+DSchedule::AlarmType DSchedule::getAlarmType()
+{
+    AlarmType alarmType = Alarm_None;
+    KCalendarCore::Alarm::List alarmList = this->alarms();
+    if (alarmList.size() > 0) {
+        KCalendarCore::Duration duration = alarmList.at(0)->duration();
+        QMap<int, AlarmType> alarmMap = getAlarmMap();
+        if (alarmMap.contains(duration.value())) {
+            alarmType = alarmMap[duration.value()];
+        }
+    }
+    return alarmType;
+}
+
+void DSchedule::setRRuleType(const DSchedule::RRuleType &rtype)
+{
+    if (getRRuleType() == rtype)
+        return;
+    clearRecurrence();
+
+    KCalendarCore::Recurrence *recurrence = this->recurrence();
+    KCalendarCore::RecurrenceRule *rrule = new KCalendarCore::RecurrenceRule();
+    switch (rtype) {
+    case RRule_Year:
+        rrule->setRRule("FREQ=YEARLY");
+        break;
+    case RRule_Month:
+        rrule->setRRule("FREQ=MONTHLY");
+        break;
+    case RRule_Week:
+        rrule->setRRule("FREQ=WEEKLY");
+        break;
+    case RRule_Work:
+        rrule->setRRule("FREQ=DAILY;BYDAY=MO,TU,WE,TH,FR");
+        break;
+    case RRule_Day:
+        rrule->setRRule("FREQ=DAILY");
+        break;
+    default:
+        break;
+    }
+    recurrence->addRRule(rrule);
+}
+
+DSchedule::RRuleType DSchedule::getRRuleType()
+{
+    RRuleType rtype = RRule_None;
+    if (this->recurs()) {
+        KCalendarCore::RecurrenceRule *rrule = this->recurrence()->defaultRRuleConst();
+        switch (rrule->recurrenceType()) {
+        case KCalendarCore::RecurrenceRule::rYearly: {
+            rtype = RRule_Year;
+        } break;
+        case KCalendarCore::RecurrenceRule::rMonthly: {
+            rtype = RRule_Month;
+        } break;
+        case KCalendarCore::RecurrenceRule::rWeekly: {
+            rtype = RRule_Week;
+        } break;
+        case KCalendarCore::RecurrenceRule::rDaily: {
+            if (rrule->rrule().contains("BYDAY=MO,TU,WE,TH,FR")) {
+                rtype = RRule_Work;
+            } else {
+                rtype = RRule_Day;
+            }
+        } break;
+        default:
+            rtype = RRule_None;
+            break;
+        }
+    }
+    return rtype;
 }
 
 bool DSchedule::fromJsonString(DSchedule::Ptr &schedule, const QString &json)
@@ -182,6 +286,23 @@ QString DSchedule::toMapString(const QMap<QDate, DSchedule::List> &scheduleMap)
     QJsonDocument jsonDoc;
     jsonDoc.setArray(rootArray);
     return QString::fromUtf8(jsonDoc.toJson(QJsonDocument::Compact));
+}
+
+QMap<int, DSchedule::AlarmType> DSchedule::getAlarmMap()
+{
+    static QMap<int, DSchedule::AlarmType> alarmMap {
+        {0, Alarm_Begin},
+        {-15 * Duration_Min, Alarm_15Min_Front},
+        {-30 * Duration_Min, Alarm_30Min_Front},
+        {-Duration_Hour, Alarm_1Hour_Front},
+        {-Duration_Day, Alarm_1Day_Front},
+        {-Duration_Day * 2, Alarm_2Day_Front},
+        {-Duration_Week, Alarm_1Week_Front},
+        {9 * Duration_Hour, Alarm_9Hour_After},
+        {-15 * Duration_Hour, Alarm_15Min_Front},
+        {-39 * Duration_Hour, Alarm_39Hour_Front},
+        {-159 * Duration_Hour, Alarm_159Hour_Front}};
+    return alarmMap;
 }
 
 QString DSchedule::fileName() const

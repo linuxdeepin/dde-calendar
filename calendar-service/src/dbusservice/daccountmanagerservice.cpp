@@ -64,3 +64,28 @@ void DAccountManagerService::setCalendarGeneralSettings(const QString &cgSet)
 {
     m_accountManager->setCalendarGeneralSettings(cgSet);
 }
+
+void DAccountManagerService::calendarOpen(const bool &isOpen)
+{
+    m_accountManager->calendarOpen(isOpen);
+}
+
+int DAccountManagerService::getfirstDayOfWeek()
+{
+    return m_accountManager->getfirstDayOfWeek();
+}
+
+void DAccountManagerService::setFirstDayOfWeek(const int firstday)
+{
+    m_accountManager->setFirstDayOfWeek(firstday);
+}
+
+int DAccountManagerService::getTimeFormatType()
+{
+    return m_accountManager->getTimeFormatType();
+}
+
+void DAccountManagerService::setTimeFormatType(const int timeType)
+{
+    m_accountManager->setTimeFormatType(timeType);
+}

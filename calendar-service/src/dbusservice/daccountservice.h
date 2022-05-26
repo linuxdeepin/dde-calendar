@@ -116,6 +116,10 @@ public slots:
      */
     Q_SCRIPTABLE QString querySchedulesWithParameter(const QString &params);
 
+    ///////获取内置类型颜色
+
+    Q_SCRIPTABLE QString getSysColors();
+
 public:
     /**
      * @brief updateAccountInfo     更新帐户信息
