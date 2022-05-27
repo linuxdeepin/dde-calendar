@@ -59,7 +59,7 @@ public:
     //更新界面搜索日程显示
     void updateSearchScheduleInfo() override;
     //设置选中搜索日程
-    void setSelectSearchScheduleInfo(const DSchedule &info) override;
+    void setSelectSearchScheduleInfo(const DSchedule::Ptr &info) override;
     //设置是否显示搜索界面
     void setSearchWFlag(bool flag);
     //删除选中日程

@@ -304,7 +304,7 @@ void Calendarmainwindow::slotOpenSchedule(QString job)
 {
     if (job.isEmpty())
         return;
-    DSchedule out;
+    DSchedule::Ptr out;
     //TODO:数据反序列化
     //    out = ScheduleDataInfo::JsonStrToSchedule(job);
 
@@ -315,11 +315,11 @@ void Calendarmainwindow::slotOpenSchedule(QString job)
     //切换到日视图
     m_stackWidget->setCurrentIndex(DDECalendar::CalendarDayWindow);
     //设置选择时间
-    m_DayWindow->setSelectDate(out.dtStart().date());
+    m_DayWindow->setSelectDate(out->dtStart().date());
     //更新界面显示
     m_DayWindow->updateData();
     //设置非全天时间定位位置
-    m_DayWindow->setTime(out.dtStart().time());
+    m_DayWindow->setTime(out->dtStart().time());
     //弹出编辑对话框
     CMyScheduleView dlg(out, this);
     dlg.exec();
@@ -618,7 +618,7 @@ void Calendarmainwindow::slotSearchEdit()
  * @brief Calendarmainwindow::slotSearchSelectSchedule  单击搜索日程动画设置
  * @param scheduleInfo
  */
-void Calendarmainwindow::slotSearchSelectSchedule(const DSchedule &scheduleInfo)
+void Calendarmainwindow::slotSearchSelectSchedule(const DSchedule::Ptr &scheduleInfo)
 {
     //如果小尺寸显示模式，在显示搜索窗口的时候，左侧视图会被隐藏
     //如果点击一个搜索结果则隐藏搜索窗口，展示左侧视图
@@ -638,9 +638,9 @@ void Calendarmainwindow::slotSearchSelectSchedule(const DSchedule &scheduleInfo)
     CScheduleBaseWidget *_showWidget = dynamic_cast<CScheduleBaseWidget *>(m_stackWidget->currentWidget());
     if (_showWidget) {
         //如果日程开始时间年份与选择时间年份不一样则切换年份显示
-        bool changeYear = _showWidget->getSelectDate().year() != scheduleInfo.dtStart().date().year();
+        bool changeYear = _showWidget->getSelectDate().year() != scheduleInfo->dtStart().date().year();
         //设置选择时间
-        if (_showWidget->setSelectDate(scheduleInfo.dtStart().date(), changeYear)) {
+        if (_showWidget->setSelectDate(scheduleInfo->dtStart().date(), changeYear)) {
             //更新显示数据
             _showWidget->updateData();
             //设置年份信息显示

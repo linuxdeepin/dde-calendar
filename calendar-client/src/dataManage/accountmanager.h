@@ -32,15 +32,13 @@ public:
     typedef std::function<void(bool)> CallbackFunc;
 
     static AccountManager* getInstance();
-    QList<QSharedPointer<AccountItem>> getAccountList();
+    QList<AccountItem::Ptr> getAccountList();
     QSharedPointer<AccountItem> getLocalAccountItem();
     QSharedPointer<AccountItem> getUnionAccountItem();
 
     //重新获取账户信息
     void resetAccount();
 
-    //日程提醒
-    void remindJob(const QString &scheduleID, const qint64 recurID, CallbackFunc callback = nullptr);
     //根据帐户ID下拉数据
     void downloadByAccountID(const QString &accountID, CallbackFunc callback = nullptr);
     //更新网络帐户数据
@@ -50,6 +48,13 @@ public:
     void waitingData(CallbackFunc callback);
 
 signals:
+    void signalDataInitFinished();
+    void signalAccountUpdate();
+    void signalGeneralSettingsUpdate();
+
+    void signalAccountDataUpdate();
+    void signalScheduleUpdate();
+    void signalScheduleTypeUpdate();
 
 public slots:
     //获取账户信息完成事件
@@ -77,7 +82,7 @@ private:
 
     QList<CallbackFunc> m_waitingCallList;
 
-    bool m_dataFinished = false;
+    bool m_dataInitFinished = false;
 };
 #define gAccounManager AccountManager::getInstance()
 #define gLocalAccountItem AccountManager::getLocalAccountItem()

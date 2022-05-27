@@ -157,25 +157,25 @@ void CDayWindow::updateShowDate(const bool isUpdateBar)
  */
 void CDayWindow::updateShowSchedule()
 {
-    //获取一天的日程信息
-    QMap<QDate, QVector<DSchedule>> _weekScheduleInfo = m_calendarManager->getScheduleTask()->getScheduleInfo(getSelectDate(), getSelectDate());
-    //设置显示日程信息
-    m_scheduleView->setShowScheduleInfo(_weekScheduleInfo);
-    //获取界面显示定位时间位置
-    setMakeTime(_weekScheduleInfo);
-    QMap<QDate, bool> _fullInfo = m_calendarManager->getScheduleTask()->getDateHasSchedule();
-    //获取当前月是否包含日程情况
-    QVector<QDate> _monthDate = m_calendarManager->getCalendarDateDataManage()->getMonthDate(getSelectDate().year(), getSelectDate().month());
-    QVector<bool> _monthFlag{};
-    for (int i = 0; i < _monthDate.size(); ++i) {
-        if (_fullInfo.contains(_monthDate.at(i))) {
-            _monthFlag.append(_fullInfo[_monthDate.at(i)]);
-        } else {
-            _monthFlag.append(false);
-        }
-    }
-    //设置日视图右侧月显示日期是否有日程
-    m_daymonthView->setHasScheduleFlag(_monthFlag);
+//    //获取一天的日程信息
+//    QMap<QDate, QVector<DSchedule>> _weekScheduleInfo = m_calendarManager->getScheduleTask()->getScheduleInfo(getSelectDate(), getSelectDate());
+//    //设置显示日程信息
+//    m_scheduleView->setShowScheduleInfo(_weekScheduleInfo);
+//    //获取界面显示定位时间位置
+//    setMakeTime(_weekScheduleInfo);
+//    QMap<QDate, bool> _fullInfo = m_calendarManager->getScheduleTask()->getDateHasSchedule();
+//    //获取当前月是否包含日程情况
+//    QVector<QDate> _monthDate = m_calendarManager->getCalendarDateDataManage()->getMonthDate(getSelectDate().year(), getSelectDate().month());
+//    QVector<bool> _monthFlag{};
+//    for (int i = 0; i < _monthDate.size(); ++i) {
+//        if (_fullInfo.contains(_monthDate.at(i))) {
+//            _monthFlag.append(_fullInfo[_monthDate.at(i)]);
+//        } else {
+//            _monthFlag.append(false);
+//        }
+//    }
+//    //设置日视图右侧月显示日期是否有日程
+//    m_daymonthView->setHasScheduleFlag(_monthFlag);
 }
 
 /**
@@ -192,12 +192,12 @@ void CDayWindow::updateShowLunar()
  * @brief CDayWindow::setSelectSearchScheduleInfo       设置选中日程
  * @param info
  */
-void CDayWindow::setSelectSearchScheduleInfo(const DSchedule &info)
+void CDayWindow::setSelectSearchScheduleInfo(const DSchedule::Ptr &info)
 {
-    if (info.allDay()) {
+    if (info->allDay()) {
         setTime();
     } else {
-        m_scheduleView->setTime(info.dtStart().time());
+        m_scheduleView->setTime(info->dtStart().time());
     }
 
     m_scheduleView->setSelectSchedule(info);
@@ -311,17 +311,17 @@ void CDayWindow::initConnection()
  * @brief CDayWindow::setMakeTime       界面显示定位时间位置
  * @param info
  */
-void CDayWindow::setMakeTime(QMap<QDate, QVector<DSchedule>> &info)
+void CDayWindow::setMakeTime(QMap<QDate, DSchedule::List> &info)
 {
     if (info.contains(getSelectDate())) {
-        QVector<DSchedule> _scheduleVector = info[getSelectDate()];
+        DSchedule::List _scheduleVector = info[getSelectDate()];
         //设置当前第一个非全天默认时间
         QDateTime firstscheduleBeginTime(getSelectDate().addDays(1), QTime(0, 0, 0));
         //获取非全天日程
         for (int i = 0 ; i < _scheduleVector.size(); ++i) {
-            if (!_scheduleVector.at(i).allDay()) {
-                if (firstscheduleBeginTime > _scheduleVector.at(i).dtStart()) {
-                    firstscheduleBeginTime = _scheduleVector.at(i).dtStart();
+            if (!_scheduleVector.at(i)->allDay()) {
+                if (firstscheduleBeginTime > _scheduleVector.at(i)->dtStart()) {
+                    firstscheduleBeginTime = _scheduleVector.at(i)->dtStart();
                 }
             }
         }

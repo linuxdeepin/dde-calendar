@@ -43,12 +43,12 @@ public:
     void setTheMe(int type = 0);
     void setLunarVisible(bool state);
     void setTime(QTime time);
-    void setSelectSchedule(const DSchedule &scheduleInfo);
+    void setSelectSchedule(const DSchedule::Ptr &scheduleInfo);
     void updateHeight();
     bool IsDragging();
     void setCurrentDate(const QDateTime &currentDate);
     //设置显示日程
-    void setShowScheduleInfo(const QMap<QDate, QVector<DSchedule>> &scheduleInfo);
+    void setShowScheduleInfo(const QMap<QDate, DSchedule::List> &scheduleInfo);
     void setTimeFormat(QString timeformat);
 signals:
     void signalsCurrentScheduleDate(QDate date);
@@ -66,7 +66,7 @@ public slots:
     //快捷键删除日程
     void slotDeleteitem();
     void slotCurrentScheduleDate(QDate date);
-    void slotScheduleShow(const bool isShow, const DSchedule &out = DSchedule());
+    void slotScheduleShow(const bool isShow, const DSchedule::Ptr &out = DSchedule::Ptr());
     void slotUpdatePaint(const int topM);
     void slotUpdateScene();
     //焦点切换到某个视图
@@ -89,7 +89,7 @@ private:
     QVector<int> m_vPos;
     QVector<int> m_vHours;
     CAllDayEventWeekView *m_alldaylist = nullptr;
-    QMap<QDate, QVector<DSchedule>> m_showSchedule {};
+    QMap<QDate, DSchedule::List> m_showSchedule {};
     int m_leftMargin;
     int m_topMargin;
     int m_rightMargin = 0;

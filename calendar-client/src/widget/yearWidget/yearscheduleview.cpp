@@ -39,12 +39,12 @@ CYearScheduleView::~CYearScheduleView()
 {
 }
 
-bool YScheduleDateThan(const DSchedule &s1, const DSchedule &s2)
+bool YScheduleDateThan(const DSchedule::Ptr &s1, const DSchedule::Ptr &s2)
 {
-    QDate bDate1 = s1.dtStart().date();
-    QDate eDate1 = s1.dtEnd().date();
-    QDate bDate2 = s2.dtStart().date();
-    QDate eDate2 = s2.dtEnd().date();
+    QDate bDate1 = s1->dtStart().date();
+    QDate eDate1 = s1->dtEnd().date();
+    QDate bDate2 = s2->dtStart().date();
+    QDate eDate2 = s2->dtEnd().date();
 
     if (bDate1 != eDate1 && bDate2 == eDate2) {
         return true;
@@ -53,24 +53,24 @@ bool YScheduleDateThan(const DSchedule &s1, const DSchedule &s2)
     } else if (bDate1 != eDate1 && bDate2 != eDate2) {
         return bDate1 < bDate2;
     } else {
-        if (s1.dtStart() == s2.dtStart()) {
-            return s1.summary() < s2.summary();
+        if (s1->dtStart() == s2->dtStart()) {
+            return s1->summary() < s2->summary();
         } else {
-            return s1.dtStart() < s2.dtStart();
+            return s1->dtStart() < s2->dtStart();
         }
     }
 }
-bool YScheduleDaysThan(const DSchedule &s1, const DSchedule &s2)
+bool YScheduleDaysThan(const DSchedule::Ptr &s1, const DSchedule::Ptr &s2)
 {
-    return s1.dtStart().date().daysTo(s1.dtEnd().date()) > s2.dtStart().date().daysTo(s2.dtEnd().date());
+    return s1->dtStart().date().daysTo(s1->dtEnd().date()) > s2->dtStart().date().daysTo(s2->dtEnd().date());
 }
 
-void CYearScheduleView::setData(QVector<DSchedule> &vListData)
+void CYearScheduleView::setData(DSchedule::List &vListData)
 {
-    QVector<DSchedule> valldayListData, vDaylistdata;
+    DSchedule::List valldayListData, vDaylistdata;
 
     for (int i = 0; i < vListData.count(); i++) {
-        if (vListData.at(i).allDay()) {
+        if (vListData.at(i)->allDay()) {
             valldayListData.append(vListData.at(i));
         } else {
             vDaylistdata.append(vListData.at(i));
@@ -83,11 +83,11 @@ void CYearScheduleView::setData(QVector<DSchedule> &vListData)
     std::sort(vDaylistdata.begin(), vDaylistdata.end(), YScheduleDateThan);
 
     for (int i = 0; i < valldayListData.count(); i++) {
-        QVector<DSchedule>::iterator iter = valldayListData.begin();
+        DSchedule::List::iterator iter = valldayListData.begin();
         //        if (valldayListData.at(i).getType() == DDECalendar::FestivalTypeID) {
         //TODO:类型判断
         if (false) {
-            DSchedule moveDate;
+            DSchedule::Ptr moveDate;
             moveDate = valldayListData.at(i);
             valldayListData.removeAt(i);
             valldayListData.insert(iter, moveDate);
@@ -99,17 +99,17 @@ void CYearScheduleView::setData(QVector<DSchedule> &vListData)
     m_vlistData.append(vDaylistdata);
 
     if (m_vlistData.size() > DDEYearCalendar::YearScheduleListMaxcount) {
-        QVector<DSchedule> vTListData;
+        DSchedule::List vTListData;
         for (int i = 0; i < 4; i++) {
-            if (m_vlistData.at(i).dtStart().date() != m_vlistData.at(i).dtEnd().date() && !m_vlistData.at(i).allDay()) {
-                if (m_vlistData.at(i).dtStart().date() != m_currentDate) {
-                    m_vlistData[i].setAllDay(true);
+            if (m_vlistData.at(i)->dtStart().date() != m_vlistData.at(i)->dtEnd().date() && !m_vlistData.at(i)->allDay()) {
+                if (m_vlistData.at(i)->dtStart().date() != m_currentDate) {
+                    m_vlistData[i]->setAllDay(true);
                 }
             }
             vTListData.append(m_vlistData.at(i));
         }
-        DSchedule info;
-        info.setSummary("......");
+        DSchedule::Ptr info;
+        info->setSummary("......");
         //TODO:设置类型
         //        info.setID(-1);
         vTListData.append(info);
@@ -212,12 +212,12 @@ void CYearScheduleView::paintEvent(QPaintEvent *event)
     }
 }
 
-void CYearScheduleView::paintItem(QPainter &painter, DSchedule info, int index)
+void CYearScheduleView::paintItem(QPainter &painter, DSchedule::Ptr info, int index)
 {
     int labelwidth = width() - 30;
     int bHeight = index * 29 + 10;
     int labelheight = 28;
-    DSchedule &gd = info;
+    DSchedule::Ptr &gd = info;
     //TODO:根据类型获取颜色
     CSchedulesColor gdColor; //= CScheduleDataManage::getScheduleDataManage()->getScheduleColorByType(gd.getType());
 
@@ -249,7 +249,7 @@ void CYearScheduleView::paintItem(QPainter &painter, DSchedule info, int index)
         painter.setPen(m_btTextColor);
         painter.setFont(m_textfont);
         QFontMetrics fm = painter.fontMetrics();
-        QString tSTitleName = gd.summary();
+        QString tSTitleName = gd->summary();
         tSTitleName.replace("\n", "");
         str = tSTitleName;
         int tilenameW = labelwidth - 80;
@@ -277,13 +277,13 @@ void CYearScheduleView::paintItem(QPainter &painter, DSchedule info, int index)
             painter.save();
             painter.setPen(m_btimecolor);
             painter.setFont(m_textfont);
-            if (info.allDay()) {
+            if (info->allDay()) {
                 str = tr("All Day");
             } else {
-                if (m_currentDate > info.dtStart().date()) {
+                if (m_currentDate > info->dtStart().date()) {
                     str = tr("All Day");
                 } else {
-                    str = info.dtStart().time().toString(m_timeFormat);
+                    str = info->dtStart().time().toString(m_timeFormat);
                 }
             }
             painter.drawText(QRect(width() - 70, bHeight, 57, labelheight - 2), Qt::AlignRight | Qt::AlignVCenter, str);
@@ -317,7 +317,7 @@ CYearScheduleOutView::CYearScheduleOutView(QWidget *parent)
     this->setContent(yearscheduleview);
 }
 
-void CYearScheduleOutView::setData(QVector<DSchedule> &vListData)
+void CYearScheduleOutView::setData(DSchedule::List &vListData)
 {
     list_count = vListData.size();
     yearscheduleview->setData(vListData);

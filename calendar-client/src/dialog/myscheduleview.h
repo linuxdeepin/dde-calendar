@@ -39,9 +39,9 @@ class CMyScheduleView : public DCalendarDDialog
 {
     Q_OBJECT
 public:
-    explicit CMyScheduleView(const DSchedule &schduleInfo, QWidget *parent = nullptr);
+    explicit CMyScheduleView(const DSchedule::Ptr &schduleInfo, QWidget *parent = nullptr);
 
-    DSchedule getSchedules()
+    DSchedule::Ptr getSchedules()
     {
         return  m_scheduleInfo;
     }
@@ -76,7 +76,7 @@ private:
     QLabel *m_scheduleLabel = nullptr;
     QLabel *m_timeLabel = nullptr;
     QLabel *m_Title = nullptr;
-    DSchedule m_scheduleInfo; //日程
+    DSchedule::Ptr m_scheduleInfo; //日程
     QScrollArea *area = nullptr;
     QFont labelF;
     int m_defaultH = 117; //时间显示高度

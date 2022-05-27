@@ -157,9 +157,10 @@ void DbusAccountRequest::deleteSchedulesByScheduleTypeID(const QString &typeID)
  * @param params                        具体的查询参数
  * @return                              查询到的日程集
  */
-void DbusAccountRequest::querySchedulesWithParameter(const QString &params)
+void DbusAccountRequest::querySchedulesWithParameter(const DScheduleQueryPar::Ptr &params)
 {
-    asyncCall("querySchedulesWithParameter", QVariant(params));
+    QString jsonStr = DScheduleQueryPar::toJsonString(params);
+    asyncCall("querySchedulesWithParameter", QVariant(jsonStr));
 }
 
 void DbusAccountRequest::slotCallFinished(CDBusPendingCallWatcher* call)
@@ -189,6 +190,11 @@ void DbusAccountRequest::slotCallFinished(CDBusPendingCallWatcher* call)
             } else {
                 qWarning() << "ScheduleTypeList Parsing failed!";
             }
+        } else if (call->getmember() == "querySchedulesWithParameter") {
+            QDBusPendingReply<QString> reply = *call;
+            QString str = reply.argumentAt<0>();
+            QMap<QDate, DSchedule::List> map = DSchedule::fromMapString(str);
+            emit signalGetScheduleListFinish(map);
         }
 
         if (call->getCallbackFunc() != nullptr) {

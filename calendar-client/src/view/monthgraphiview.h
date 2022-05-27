@@ -57,11 +57,11 @@ public:
     //设置是否显示农历信息
     void setLunarVisible(bool visible);
     //设置日程信息
-    void setScheduleInfo(const QMap<QDate, QVector<DSchedule>> &info);
+    void setScheduleInfo(const QMap<QDate, DSchedule::List> &info);
     //设置搜索选中日程
-    void setSelectSearchSchedule(const DSchedule &scheduleInfo) override;
+    void setSelectSearchSchedule(const DSchedule::Ptr &scheduleInfo) override;
     //设置搜索日程信息
-    void setSearchScheduleInfo(const QVector<DSchedule> &searchScheduleInfo);
+    void setSearchScheduleInfo(const DSchedule::List &searchScheduleInfo);
 
 private:
     void updateSize();
@@ -88,12 +88,12 @@ private:
     //根据鼠标移动的距离判断是否创建日程
     bool JudgeIsCreate(const QPointF &pos)  override;
     void RightClickToCreate(QGraphicsItem *listItem, const QPoint &pos) override;
-    void MoveInfoProcess(DSchedule &info, const QPointF &pos) override;
+    void MoveInfoProcess(DSchedule::Ptr &info, const QPointF &pos) override;
     QDateTime getDragScheduleInfoBeginTime(const QDateTime &moveDateTime) override;
     QDateTime getDragScheduleInfoEndTime(const QDateTime &moveDateTime) override;
     PosInItem getPosInItem(const QPoint &p, const QRectF &itemRect)override;
     QDateTime getPosDate(const QPoint &p)override;
-    void upDateInfoShow(const DragStatus &status = NONE, const DSchedule &info = DSchedule()) override;
+    void upDateInfoShow(const DragStatus &status = NONE, const DSchedule::Ptr &info = DSchedule::Ptr()) override;
     /**
      * @brief slideEvent            触摸滑动事件处理
      * @param startPoint            触摸开始坐标
@@ -112,6 +112,6 @@ private:
     QMap<QDate, int>                    m_festivallist;
     int                                 m_currentMonth;
     CMonthScheduleView                  *m_MonthScheduleView = nullptr;
-    QMap<QDate, QVector<DSchedule>> m_schedulelistdata;
+    QMap<QDate, DSchedule::List> m_schedulelistdata;
 };
 #endif // MONTHGRAPHIVIEW_H

@@ -36,8 +36,9 @@ struct CSchedulesColor {
     QColor orginalColor; //最初的颜色
 };
 
-class CScheduleDataManage
+class CScheduleDataManage : public QObject
 {
+    Q_OBJECT
 public:
     static CScheduleDataManage *getScheduleDataManage();
     CSchedulesColor getScheduleColorByType(const QString &type);
@@ -49,17 +50,18 @@ public:
         return m_theme;
     }
 private:
-    CScheduleDataManage();
+    CScheduleDataManage(QObject *parent = nullptr);
     ~CScheduleDataManage();
 private:
     int m_theme = 0;
     static CScheduleDataManage *m_vscheduleDataManage;
 };
 
-class JobTypeInfoManager
+class JobTypeInfoManager : public QObject
 {
+    Q_OBJECT
 private:
-    JobTypeInfoManager();
+    JobTypeInfoManager(QObject *parent = nullptr);
 public:
     static JobTypeInfoManager *instance();
     /**
@@ -109,6 +111,7 @@ public:
     void addToNoticeBill(QObject *obj, const QByteArray &method);
     //通知单,移除回调函数
     void removeFromNoticeBill(QObject *obj);
+
 private:
     QList<DScheduleType> m_lstJobType;
     QList<DTypeColor> m_lstJobTypeColor;

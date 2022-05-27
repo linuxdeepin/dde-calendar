@@ -38,14 +38,15 @@ CScheduleOperation::CScheduleOperation(QWidget *parent)
  * @brief CScheduleOperation::createSchedule        创建日程
  * @param scheduleInfo
  */
-bool CScheduleOperation::createSchedule(const DSchedule &scheduleInfo)
+bool CScheduleOperation::createSchedule(const DSchedule::Ptr &scheduleInfo)
 {
     //如果为农历且重复类型为每年
     //TODO:是否提示
     //    if (scheduleInfo.getIsLunar() && RepetitionRule::RRule_EVEYEAR == scheduleInfo.getRepetitionRule().getRuleId()) {
     //        lunarMessageDialogShow(scheduleInfo);
     //    }
-    return m_DBusManager->CreateJob(scheduleInfo);
+//    return m_DBusManager->CreateJob(scheduleInfo);
+    return true;
 }
 
 /**
@@ -53,7 +54,7 @@ bool CScheduleOperation::createSchedule(const DSchedule &scheduleInfo)
  * @param newInfo
  * @param oldInfo
  */
-bool CScheduleOperation::changeSchedule(const DSchedule &newInfo, const DSchedule &oldInfo)
+bool CScheduleOperation::changeSchedule(const DSchedule::Ptr &newInfo, const DSchedule::Ptr &oldInfo)
 {
     bool _result {false};
     //TODO:重复规则
@@ -104,7 +105,7 @@ bool CScheduleOperation::changeSchedule(const DSchedule &newInfo, const DSchedul
  * @brief CScheduleOperation::deleteSchedule        删除日程
  * @param scheduleInfo
  */
-bool CScheduleOperation::deleteSchedule(const DSchedule &scheduleInfo)
+bool CScheduleOperation::deleteSchedule(const DSchedule::Ptr &scheduleInfo)
 {
     bool _restuleBool {false};
     //如果为普通日程

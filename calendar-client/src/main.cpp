@@ -23,7 +23,7 @@
 #include "configsettings.h"
 #include "accessible/accessible.h"
 #include "tabletconfig.h"
-#include "accountmanager.h"
+#include "schedulemanager.h"
 
 #include <DApplication>
 #include <DLog>
@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
         }
         ww.slotTheme(DGuiApplicationHelper::instance()->themeType());
         ww.show();
-        //准备数据
+        //准备数据  TODO:测试稳定后因放在界面构造前面
         gAccounManager->resetAccount();
         return app->exec();
     }

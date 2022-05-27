@@ -27,7 +27,7 @@ typedef struct _tagMScheduleDateRangeInfo {
     QDate edate;
     bool state;
     int  num;
-    DSchedule tData;
+    DSchedule::Ptr tData;
 
     bool operator <(const _tagMScheduleDateRangeInfo &info)const
     {

@@ -44,7 +44,7 @@ AccountManager* AccountManager::getInstance()
  * 获取账户列表
  * @return 账户列表
  */
-QList<QSharedPointer<AccountItem>> AccountManager::getAccountList()
+QList<AccountItem::Ptr> AccountManager::getAccountList()
 {
     QList<QSharedPointer<AccountItem>> accountList;
     if (nullptr != m_localAccountItem.data()) {
@@ -83,7 +83,7 @@ QSharedPointer<AccountItem> AccountManager::getUnionAccountItem()
  */
 void AccountManager::resetAccount()
 {
-    m_dataFinished = false;
+    m_dataInitFinished = false;
     m_localAccountItem.clear();
     m_unionAccountItem.clear();
     m_dbusRequest->getAccountList();
@@ -120,7 +120,7 @@ void AccountManager::uploadNetWorkAccountData(CallbackFunc callback)
  */
 void AccountManager::waitingData(CallbackFunc callback)
 {
-    if (m_dataFinished) {
+    if (m_dataInitFinished) {
         callback(true);
     } else {
         m_waitingCallList.append(callback);
@@ -133,7 +133,7 @@ void AccountManager::waitingData(CallbackFunc callback)
  */
 void AccountManager::execWaitingCall()
 {
-    m_dataFinished = true;
+    m_dataInitFinished = true;
     for (CallbackFunc call : m_waitingCallList) {
         call(true);
     }
@@ -151,11 +151,18 @@ void AccountManager::slotGetAccountListFinish(DAccount::List accountList)
     for (DAccount::Ptr account : accountList) {
         if (account->accountType() == DAccount::Account_Local) {
             m_localAccountItem.reset(new AccountItem(account, this));
+            connect(m_localAccountItem.data(), &AccountItem::signalScheduleUpdate, this, &AccountManager::signalScheduleUpdate);
+            m_localAccountItem->resetAccount();
         }
 
         if (account->accountType() == DAccount::Account_UnionID) {
             m_unionAccountItem.reset(new AccountItem(account, this));
+            connect(m_unionAccountItem.data(), &AccountItem::signalScheduleUpdate, this, &AccountManager::signalScheduleUpdate);
+            m_unionAccountItem->resetAccount();
         }
+    }
+    if (m_dataInitFinished) {
+        emit signalAccountUpdate();
     }
 }
 
@@ -167,5 +174,10 @@ void AccountManager::slotGetAccountListFinish(DAccount::List accountList)
 void AccountManager::slotGetGeneralSettingsFinish(DCalendarGeneralSettings::Ptr ptr)
 {
     m_settings = ptr;
-    execWaitingCall();
+    if (!m_dataInitFinished) {
+        execWaitingCall();
+        emit signalDataInitFinished();
+    } else {
+        emit signalGeneralSettingsUpdate();
+    }
 }

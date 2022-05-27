@@ -35,14 +35,14 @@ public:
     CScheduleItem(QRectF rect, QGraphicsItem *parent = nullptr, int type = 0);
     ~CScheduleItem() override;
     //设置显示数据
-    void setData(const DSchedule &info, QDate date, int totalNum);
+    void setData(const DSchedule::Ptr &info, QDate date, int totalNum);
     //是否含有选中日程
-    bool hasSelectSchedule(const DSchedule &info);
+    bool hasSelectSchedule(const DSchedule::Ptr &info);
     int getType()
     {
         return m_type;
     }
-    DSchedule getData() const
+    DSchedule::Ptr getData() const
     {
         return m_vScheduleInfo;
     }

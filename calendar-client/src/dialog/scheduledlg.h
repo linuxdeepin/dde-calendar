@@ -49,7 +49,7 @@ public:
 
     CScheduleDlg(int type, QWidget *parent = nullptr, const bool isAllDay = true);
     ~CScheduleDlg() override;
-    void setData(const DSchedule &info);
+    void setData(const DSchedule::Ptr &info);
     void setDate(const QDateTime &date);
     void setAllDay(bool flag);
 private:
@@ -212,7 +212,7 @@ private:
     bool m_isMoreThenOneDay = false;
 private:
     //日程
-    DSchedule m_ScheduleDataInfo;
+    DSchedule::Ptr m_ScheduleDataInfo;
     QList<DScheduleType> m_lstJobType;
     int m_type; // 1新建 0 编辑日程
     QDateTime m_currentDate;

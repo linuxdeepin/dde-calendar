@@ -20,6 +20,7 @@
 */
 #include "calendardatedatamanage.h"
 #include "configsettings.h"
+#include "schedulemanager.h"
 #include <QtMath>
 
 const int MonthMaxDay = 42;
@@ -44,6 +45,7 @@ void CalendarDateDataManager::setSelectDate(const QDate &selectDate, bool isSwit
     m_selectDate = selectDate;
     if (isSwitchYear || m_showDateRange.startDate > m_selectDate || m_showDateRange.stopDate < m_selectDate) {
         //如果选择时间不在显示范围内则修改显示年份,开始和结束时间
+        gScheduleManager->resetSchedule(m_selectDate.year());
         setYearBeginAndEndDate(m_selectDate.year());
     }
 }

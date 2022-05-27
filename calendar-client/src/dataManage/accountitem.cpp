@@ -25,13 +25,13 @@ AccountItem::AccountItem(const DAccount::Ptr& account, QObject *parent) : QObjec
   , m_dbusRequest(new DbusAccountRequest(account->dbusPath(), account->dbusInterface(), this))
 {
     initConnect();
-    resetAccount();
 }
 
 void AccountItem::initConnect()
 {
     connect(m_dbusRequest, &DbusAccountRequest::signalGetAccountInfoFinish, this, &AccountItem::slotGetAccountInfoFinish);
     connect(m_dbusRequest, &DbusAccountRequest::signalGetScheduleTypeListFinish, this, &AccountItem::slotGetScheduleTypeListFinish);
+    connect(m_dbusRequest, &DbusAccountRequest::signalGetScheduleListFinish, this, &AccountItem::slotGetScheduleListFinish);
 }
 
 /**
@@ -41,6 +41,7 @@ void AccountItem::initConnect()
 void AccountItem::resetAccount()
 {
     m_dbusRequest->getScheduleTypeList();
+    querySchedulesWithParameter(QDate().currentDate().year());
 }
 
 /**
@@ -51,6 +52,12 @@ void AccountItem::resetAccount()
 DAccount::Ptr AccountItem::getAccount()
 {
     return m_account;
+}
+
+//获取日程
+QMap<QDate, DSchedule::List> AccountItem::getScheduleMap()
+{
+    return m_scheduleMap;
 }
 
 /**
@@ -181,13 +188,35 @@ void AccountItem::deleteSchedulesByTypeID(const QString &typeID, CallbackFunc ca
     m_dbusRequest->deleteSchedulesByScheduleTypeID(typeID);
 }
 
+void AccountItem::querySchedulesWithParameter(const int year, CallbackFunc callback)
+{
+    QDateTime start = QDateTime(QDate(year-1, 12, 1));
+    QDateTime end = QDateTime(QDate(year+1, 1, 31));
+    querySchedulesWithParameter(start, end, callback);
+}
+
+void AccountItem::querySchedulesWithParameter(const QDateTime& start, const QDateTime& end, CallbackFunc callback)
+{
+    querySchedulesWithParameter("", start, end, callback);
+}
+
+void AccountItem::querySchedulesWithParameter(const QString& key, const QDateTime& start, const QDateTime& end, CallbackFunc callback)
+{
+    DScheduleQueryPar::Ptr ptr;
+    ptr.reset(new DScheduleQueryPar);
+    ptr->setKey(key);
+    ptr->setDtStart(start);
+    ptr->setDtEnd(end);
+    querySchedulesWithParameter(ptr, callback);
+}
+
 /**
  * @brief AccountItem::querySchedulesWithParameter
  * 根据查询条件查询数据
  * @param params 查询条件
  * @param callback 回调函数
  */
-void AccountItem::querySchedulesWithParameter(const QString &params, CallbackFunc callback)
+void AccountItem::querySchedulesWithParameter(const DScheduleQueryPar::Ptr &params, CallbackFunc callback)
 {
     m_dbusRequest->setCallbackFunc(callback);
     m_dbusRequest->querySchedulesWithParameter(params);
@@ -224,6 +253,7 @@ void AccountItem::monitorScheduleTypeData(CallbackFunc callback)
 void AccountItem::slotGetAccountInfoFinish(DAccount::Ptr account)
 {
     m_account = account;
+    emit signalAccountDataUpdate();
 }
 
 /**
@@ -242,6 +272,12 @@ void AccountItem::slotGetScheduleTypeListFinish(DScheduleType::List scheduleType
             func(true);
         }
     }
+    emit signalScheduleTypeUpdate();
+}
 
+void AccountItem::slotGetScheduleListFinish(QMap<QDate, DSchedule::List> map)
+{
+    m_scheduleMap = map;
+    emit signalScheduleUpdate();
 }
 

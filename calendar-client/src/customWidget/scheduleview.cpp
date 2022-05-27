@@ -124,9 +124,9 @@ void CScheduleView::setTime(QTime time)
     m_graphicsView->setTime(time);
 }
 
-void CScheduleView::setSelectSchedule(const DSchedule &scheduleInfo)
+void CScheduleView::setSelectSchedule(const DSchedule::Ptr &scheduleInfo)
 {
-    if (scheduleInfo.allDay()) {
+    if (scheduleInfo->allDay()) {
         m_alldaylist->setSelectSearchSchedule(scheduleInfo);
     } else {
         m_graphicsView->setSelectSearchSchedule(scheduleInfo);
@@ -153,7 +153,7 @@ void CScheduleView::setCurrentDate(const QDateTime &currentDate)
  * @brief CScheduleView::setShowScheduleInfo        设置显示日程
  * @param scheduleInfo
  */
-void CScheduleView::setShowScheduleInfo(const QMap<QDate, QVector<DSchedule>> &scheduleInfo)
+void CScheduleView::setShowScheduleInfo(const QMap<QDate, DSchedule::List> &scheduleInfo)
 {
     m_showSchedule = scheduleInfo;
     updateSchedule();
@@ -480,7 +480,7 @@ void CScheduleView::slotCurrentScheduleDate(QDate date)
     emit signalsCurrentScheduleDate(date);
 }
 
-void CScheduleView::slotScheduleShow(const bool isShow, const DSchedule &out)
+void CScheduleView::slotScheduleShow(const bool isShow, const DSchedule::Ptr &out)
 {
     if (isShow) {
         QVariant variant;
@@ -538,13 +538,13 @@ void CScheduleView::updateSchedule()
 {
     //获取一个月的日程信息
     m_graphicsView->clearSchedule();
-    QVector<DSchedule> allInfo;
-    QVector<DSchedule> nonAllInfo;
+    DSchedule::List allInfo;
+    DSchedule::List nonAllInfo;
 
-    QMap<QDate, QVector<DSchedule>>::const_iterator _iterator = m_showSchedule.constBegin();
+    QMap<QDate, DSchedule::List>::const_iterator _iterator = m_showSchedule.constBegin();
     for (; _iterator != m_showSchedule.constEnd(); ++_iterator) {
         for (int i = 0; i < _iterator->size(); ++i) {
-            if (_iterator.value().at(i).allDay()) {
+            if (_iterator.value().at(i)->allDay()) {
                 if (!allInfo.contains(_iterator.value().at(i))) {
                     allInfo.append(_iterator.value().at(i));
                 }
@@ -555,7 +555,7 @@ void CScheduleView::updateSchedule()
             }
         }
     }
-    m_alldaylist->setInfo(allInfo);
+//    m_alldaylist->setInfo(allInfo);
     m_graphicsView->setInfo(nonAllInfo);
     updateAllday();
     m_graphicsView->updateInfo();

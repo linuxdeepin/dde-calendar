@@ -36,7 +36,7 @@ ExportedInterface::ExportedInterface(QObject *parent)
 
 QVariant ExportedInterface::invoke(const QString &action, const QString &parameters) const
 {
-    DSchedule info;
+    DSchedule::Ptr info;
     Exportpara para;
     QString tstr = parameters;
     CScheduleOperation _scheduleOperation;
@@ -60,24 +60,24 @@ QVariant ExportedInterface::invoke(const QString &action, const QString &paramet
         return QVariant(qstr);
     } else if (action == "CANCEL") {
         //对外接口删除日程
-        QMap<QDate, QVector<DSchedule>> out;
-        //        //口查询日程
-        if (_scheduleOperation.queryScheduleInfo(para.ADTitleName, para.ADStartTime, para.ADEndTime, out)) {
-            //删除查询到的日程
-            QMap<QDate, QVector<DSchedule>>::const_iterator _iterator = nullptr;
-            for (_iterator = out.constBegin(); _iterator != out.constEnd(); ++_iterator) {
-                for (int i = 0 ; i < _iterator.value().size(); ++i) {
-                    _scheduleOperation.deleteOnlyInfo(_iterator.value().at(i));
-                }
-            }
-        } else {
-            return QVariant(false);
-        }
+//        QMap<QDate, DSchedule::List> out;
+//        //        //口查询日程
+//        if (_scheduleOperation.queryScheduleInfo(para.ADTitleName, para.ADStartTime, para.ADEndTime, out)) {
+//            //删除查询到的日程
+//            QMap<QDate, DSchedule::List>::const_iterator _iterator = nullptr;
+//            for (_iterator = out.constBegin(); _iterator != out.constEnd(); ++_iterator) {
+//                for (int i = 0 ; i < _iterator.value().size(); ++i) {
+//                    _scheduleOperation.deleteOnlyInfo(_iterator.value().at(i));
+//                }
+//            }
+//        } else {
+//            return QVariant(false);
+//        }
     }
     return QVariant(true);
 }
 
-bool ExportedInterface::analysispara(QString &parameters, DSchedule &info, Exportpara &para) const
+bool ExportedInterface::analysispara(QString &parameters, DSchedule::Ptr &info, Exportpara &para) const
 {
     QJsonParseError json_error;
     QJsonDocument jsonDoc(QJsonDocument::fromJson(parameters.toLocal8Bit(), &json_error));

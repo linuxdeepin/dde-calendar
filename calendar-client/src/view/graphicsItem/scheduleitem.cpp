@@ -56,7 +56,7 @@ CScheduleItem::~CScheduleItem()
  * @param date
  * @param totalNum
  */
-void CScheduleItem::setData(const DSchedule &info, QDate date, int totalNum)
+void CScheduleItem::setData(const DSchedule::Ptr &info, QDate date, int totalNum)
 {
     m_vScheduleInfo = info;
     m_totalNum = totalNum;
@@ -69,7 +69,7 @@ void CScheduleItem::setData(const DSchedule &info, QDate date, int totalNum)
  * @param info
  * @return
  */
-bool CScheduleItem::hasSelectSchedule(const DSchedule &info)
+bool CScheduleItem::hasSelectSchedule(const DSchedule::Ptr &info)
 {
     return info == m_vScheduleInfo;
 }
@@ -261,12 +261,12 @@ void CScheduleItem::paintBackground(QPainter *painter, const QRectF &rect, const
         font = DFontSizeManager::instance()->get(DFontSizeManager::T8, font);
 
         //绘制日程起始时间
-        if (m_vScheduleInfo.dtStart().date() == getDate()) {
+        if (m_vScheduleInfo->dtStart().date() == getDate()) {
             painter->save();
             painter->setFont(font);
             painter->setPen(gdColor.orginalColor);
 
-            QTime stime = m_vScheduleInfo.dtStart().time();
+            QTime stime = m_vScheduleInfo->dtStart().time();
             QString str = stime.toString("AP " + m_timeFormat);
             QFontMetrics fontMetrics(font);
             qreal drawTextWidth = rect.width() - m_offset * 2;
@@ -314,7 +314,7 @@ void CScheduleItem::paintBackground(QPainter *painter, const QRectF &rect, const
         splitText(font,
                   textRect.width() - tMargin - 8,
                   textRect.height() - 20,
-                  m_vScheduleInfo.summary(),
+                  m_vScheduleInfo->summary(),
                   liststr, fm);
 
         for (int i = 0; i < liststr.count(); i++) {

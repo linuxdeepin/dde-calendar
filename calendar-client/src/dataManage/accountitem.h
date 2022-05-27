@@ -34,8 +34,13 @@ public:
     typedef std::function<void(bool)> CallbackFunc;
     typedef QSharedPointer<AccountItem> Ptr;
 
+    void resetAccount();
+
     //获取账户数据
     DAccount::Ptr getAccount();
+
+    //获取日程
+    QMap<QDate, DSchedule::List> getScheduleMap();
 
     // 获取日程类型信息集
     DScheduleType::List getScheduleTypeList();
@@ -71,7 +76,10 @@ public:
     void deleteSchedulesByTypeID(const QString &typeID, CallbackFunc callback = nullptr);
 
     //根据查询条件查询数据
-    void querySchedulesWithParameter(const QString &params, CallbackFunc callback = nullptr);
+    void querySchedulesWithParameter(const int year, CallbackFunc callback = nullptr);
+    void querySchedulesWithParameter(const QDateTime& start, const QDateTime& end, CallbackFunc callback = nullptr);
+    void querySchedulesWithParameter(const QString& key, const QDateTime& start, const QDateTime& end, CallbackFunc callback = nullptr);
+    void querySchedulesWithParameter(const DScheduleQueryPar::Ptr&, CallbackFunc callback = nullptr);
 
     //获取颜色类型列表
     QVector<DTypeColor> getColorTypeList();
@@ -80,21 +88,24 @@ public:
     void monitorScheduleTypeData(CallbackFunc callback);
 
 signals:
+    void signalAccountDataUpdate();
+    void signalScheduleUpdate();
+    void signalScheduleTypeUpdate();
 
 public slots:
     //获取账户信息完成事件
     void slotGetAccountInfoFinish(DAccount::Ptr);
     //获取日程类型数据完成事件
     void slotGetScheduleTypeListFinish(DScheduleType::List);
+    //获取日程数据完成事件
+    void slotGetScheduleListFinish(QMap<QDate, DSchedule::List>);
 
 private:
     void initConnect();
-    void resetAccount();
 
 private:
     DAccount::Ptr m_account;    //账户数据
     DScheduleType::List m_scheduleTypeList; //日程类型数据
-    DSchedule::List m_scheduleList;     //日程数据
     QVector<DTypeColor> m_typeColorList;    //颜色数据
     DbusAccountRequest* m_dbusRequest = nullptr;    //dbus请求实例
 
@@ -103,7 +114,7 @@ private:
     QMap<QString, bool> m_dataStatus;   //数据状态
 
     //一年的日程信息
-    QMap<QDate, QVector<DSchedule>> m_queryScheduleInfo{};
+    QMap<QDate, DSchedule::List> m_scheduleMap{};
     //一年是否含有日程
     QMap<QDate, bool>               m_fullInfo{};
     //一年的班休信息

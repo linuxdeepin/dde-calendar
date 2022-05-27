@@ -77,37 +77,37 @@ CScheduleDlg::~CScheduleDlg()
 {
 }
 
-void CScheduleDlg::setData(const DSchedule &info)
+void CScheduleDlg::setData(const DSchedule::Ptr &info)
 {
     m_ScheduleDataInfo = info;
 
-    m_typeComBox->setCurrentJobTypeNo(info.scheduleTypeID());
+    m_typeComBox->setCurrentJobTypeNo(info->scheduleTypeID());
     if (m_type == 1) {
         //如果为新建则设置为提示信息
-        m_textEdit->setPlaceholderText(info.summary());
+        m_textEdit->setPlaceholderText(info->summary());
     } else {
         //如果为编辑则显示
-        m_textEdit->setPlainText(info.summary());
+        m_textEdit->setPlainText(info->summary());
         //光标移动到文末
         m_textEdit->moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
     }
 
-    m_beginDateEdit->setDate(info.dtStart().date());
-    m_beginTimeEdit->setTime(info.dtStart().time());
-    m_endDateEdit->setDate(info.dtEnd().date());
-    m_endTimeEdit->setTime(info.dtEnd().time());
-    m_allDayCheckbox->setChecked(info.allDay());
-    m_endRepeatDate->setMinimumDate(info.dtStart().date());
+    m_beginDateEdit->setDate(info->dtStart().date());
+    m_beginTimeEdit->setTime(info->dtStart().time());
+    m_endDateEdit->setDate(info->dtEnd().date());
+    m_endTimeEdit->setTime(info->dtEnd().time());
+    m_allDayCheckbox->setChecked(info->allDay());
+    m_endRepeatDate->setMinimumDate(info->dtStart().date());
 
-    m_currentDate = info.dtStart();
-    m_EndDate = info.dtEnd();
+    m_currentDate = info->dtStart();
+    m_EndDate = info->dtEnd();
 
     updateEndTimeListAndTimeDiff(m_currentDate, m_EndDate);
-    slotallDayStateChanged(info.allDay());
+    slotallDayStateChanged(info->allDay());
     //根据是否为农历更新重复选项
-    updateRepeatCombox(info.lunnar());
+    updateRepeatCombox(info->lunnar());
     initRmindRpeatUI();
-    setShowState(info.lunnar());
+    setShowState(info->lunnar());
 }
 
 void CScheduleDlg::setDate(const QDateTime &date)
@@ -153,7 +153,7 @@ void CScheduleDlg::setAllDay(bool flag)
  */
 bool CScheduleDlg::clickOkBtn()
 {
-    DSchedule _newSchedule = m_ScheduleDataInfo;
+    DSchedule::Ptr _newSchedule = m_ScheduleDataInfo;
     QDateTime beginDateTime, endDateTime;
     beginDateTime.setDate(m_beginDateEdit->date());
     beginDateTime.setTime(m_beginTimeEdit->getTime());
@@ -164,21 +164,21 @@ bool CScheduleDlg::clickOkBtn()
     switch (m_calendarCategoryRadioGroup->checkedId()) {
     case 1:
         //农历日程
-        _newSchedule.setLunnar(true);
+        _newSchedule->setLunnar(true);
         break;
     default:
         //公历日程
-        _newSchedule.setLunnar(false);
+        _newSchedule->setLunnar(false);
         break;
     }
 
     if (m_textEdit->toPlainText().isEmpty()) {
-        _newSchedule.setSummary(m_textEdit->placeholderText());
+        _newSchedule->setSummary(m_textEdit->placeholderText());
     } else {
-        _newSchedule.setSummary(m_textEdit->toPlainText());
+        _newSchedule->setSummary(m_textEdit->toPlainText());
     }
 
-    if (_newSchedule.summary().isEmpty()) {
+    if (_newSchedule->summary().isEmpty()) {
         return false;
     }
     //如果类型选项不为负数则设置日程类型
@@ -203,7 +203,7 @@ bool CScheduleDlg::clickOkBtn()
     //TODO:设置日程id
     //    if (m_type == 1)
     //        _newSchedule.setID(0) ;
-    _newSchedule.setAllDay(m_allDayCheckbox->isChecked());
+    _newSchedule->setAllDay(m_allDayCheckbox->isChecked());
     //TODO:重复规则和提醒规则
     //    RemindData _remindData;
     //    if (_newSchedule.allDay()) {
@@ -295,8 +295,8 @@ bool CScheduleDlg::clickOkBtn()
     //        }
     //    }
     //    _newSchedule.setRepetitionRule(_repetitionRule);
-    _newSchedule.setDtStart(beginDateTime);
-    _newSchedule.setDtEnd(endDateTime);
+    _newSchedule->setDtStart(beginDateTime);
+    _newSchedule->setDtEnd(endDateTime);
     CScheduleOperation _scheduleOperation(this);
 
     if (m_type == 1) {
@@ -305,7 +305,7 @@ bool CScheduleDlg::clickOkBtn()
 
     } else if (m_type == 0) {
         //修改日程,根据返回的参数判断是否关闭对话框
-        return _scheduleOperation.changeSchedule(_newSchedule, m_ScheduleDataInfo);
+//        return _scheduleOperation.changeSchedule(_newSchedule, m_ScheduleDataInfo);
     }
     return true;
 }
@@ -473,10 +473,10 @@ void CScheduleDlg::slotallDayStateChanged(int state)
         m_endTimeEdit->setVisible(true);
 
         if (m_type == 0) {
-            m_beginDateEdit->setDate(m_ScheduleDataInfo.dtStart().date());
-            m_beginTimeEdit->setTime(m_ScheduleDataInfo.dtStart().time());
-            m_endDateEdit->setDate(m_ScheduleDataInfo.dtEnd().date());
-            m_endTimeEdit->setTime(m_ScheduleDataInfo.dtEnd().time());
+            m_beginDateEdit->setDate(m_ScheduleDataInfo->dtStart().date());
+            m_beginTimeEdit->setTime(m_ScheduleDataInfo->dtStart().time());
+            m_endDateEdit->setDate(m_ScheduleDataInfo->dtEnd().date());
+            m_endTimeEdit->setTime(m_ScheduleDataInfo->dtEnd().time());
         } else {
             m_beginDateEdit->setDate(m_currentDate.date());
             m_beginTimeEdit->setTime(m_currentDate.time());
@@ -493,9 +493,9 @@ void CScheduleDlg::slotallDayStateChanged(int state)
         m_endTimeEdit->setVisible(false);
 
         if (m_type == 0) {
-            m_beginDateEdit->setDate(m_ScheduleDataInfo.dtStart().date());
+            m_beginDateEdit->setDate(m_ScheduleDataInfo->dtStart().date());
             m_beginTimeEdit->setTime(QTime(0, 0));
-            m_endDateEdit->setDate(m_ScheduleDataInfo.dtEnd().date());
+            m_endDateEdit->setDate(m_ScheduleDataInfo->dtEnd().date());
             m_endTimeEdit->setTime(QTime(23, 59));
         } else {
             m_beginDateEdit->setDate(m_currentDate.date());

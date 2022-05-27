@@ -88,7 +88,7 @@ void CScheduleSearchItem::setTimeC(QColor tColor, QFont font)
     m_timefont = font;
 }
 
-void CScheduleSearchItem::setData(DSchedule vScheduleInfo, QDate date)
+void CScheduleSearchItem::setData(DSchedule::Ptr vScheduleInfo, QDate date)
 {
     m_ScheduleInfo = vScheduleInfo;
     m_date = date;
@@ -146,22 +146,22 @@ void CScheduleSearchItem::setDurationSize(QFont font)
 }
 void CScheduleSearchItem::slotEdit()
 {
-    CScheduleDlg dlg(0, this);
-    dlg.setData(m_ScheduleInfo);
-    dlg.exec();
+//    CScheduleDlg dlg(0, this);
+//    dlg.setData(m_ScheduleInfo);
+//    dlg.exec();
 }
 
 void CScheduleSearchItem::slotDelete()
 {
     //删除日程
-    CScheduleOperation _scheduleOperation(this);
-    bool _isDelete = _scheduleOperation.deleteSchedule(m_ScheduleInfo);
-    //删除日程后，将焦点设置给父类
-    if (_isDelete) {
-        parentWidget()->setFocus(Qt::TabFocusReason);
-    } else {
-        this->setFocus();
-    }
+//    CScheduleOperation _scheduleOperation(this);
+//    bool _isDelete = _scheduleOperation.deleteSchedule(m_ScheduleInfo);
+//    删除日程后，将焦点设置给父类
+//    if (_isDelete) {
+//        parentWidget()->setFocus(Qt::TabFocusReason);
+//    } else {
+//        this->setFocus();
+//    }
 }
 
 /**
@@ -273,12 +273,12 @@ void CScheduleSearchItem::paintEvent(QPaintEvent *e)
 
     QString datestr;
 
-    datestr = m_ScheduleInfo.dtStart().toString(m_timeFormat)
-              + "-" + m_ScheduleInfo.dtEnd().toString(m_timeFormat);
+    datestr = m_ScheduleInfo->dtStart().toString(m_timeFormat)
+              + "-" + m_ScheduleInfo->dtEnd().toString(m_timeFormat);
 
     int flag = Qt::AlignLeft | Qt::AlignVCenter;
 
-    if (m_ScheduleInfo.allDay()) {
+    if (m_ScheduleInfo->allDay()) {
         datestr = tr("All Day");
     }
     painter.drawText(QRect(12, 8, m_durationSize, labelBottomY - 16), flag, datestr);
@@ -300,7 +300,7 @@ void CScheduleSearchItem::paintEvent(QPaintEvent *e)
     QFontMetrics fm = painter.fontMetrics();
     //整个label宽度-文字起始位置
     int tilenameW = labelRightX - m_borderframewX - (m_durationSize + 26);
-    QString tSTitleName = m_ScheduleInfo.summary();
+    QString tSTitleName = m_ScheduleInfo->summary();
     tSTitleName.replace("\n", "");
     QString str = tSTitleName;
     QString tStr;
@@ -585,17 +585,17 @@ void CScheduleSearchView::updateDateShow()
     //找最近日程
     QDate tCurrentData = QDate::currentDate();
     //搜索日程过滤排序
-    QMap<QDate, QVector<DSchedule>> m_showData;
+    QMap<QDate, DSchedule::List> m_showData;
     qint64 offset = 1000;
     QDate topdate = tCurrentData;
-    QMap<QDate, QVector<DSchedule>>::const_iterator _iterator = m_vlistData.constBegin();
-    QVector<DSchedule> _showInfo {};
+    QMap<QDate, DSchedule::List>::const_iterator _iterator = m_vlistData.constBegin();
+    DSchedule::List _showInfo {};
     for (; _iterator != m_vlistData.constEnd(); ++_iterator) {
         qint64 d = qAbs(_iterator.key().daysTo(tCurrentData));
         _showInfo.clear();
         for (int i = 0 ; i < _iterator.value().size(); ++i) {
             //如果开始时间日期为显示日期则显示,跨天日程只显示一个
-            if (_iterator.value().at(i).dtStart().date() == _iterator.key() || _iterator == m_vlistData.constBegin()) {
+            if (_iterator.value().at(i)->dtStart().date() == _iterator.key() || _iterator == m_vlistData.constBegin()) {
                 _showInfo.append(_iterator.value().at(i));
             }
         }
@@ -611,7 +611,7 @@ void CScheduleSearchView::updateDateShow()
         }
     }
     tCurrentData = topdate;
-    QMap<QDate, QVector<DSchedule>>::const_iterator _showIterator = m_showData.constBegin();
+    QMap<QDate, DSchedule::List>::const_iterator _showIterator = m_showData.constBegin();
     for (; _showIterator != m_showData.constEnd(); ++_showIterator) {
         //创建显示日期项
         QListWidgetItem *dateItem = createItemWidget(_showIterator.key());
@@ -680,9 +680,9 @@ void CScheduleSearchView::updateDateShow()
     }
 }
 
-void CScheduleSearchView::createItemWidget(DSchedule info, QDate date, int rtype)
+void CScheduleSearchView::createItemWidget(DSchedule::Ptr info, QDate date, int rtype)
 {
-    DSchedule &gd = info;
+    DSchedule::Ptr &gd = info;
 
     CScheduleSearchItem *gwi = new CScheduleSearchItem(this);
     QFont font;
@@ -753,11 +753,11 @@ void CScheduleSearchView::slotsetSearch(QString str)
     }
     QDateTime eDate = date.addMonths(6);
     //查询搜索
-    m_vlistData = CalendarManager::getInstance()->getScheduleTask()->getSearchScheduleInfo(str, bDate, eDate);
+//    m_vlistData = CalendarManager::getInstance()->getScheduleTask()->getSearchScheduleInfo(str, bDate, eDate);
     updateDateShow();
 }
 
-void CScheduleSearchView::slotSelectSchedule(const DSchedule &scheduleInfo)
+void CScheduleSearchView::slotSelectSchedule(const DSchedule::Ptr &scheduleInfo)
 {
     emit signalSelectSchedule(scheduleInfo);
 }

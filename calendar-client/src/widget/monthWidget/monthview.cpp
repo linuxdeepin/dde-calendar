@@ -72,12 +72,12 @@ CMonthView::~CMonthView()
 {
 }
 
-void CMonthView::setSelectSchedule(const DSchedule &scheduleInfo)
+void CMonthView::setSelectSchedule(const DSchedule::Ptr &scheduleInfo)
 {
     m_monthGraphicsView->setSelectSearchSchedule(scheduleInfo);
 }
 
-void CMonthView::slotScheduleRemindWidget(const bool isShow, const DSchedule &out)
+void CMonthView::slotScheduleRemindWidget(const bool isShow, const DSchedule::Ptr &out)
 {
     if (isShow) {
         //获取当前鼠标位置
@@ -86,7 +86,7 @@ void CMonthView::slotScheduleRemindWidget(const bool isShow, const DSchedule &ou
         QPoint remindPos = variant.value<QPoint>();
         //TODO:根据类型获取颜色
         CSchedulesColor gdColor; //= CScheduleDataManage::getScheduleDataManage()->getScheduleColorByType(out.getType());
-        m_remindWidget->setData(out, gdColor);
+//        m_remindWidget->setData(out, gdColor);
         //获取屏幕大小
         QRect desktopRect = QApplication::desktop()->rect();
         //根据提示框在屏幕的位置设置箭头方向
@@ -167,7 +167,7 @@ void CMonthView::setFestival(const QMap<QDate, int> &festivalInfo)
  * @brief CMonthView::setScheduleInfo       设置显示日程
  * @param scheduleInfo
  */
-void CMonthView::setScheduleInfo(const QMap<QDate, QVector<DSchedule>> &scheduleInfo)
+void CMonthView::setScheduleInfo(const QMap<QDate, DSchedule::List> &scheduleInfo)
 {
     m_monthGraphicsView->setScheduleInfo(scheduleInfo);
 }
@@ -176,7 +176,7 @@ void CMonthView::setScheduleInfo(const QMap<QDate, QVector<DSchedule>> &schedule
  * @brief CMonthView::setSearchScheduleInfo     设置搜索日程
  * @param searchScheduleInfo
  */
-void CMonthView::setSearchScheduleInfo(const QVector<DSchedule> &searchScheduleInfo)
+void CMonthView::setSearchScheduleInfo(const DSchedule::List &searchScheduleInfo)
 {
     m_monthGraphicsView->setSearchScheduleInfo(searchScheduleInfo);
 }
@@ -209,18 +209,19 @@ void CMonthView::setLunarVisible(bool visible)
     m_monthGraphicsView->setLunarVisible(visible);
 }
 
-DSchedule CMonthView::getScheduleInfo(const QDate &beginDate, const QDate &endDate)
+DSchedule::Ptr CMonthView::getScheduleInfo(const QDate &beginDate, const QDate &endDate)
 {
-    DSchedule info;
+    DSchedule::Ptr info;
+    info.reset(new DSchedule());
     if (beginDate.daysTo(endDate) > 0) {
-        info.setDtStart(QDateTime(beginDate, QTime(0, 0, 0)));
-        info.setDtEnd(QDateTime(endDate, QTime(23, 59, 59)));
+        info->setDtStart(QDateTime(beginDate, QTime(0, 0, 0)));
+        info->setDtEnd(QDateTime(endDate, QTime(23, 59, 59)));
     } else {
-        info.setDtStart(QDateTime(endDate, QTime(0, 0, 0)));
-        info.setDtEnd(QDateTime(beginDate, QTime(23, 59, 00)));
+        info->setDtStart(QDateTime(endDate, QTime(0, 0, 0)));
+        info->setDtEnd(QDateTime(beginDate, QTime(23, 59, 00)));
     }
-    info.setSummary(tr("New Event"));
-    info.setAllDay(true);
+    info->setSummary(tr("New Event"));
+    info->setAllDay(true);
     //TODO:设置提醒规则
     //    info.setRemindData(RemindData(1, QTime(9, 0)));
     return info;

@@ -43,12 +43,12 @@ public:
      * @brief setData 设置日程信息，并全天日程置于非全天日程之前
      * @param vListData 日程信息
      */
-    void setData(QVector<DSchedule> &vListData);
+    void setData(DSchedule::List &vListData);
     /**
      * @brief getlistdate 获取日程信息
      * @return  日程信息
      */
-    QVector<DSchedule> getlistdate()
+    DSchedule::List getlistdate()
     {
         return m_vlistData;
     }
@@ -97,14 +97,14 @@ protected:
      * @param info 日程信息
      * @param index 日程的索引
      */
-    void paintItem(QPainter &painter, DSchedule info, int index);
+    void paintItem(QPainter &painter, DSchedule::Ptr info, int index);
     /**
      * @brief paintItem
      */
     void paintItem(QPainter &painter);
 
 private:
-    QVector<DSchedule> m_vlistData;
+    DSchedule::List m_vlistData;
     QDate m_currentDate;
     QColor m_btimecolor = "#526A7F";
     QColor m_btTextColor = "#414D68";
@@ -126,7 +126,7 @@ public:
      * @brief setData 设置日程信息
      * @param vListData 日程信息
      */
-    void setData(QVector<DSchedule> &vListData);
+    void setData(DSchedule::List &vListData);
     /**
      * @brief clearData 清楚数据
      */
@@ -156,7 +156,7 @@ signals:
     void signalupdateschedule();
 private:
     CYearScheduleView *yearscheduleview = nullptr;
-    QVector<DSchedule> scheduleinfoList;
+    DSchedule::List scheduleinfoList;
     QDate currentdate;
     int list_count = 0;
 protected:

@@ -77,10 +77,6 @@ void MonthBrefWidget::setShowMonthDate(const QDate& monthDate)
     }
     //设置显示的月
     m_globalData->m_showMonthDate = monthDate;
-    //清空日程标识
-    for (int i = 0; i < 32; ++i) {
-        m_globalData->m_scheduleDateFlag[i]  = false;
-    }
     update();
 }
 

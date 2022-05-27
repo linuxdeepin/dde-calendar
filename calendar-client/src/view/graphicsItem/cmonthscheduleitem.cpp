@@ -104,7 +104,7 @@ void CMonthScheduleItem::paintBackground(QPainter *painter, const QRectF &rect, 
     painter->setPen(textcolor);
     QFontMetrics fm = painter->fontMetrics();
 
-    QString tSTitleName = m_vScheduleInfo.summary();
+    QString tSTitleName = m_vScheduleInfo->summary();
     tSTitleName.replace("\n", "");
     QString str = tSTitleName;
     //右侧偏移8

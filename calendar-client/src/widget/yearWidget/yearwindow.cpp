@@ -491,8 +491,9 @@ void CYearWindow::updateShowDate(const bool isUpdateBar)
 void CYearWindow::updateShowSchedule()
 {
     //获取显示日期中是否包含日程信息标志
-    QMap<QDate, bool> _fullInfo = m_calendarManager->getScheduleTask()->getDateHasSchedule();
-    m_yearWidget->setDateHasScheduleSign(_fullInfo);
+//    QMap<QDate, bool> _fullInfo = m_calendarManager->getScheduleTask()->getDateHasSchedule();
+    m_yearWidget->setDateHasScheduleSign(ScheduleManager::getInstace()->getAllScheduleDate());
+
 }
 
 /**
@@ -522,7 +523,7 @@ void CYearWindow::updateSearchScheduleInfo()
  * @brief CYearWindow::setSelectSearchScheduleInfo      设置选中搜索日程
  * @param info
  */
-void CYearWindow::setSelectSearchScheduleInfo(const DSchedule &info)
+void CYearWindow::setSelectSearchScheduleInfo(const DSchedule::Ptr &info)
 {
     Q_UNUSED(info);
 }
@@ -648,12 +649,12 @@ void CYearWindow::slotMousePress(const QDate &selectDate, const int pressType)
     switch (pressType) {
     case 0: {
         // 0:单击
-        QVector<DSchedule> _scheduleInfo {};
+        DSchedule::List _scheduleInfo {};
         //获取选择日期的日程信息
-        QMap<QDate, QVector<DSchedule>> showInfo = m_calendarManager->getScheduleTask()->getScheduleInfo(selectDate, selectDate);
-        if (showInfo.begin() != showInfo.end()) {
-            _scheduleInfo = showInfo.begin().value();
-        }
+//        QMap<QDate, DSchedule::List> showInfo = m_calendarManager->getScheduleTask()->getScheduleInfo(selectDate, selectDate);
+//        if (showInfo.begin() != showInfo.end()) {
+//            _scheduleInfo = showInfo.begin().value();
+//        }
         m_scheduleView->setCurrentDate(selectDate);
         m_scheduleView->setData(_scheduleInfo);
         //使用设置的显示坐标
@@ -825,7 +826,8 @@ void YearFrame::setDateHasScheduleSign(const QMap<QDate, bool> &hasSchedule)
             _offset = _startDate.daysTo(_stopDate) + 1;
             _hasScheduleSet.clear();
             for (int j = 0 ; j < _offset; ++j) {
-                if (hasSchedule.contains(_startDate.addDays(j))) {
+                _getDate = _startDate.addDays(j);
+                if (hasSchedule.contains(_getDate)) {
                     _hasScheduleSet.insert(_getDate);
                 }
             }

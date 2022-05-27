@@ -93,22 +93,22 @@ void CAllDayEventWeekView::RightClickToCreate(QGraphicsItem *listItem, const QPo
     m_rightMenu->exec(QCursor::pos());
 }
 
-void CAllDayEventWeekView::MoveInfoProcess(DSchedule &info, const QPointF &pos)
+void CAllDayEventWeekView::MoveInfoProcess(DSchedule::Ptr &info, const QPointF &pos)
 {
     Q_UNUSED(pos);
-    if (info.allDay()) {
+    if (info->allDay()) {
         qint64 offset = m_PressDate.daysTo(m_MoveDate);
-        info.setDtStart(info.dtStart().addDays(offset));
-        info.setDtEnd(info.dtEnd().addDays(offset));
+        info->setDtStart(info->dtStart().addDays(offset));
+        info->setDtEnd(info->dtEnd().addDays(offset));
     } else {
-        qint64 offset = info.dtStart().daysTo(info.dtEnd());
-        info.setAllDay(true);
+        qint64 offset = info->dtStart().daysTo(info->dtEnd());
+        info->setAllDay(true);
         //        info.remind = true;
         //TODO:提醒规则
         //        info.getRemindData().setRemindTime(QTime(9, 0));
         //        info.getRemindData().setRemindNum(1);
-        m_DragScheduleInfo.setDtStart(QDateTime(m_MoveDate.date(), QTime(0, 0, 0)));
-        m_DragScheduleInfo.setDtEnd(QDateTime(m_MoveDate.addDays(offset).date(), QTime(23, 59, 59)));
+        m_DragScheduleInfo->setDtStart(QDateTime(m_MoveDate.date(), QTime(0, 0, 0)));
+        m_DragScheduleInfo->setDtEnd(QDateTime(m_MoveDate.addDays(offset).date(), QTime(23, 59, 59)));
     }
     upDateInfoShow(ChangeWhole, info);
 }
@@ -134,7 +134,7 @@ void CAllDayEventWeekView::updateHeight()
  * @brief CAllDayEventWeekView::setSelectSearchSchedule     设置搜索选中日程
  * @param info
  */
-void CAllDayEventWeekView::setSelectSearchSchedule(const DSchedule &info)
+void CAllDayEventWeekView::setSelectSearchSchedule(const DSchedule::Ptr &info)
 {
     DragInfoGraphicsView::setSelectSearchSchedule(info);
     for (int i = 0; i < m_baseShowItem.size(); ++i) {
@@ -171,9 +171,9 @@ void CAllDayEventWeekView::updateInfo()
     }
 }
 
-void CAllDayEventWeekView::upDateInfoShow(const DragStatus &status, const DSchedule &info)
+void CAllDayEventWeekView::upDateInfoShow(const DragStatus &status, const DSchedule::Ptr &info)
 {
-    QVector<DSchedule> vListData;
+    DSchedule::List vListData;
     vListData = m_scheduleInfo;
     switch (status) {
     case NONE:
@@ -197,8 +197,8 @@ void CAllDayEventWeekView::upDateInfoShow(const DragStatus &status, const DSched
 
     QVector<MScheduleDateRangeInfo> vMDaySchedule;
     for (int i = 0; i < vListData.count(); i++) {
-        QDate tbegindate = vListData.at(i).dtStart().date();
-        QDate tenddate = vListData.at(i).dtEnd().date();
+        QDate tbegindate = vListData.at(i)->dtStart().date();
+        QDate tenddate = vListData.at(i)->dtEnd().date();
         if (tbegindate < m_beginDate)
             tbegindate = m_beginDate;
         if (tenddate > m_endDate)
@@ -249,7 +249,7 @@ void CAllDayEventWeekView::upDateInfoShow(const DragStatus &status, const DSched
         if (flag)
             vMDaySchedule[i].state = true;
     }
-    QVector<QVector<DSchedule>> vResultData;
+    QVector<DSchedule::List> vResultData;
     for (int i = 0; i < vListData.count(); i++) {
         QVector<int> vId;
         for (int j = 0; j < tNum; j++) {
@@ -263,7 +263,7 @@ void CAllDayEventWeekView::upDateInfoShow(const DragStatus &status, const DSched
                     vId.append(vCfillSchedule[i][j]);
             }
         }
-        QVector<DSchedule> tData;
+        DSchedule::List tData;
         for (int j = 0; j < vId.count(); j++) {
             tData.append(vMDaySchedule[vId[j]].tData);
         }
@@ -295,13 +295,13 @@ CAllDayEventWeekView::~CAllDayEventWeekView()
 {
 }
 
-void CAllDayEventWeekView::setDayData(const QVector<QVector<DSchedule>> &vlistData)
+void CAllDayEventWeekView::setDayData(const QVector<DSchedule::List> &vlistData)
 {
     m_vlistData = vlistData;
     updateDateShow();
 }
 
-void CAllDayEventWeekView::setInfo(const QVector<DSchedule> &info)
+void CAllDayEventWeekView::setInfo(const DSchedule::List &info)
 {
     m_scheduleInfo = info;
 }
@@ -371,8 +371,8 @@ void CAllDayEventWeekView::createItemWidget(int index, bool average)
 {
     Q_UNUSED(average)
     for (int i = 0; i < m_vlistData[index].size(); ++i) {
-        const DSchedule &info = m_vlistData[index].at(i);
-        QRectF drawrect = m_coorManage->getAllDayDrawRegion(info.dtStart().date(), info.dtEnd().date());
+        const DSchedule::Ptr &info = m_vlistData[index].at(i);
+        QRectF drawrect = m_coorManage->getAllDayDrawRegion(info->dtStart().date(), info->dtEnd().date());
         drawrect.setY(2 + (itemHeight + 1) * index);
         drawrect.setHeight(itemHeight);
 

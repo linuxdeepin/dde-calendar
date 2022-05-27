@@ -26,6 +26,7 @@
 #include "dschedule.h"
 #include "dscheduletype.h"
 #include "dtypecolor.h"
+#include "dschedulequerypar.h"
 
 //单项账户信息请求类
 class DbusAccountRequest : public DbusRequestBase
@@ -118,11 +119,12 @@ public:
      * @param params                        具体的查询参数
      * @return                              查询到的日程集
      */
-    void querySchedulesWithParameter(const QString &params);
+    void querySchedulesWithParameter(const DScheduleQueryPar::Ptr &params);
 
 signals:
     void signalGetAccountInfoFinish(DAccount::Ptr);
     void signalGetScheduleTypeListFinish(DScheduleType::List);
+    void signalGetScheduleListFinish(QMap<QDate, DSchedule::List>);
 
 public slots:
 

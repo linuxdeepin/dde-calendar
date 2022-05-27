@@ -48,14 +48,14 @@ public:
     bool getScheduleStatus();
     void deleteSchedule();
 signals:
-    void signalSelectSchedule(const DSchedule &scheduleInfo);
+    void signalSelectSchedule(const DSchedule::Ptr &scheduleInfo);
     void signalScheduleHide();
     void signalSelectCurrentItem();
     void signalSchotCutClicked();
 public slots:
     //需要搜索日程关键字
     void slotsetSearch(QString str);
-    void slotSelectSchedule(const DSchedule &scheduleInfo);
+    void slotSelectSchedule(const DSchedule::Ptr &scheduleInfo);
     //更新搜索信息
     void updateSearch();
     void slotSelectCurrentItem(CScheduleSearchItem *item, bool itemFocusOut);
@@ -69,12 +69,12 @@ protected:
 
 private:
     void updateDateShow();
-    void createItemWidget(DSchedule info, QDate date, int rtype);
+    void createItemWidget(DSchedule::Ptr info, QDate date, int rtype);
     QListWidgetItem *createItemWidget(QDate date);
 private:
     CScheduleListWidget *m_gradientItemList = nullptr; //下拉列表窗
     bool m_widgetFlag;
-    QMap<QDate, QVector<DSchedule>> m_vlistData;
+    QMap<QDate, DSchedule::List> m_vlistData;
     QVector<DLabel *> m_labellist;
     int m_type;
     QDate m_currentDate;
@@ -120,18 +120,18 @@ public:
     void setBackgroundColor(QColor color1);
     void setText(QColor tColor, QFont font);
     void setTimeC(QColor tColor, QFont font);
-    void setData(DSchedule vScheduleInfo, QDate date);
+    void setData(DSchedule::Ptr vScheduleInfo, QDate date);
     void setRoundtype(int rtype);
     void setTheMe(int type = 0);
     void setDurationSize(QFont font);
-    const DSchedule &getData() const
+    const DSchedule::Ptr &getData() const
     {
         return m_ScheduleInfo;
     }
 signals:
     void signalsDelete(CScheduleSearchItem *item);
     void signalsEdit(CScheduleSearchItem *item);
-    void signalSelectSchedule(const DSchedule &scheduleInfo);
+    void signalSelectSchedule(const DSchedule::Ptr &scheduleInfo);
     void signalSelectCurrentItem(CScheduleSearchItem *item, bool focusOutStatus);
 public slots:
     void slotEdit();
@@ -156,7 +156,7 @@ private:
         QColor timeColor;
         QColor textColor;
     };
-    DSchedule m_ScheduleInfo;
+    DSchedule::Ptr m_ScheduleInfo;
     QAction *m_editAction = nullptr;
     QAction *m_deleteAction = nullptr;
     QColor m_Backgroundcolor;

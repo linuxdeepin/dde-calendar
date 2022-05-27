@@ -36,7 +36,7 @@ DWIDGET_USE_NAMESPACE
 typedef struct _tagScheduleclassificationInfo {
     QDateTime begindate;
     QDateTime enddate;
-    QVector<DSchedule> vData;
+    DSchedule::List vData;
 
 } ScheduleclassificationInfo;
 
@@ -55,10 +55,10 @@ public:
     }
     void updateHeight();
     void setCurrentDate(const QDateTime &currentDate);
-    void setInfo(const QVector<DSchedule> &info);
-    void addScheduleItem(const DSchedule &info, QDate date, int index, int totalNum, int type, int viewtype, int maxnum);
+    void setInfo(const DSchedule::List &info);
+    void addScheduleItem(const DSchedule::Ptr &info, QDate date, int index, int totalNum, int type, int viewtype, int maxnum);
     //设置搜索选中日程
-    void setSelectSearchSchedule(const DSchedule &info) override;
+    void setSelectSearchSchedule(const DSchedule::Ptr &info) override;
     void clearSchedule();
 
     void setMinTime(const int &minTime)
@@ -71,7 +71,7 @@ public:
     }
     void keepCenterOnScene();
 
-    void scheduleClassificationType(QVector<DSchedule> &scheduleInfolist, QList<ScheduleclassificationInfo> &info);
+    void scheduleClassificationType(DSchedule::List &scheduleInfolist, QList<ScheduleclassificationInfo> &info);
     void mouseDoubleClickEvent(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
@@ -103,12 +103,12 @@ public:
 protected:
     void slotCreate(const QDateTime &date) override;
     bool MeetCreationConditions(const QDateTime &date) override;
-    void upDateInfoShow(const DragStatus &status = NONE, const DSchedule &info = DSchedule()) override;
+    void upDateInfoShow(const DragStatus &status = NONE, const DSchedule::Ptr &info = DSchedule::Ptr()) override;
     QDateTime getPosDate(const QPoint &p) override;
     void ShowSchedule(DragInfoItem *infoitem) override;
-    void MoveInfoProcess(DSchedule &info, const QPointF &pos) override;
+    void MoveInfoProcess(DSchedule::Ptr &info, const QPointF &pos) override;
     PosInItem getPosInItem(const QPoint &p, const QRectF &itemRect) override;
-    DSchedule getScheduleInfo(const QDateTime &beginDate, const QDateTime &endDate) override;
+    DSchedule::Ptr getScheduleInfo(const QDateTime &beginDate, const QDateTime &endDate) override;
     bool IsEqualtime(const QDateTime &timeFirst, const QDateTime &timeSecond) override;
     bool JudgeIsCreate(const QPointF &pos) override;
     void RightClickToCreate(QGraphicsItem *listItem, const QPoint &pos) override;
@@ -132,7 +132,7 @@ private:
     QTimer *m_timer = nullptr;
     QMutex m_Mutex;
     bool m_updateDflag = false;
-    QVector<DSchedule> m_scheduleInfo;
+    DSchedule::List m_scheduleInfo;
     QDateTime m_currentDateTime;
     int m_minTime; //最小高度对应的最小时间
     int m_sMaxNum = 4;

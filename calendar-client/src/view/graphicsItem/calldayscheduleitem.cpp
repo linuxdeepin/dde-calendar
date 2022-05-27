@@ -27,7 +27,7 @@ CAllDayScheduleItem::CAllDayScheduleItem(QRectF rect, QGraphicsItem *parent)
 {
 }
 
-bool CAllDayScheduleItem::hasSelectSchedule(const DSchedule &info)
+bool CAllDayScheduleItem::hasSelectSchedule(const DSchedule::Ptr &info)
 {
     return info == m_vScheduleInfo;
 }
@@ -85,7 +85,7 @@ void CAllDayScheduleItem::paintBackground(QPainter *painter, const QRectF &rect,
     painter->setFont(m_font);
     painter->setPen(textcolor);
     QFontMetrics fm = painter->fontMetrics();
-    QString tSTitleName = m_vScheduleInfo.summary();
+    QString tSTitleName = m_vScheduleInfo->summary();
     tSTitleName.replace("\n", "");
     QString str = tSTitleName;
     QString tStr;

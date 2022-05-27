@@ -58,9 +58,9 @@ public:
     //设置班休信息
     void setFestival(const QMap<QDate, int> &festivalInfo);
     //设置显示日程
-    void setScheduleInfo(const QMap<QDate, QVector<DSchedule>> &scheduleInfo);
+    void setScheduleInfo(const QMap<QDate, DSchedule::List> &scheduleInfo);
     //设置搜索日程
-    void setSearchScheduleInfo(const QVector<DSchedule> &searchScheduleInfo);
+    void setSearchScheduleInfo(const DSchedule::List &searchScheduleInfo);
     //设置当前时间
     void setCurrentDate(const QDate &currentDate);
     void setRemindWidgetTimeFormat(QString timeformat);
@@ -81,14 +81,14 @@ public slots:
      * @brief setSelectSchedule 设置选择的日程
      * @param scheduleInfo 日程信息
      */
-    void setSelectSchedule(const DSchedule &scheduleInfo);
+    void setSelectSchedule(const DSchedule::Ptr &scheduleInfo);
 public slots:
     /**
      * @brief slotScheduleRemindWidget 日程浮框
      * @param isShow 是否显示日程浮框
      * @param out 日程信息
      */
-    void slotScheduleRemindWidget(const bool isShow, const DSchedule &out = DSchedule());
+    void slotScheduleRemindWidget(const bool isShow, const DSchedule::Ptr &out = DSchedule::Ptr());
 signals:
     /**
      * @brief signalAngleDelta      发送滚动信号滚动相对量
@@ -113,7 +113,7 @@ protected:
     bool event(QEvent *event) override;
 
 private:
-    DSchedule getScheduleInfo(const QDate &beginDate, const QDate &endDate);
+    DSchedule::Ptr getScheduleInfo(const QDate &beginDate, const QDate &endDate);
 
 private:
     CMonthGraphicsview *m_monthGraphicsView = nullptr;

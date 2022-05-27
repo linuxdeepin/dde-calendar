@@ -38,15 +38,15 @@ class CAllDayEventWeekView : public CWeekDayGraphicsview
 public:
     CAllDayEventWeekView(QWidget *parent = nullptr, ViewPosition type = WeekPos);
     ~CAllDayEventWeekView() override;
-    void setDayData(const QVector<QVector<DSchedule>> &vlistData);
-    void setInfo(const QVector<DSchedule> &info);
-    QVector<QVector<DSchedule>> &getListData()
+    void setDayData(const QVector<DSchedule::List> &vlistData);
+    void setInfo(const DSchedule::List &info);
+    QVector<DSchedule::List> &getListData()
     {
         return m_vlistData;
     }
     void updateHeight();
     //获取搜索选中日程
-    void setSelectSearchSchedule(const DSchedule &info) override;
+    void setSelectSearchSchedule(const DSchedule::Ptr &info) override;
     void setMargins(int left, int top, int right, int bottom);
     //更新日程显示
     void updateInfo() override;
@@ -68,12 +68,12 @@ private:
     //根据鼠标移动的距离判断是否创建日程
     bool JudgeIsCreate(const QPointF &pos) override;
     void RightClickToCreate(QGraphicsItem *listItem, const QPoint &pos) override;
-    void MoveInfoProcess(DSchedule &info, const QPointF &pos) override;
+    void MoveInfoProcess(DSchedule::Ptr &info, const QPointF &pos) override;
     QDateTime getDragScheduleInfoBeginTime(const QDateTime &moveDateTime) override;
     QDateTime getDragScheduleInfoEndTime(const QDateTime &moveDateTime) override;
     PosInItem getPosInItem(const QPoint &p, const QRectF &itemRect) override;
     QDateTime getPosDate(const QPoint &p) override;
-    void upDateInfoShow(const DragStatus &status = NONE, const DSchedule &info = DSchedule()) override;
+    void upDateInfoShow(const DragStatus &status = NONE, const DSchedule::Ptr &info = DSchedule::Ptr()) override;
 
 protected:
     void mouseDoubleClickEvent(QMouseEvent *event) override;
@@ -84,8 +84,8 @@ private:
     void updateItemHeightByFontSize();
 private:
     int itemHeight = 22;
-    QVector<QVector<DSchedule>> m_vlistData;
-    QVector<DSchedule> m_scheduleInfo;
+    QVector<DSchedule::List> m_vlistData;
+    QVector<DSchedule::Ptr> m_scheduleInfo;
     QVector<CAllDayScheduleItem *> m_baseShowItem;
     bool m_updateDflag = false;
 };

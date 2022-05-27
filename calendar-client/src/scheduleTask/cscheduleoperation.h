@@ -38,11 +38,11 @@ class CScheduleOperation : public QObject
 public:
     explicit CScheduleOperation(QWidget *parent = nullptr);
     //创建日程
-    bool createSchedule(const DSchedule &scheduleInfo);
+    bool createSchedule(const DSchedule::Ptr &scheduleInfo);
     //修改日程
-    bool changeSchedule(const DSchedule &newInfo, const DSchedule &oldInfo);
+    bool changeSchedule(const DSchedule::Ptr &newInfo, const DSchedule::Ptr &oldInfo);
     //删除日程  false :取消删除  true: 确定删除
-    bool deleteSchedule(const DSchedule &scheduleInfo);
+    bool deleteSchedule(const DSchedule::Ptr &scheduleInfo);
     //查询日程
     QString queryScheduleStr(const QString &key, const QDateTime &startTime, const QDateTime &endTime);
     //获取查询日程

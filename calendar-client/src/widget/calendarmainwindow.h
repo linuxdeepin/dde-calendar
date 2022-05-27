@@ -91,7 +91,7 @@ private slots:
     void slotStextfocusChanged(bool onFocus);
     void slotSearchEdit();
     //单击搜索日程动画设置
-    void slotSearchSelectSchedule(const DSchedule &scheduleInfo);
+    void slotSearchSelectSchedule(const DSchedule::Ptr &scheduleInfo);
     //添加视图阴影
     void slotViewtransparentFrame(const bool isShow);
     //启用buttonbox

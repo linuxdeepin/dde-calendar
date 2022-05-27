@@ -23,6 +23,7 @@
 
 #include "calendarmanage.h"
 #include "cdialogiconbutton.h"
+#include "schedulemanager.h"
 
 #include <QWidget>
 
@@ -58,7 +59,7 @@ public:
     //更新农历信息显示
     virtual void updateShowLunar() = 0;
     //设置选中搜索日程
-    virtual void setSelectSearchScheduleInfo(const DSchedule &info) = 0;
+    virtual void setSelectSearchScheduleInfo(const DSchedule::Ptr &info) = 0;
     //删除选中日程
     virtual void deleteselectSchedule();
 protected:
@@ -67,6 +68,13 @@ protected:
 signals:
     //切换视图信号    0:跳转上一个视图  1：月视图  2：周视图 3:日视图
     void signalSwitchView(const int viewIndex = 0);
+
+public slots:
+    void slotScheduleUpdate();
+
+private:
+    void initConnect();
+
 protected:
     static CalendarManager *m_calendarManager;
     QString             m_lunarYear;

@@ -60,14 +60,14 @@ public:
     //更新显示农历信息
     void updateShowLunar() override;
     //设置选中搜索日程
-    void setSelectSearchScheduleInfo(const DSchedule &info) override;
+    void setSelectSearchScheduleInfo(const DSchedule::Ptr &info) override;
     //删除选中日程
     void deleteselectSchedule() override;
 private:
     void initUI();
     void initConnection();
     //获取界面显示定位时间位置
-    void setMakeTime(QMap<QDate, QVector<DSchedule>> &info);
+    void setMakeTime(QMap<QDate, DSchedule::List> &info);
 public slots:
     void slotScheduleHide();
     //更新选择时间
