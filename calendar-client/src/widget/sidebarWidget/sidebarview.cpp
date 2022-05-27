@@ -19,7 +19,6 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "sidebarview.h"
-#include "sidebaritemwidget.h"
 #include "calendarmanage.h"
 #include "widget/monthWidget/monthdayview.h"
 #include "widget/dayWidget/daymonthview.h"
@@ -31,7 +30,10 @@ SidebarView::SidebarView(QWidget *parent) : QWidget(parent)
 {
     initView();
     initConnection();
-    initData();
+    //等待数据完成
+    gAccounManager->waitingData([this](bool){
+       initData();
+    });
 }
 
 /**
@@ -79,24 +81,53 @@ void SidebarView::initConnection()
 void SidebarView::initData()
 {
     m_treeWidget->clear();
+    initLocalAccountItem();
+    initUnionAccountItem();
+}
+
+void SidebarView::initLocalAccountItem()
+{
+    if (nullptr != m_accountItemWidget) {
+        m_accountItemWidget->deleteLater();
+    }
+    QSharedPointer<AccountItem> localAccount = gAccounManager->getLocalAccountItem();
+    if (nullptr == localAccount) {
+        return;
+    }
     QTreeWidgetItem *localItem = new QTreeWidgetItem();
     m_treeWidget->addTopLevelItem(localItem);
     localItem->setSizeHint(0, QSize(200, 30));
-    QString localName = tr("Local Calendar");
-    SidebarItemWidget *localWidget = SidebarItemWidget::getTopLevelWidget(localName);
-    m_treeWidget->setItemWidget(localItem, 0, localWidget);
-    localWidget->setItem(localItem);
+    QString localName = localAccount->getAccount()->accountName();
+    m_accountItemWidget = new SidebarAccountItemWidget(localAccount);
+    m_treeWidget->setItemWidget(localItem, 0, m_accountItemWidget);
+    m_accountItemWidget->setItem(localItem);
 
-    QString unionName("UnionID");
-    QTreeWidgetItem *unionItem = new QTreeWidgetItem();
-    m_treeWidget->addTopLevelItem(unionItem);
-    QIcon unionIcon(":/resources/icon/icon_refresh.svg");
-    SidebarItemWidget *unionWidget = SidebarItemWidget::getTopLevelWidget(unionName, unionIcon);
-    m_treeWidget->setItemWidget(unionItem, 0, unionWidget);
-    unionWidget->setItem(unionItem);
+    //监听日程类型数据变化数据
+    localAccount->monitorScheduleTypeData([this](bool) {
+        resetJobTypeChildItem(m_accountItemWidget);
+    });
+}
 
-    resetJobTypeChildItem(localItem);
-    resetJobTypeChildItem(unionItem);
+void SidebarView::initUnionAccountItem()
+{
+    if (nullptr != m_unionItemWidget) {
+        m_unionItemWidget->deleteLater();
+    }
+    QSharedPointer<AccountItem> unionAccount = gAccounManager->getUnionAccountItem();
+    if (nullptr == unionAccount) {
+        return;
+    }
+    QTreeWidgetItem *localItem = new QTreeWidgetItem();
+    m_treeWidget->addTopLevelItem(localItem);
+    localItem->setSizeHint(0, QSize(200, 30));
+    QString localName = unionAccount->getAccount()->accountName();
+    m_unionItemWidget = new SidebarAccountItemWidget(unionAccount);
+    m_treeWidget->setItemWidget(localItem, 0, m_accountItemWidget);
+    m_unionItemWidget->setItem(localItem);
+
+    unionAccount->monitorScheduleTypeData([this](bool) {
+        resetJobTypeChildItem(m_accountItemWidget);
+    });
 }
 
 /**
@@ -104,16 +135,18 @@ void SidebarView::initData()
  * 重置本地日程类型选项
  * @param parentItem
  */
-void SidebarView::resetJobTypeChildItem(QTreeWidgetItem *parentItem)
+void SidebarView::resetJobTypeChildItem(SidebarAccountItemWidget *parentItemWidget)
 {
+    DScheduleType::List typeList = parentItemWidget->getAccountItem()->getScheduleTypeList();
     QTreeWidgetItem *item;
-    for (auto info : JobTypeInfoManager::instance()->getJobTypeList()) {
-        item = new QTreeWidgetItem(parentItem);
-        item->setTextAlignment(0, Qt::AlignVCenter | Qt::AlignLeft);
-        parentItem->addChild(item);
-        SidebarItemWidget *widget = SidebarItemWidget::getLocalWidget(info);
-        m_treeWidget->setItemWidget(item, 0, widget);
-        connect(widget, &SidebarItemWidget::signalStatusChange, this, &SidebarView::slotItemWidgetStatusChange);
+    for (DScheduleType::Ptr p : typeList) {
+        if (nullptr != p) {
+            item = new QTreeWidgetItem(parentItemWidget->getTreeItem());
+            item->setTextAlignment(0, Qt::AlignVCenter | Qt::AlignLeft);
+            parentItemWidget->getTreeItem()->addChild(item);
+            SidebarItemWidget *widget = new SidebarTypeItemWidget(p, this);
+            m_treeWidget->setItemWidget(item, 0, widget);
+        }
     }
 }
 

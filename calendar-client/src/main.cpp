@@ -23,6 +23,7 @@
 #include "configsettings.h"
 #include "accessible/accessible.h"
 #include "tabletconfig.h"
+#include "accountmanager.h"
 
 #include <DApplication>
 #include <DLog>
@@ -100,6 +101,8 @@ int main(int argc, char *argv[])
         }
         ww.slotTheme(DGuiApplicationHelper::instance()->themeType());
         ww.show();
+        //准备数据
+        gAccounManager->resetAccount();
         return app->exec();
     }
     return 0;

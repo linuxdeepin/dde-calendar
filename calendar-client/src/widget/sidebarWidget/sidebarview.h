@@ -22,6 +22,8 @@
 #define SIDEBARVIEW_H
 
 #include "sidebarcalendarwidget.h"
+#include "sidebaritemwidget.h"
+#include "accountmanager.h"
 #include <DTreeWidget>
 #include <QWidget>
 #include <QTreeWidgetItem>
@@ -44,13 +46,21 @@ protected:
 private:
     void initView();
     void initConnection();
+    //初始化数据
     void initData();
+    //初始化本地账户列表
+    void initLocalAccountItem();
+    //初始化union账户列表
+    void initUnionAccountItem();
 
-    //重置本地日程类型item
-    void resetJobTypeChildItem(QTreeWidgetItem *parentItem);
+    //重置日程类型item
+    void resetJobTypeChildItem(SidebarAccountItemWidget *parentItemWidget);
 
 private:
     QTreeWidget *m_treeWidget = nullptr;        //树结构
+    SidebarAccountItemWidget* m_accountItemWidget = nullptr;
+    SidebarAccountItemWidget* m_unionItemWidget = nullptr;
+
     SidebarCalendarWidget *m_calendarWidget = nullptr;  //小日历
 };
 

@@ -66,8 +66,8 @@ qint64 CScheduleDBus::CreateJob(const DSchedule &info)
         return -1;
     }
     QList<QVariant> argumentList;
-    //TODO:序列化
-    //    argumentList << QVariant::fromValue(info.ScheduleToJsonStr(info));
+//    TODO:序列化
+//        argumentList << QVariant::fromValue(info.ScheduleToJsonStr(info));
     QDBusPendingCall pCall = asyncCallWithArgumentList(QStringLiteral("CreateJob"), argumentList);
     pCall.waitForFinished();
     QDBusMessage reply = pCall.reply();
@@ -105,8 +105,8 @@ bool CScheduleDBus::GetJobs(const QDate &startDate, const QDate &endDate, QMap<Q
 
     if (!jobs.isValid())
         return false;
-    //TODO:序列化
-    //    info = ScheduleDataInfo::StrJsonToRangeInfo(jobs.value());
+//    TODO:序列化
+//        info = ScheduleDataInfo::StrJsonToRangeInfo(jobs.value());
     return  true;
 }
 

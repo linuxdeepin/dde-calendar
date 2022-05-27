@@ -1,0 +1,117 @@
+/*
+* Copyright (C) 2019 ~ 2020 Uniontech Software Technology Co.,Ltd.
+*
+* Author:     leilong  <leilong@uniontech.com>
+*
+* Maintainer: leilong  <leilong@uniontech.com>
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+#ifndef ACCOUNTITEM_H
+#define ACCOUNTITEM_H
+
+#include "dbus/dbusaccountrequest.h"
+#include <QObject>
+
+//单项账户信息管理类
+class AccountItem : public QObject
+{
+    Q_OBJECT
+public:
+    explicit AccountItem(const DAccount::Ptr& account, QObject *parent = nullptr);
+
+    typedef std::function<void(bool)> CallbackFunc;
+    typedef QSharedPointer<AccountItem> Ptr;
+
+    //获取账户数据
+    DAccount::Ptr getAccount();
+
+    // 获取日程类型信息集
+    DScheduleType::List getScheduleTypeList();
+
+    //根据类型ID获取日程类型
+    DScheduleType::Ptr getScheduleTypeByID(const QString &typeID);
+
+    //更新账户信息
+    void updateAccountInfo(CallbackFunc callback = nullptr);
+
+    //创建日程类型
+    void createJobType(const DScheduleType::Ptr &typeInfo, CallbackFunc callback = nullptr);
+
+    //更新类型信息
+    void updateScheduleType(const DScheduleType::Ptr &typeInfo, CallbackFunc callback = nullptr);
+
+    //根据类型ID删除日程类型
+    void deleteScheduleTypeByID(const QString &typeID, CallbackFunc callback = nullptr);
+
+    //类型是否被日程使用
+    void scheduleTypeIsUsed(const QString &typeID, CallbackFunc callback);
+
+    //创建日程
+    void createSchedule(const DSchedule::Ptr& scheduleInfo, CallbackFunc callback = nullptr);
+
+    //更新日程
+    void updateSchedule(const DSchedule::Ptr& scheduleInfo, CallbackFunc callback = nullptr);
+
+    //根据日程ID删除日程
+    void deleteScheduleByID(const QString &scheduleID, CallbackFunc callback = nullptr);
+
+    //根据类型ID删除日程
+    void deleteSchedulesByTypeID(const QString &typeID, CallbackFunc callback = nullptr);
+
+    //根据查询条件查询数据
+    void querySchedulesWithParameter(const QString &params, CallbackFunc callback = nullptr);
+
+    //获取颜色类型列表
+    QVector<DTypeColor> getColorTypeList();
+
+    //监听日程类型数据完成事件
+    void monitorScheduleTypeData(CallbackFunc callback);
+
+signals:
+
+public slots:
+    //获取账户信息完成事件
+    void slotGetAccountInfoFinish(DAccount::Ptr);
+    //获取日程类型数据完成事件
+    void slotGetScheduleTypeListFinish(DScheduleType::List);
+
+private:
+    void initConnect();
+    void resetAccount();
+
+private:
+    DAccount::Ptr m_account;    //账户数据
+    DScheduleType::List m_scheduleTypeList; //日程类型数据
+    DSchedule::List m_scheduleList;     //日程数据
+    QVector<DTypeColor> m_typeColorList;    //颜色数据
+    DbusAccountRequest* m_dbusRequest = nullptr;    //dbus请求实例
+
+    //回调函数
+    QMap<QString, QList<CallbackFunc>> m_callbackMap;
+    QMap<QString, bool> m_dataStatus;   //数据状态
+
+    //一年的日程信息
+    QMap<QDate, QVector<DSchedule>> m_queryScheduleInfo{};
+    //一年是否含有日程
+    QMap<QDate, bool>               m_fullInfo{};
+    //一年的班休信息
+    QMap<QDate, int>                m_festivalInfo{};
+    //搜索的日程信息
+    QMap<QDate, QVector<DSchedule>> m_searchScheduleInfo {};
+    QVector<DSchedule> m_searchScheduleInfoVector {};
+
+};
+
+#endif // ACCOUNTITEM_H

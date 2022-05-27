@@ -23,6 +23,7 @@
 
 #include "scheduledatamanage.h"
 #include "dscheduletype.h"
+#include "accountitem.h"
 
 #include <DIconButton>
 #include <DLabel>
@@ -40,18 +41,10 @@ class SidebarItemWidget : public QWidget
 public:
     SidebarItemWidget(QWidget *parent = nullptr);
 
-    //头控件类型
-    enum HeadType {
-        HeadInvalid = 0,
-        HeadIcon,
-        HeadCheckBox,
-    };
-
     //获取顶层item控件，有箭头
-    static SidebarItemWidget *getTopLevelWidget(QString &, QIcon &);
-    static SidebarItemWidget *getTopLevelWidget(QString &);
+    static SidebarItemWidget *getAccountItemWidget(AccountItem::Ptr);
     //获取子层本地日程item控件，有复选框
-    static SidebarItemWidget *getLocalWidget(DScheduleType &);
+    static SidebarItemWidget *getTypeItemWidget(DScheduleType::Ptr);
 
     //设置选中状态
     void setSelectStatus(bool);
@@ -60,41 +53,71 @@ public:
     //设置item
     void setItem(QTreeWidgetItem *);
 
+    QTreeWidgetItem* getTreeItem();
+
 signals:
     //状态改变信号
     void signalStatusChange(bool status, QString id = "");
 
 public slots:
-    //头部控件点击事件
-    void slotHeadWidgetClicked();
-    //尾部icon控件点击事件
-    void slotRearIconClicked();
+
 
 protected:
     void mouseDoubleClickEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
 
-private:
-    void initView();
+    virtual void updateStatus() = 0;
 
-    //设置头部控件内容
-    void setHeadWidget(QWidget *);
-
-private:
+protected:
     QString m_title = "";   //标题
-    QIcon m_icon;       //尾部控件显示的icon
     QString m_id = ""; //数据id
-
-    HeadType m_headType = HeadInvalid;  //控件类型
     bool m_selectStatus = false;    //选中状态
     QTreeWidgetItem *m_item = nullptr; //关联的item
+};
 
-    QHBoxLayout *m_headLayout = nullptr;    //头部控件布局
-    QWidget *m_headWidget = nullptr;    //头部控件显示区域
-    DLabel *m_titleLabel = nullptr; //标题显示区域
+class SidebarTypeItemWidget : public SidebarItemWidget
+{
+    Q_OBJECT
+public:
+    SidebarTypeItemWidget(DScheduleType::Ptr, QWidget *parent = nullptr);
+
+protected:
+    void initView();
+    void updateStatus() override;
+
+private:
+    DScheduleType::Ptr m_scheduleType;
+
+    DIconButton *m_rearIconButton = nullptr;    //尾部icon控件
     QCheckBox *m_checkBox = nullptr;    //复选框
+    DLabel *m_titleLabel = nullptr; //标题显示区域
+};
+
+class SidebarAccountItemWidget : public SidebarItemWidget
+{
+    Q_OBJECT
+public:
+    SidebarAccountItemWidget(AccountItem::Ptr, QWidget *parent = nullptr);
+
+    AccountItem::Ptr getAccountItem();
+
+signals:
+
+
+public slots:
+
+protected:
+    void initView();
+    void updateStatus() override;
+
+    void initScheduleType();
+
+private:
+    AccountItem::Ptr m_accountItem;
+
     DIconButton *m_rearIconButton = nullptr;    //尾部icon控件
     DIconButton *m_headIconButton = nullptr;    //头部icon控件
+    DLabel *m_titleLabel = nullptr; //标题显示区域
 };
 
 #endif // ITEMWIDGET_H
