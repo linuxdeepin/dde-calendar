@@ -35,6 +35,8 @@
 #include "ctitlewidget.h"
 #include "tabletconfig.h"
 #include "calendarglobalenv.h"
+#include "commonsetting.h"
+#include "userlogin.h"
 
 #include "scheduletypeeditdlg.h"
 
@@ -61,6 +63,7 @@
 #include <QMouseEvent>
 #include <QColorDialog>
 #include <QApplication>
+#include <QWidgetAction>
 
 DGUI_USE_NAMESPACE
 DWIDGET_USE_NAMESPACE
@@ -442,7 +445,7 @@ void Calendarmainwindow::initConnection()
 
     connect(m_scheduleSearchView, &CScheduleSearchView::signalSelectCurrentItem, this,
             &Calendarmainwindow::slotSetSearchFocus);
-
+//    connect(DeepinAccount::instance(), &DeepinAccount::loggedIn, this, &Calendarmainwindow::);
     //更新当前时间
     connect(m_currentDateUpdateTimer, &QTimer::timeout, this,
             &Calendarmainwindow::slotCurrentDateUpdate);
@@ -843,6 +846,9 @@ void Calendarmainwindow::slotOpenSettingDialog()
         m_dsdSetting = new DSettingsDialog(this);
         m_dsdSetting->setIcon(CDynamicIcon::getInstance()->getPixmap());
         m_dsdSetting->setFixedSize(682, 506);
+        m_dsdSetting->widgetFactory()->registerWidget("login",Userlogin::createloginButton);
+        m_dsdSetting->widgetFactory()->registerWidget("FirstDayofWeek",Commonsetting::createComboboxFirstDayofWeek);
+        m_dsdSetting->widgetFactory()->registerWidget("Time",Commonsetting::createComboboxTime);
         m_dsdSetting->widgetFactory()->registerWidget("JobTypeListView", [](QObject *obj) -> QWidget * {
             if (DSettingsOption *option = qobject_cast<DSettingsOption *>(obj)) {
                 Q_UNUSED(option)
@@ -862,7 +868,14 @@ void Calendarmainwindow::slotOpenSettingDialog()
                                               {
                                                   "key":"account",
                                                   "name":"Account",
-                                                  "default":""
+                                                  "options":[
+                                                      {
+                                                          "key":"login",
+                                                          "type":"login",
+                                                          "name":"",
+                                                          "default":""
+                                                      }
+                                                  ]
                                               }
                                           ]
                                       },
@@ -891,7 +904,21 @@ void Calendarmainwindow::slotOpenSettingDialog()
                                            {
                                                "key":"common",
                                                "name":"Common",
-                                               "default":""
+                                               "options":[
+                                                   {
+                                                       "key":"firstday",
+                                                       "name":"firstdayofweek",
+                                                       "type":"FirstDayofWeek",
+                                                       "text":"Sunday",
+                                                       "default":""
+                                                   },
+                                                   {
+                                                       "key":"time",
+                                                       "name":"time",
+                                                       "type":"Time",
+                                                      "default":""
+                                                   }
+                                               ]
                                            }
                                        ]
                                    }
