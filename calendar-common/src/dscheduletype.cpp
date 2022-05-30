@@ -319,15 +319,15 @@ bool DScheduleType::fromJsonListString(DScheduleType::List &stList, const QStrin
             }
 
             if (typeObject.contains("typeName")) {
-                scheduleType->setTypeID(typeObject.value("typeName").toString());
+                scheduleType->setTypeName(typeObject.value("typeName").toString());
             }
 
             if (typeObject.contains("displayName")) {
-                scheduleType->setTypeID(typeObject.value("displayName").toString());
+                scheduleType->setDisplayName(typeObject.value("displayName").toString());
             }
 
             if (typeObject.contains("typePath")) {
-                scheduleType->setTypeID(typeObject.value("typePath").toString());
+                scheduleType->setTypePath(typeObject.value("typePath").toString());
             }
 
             if (typeObject.contains("TypeColor")) {

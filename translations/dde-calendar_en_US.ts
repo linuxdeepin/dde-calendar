@@ -114,7 +114,7 @@
         <translation>New event</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/monthWidget/monthview.cpp" line="222"/>
+        <location filename="../calendar-client/src/widget/monthWidget/monthview.cpp" line="223"/>
         <source>New Event</source>
         <translation>New Event</translation>
     </message>
@@ -517,12 +517,12 @@
         <translation type="vanished">All Future Events</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="476"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="477"/>
         <source>You have selected a leap month, and will be reminded according to the rules of the lunar calendar.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="477"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="478"/>
         <source>OK</source>
         <comment>button</comment>
         <translation type="unfinished">OK</translation>
@@ -656,7 +656,7 @@
 <context>
     <name>CYearWindow</name>
     <message>
-        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="625"/>
+        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="626"/>
         <source>Y</source>
         <translation>Y</translation>
     </message>
@@ -677,12 +677,12 @@
 <context>
     <name>Calendarmainwindow</name>
     <message>
-        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="85"/>
+        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="88"/>
         <source>Calendar</source>
         <translation>Calendar</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="352"/>
+        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="355"/>
         <source>Manage</source>
         <translation type="unfinished"></translation>
     </message>
@@ -693,6 +693,54 @@
         <location filename="../calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="191"/>
         <source>All Day</source>
         <translation>All Day</translation>
+    </message>
+</context>
+<context>
+    <name>Commonsetting</name>
+    <message>
+        <location filename="../calendar-client/src/dialog/commonsetting.cpp" line="50"/>
+        <source>Sunday</source>
+        <translation type="unfinished">Sunday</translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/dialog/commonsetting.cpp" line="50"/>
+        <source>Monday</source>
+        <translation type="unfinished">Monday</translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/dialog/commonsetting.cpp" line="50"/>
+        <source>Tuesday</source>
+        <translation type="unfinished">Tuesday</translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/dialog/commonsetting.cpp" line="50"/>
+        <source>Wednesday</source>
+        <translation type="unfinished">Wednesday</translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/dialog/commonsetting.cpp" line="50"/>
+        <source>Thursday</source>
+        <translation type="unfinished">Thursday</translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/dialog/commonsetting.cpp" line="50"/>
+        <source>Friday</source>
+        <translation type="unfinished">Friday</translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/dialog/commonsetting.cpp" line="50"/>
+        <source>Saturday</source>
+        <translation type="unfinished">Saturday</translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/dialog/commonsetting.cpp" line="72"/>
+        <source>24 hour</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/dialog/commonsetting.cpp" line="72"/>
+        <source>12 hour</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -759,7 +807,7 @@
 <context>
     <name>Return</name>
     <message>
-        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="621"/>
+        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="622"/>
         <source>Today</source>
         <comment>Return</comment>
         <translation>Today</translation>
@@ -873,9 +921,18 @@
     </message>
 </context>
 <context>
+    <name>Userlogin</name>
+    <message>
+        <location filename="../calendar-client/src/dialog/userlogin.cpp" line="48"/>
+        <source>login</source>
+        <comment>button</comment>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>YearFrame</name>
     <message>
-        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="933"/>
+        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="935"/>
         <source>Y</source>
         <translation>Y</translation>
     </message>
@@ -890,7 +947,7 @@
         <location filename="../calendar-client/src/widget/weekWidget/weekwindow.cpp" line="69"/>
         <location filename="../calendar-client/src/widget/weekWidget/weekwindow.cpp" line="315"/>
         <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="278"/>
-        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="619"/>
+        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="620"/>
         <source>Today</source>
         <comment>Today</comment>
         <translation>Today</translation>

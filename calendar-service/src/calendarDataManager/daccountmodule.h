@@ -64,12 +64,30 @@ public:
 
     DAccount::Ptr account() const;
 
+    /**
+     * @brief updateRemindSchedules     更新未来10分钟的提醒任务
+     * @param isClear                   是否清空提醒任务数据库
+     */
+    void updateRemindSchedules(bool isClear);
+
+    /**
+     * @brief notifyMsgHanding      通知提示框交互处理
+     * @param alarmID               提醒任务id
+     * @param operationNum          操作编号 ， 1：打开日历，2：稍后提醒 3： 明天提醒 4： 提前1天提醒 5:关闭按钮
+     */
+    void notifyMsgHanding(const QString &alarmID, const qint32 operationNum);
+
+    void remindJob(const QString &alarmID);
+
 private:
     QMap<QDate, DSchedule::List> getScheduleTimesOn(const QDateTime &dtStart, const QDateTime &dtEnd, const DSchedule::List &scheduleList, bool extend = true);
     DSchedule::List getFestivalSchedule(const QDateTime &dtStart, const QDateTime &dtEnd, const QString &key);
 
 signals:
-    //
+    void signalScheduleUpdate();
+    void signalScheduleTypeUpdate();
+    //关闭通知弹框
+    void signalCloseNotification(quint64 notifyID);
 
 public slots:
 private:

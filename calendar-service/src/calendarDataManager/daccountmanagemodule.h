@@ -58,7 +58,7 @@ public:
     int getTimeFormatType();
     void setTimeFormatType(const int timeType);
 
-    void remindJob(const QString &alarmID);
+    void remindJob(const QString &accountID, const QString &alarmID);
 
     /**
      * @brief updateRemindSchedules     更新未来10分钟的提醒任务
@@ -68,10 +68,11 @@ public:
 
     /**
      * @brief notifyMsgHanding      通知提示框交互处理
+     * @param accountID             帐户id
      * @param alarmID               提醒任务id
      * @param operationNum          操作编号 ， 1：打开日历，2：稍后提醒 3： 明天提醒 4： 提前1天提醒 5:关闭按钮
      */
-    void notifyMsgHanding(const QString &alarmID, const qint32 operationNum);
+    void notifyMsgHanding(const QString &accountID, const QString &alarmID, const qint32 operationNum);
 
 private:
     void unionIDDataMerging();

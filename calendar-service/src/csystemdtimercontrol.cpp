@@ -117,7 +117,8 @@ void CSystemdTimerControl::createService(const QString &name, const SystemDInfo 
 {
     QString fileName;
     QString remindCMD = QString("dbus-send --session --print-reply --dest=com.deepin.dataserver.Calendar "
-                                "/com/deepin/dataserver/Calendar com.deepin.dataserver.Calendar.remindJob String:%1")
+                                "/com/deepin/dataserver/Calendar com.deepin.dataserver.Calendar.remindJob String:%1 String:%1")
+                            .arg(info.accountID)
                             .arg(info.alarmID);
     fileName = m_systemdPath + name + ".service";
     QString content;

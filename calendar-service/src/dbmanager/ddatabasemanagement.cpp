@@ -109,7 +109,7 @@ DDataBaseManagement::DDataBaseManagement()
                 DRemindData::List remindList = querOldRemindData(oldDB);
                 foreach (auto remind, remindList) {
                     remind->setAccountID(localAccount->accountID());
-                    accountManager.createRemindInfo(remind);
+                    localDB.createRemindInfo(remind);
                 }
             }
         }

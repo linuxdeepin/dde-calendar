@@ -6,6 +6,7 @@
 #include <QVector>
 
 struct SystemDInfo {
+    QString accountID = ""; //帐户ID
     QString alarmID = ""; //提醒编号id
     qint64      laterCount = 0;         //稍后提醒次数
     QDateTime   triggerTimer;           //触发时间

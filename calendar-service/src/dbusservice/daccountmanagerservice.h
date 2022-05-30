@@ -45,7 +45,7 @@ public slots:
      */
     Q_SCRIPTABLE QString getAccountList();
     //稍后提醒相关接口
-    Q_SCRIPTABLE void remindJob(const QString &alarmID);
+    Q_SCRIPTABLE void remindJob(const QString &accountID, const QString &alarmID);
 
     /**
      * @brief updateRemindJob       每隔10分钟更新提醒日程
@@ -58,7 +58,7 @@ public slots:
      * @param alarmID               提醒任务id
      * @param operationNum          操作编号 ， 1：打开日历，2：稍后提醒 3： 明天提醒 4： 提前1天提醒 5:关闭按钮
      */
-    Q_SCRIPTABLE void notifyMsgHanding(const QString &alarmID, const qint32 operationNum);
+    Q_SCRIPTABLE void notifyMsgHanding(const QString &accountID, const QString &alarmID, const qint32 operationNum);
 
     Q_SCRIPTABLE void downloadByAccountID(const QString &accountID);
     Q_SCRIPTABLE void uploadNetWorkAccountData();

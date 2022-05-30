@@ -65,6 +65,7 @@ void DAlarmManager::updateRemind(const DRemindData::List &remindList)
     QVector<SystemDInfo> infoVector {};
     foreach (auto remind, remindList) {
         SystemDInfo info;
+        info.accountID = remind->accountID();
         info.alarmID = remind->alarmID();
         info.laterCount = remind->remindCount();
         info.triggerTimer = remind->dtRemind();
@@ -82,6 +83,7 @@ void DAlarmManager::notifyJobsChanged(const DRemindData::List &remindList)
     QVector<SystemDInfo> infoVector {};
     foreach (auto remind, remindList) {
         SystemDInfo info;
+        info.accountID = remind->accountID();
         info.alarmID = remind->alarmID();
         info.laterCount = remind->remindCount();
         info.triggerTimer = remind->dtRemind();
@@ -114,6 +116,7 @@ void DAlarmManager::remindLater(const DRemindData::Ptr &remindData, const int op
 {
     CSystemdTimerControl systemdTimerControl;
     SystemDInfo info;
+    info.accountID = remindData->accountID();
     info.alarmID = remindData->alarmID();
     //如果是稍后提醒则设置对应的重复次数
     if (operationNum == 2) {
@@ -153,7 +156,8 @@ int DAlarmManager::remindJob(const DRemindData::Ptr &remindData, const DSchedule
     QStringList actionlist;
     QVariantMap hints;
     QString cmd = QString("dbus-send --session --print-reply --dest=com.deepin.dataserver.Calendar "
-                          "/com/deepin/dataserver/Calendar com.deepin.dataserver.Calendar.notifyMsgHanding String:%1")
+                          "/com/deepin/dataserver/Calendar com.deepin.dataserver.Calendar.notifyMsgHanding String:%1 String:%2")
+                      .arg(remindData->accountID())
                       .arg(remindData->alarmID());
     auto argMake = [&](int operationNum, const QString &text, const QString &transText) {
         actionlist << text << transText;
