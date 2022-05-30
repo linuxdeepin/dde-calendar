@@ -50,9 +50,6 @@ public:
     //设置通用设置
     void setCalendarGeneralSettings(const QString &cgSet);
 
-    //若日历打开则后端不自动退出
-    void calendarOpen(const bool &isOpen);
-
     int getfirstDayOfWeek();
     void setFirstDayOfWeek(const int firstday);
     int getTimeFormatType();
@@ -73,6 +70,9 @@ public:
      * @param operationNum          操作编号 ， 1：打开日历，2：稍后提醒 3： 明天提醒 4： 提前1天提醒 5:关闭按钮
      */
     void notifyMsgHanding(const QString &accountID, const QString &alarmID, const qint32 operationNum);
+
+    void downloadByAccountID(const QString &accountID);
+    void uploadNetWorkAccountData();
 
 private:
     void unionIDDataMerging();

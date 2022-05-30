@@ -42,6 +42,8 @@ public:
     void getCalendarGeneralSettings();
     //设置通用设置
     void setCalendarGeneralSettings(DCalendarGeneralSettings::Ptr ptr);
+    //
+    void clientIsShow(bool isShow);
 
 signals:
     //获取账户列表数据完成信号
@@ -51,8 +53,7 @@ signals:
 
 public slots:
     //dbus调用完成事件
-    void slotCallFinished(CDBusPendingCallWatcher*) override;
-
+    void slotCallFinished(CDBusPendingCallWatcher *) override;
 };
 
 #endif // DBUSACCOUNTMANAGERREQUEST_H

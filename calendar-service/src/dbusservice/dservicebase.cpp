@@ -20,6 +20,10 @@
 */
 #include "dservicebase.h"
 
+#include <QtDBus/QDBusConnection>
+#include <QtDBus/QDBusConnectionInterface>
+#include <QFile>
+
 DServiceBase::DServiceBase(const QString &path, const QString &interface, QObject *parent)
     : QObject(parent)
     , m_path(path)
@@ -35,4 +39,25 @@ QString DServiceBase::getPath() const
 QString DServiceBase::getInterface() const
 {
     return m_interface;
+}
+
+QString DServiceBase::getClientName()
+{
+    uint pid = QDBusConnection::sessionBus().interface()->servicePid(message().service());
+    QString name;
+    QFile file(QString("/proc/%1/status").arg(pid));
+    if (file.open(QFile::ReadOnly)) {
+        name = QString(file.readLine()).section(QRegExp("([\\t ]*:[\\t ]*|\\n)"), 1, 1);
+        file.close();
+    }
+    return name;
+}
+
+bool DServiceBase::clientWhite(const int index)
+{
+    //TODO:根据编号,获取不同到白名单
+    static QStringList whiteList_0 {"dde-calendar"};
+    static QStringList whiteList_1 {"dde-calendar", ""};
+
+    return whiteList_0.contains(getClientName());
 }

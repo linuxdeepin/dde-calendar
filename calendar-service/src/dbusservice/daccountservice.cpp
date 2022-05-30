@@ -19,74 +19,131 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "daccountservice.h"
+#include "calendarprogramexitcontrol.h"
 
 DAccountService::DAccountService(const QString &path, const QString &interface, const DAccountModule::Ptr &accountModule, QObject *parent)
     : DServiceBase(path, interface, parent)
     , m_accountModel(accountModule)
 {
+    //TODO:为了便于调试先注释,待开发完成取消注释
+    //    DServiceExitControl exitControl;
 }
 
 QString DAccountService::getAccountInfo()
 {
+    //如果不在白名单内直接放回无效值
+    DServiceExitControl exitControl;
+    if (!clientWhite(0)) {
+        return QString();
+    }
     return m_accountModel->getAccountInfo();
 }
 
 QString DAccountService::getScheduleTypeList()
 {
+    DServiceExitControl exitControl;
+    if (!clientWhite(0)) {
+        return QString();
+    }
     return m_accountModel->getScheduleTypeList();
 }
 
 QString DAccountService::getScheduleTypeByID(const QString &typeID)
 {
+    DServiceExitControl exitControl;
+    if (!clientWhite(0)) {
+        return QString();
+    }
     return m_accountModel->getScheduleTypeByID(typeID);
 }
 
 QString DAccountService::createScheduleType(const QString &typeInfo)
 {
+    DServiceExitControl exitControl;
+    if (!clientWhite(0)) {
+        return QString();
+    }
     return m_accountModel->createScheduleType(typeInfo);
 }
 
 bool DAccountService::updateScheduleType(const QString &typeInfo)
 {
+    DServiceExitControl exitControl;
+    if (!clientWhite(0)) {
+        return false;
+    }
+    return m_accountModel->updateScheduleType(typeInfo);
 }
 
 bool DAccountService::deleteScheduleTypeByID(const QString &typeID)
 {
-    m_accountModel->deleteScheduleTypeByID(typeID);
+    DServiceExitControl exitControl;
+    if (!clientWhite(0)) {
+        return false;
+    }
+    return m_accountModel->deleteScheduleTypeByID(typeID);
 }
 
 bool DAccountService::scheduleTypeByUsed(const QString &typeID)
 {
+    DServiceExitControl exitControl;
+    if (!clientWhite(0)) {
+        return false;
+    }
     return m_accountModel->scheduleTypeByUsed(typeID);
 }
 
 QString DAccountService::createSchedule(const QString &scheduleInfo)
 {
+    DServiceExitControl exitControl;
+    if (!clientWhite(0)) {
+        return QString();
+    }
     return m_accountModel->createSchedule(scheduleInfo);
 }
 
 bool DAccountService::updateSchedule(const QString &scheduleInfo)
 {
+    DServiceExitControl exitControl;
+    if (!clientWhite(0)) {
+        return false;
+    }
     return m_accountModel->updateSchedule(scheduleInfo);
 }
 
 QString DAccountService::getScheduleByScheduleID(const QString &scheduleID)
 {
+    DServiceExitControl exitControl;
+    if (!clientWhite(0)) {
+        return QString();
+    }
     return m_accountModel->getScheduleByScheduleID(scheduleID);
 }
 
 bool DAccountService::deleteScheduleByScheduleID(const QString &scheduleID)
 {
+    DServiceExitControl exitControl;
+    if (!clientWhite(0)) {
+        return false;
+    }
     return m_accountModel->deleteScheduleByScheduleID(scheduleID);
 }
 
 QString DAccountService::querySchedulesWithParameter(const QString &params)
 {
+    DServiceExitControl exitControl;
+    if (!clientWhite(0)) {
+        return QString();
+    }
     return m_accountModel->querySchedulesWithParameter(params);
 }
 
 QString DAccountService::getSysColors()
 {
+    DServiceExitControl exitControl;
+    if (!clientWhite(0)) {
+        return QString();
+    }
     return m_accountModel->getSysColors();
 }
 

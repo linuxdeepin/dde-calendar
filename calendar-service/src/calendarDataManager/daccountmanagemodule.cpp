@@ -86,11 +86,6 @@ void DAccountManageModule::setCalendarGeneralSettings(const QString &cgSet)
     }
 }
 
-void DAccountManageModule::calendarOpen(const bool &isOpen)
-{
-    //TODO:根据日历的打开关闭设置是否自动退出
-}
-
 int DAccountManageModule::getfirstDayOfWeek()
 {
     return static_cast<int>(m_generalSetting->firstDayOfWeek());
@@ -136,6 +131,21 @@ void DAccountManageModule::notifyMsgHanding(const QString &accountID, const QStr
 {
     if (m_accountModuleMap.contains(accountID)) {
         m_accountModuleMap[accountID]->notifyMsgHanding(alarmID, operationNum);
+    }
+}
+
+void DAccountManageModule::downloadByAccountID(const QString &accountID)
+{
+    if (m_accountModuleMap.contains(accountID)) {
+        m_accountModuleMap[accountID]->accountDownload();
+    }
+}
+
+void DAccountManageModule::uploadNetWorkAccountData()
+{
+    QMap<QString, DAccountModule::Ptr>::const_iterator iter = m_accountModuleMap.constBegin();
+    for (; iter != m_accountModuleMap.constEnd(); ++iter) {
+        iter.value()->uploadNetWorkAccountData();
     }
 }
 

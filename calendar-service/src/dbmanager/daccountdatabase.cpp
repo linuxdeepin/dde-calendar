@@ -635,6 +635,20 @@ bool DAccountDataBase::addTypeColor(const int typeColorNo, const QString &strCol
     return res;
 }
 
+void DAccountDataBase::deleteTypeColor(const int colorNo)
+{
+    QString strSql("DELETE FROM typeColor WHERE ColorID = ?;");
+    QSqlQuery query(m_database);
+    query.prepare(strSql);
+    query.addBindValue(colorNo);
+    if (!query.exec()) {
+        qWarning() << __FUNCTION__ << query.lastError();
+    }
+    if (query.isActive()) {
+        query.finish();
+    }
+}
+
 DTypeColor::List DAccountDataBase::getSysColor()
 {
     QString strSql("SELECT ColorID, ColorHex, privilege FROM typeColor WHERE  privilege =1;");

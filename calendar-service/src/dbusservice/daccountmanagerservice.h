@@ -68,7 +68,7 @@ public slots:
     Q_SCRIPTABLE void setCalendarGeneralSettings(const QString &cgSet);
 
     //日历打开关闭
-    Q_SCRIPTABLE void calendarOpen(const bool &isOpen);
+    Q_SCRIPTABLE void calendarIsShow(const bool &isShow);
 
 signals:
     Q_SCRIPTABLE void accountUpdate(const QStringList &accountIDs);

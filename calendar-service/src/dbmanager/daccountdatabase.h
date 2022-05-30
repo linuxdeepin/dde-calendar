@@ -77,7 +77,7 @@ public:
 
     ///////////////////类型颜色
     bool addTypeColor(const int typeColorNo, const QString &strColorHex, const int privilege);
-    void deleteTypeColor();
+    void deleteTypeColor(const int colorNo);
     //获取内置类型颜色
     DTypeColor::List getSysColor();
 
@@ -123,28 +123,6 @@ public:
      * @return
      */
     DSchedule getRemindJob(const QString &jobID, const qint64 recurid);
-
-    /**
-     * @brief getNotifyID       获取桌面顶部通知ID
-     * @param id                日程ID
-     * @return                  通知ID
-     */
-    QVector<int> getNotifyID(const QString &jobID);
-
-    /**
-     * @brief getNotifyID   获取桌面顶部通知ID
-     * @param jobID         日程ID
-     * @param recurid       重复id
-     * @return
-     */
-    int getNotifyID(const QString &jobID, const qint64 recurid);
-
-    /**
-     * @brief updateNotifyID        更新桌面顶部通知ID
-     * @param jobID                 日程ID
-     * @param notifyid              通知ID
-     */
-    void updateNotifyID(const QString &job, int notifyid);
 
 protected:
     virtual void initScheduleType();

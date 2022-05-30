@@ -31,7 +31,9 @@ class AccountManager : public QObject
 public:
     typedef std::function<void(bool)> CallbackFunc;
 
-    static AccountManager* getInstance();
+    ~AccountManager() override;
+
+    static AccountManager *getInstance();
     QList<AccountItem::Ptr> getAccountList();
     QSharedPointer<AccountItem> getLocalAccountItem();
     QSharedPointer<AccountItem> getUnionAccountItem();
@@ -74,12 +76,12 @@ private:
     void execWaitingCall();
 
 private:
-    static AccountManager* m_accountManager;
+    static AccountManager *m_accountManager;
     QSharedPointer<AccountItem>  m_localAccountItem;
     QSharedPointer<AccountItem>  m_unionAccountItem;
     DCalendarGeneralSettings::Ptr m_settings;
 
-    DbusAccountManagerRequest* m_dbusRequest;
+    DbusAccountManagerRequest *m_dbusRequest;
 
     QList<CallbackFunc> m_waitingCallList;
 

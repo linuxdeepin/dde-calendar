@@ -24,12 +24,33 @@ public:
      * @brief reduce      接口处理结束后使用该函数，用来减少计数，跟addExc配对使用
      */
     void reduce();
+    static bool getClientIsOpen();
+    static void setClientIsOpen(bool clientIsOpen);
+
 private:
     CalendarProgramExitControl();
     void exit();
 private:
+    static bool m_clientIsOpen;
     int   m_excNum = 0;
     QReadWriteLock readWriteLock;
+};
+
+class DServiceExitControl
+{
+public:
+    DServiceExitControl()
+    {
+        CalendarProgramExitControl::getProgramExitControl()->addExc();
+    }
+    ~DServiceExitControl()
+    {
+        CalendarProgramExitControl::getProgramExitControl()->reduce();
+    }
+    void setClientIsOpen(bool isOpen)
+    {
+        CalendarProgramExitControl::setClientIsOpen(isOpen);
+    }
 };
 
 #endif // CALENDARPROGRAMEXITCONTROL_H

@@ -20,18 +20,26 @@
 */
 #include "daccountmanagerservice.h"
 #include "units.h"
+#include "calendarprogramexitcontrol.h"
 
 #include <QMetaType>
 #include <QDBusMetaType>
+#include <QDebug>
 
 DAccountManagerService::DAccountManagerService(QObject *parent)
     : DServiceBase(serviceBasePath + "/AccountManager", serviceBaseName + ".AccountManager", parent)
     , m_accountManager(new DAccountManageModule(this))
 {
+    //TODO:为了便于调试先注释,待开发完成取消注释
+    //    DServiceExitControl exitControl;
 }
 
 QString DAccountManagerService::getAccountList()
 {
+    DServiceExitControl exitControl;
+    if (!clientWhite(1)) {
+        return QString();
+    }
     return m_accountManager->getAccountList();
 }
 
@@ -60,17 +68,29 @@ void DAccountManagerService::uploadNetWorkAccountData()
 
 QString DAccountManagerService::getCalendarGeneralSettings()
 {
+    DServiceExitControl exitControl;
+    if (!clientWhite(0)) {
+        return QString();
+    }
     return m_accountManager->getCalendarGeneralSettings();
 }
 
 void DAccountManagerService::setCalendarGeneralSettings(const QString &cgSet)
 {
+    DServiceExitControl exitControl;
+    if (!clientWhite(0)) {
+        return;
+    }
     m_accountManager->setCalendarGeneralSettings(cgSet);
 }
 
-void DAccountManagerService::calendarOpen(const bool &isOpen)
+void DAccountManagerService::calendarIsShow(const bool &isShow)
 {
-    m_accountManager->calendarOpen(isOpen);
+    DServiceExitControl exitControl;
+    if (!clientWhite(0)) {
+        return;
+    }
+    exitControl.setClientIsOpen(isShow);
 }
 
 int DAccountManagerService::getfirstDayOfWeek()

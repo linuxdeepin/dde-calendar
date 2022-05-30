@@ -48,6 +48,7 @@ public:
     QString createScheduleType(const QString &typeInfo);
     bool deleteScheduleTypeByID(const QString &typeID);
     bool scheduleTypeByUsed(const QString &typeID);
+    bool updateScheduleType(const QString &typeInfo);
 
     //日程信息
     QString createSchedule(const QString &scheduleInfo);
@@ -79,9 +80,18 @@ public:
 
     void remindJob(const QString &alarmID);
 
+    void accountDownload();
+    void uploadNetWorkAccountData();
+
 private:
     QMap<QDate, DSchedule::List> getScheduleTimesOn(const QDateTime &dtStart, const QDateTime &dtEnd, const DSchedule::List &scheduleList, bool extend = true);
     DSchedule::List getFestivalSchedule(const QDateTime &dtStart, const QDateTime &dtEnd, const QString &key);
+
+    /**
+     * @brief closeNotification     关闭通知弹框
+     * @param scheduleId            日程id
+     */
+    void closeNotification(const QString &scheduleId);
 
 signals:
     void signalScheduleUpdate();

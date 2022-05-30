@@ -36,6 +36,10 @@ public:
     QString getPath() const;
     QString getInterface() const;
 
+protected:
+    QString getClientName();
+    bool clientWhite(const int index);
+
 private:
     QString m_path;
     QString m_interface;

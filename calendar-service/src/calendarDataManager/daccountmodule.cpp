@@ -40,6 +40,8 @@ DAccountModule::DAccountModule(const DAccount::Ptr &account, QObject *parent)
     m_accountDB->dbOpen();
     m_accountDB->initDBData();
     m_account = m_accountDB->getAccountInfo();
+    //若程序没有开启定时任务则开启对应的定时任务
+    DAlarmManager alarm;
 }
 
 QString DAccountModule::getAccountInfo()
@@ -79,29 +81,62 @@ QString DAccountModule::createScheduleType(const QString &typeInfo)
 
 bool DAccountModule::deleteScheduleTypeByID(const QString &typeID)
 {
+    //如果日程类型被使用需要删除对应到日程信息
+    if (m_accountDB->scheduleTypeByUsed(typeID)) {
+        QStringList scheduleIDList = m_accountDB->getScheduleIDListByTypeID(typeID);
+        foreach (auto scheduleID, scheduleIDList) {
+            closeNotification(scheduleID);
+        }
+        //更新提醒任务
+        updateRemindSchedules(false);
+        m_accountDB->deleteSchedulesByScheduleTypeID(typeID, !m_account->isNetWorkAccount());
+        //TODO:发送操作内容给任务列表
+        if (m_account->isNetWorkAccount()) {
+        }
+        emit signalScheduleUpdate();
+    }
+    DScheduleType::Ptr scheduleType = m_accountDB->getScheduleTypeByID(typeID);
     //根据帐户是否为网络帐户需要添加任务列表中,并设置弱删除
     if (m_account->isNetWorkAccount()) {
         QStringList scheduleIDList = m_accountDB->getScheduleIDListByTypeID(typeID);
         //弱删除
-        m_accountDB->deleteSchedulesByScheduleTypeID(typeID);
         m_accountDB->deleteScheduleTypeByID(typeID);
         //发送操作内容给任务列表
-
     } else {
-        m_accountDB->deleteSchedulesByScheduleTypeID(typeID, 1);
         m_accountDB->deleteScheduleTypeByID(typeID, 1);
     }
-    //TODO
-    //删除提醒任务和关闭对应弹窗
 
     //如果为用户颜色则删除颜色
-    //删除日程类型
+    if (scheduleType->typeColor().privilege() > 1) {
+        m_accountDB->deleteTypeColor(scheduleType->typeColor().colorID());
+    }
     return true;
 }
 
 bool DAccountModule::scheduleTypeByUsed(const QString &typeID)
 {
     return m_accountDB->scheduleTypeByUsed(typeID);
+}
+
+bool DAccountModule::updateScheduleType(const QString &typeInfo)
+{
+    DScheduleType::Ptr scheduleType;
+    DScheduleType::fromJsonString(scheduleType, typeInfo);
+    DScheduleType::Ptr oldScheduleType = m_accountDB->getScheduleTypeByID(scheduleType->typeID());
+    //如果颜色有改动
+    if (oldScheduleType->typeColor() != scheduleType->typeColor()) {
+        if (!oldScheduleType->typeColor().isSysColorInfo()) {
+            m_accountDB->deleteTypeColor(oldScheduleType->typeColor().colorID());
+        }
+        if (!scheduleType->typeColor().isSysColorInfo()) {
+            m_accountDB->addTypeColor(scheduleType->typeColor().colorID(), scheduleType->typeColor().colorCode(), scheduleType->typeColor().privilege());
+        }
+    }
+    bool isSucc = m_accountDB->updateScheduleType(scheduleType);
+    if (isSucc) {
+        emit signalScheduleTypeUpdate();
+    }
+    return isSucc;
 }
 
 QString DAccountModule::createSchedule(const QString &scheduleInfo)
@@ -111,7 +146,7 @@ QString DAccountModule::createSchedule(const QString &scheduleInfo)
     schedule->setCreated(QDateTime::currentDateTime());
     //根据是否为提醒日程更新提醒任务
     if (schedule->alarms().size() > 0) {
-        //TODO:
+        updateRemindSchedules(false);
     }
     QString scheduleID = m_accountDB->createSchedule(schedule);
     //根据是否为网络帐户判断是否需要更新任务列表
@@ -125,23 +160,66 @@ QString DAccountModule::createSchedule(const QString &scheduleInfo)
 
 bool DAccountModule::updateSchedule(const QString &scheduleInfo)
 {
-    //TODO:根据是否为网络帐户判断是否需要
-    //TODO:根据是否为提醒日程更新提醒任务,修改前的和修改后的
+    //根据是否为提醒日程更新提醒任务
     DSchedule::Ptr schedule;
     DSchedule::fromJsonString(schedule, scheduleInfo);
     DSchedule::Ptr oldSchedule = m_accountDB->getScheduleByScheduleID(schedule->uid());
     schedule->setLastModified(QDateTime::currentDateTime());
     schedule->setRevision(schedule->revision() + 1);
 
-    //根据日程ID获取提醒日程信息
+    //如果旧日程为提醒日程
+    if (oldSchedule->alarms().size() > 0) {
+        //根据日程ID获取提醒日程信息
+        DRemindData::List remindList = m_accountDB->getRemindByScheduleID(schedule->schedulingID());
 
-    //如果是重复日程且重复规则不一样
-    if (schedule->recurs() && *schedule->recurrence() != *oldSchedule->recurrence()) {
+        DRemindData::List deleteRemind;
+
+        //如果是重复日程且重复规则不一样
+        if ((schedule->recurs() || oldSchedule->recurs()) && *schedule->recurrence() != *oldSchedule->recurrence()) {
+            QDateTime dtEnd = schedule->dtStart();
+            for (int i = remindList.size() - 1; i >= 0; --i) {
+                dtEnd = dtEnd > remindList.at(i)->dtStart() ? dtEnd : remindList.at(i)->dtStart();
+            }
+
+            if (remindList.size() > 0) {
+                //获取新日程的重复时间
+                QList<QDateTime> dtList = schedule->recurrence()->timesInInterval(schedule->dtStart(), dtEnd);
+                foreach (auto remind, remindList) {
+                    //如果生成的开始时间列表内不包含提醒日程的开始时间，则表示该重复日程被删除
+                    if (!dtList.contains(remind->dtStart())) {
+                        //如果改日程已经提醒，且通知弹框未操作
+                        if (remind->notifyid() > 0) {
+                            emit signalCloseNotification(static_cast<quint64>(remind->notifyid()));
+                            deleteRemind.append(remind);
+                        } else if (remind->dtRemind() > QDateTime::currentDateTime()) {
+                            //删除没有触发的提醒日程
+                            deleteRemind.append(remind);
+                        }
+                    }
+                }
+            }
+        } else {
+            //不是重复日程
+            if (remindList.size() > 0 && remindList.at(0)->notifyid() > 0) {
+                deleteRemind.append(remindList.at(0));
+            }
+        }
+        for (int i = 0; i < deleteRemind.size(); ++i) {
+            m_accountDB->deleteRemindInfoByAlarmID(deleteRemind.at(i)->alarmID());
+        }
     }
-    //
+
+    //如果存在提醒
+    if (oldSchedule->alarms().size() > 0 || schedule->alarms().size() > 0) {
+        updateRemindSchedules(false);
+    }
 
     bool ok = m_accountDB->updateSchedule(schedule);
 
+    emit signalScheduleUpdate();
+    if (m_account->isNetWorkAccount()) {
+        //TODO:若为网络帐号
+    }
     return ok;
 }
 
@@ -157,10 +235,22 @@ bool DAccountModule::deleteScheduleByScheduleID(const QString &scheduleID)
 {
     //TODO:根据是否为网络判断是否需要弱删除
     //TODO:根据是否为提醒日程更新提醒任务,
+    bool isOK;
+    DSchedule::Ptr schedule = m_accountDB->getScheduleByScheduleID(scheduleID);
     if (m_account->isNetWorkAccount()) {
+        isOK = m_accountDB->deleteScheduleByScheduleID(scheduleID);
+        //TODO:更新上传任务表
     } else {
+        isOK = m_accountDB->deleteScheduleByScheduleID(scheduleID, 1);
     }
-    //关闭提醒消息和对应的通知弹框
+    //如果删除的是提醒日程
+    if (schedule->alarms().size() > 0) {
+        //关闭提醒消息和对应的通知弹框
+        closeNotification(scheduleID);
+        updateRemindSchedules(false);
+    }
+    emit signalScheduleUpdate();
+    return isOK;
 }
 
 QString DAccountModule::querySchedulesWithParameter(const QString &params)
@@ -346,6 +436,14 @@ void DAccountModule::remindJob(const QString &alarmID)
     m_accountDB->updateRemindInfo(remindData);
 }
 
+void DAccountModule::accountDownload()
+{
+}
+
+void DAccountModule::uploadNetWorkAccountData()
+{
+}
+
 QMap<QDate, DSchedule::List> DAccountModule::getScheduleTimesOn(const QDateTime &dtStart, const QDateTime &dtEnd, const DSchedule::List &scheduleList, bool extend)
 {
     QMap<QDate, DSchedule::List> m_scheduleMap;
@@ -463,4 +561,14 @@ DSchedule::List DAccountModule::getFestivalSchedule(const QDateTime &dtStart, co
         }
     }
     return scheduleList;
+}
+
+void DAccountModule::closeNotification(const QString &scheduleId)
+{
+    //根据日程ID获取提醒日程信息
+    DRemindData::List remindList = m_accountDB->getRemindByScheduleID(scheduleId);
+    foreach (auto remind, remindList) {
+        m_accountDB->deleteRemindInfoByAlarmID(remind->alarmID());
+        emit signalCloseNotification(static_cast<quint32>(remind->notifyid()));
+    }
 }

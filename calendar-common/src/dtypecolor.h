@@ -55,6 +55,8 @@ public:
 
     bool isSysColorInfo();
 
+    bool operator!=(const DTypeColor &color) const;
+
     static List fromJsonString(const QString &colorJson);
     static QString toJsonString(const List &colorList);
 

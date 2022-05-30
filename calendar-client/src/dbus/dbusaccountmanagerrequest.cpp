@@ -81,12 +81,20 @@ void DbusAccountManagerRequest::setCalendarGeneralSettings(DCalendarGeneralSetti
     asyncCall("setCalendarGeneralSettings", argumentList);
 }
 
+void DbusAccountManagerRequest::clientIsShow(bool isShow)
+{
+    QList<QVariant> argumentList;
+    argumentList << isShow;
+    //不需要返回结果，发送完直接结束
+    callWithArgumentList(QDBus::NoBlock, QStringLiteral("calendarIsShow"), argumentList);
+}
+
 /**
  * @brief DbusAccountManagerRequest::slotCallFinished
  * dbus调用完成事件
  * @param call 回调类
  */
-void DbusAccountManagerRequest::slotCallFinished(CDBusPendingCallWatcher* call)
+void DbusAccountManagerRequest::slotCallFinished(CDBusPendingCallWatcher *call)
 {
     bool ret = true;
     //错误处理

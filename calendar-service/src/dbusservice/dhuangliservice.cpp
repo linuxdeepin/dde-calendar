@@ -36,44 +36,54 @@ DHuangliService::DHuangliService(QObject *parent)
 //获取指定公历月的假日信息
 QString DHuangliService::getFestivalMonth(quint32 year, quint32 month)
 {
-    CalendarProgramExitControl::getProgramExitControl()->addExc();
+    DServiceExitControl exitControl;
+    if (!clientWhite(0)) {
+        return QString();
+    }
     QString festivalInfo = m_huangli->getFestivalMonth(year, month);
-    CalendarProgramExitControl::getProgramExitControl()->reduce();
     return festivalInfo;
 }
 
 //获取指定公历日的黄历信息
 QString DHuangliService::getHuangLiDay(quint32 year, quint32 month, quint32 day)
 {
-    CalendarProgramExitControl::getProgramExitControl()->addExc();
+    DServiceExitControl exitControl;
+    if (!clientWhite(0)) {
+        return QString();
+    }
     QString huangliInfo = m_huangli->getHuangLiDay(year, month, day);
-    CalendarProgramExitControl::getProgramExitControl()->reduce();
     return huangliInfo;
 }
 
 //获取指定公历月的黄历信息
 QString DHuangliService::getHuangLiMonth(quint32 year, quint32 month, bool fill)
 {
-    CalendarProgramExitControl::getProgramExitControl()->addExc();
+    DServiceExitControl exitControl;
+    if (!clientWhite(0)) {
+        return QString();
+    }
     QString huangliInfo = m_huangli->getHuangLiMonth(year, month, fill);
-    CalendarProgramExitControl::getProgramExitControl()->reduce();
     return huangliInfo;
 }
 
 //通过公历获取阴历信息
 CaLunarDayInfo DHuangliService::getLunarInfoBySolar(quint32 year, quint32 month, quint32 day)
 {
-    CalendarProgramExitControl::getProgramExitControl()->addExc();
+    DServiceExitControl exitControl;
+    if (!clientWhite(0)) {
+        return CaLunarDayInfo();
+    }
     CaLunarDayInfo huangliInfo = m_huangli->getLunarInfoBySolar(year, month, day);
-    CalendarProgramExitControl::getProgramExitControl()->reduce();
     return huangliInfo;
 }
 
 //获取阴历月信息
 CaLunarMonthInfo DHuangliService::getLunarMonthCalendar(quint32 year, quint32 month, bool fill)
 {
-    CalendarProgramExitControl::getProgramExitControl()->addExc();
+    DServiceExitControl exitControl;
+    if (!clientWhite(0)) {
+        return CaLunarMonthInfo();
+    }
     CaLunarMonthInfo huangliInfo = m_huangli->getLunarCalendarMonth(year, month, fill);
-    CalendarProgramExitControl::getProgramExitControl()->reduce();
     return huangliInfo;
 }

@@ -20,11 +20,13 @@
 */
 #include "accountmanager.h"
 
-AccountManager* AccountManager::m_accountManager = nullptr;
-AccountManager::AccountManager(QObject *parent) : QObject(parent)
-  , m_dbusRequest(new DbusAccountManagerRequest(this))
+AccountManager *AccountManager::m_accountManager = nullptr;
+AccountManager::AccountManager(QObject *parent)
+    : QObject(parent)
+    , m_dbusRequest(new DbusAccountManagerRequest(this))
 {
     initConnect();
+    m_dbusRequest->clientIsShow(true);
 }
 
 void AccountManager::initConnect()
@@ -33,7 +35,12 @@ void AccountManager::initConnect()
     connect(m_dbusRequest, &DbusAccountManagerRequest::signalGetGeneralSettingsFinish, this, &AccountManager::slotGetGeneralSettingsFinish);
 }
 
-AccountManager* AccountManager::getInstance()
+AccountManager::~AccountManager()
+{
+    m_dbusRequest->clientIsShow(false);
+}
+
+AccountManager *AccountManager::getInstance()
 {
     static AccountManager m_accountManager;
     return &m_accountManager;

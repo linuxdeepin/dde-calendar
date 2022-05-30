@@ -61,6 +61,12 @@ void DTypeColor::setPrivilege(const Privilege &privilege)
 
 bool DTypeColor::isSysColorInfo()
 {
+    return this->privilege() == PriSystem;
+}
+
+bool DTypeColor::operator!=(const DTypeColor &color) const
+{
+    return this->colorID() != color.colorID() || this->colorCode() != this->colorCode() || this->privilege() != this->privilege();
 }
 
 DTypeColor::List DTypeColor::fromJsonString(const QString &colorJson)

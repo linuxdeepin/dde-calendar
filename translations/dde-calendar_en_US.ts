@@ -85,7 +85,7 @@
         <translation>D</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/dayWidget/daywindow.cpp" line="187"/>
+        <location filename="../calendar-client/src/widget/dayWidget/daywindow.cpp" line="184"/>
         <source>Lunar</source>
         <translation type="unfinished"></translation>
     </message>
@@ -531,17 +531,17 @@
 <context>
     <name>CScheduleSearchDateItem</name>
     <message>
-        <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="909"/>
+        <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="919"/>
         <source>Y</source>
         <translation>Y</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="909"/>
+        <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="919"/>
         <source>M</source>
         <translation>M</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="909"/>
+        <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="919"/>
         <source>D</source>
         <translation>D</translation>
     </message>
@@ -567,7 +567,7 @@
 <context>
     <name>CScheduleSearchView</name>
     <message>
-        <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="657"/>
+        <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="662"/>
         <source>No search results</source>
         <translation>No search results</translation>
     </message>
@@ -642,13 +642,13 @@
 <context>
     <name>CYearScheduleView</name>
     <message>
+        <location filename="../calendar-client/src/widget/yearWidget/yearscheduleview.cpp" line="278"/>
         <location filename="../calendar-client/src/widget/yearWidget/yearscheduleview.cpp" line="281"/>
-        <location filename="../calendar-client/src/widget/yearWidget/yearscheduleview.cpp" line="284"/>
         <source>All Day</source>
         <translation>All Day</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/yearWidget/yearscheduleview.cpp" line="301"/>
+        <location filename="../calendar-client/src/widget/yearWidget/yearscheduleview.cpp" line="298"/>
         <source>No event</source>
         <translation>No event</translation>
     </message>
@@ -932,7 +932,7 @@
 <context>
     <name>YearFrame</name>
     <message>
-        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="935"/>
+        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="936"/>
         <source>Y</source>
         <translation>Y</translation>
     </message>
@@ -943,7 +943,7 @@
         <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="226"/>
         <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="386"/>
         <location filename="../calendar-client/src/widget/monthWidget/monthwindow.cpp" line="134"/>
-        <location filename="../calendar-client/src/widget/monthWidget/monthwindow.cpp" line="262"/>
+        <location filename="../calendar-client/src/widget/monthWidget/monthwindow.cpp" line="271"/>
         <location filename="../calendar-client/src/widget/weekWidget/weekwindow.cpp" line="69"/>
         <location filename="../calendar-client/src/widget/weekWidget/weekwindow.cpp" line="315"/>
         <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="278"/>
