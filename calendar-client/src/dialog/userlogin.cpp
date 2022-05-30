@@ -25,6 +25,8 @@
 #include <DPushButton>
 #include <QHBoxLayout>
 #include <DSettingsOption>
+#include <DIconButton>
+#include <DApplicationHelper>
 
 Userlogin::Userlogin(QObject *parent)
     : QObject(parent)
@@ -43,11 +45,29 @@ QPair<QWidget*, QWidget*> Userlogin::createloginButton(QObject *obj)
 
     // 构建自定义Item
     QWidget* widget = new QWidget();
+
+    DIconButton *buttonImg = new DIconButton(widget);
     QPushButton* button = new QPushButton(widget);
     QHBoxLayout* layout = new QHBoxLayout(widget);
+    QPixmap pixmaplight;
+    QPixmap pixmapdark;
+
+    pixmaplight.load(":/resources/icon/account_light.svg");
+//    pixmap = pixmap.scaled(59,100,Qt::IgnoreAspectRatio);
+    pixmapdark.load(":/resources/icon/account_dark.svg");
+    buttonImg->setStyleSheet("border:0px solid;");
+    if (DGuiApplicationHelper::instance()->themeType() == DGuiApplicationHelper::DarkType) {
+        buttonImg->setIcon(pixmaplight);
+    }else {
+        buttonImg->setIcon(pixmapdark);
+    }
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->addWidget(buttonImg);
+    layout->addStretch();
     button->setText(tr("login","button"));
     layout->addWidget(button);
-    widget->layout()->setAlignment(Qt::AlignRight);
+    widget->layout()->setAlignment(Qt::AlignLeft);
+
     QPair<QWidget *, QWidget *> optionWidget = DSettingsWidgetFactory::createStandardItem(QByteArray(), option, widget);
     // 获取初始值
     option->setValue(option->defaultValue());

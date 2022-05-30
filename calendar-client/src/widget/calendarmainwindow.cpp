@@ -445,7 +445,6 @@ void Calendarmainwindow::initConnection()
 
     connect(m_scheduleSearchView, &CScheduleSearchView::signalSelectCurrentItem, this,
             &Calendarmainwindow::slotSetSearchFocus);
-//    connect(DeepinAccount::instance(), &DeepinAccount::loggedIn, this, &Calendarmainwindow::);
     //更新当前时间
     connect(m_currentDateUpdateTimer, &QTimer::timeout, this,
             &Calendarmainwindow::slotCurrentDateUpdate);
@@ -802,6 +801,8 @@ void Calendarmainwindow::mousePressEvent(QMouseEvent *event)
 {
     Q_UNUSED(event);
     setScheduleHide();
+    if (event->button() & Qt::LeftButton)
+        m_startPos = event->pos();
 }
 
 bool Calendarmainwindow::event(QEvent *event)
@@ -847,6 +848,7 @@ void Calendarmainwindow::slotOpenSettingDialog()
         m_dsdSetting->setIcon(CDynamicIcon::getInstance()->getPixmap());
         m_dsdSetting->setFixedSize(682, 506);
         m_dsdSetting->widgetFactory()->registerWidget("login",Userlogin::createloginButton);
+
         m_dsdSetting->widgetFactory()->registerWidget("FirstDayofWeek",Commonsetting::createComboboxFirstDayofWeek);
         m_dsdSetting->widgetFactory()->registerWidget("Time",Commonsetting::createComboboxTime);
         m_dsdSetting->widgetFactory()->registerWidget("JobTypeListView", [](QObject *obj) -> QWidget * {
@@ -991,11 +993,9 @@ void Calendarmainwindow::dragEnterEvent(QDragEnterEvent *event)
  */
 void Calendarmainwindow::dropEvent(QDropEvent *event)
 {
-    m_startPos = event->pos();
-    slotNewSchedule();
-}
-
-void Calendarmainwindow::slotCommonSetting()
-{
-
+    QPoint pos = event->pos();
+    int diffPosx = pos.x() - m_startPos.x();
+    int diffPosy = pos.y() - m_startPos.y();
+    if ((diffPosx >=16 || diffPosx <= -16) || (diffPosy >= 16 || diffPosy <= -16))
+        slotNewSchedule();
 }

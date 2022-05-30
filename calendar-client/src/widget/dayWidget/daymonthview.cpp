@@ -732,7 +732,7 @@ void CDayMonthWidget::mouseMoveEvent(QMouseEvent *event)
     data->setImageData(m_selectedCell);
     if (event->buttons() & Qt::LeftButton) {
         int distance = (event->pos() - m_startPos).manhattanLength();
-        if (distance >= 15)
+        if (distance > 20)
               drag->exec(Qt::MoveAction);
     }
 }

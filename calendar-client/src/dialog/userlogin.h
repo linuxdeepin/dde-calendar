@@ -36,6 +36,9 @@ public:
     virtual ~Userlogin();
 
     static QPair<QWidget*, QWidget*> createloginButton(QObject *obj);
+protected:
+    QIcon *m_switchIconLight {};
+    QIcon *m_switchIconDark {};
 };
 
 #endif // USERLOGIN_H

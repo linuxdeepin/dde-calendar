@@ -107,5 +107,7 @@
         <file>resources/icon/calaendar_sidebar.svg</file>
         <file>resources/icon/icon_refresh.svg</file>
         <file>resources/icon/icon_warning_light.svg</file>
+        <file>resources/icon/account_dark.svg</file>
+        <file>resources/icon/account_light.svg</file>
     </qresource>
 </RCC>

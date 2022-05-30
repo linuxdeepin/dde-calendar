@@ -101,7 +101,6 @@ private slots:
     //新建日程
     void slotNewSchedule();
     void slotOpenSettingDialog();
-    void slotCommonSetting();
     //快捷键删除选中日程
     void slotDeleteitem();
     //设置最大大小
