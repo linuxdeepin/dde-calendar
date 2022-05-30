@@ -62,6 +62,15 @@ protected:
                    const QVariant &arg6 = QVariant(),
                    const QVariant &arg7 = QVariant(),
                    const QVariant &arg8 = QVariant());
+    void asyncCall(const QString &method, QString callName,
+                   const QVariant &arg1 = QVariant(),
+                   const QVariant &arg2 = QVariant(),
+                   const QVariant &arg3 = QVariant(),
+                   const QVariant &arg4 = QVariant(),
+                   const QVariant &arg5 = QVariant(),
+                   const QVariant &arg6 = QVariant(),
+                   const QVariant &arg7 = QVariant(),
+                   const QVariant &arg8 = QVariant());
 
 private:
     CallbackFunc m_callbackFunc = nullptr; //回调函数

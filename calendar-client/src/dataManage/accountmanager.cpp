@@ -151,16 +151,20 @@ void AccountManager::slotGetAccountListFinish(DAccount::List accountList)
     for (DAccount::Ptr account : accountList) {
         if (account->accountType() == DAccount::Account_Local) {
             m_localAccountItem.reset(new AccountItem(account, this));
-            connect(m_localAccountItem.data(), &AccountItem::signalScheduleUpdate, this, &AccountManager::signalScheduleUpdate);
             m_localAccountItem->resetAccount();
         }
 
         if (account->accountType() == DAccount::Account_UnionID) {
             m_unionAccountItem.reset(new AccountItem(account, this));
-            connect(m_unionAccountItem.data(), &AccountItem::signalScheduleUpdate, this, &AccountManager::signalScheduleUpdate);
             m_unionAccountItem->resetAccount();
         }
     }
+
+    for (AccountItem::Ptr p : getAccountList()) {
+        connect(p.data(), &AccountItem::signalScheduleUpdate, this, &AccountManager::signalScheduleUpdate);
+        connect(p.data(), &AccountItem::signalSearchScheduleUpdate, this, &AccountManager::signalSearchScheduleUpdate);
+    }
+
     if (m_dataInitFinished) {
         emit signalAccountUpdate();
     }

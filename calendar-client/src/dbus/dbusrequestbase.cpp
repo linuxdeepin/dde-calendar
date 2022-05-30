@@ -62,8 +62,21 @@ void DbusRequestBase::asyncCall(const QString &method,
                                 const QVariant &arg1, const QVariant &arg2, const QVariant &arg3, const QVariant &arg4,
                                 const QVariant &arg5, const QVariant &arg6, const QVariant &arg7, const QVariant &arg8)
 {
+    asyncCall(method, method, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+}
+
+/**
+ * @brief DbusRequestBase::asyncCall
+ * 异步访问dbus接口
+ * @param method    dbus方法名
+ * @param args  参数
+ */
+void DbusRequestBase::asyncCall(const QString &method, QString callName,
+                                const QVariant &arg1, const QVariant &arg2, const QVariant &arg3, const QVariant &arg4,
+                                const QVariant &arg5, const QVariant &arg6, const QVariant &arg7, const QVariant &arg8)
+{
     QDBusPendingCall async = QDBusAbstractInterface::asyncCall(method, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
-    CDBusPendingCallWatcher *watcher = new CDBusPendingCallWatcher(async, method, this);
+    CDBusPendingCallWatcher *watcher = new CDBusPendingCallWatcher(async, callName, this);
     //将回调函数放进CallWatcher中，随CallWatcher调用结果返回
     watcher->setCallbackFunc(m_callbackFunc);
     //清楚回调函数，防止多方法调用时混淆

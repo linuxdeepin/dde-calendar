@@ -285,8 +285,12 @@ void CScheduleSearchItem::paintEvent(QPaintEvent *e)
 
     painter.save();
     //TODO:根据日程类型获取颜色
-    const CSchedulesColor gdColor; //= CScheduleDataManage::getScheduleDataManage()->getScheduleColorByType(m_ScheduleInfo.getType());
-    bColor = gdColor.orginalColor;
+    DScheduleType::Ptr type =  gScheduleManager->getScheduleTypeByScheduleId(m_ScheduleInfo->scheduleTypeID());
+    if (nullptr != type) {
+        bColor = type->typeColor().colorCode();
+    }
+
+//    bColor = gdColor.orginalColor;
     QPen pen(bColor);
     pen.setWidth(2);
     painter.setPen(pen);
@@ -471,6 +475,7 @@ CScheduleSearchView::CScheduleSearchView(QWidget *parent)
     connect(m_gradientItemList, &CScheduleListWidget::signalListWidgetClicked, this, &CScheduleSearchView::slotListWidgetClicked);
     CScheduleTask *_scheduleTask = CalendarManager::getInstance()->getScheduleTask();
     connect(_scheduleTask, &CScheduleTask::jobsUpdate, this, &CScheduleSearchView::updateSearch);
+    connect(gScheduleManager, &ScheduleManager::signalSearchScheduleUpdate, this, &CScheduleSearchView::slotScearedScheduleUpdate);
 }
 
 CScheduleSearchView::~CScheduleSearchView()
@@ -525,7 +530,7 @@ void CScheduleSearchView::clearSearch()
     m_labellist.clear();
     m_gradientItemList->clear();
     //清空搜索数据
-    CalendarManager::getInstance()->getScheduleTask()->clearSearchScheduleInfo();
+    gScheduleManager->clearSearchSchedule();
 }
 
 void CScheduleSearchView::setMaxWidth(const int w)
@@ -753,7 +758,12 @@ void CScheduleSearchView::slotsetSearch(QString str)
     }
     QDateTime eDate = date.addMonths(6);
     //查询搜索
-//    m_vlistData = CalendarManager::getInstance()->getScheduleTask()->getSearchScheduleInfo(str, bDate, eDate);
+    gScheduleManager->searchSchedule(str, bDate, eDate);
+}
+
+void CScheduleSearchView::slotScearedScheduleUpdate()
+{
+    m_vlistData = gScheduleManager->getAllSearchedScheduleMap();
     updateDateShow();
 }
 

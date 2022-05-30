@@ -183,8 +183,18 @@ void CMonthWindow::setCurrentDateTime(const QDateTime &currentDate)
  */
 void CMonthWindow::updateShowSchedule()
 {
-//    QMap<QDate, QVector<DSchedule>> _monthScheduleInfo = m_calendarManager->getScheduleTask()->getScheduleInfo(m_startDate, m_stopDate);
-//    m_monthView->setScheduleInfo(gScheduleManager->getAllSchedule());
+    QMap<QDate, DSchedule::List> map = gScheduleManager->getScheduleMap(m_startDate, m_stopDate);
+    //因获取的日程中只有有日程的项，数量不等于开始时间到结束时间的天数，
+    //但是视图显示要求数量为开始时间到结束时间的天数，所以在没有日程的时间中添加空日期列表
+    QDate date = m_startDate;
+    QDate eDate = m_stopDate.addDays(1);
+    while (date != eDate) {
+        if (!map.contains(date)) {
+            map[date] = DSchedule::List();
+        }
+        date = date.addDays(1);
+    }
+    m_monthView->setScheduleInfo(map);
 }
 
 /**
@@ -206,8 +216,7 @@ void CMonthWindow::updateShowLunar()
 void CMonthWindow::updateSearchScheduleInfo()
 {
     //获取搜索日程信息
-//    DSchedule::List _searchSchedule = m_calendarManager->getScheduleTask()->getSearchScheduleInfoVector();
-//    m_monthView->setSearchScheduleInfo(_searchSchedule);
+    m_monthView->setSearchScheduleInfo(gScheduleManager->getAllSearchedScheduleList());
 }
 
 /**

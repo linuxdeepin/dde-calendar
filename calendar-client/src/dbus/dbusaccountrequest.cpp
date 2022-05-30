@@ -159,8 +159,13 @@ void DbusAccountRequest::deleteSchedulesByScheduleTypeID(const QString &typeID)
  */
 void DbusAccountRequest::querySchedulesWithParameter(const DScheduleQueryPar::Ptr &params)
 {
+    //key为空为正常日程获取，不为空则为搜索日程
+    QString callName = "querySchedulesWithParameter";
+    if (!params->key().isEmpty()) {
+        callName = "searchSchedulesWithParameter";
+    }
     QString jsonStr = DScheduleQueryPar::toJsonString(params);
-    asyncCall("querySchedulesWithParameter", QVariant(jsonStr));
+    asyncCall("querySchedulesWithParameter", callName, QVariant(jsonStr));
 }
 
 void DbusAccountRequest::slotCallFinished(CDBusPendingCallWatcher* call)
@@ -195,6 +200,11 @@ void DbusAccountRequest::slotCallFinished(CDBusPendingCallWatcher* call)
             QString str = reply.argumentAt<0>();
             QMap<QDate, DSchedule::List> map = DSchedule::fromMapString(str);
             emit signalGetScheduleListFinish(map);
+        } else if (call->getmember() == "searchSchedulesWithParameter") {
+            QDBusPendingReply<QString> reply = *call;
+            QString str = reply.argumentAt<0>();
+            QMap<QDate, DSchedule::List> map = DSchedule::fromMapString(str);
+            emit signalSearchScheduleListFinish(map);
         }
 
         if (call->getCallbackFunc() != nullptr) {

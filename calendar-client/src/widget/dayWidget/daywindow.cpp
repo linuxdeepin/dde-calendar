@@ -157,25 +157,22 @@ void CDayWindow::updateShowDate(const bool isUpdateBar)
  */
 void CDayWindow::updateShowSchedule()
 {
-//    //获取一天的日程信息
-//    QMap<QDate, QVector<DSchedule>> _weekScheduleInfo = m_calendarManager->getScheduleTask()->getScheduleInfo(getSelectDate(), getSelectDate());
-//    //设置显示日程信息
-//    m_scheduleView->setShowScheduleInfo(_weekScheduleInfo);
-//    //获取界面显示定位时间位置
-//    setMakeTime(_weekScheduleInfo);
-//    QMap<QDate, bool> _fullInfo = m_calendarManager->getScheduleTask()->getDateHasSchedule();
-//    //获取当前月是否包含日程情况
-//    QVector<QDate> _monthDate = m_calendarManager->getCalendarDateDataManage()->getMonthDate(getSelectDate().year(), getSelectDate().month());
-//    QVector<bool> _monthFlag{};
-//    for (int i = 0; i < _monthDate.size(); ++i) {
-//        if (_fullInfo.contains(_monthDate.at(i))) {
-//            _monthFlag.append(_fullInfo[_monthDate.at(i)]);
-//        } else {
-//            _monthFlag.append(false);
-//        }
-//    }
-//    //设置日视图右侧月显示日期是否有日程
-//    m_daymonthView->setHasScheduleFlag(_monthFlag);
+    //获取一天的日程信息
+    QMap<QDate, DSchedule::List> _weekScheduleInfo = gScheduleManager->getScheduleMap(getSelectDate(), getSelectDate());
+    //设置显示日程信息
+    m_scheduleView->setShowScheduleInfo(_weekScheduleInfo);
+    //获取界面显示定位时间位置
+    setMakeTime(_weekScheduleInfo);
+
+    QSet<QDate> scheduleDate = gScheduleManager->getAllScheduleDate();
+    QVector<bool> monthFlag{};
+    QVector<QDate> monthDate = m_calendarManager->getCalendarDateDataManage()->getMonthDate(getSelectDate().year(), getSelectDate().month());
+
+    for (QDate date : monthDate) {
+        monthFlag.push_back((scheduleDate.find(date) != scheduleDate.end()));
+    }
+    //设置日视图右侧月显示日期是否有日程
+    m_daymonthView->setHasScheduleFlag(monthFlag);
 }
 
 /**

@@ -256,7 +256,7 @@ CWeekScheduleView::~CWeekScheduleView()
 void CWeekScheduleView::setData(QMap<QDate, DSchedule::List> &data, const QDate &startDate, const QDate &stopDate)
 {
     //显示一周的日程
-    Q_ASSERT(startDate.daysTo(stopDate) == 6);
+//    Q_ASSERT(startDate.daysTo(stopDate) == 6);
     m_ScheduleInfo.clear();
     beginDate = startDate;
     endDate = stopDate;

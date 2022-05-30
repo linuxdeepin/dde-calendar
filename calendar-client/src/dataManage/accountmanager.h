@@ -55,6 +55,7 @@ signals:
     void signalAccountDataUpdate();
     void signalScheduleUpdate();
     void signalScheduleTypeUpdate();
+    void signalSearchScheduleUpdate();
 
 public slots:
     //获取账户信息完成事件

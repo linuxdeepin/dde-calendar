@@ -358,8 +358,7 @@ void CWeekWindow::updateShowDate(const bool isUpdateBar)
  */
 void CWeekWindow::updateShowSchedule()
 {
-//    QMap<QDate, QVector<DSchedule>> _weekScheduleInfo = m_calendarManager->getScheduleTask()->getScheduleInfo(m_startDate, m_stopDate);
-//    m_scheduleView->setShowScheduleInfo(_weekScheduleInfo);
+    m_scheduleView->setShowScheduleInfo(gScheduleManager->getScheduleMap(m_startDate, m_stopDate));
 }
 
 /**

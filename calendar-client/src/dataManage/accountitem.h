@@ -91,6 +91,7 @@ signals:
     void signalAccountDataUpdate();
     void signalScheduleUpdate();
     void signalScheduleTypeUpdate();
+    void signalSearchScheduleUpdate();
 
 public slots:
     //获取账户信息完成事件
@@ -99,6 +100,8 @@ public slots:
     void slotGetScheduleTypeListFinish(DScheduleType::List);
     //获取日程数据完成事件
     void slotGetScheduleListFinish(QMap<QDate, DSchedule::List>);
+    //搜索日程数据完成事件
+    void slotSearchScheduleListFinish(QMap<QDate, DSchedule::List>);
 
 private:
     void initConnect();
@@ -106,22 +109,21 @@ private:
 private:
     DAccount::Ptr m_account;    //账户数据
     DScheduleType::List m_scheduleTypeList; //日程类型数据
-    QVector<DTypeColor> m_typeColorList;    //颜色数据
+    DTypeColor::Ptr m_typeColorList;    //颜色数据
     DbusAccountRequest* m_dbusRequest = nullptr;    //dbus请求实例
-
-    //回调函数
-    QMap<QString, QList<CallbackFunc>> m_callbackMap;
-    QMap<QString, bool> m_dataStatus;   //数据状态
-
     //一年的日程信息
     QMap<QDate, DSchedule::List> m_scheduleMap{};
+    //搜索的日程信息
+    QMap<QDate, DSchedule::List> m_searchedScheduleMap{};
     //一年是否含有日程
     QMap<QDate, bool>               m_fullInfo{};
     //一年的班休信息
     QMap<QDate, int>                m_festivalInfo{};
-    //搜索的日程信息
-    QMap<QDate, QVector<DSchedule>> m_searchScheduleInfo {};
     QVector<DSchedule> m_searchScheduleInfoVector {};
+
+    //回调函数
+    QMap<QString, QList<CallbackFunc>> m_callbackMap;
+    QMap<QString, bool> m_dataStatus;   //数据状态
 
 };
 

@@ -262,7 +262,7 @@ void CMonthDayRectWidget::paintEvent(QPaintEvent *event)
 
     QColor highColor = DPaletteHelper::instance()->palette(this).highlight().color();
 
-    if (m_date == QDate::currentDate()) {
+    if (m_date == QDate::currentDate() && m_globaldata->isBelongMonth(m_date)) {
         //当天日期
         painter.setBrush(highColor);
         painter.setPen(Qt::NoPen);

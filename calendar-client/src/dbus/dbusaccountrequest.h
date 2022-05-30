@@ -125,6 +125,7 @@ signals:
     void signalGetAccountInfoFinish(DAccount::Ptr);
     void signalGetScheduleTypeListFinish(DScheduleType::List);
     void signalGetScheduleListFinish(QMap<QDate, DSchedule::List>);
+    void signalSearchScheduleListFinish(QMap<QDate, DSchedule::List>);
 
 public slots:
 

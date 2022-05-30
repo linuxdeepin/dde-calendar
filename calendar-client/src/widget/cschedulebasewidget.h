@@ -71,6 +71,7 @@ signals:
 
 public slots:
     void slotScheduleUpdate();
+    void slotSearchedScheduleUpdate();
 
 private:
     void initConnect();

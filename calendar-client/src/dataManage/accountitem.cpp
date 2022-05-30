@@ -275,9 +275,25 @@ void AccountItem::slotGetScheduleTypeListFinish(DScheduleType::List scheduleType
     emit signalScheduleTypeUpdate();
 }
 
+/**
+ * @brief AccountItem::slotGetScheduleListFinish
+ * 获取日程数据完成事件
+ * @param map 日程数据
+ */
 void AccountItem::slotGetScheduleListFinish(QMap<QDate, DSchedule::List> map)
 {
     m_scheduleMap = map;
     emit signalScheduleUpdate();
+}
+
+/**
+ * @brief AccountItem::slotSearchScheduleListFinish
+ * 搜索日程数据完成事件
+ * @param map 日程数据
+ */
+void AccountItem::slotSearchScheduleListFinish(QMap<QDate, DSchedule::List> map)
+{
+    m_searchedScheduleMap = map;
+    emit signalSearchScheduleUpdate();
 }
 

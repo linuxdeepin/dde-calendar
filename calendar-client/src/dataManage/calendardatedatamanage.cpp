@@ -45,7 +45,6 @@ void CalendarDateDataManager::setSelectDate(const QDate &selectDate, bool isSwit
     m_selectDate = selectDate;
     if (isSwitchYear || m_showDateRange.startDate > m_selectDate || m_showDateRange.stopDate < m_selectDate) {
         //如果选择时间不在显示范围内则修改显示年份,开始和结束时间
-        gScheduleManager->resetSchedule(m_selectDate.year());
         setYearBeginAndEndDate(m_selectDate.year());
     }
 }
@@ -290,6 +289,7 @@ QString CalendarDateDataManager::getDateFormat() const
 
 void CalendarDateDataManager::setYearBeginAndEndDate(const int year)
 {
+    gScheduleManager->resetSchedule(m_selectDate.year());
     m_showDateRange.showYear = year;
     QDate _firstDayOfJan(year, 1, 1);
     m_showDateRange.startDate = getFirstDayOfWeek(_firstDayOfJan);

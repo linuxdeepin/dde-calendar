@@ -21,6 +21,7 @@
 #include "scheduledlg.h"
 #include "scheduledatamanage.h"
 #include "constants.h"
+#include "schedulemanager.h"
 
 #include <QPainter>
 #include <QRect>
@@ -84,9 +85,9 @@ void CYearScheduleView::setData(DSchedule::List &vListData)
 
     for (int i = 0; i < valldayListData.count(); i++) {
         DSchedule::List::iterator iter = valldayListData.begin();
-        //        if (valldayListData.at(i).getType() == DDECalendar::FestivalTypeID) {
+//        if (valldayListData.at(i).getType() == DDECalendar::FestivalTypeID) {};
         //TODO:类型判断
-        if (false) {
+        if (true) {
             DSchedule::Ptr moveDate;
             moveDate = valldayListData.at(i);
             valldayListData.removeAt(i);
@@ -109,9 +110,9 @@ void CYearScheduleView::setData(DSchedule::List &vListData)
             vTListData.append(m_vlistData.at(i));
         }
         DSchedule::Ptr info;
+        info.reset(new  DSchedule());
         info->setSummary("......");
-        //TODO:设置类型
-        //        info.setID(-1);
+        info->setUid("-1");
         vTListData.append(info);
         m_vlistData = vTListData;
     }
@@ -218,26 +219,24 @@ void CYearScheduleView::paintItem(QPainter &painter, DSchedule::Ptr info, int in
     int bHeight = index * 29 + 10;
     int labelheight = 28;
     DSchedule::Ptr &gd = info;
-    //TODO:根据类型获取颜色
-    CSchedulesColor gdColor; //= CScheduleDataManage::getScheduleDataManage()->getScheduleColorByType(gd.getType());
 
-    //TODO:判断是否为。。。
-    //        if (info.getID() != -1) {
-    if (false) {
+    if (info->uid() == "-1") {
         QString str = "...";
-
         painter.save();
         painter.setPen(m_btimecolor);
         painter.setFont(m_textfont);
         painter.drawText(QRect(25, bHeight, labelwidth - 80, labelheight - 2), Qt::AlignLeft | Qt::AlignVCenter, str);
         painter.restore();
     } else {
-        //TODO:判断是否为。。。
-        //        if (info.getID() != -1) {
-        if (true) {
+        if (info->uid() != "-1") {
             //圆点m_solocolor
+            QColor gdColor;
+            DScheduleType::Ptr type = gScheduleManager->getScheduleTypeByScheduleId(info->scheduleTypeID());
+            if (nullptr != type) {
+                gdColor = type->getColorCode();
+            }
             painter.save();
-            painter.setBrush(QBrush(gdColor.orginalColor));
+            painter.setBrush(QBrush(gdColor));
             painter.setPen(Qt::NoPen);
             painter.drawEllipse(QRect(25, bHeight + (labelheight - 8) / 2, 8, 8));
             painter.restore();
@@ -270,9 +269,7 @@ void CYearScheduleView::paintItem(QPainter &painter, DSchedule::Ptr info, int in
 
         painter.restore();
 
-        //TODO:判断是否为。。。
-        //        if (info.getID() != -1) {
-        if (true) {
+        if (info->uid() != "-1") {
             //右边时间
             painter.save();
             painter.setPen(m_btimecolor);

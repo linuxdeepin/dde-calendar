@@ -515,8 +515,8 @@ void CYearWindow::updateShowLunar()
 void CYearWindow::updateSearchScheduleInfo()
 {
     //获取搜索日程信息
-    QMap<QDate, QVector<DSchedule>> _searchSchedule = m_calendarManager->getScheduleTask()->getSearchScheduleInfo();
-    m_yearWidget->setSearchSchedule(_searchSchedule);
+//    QMap<QDate, QVector<DSchedule>> _searchSchedule = m_calendarManager->getScheduleTask()->getSearchScheduleInfo();
+    m_yearWidget->setSearchSchedule(gScheduleManager->getAllSearchedScheduleDate());
 }
 
 /**
@@ -651,10 +651,8 @@ void CYearWindow::slotMousePress(const QDate &selectDate, const int pressType)
         // 0:单击
         DSchedule::List _scheduleInfo {};
         //获取选择日期的日程信息
-//        QMap<QDate, DSchedule::List> showInfo = m_calendarManager->getScheduleTask()->getScheduleInfo(selectDate, selectDate);
-//        if (showInfo.begin() != showInfo.end()) {
-//            _scheduleInfo = showInfo.begin().value();
-//        }
+        _scheduleInfo = gScheduleManager->getScheduleByDay(selectDate);
+
         m_scheduleView->setCurrentDate(selectDate);
         m_scheduleView->setData(_scheduleInfo);
         //使用设置的显示坐标
@@ -669,6 +667,7 @@ void CYearWindow::slotMousePress(const QDate &selectDate, const int pressType)
             m_scheduleView->setDirection(DArrowRectangle::ArrowRight);
             m_scheduleView->show(pos22.x() - 10, pos22.y());
         }
+        update();
         break;
     }
     case 1: {
@@ -813,7 +812,7 @@ void YearFrame::setLunarYearDate(const QString &lunar)
  * @brief YearFrame::setDateHasScheduleSign     设置日期是否存在日程
  * @param hasSchedule
  */
-void YearFrame::setDateHasScheduleSign(const QMap<QDate, bool> &hasSchedule)
+void YearFrame::setDateHasScheduleSign(const QSet<QDate> &hasSchedule)
 {
     QDate _startDate;
     QDate _stopDate;
@@ -882,7 +881,7 @@ void YearFrame::setTheMe(int type)
  * @brief YearFrame::setSearchSchedule      设置搜索日程
  * @param searchInfo
  */
-void YearFrame::setSearchSchedule(const QMap<QDate, QVector<DSchedule>> &searchInfo)
+void YearFrame::setSearchSchedule(const QSet<QDate> &hasSchedule)
 {
     QDate _startDate;
     QDate _stopDate;
@@ -896,13 +895,15 @@ void YearFrame::setSearchSchedule(const QMap<QDate, QVector<DSchedule>> &searchI
             _hasSearchScheduleSet.clear();
             for (int j = 0 ; j < _offset; ++j) {
                 _getDate = _startDate.addDays(j);
-                if (searchInfo.contains(_getDate) && searchInfo[_getDate].size() > 0) {
+                if (hasSchedule.contains(_getDate)) {
                     _hasSearchScheduleSet.insert(_getDate);
                 }
             }
             m_monthViewList.at(i)->setHasSearchScheduleSet(_hasSearchScheduleSet);
         }
     }
+
+
 }
 
 /**

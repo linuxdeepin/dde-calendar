@@ -159,11 +159,11 @@ public:
     //设置阴历年显示
     void setLunarYearDate(const QString &lunar = "");
     //设置日期是否存在日程
-    void setDateHasScheduleSign(const QMap<QDate, bool> &hasSchedule);
+    void setDateHasScheduleSign(const QSet<QDate> &hasSchedule);
     //设置不同主题颜色
     void setTheMe(int type = 0);
     //设置搜索日程
-    void setSearchSchedule(const QMap<QDate, QVector<DSchedule>> &searchInfo);
+    void setSearchSchedule(const QSet<QDate> &hasSchedule);
     void setViewFocus(int index);
     int getViewFocusIndex();
 private:

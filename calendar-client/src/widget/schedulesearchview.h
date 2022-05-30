@@ -20,6 +20,7 @@
 #define SCHEDULESEARCHVIEW_H
 
 #include "dschedule.h"
+#include "schedulemanager.h"
 
 #include <DLabel>
 #include <DMenu>
@@ -60,6 +61,7 @@ public slots:
     void updateSearch();
     void slotSelectCurrentItem(CScheduleSearchItem *item, bool itemFocusOut);
     void slotListWidgetClicked();
+    void slotScearedScheduleUpdate();
 
 protected:
     void resizeEvent(QResizeEvent *event) override;

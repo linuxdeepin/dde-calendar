@@ -26,12 +26,11 @@ CScheduleBaseWidget::CScheduleBaseWidget(QWidget *parent)
 {
     m_dialogIconButton = new CDialogIconButton(this);
     m_dialogIconButton->setFixedSize(QSize(16, 16));
-
+    initConnect();
     if (m_calendarManager == nullptr) {
         m_calendarManager = CalendarManager::getInstance();
         //获取一年的日程信息
 //        updateDBusData();
-        initConnect();
     }
     m_calendarManager->addShowWidget(this);
 }
@@ -48,6 +47,7 @@ CScheduleBaseWidget::~CScheduleBaseWidget()
 void CScheduleBaseWidget::initConnect()
 {
     connect(ScheduleManager::getInstace(), &ScheduleManager::signalScheduleUpdate, this, &CScheduleBaseWidget::slotScheduleUpdate);
+    connect(ScheduleManager::getInstace(), &ScheduleManager::signalSearchScheduleUpdate, this, &CScheduleBaseWidget::slotSearchedScheduleUpdate);
 }
 
 /**
@@ -68,7 +68,7 @@ bool CScheduleBaseWidget::setSelectDate(const QDate &selectDate, const bool isSw
             m_calendarManager->getShowWidget(i)->setYearData();
             m_calendarManager->getShowWidget(i)->updateShowDate();
         }
-        updateDBusData();
+//        updateDBusData();
     }
     return _result;
 }
@@ -120,7 +120,7 @@ bool CScheduleBaseWidget::getShowLunar()
 void CScheduleBaseWidget::updateData()
 {
     updateShowDate();
-//    updateShowSchedule();
+    updateShowSchedule();
     updateShowLunar();
     updateSearchScheduleInfo();
 }
@@ -179,4 +179,9 @@ CaHuangLiDayInfo CScheduleBaseWidget::getLunarInfo()
 void CScheduleBaseWidget::slotScheduleUpdate()
 {
     updateShowSchedule();
+}
+
+void CScheduleBaseWidget::slotSearchedScheduleUpdate()
+{
+    updateSearchScheduleInfo();
 }
