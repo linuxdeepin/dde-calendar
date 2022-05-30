@@ -21,7 +21,8 @@
 #include "dreminddata.h"
 
 DRemindData::DRemindData()
-    : m_accountID("")
+    : m_alarmID("")
+    , m_accountID("")
     , m_scheduleID("")
     , m_remindCount(0)
     , m_notifyid(-1)
@@ -106,4 +107,37 @@ QDateTime DRemindData::dtEnd() const
 void DRemindData::setDtEnd(const QDateTime &dtEnd)
 {
     m_dtEnd = dtEnd;
+}
+
+QString DRemindData::alarmID() const
+{
+    return m_alarmID;
+}
+
+void DRemindData::setAlarmID(const QString &alarmID)
+{
+    m_alarmID = alarmID;
+}
+
+void DRemindData::updateRemindTimeByCount()
+{
+    qint64 Minute = 60 * 1000;
+    qint64 Hour = Minute * 60;
+    qint64 duration = (10 + ((m_remindCount - 1) * 5)) * Minute; //下一次提醒距离现在的时间间隔，单位毫秒
+    if (duration >= Hour) {
+        duration = Hour;
+    }
+    setDtRemind(getRemindTimeByMesc(duration));
+}
+
+void DRemindData::updateRemindTimeByMesc(qint64 duration)
+{
+    setDtRemind(getRemindTimeByMesc(duration));
+}
+
+QDateTime DRemindData::getRemindTimeByMesc(qint64 duration)
+{
+    QDateTime currentTime = QDateTime::currentDateTime();
+    currentTime = currentTime.addMSecs(duration);
+    return currentTime;
 }

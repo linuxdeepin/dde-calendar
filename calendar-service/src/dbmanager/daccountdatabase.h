@@ -52,6 +52,8 @@ public:
     DSchedule::List querySchedulesByKey(const QString &key);
     //根据重复规则查询一定范围内的日程
     DSchedule::List querySchedulesByRRule(const QString &key, const ushort &rruleType);
+    //获取需要提醒的日程信息
+    DSchedule::List getRemindSchedule();
 
     ///////////////类型信息
     /**
@@ -65,6 +67,7 @@ public:
     bool scheduleTypeByUsed(const QString &typeID, const int isDeleted = 0);
     bool deleteScheduleTypeByID(const QString &typeID, const int isDeleted = 0);
     bool updateScheduleType(const DScheduleType::Ptr &scheduleType);
+
     //获取节假日类型ID
     QString getFestivalTypeID();
     ///////////////帐户信息

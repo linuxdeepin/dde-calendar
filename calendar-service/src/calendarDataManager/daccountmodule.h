@@ -56,6 +56,9 @@ public:
     bool deleteScheduleByScheduleID(const QString &scheduleID);
     QString querySchedulesWithParameter(const QString &params);
 
+    //获取需要提醒的日程
+    DSchedule::List getRemindScheduleList(const QDateTime &dtStart, const QDateTime &dtEnd);
+
     //内置颜色
     QString getSysColors();
 

@@ -161,11 +161,30 @@ QString DAccountModule::querySchedulesWithParameter(const QString &params)
 
     //获取一定范围内的日程
     QMap<QDate, DSchedule::List> scheduleMap = getScheduleTimesOn(queryPar->dtStart(), queryPar->dtEnd(), scheduleList, extend);
+
     //如果为查询前N个日程，则取前N个日程
     if (queryPar->queryType() == DScheduleQueryPar::Query_Top) {
         //TODO:
     }
     return DSchedule::toMapString(scheduleMap);
+}
+
+DSchedule::List DAccountModule::getRemindScheduleList(const QDateTime &dtStart, const QDateTime &dtEnd)
+{
+    //获取范围内需要提醒的日程信息
+    DSchedule::List scheduleList;
+    //当前最多提前一周提醒。所以结束时间+8天
+    QMap<QDate, DSchedule::List> scheduleMap = getScheduleTimesOn(dtStart, dtEnd.addDays(8), m_accountDB->getRemindSchedule(), false);
+    QMap<QDate, DSchedule::List>::const_iterator iter = scheduleMap.constBegin();
+    for (; iter != scheduleMap.constEnd(); ++iter) {
+        foreach (auto schedule, iter.value()) {
+            if (schedule->alarms().size() > 0
+                && schedule->alarms()[0]->time() >= dtStart && schedule->alarms()[0]->time() <= dtEnd) {
+                scheduleList.append(schedule);
+            }
+        }
+    }
+    return scheduleList;
 }
 
 QString DAccountModule::getSysColors()
@@ -214,7 +233,10 @@ QMap<QDate, DSchedule::List> DAccountModule::getScheduleTimesOn(const QDateTime 
                     DSchedule::Ptr newSchedule = DSchedule::Ptr(new DSchedule(*schedule.data()));
                     newSchedule->setDtStart(recurDateTime);
                     newSchedule->setDtEnd(copyEnd);
-                    newSchedule->setRecurrenceId(recurDateTime);
+                    //只有重复日程设置RecurrenceId
+                    if (schedule->dtStart() != recurDateTime) {
+                        newSchedule->setRecurrenceId(recurDateTime);
+                    }
 
                     if (extend) {
                         //需要扩展的天数
@@ -235,7 +257,11 @@ QMap<QDate, DSchedule::List> DAccountModule::getScheduleTimesOn(const QDateTime 
                     DSchedule::Ptr newSchedule = DSchedule::Ptr(schedule->clone());
                     newSchedule->setDtStart(dt);
                     newSchedule->setDtEnd(scheduleDtEnd);
-                    newSchedule->setRecurrenceId(dt);
+
+                    //只有重复日程设置RecurrenceId
+                    if (schedule->dtStart() != dt) {
+                        newSchedule->setRecurrenceId(dt);
+                    }
                     if (extend) {
                         //需要扩展的天数
                         int extenddays = static_cast<int>(dt.daysTo(scheduleDtEnd));

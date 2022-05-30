@@ -33,7 +33,7 @@ class DAccountService : public DServiceBase
 public:
     typedef QSharedPointer<DAccountService> Ptr;
 
-    DAccountService(const QString &path, const QString &interface, const DAccount::Ptr &account, QObject *parent = nullptr);
+    DAccountService(const QString &path, const QString &interface, const DAccountModule::Ptr &accountModule, QObject *parent = nullptr);
 public slots:
     /**
      * @brief getAccountInfo        获取帐户信息

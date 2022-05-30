@@ -33,13 +33,25 @@
 
 DSchedule::DSchedule()
     : KCalendarCore::Event()
+    , m_fileName("")
+    , m_scheduleTypeID("")
 {
 }
 
 DSchedule::DSchedule(const DSchedule &schedule)
     : KCalendarCore::Event(schedule)
+    , m_fileName("")
+    , m_scheduleTypeID("")
 {
     this->setScheduleTypeID(schedule.scheduleTypeID());
+}
+
+DSchedule::DSchedule(const KCalendarCore::Event &event)
+    : KCalendarCore::Event(event)
+    , m_fileName("")
+    , m_scheduleTypeID("")
+
+{
 }
 
 DSchedule *DSchedule::clone() const
@@ -225,7 +237,7 @@ bool DSchedule::fromIcsString(Ptr &schedule, const QString &string)
     if (icalformat.fromString(_cal, string)) {
         KCalendarCore::Event::List eventList = _cal->events();
         if (eventList.size() > 0) {
-            schedule = eventList.at(0).staticCast<DSchedule>();
+            schedule = DSchedule::Ptr(new DSchedule(*eventList.at(0).data())); // eventList.at(0).staticCast<DSchedule>();
             resBool = true;
         }
     }
@@ -261,7 +273,7 @@ QMap<QDate, DSchedule::List> DSchedule::fromMapString(const QString &json)
             foreach (auto scheduleValue, jsonArray) {
                 QString scheduleStr = scheduleValue.toString();
                 DSchedule::Ptr schedule = DSchedule::Ptr(new DSchedule);
-                DSchedule::fromIcsString(schedule, scheduleStr);
+                DSchedule::fromJsonString(schedule, scheduleStr);
                 scheduleMap[date].append(schedule);
             }
         }
@@ -278,7 +290,9 @@ QString DSchedule::toMapString(const QMap<QDate, DSchedule::List> &scheduleMap)
         jsonObj.insert("Date", dateToString(iter.key()));
         QJsonArray jsonArray;
         foreach (auto &schedule, iter.value()) {
-            jsonArray.append(DSchedule::toIcsString(schedule));
+            QString scheduleStr;
+            DSchedule::toJsonString(schedule, scheduleStr);
+            jsonArray.append(scheduleStr);
         }
         jsonObj.insert("schedule", jsonArray);
         rootArray.append(jsonObj);

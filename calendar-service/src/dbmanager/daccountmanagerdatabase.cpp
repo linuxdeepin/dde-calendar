@@ -199,21 +199,133 @@ void DAccountManagerDataBase::setCalendarGeneralSettings(const DCalendarGeneralS
 void DAccountManagerDataBase::createRemindInfo(const DRemindData::Ptr &remind)
 {
     QString strSql("INSERT INTO remindTask                              \
-                   (accountID, scheduleID, recurID,remindCount,notifyID        \
+                   (alarmID,accountID, scheduleID, recurID,remindCount,notifyID        \
                     , dtRemind, dtStart, dtEnd)                         \
-                   VALUES(?,?,?,?,?,?,?,?);");
+                   VALUES(?,?,?,?,?,?,?,?,?);");
+    QSqlQuery query(m_database);
+    query.prepare(strSql);
+    remind->setAlarmID(createUuid());
+    query.addBindValue(remind->alarmID());
+    query.addBindValue(remind->accountID());
+    query.addBindValue(remind->scheduleID());
+    query.addBindValue(dtToString(remind->recurrenceId()));
+    query.addBindValue(remind->remindCount());
+    query.addBindValue(remind->notifyid());
+    query.addBindValue(dtToString(remind->dtRemind()));
+    query.addBindValue(dtToString(remind->dtStart()));
+    query.addBindValue(dtToString(remind->dtEnd()));
+    if (!query.exec()) {
+        qWarning() << Q_FUNC_INFO << query.lastError();
+    }
+}
+
+void DAccountManagerDataBase::updateRemindInfo(const DRemindData::Ptr &remind)
+{
+    QString strSql("UPDATE remindTask                                               \
+                   SET accountID=?, scheduleID=?, recurID=?, remindCount=?,         \
+                   notifyID=?, dtRemind=?, dtStart=?, dtEnd=? WHERE alarmID = ?");
+
     QSqlQuery query(m_database);
     query.prepare(strSql);
     query.addBindValue(remind->accountID());
     query.addBindValue(remind->scheduleID());
-    query.addBindValue(dtToString(remind->dtRemind()));
+    query.addBindValue(dtToString(remind->recurrenceId()));
     query.addBindValue(remind->remindCount());
     query.addBindValue(remind->notifyid());
-    query.addBindValue(remind->dtRemind());
-    query.addBindValue(remind->dtStart());
-    query.addBindValue(remind->dtEnd());
+    query.addBindValue(dtToString(remind->dtRemind()));
+    query.addBindValue(dtToString(remind->dtStart()));
+    query.addBindValue(dtToString(remind->dtEnd()));
+    query.addBindValue(remind->alarmID());
     if (!query.exec()) {
         qWarning() << Q_FUNC_INFO << query.lastError();
+    }
+}
+
+void DAccountManagerDataBase::deleteRemindInfoByAlarmID(const QString &alarmID)
+{
+    QString strSql("DELETE FROM remindTask  WHERE alarmID=?;");
+    QSqlQuery query(m_database);
+    query.prepare(strSql);
+    query.addBindValue(alarmID);
+    if (!query.exec()) {
+        qWarning() << Q_FUNC_INFO << query.lastError();
+    }
+    if (query.isActive()) {
+        query.finish();
+    }
+}
+
+DRemindData::Ptr DAccountManagerDataBase::getRemindData(const QString &alarmID)
+{
+    QString strSql("SELECT alarmID, accountID, scheduleID, recurID, remindCount, notifyID, dtRemind, dtStart, dtEnd \
+                   FROM remindTask WHERE  alarmID = ? ;");
+    QSqlQuery query(m_database);
+    query.prepare(strSql);
+    query.addBindValue(alarmID);
+    DRemindData::Ptr remindData;
+    if (query.exec()) {
+        while (query.next()) {
+            remindData = DRemindData::Ptr(new DRemindData);
+            remindData->setAlarmID(query.value("alarmID").toString());
+            remindData->setAccountID(query.value("accountID").toString());
+            remindData->setScheduleID(query.value("scheduleID").toString());
+            remindData->setRemindCount(query.value("remindCount").toInt());
+            remindData->setNotifyid(query.value("notifyID").toInt());
+            remindData->setDtStart(dtFromString(query.value("dtStart").toString()));
+            remindData->setDtEnd(dtFromString(query.value("dtEnd").toString()));
+            remindData->setDtRemind(dtFromString(query.value("dtRemind").toString()));
+            remindData->setRecurrenceId(dtFromString(query.value("recurID").toString()));
+        }
+    } else {
+        qWarning() << Q_FUNC_INFO << query.lastError();
+    }
+    if (query.isActive()) {
+        query.finish();
+    }
+    return remindData;
+}
+
+DRemindData::List DAccountManagerDataBase::getValidRemindJob()
+{
+    QString strSql("SELECT alarmID, accountID, scheduleID, recurID, remindCount, notifyID, dtRemind, dtStart, dtEnd \
+                   FROM remindTask WHERE  dtRemind > ? ;");
+    QSqlQuery query(m_database);
+    query.prepare(strSql);
+    query.addBindValue(dtToString(QDateTime::currentDateTime()));
+    DRemindData::List remindList;
+    if (query.exec()) {
+        while (query.next()) {
+            DRemindData::Ptr remindData = DRemindData::Ptr(new DRemindData);
+            remindData->setAlarmID(query.value("alarmID").toString());
+            remindData->setAccountID(query.value("accountID").toString());
+            remindData->setScheduleID(query.value("scheduleID").toString());
+            remindData->setRemindCount(query.value("remindCount").toInt());
+            remindData->setNotifyid(query.value("notifyID").toInt());
+            remindData->setDtStart(dtFromString(query.value("dtStart").toString()));
+            remindData->setDtEnd(dtFromString(query.value("dtEnd").toString()));
+            remindData->setDtRemind(dtFromString(query.value("dtRemind").toString()));
+            remindData->setRecurrenceId(dtFromString(query.value("recurID").toString()));
+            remindList.append(remindData);
+        }
+    } else {
+        qWarning() << Q_FUNC_INFO << query.lastError();
+    }
+    if (query.isActive()) {
+        query.finish();
+    }
+    return remindList;
+}
+
+void DAccountManagerDataBase::clearRemindJobDatabase()
+{
+    QSqlQuery query(m_database);
+    QString sql("delete from remindTask");
+    if (query.exec(sql)) {
+        if (query.isActive()) {
+            query.finish();
+        }
+    } else {
+        qWarning() << __FUNCTION__ << query.lastError();
     }
 }
 
@@ -273,6 +385,7 @@ void DAccountManagerDataBase::createDB()
         //创建提醒任务表
         QString remindTaskSql("CREATE TABLE remindTask (            \
                               id INTEGER NOT NULL PRIMARY KEY,      \
+                              alarmID TEXT NOT NULL,                \
                               accountID TEXT NOT NULL,              \
                               scheduleID TEXT NOT NULL,             \
                               recurID DATETIME ,                    \

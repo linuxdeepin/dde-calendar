@@ -57,7 +57,18 @@ public:
     QDateTime dtEnd() const;
     void setDtEnd(const QDateTime &dtEnd);
 
+    QString alarmID() const;
+    void setAlarmID(const QString &alarmID);
+
+    void updateRemindTimeByCount();
+
+    void updateRemindTimeByMesc(qint64 duration);
+
 private:
+    QDateTime getRemindTimeByMesc(qint64 duration);
+
+private:
+    QString m_alarmID;
     QString m_accountID;
     QString m_scheduleID;
     QDateTime m_recurrenceId;

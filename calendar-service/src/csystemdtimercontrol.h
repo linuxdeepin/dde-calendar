@@ -5,11 +5,9 @@
 #include <QDateTime>
 #include <QVector>
 
-
-struct SystemDInfo{
-    qint64      jobID = 0;              //日程id
+struct SystemDInfo {
+    QString alarmID = ""; //提醒编号id
     qint64      laterCount = 0;         //稍后提醒次数
-    qint64      recurID = 0 ;           //重复日程编号
     QDateTime   triggerTimer;           //触发时间
 };
 
@@ -89,19 +87,19 @@ private:
      * @brief createService
      * 创建 .service文件
      */
-    void createService(const QString &name ,const SystemDInfo &info);
+    void createService(const QString &name, const SystemDInfo &info);
     /**
      * @brief createTimer
      * 创建 .timer文件
      */
-    void createTimer(const QString &name ,const QDateTime &triggerTimer);
+    void createTimer(const QString &name, const QDateTime &triggerTimer);
 
     /**
      * @brief createFile        创建文件
      * @param fileName          文件名称
      * @param content           内容
      */
-    void createFile(const QString &fileName ,const QString &content);
+    void createFile(const QString &fileName, const QString &content);
 signals:
 
 public slots:

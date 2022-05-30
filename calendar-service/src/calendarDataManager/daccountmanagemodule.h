@@ -58,6 +58,21 @@ public:
     int getTimeFormatType();
     void setTimeFormatType(const int timeType);
 
+    void remindJob(const QString &alarmID);
+
+    /**
+     * @brief updateRemindSchedules     更新未来10分钟的提醒任务
+     * @param isClear                   是否清空提醒任务数据库
+     */
+    void updateRemindSchedules(bool isClear);
+
+    /**
+     * @brief notifyMsgHanding      通知提示框交互处理
+     * @param alarmID               提醒任务id
+     * @param operationNum          操作编号 ， 1：打开日历，2：稍后提醒 3： 明天提醒 4： 提前1天提醒 5:关闭按钮
+     */
+    void notifyMsgHanding(const QString &alarmID, const qint32 operationNum);
+
 private:
     void unionIDDataMerging();
 signals:
@@ -71,6 +86,7 @@ private:
     DAccountManagerDataBase::Ptr m_accountManagerDB;
     DUnionIDDbus::Ptr m_unionIDDbus;
     DAccount::List m_accountList;
+    QMap<QString, DAccountModule::Ptr> m_accountModuleMap;
     QMap<QString, DAccountService::Ptr> m_AccountServiceMap[accountTypeCount];
     DCalendarGeneralSettings::Ptr m_generalSetting;
 };

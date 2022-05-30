@@ -72,24 +72,22 @@ public:
      */
     void updateRemindInfo(const DRemindData::Ptr &remind);
 
+    void deleteRemindInfoByAlarmID(const QString &alarmID);
+
+    DRemindData::Ptr getRemindData(const QString &alarmID);
+
     /**
      * @brief deleteRemindJobs      根据日程id删除提醒日程信息
      * @param Ids                   日程id集
      */
     void deleteRemindInfos(const QStringList &jobIDs);
 
-    /**
-     * @brief deleteRemindInfo      根据日程id和重复id删除提醒日程信息
-     * @param scheduleID            日程id
-     * @param recurid               重复id
-     */
-    void deleteRemindInfo(const QString &scheduleID, const QDateTime &recurid);
 
     /**
      * @brief getValidRemindJob     获取未提醒的稍后提醒日程
      * @return
      */
-    QList<DSchedule> getValidRemindJob();
+    DRemindData::List getValidRemindJob();
 
     /**
      * @brief clearRemindJobDatabase    清空稍后提醒表
@@ -103,13 +101,6 @@ public:
      * @return
      */
     DSchedule getRemindJob(const QString &jobID, const qint64 recurid);
-
-    /**
-     * @brief getRemindJob      根据日程id获取对应的提醒日程
-     * @param jobID                日程id
-     * @return
-     */
-    QList<DSchedule> getRemindJob(const QString &jobID);
 
     /**
      * @brief getNotifyID       获取桌面顶部通知ID

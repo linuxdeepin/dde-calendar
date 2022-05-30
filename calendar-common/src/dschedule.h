@@ -62,6 +62,7 @@ public:
 
     DSchedule();
     DSchedule(const DSchedule &schedule);
+    DSchedule(const KCalendarCore::Event &event);
 
     DSchedule *clone() const override;
 

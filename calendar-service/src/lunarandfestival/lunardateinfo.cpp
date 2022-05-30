@@ -224,7 +224,6 @@ bool LunarDateInfo::addSolarMap(QMap<int, QDate> &solarMap, QDate &nextDate, int
         solarMap[count] = nextDate;
     }
     count++;
-    //TODO:重复规则截止限制
     //    当结束重复为按多少次结束判断时，检查重复次数是否达到，达到则退出
     //    当重复次数达到最大限制直接返回
     //    duration > 0 表示结束与次数

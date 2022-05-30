@@ -237,7 +237,7 @@ DSchedule::List DAccountDataBase::querySchedulesByKey(const QString &key)
 
     if (query.exec()) {
         if (query.next()) {
-            DSchedule::Ptr schedule = DSchedule::Ptr(new DSchedule);
+            DSchedule::Ptr schedule;
             QString &&icsStr = query.value("ics").toString();
             DSchedule::fromIcsString(schedule, icsStr);
             scheduleList.append(schedule);
@@ -273,12 +273,36 @@ DSchedule::List DAccountDataBase::querySchedulesByRRule(const QString &key, cons
                     scheduleList.append(schedule);
                 } else if (rruleType > 7) {
                     //如果为工作日
-                    if (schedule->recurrence()->recurrenceType() == 4) {
-                        //TODO:判断是否为周一至周五
-                        QList<KCalendarCore::RecurrenceRule::WDayPos> lisetDayPos = schedule->recurrence()->defaultRRuleConst()->byDays();
+                    if (schedule->recurrence()->recurrenceType() == 4
+                        && schedule->recurrence()->defaultRRuleConst()->rrule().contains("BYDAY=MO,TU,WE,TH,FR")) {
+                        scheduleList.append(schedule);
                     }
                 }
             }
+        }
+    } else {
+        qWarning() << Q_FUNC_INFO << query.lastError();
+    }
+    if (query.isActive()) {
+        query.finish();
+    }
+    return scheduleList;
+}
+
+DSchedule::List DAccountDataBase::getRemindSchedule()
+{
+    QString strSql("SELECT  scheduleID, scheduleTypeID, summary, description, allDay, dtStart, dtEnd, isAlarm,  \
+                   titlePinyin, isLunar, ics, fileName, dtCreate, dtUpdate, dtDelete, isDeleted                 \
+                   FROM schedules WHERE  isAlarm =1;");
+    QSqlQuery query(m_database);
+    query.prepare(strSql);
+    DSchedule::List scheduleList;
+    if (query.exec()) {
+        while (query.next()) {
+            DSchedule::Ptr schedule = DSchedule::Ptr(new DSchedule);
+            QString &&icsStr = query.value("ics").toString();
+            DSchedule::fromIcsString(schedule, icsStr);
+            scheduleList.append(schedule);
         }
     } else {
         qWarning() << Q_FUNC_INFO << query.lastError();

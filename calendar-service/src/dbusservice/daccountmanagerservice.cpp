@@ -35,16 +35,19 @@ QString DAccountManagerService::getAccountList()
     return m_accountManager->getAccountList();
 }
 
-void DAccountManagerService::remindJob(const QString &scheduleID, const qint64 recurID)
+void DAccountManagerService::remindJob(const QString &alarmID)
 {
+    m_accountManager->remindJob(alarmID);
 }
 
 void DAccountManagerService::updateRemindJob(bool isClear)
 {
+    m_accountManager->updateRemindSchedules(isClear);
 }
 
-void DAccountManagerService::notifyMsgHanding(const QString &accountID, const QString &scheduleID, const qint64 recurID, const qint32 operationNum)
+void DAccountManagerService::notifyMsgHanding(const QString &alarmID, const qint32 operationNum)
 {
+    m_accountManager->notifyMsgHanding(alarmID, operationNum);
 }
 
 void DAccountManagerService::downloadByAccountID(const QString &accountID)

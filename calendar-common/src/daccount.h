@@ -36,10 +36,10 @@ public:
     };
 
     enum AccountState {
-        Account_Close = 0x0, //日历同步总开关被关闭(控制中心)
-        Account_Open = 0x1, //日历同步总开关开启
-        Account_Calendar = 0x2, //同步日程
-        Account_Setting = 0x4, //同步通用设置
+        Account_Close = 0x1, //日历同步总开关被关闭(控制中心)
+        Account_Open = 0x2, //日历同步总开关开启
+        Account_Calendar = 0x4, //同步日程
+        Account_Setting = 0x8, //同步通用设置
     };
     Q_DECLARE_FLAGS(AccountStates, AccountState)
 

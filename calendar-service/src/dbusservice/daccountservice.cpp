@@ -20,9 +20,9 @@
 */
 #include "daccountservice.h"
 
-DAccountService::DAccountService(const QString &path, const QString &interface, const DAccount::Ptr &account, QObject *parent)
+DAccountService::DAccountService(const QString &path, const QString &interface, const DAccountModule::Ptr &accountModule, QObject *parent)
     : DServiceBase(path, interface, parent)
-    , m_accountModel(new DAccountModule(account))
+    , m_accountModel(accountModule)
 {
 }
 
