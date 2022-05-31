@@ -84,9 +84,9 @@ void CMonthView::slotScheduleRemindWidget(const bool isShow, const DSchedule::Pt
         QVariant variant;
         CalendarGlobalEnv::getGlobalEnv()->getValueByKey(DDECalendar::CursorPointKey, variant);
         QPoint remindPos = variant.value<QPoint>();
-        //TODO:根据类型获取颜色
-        CSchedulesColor gdColor; //= CScheduleDataManage::getScheduleDataManage()->getScheduleColorByType(out.getType());
-//        m_remindWidget->setData(out, gdColor);
+        //根据类型获取颜色
+        CSchedulesColor gdColor = CScheduleDataManage::getScheduleDataManage()->getScheduleColorByType(out->scheduleTypeID());
+        m_remindWidget->setData(out, gdColor);
         //获取屏幕大小
         QRect desktopRect = QApplication::desktop()->rect();
         //根据提示框在屏幕的位置设置箭头方向

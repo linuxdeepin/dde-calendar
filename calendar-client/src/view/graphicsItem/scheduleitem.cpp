@@ -174,8 +174,8 @@ void CScheduleItem::timeFormatChanged(int value)
 void CScheduleItem::paintBackground(QPainter *painter, const QRectF &rect, const bool isPixMap)
 {
     Q_UNUSED(isPixMap);
-    //TODO:根据日程类型获取颜色
-    CSchedulesColor gdColor; //= CScheduleDataManage::getScheduleDataManage()->getScheduleColorByType(m_vScheduleInfo.getType());
+    //根据日程类型获取颜色
+    CSchedulesColor gdColor = CScheduleDataManage::getScheduleDataManage()->getScheduleColorByType(m_vScheduleInfo->scheduleTypeID());
 
     QColor textPenColor = CScheduleDataManage::getScheduleDataManage()->getTextColor();
     //判断是否为选中日程

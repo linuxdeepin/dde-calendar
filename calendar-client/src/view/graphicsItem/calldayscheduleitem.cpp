@@ -37,8 +37,8 @@ void CAllDayScheduleItem::paintBackground(QPainter *painter, const QRectF &rect,
     Q_UNUSED(isPixMap);
     m_font = DFontSizeManager::instance()->get(m_sizeType, m_font);
     painter->setRenderHints(QPainter::Antialiasing);
-    //TODO:根据日程类型获取类型颜色
-    CSchedulesColor gdColor; //= CScheduleDataManage::getScheduleDataManage()->getScheduleColorByType(m_vScheduleInfo.getType());
+    //根据日程类型获取类型颜色
+    CSchedulesColor gdColor = CScheduleDataManage::getScheduleDataManage()->getScheduleColorByType(m_vScheduleInfo->scheduleTypeID());
     QRectF drawrect = rect;
 
     QColor textcolor = CScheduleDataManage::getScheduleDataManage()->getTextColor();

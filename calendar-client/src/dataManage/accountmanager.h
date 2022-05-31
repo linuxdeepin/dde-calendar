@@ -37,10 +37,10 @@ public:
     QList<AccountItem::Ptr> getAccountList();
     AccountItem::Ptr getLocalAccountItem();
     AccountItem::Ptr getUnionAccountItem();
-    DScheduleType::Ptr getScheduleTypeByScheduleTypeId(const QString& schduleTypeId);
-    AccountItem::Ptr getAccountItemByScheduleTypeId(const QString& schduleTypeId);
-    AccountItem::Ptr getAccountItemByAccountId(const QString& accountId);
-    AccountItem::Ptr getAccountItemByAccountName(const QString& accountName);
+    DScheduleType::Ptr getScheduleTypeByScheduleTypeId(const QString &schduleTypeId);
+    AccountItem::Ptr getAccountItemByScheduleTypeId(const QString &schduleTypeId);
+    AccountItem::Ptr getAccountItemByAccountId(const QString &accountId);
+    AccountItem::Ptr getAccountItemByAccountName(const QString &accountName);
     DCalendarGeneralSettings::Ptr getGeneralSettings();
 
     //重新获取账户信息
@@ -84,8 +84,7 @@ private:
     void execWaitingCall();
 
 private:
-
-    static AccountManager* m_accountManager;
+    static AccountManager *m_accountManager;
     AccountItem::Ptr  m_localAccountItem;
     AccountItem::Ptr  m_unionAccountItem;
     DCalendarGeneralSettings::Ptr m_settings;

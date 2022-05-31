@@ -147,8 +147,8 @@ int JobTypeListView::addJobTypeItem(const DScheduleType &info)
     int itemHeight = 0;
     DStandardItem *item = new DStandardItem;
     item->setData(QVariant::fromValue(info), RoleJobTypeInfo);
-    //TODO:根据日程类型权限设置显示数据
-    //    item->setData(info.getAuthority() > 1, RoleJobTypeEditable);
+    //根据日程类型权限设置显示数据
+    item->setData(info.privilege() > 1, RoleJobTypeEditable);
     item->setData(false, RoleJobTypeLine);
 
     //首个 非默认日程类型，前面 添加分割线

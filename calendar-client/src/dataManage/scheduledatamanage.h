@@ -41,6 +41,7 @@ class CScheduleDataManage : public QObject
     Q_OBJECT
 public:
     static CScheduleDataManage *getScheduleDataManage();
+    //根据日程类型ID获取颜色信息
     CSchedulesColor getScheduleColorByType(const QString &type);
     static QColor getSystemActiveColor();
     static QColor getTextColor();

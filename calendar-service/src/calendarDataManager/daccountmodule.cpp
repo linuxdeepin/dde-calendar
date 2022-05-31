@@ -233,8 +233,7 @@ QString DAccountModule::getScheduleByScheduleID(const QString &scheduleID)
 
 bool DAccountModule::deleteScheduleByScheduleID(const QString &scheduleID)
 {
-    //TODO:根据是否为网络判断是否需要弱删除
-    //TODO:根据是否为提醒日程更新提醒任务,
+    //根据是否为网络判断是否需要弱删除
     bool isOK;
     DSchedule::Ptr schedule = m_accountDB->getScheduleByScheduleID(scheduleID);
     if (m_account->isNetWorkAccount()) {

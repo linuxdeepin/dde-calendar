@@ -19,48 +19,31 @@
 #include "scheduledatamanage.h"
 #include "accountmanager.h"
 #include "cscheduleoperation.h"
+#include "accountmanager.h"
 
 #include <QJsonArray>
 #include <QJsonDocument>
 
 CScheduleDataManage *CScheduleDataManage::m_vscheduleDataManage = new CScheduleDataManage;
 
+//
 CSchedulesColor CScheduleDataManage::getScheduleColorByType(const QString &type)
 {
     CSchedulesColor color;
     DTypeColor colorinfo;
-    bool isOk = false;
-    if (type != 4) {
-        //如果不是节假日
-        //TODO: 类型编号改为string
-        DScheduleType typeInfo(nullptr);
-        //根据类型获取日程类型信息getJobTypeByNo
-        isOk = JobTypeInfoManager::instance()->getJobTypeByNo(type, typeInfo);
-        //根据类型关联的颜色编号获取对应的颜色
-        colorinfo = typeInfo.typeColor();
+    QColor typeColor = QColor(gAccounManager->getScheduleTypeByScheduleTypeId(type)->typeColor().colorCode());
 
-    } else {
-        //节假日 颜色变化为2
-        isOk = JobTypeInfoManager::instance()->getJobTypeColorByNo(2, colorinfo);
-    }
+    color.orginalColor = typeColor;
+    color.normalColor = color.orginalColor;
+    color.normalColor.setAlphaF(0.2);
+    color.pressColor = color.orginalColor;
+    color.pressColor.setAlphaF(0.35);
 
-    if (isOk) {
-        color.orginalColor = QColor(colorinfo.colorCode());
-        color.normalColor = color.orginalColor;
-        color.normalColor.setAlphaF(0.2);
-        color.pressColor = color.orginalColor;
-        color.pressColor.setAlphaF(0.35);
+    color.hoverColor = color.orginalColor;
+    color.hoverColor.setAlphaF(0.3);
 
-        color.hoverColor = color.orginalColor;
-        color.hoverColor.setAlphaF(0.3);
-
-        color.hightColor = color.orginalColor;
-        color.hightColor.setAlphaF(0.35);
-
-    } else {
-        //获取颜色失败
-        qWarning() << "get type color fail ,type:" << type;
-    }
+    color.hightColor = color.orginalColor;
+    color.hightColor.setAlphaF(0.35);
 
     return color;
 }
@@ -85,7 +68,8 @@ CScheduleDataManage *CScheduleDataManage::getScheduleDataManage()
     return m_vscheduleDataManage;
 }
 
-CScheduleDataManage::CScheduleDataManage(QObject *parent) : QObject (parent)
+CScheduleDataManage::CScheduleDataManage(QObject *parent)
+    : QObject(parent)
 {
 }
 
@@ -104,7 +88,8 @@ void JobTypeInfoManager::updateInfo()
     }
     return;
 }
-JobTypeInfoManager::JobTypeInfoManager(QObject *parent) : QObject (parent)               //私有静态构造函数
+JobTypeInfoManager::JobTypeInfoManager(QObject *parent)
+    : QObject(parent) //私有静态构造函数
 {
     updateInfo();
 }

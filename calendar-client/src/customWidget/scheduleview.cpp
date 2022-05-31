@@ -486,11 +486,11 @@ void CScheduleView::slotScheduleShow(const bool isShow, const DSchedule::Ptr &ou
         QVariant variant;
         CalendarGlobalEnv::getGlobalEnv()->getValueByKey(DDECalendar::CursorPointKey, variant);
         QPoint pos22 = variant.value<QPoint>();
-        //TODO:根据日程类型获取颜色
-        //        CSchedulesColor gdColor = CScheduleDataManage::getScheduleDataManage()->getScheduleColorByType(
-        //                                      out.getType());
+        //根据日程类型获取颜色
+        CSchedulesColor gdColor = CScheduleDataManage::getScheduleDataManage()->getScheduleColorByType(
+            out->scheduleTypeID());
         QDesktopWidget *w = QApplication::desktop();
-        //        m_ScheduleRemindWidget->setData(out, gdColor);
+        m_ScheduleRemindWidget->setData(out, gdColor);
 
         if ((pos22.x() + m_ScheduleRemindWidget->width() + 15) > w->width()) {
             m_ScheduleRemindWidget->setDirection(DArrowRectangle::ArrowRight);

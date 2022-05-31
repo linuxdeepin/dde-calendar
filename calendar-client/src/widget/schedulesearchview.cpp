@@ -284,7 +284,6 @@ void CScheduleSearchItem::paintEvent(QPaintEvent *e)
     painter.drawText(QRect(12, 8, m_durationSize, labelBottomY - 16), flag, datestr);
 
     painter.save();
-    //TODO:根据日程类型获取颜色
     DScheduleType::Ptr type =  gScheduleManager->getScheduleTypeByScheduleId(m_ScheduleInfo->scheduleTypeID());
     if (nullptr != type) {
         bColor = type->typeColor().colorCode();

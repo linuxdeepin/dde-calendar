@@ -48,8 +48,8 @@ void CMonthScheduleItem::paintBackground(QPainter *painter, const QRectF &rect, 
     qreal labelheight = rect.height();
     m_font = DFontSizeManager::instance()->get(m_sizeType, m_font);
     int themetype = CScheduleDataManage::getScheduleDataManage()->getTheme();
-    //TODO:根据类型获取颜色
-    CSchedulesColor gdColor; //= CScheduleDataManage::getScheduleDataManage()->getScheduleColorByType(m_vScheduleInfo.getType());
+    //根据类型获取颜色
+    CSchedulesColor gdColor = CScheduleDataManage::getScheduleDataManage()->getScheduleColorByType(m_vScheduleInfo->scheduleTypeID());
     QColor brushColor = gdColor.normalColor;
     QColor textcolor = CScheduleDataManage::getScheduleDataManage()->getTextColor();
 
