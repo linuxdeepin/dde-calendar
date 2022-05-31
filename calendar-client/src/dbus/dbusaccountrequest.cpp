@@ -168,8 +168,15 @@ void DbusAccountRequest::querySchedulesWithParameter(const DScheduleQueryPar::Pt
     asyncCall("querySchedulesWithParameter", callName, QVariant(jsonStr));
 }
 
+void DbusAccountRequest::getSysColors()
+{
+    asyncCall("getSysColors");
+}
+
 void DbusAccountRequest::slotCallFinished(CDBusPendingCallWatcher* call)
 {
+    bool canCall = true;
+
     if (call->isError()) {
         qWarning() << call->reply().member() << call->error().message();
         if (call->getCallbackFunc() != nullptr) {
@@ -205,9 +212,18 @@ void DbusAccountRequest::slotCallFinished(CDBusPendingCallWatcher* call)
             QString str = reply.argumentAt<0>();
             QMap<QDate, DSchedule::List> map = DSchedule::fromMapString(str);
             emit signalSearchScheduleListFinish(map);
+        } else if (call->getmember() == "getSysColors") {
+            QDBusPendingReply<QString> reply = *call;
+            QString str = reply.argumentAt<0>();
+            DTypeColor::List list = DTypeColor::fromJsonString(str);
+            emit signalGetSysColorsFinish(list);
+        } else if (call->getmember() == "createScheduleType") {
+            canCall = false;
+            setCallbackFunc(call->getCallbackFunc());
+            getScheduleTypeList();
         }
 
-        if (call->getCallbackFunc() != nullptr) {
+        if (canCall && call->getCallbackFunc() != nullptr) {
             call->getCallbackFunc()(true);
         }
     }

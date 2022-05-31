@@ -75,10 +75,7 @@ void DbusAccountManagerRequest::setCalendarGeneralSettings(DCalendarGeneralSetti
 {
     QString jsonStr;
     DCalendarGeneralSettings::toJsonString(ptr, jsonStr);
-
-    QList<QVariant> argumentList;
-    argumentList << QVariant(jsonStr);
-    asyncCall("setCalendarGeneralSettings", argumentList);
+    asyncCall("setCalendarGeneralSettings", QVariant(jsonStr));
 }
 
 void DbusAccountManagerRequest::clientIsShow(bool isShow)
@@ -97,6 +94,7 @@ void DbusAccountManagerRequest::clientIsShow(bool isShow)
 void DbusAccountManagerRequest::slotCallFinished(CDBusPendingCallWatcher *call)
 {
     bool ret = true;
+    bool canCall = true;
     //错误处理
     if (call->isError()) {
         //打印错误信息
@@ -126,10 +124,14 @@ void DbusAccountManagerRequest::slotCallFinished(CDBusPendingCallWatcher *call)
             qWarning() << "AccountList Parsing failed!";
             ret = false;
         }
+    } else if (call->getmember() == "setCalendarGeneralSettings") {
+        canCall = false;
+        setCallbackFunc(call->getCallbackFunc());
+        getCalendarGeneralSettings();
     }
 
     //执行回调函数
-    if (call->getCallbackFunc() != nullptr) {
+    if (canCall && call->getCallbackFunc() != nullptr) {
         call->getCallbackFunc()(ret);
     }
     //释放内存

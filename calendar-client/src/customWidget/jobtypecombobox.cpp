@@ -55,13 +55,13 @@ QString JobTypeComboBox::getCurrentJobTypeNo()
     if (this->currentIndex() < 0 || this->currentIndex() >= m_lstJobType.size()) {
         return QString();
     }
-    return m_lstJobType[this->currentIndex()].typeID();
+    return m_lstJobType[this->currentIndex()]->typeID();
 }
 
 void JobTypeComboBox::setCurrentJobTypeNo(const QString &strJobTypeNo)
 {
     for (int i = 0; i < m_lstJobType.size(); i++) {
-        if (strJobTypeNo == m_lstJobType[i].typeID()) {
+        if (strJobTypeNo == m_lstJobType[i]->typeID()) {
             this->setCurrentIndex(i);
             break;
         }
@@ -116,26 +116,18 @@ int JobTypeComboBox::getCurrentEditPosition() const
     return m_newPos;
 }
 
-bool JobTypeComboBox::updateJobType()
+void JobTypeComboBox::updateJobType(const AccountItem::Ptr& account)
 {
-    QString strColorHex;
-    QString strJobType;
+    if (nullptr == account) {
+        return;
+    }
 
-    m_lstJobType = JobTypeInfoManager::instance()->getJobTypeList();
+    m_lstJobType = account->getScheduleTypeList();
 
     clear(); //更新前先清空原有列表
     for (m_itemNumIndex = 0; m_itemNumIndex < m_lstJobType.size(); m_itemNumIndex++) {
-        strColorHex = m_lstJobType[m_itemNumIndex].typeColor().colorCode();
-        strJobType = m_lstJobType[m_itemNumIndex].displayName();
-
-        if (strColorHex.isEmpty() || strJobType.isEmpty()) {
-            m_lstJobType.removeAt(m_itemNumIndex);
-            m_itemNumIndex--;
-            continue;
-        }
-        addJobTypeItem(m_itemNumIndex, m_lstJobType[m_itemNumIndex].typeColor().colorCode(), m_lstJobType[m_itemNumIndex].displayName());
+        addJobTypeItem(m_itemNumIndex, m_lstJobType[m_itemNumIndex]->getColorCode(), m_lstJobType[m_itemNumIndex]->displayName());
     }
-    return true;
 }
 
 void JobTypeComboBox::addJobTypeItem(int idx, QString strColorHex, QString strJobType)

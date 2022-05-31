@@ -47,6 +47,10 @@ public:
 
     //根据类型ID获取日程类型
     DScheduleType::Ptr getScheduleTypeByID(const QString &typeID);
+    DScheduleType::Ptr getScheduleTypeByName(const QString &typeName);
+
+    //获取颜色类型列表
+    DTypeColor::List getColorTypeList();
 
     //更新账户信息
     void updateAccountInfo(CallbackFunc callback = nullptr);
@@ -81,9 +85,6 @@ public:
     void querySchedulesWithParameter(const QString& key, const QDateTime& start, const QDateTime& end, CallbackFunc callback = nullptr);
     void querySchedulesWithParameter(const DScheduleQueryPar::Ptr&, CallbackFunc callback = nullptr);
 
-    //获取颜色类型列表
-    QVector<DTypeColor> getColorTypeList();
-
     //监听日程类型数据完成事件
     void monitorScheduleTypeData(CallbackFunc callback);
 
@@ -102,6 +103,8 @@ public slots:
     void slotGetScheduleListFinish(QMap<QDate, DSchedule::List>);
     //搜索日程数据完成事件
     void slotSearchScheduleListFinish(QMap<QDate, DSchedule::List>);
+    //获取系统颜色完成
+    void slotGetSysColorsFinish(DTypeColor::List);
 
 private:
     void initConnect();
@@ -109,7 +112,7 @@ private:
 private:
     DAccount::Ptr m_account;    //账户数据
     DScheduleType::List m_scheduleTypeList; //日程类型数据
-    DTypeColor::Ptr m_typeColorList;    //颜色数据
+    DTypeColor::List m_typeColorList;    //颜色数据
     DbusAccountRequest* m_dbusRequest = nullptr;    //dbus请求实例
     //一年的日程信息
     QMap<QDate, DSchedule::List> m_scheduleMap{};

@@ -32,22 +32,26 @@ void ColorSeletorWidget::init()
     m_colorGroup = new QButtonGroup(this);
     m_colorGroup->setExclusive(true);
     connect(m_colorGroup, QOverload<int>::of(&QButtonGroup::buttonClicked), this, &ColorSeletorWidget::slotButtonClicked);
-    //默认选中第一个
-    initColorButton(0);
+
+    m_colorInfo.reset(new DTypeColor());
 }
 
-void ColorSeletorWidget::initColorButton(int index)
+void ColorSeletorWidget::resetColorButton(const AccountItem::Ptr& account)
 {
     reset();
-    QList<DTypeColor> lstColorInfo = JobTypeInfoManager::instance()->getJobTypeColorList();
-    for (DTypeColor &var : lstColorInfo) {
-        if (DTypeColor::PriSystem == var.privilege()) {
+    if (nullptr == account) {
+        return;
+    }
+
+    DTypeColor::List colorList =  account->getColorTypeList();
+    for (DTypeColor::Ptr &var : colorList) {
+        if (DTypeColor::PriSystem == var->privilege()) {
             addColor(var);
         }
     }
 
-    if (index >= 0 && index < m_colorGroup->buttons().size()) {
-        m_colorGroup->buttons().at(index)->click();
+    if (m_colorGroup->buttons().size() > 0) {
+        m_colorGroup->buttons().at(0)->click();
     }
 }
 
@@ -62,30 +66,30 @@ void ColorSeletorWidget::reset()
         delete btn;
     }
     if (m_userColorBtn) {
-        delete m_userColorBtn;
+        m_userColorBtn->deleteLater();
     }
     m_userColorBtn = nullptr;
     m_userColorBtnId = -1;
 }
 
-void ColorSeletorWidget::addColor(const DTypeColor &cInfo)
+void ColorSeletorWidget::addColor(const DTypeColor::Ptr &cInfo)
 {
     static int count = 0;   //静态变量，充当色彩控件id
     count++;
     m_colorEntityMap.insert(count, cInfo);      //映射id与控件
     CRadioButton *radio = new CRadioButton(this);
-    radio->setColor(QColor(cInfo.colorCode())); //设置控件颜色
+    radio->setColor(QColor(cInfo->colorCode())); //设置控件颜色
     radio->setFixedSize(18, 18);
     m_colorGroup->addButton(radio, count);
     m_colorLayout->addWidget(radio);
     //TODO
-    if (DTypeColor::PriUser == cInfo.privilege()) {
+    if (DTypeColor::PriUser == cInfo->privilege()) {
         m_userColorBtn = radio;             //记录用户色彩指针
         m_userColorBtnId = count;
     }
 }
 
-DTypeColor ColorSeletorWidget::getSelectedColorInfo()
+DTypeColor::Ptr ColorSeletorWidget::getSelectedColorInfo()
 {
     return m_colorInfo;
 }
@@ -111,7 +115,7 @@ void ColorSeletorWidget::setSelectedColorById(int colorId)
     //系统颜色则向后移一位
     auto iterator = m_colorEntityMap.begin();
     while (iterator != m_colorEntityMap.end()) {
-        if (iterator.value().colorID() == colorId) {
+        if (iterator.value()->colorID() == colorId) {
             //向后移一位
             iterator++;
             if (iterator == m_colorEntityMap.end() || iterator.key() == m_userColorBtnId) {
@@ -127,16 +131,16 @@ void ColorSeletorWidget::setSelectedColorById(int colorId)
     }
 }
 
-void ColorSeletorWidget::setSelectedColor(const DTypeColor &colorInfo)
+void ColorSeletorWidget::setSelectedColor(const DTypeColor::Ptr &colorInfo)
 {
-    if (DTypeColor::PriUser == colorInfo.privilege()) {
+    if (DTypeColor::PriUser == colorInfo->privilege()) {
         setUserColor(colorInfo);
     }
 
     bool isFind = false;
     //遍历所有控件
     for (QAbstractButton *but : m_colorGroup->buttons()) {
-        if (nullptr != but && qobject_cast<CRadioButton *>(but)->getColor().name() == colorInfo.colorCode()) {
+        if (nullptr != but && qobject_cast<CRadioButton *>(but)->getColor().name() == colorInfo->colorCode()) {
             but->click();
             isFind = true;
             break;
@@ -177,8 +181,8 @@ void ColorSeletorWidget::slotButtonClicked(int butId)
     if (m_colorEntityMap.end() == it) {
         return;
     }
-    DTypeColor info = it.value();
-    if (info.colorCode() != m_colorInfo.colorCode()) {
+    DTypeColor::Ptr info = it.value();
+    if (info->colorCode() != m_colorInfo->colorCode()) {
         m_colorInfo = info;
         emit signalColorChange(info);
     }
@@ -189,22 +193,25 @@ void ColorSeletorWidget::slotAddColorButClicked()
     CColorPickerWidget colorPicker;
 
     if (colorPicker.exec()) {
-        //设置用户自定义控件颜色
-        //TODO:设置颜色
-        //        setUserColor(JobTypeColorInfo(0, colorPicker->getSelectedColor().name(), TypeUser));
+        DTypeColor::Ptr typeColor;
+        typeColor.reset(new DTypeColor());
+        typeColor->setColorCode("0");
+        typeColor->setColorCode(colorPicker.getSelectedColor().name());
+        typeColor->setPrivilege(DTypeColor::PriUser);
+        setUserColor(typeColor);
         m_userColorBtn->click();
     }
 }
 
-void ColorSeletorWidget::setUserColor(const DTypeColor &colorInfo)
+void ColorSeletorWidget::setUserColor(const DTypeColor::Ptr &colorInfo)
 {
-    if (DTypeColor::PriUser != colorInfo.privilege()) {
+    if (DTypeColor::PriUser != colorInfo->privilege()) {
         return;
     }
     if (nullptr == m_userColorBtn) {
         addColor(colorInfo);
     }
-    m_userColorBtn->setColor(colorInfo.colorCode());
+    m_userColorBtn->setColor(colorInfo->colorCode());
     m_colorEntityMap[m_userColorBtnId] = colorInfo;
     m_userColorBtn->click();
 }

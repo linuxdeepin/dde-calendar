@@ -26,6 +26,7 @@
 #include "scheduledatamanage.h"
 #include "dschedule.h"
 #include "dtypecolor.h"
+#include "accountmanager.h"
 
 #include <QWidget>
 #include <QColor>
@@ -49,11 +50,11 @@ public:
      * @brief getSelectColor
      * @return 当前已选在的色彩
      */
-    DTypeColor getSelectedColorInfo();
+    DTypeColor::Ptr getSelectedColorInfo();
     /**
      * @brief setUserColor 设置用户自定义的色彩
      */
-    void setUserColor(const DTypeColor &);
+    void setUserColor(const DTypeColor::Ptr &);
     /**
      * @brief setSelectedColorByIndex 设置选择的色彩控件
      * @param index 色彩控件位置
@@ -68,17 +69,17 @@ public:
      * @brief selectColor 设置选择的色彩控件
      * @param color 色彩
      */
-    void setSelectedColor(const DTypeColor &color);
+    void setSelectedColor(const DTypeColor::Ptr &color);
     /**
-     * @brief initColorButton
-     * 初始化色彩控件
-     * @param index 初始选择的色彩下标
+     * @brief resetColorButton
+     * 重置色彩控件
+     * @param account 账户
      */
-    void initColorButton(int index = -1);
+    void resetColorButton(const AccountItem::Ptr& account);
 
 signals:
     //选择的色彩改变信号
-    void signalColorChange(DTypeColor);
+    void signalColorChange(DTypeColor::Ptr);
 
 public slots:
     //色彩控件点击信号
@@ -91,13 +92,13 @@ private:
     void initView();
 
     //添加色彩控件
-    void addColor(const DTypeColor &);
+    void addColor(const DTypeColor::Ptr &);
 
 private:
-    QMap<int, DTypeColor> m_colorEntityMap; //所有色彩实体
+    QMap<int, DTypeColor::Ptr> m_colorEntityMap; //所有色彩实体
     QHBoxLayout *m_colorLayout = nullptr;     //色彩控件布局类
     QButtonGroup *m_colorGroup = nullptr;     //所有色彩控件
-    DTypeColor m_colorInfo; //当前已选择的色彩
+    DTypeColor::Ptr m_colorInfo; //当前已选择的色彩
     CRadioButton *m_userColorBtn = nullptr; //用户自定义的色彩控件
     int m_userColorBtnId = -1; //用户自定义的色彩控件id
 };

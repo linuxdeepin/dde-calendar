@@ -35,8 +35,13 @@ public:
 
     static AccountManager *getInstance();
     QList<AccountItem::Ptr> getAccountList();
-    QSharedPointer<AccountItem> getLocalAccountItem();
-    QSharedPointer<AccountItem> getUnionAccountItem();
+    AccountItem::Ptr getLocalAccountItem();
+    AccountItem::Ptr getUnionAccountItem();
+    DScheduleType::Ptr getScheduleTypeByScheduleTypeId(const QString& schduleTypeId);
+    AccountItem::Ptr getAccountItemByScheduleTypeId(const QString& schduleTypeId);
+    AccountItem::Ptr getAccountItemByAccountId(const QString& accountId);
+    AccountItem::Ptr getAccountItemByAccountName(const QString& accountName);
+    DCalendarGeneralSettings::Ptr getGeneralSettings();
 
     //重新获取账户信息
     void resetAccount();
@@ -45,6 +50,9 @@ public:
     void downloadByAccountID(const QString &accountID, CallbackFunc callback = nullptr);
     //更新网络帐户数据
     void uploadNetWorkAccountData(CallbackFunc callback = nullptr);
+
+    //设置通用设置
+    void setCalendarGeneralSettings(DCalendarGeneralSettings::Ptr ptr, CallbackFunc callback = nullptr);
 
     //等待数据获取完成的事件
     void waitingData(CallbackFunc callback);
@@ -76,9 +84,10 @@ private:
     void execWaitingCall();
 
 private:
-    static AccountManager *m_accountManager;
-    QSharedPointer<AccountItem>  m_localAccountItem;
-    QSharedPointer<AccountItem>  m_unionAccountItem;
+
+    static AccountManager* m_accountManager;
+    AccountItem::Ptr  m_localAccountItem;
+    AccountItem::Ptr  m_unionAccountItem;
     DCalendarGeneralSettings::Ptr m_settings;
 
     DbusAccountManagerRequest *m_dbusRequest;

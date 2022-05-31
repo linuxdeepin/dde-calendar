@@ -24,6 +24,7 @@
 #include "cscheduleoperation.h"
 #include "cdynamicicon.h"
 #include "configsettings.h"
+#include "accountmanager.h"
 
 #include <DHiDPIHelper>
 #include <DFontSizeManager>
@@ -50,7 +51,7 @@ CScheduleDlg::CScheduleDlg(int type, QWidget *parent, const bool isAllDay)
     initUI();
     initConnection();
     setTabFouseOrder();
-    initColor();
+    initAccountComBox();
 
     if (type == 1) {
         m_titleLabel->setText(tr("New Event"));
@@ -68,7 +69,7 @@ CScheduleDlg::CScheduleDlg(int type, QWidget *parent, const bool isAllDay)
     } else {
         m_titleLabel->setText(tr("Edit Event"));
     }
-    setFixedSize(dialog_width, 524);
+    setFixedSize(dialog_width, 561);
     //焦点设置到输入框
     m_textEdit->setFocus();
 }
@@ -81,15 +82,25 @@ void CScheduleDlg::setData(const DSchedule::Ptr &info)
 {
     m_ScheduleDataInfo = info;
 
-    m_typeComBox->setCurrentJobTypeNo(info->scheduleTypeID());
     if (m_type == 1) {
         //如果为新建则设置为提示信息
         m_textEdit->setPlaceholderText(info->summary());
+        m_accountItem = gAccounManager->getLocalAccountItem();
     } else {
         //如果为编辑则显示
         m_textEdit->setPlainText(info->summary());
         //光标移动到文末
         m_textEdit->moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
+        m_accountItem = gAccounManager->getAccountItemByScheduleTypeId(info->scheduleTypeID());
+    }
+
+    if (nullptr != m_accountItem) {
+        //更新账户下拉框和类型选择框
+        m_accountComBox->setCurrentText(m_accountItem->getAccount()->accountName());
+        m_typeComBox->updateJobType(m_accountItem);
+    } else {
+        //TODO:目前日程类型的所属账户id与账户id对应不上，理论上m_accountItem不会为空值，待与后端沟通
+        m_accountItem = gAccounManager->getLocalAccountItem();
     }
 
     m_beginDateEdit->setDate(info->dtStart().date());
@@ -153,7 +164,57 @@ void CScheduleDlg::setAllDay(bool flag)
  */
 bool CScheduleDlg::clickOkBtn()
 {
-    DSchedule::Ptr _newSchedule = m_ScheduleDataInfo;
+    return selectScheduleType();
+}
+
+/**
+ * @brief CScheduleDlg::selectScheduleType
+ * 选择日程类型
+ * @return 是否可关闭弹窗
+ */
+bool CScheduleDlg::selectScheduleType()
+{
+    //编辑状态，需要创建日程
+    if (m_typeComBox->isEditable()) {
+        DScheduleType::Ptr type;
+        type.reset(new DScheduleType());
+        type->setTypeID("0");
+        type->setDisplayName(m_typeComBox->lineEdit()->text());
+        type->setTypeColor(*m_colorSeletorWideget->getSelectedColorInfo().data());
+        //创建日程类型，等待回调
+        m_accountItem->createJobType(type, [&](bool status){
+            if (status) {
+                //日程已创建且数据刷新完毕
+                //根据日程类型名去获取日程类型实例
+                DScheduleType::Ptr type = m_accountItem->getScheduleTypeByName(m_typeComBox->lineEdit()->text());
+                if (nullptr != type) {
+                    //创建日程
+                    createSchedule(type->typeID());
+                }
+            }
+            this->close();
+        });
+    } else if (m_typeComBox->currentIndex() >= 0) {
+        //选择已有日程，直接创建日程
+        return createSchedule(m_typeComBox->getCurrentJobTypeNo());
+    }
+    return false;
+}
+
+/**
+ * @brief CScheduleDlg::createSchedule
+ * 创建日程
+ * @param scheduleTypeId 日程所属日程类型的id
+ * @return
+ */
+bool CScheduleDlg::createSchedule(const QString& scheduleTypeId)
+{
+    //创建新的日程实例
+    DSchedule::Ptr schedule;
+    schedule.reset(new DSchedule());
+    //设置所属日程类型id
+    schedule->setScheduleTypeID(scheduleTypeId);
+
     QDateTime beginDateTime, endDateTime;
     beginDateTime.setDate(m_beginDateEdit->date());
     beginDateTime.setTime(m_beginTimeEdit->getTime());
@@ -164,33 +225,23 @@ bool CScheduleDlg::clickOkBtn()
     switch (m_calendarCategoryRadioGroup->checkedId()) {
     case 1:
         //农历日程
-        _newSchedule->setLunnar(true);
+        schedule->setLunnar(true);
         break;
     default:
         //公历日程
-        _newSchedule->setLunnar(false);
+        schedule->setLunnar(false);
         break;
     }
 
     if (m_textEdit->toPlainText().isEmpty()) {
-        _newSchedule->setSummary(m_textEdit->placeholderText());
+        schedule->setSummary(m_textEdit->placeholderText());
     } else {
-        _newSchedule->setSummary(m_textEdit->toPlainText());
+        schedule->setSummary(m_textEdit->toPlainText());
     }
 
-    if (_newSchedule->summary().isEmpty()) {
+    if (schedule->summary().isEmpty()) {
         return false;
     }
-    //如果类型选项不为负数则设置日程类型
-    //TODO:创建日程类型
-    //    if (m_typeComBox->isEditable()) {
-    //        JobTypeInfo jobType(0, m_typeComBox->lineEdit()->text(), m_colorSeletorWideget->getSelectedColorInfo());
-    //        //创建日程类型
-    //        if (CScheduleOperation().createJobType(jobType)) {
-    //            _newSchedule.setType(jobType.getJobTypeNo());
-    //        }
-    //    } else if (m_typeComBox->currentIndex() >= 0)
-    //        _newSchedule.setType(m_typeComBox->getCurrentJobTypeNo());
 
     if (beginDateTime > endDateTime) {
         DCalendarDDialog *prompt = new DCalendarDDialog(this);
@@ -200,112 +251,111 @@ bool CScheduleDlg::clickOkBtn()
         prompt->exec();
         return false;
     }
-    //TODO:设置日程id
-    //    if (m_type == 1)
-    //        _newSchedule.setID(0) ;
-    _newSchedule->setAllDay(m_allDayCheckbox->isChecked());
-    //TODO:重复规则和提醒规则
-    //    RemindData _remindData;
-    //    if (_newSchedule.allDay()) {
-    //        _remindData.setRemindTime(QTime(9, 0));
-    //        switch (m_rmindCombox->currentIndex()) {
-    //        case 1:
-    //            _remindData.setRemindNum(DDECalendar::OnStartDay);
-    //            break;
-    //        case 2:
-    //            _remindData.setRemindNum(DDECalendar::OneDayBeforeWithDay);
-    //            break;
-    //        case 3:
-    //            _remindData.setRemindNum(DDECalendar::TwoDayBeforeWithDay);
-    //            break;
-    //        case 4:
-    //            _remindData.setRemindNum(DDECalendar::OneWeekBeforeWithDay);
-    //            break;
-    //        default:
-    //            break;
-    //        }
-    //    } else {
-    //        switch (m_rmindCombox->currentIndex()) {
-    //        case 1:
-    //            _remindData.setRemindNum(DDECalendar::AtTimeOfEvent);
-    //            break;
-    //        case 2:
-    //            _remindData.setRemindNum(DDECalendar::FifteenMinutesBefore);
-    //            break;
-    //        case 3:
-    //            _remindData.setRemindNum(DDECalendar::ThirtyMinutesBefore);
-    //            break;
-    //        case 4:
-    //            _remindData.setRemindNum(DDECalendar::OneHourBefore);
-    //            break;
-    //        case 5:
-    //            _remindData.setRemindNum(DDECalendar::OneDayBeforeWithMinutes);
-    //            break;
-    //        case 6:
-    //            _remindData.setRemindNum(DDECalendar::TwoDayBeforeWithMinutes);
-    //            break;
-    //        case 7:
-    //            _remindData.setRemindNum(DDECalendar::OneWeekBeforeWithMinutes);
-    //            break;
-    //        default:
-    //            break;
-    //        }
-    //    }
-    //    _newSchedule.setRemindData(_remindData);
+    schedule->setAllDay(m_allDayCheckbox->isChecked());
+//    TODO:重复规则和提醒规则
+//        RemindData _remindData;
+//        if (schedule->allDay()) {
+//            _remindData.setRemindTime(QTime(9, 0));
+//            switch (m_rmindCombox->currentIndex()) {
+//            case 1:
+//                _remindData.setRemindNum(DDECalendar::OnStartDay);
+//                break;
+//            case 2:
+//                _remindData.setRemindNum(DDECalendar::OneDayBeforeWithDay);
+//                break;
+//            case 3:
+//                _remindData.setRemindNum(DDECalendar::TwoDayBeforeWithDay);
+//                break;
+//            case 4:
+//                _remindData.setRemindNum(DDECalendar::OneWeekBeforeWithDay);
+//                break;
+//            default:
+//                break;
+//            }
+//        } else {
+//            switch (m_rmindCombox->currentIndex()) {
+//            case 1:
+//                _remindData.setRemindNum(DDECalendar::AtTimeOfEvent);
+//                break;
+//            case 2:
+//                _remindData.setRemindNum(DDECalendar::FifteenMinutesBefore);
+//                break;
+//            case 3:
+//                _remindData.setRemindNum(DDECalendar::ThirtyMinutesBefore);
+//                break;
+//            case 4:
+//                _remindData.setRemindNum(DDECalendar::OneHourBefore);
+//                break;
+//            case 5:
+//                _remindData.setRemindNum(DDECalendar::OneDayBeforeWithMinutes);
+//                break;
+//            case 6:
+//                _remindData.setRemindNum(DDECalendar::TwoDayBeforeWithMinutes);
+//                break;
+//            case 7:
+//                _remindData.setRemindNum(DDECalendar::OneWeekBeforeWithMinutes);
+//                break;
+//            default:
+//                break;
+//            }
+//        }
+//        schedule->setRemindData(_remindData);
 
-    //    RepetitionRule _repetitionRule;
-    //    //根据是否为农历日程，设置对应的重复规则
-    //    RepetitionRule::RRuleID ruleID;
-    //    if (_newSchedule.getIsLunar()) {
-    //        switch (m_beginrepeatCombox->currentIndex()) {
-    //        case 1:
-    //            //每月
-    //            ruleID = RepetitionRule::RRule_EVEMONTH;
-    //            break;
-    //        case 2: {
-    //            //每年
-    //            ruleID = RepetitionRule::RRule_EVEYEAR;
-    //        } break;
-    //        default:
-    //            //默认不重复
-    //            ruleID = RepetitionRule::RRule_NONE;
-    //            break;
-    //        }
+//        RepetitionRule _repetitionRule;
+//        //根据是否为农历日程，设置对应的重复规则
+//        RepetitionRule::RRuleID ruleID;
+//        if (schedule->getIsLunar()) {
+//            switch (m_beginrepeatCombox->currentIndex()) {
+//            case 1:
+//                //每月
+//                ruleID = RepetitionRule::RRule_EVEMONTH;
+//                break;
+//            case 2: {
+//                //每年
+//                ruleID = RepetitionRule::RRule_EVEYEAR;
+//            } break;
+//            default:
+//                //默认不重复
+//                ruleID = RepetitionRule::RRule_NONE;
+//                break;
+//            }
 
-    //    } else {
-    //        ruleID = static_cast<RepetitionRule::RRuleID>(m_beginrepeatCombox->currentIndex());
-    //    }
-    //    _repetitionRule.setRuleId(ruleID);
-    //    if (_repetitionRule.getRuleId() > 0) {
-    //        _repetitionRule.setRuleType(static_cast<RepetitionRule::RRuleEndType>
-    //                                    (m_endrepeatCombox->currentIndex()));
-    //        if (m_endrepeatCombox->currentIndex() == 1) {
-    //            if (m_endrepeattimes->text().isEmpty()) {
-    //                return false;
-    //            }
-    //            _repetitionRule.setEndCount(m_endrepeattimes->text().toInt());
-    //        } else if (m_endrepeatCombox->currentIndex() == 2) {
-    //            QDateTime endrpeattime = beginDateTime;
-    //            endrpeattime.setDate(m_endRepeatDate->date());
+//        } else {
+//            ruleID = static_cast<RepetitionRule::RRuleID>(m_beginrepeatCombox->currentIndex());
+//        }
+//        _repetitionRule.setRuleId(ruleID);
+//        if (_repetitionRule.getRuleId() > 0) {
+//            _repetitionRule.setRuleType(static_cast<RepetitionRule::RRuleEndType>
+//                                        (m_endrepeatCombox->currentIndex()));
+//            if (m_endrepeatCombox->currentIndex() == 1) {
+//                if (m_endrepeattimes->text().isEmpty()) {
+//                    return false;
+//                }
+//                _repetitionRule.setEndCount(m_endrepeattimes->text().toInt());
+//            } else if (m_endrepeatCombox->currentIndex() == 2) {
+//                QDateTime endrpeattime = beginDateTime;
+//                endrpeattime.setDate(m_endRepeatDate->date());
 
-    //            if (beginDateTime > endrpeattime) {
-    //                return false;
-    //            }
-    //            _repetitionRule.setEndDate(endrpeattime);
-    //        }
-    //    }
-    //    _newSchedule.setRepetitionRule(_repetitionRule);
-    _newSchedule->setDtStart(beginDateTime);
-    _newSchedule->setDtEnd(endDateTime);
+//                if (beginDateTime > endrpeattime) {
+//                    return false;
+//                }
+//                _repetitionRule.setEndDate(endrpeattime);
+//            }
+//        }
+//        schedule->setRepetitionRule(_repetitionRule);
+    schedule->setDtStart(beginDateTime);
+    schedule->setDtEnd(endDateTime);
     CScheduleOperation _scheduleOperation(this);
 
     if (m_type == 1) {
         //创建日程
-        _scheduleOperation.createSchedule(_newSchedule);
+        schedule->setUid("0");
+        m_accountItem->createSchedule(schedule);
 
     } else if (m_type == 0) {
+        schedule->setUid(m_ScheduleDataInfo->uid());
+        m_accountItem->updateSchedule(schedule);
         //修改日程,根据返回的参数判断是否关闭对话框
-//        return _scheduleOperation.changeSchedule(_newSchedule, m_ScheduleDataInfo);
     }
     return true;
 }
@@ -548,6 +598,13 @@ void CScheduleDlg::slotJobComboBoxEditingFinished()
     }
 }
 
+void CScheduleDlg::slotAccoutBoxActivated(const QString &text)
+{
+    m_accountItem = gAccounManager->getAccountItemByAccountName(text);
+    m_typeComBox->updateJobType(m_accountItem);
+    m_colorSeletorWideget->resetColorButton(m_accountItem);
+}
+
 void CScheduleDlg::slotTypeRpeatactivated(int index)
 {
     Q_UNUSED(index);
@@ -756,6 +813,27 @@ void CScheduleDlg::initUI()
     QVBoxLayout *maintlayout = new QVBoxLayout;
     maintlayout->setMargin(0);
     maintlayout->setSpacing(10);
+    //账户
+    {
+        QHBoxLayout *hlayout = new QHBoxLayout;
+        hlayout->setSpacing(0);
+        hlayout->setMargin(0);
+
+        DLabel *aLabel = new DLabel(tr("Calendar account:"));
+        aLabel->setToolTip(tr("Calendar account"));
+        DFontSizeManager::instance()->bind(aLabel, DFontSizeManager::T6);
+        aLabel->setElideMode(Qt::ElideRight);
+        aLabel->setFont(mlabelF);
+        aLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+        aLabel->setFixedSize(label_Fixed_Width, item_Fixed_Height);
+
+        m_accountComBox = new DComboBox(this);
+        m_accountComBox->setFixedSize(350, item_Fixed_Height);
+        hlayout->addWidget(aLabel);
+        hlayout->addWidget(m_accountComBox);
+        maintlayout->addLayout(hlayout);
+    }
+
     //类型
     {
         //使用网格布局
@@ -778,7 +856,6 @@ void CScheduleDlg::initUI()
         m_typeComBox->setObjectName("ScheduleTypeCombobox");
         m_typeComBox->setAccessibleName("ScheduleTypeCombobox");
         m_typeComBox->setFixedSize(350, item_Fixed_Height);
-        initJobTypeComboBox();//todo
 
         m_colorSeletorWideget = new ColorSeletorWidget();
         m_colorSeletorWideget->hide();
@@ -1132,6 +1209,8 @@ void CScheduleDlg::initConnection()
             &CScheduleDlg::sloteRpeatactivated);
     connect(m_typeComBox, QOverload<int>::of(&QComboBox::activated), this,
             &CScheduleDlg::slotTypeRpeatactivated);
+    connect(m_accountComBox, QOverload<const QString &>::of(&QComboBox::activated), this,
+            &CScheduleDlg::slotAccoutBoxActivated);
     connect(m_beginDateEdit, &DDateEdit::userDateChanged, this, &CScheduleDlg::slotBDateEidtInfo);
     QShortcut *shortcut = new QShortcut(this);
     shortcut->setKey(QKeySequence(QLatin1String("ESC")));
@@ -1147,6 +1226,15 @@ void CScheduleDlg::initConnection()
     connect(m_typeComBox, &JobTypeComboBox::editingFinished, this, &CScheduleDlg::slotJobComboBoxEditingFinished);
 }
 
+void CScheduleDlg::initAccountComBox()
+{
+    QList<AccountItem::Ptr> accountList = gAccounManager->getAccountList();
+    for (AccountItem::Ptr p : accountList) {
+        m_accountComBox->addItem(p->getAccount()->accountName());
+    }
+    initJobTypeComboBox();
+}
+
 void CScheduleDlg::initDateEdit()
 {
     m_beginDateEdit->setMinimumDate(QDate(DDECalendar::QueryEarliestYear, 1, 1)); // 0天
@@ -1155,9 +1243,12 @@ void CScheduleDlg::initDateEdit()
     m_endDateEdit->setMaximumDate(QDate(DDECalendar::QueryLatestYear, 12, 31));
     return;
 }
+
 void CScheduleDlg::initJobTypeComboBox()
 {
-    m_typeComBox->updateJobType();
+    m_accountItem = gAccounManager->getAccountItemByAccountName(m_accountComBox->currentText());
+    m_typeComBox->updateJobType(m_accountItem);
+    m_colorSeletorWideget->resetColorButton(m_accountItem);
 }
 
 void CScheduleDlg::initRmindRpeatUI()
@@ -1372,8 +1463,9 @@ void CScheduleDlg::setWidgetEnabled(bool isEnabled)
     m_endRepeatDate->setEnabled(isEnabled);
 }
 
-void CScheduleDlg::initColor()
+void CScheduleDlg::resetColor(const AccountItem::Ptr& account)
 {
+    m_colorSeletorWideget->resetColorButton(account);
     //将用户上一次选择的自定义颜色添加进去
     QString colorName = CConfigSettings::getInstance()->value("LastUserColor", "").toString();
     if (!colorName.isEmpty()) {
@@ -1398,8 +1490,8 @@ void CScheduleDlg::resize()
     if (m_colorSeletorWideget->isVisible()) {
         h += 18 + 5;
     }
-    //524: 默认界面高度, h: 新增控件高度
-    setFixedSize(dialog_width, 524 + h);
+    //561: 默认界面高度, h: 新增控件高度
+    setFixedSize(dialog_width, 561 + h);
 }
 
 void CScheduleDlg::setOkBtnEnabled()
@@ -1409,7 +1501,7 @@ void CScheduleDlg::setOkBtnEnabled()
     //根据类型输入框的内容判断保存按钮是否有效
     if (m_OkBt != nullptr && m_typeComBox->lineEdit() != nullptr) {
         const QString &typeStr = m_typeComBox->lineEdit()->text();
-        if (typeStr.isEmpty() || typeStr.trimmed().isEmpty() || JobTypeInfoManager::instance()->isJobTypeNameUsed(typeStr)) {
+        if (typeStr.isEmpty() || typeStr.trimmed().isEmpty() || m_accountItem->getScheduleTypeByName(typeStr)) {
             m_OkBt->setEnabled(false);
             //若内容无效直接退出，不判断结束次数是否为空
             return;

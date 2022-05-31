@@ -69,7 +69,7 @@ QList<AccountItem::Ptr> AccountManager::getAccountList()
  * 获取本地账户
  * @return
  */
-QSharedPointer<AccountItem> AccountManager::getLocalAccountItem()
+AccountItem::Ptr AccountManager::getLocalAccountItem()
 {
     return m_localAccountItem;
 }
@@ -79,9 +79,56 @@ QSharedPointer<AccountItem> AccountManager::getLocalAccountItem()
  * 获取unionID账户
  * @return
  */
-QSharedPointer<AccountItem> AccountManager::getUnionAccountItem()
+AccountItem::Ptr AccountManager::getUnionAccountItem()
 {
     return m_unionAccountItem;
+}
+
+DScheduleType::Ptr AccountManager::getScheduleTypeByScheduleTypeId(const QString& schduleTypeId)
+{
+    DScheduleType::Ptr type = nullptr;
+    for (AccountItem::Ptr p : gAccounManager->getAccountList()) {
+        type = p->getScheduleTypeByID(schduleTypeId);
+        if (nullptr != type) {
+            break;
+        }
+    }
+    return type;
+}
+
+AccountItem::Ptr AccountManager::getAccountItemByScheduleTypeId(const QString& schduleTypeId)
+{
+    DScheduleType::Ptr type = getScheduleTypeByScheduleTypeId(schduleTypeId);
+    return getAccountItemByAccountId(type->accountID());
+}
+
+AccountItem::Ptr AccountManager::getAccountItemByAccountId(const QString& accountId)
+{
+    AccountItem::Ptr account = nullptr;
+    for (AccountItem::Ptr p : gAccounManager->getAccountList()) {
+        if (p->getAccount()->accountID() == accountId) {
+            account = p;
+            break;
+        }
+    }
+    return account;
+}
+
+AccountItem::Ptr AccountManager::getAccountItemByAccountName(const QString& accountName)
+{
+    AccountItem::Ptr account = nullptr;
+    for (AccountItem::Ptr p : gAccounManager->getAccountList()) {
+        if (p->getAccount()->accountName() == accountName) {
+            account = p;
+            break;
+        }
+    }
+    return account;
+}
+
+DCalendarGeneralSettings::Ptr AccountManager::getGeneralSettings()
+{
+    return m_settings;
 }
 
 /**
@@ -118,6 +165,12 @@ void AccountManager::uploadNetWorkAccountData(CallbackFunc callback)
 {
     m_dbusRequest->setCallbackFunc(callback);
     m_dbusRequest->uploadNetWorkAccountData();
+}
+
+void AccountManager::setCalendarGeneralSettings(DCalendarGeneralSettings::Ptr ptr, CallbackFunc callback)
+{
+    m_dbusRequest->setCallbackFunc(callback);
+    m_dbusRequest->setCalendarGeneralSettings(ptr);
 }
 
 /**

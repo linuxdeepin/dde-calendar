@@ -32,6 +32,7 @@ void AccountItem::initConnect()
     connect(m_dbusRequest, &DbusAccountRequest::signalGetAccountInfoFinish, this, &AccountItem::slotGetAccountInfoFinish);
     connect(m_dbusRequest, &DbusAccountRequest::signalGetScheduleTypeListFinish, this, &AccountItem::slotGetScheduleTypeListFinish);
     connect(m_dbusRequest, &DbusAccountRequest::signalGetScheduleListFinish, this, &AccountItem::slotGetScheduleListFinish);
+    connect(m_dbusRequest, &DbusAccountRequest::signalGetSysColorsFinish, this, &AccountItem::slotGetSysColorsFinish);
 }
 
 /**
@@ -40,8 +41,9 @@ void AccountItem::initConnect()
  */
 void AccountItem::resetAccount()
 {
-    m_dbusRequest->getScheduleTypeList();
     querySchedulesWithParameter(QDate().currentDate().year());
+    m_dbusRequest->getScheduleTypeList();
+    m_dbusRequest->getSysColors();
 }
 
 /**
@@ -66,7 +68,13 @@ QMap<QDate, DSchedule::List> AccountItem::getScheduleMap()
  */
 DScheduleType::List AccountItem::getScheduleTypeList()
 {
-    return m_scheduleTypeList;
+    DScheduleType::List list;
+    for (DScheduleType::Ptr p : m_scheduleTypeList) {
+        if (p->privilege() != DScheduleType::None) {
+            list.push_back(p);
+        }
+    }
+    return list;
 }
 
 //根据类型ID获取日程类型
@@ -78,6 +86,21 @@ DScheduleType::Ptr AccountItem::getScheduleTypeByID(const QString &typeID)
         }
     }
     return nullptr;
+}
+
+DScheduleType::Ptr AccountItem::getScheduleTypeByName(const QString &typeName)
+{
+    for (DScheduleType::Ptr p : m_scheduleTypeList) {
+        if (p->typeName() == typeName || p->displayName() == typeName) {
+            return p;
+        }
+    }
+    return nullptr;
+}
+
+DTypeColor::List AccountItem::getColorTypeList()
+{
+    return m_typeColorList;
 }
 
 
@@ -101,6 +124,7 @@ void AccountItem::updateAccountInfo(CallbackFunc callback)
 void AccountItem::createJobType(const DScheduleType::Ptr &typeInfo, CallbackFunc callback)
 {
     m_dbusRequest->setCallbackFunc(callback);
+    typeInfo->setPrivilege(DScheduleType::User);
     m_dbusRequest->createScheduleType(typeInfo);
 }
 
@@ -295,5 +319,14 @@ void AccountItem::slotSearchScheduleListFinish(QMap<QDate, DSchedule::List> map)
 {
     m_searchedScheduleMap = map;
     emit signalSearchScheduleUpdate();
+}
+
+/**
+ * @brief AccountItem::slotGetSysColorsFinish
+ * 获取系统颜色完成事件
+ */
+void AccountItem::slotGetSysColorsFinish(DTypeColor::List typeColorList)
+{
+    m_typeColorList = typeColorList;
 }
 

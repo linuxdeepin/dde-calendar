@@ -55,6 +55,10 @@ public:
 private:
     //确定按钮处理
     bool clickOkBtn();
+    //选择日程类型
+    bool selectScheduleType();
+    //创建日程
+    bool createSchedule(const QString& scheduleTypeId);
 
     /**
      * @brief updateEndTimeListAndTimeDiff      更新结束时间（time），结束时间下拉列表和开始时间和结束时间差
@@ -115,6 +119,7 @@ public slots:
     void slotbRpeatactivated(int index);
     void sloteRpeatactivated(int index);
     void slotJobComboBoxEditingFinished();
+    void slotAccoutBoxActivated(const QString &text);
 
 protected:
     bool eventFilter(QObject *obj, QEvent *pEvent) override;
@@ -125,8 +130,9 @@ protected:
 
 private:
     void initUI();
-    void initColor();
+    void resetColor(const AccountItem::Ptr&);
     void initConnection();
+    void initAccountComBox();
     void initDateEdit();
     void initJobTypeComboBox();
     void initRmindRpeatUI();
@@ -172,6 +178,9 @@ private:
     void setOkBtnEnabled();
 
 private:
+
+    DComboBox *m_accountComBox = nullptr;   //账户下拉选择框
+
     QLabel *m_typeLabel = nullptr;
     //DComboBox *m_typeComBox = nullptr;
     JobTypeComboBox *m_typeComBox = nullptr;
@@ -213,7 +222,7 @@ private:
 private:
     //日程
     DSchedule::Ptr m_ScheduleDataInfo;
-    QList<DScheduleType> m_lstJobType;
+    AccountItem::Ptr m_accountItem;
     int m_type; // 1新建 0 编辑日程
     QDateTime m_currentDate;
     QDateTime m_EndDate;

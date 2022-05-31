@@ -121,11 +121,14 @@ public:
      */
     void querySchedulesWithParameter(const DScheduleQueryPar::Ptr &params);
 
+    void getSysColors();
+
 signals:
     void signalGetAccountInfoFinish(DAccount::Ptr);
     void signalGetScheduleTypeListFinish(DScheduleType::List);
     void signalGetScheduleListFinish(QMap<QDate, DSchedule::List>);
     void signalSearchScheduleListFinish(QMap<QDate, DSchedule::List>);
+    void signalGetSysColorsFinish(DTypeColor::List);
 
 public slots:
 

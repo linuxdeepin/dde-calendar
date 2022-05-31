@@ -49,6 +49,7 @@ public:
     DSchedule::List getScheduleByDay(QDate);
 
     //根据日程id获取日程类型
+    DScheduleType::Ptr getAccountByScheduleId(const QString& id);
     DScheduleType::Ptr getScheduleTypeByScheduleId(const QString& id);
 
     //搜索日程

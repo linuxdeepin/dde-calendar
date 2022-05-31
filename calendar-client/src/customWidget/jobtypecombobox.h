@@ -24,6 +24,7 @@
 #include "dschedule.h"
 #include "scheduledatamanage.h"
 #include "cpushbutton.h"
+#include "accountmanager.h"
 
 #include <DComboBox>
 #include <DAlertControl>
@@ -36,7 +37,7 @@ class JobTypeComboBox : public DComboBox
 public:
     explicit JobTypeComboBox(QWidget *parent = nullptr);
     ~JobTypeComboBox() override;
-    bool updateJobType();
+    void updateJobType(const AccountItem::Ptr&);
     QString getCurrentJobTypeNo();
     void setCurrentJobTypeNo(const QString &strJobTypeNo);
 
@@ -73,7 +74,7 @@ private:
 private:
     QWidget *m_customWidget {nullptr};
     CPushButton *m_addBtn {nullptr};
-    QList<DScheduleType> m_lstJobType;
+    DScheduleType::List m_lstJobType;
     int m_hoverSelectedIndex = -1; //鼠标悬停的选项下标
     int m_itemNumIndex = 0; //item数量
     DAlertControl *m_control {nullptr};
