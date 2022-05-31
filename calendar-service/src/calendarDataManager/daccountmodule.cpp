@@ -76,7 +76,18 @@ QString DAccountModule::createScheduleType(const QString &typeInfo)
     if (scheduleType->typeColor().privilege() == DTypeColor::PriUser) {
         m_accountDB->addTypeColor(scheduleType->typeColor().colorID(), scheduleType->typeColor().colorCode(), 7);
     }
-    return m_accountDB->createScheduleType(scheduleType);
+    QString scheduleTypeID = m_accountDB->createScheduleType(scheduleType);
+    //如果为网络日程则需要上传任务
+    if (m_account->isNetWorkAccount()) {
+        DUploadTaskData::Ptr uploadTask(new DUploadTaskData);
+        uploadTask->setTaskType(DUploadTaskData::TaskType::Create);
+        uploadTask->setTaskObject(DUploadTaskData::Task_ScheduleType);
+        uploadTask->setObjectId(scheduleTypeID);
+        m_accountDB->addUploadTask(uploadTask);
+        //TODO:开启上传任务
+    }
+    emit signalScheduleTypeUpdate();
+    return scheduleTypeID;
 }
 
 bool DAccountModule::deleteScheduleTypeByID(const QString &typeID)
@@ -90,8 +101,14 @@ bool DAccountModule::deleteScheduleTypeByID(const QString &typeID)
         //更新提醒任务
         updateRemindSchedules(false);
         m_accountDB->deleteSchedulesByScheduleTypeID(typeID, !m_account->isNetWorkAccount());
-        //TODO:发送操作内容给任务列表
+        //操作内容给任务列表
         if (m_account->isNetWorkAccount()) {
+            DUploadTaskData::Ptr uploadTask(new DUploadTaskData);
+            uploadTask->setTaskType(DUploadTaskData::TaskType::Delete);
+            uploadTask->setTaskObject(DUploadTaskData::Task_ScheduleType);
+            uploadTask->setObjectId(typeID);
+            m_accountDB->addUploadTask(uploadTask);
+            //TODO:开启上传任务
         }
         emit signalScheduleUpdate();
     }
@@ -133,7 +150,16 @@ bool DAccountModule::updateScheduleType(const QString &typeInfo)
         }
     }
     bool isSucc = m_accountDB->updateScheduleType(scheduleType);
+
     if (isSucc) {
+        if (m_account->isNetWorkAccount()) {
+            DUploadTaskData::Ptr uploadTask(new DUploadTaskData);
+            uploadTask->setTaskType(DUploadTaskData::TaskType::Modify);
+            uploadTask->setTaskObject(DUploadTaskData::Task_ScheduleType);
+            uploadTask->setObjectId(scheduleType->typeID());
+            m_accountDB->addUploadTask(uploadTask);
+            //TODO:开启上传任务
+        }
         emit signalScheduleTypeUpdate();
     }
     return isSucc;
@@ -151,7 +177,12 @@ QString DAccountModule::createSchedule(const QString &scheduleInfo)
     QString scheduleID = m_accountDB->createSchedule(schedule);
     //根据是否为网络帐户判断是否需要更新任务列表
     if (m_account->isNetWorkAccount()) {
-        //TODO:
+        DUploadTaskData::Ptr uploadTask(new DUploadTaskData);
+        uploadTask->setTaskType(DUploadTaskData::TaskType::Create);
+        uploadTask->setTaskObject(DUploadTaskData::Task_Schedule);
+        uploadTask->setObjectId(scheduleID);
+        m_accountDB->addUploadTask(uploadTask);
+        //TODO:开启上传任务
     }
     //发送日程更新信号
     emit signalScheduleUpdate();
@@ -217,8 +248,14 @@ bool DAccountModule::updateSchedule(const QString &scheduleInfo)
     bool ok = m_accountDB->updateSchedule(schedule);
 
     emit signalScheduleUpdate();
+    //根据是否为网络帐户判断是否需要更新任务列表
     if (m_account->isNetWorkAccount()) {
-        //TODO:若为网络帐号
+        DUploadTaskData::Ptr uploadTask(new DUploadTaskData);
+        uploadTask->setTaskType(DUploadTaskData::TaskType::Modify);
+        uploadTask->setTaskObject(DUploadTaskData::Task_Schedule);
+        uploadTask->setObjectId(schedule->uid());
+        m_accountDB->addUploadTask(uploadTask);
+        //TODO:开启上传任务
     }
     return ok;
 }
@@ -238,7 +275,12 @@ bool DAccountModule::deleteScheduleByScheduleID(const QString &scheduleID)
     DSchedule::Ptr schedule = m_accountDB->getScheduleByScheduleID(scheduleID);
     if (m_account->isNetWorkAccount()) {
         isOK = m_accountDB->deleteScheduleByScheduleID(scheduleID);
-        //TODO:更新上传任务表
+        //更新上传任务表
+        DUploadTaskData::Ptr uploadTask(new DUploadTaskData);
+        uploadTask->setTaskType(DUploadTaskData::TaskType::Delete);
+        uploadTask->setTaskObject(DUploadTaskData::Task_Schedule);
+        uploadTask->setObjectId(scheduleID);
+        m_accountDB->addUploadTask(uploadTask);
     } else {
         isOK = m_accountDB->deleteScheduleByScheduleID(scheduleID, 1);
     }

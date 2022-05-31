@@ -253,97 +253,41 @@ bool CScheduleDlg::createSchedule(const QString &scheduleTypeId)
     }
     schedule->setAllDay(m_allDayCheckbox->isChecked());
 
-//    TODO:重复规则和提醒规则
-//        RemindData _remindData;
-//        if (schedule->allDay()) {
-//            _remindData.setRemindTime(QTime(9, 0));
-//            switch (m_rmindCombox->currentIndex()) {
-//            case 1:
-//                _remindData.setRemindNum(DDECalendar::OnStartDay);
-//                break;
-//            case 2:
-//                _remindData.setRemindNum(DDECalendar::OneDayBeforeWithDay);
-//                break;
-//            case 3:
-//                _remindData.setRemindNum(DDECalendar::TwoDayBeforeWithDay);
-//                break;
-//            case 4:
-//                _remindData.setRemindNum(DDECalendar::OneWeekBeforeWithDay);
-//                break;
-//            default:
-//                break;
-//            }
-//        } else {
-//            switch (m_rmindCombox->currentIndex()) {
-//            case 1:
-//                _remindData.setRemindNum(DDECalendar::AtTimeOfEvent);
-//                break;
-//            case 2:
-//                _remindData.setRemindNum(DDECalendar::FifteenMinutesBefore);
-//                break;
-//            case 3:
-//                _remindData.setRemindNum(DDECalendar::ThirtyMinutesBefore);
-//                break;
-//            case 4:
-//                _remindData.setRemindNum(DDECalendar::OneHourBefore);
-//                break;
-//            case 5:
-//                _remindData.setRemindNum(DDECalendar::OneDayBeforeWithMinutes);
-//                break;
-//            case 6:
-//                _remindData.setRemindNum(DDECalendar::TwoDayBeforeWithMinutes);
-//                break;
-//            case 7:
-//                _remindData.setRemindNum(DDECalendar::OneWeekBeforeWithMinutes);
-//                break;
-//            default:
-//                break;
-//            }
-//        }
-//        schedule->setRemindData(_remindData);
+    //设置提醒规则
+    DSchedule::AlarmType alarmType;
+    if (schedule->allDay()) {
+        alarmType = static_cast<DSchedule::AlarmType>(m_rmindCombox->currentIndex() + 8);
+    } else {
+        alarmType = static_cast<DSchedule::AlarmType>(m_rmindCombox->currentIndex());
+    }
+    schedule->setAlarmType(alarmType);
 
-//        RepetitionRule _repetitionRule;
-//        //根据是否为农历日程，设置对应的重复规则
-//        RepetitionRule::RRuleID ruleID;
-//        if (schedule->getIsLunar()) {
-//            switch (m_beginrepeatCombox->currentIndex()) {
-//            case 1:
-//                //每月
-//                ruleID = RepetitionRule::RRule_EVEMONTH;
-//                break;
-//            case 2: {
-//                //每年
-//                ruleID = RepetitionRule::RRule_EVEYEAR;
-//            } break;
-//            default:
-//                //默认不重复
-//                ruleID = RepetitionRule::RRule_NONE;
-//                break;
-//            }
+    //设置重复规则
+    DSchedule::RRuleType rruleType = DSchedule::RRule_None;
+    rruleType = static_cast<DSchedule::RRuleType>(m_beginrepeatCombox->currentIndex());
+    schedule->setRRuleType(rruleType);
+    if (m_endrepeatCombox->currentIndex() == 1) {
+        //结束与次数
+        if (m_endrepeattimes->text().isEmpty()) {
+            return false;
+        }
+        schedule->recurrence()->setDuration(m_endrepeattimes->text().toInt());
 
-//        } else {
-//            ruleID = static_cast<RepetitionRule::RRuleID>(m_beginrepeatCombox->currentIndex());
-//        }
-//        _repetitionRule.setRuleId(ruleID);
-//        if (_repetitionRule.getRuleId() > 0) {
-//            _repetitionRule.setRuleType(static_cast<RepetitionRule::RRuleEndType>
-//                                        (m_endrepeatCombox->currentIndex()));
-//            if (m_endrepeatCombox->currentIndex() == 1) {
-//                if (m_endrepeattimes->text().isEmpty()) {
-//                    return false;
-//                }
-//                _repetitionRule.setEndCount(m_endrepeattimes->text().toInt());
-//            } else if (m_endrepeatCombox->currentIndex() == 2) {
-//                QDateTime endrpeattime = beginDateTime;
-//                endrpeattime.setDate(m_endRepeatDate->date());
+    } else if (m_endrepeatCombox->currentIndex() == 2) {
+        //结束与日期
+        QDateTime endrpeattime = beginDateTime;
+        endrpeattime.setDate(m_endRepeatDate->date());
 
-//                if (beginDateTime > endrpeattime) {
-//                    return false;
-//                }
-//                _repetitionRule.setEndDate(endrpeattime);
-//            }
-//        }
-//        schedule->setRepetitionRule(_repetitionRule);
+        if (beginDateTime > endrpeattime) {
+            return false;
+        }
+        schedule->recurrence()->setDuration(0);
+        schedule->recurrence()->setEndDateTime(endrpeattime);
+    } else {
+        //永不
+        schedule->recurrence()->setDuration(-1);
+    }
+
     schedule->setDtStart(beginDateTime);
     schedule->setDtEnd(endDateTime);
     CScheduleOperation _scheduleOperation(this);
@@ -1254,79 +1198,27 @@ void CScheduleDlg::initJobTypeComboBox()
 
 void CScheduleDlg::initRmindRpeatUI()
 {
-    //TODO:等待提醒规则
-    //    if (m_ScheduleDataInfo.getAllDay()) {
-    //        if (m_ScheduleDataInfo.getRemindData().getRemindNum() > -1) {
-    //            if (m_ScheduleDataInfo.getRemindData().getRemindNum() == DDECalendar::OnStartDay) {
-    //                m_rmindCombox->setCurrentIndex(1);
-    //            } else if (m_ScheduleDataInfo.getRemindData().getRemindNum() == DDECalendar::OneDayBeforeWithDay) {
-    //                m_rmindCombox->setCurrentIndex(2);
-    //            } else if (m_ScheduleDataInfo.getRemindData().getRemindNum() == DDECalendar::TwoDayBeforeWithDay) {
-    //                m_rmindCombox->setCurrentIndex(3);
-    //            } else if (m_ScheduleDataInfo.getRemindData().getRemindNum() == DDECalendar::OneWeekBeforeWithDay) {
-    //                m_rmindCombox->setCurrentIndex(4);
-    //            }
-    //        } else {
-    //            m_rmindCombox->setCurrentIndex(0);
-    //        }
-    //    } else {
-    //        if (m_ScheduleDataInfo.getRemindData().getRemindNum() > -1) {
-    //            if (m_ScheduleDataInfo.getRemindData().getRemindNum() == DDECalendar::AtTimeOfEvent) {
-    //                m_rmindCombox->setCurrentIndex(1);
-    //            } else if (m_ScheduleDataInfo.getRemindData().getRemindNum() == DDECalendar::FifteenMinutesBefore) {
-    //                m_rmindCombox->setCurrentIndex(2);
-    //            } else if (m_ScheduleDataInfo.getRemindData().getRemindNum() == DDECalendar::ThirtyMinutesBefore) {
-    //                m_rmindCombox->setCurrentIndex(3);
-    //            } else if (m_ScheduleDataInfo.getRemindData().getRemindNum() == DDECalendar::OneHourBefore) {
-    //                m_rmindCombox->setCurrentIndex(4);
-    //            } else if (m_ScheduleDataInfo.getRemindData().getRemindNum() ==
-    //                       DDECalendar::OneDayBeforeWithMinutes) {
-    //                m_rmindCombox->setCurrentIndex(5);
-    //            } else if (m_ScheduleDataInfo.getRemindData().getRemindNum() ==
-    //                       DDECalendar::TwoDayBeforeWithMinutes) {
-    //                m_rmindCombox->setCurrentIndex(6);
-    //            } else if (m_ScheduleDataInfo.getRemindData().getRemindNum() ==
-    //                       DDECalendar::OneWeekBeforeWithMinutes) {
-    //                m_rmindCombox->setCurrentIndex(7);
-    //            }
-    //        } else {
-    //            m_rmindCombox->setCurrentIndex(0);
-    //        }
-    //    }
-    //TODO:等待重复规则
-    //    slotbRpeatactivated(m_ScheduleDataInfo.getRepetitionRule().getRuleId());
-    //    RepetitionRule::RRuleID ruleID = m_ScheduleDataInfo.getRepetitionRule().getRuleId();
-    //    if (m_ScheduleDataInfo.getIsLunar()) {
-    //        switch (ruleID) {
-    //        case RepetitionRule::RRule_EVEYEAR:
-    //            m_beginrepeatCombox->setCurrentIndex(2);
-    //            break;
-    //        case RepetitionRule::RRule_EVEMONTH:
-    //            m_beginrepeatCombox->setCurrentIndex(1);
-    //            break;
-    //        default:
-    //            m_beginrepeatCombox->setCurrentIndex(0);
-    //            break;
-    //        }
-    //    } else {
-    //        m_beginrepeatCombox->setCurrentIndex(ruleID);
-    //    }
+    //提醒规则
+    if (m_ScheduleDataInfo->allDay()) {
+        m_rmindCombox->setCurrentIndex(m_ScheduleDataInfo->getAlarmType() - 8);
+    } else {
+        m_rmindCombox->setCurrentIndex(m_ScheduleDataInfo->getAlarmType());
+    }
 
-    //    if (m_ScheduleDataInfo.getRepetitionRule().getRuleId() != 0) {
-    //        if (m_ScheduleDataInfo.getRepetitionRule().getRuleType() == 0) {
-    //            m_endrepeatCombox->setCurrentIndex(0);
-    //        } else if (m_ScheduleDataInfo.getRepetitionRule().getRuleType() == 1) {
-    //            m_endrepeatCombox->setCurrentIndex(1);
-    //            m_endrepeattimes->setText(QString::number(m_ScheduleDataInfo.getRepetitionRule().getEndCount()));
-    //        } else if (m_ScheduleDataInfo.getRepetitionRule().getRuleType() == 2) {
-    //            m_endrepeatCombox->setCurrentIndex(2);
-    //            m_endRepeatDate->setDate(m_ScheduleDataInfo.getRepetitionRule().getEndDate().date());
-    //        }
-    //        m_endrepeatWidget->show();
-    //        sloteRpeatactivated(m_ScheduleDataInfo.getRepetitionRule().getRuleType());
-    //    } else {
-    //        m_endrepeatWidget->hide();
-    //    }
+    //重复规则
+    m_beginrepeatCombox->setCurrentIndex(m_ScheduleDataInfo->getRRuleType());
+    if (m_ScheduleDataInfo->recurrence()->duration() < 0) {
+        //永不
+        m_endrepeatCombox->setCurrentIndex(0);
+    } else if (m_ScheduleDataInfo->recurrence()->duration() == 0) {
+        //结束于日期
+        m_endrepeatCombox->setCurrentIndex(2);
+        m_endRepeatDate->setDate(m_ScheduleDataInfo->recurrence()->endDateTime().date());
+    } else {
+        //结束与次数
+        m_endrepeatCombox->setCurrentIndex(1);
+        m_endrepeattimes->setText(QString::number(m_ScheduleDataInfo->recurrence()->duration()));
+    }
 }
 
 void CScheduleDlg::setTheMe(const int type)

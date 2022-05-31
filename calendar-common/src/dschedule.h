@@ -41,6 +41,7 @@ public:
         Alarm_1Day_Front, //提前1天
         Alarm_2Day_Front, //提前2天
         Alarm_1Week_Front, //提前1周
+        Alarm_AllDay_None, //全天从不
         Alarm_9Hour_After, //日程当天9点(全天)
         Alarm_15Hour_Front, //一天前（全天），为日程开始前15小时
         Alarm_39Hour_Front, //2天前（全天），为日程开始前39小时

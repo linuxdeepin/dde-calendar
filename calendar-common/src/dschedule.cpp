@@ -118,7 +118,7 @@ void DSchedule::setAlarmType(const DSchedule::AlarmType &alarmType)
 
 DSchedule::AlarmType DSchedule::getAlarmType()
 {
-    AlarmType alarmType = Alarm_None;
+    AlarmType alarmType = allDay() ? Alarm_AllDay_None : Alarm_None;
     KCalendarCore::Alarm::List alarmList = this->alarms();
     if (alarmList.size() > 0) {
         KCalendarCore::Duration duration = alarmList.at(0)->duration();
@@ -312,6 +312,7 @@ QMap<int, DSchedule::AlarmType> DSchedule::getAlarmMap()
         {-Duration_Day, Alarm_1Day_Front},
         {-Duration_Day * 2, Alarm_2Day_Front},
         {-Duration_Week, Alarm_1Week_Front},
+        {0, Alarm_AllDay_None},
         {9 * Duration_Hour, Alarm_9Hour_After},
         {-15 * Duration_Hour, Alarm_15Min_Front},
         {-39 * Duration_Hour, Alarm_39Hour_Front},
