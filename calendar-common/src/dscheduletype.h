@@ -39,14 +39,14 @@ public:
         Read = 0x1, //可读
         Write = 0x2, //可编辑
         Delete = 0x4, //可删除
-        System = Read,  //系统权限
-        User = Read|Write|Delete,   //用户权限
+        System = Read, //系统权限
+        User = Read | Write | Delete, //用户权限
     };
     Q_DECLARE_FLAGS(Privileges, Privilege)
 
     enum ShowState {
-        Show,
-        Hide
+        Hide, //日程隐藏
+        Show, //日程显示
     };
 
     typedef QSharedPointer<DScheduleType> Ptr;

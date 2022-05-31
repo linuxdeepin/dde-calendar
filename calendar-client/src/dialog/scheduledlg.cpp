@@ -182,7 +182,7 @@ bool CScheduleDlg::selectScheduleType()
         type->setDisplayName(m_typeComBox->lineEdit()->text());
         type->setTypeColor(*m_colorSeletorWideget->getSelectedColorInfo().data());
         //创建日程类型，等待回调
-        m_accountItem->createJobType(type, [&](bool status){
+        m_accountItem->createJobType(type, [&](bool status) {
             if (status) {
                 //日程已创建且数据刷新完毕
                 //根据日程类型名去获取日程类型实例
@@ -207,7 +207,7 @@ bool CScheduleDlg::selectScheduleType()
  * @param scheduleTypeId 日程所属日程类型的id
  * @return
  */
-bool CScheduleDlg::createSchedule(const QString& scheduleTypeId)
+bool CScheduleDlg::createSchedule(const QString &scheduleTypeId)
 {
     //创建新的日程实例
     DSchedule::Ptr schedule;
@@ -252,6 +252,7 @@ bool CScheduleDlg::createSchedule(const QString& scheduleTypeId)
         return false;
     }
     schedule->setAllDay(m_allDayCheckbox->isChecked());
+
 //    TODO:重复规则和提醒规则
 //        RemindData _remindData;
 //        if (schedule->allDay()) {
@@ -1463,7 +1464,7 @@ void CScheduleDlg::setWidgetEnabled(bool isEnabled)
     m_endRepeatDate->setEnabled(isEnabled);
 }
 
-void CScheduleDlg::resetColor(const AccountItem::Ptr& account)
+void CScheduleDlg::resetColor(const AccountItem::Ptr &account)
 {
     m_colorSeletorWideget->resetColorButton(account);
     //将用户上一次选择的自定义颜色添加进去

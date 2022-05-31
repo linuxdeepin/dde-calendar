@@ -26,6 +26,7 @@
 #include "dschedule.h"
 #include "dscheduletype.h"
 #include "dreminddata.h"
+#include "duploadtaskdata.h"
 
 #include <QSharedPointer>
 
@@ -123,6 +124,11 @@ public:
      * @return
      */
     DSchedule getRemindJob(const QString &jobID, const qint64 recurid);
+
+    //添加上传任务
+    void addUploadTask(const DUploadTaskData::Ptr &uploadTask);
+    DUploadTaskData::List getUploadTask();
+    void deleteUploadTask(const QString &taskID);
 
 protected:
     virtual void initScheduleType();

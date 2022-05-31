@@ -391,7 +391,7 @@ DScheduleType::Ptr DAccountDataBase::getScheduleTypeByID(const QString &typeID, 
     query.addBindValue(isDeleted);
 
     if (query.exec() && query.next()) {
-        type = DScheduleType::Ptr(new DScheduleType);
+        type = DScheduleType::Ptr(new DScheduleType(m_account->accountID()));
         type->setTypeID(typeID);
         type->setTypeName(query.value("typeName").toString());
         type->setDisplayName(query.value("typeDisplayName").toString());
@@ -437,7 +437,7 @@ DScheduleType::List DAccountDataBase::getScheduleTypeList(const int isDeleted)
     typeList.append(sysTypeList);
     if (query.exec()) {
         while (query.next()) {
-            DScheduleType::Ptr type = DScheduleType::Ptr(new DScheduleType);
+            DScheduleType::Ptr type = DScheduleType::Ptr(new DScheduleType(m_account->accountID()));
             type->setTypeID(query.value("typeID").toString());
             type->setTypeName(query.value("typeName").toString());
             type->setDisplayName(query.value("typeDisplayName").toString());
@@ -831,6 +831,67 @@ DRemindData::List DAccountDataBase::getRemindByScheduleID(const QString &schedul
     return remindList;
 }
 
+void DAccountDataBase::addUploadTask(const DUploadTaskData::Ptr &uploadTask)
+{
+    QString strSql("INSERT INTO uploadTask                                      \
+                   (taskID, uploadType, uploadObject, objectID, dtCreate)      \
+                   VALUES(?, ?, ?, ?, ?);");
+    QSqlQuery query(m_database);
+    query.prepare(strSql);
+    uploadTask->setTaskID(createUuid());
+    query.addBindValue(uploadTask->taskID());
+    query.addBindValue(uploadTask->taskType());
+    query.addBindValue(uploadTask->taskObject());
+    query.addBindValue(uploadTask->objectId());
+    query.addBindValue(dtToString(QDateTime::currentDateTime()));
+    if (!query.exec()) {
+        qWarning() << Q_FUNC_INFO << query.lastError();
+    }
+    if (query.isActive()) {
+        query.finish();
+    }
+}
+
+DUploadTaskData::List DAccountDataBase::getUploadTask()
+{
+    DUploadTaskData::List uploadList;
+    QString strSql("SELECT taskID, uploadType, uploadObject, objectID, dtCreate     \
+                  FROM uploadTask;");
+    QSqlQuery query(m_database);
+    query.prepare(strSql);
+    if (query.exec()) {
+        while (query.next()) {
+            DUploadTaskData::Ptr upload = DUploadTaskData::Ptr(new DUploadTaskData);
+            upload->setTaskID(query.value("taskID").toString());
+            upload->setTaskType(static_cast<DUploadTaskData::TaskType>(query.value("uploadType").toInt()));
+            upload->setTaskObject(static_cast<DUploadTaskData::TaskObject>(query.value("uploadObject").toInt()));
+            upload->setObjectId(query.value("objectID").toString());
+            upload->setDtCreate(dtFromString(query.value("dtCreate").toString()));
+            uploadList.append(upload);
+        }
+    } else {
+        qWarning() << Q_FUNC_INFO << query.lastError();
+    }
+    if (query.isActive()) {
+        query.finish();
+    }
+    return uploadList;
+}
+
+void DAccountDataBase::deleteUploadTask(const QString &taskID)
+{
+    QString strSql("DELETE FROM uploadTask   WHERE taskID = ?;");
+    QSqlQuery query(m_database);
+    query.prepare(strSql);
+    query.addBindValue(taskID);
+    if (!query.exec()) {
+        qWarning() << Q_FUNC_INFO << query.lastError();
+    }
+    if (query.isActive()) {
+        query.finish();
+    }
+}
+
 void DAccountDataBase::createDB()
 {
     dbOpen();
@@ -927,8 +988,9 @@ void DAccountDataBase::createDB()
         //创建上传任务表
         QString uploadSql("CREATE TABLE uploadTask (                \
                           id INTEGER NOT NULL PRIMARY KEY,          \
-                          updateOperation integer NOT NULL,         \
-                          updateObject integer NOT NULL,            \
+                          taskID TEXT NOT NULL,                     \
+                          uploadType integer NOT NULL,         \
+                          uploadObject integer NOT NULL,            \
                           objectID TEXT NOT NULL,                   \
                           dtCreate DATETIME NOT NULL)");
         res = query.exec(uploadSql);
@@ -949,7 +1011,7 @@ void DAccountDataBase::createDB()
                               dtEnd DATETIME NOT NULL)");
         res = query.exec(remindTaskSql);
         if (!res) {
-            qWarning() << "uploadTask create failed.error:" << query.lastError();
+            qWarning() << "remindTask create failed.error:" << query.lastError();
         }
 
         if (query.isActive()) {
@@ -984,7 +1046,7 @@ DScheduleType::List DAccountDataBase::initSysType()
     static DScheduleType::List typeList;
     if (typeList.size() == 0) {
         //工作类型
-        DScheduleType::Ptr workType(new DScheduleType);
+        DScheduleType::Ptr workType(new DScheduleType(m_account->accountID()));
         workType->setTypeID("107c369e-b13a-4d45-9ff3-de4eb3c0475b");
         workType->setDtCreate(QDateTime::currentDateTime());
         workType->setPrivilege(DScheduleType::Read);
@@ -999,7 +1061,7 @@ DScheduleType::List DAccountDataBase::initSysType()
         typeList.append(workType);
 
         //生活
-        DScheduleType::Ptr lifeType(new DScheduleType);
+        DScheduleType::Ptr lifeType(new DScheduleType(m_account->accountID()));
         lifeType->setTypeID("24cf3ae3-541d-487f-83df-f068416b56b6");
         lifeType->setDtCreate(QDateTime::currentDateTime());
         lifeType->setPrivilege(DScheduleType::Read);
@@ -1014,7 +1076,7 @@ DScheduleType::List DAccountDataBase::initSysType()
         typeList.append(lifeType);
 
         //其他
-        DScheduleType::Ptr otherType(new DScheduleType);
+        DScheduleType::Ptr otherType(new DScheduleType(m_account->accountID()));
         otherType->setTypeID("403bf009-2005-4679-9c76-e73d9f83a8b4");
         otherType->setDtCreate(QDateTime::currentDateTime());
         otherType->setPrivilege(DScheduleType::Read);
