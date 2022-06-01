@@ -170,10 +170,7 @@ QString DAccountModule::createSchedule(const QString &scheduleInfo)
     DSchedule::Ptr schedule;
     DSchedule::fromJsonString(schedule, scheduleInfo);
     schedule->setCreated(QDateTime::currentDateTime());
-    //根据是否为提醒日程更新提醒任务
-    if (schedule->alarms().size() > 0) {
-        updateRemindSchedules(false);
-    }
+
     QString scheduleID = m_accountDB->createSchedule(schedule);
     //根据是否为网络帐户判断是否需要更新任务列表
     if (m_account->isNetWorkAccount()) {
@@ -183,6 +180,10 @@ QString DAccountModule::createSchedule(const QString &scheduleInfo)
         uploadTask->setObjectId(scheduleID);
         m_accountDB->addUploadTask(uploadTask);
         //TODO:开启上传任务
+    }
+    //根据是否为提醒日程更新提醒任务
+    if (schedule->alarms().size() > 0) {
+        updateRemindSchedules(false);
     }
     //发送日程更新信号
     emit signalScheduleUpdate();
@@ -240,12 +241,12 @@ bool DAccountModule::updateSchedule(const QString &scheduleInfo)
         }
     }
 
+    bool ok = m_accountDB->updateSchedule(schedule);
+
     //如果存在提醒
     if (oldSchedule->alarms().size() > 0 || schedule->alarms().size() > 0) {
         updateRemindSchedules(false);
     }
-
-    bool ok = m_accountDB->updateSchedule(schedule);
 
     emit signalScheduleUpdate();
     //根据是否为网络帐户判断是否需要更新任务列表

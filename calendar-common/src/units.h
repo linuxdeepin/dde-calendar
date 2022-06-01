@@ -42,4 +42,6 @@ bool isChineseEnv();
 //时间转换
 QDateTime dtConvert(const QDateTime &datetime);
 
+//TODO:获取系统版本(专业版，社区版等)
+
 #endif // UNITS_H

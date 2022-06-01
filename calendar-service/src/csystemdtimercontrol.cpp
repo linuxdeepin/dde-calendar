@@ -21,7 +21,7 @@ void CSystemdTimerControl::buildingConfiggure(const QVector<SystemDInfo> &infoVe
         return;
     QStringList fileNameList{};
     foreach (auto info, infoVector) {
-        fileNameList.append(QString("calendar-remind-%1-%2").arg(info.alarmID).arg(info.laterCount));
+        fileNameList.append(QString("calendar-remind-%1-%2").arg(info.alarmID.mid(1, 8)).arg(info.laterCount));
         createService(fileNameList.last(), info);
         createTimer(fileNameList.last(), info.triggerTimer);
     }
@@ -32,7 +32,7 @@ void CSystemdTimerControl::stopSystemdTimerByJobInfos(const QVector<SystemDInfo>
 {
     QStringList fileNameList;
     foreach (auto info, infoVector) {
-        fileNameList.append(QString("calendar-remind-%1-%2").arg(info.alarmID).arg(info.laterCount));
+        fileNameList.append(QString("calendar-remind-%1-%2").arg(info.alarmID.mid(1, 8)).arg(info.laterCount));
     }
     stopSystemdTimer(fileNameList);
 }
@@ -117,7 +117,8 @@ void CSystemdTimerControl::createService(const QString &name, const SystemDInfo 
 {
     QString fileName;
     QString remindCMD = QString("dbus-send --session --print-reply --dest=com.deepin.dataserver.Calendar "
-                                "/com/deepin/dataserver/Calendar com.deepin.dataserver.Calendar.remindJob String:%1 String:%1")
+                                "/com/deepin/dataserver/Calendar/AccountManager "
+                                "com.deepin.dataserver.Calendar.AccountManager.remindJob string:%1 string:%2")
                             .arg(info.accountID)
                             .arg(info.alarmID);
     fileName = m_systemdPath + name + ".service";

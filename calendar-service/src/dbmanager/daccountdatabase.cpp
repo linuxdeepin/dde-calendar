@@ -47,28 +47,33 @@ QString DAccountDataBase::createSchedule(const DSchedule::Ptr &schedule)
                        (scheduleID, scheduleTypeID, summary, description, allDay, dtStart   \
                        , dtEnd, isAlarm, titlePinyin,isLunar, ics, fileName, dtCreate, isDeleted)   \
                        VALUES(?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?);");
-        query.prepare(strSql);
-        query.addBindValue(schedule->schedulingID());
-        query.addBindValue(schedule->scheduleTypeID());
-        query.addBindValue(schedule->summary());
-        query.addBindValue(schedule->description());
-        query.addBindValue(schedule->allDay());
-        query.addBindValue(dtToString(schedule->dtStart()));
-        query.addBindValue(dtToString(schedule->dtEnd()));
-        query.addBindValue(schedule->hasEnabledAlarms());
-        query.addBindValue(pinyinsearch::getPinPinSearch()->CreatePinyin(schedule->summary()));
-        query.addBindValue(schedule->lunnar());
-        query.addBindValue(schedule->toIcsString(schedule));
-        query.addBindValue(schedule->fileName());
-        query.addBindValue(dtToString(schedule->created()));
-        query.addBindValue(0);
-        if (!query.exec()) {
+        if (query.prepare(strSql)) {
+            query.addBindValue(schedule->schedulingID());
+            query.addBindValue(schedule->scheduleTypeID());
+            query.addBindValue(schedule->summary());
+            query.addBindValue(schedule->description());
+            query.addBindValue(schedule->allDay());
+            query.addBindValue(dtToString(schedule->dtStart()));
+            query.addBindValue(dtToString(schedule->dtEnd()));
+            query.addBindValue(schedule->hasEnabledAlarms());
+            query.addBindValue(pinyinsearch::getPinPinSearch()->CreatePinyin(schedule->summary()));
+            query.addBindValue(schedule->lunnar());
+            query.addBindValue(schedule->toIcsString(schedule));
+            query.addBindValue(schedule->fileName());
+            query.addBindValue(dtToString(schedule->created()));
+            query.addBindValue(0);
+            if (!query.exec()) {
+                schedule->setUid("");
+                qWarning() << "createSchedule error:" << query.lastError();
+            }
+            if (query.isActive()) {
+                query.finish();
+            }
+        } else {
             schedule->setUid("");
             qWarning() << "createSchedule error:" << query.lastError();
         }
-        if (query.isActive()) {
-            query.finish();
-        }
+
     } else {
         schedule->setUid("");
         qWarning() << "schedule is null";
@@ -86,27 +91,30 @@ bool DAccountDataBase::updateSchedule(const DSchedule::Ptr &schedule)
                        SET scheduleTypeID=?, summary=?, description=?, allDay=?           \
                 , dtStart=?, dtEnd=?, isAlarm=?,titlePinyin=?, isLunar=?, ics=?, fileName=?             \
                 , dtUpdate=? WHERE scheduleID= ?;");
-        query.prepare(strSql);
-        query.addBindValue(schedule->scheduleTypeID());
-        query.addBindValue(schedule->summary());
-        query.addBindValue(schedule->description());
-        query.addBindValue(schedule->allDay());
-        query.addBindValue(dtToString(schedule->dtStart()));
-        query.addBindValue(dtToString(schedule->dtEnd()));
-        query.addBindValue(schedule->hasEnabledAlarms());
-        query.addBindValue(pinyinsearch::getPinPinSearch()->CreatePinyin(schedule->summary()));
-        query.addBindValue(schedule->lunnar());
-        query.addBindValue(DSchedule::toIcsString(schedule));
-        query.addBindValue(schedule->fileName());
-        query.addBindValue(dtToString(schedule->lastModified()));
-        query.addBindValue(schedule->schedulingID());
-        if (query.exec()) {
-            resbool = true;
+        if (query.prepare(strSql)) {
+            query.addBindValue(schedule->scheduleTypeID());
+            query.addBindValue(schedule->summary());
+            query.addBindValue(schedule->description());
+            query.addBindValue(schedule->allDay());
+            query.addBindValue(dtToString(schedule->dtStart()));
+            query.addBindValue(dtToString(schedule->dtEnd()));
+            query.addBindValue(schedule->hasEnabledAlarms());
+            query.addBindValue(pinyinsearch::getPinPinSearch()->CreatePinyin(schedule->summary()));
+            query.addBindValue(schedule->lunnar());
+            query.addBindValue(DSchedule::toIcsString(schedule));
+            query.addBindValue(schedule->fileName());
+            query.addBindValue(dtToString(schedule->lastModified()));
+            query.addBindValue(schedule->schedulingID());
+            if (query.exec()) {
+                resbool = true;
+            } else {
+                qWarning() << Q_FUNC_INFO << query.lastError();
+            }
+            if (query.isActive()) {
+                query.finish();
+            }
         } else {
             qWarning() << Q_FUNC_INFO << query.lastError();
-        }
-        if (query.isActive()) {
-            query.finish();
         }
     }
 
@@ -119,21 +127,27 @@ DSchedule::Ptr DAccountDataBase::getScheduleByScheduleID(const QString &schedule
                    isAlarm,titlePinyin,isLunar, ics, fileName, dtCreate, dtUpdate, dtDelete, isDeleted  \
                    FROM schedules WHERE  scheduleID  = ? ;");
     QSqlQuery query(m_database);
-    query.prepare(strSql);
-    query.addBindValue(scheduleID);
-    DSchedule::Ptr schedule = DSchedule::Ptr(new DSchedule);
-    if (query.exec()) {
-        if (query.next()) {
-            QString &&icsStr = query.value("ics").toString();
-            DSchedule::fromIcsString(schedule, icsStr);
+    DSchedule::Ptr schedule;
+    if (query.prepare(strSql)) {
+        query.addBindValue(scheduleID);
+        schedule = DSchedule::Ptr(new DSchedule);
+        if (query.exec()) {
+            if (query.next()) {
+                QString &&icsStr = query.value("ics").toString();
+                DSchedule::fromIcsString(schedule, icsStr);
+            }
+        } else {
+            qWarning() << Q_FUNC_INFO << query.lastError();
+            return schedule;
+        }
+        if (query.isActive()) {
+            query.finish();
         }
     } else {
         qWarning() << Q_FUNC_INFO << query.lastError();
-        return nullptr;
+        return schedule;
     }
-    if (query.isActive()) {
-        query.finish();
-    }
+
     return schedule;
 }
 
@@ -142,18 +156,22 @@ QStringList DAccountDataBase::getScheduleIDListByTypeID(const QString &typeID)
     QStringList scheduleIDList;
     QString strSql("SELECT scheduleID FROM schedules WHERE  scheduleTypeID  = ?;");
     QSqlQuery query(m_database);
-    query.prepare(strSql);
-    query.addBindValue(typeID);
-    if (query.exec()) {
-        while (query.next()) {
-            scheduleIDList.append(query.value("scheduleID").toString());
+    if (query.prepare(strSql)) {
+        query.addBindValue(typeID);
+        if (query.exec()) {
+            while (query.next()) {
+                scheduleIDList.append(query.value("scheduleID").toString());
+            }
+        } else {
+            qWarning() << Q_FUNC_INFO << query.lastError();
+        }
+        if (query.isActive()) {
+            query.finish();
         }
     } else {
         qWarning() << Q_FUNC_INFO << query.lastError();
     }
-    if (query.isActive()) {
-        query.finish();
-    }
+
     return scheduleIDList;
 }
 
@@ -166,10 +184,11 @@ bool DAccountDataBase::deleteScheduleByScheduleID(const QString &scheduleID, con
         strSql = QString("UPDATE schedules SET dtDelete = %1 , isDeleted = 1  WHERE scheduleID=?").arg(dtToString(QDateTime::currentDateTime()));
     }
     QSqlQuery query(m_database);
-    query.prepare(strSql);
-    query.addBindValue(scheduleID);
-    bool resBool = query.exec();
-
+    bool resBool = false;
+    if (query.prepare(strSql)) {
+        query.addBindValue(scheduleID);
+        resBool = query.exec();
+    }
     if (!resBool) {
         qWarning() << Q_FUNC_INFO << query.lastError();
     }
@@ -177,6 +196,7 @@ bool DAccountDataBase::deleteScheduleByScheduleID(const QString &scheduleID, con
     if (query.isActive()) {
         query.finish();
     }
+
     return resBool;
 }
 
@@ -189,9 +209,11 @@ bool DAccountDataBase::deleteSchedulesByScheduleTypeID(const QString &typeID, co
         strSql = QString("UPDATE schedules SET dtDelete = %1 , isDeleted = 1  WHERE scheduleTypeID=?").arg(dtToString(QDateTime::currentDateTime()));
     }
     QSqlQuery query(m_database);
-    query.prepare(strSql);
-    query.addBindValue(typeID);
-    bool resBool = query.exec();
+    bool resBool = false;
+    if (query.prepare(strSql)) {
+        query.addBindValue(typeID);
+        resBool = query.exec();
+    }
 
     if (!resBool) {
         qWarning() << Q_FUNC_INFO << query.lastError();
@@ -229,22 +251,26 @@ DSchedule::List DAccountDataBase::querySchedulesByKey(const QString &key)
     sqlBindValue[":strsort"] = "dtStart asc";
 
     QSqlQuery query(m_database);
-    query.prepare(strSql);
-    for (auto iter = sqlBindValue.constBegin(); iter != sqlBindValue.constEnd(); iter++) {
-        query.bindValue(iter.key(), iter.value());
-    }
+    if (query.prepare(strSql)) {
+        for (auto iter = sqlBindValue.constBegin(); iter != sqlBindValue.constEnd(); iter++) {
+            query.bindValue(iter.key(), iter.value());
+        }
 
-    if (query.exec()) {
-        while (query.next()) {
-            DSchedule::Ptr schedule;
-            QString &&icsStr = query.value("ics").toString();
-            DSchedule::fromIcsString(schedule, icsStr);
-            schedule->setScheduleTypeID(query.value("scheduleTypeID").toString());
-            scheduleList.append(schedule);
+        if (query.exec()) {
+            while (query.next()) {
+                DSchedule::Ptr schedule;
+                QString &&icsStr = query.value("ics").toString();
+                DSchedule::fromIcsString(schedule, icsStr);
+                schedule->setScheduleTypeID(query.value("scheduleTypeID").toString());
+                scheduleList.append(schedule);
+            }
+        } else {
+            qWarning() << Q_FUNC_INFO << query.lastError();
         }
     } else {
         qWarning() << Q_FUNC_INFO << query.lastError();
     }
+
     if (query.isActive()) {
         query.finish();
     }
@@ -258,31 +284,35 @@ DSchedule::List DAccountDataBase::querySchedulesByRRule(const QString &key, cons
                    isAlarm,titlePinyin,isLunar, ics, fileName, dtCreate, dtUpdate, dtDelete, isDeleted  \
                    FROM schedules WHERE  summary  = ? ;");
     QSqlQuery query(m_database);
-    query.prepare(strSql);
-    query.addBindValue(key);
+    if (query.prepare(strSql)) {
+        query.addBindValue(key);
 
-    if (query.exec()) {
-        if (query.next()) {
-            DSchedule::Ptr schedule = DSchedule::Ptr(new DSchedule);
-            QString &&icsStr = query.value("ics").toString();
-            DSchedule::fromIcsString(schedule, icsStr);
-            //如果存在重复规则
-            if (schedule->recurs()) {
-                //如果为需要获取的重复规则
-                if (rruleType == schedule->recurrence()->recurrenceType()) {
-                    scheduleList.append(schedule);
-                } else if (rruleType > 7) {
-                    //如果为工作日
-                    if (schedule->recurrence()->recurrenceType() == 4
-                        && schedule->recurrence()->defaultRRuleConst()->rrule().contains("BYDAY=MO,TU,WE,TH,FR")) {
+        if (query.exec()) {
+            if (query.next()) {
+                DSchedule::Ptr schedule = DSchedule::Ptr(new DSchedule);
+                QString &&icsStr = query.value("ics").toString();
+                DSchedule::fromIcsString(schedule, icsStr);
+                //如果存在重复规则
+                if (schedule->recurs()) {
+                    //如果为需要获取的重复规则
+                    if (rruleType == schedule->recurrence()->recurrenceType()) {
                         scheduleList.append(schedule);
+                    } else if (rruleType > 7) {
+                        //如果为工作日
+                        if (schedule->recurrence()->recurrenceType() == 4
+                            && schedule->recurrence()->defaultRRuleConst()->rrule().contains("BYDAY=MO,TU,WE,TH,FR")) {
+                            scheduleList.append(schedule);
+                        }
                     }
                 }
             }
+        } else {
+            qWarning() << Q_FUNC_INFO << query.lastError();
         }
     } else {
         qWarning() << Q_FUNC_INFO << query.lastError();
     }
+
     if (query.isActive()) {
         query.finish();
     }
@@ -295,18 +325,22 @@ DSchedule::List DAccountDataBase::getRemindSchedule()
                    titlePinyin, isLunar, ics, fileName, dtCreate, dtUpdate, dtDelete, isDeleted                 \
                    FROM schedules WHERE  isAlarm =1;");
     QSqlQuery query(m_database);
-    query.prepare(strSql);
     DSchedule::List scheduleList;
-    if (query.exec()) {
-        while (query.next()) {
-            DSchedule::Ptr schedule = DSchedule::Ptr(new DSchedule);
-            QString &&icsStr = query.value("ics").toString();
-            DSchedule::fromIcsString(schedule, icsStr);
-            scheduleList.append(schedule);
+    if (query.prepare(strSql)) {
+        if (query.exec()) {
+            while (query.next()) {
+                DSchedule::Ptr schedule = DSchedule::Ptr(new DSchedule);
+                QString &&icsStr = query.value("ics").toString();
+                DSchedule::fromIcsString(schedule, icsStr);
+                scheduleList.append(schedule);
+            }
+        } else {
+            qWarning() << Q_FUNC_INFO << query.lastError();
         }
     } else {
         qWarning() << Q_FUNC_INFO << query.lastError();
     }
+
     if (query.isActive()) {
         query.finish();
     }
@@ -333,24 +367,29 @@ QString DAccountDataBase::createScheduleType(const DScheduleType::Ptr &scheduleT
                    syncTag,dtCreate,isDeleted)                      \
                VALUES(?,?,?,?,?,?,?,?,?,?,?)");
     QSqlQuery query(m_database);
-    query.prepare(strSql);
-    scheduleType->setTypeID(DDataBase::createUuid());
-    query.addBindValue(scheduleType->typeID());
-    query.addBindValue(scheduleType->typeName());
-    query.addBindValue(scheduleType->displayName());
-    query.addBindValue(scheduleType->typePath());
-    query.addBindValue(scheduleType->typeColor().colorID());
-    query.addBindValue(scheduleType->description());
-    query.addBindValue(scheduleType->privilege());
-    query.addBindValue(scheduleType->showState());
-    query.addBindValue(scheduleType->syncTag());
-    query.addBindValue(dtToString(scheduleType->dtCreate()));
-    query.addBindValue(scheduleType->deleted());
+    if (query.prepare(strSql)) {
+        scheduleType->setTypeID(DDataBase::createUuid());
+        query.addBindValue(scheduleType->typeID());
+        query.addBindValue(scheduleType->typeName());
+        query.addBindValue(scheduleType->displayName());
+        query.addBindValue(scheduleType->typePath());
+        query.addBindValue(scheduleType->typeColor().colorID());
+        query.addBindValue(scheduleType->description());
+        query.addBindValue(scheduleType->privilege());
+        query.addBindValue(scheduleType->showState());
+        query.addBindValue(scheduleType->syncTag());
+        query.addBindValue(dtToString(scheduleType->dtCreate()));
+        query.addBindValue(scheduleType->deleted());
 
-    if (!query.exec()) {
+        if (!query.exec()) {
+            qWarning() << __FUNCTION__ << query.lastError();
+            scheduleType->setTypeID("");
+        }
+    } else {
         qWarning() << __FUNCTION__ << query.lastError();
         scheduleType->setTypeID("");
     }
+
     if (query.isActive()) {
         query.finish();
     }
@@ -386,29 +425,32 @@ DScheduleType::Ptr DAccountDataBase::getScheduleTypeByID(const QString &typeID, 
                WHERE                                                    \
                    st.typeID = ? AND st.isDeleteD = ?");
     QSqlQuery query(m_database);
-    query.prepare(strSql);
+    if (query.prepare(strSql)) {
+        if (query.exec() && query.next()) {
+            type = DScheduleType::Ptr(new DScheduleType(m_account->accountID()));
+            type->setTypeID(typeID);
+            type->setTypeName(query.value("typeName").toString());
+            type->setDisplayName(query.value("typeDisplayName").toString());
+            type->setTypePath(query.value("typePath").toString());
+            DTypeColor color;
+            color.setColorID(query.value("typeColorID").toInt());
+            color.setColorCode(query.value("ColorHex").toString());
+            color.setPrivilege(static_cast<DTypeColor::Privilege>(query.value("colorPri").toInt()));
+            type->setTypeColor(color);
+            type->setDescription(query.value("description").toString());
+            type->setPrivilege(static_cast<DScheduleType::Privilege>(query.value("typePri").toInt()));
+            type->setSyncTag(query.value("syncTag").toInt());
+            type->setDtCreate(query.value("dtCreate").toDateTime());
+            type->setDtUpdate(query.value("dtUpdate").toDateTime());
+            type->setDtDelete(query.value("dtDelete").toDateTime());
+            type->setDeleted(query.value("isDeleted").toInt());
+        }
+    } else {
+        qWarning() << query.lastError();
+    }
     query.addBindValue(typeID);
     query.addBindValue(isDeleted);
 
-    if (query.exec() && query.next()) {
-        type = DScheduleType::Ptr(new DScheduleType(m_account->accountID()));
-        type->setTypeID(typeID);
-        type->setTypeName(query.value("typeName").toString());
-        type->setDisplayName(query.value("typeDisplayName").toString());
-        type->setTypePath(query.value("typePath").toString());
-        DTypeColor color;
-        color.setColorID(query.value("typeColorID").toInt());
-        color.setColorCode(query.value("ColorHex").toString());
-        color.setPrivilege(static_cast<DTypeColor::Privilege>(query.value("colorPri").toInt()));
-        type->setTypeColor(color);
-        type->setDescription(query.value("description").toString());
-        type->setPrivilege(static_cast<DScheduleType::Privilege>(query.value("typePri").toInt()));
-        type->setSyncTag(query.value("syncTag").toInt());
-        type->setDtCreate(query.value("dtCreate").toDateTime());
-        type->setDtUpdate(query.value("dtUpdate").toDateTime());
-        type->setDtDelete(query.value("dtDelete").toDateTime());
-        type->setDeleted(query.value("isDeleted").toInt());
-    }
     if (query.isActive()) {
         query.finish();
     }
@@ -429,36 +471,41 @@ DScheduleType::List DAccountDataBase::getScheduleTypeList(const int isDeleted)
                    st.typeColorID = tc.ColorID                          \
                WHERE                                                    \
                    st.isDeleted = ?");
-    QSqlQuery query(m_database);
-    query.prepare(strSql);
-    query.addBindValue(isDeleted);
     DScheduleType::List typeList;
-    DScheduleType::List sysTypeList = initSysType();
-    typeList.append(sysTypeList);
-    if (query.exec()) {
-        while (query.next()) {
-            DScheduleType::Ptr type = DScheduleType::Ptr(new DScheduleType(m_account->accountID()));
-            type->setTypeID(query.value("typeID").toString());
-            type->setTypeName(query.value("typeName").toString());
-            type->setDisplayName(query.value("typeDisplayName").toString());
-            type->setTypePath(query.value("typePath").toString());
-            DTypeColor color;
-            color.setColorID(query.value("typeColorID").toInt());
-            color.setColorCode(query.value("ColorHex").toString());
-            color.setPrivilege(static_cast<DTypeColor::Privilege>(query.value("colorPri").toInt()));
-            type->setTypeColor(color);
-            type->setDescription(query.value("description").toString());
-            type->setPrivilege(static_cast<DScheduleType::Privilege>(query.value("typePri").toInt()));
-            type->setSyncTag(query.value("syncTag").toInt());
-            type->setDtCreate(query.value("dtCreate").toDateTime());
-            type->setDtCreate(query.value("dtUpdate").toDateTime());
-            type->setDtCreate(query.value("dtDelete").toDateTime());
-            type->setDeleted(query.value("isDeleted").toInt());
-            typeList.append(type);
+    QSqlQuery query(m_database);
+    if (query.prepare(strSql)) {
+        query.addBindValue(isDeleted);
+
+        DScheduleType::List sysTypeList = initSysType();
+        typeList.append(sysTypeList);
+        if (query.exec()) {
+            while (query.next()) {
+                DScheduleType::Ptr type = DScheduleType::Ptr(new DScheduleType(m_account->accountID()));
+                type->setTypeID(query.value("typeID").toString());
+                type->setTypeName(query.value("typeName").toString());
+                type->setDisplayName(query.value("typeDisplayName").toString());
+                type->setTypePath(query.value("typePath").toString());
+                DTypeColor color;
+                color.setColorID(query.value("typeColorID").toInt());
+                color.setColorCode(query.value("ColorHex").toString());
+                color.setPrivilege(static_cast<DTypeColor::Privilege>(query.value("colorPri").toInt()));
+                type->setTypeColor(color);
+                type->setDescription(query.value("description").toString());
+                type->setPrivilege(static_cast<DScheduleType::Privilege>(query.value("typePri").toInt()));
+                type->setSyncTag(query.value("syncTag").toInt());
+                type->setDtCreate(query.value("dtCreate").toDateTime());
+                type->setDtCreate(query.value("dtUpdate").toDateTime());
+                type->setDtCreate(query.value("dtDelete").toDateTime());
+                type->setDeleted(query.value("isDeleted").toInt());
+                typeList.append(type);
+            }
+        } else {
+            qWarning() << "getScheduleTypeList error:" << query.lastError();
         }
     } else {
         qWarning() << "getScheduleTypeList error:" << query.lastError();
     }
+
     if (query.isActive()) {
         query.finish();
     }
@@ -469,13 +516,18 @@ bool DAccountDataBase::scheduleTypeByUsed(const QString &typeID, const int isDel
 {
     QString strSql("SELECT COUNT(scheduleTypeID) FROM schedules WHERE scheduleTypeID = ? AND isDeleted = ?;");
     QSqlQuery query(m_database);
-    query.prepare(strSql);
-    query.addBindValue(typeID);
-    query.addBindValue(isDeleted);
     int typeCount = 0;
-    if (query.exec() && query.next()) {
-        typeCount = query.value(0).toInt();
+    if (query.prepare(strSql)) {
+        query.addBindValue(typeID);
+        query.addBindValue(isDeleted);
+
+        if (query.exec() && query.next()) {
+            typeCount = query.value(0).toInt();
+        }
+    } else {
+        qWarning() << query.lastError();
     }
+
     if (query.isActive()) {
         query.finish();
     }
@@ -495,16 +547,20 @@ bool DAccountDataBase::deleteScheduleTypeByID(const QString &typeID, const int i
         //真删除
         strSql = "DELETE FROM scheduleType WHERE typeID = ?";
     }
-
-    query.prepare(strSql);
-    query.addBindValue(typeID);
-    bool res = query.exec();
-    if (!res) {
+    bool res = false;
+    if (query.prepare(strSql)) {
+        query.addBindValue(typeID);
+        res = query.exec();
+        if (!res) {
+            qWarning() << "DELETE scheduleType error by typeID:" << typeID << " " << query.lastError();
+        }
+        if (query.isActive()) {
+            query.finish();
+        }
+    } else {
         qWarning() << "DELETE scheduleType error by typeID:" << typeID << " " << query.lastError();
     }
-    if (query.isActive()) {
-        query.finish();
-    }
+
     return res;
 }
 
@@ -516,24 +572,28 @@ bool DAccountDataBase::updateScheduleType(const DScheduleType::Ptr &scheduleType
                        SET typeName=?, typeDisplayName=?, typePath=?, typeColorID=?, description=?,     \
                        privilege=?, showState=?, dtCreate=?, dtUpdate=?, dtDelete=?, isDeleted=?        \
                        WHERE typeID = ?");
-    query.prepare(strSql);
-    query.addBindValue(scheduleType->typeName());
-    query.addBindValue(scheduleType->displayName());
-    query.addBindValue(scheduleType->typePath());
-    query.addBindValue(scheduleType->typeColor().colorID());
-    query.addBindValue(scheduleType->description());
-    query.addBindValue(scheduleType->privilege());
-    query.addBindValue(scheduleType->showState());
-    query.addBindValue(dtConvert(scheduleType->dtCreate()));
-    query.addBindValue(dtConvert(scheduleType->dtUpdate()));
-    query.addBindValue(dtConvert(scheduleType->dtDelete()));
-    query.addBindValue(scheduleType->deleted());
-    query.addBindValue(scheduleType->typeID());
-    if (query.exec()) {
-        res = true;
+    if (query.prepare(strSql)) {
+        query.addBindValue(scheduleType->typeName());
+        query.addBindValue(scheduleType->displayName());
+        query.addBindValue(scheduleType->typePath());
+        query.addBindValue(scheduleType->typeColor().colorID());
+        query.addBindValue(scheduleType->description());
+        query.addBindValue(scheduleType->privilege());
+        query.addBindValue(scheduleType->showState());
+        query.addBindValue(dtConvert(scheduleType->dtCreate()));
+        query.addBindValue(dtConvert(scheduleType->dtUpdate()));
+        query.addBindValue(dtConvert(scheduleType->dtDelete()));
+        query.addBindValue(scheduleType->deleted());
+        query.addBindValue(scheduleType->typeID());
+        if (query.exec()) {
+            res = true;
+        } else {
+            qWarning() << "updateScheduleType error:" << query.lastError();
+        }
     } else {
         qWarning() << "updateScheduleType error:" << query.lastError();
     }
+
     if (query.isActive()) {
         query.finish();
     }
@@ -544,18 +604,23 @@ QString DAccountDataBase::getFestivalTypeID()
 {
     QString strSql("SELECT typeID FROM scheduleType WHERE  privilege = 0;");
     QSqlQuery query(m_database);
-    query.prepare(strSql);
     QString typeID("");
-    if (query.exec()) {
-        if (query.next()) {
-            typeID = query.value("typeID").toString();
+    if (query.prepare(strSql)) {
+        if (query.exec()) {
+            if (query.next()) {
+                typeID = query.value("typeID").toString();
+            }
+        } else {
+            qWarning() << "updateScheduleType error:" << query.lastError();
         }
+
     } else {
         qWarning() << "updateScheduleType error:" << query.lastError();
     }
     if (query.isActive()) {
         query.finish();
     }
+
     return typeID;
 }
 
@@ -565,8 +630,7 @@ DAccount::Ptr DAccountDataBase::getAccountInfo()
                    accountType, syncFreq, intervalTime, syncTag ,dtLastUpdate         \
                    FROM account WHERE id = 1;");
     QSqlQuery query(m_database);
-    query.prepare(strSql);
-    if (query.exec() && query.next()) {
+    if (query.prepare(strSql) && query.exec() && query.next()) {
         m_account->setSyncState(static_cast<DAccount::AccountSyncState>(query.value("syncState").toInt()));
         m_account->setAccountState(static_cast<DAccount::AccountState>(query.value("accountState").toInt()));
         m_account->setAccountName(query.value("accountName").toString());
@@ -593,20 +657,24 @@ void DAccountDataBase::setAccountInfo(const DAccount::Ptr &account)
                   cloudPath=?, accountType=?, syncFreq=?, intervalTime=?, syncTag=?             \
                   ,dtLastUpdate = ? WHERE id=1;");
     QSqlQuery query(m_database);
-    query.prepare(strSql);
-    query.addBindValue(account->syncState());
-    query.addBindValue(account->accountState());
-    query.addBindValue(account->accountName());
-    query.addBindValue(account->displayName());
-    query.addBindValue(account->cloudPath());
-    query.addBindValue(account->accountType());
-    query.addBindValue(account->syncFreq());
-    query.addBindValue(account->intervalTime());
-    query.addBindValue(account->syncTag());
-    query.addBindValue(account->dtLastSync());
-    if (!query.exec()) {
+    if (query.prepare(strSql)) {
+        query.addBindValue(account->syncState());
+        query.addBindValue(account->accountState());
+        query.addBindValue(account->accountName());
+        query.addBindValue(account->displayName());
+        query.addBindValue(account->cloudPath());
+        query.addBindValue(account->accountType());
+        query.addBindValue(account->syncFreq());
+        query.addBindValue(account->intervalTime());
+        query.addBindValue(account->syncTag());
+        query.addBindValue(account->dtLastSync());
+        if (!query.exec()) {
+            qWarning() << query.lastError();
+        }
+    } else {
         qWarning() << query.lastError();
     }
+
     if (query.isActive()) {
         query.finish();
     }
@@ -619,16 +687,21 @@ bool DAccountDataBase::addTypeColor(const int typeColorNo, const QString &strCol
                    VALUES(:ColorID, :ColorHex, :privilege)");
 
     QSqlQuery query(m_database);
-    query.prepare(strSql);
-    query.bindValue(":ColorID", typeColorNo);
-    query.bindValue(":ColorHex", strColorHex);
-    query.bindValue(":privilege", privilege);
     bool res = false;
-    if (query.exec()) {
-        res = true;
+    if (query.prepare(strSql)) {
+        query.bindValue(":ColorID", typeColorNo);
+        query.bindValue(":ColorHex", strColorHex);
+        query.bindValue(":privilege", privilege);
+
+        if (query.exec()) {
+            res = true;
+        } else {
+            qWarning() << __FUNCTION__ << query.lastError();
+        }
     } else {
         qWarning() << __FUNCTION__ << query.lastError();
     }
+
     if (query.isActive()) {
         query.finish();
     }
@@ -639,11 +712,15 @@ void DAccountDataBase::deleteTypeColor(const int colorNo)
 {
     QString strSql("DELETE FROM typeColor WHERE ColorID = ?;");
     QSqlQuery query(m_database);
-    query.prepare(strSql);
-    query.addBindValue(colorNo);
-    if (!query.exec()) {
+    if (query.prepare(strSql)) {
+        query.addBindValue(colorNo);
+        if (!query.exec()) {
+            qWarning() << __FUNCTION__ << query.lastError();
+        }
+    } else {
         qWarning() << __FUNCTION__ << query.lastError();
     }
+
     if (query.isActive()) {
         query.finish();
     }
@@ -653,9 +730,9 @@ DTypeColor::List DAccountDataBase::getSysColor()
 {
     QString strSql("SELECT ColorID, ColorHex, privilege FROM typeColor WHERE  privilege =1;");
     QSqlQuery query(m_database);
-    query.prepare(strSql);
     DTypeColor::List typeColorList;
-    if (query.exec()) {
+
+    if (query.prepare(strSql) && query.exec()) {
         while (query.next()) {
             DTypeColor::Ptr color = DTypeColor::Ptr(new DTypeColor);
             color->setColorID(query.value("ColorID").toInt());
@@ -679,17 +756,20 @@ void DAccountDataBase::createRemindInfo(const DRemindData::Ptr &remind)
                     , dtRemind, dtStart, dtEnd)                         \
                    VALUES(?,?,?,?,?,?,?,?);");
     QSqlQuery query(m_database);
-    query.prepare(strSql);
-    remind->setAlarmID(createUuid());
-    query.addBindValue(remind->alarmID());
-    query.addBindValue(remind->scheduleID());
-    query.addBindValue(dtToString(remind->recurrenceId()));
-    query.addBindValue(remind->remindCount());
-    query.addBindValue(remind->notifyid());
-    query.addBindValue(dtToString(remind->dtRemind()));
-    query.addBindValue(dtToString(remind->dtStart()));
-    query.addBindValue(dtToString(remind->dtEnd()));
-    if (!query.exec()) {
+    if (query.prepare(strSql)) {
+        remind->setAlarmID(createUuid());
+        query.addBindValue(remind->alarmID());
+        query.addBindValue(remind->scheduleID());
+        query.addBindValue(dtToString(remind->recurrenceId()));
+        query.addBindValue(remind->remindCount());
+        query.addBindValue(remind->notifyid());
+        query.addBindValue(dtToString(remind->dtRemind()));
+        query.addBindValue(dtToString(remind->dtStart()));
+        query.addBindValue(dtToString(remind->dtEnd()));
+        if (!query.exec()) {
+            qWarning() << Q_FUNC_INFO << query.lastError();
+        }
+    } else {
         qWarning() << Q_FUNC_INFO << query.lastError();
     }
 }
@@ -701,16 +781,19 @@ void DAccountDataBase::updateRemindInfo(const DRemindData::Ptr &remind)
                    notifyID=?, dtRemind=?, dtStart=?, dtEnd=? WHERE alarmID = ?");
 
     QSqlQuery query(m_database);
-    query.prepare(strSql);
-    query.addBindValue(remind->scheduleID());
-    query.addBindValue(dtToString(remind->recurrenceId()));
-    query.addBindValue(remind->remindCount());
-    query.addBindValue(remind->notifyid());
-    query.addBindValue(dtToString(remind->dtRemind()));
-    query.addBindValue(dtToString(remind->dtStart()));
-    query.addBindValue(dtToString(remind->dtEnd()));
-    query.addBindValue(remind->alarmID());
-    if (!query.exec()) {
+    if (query.prepare(strSql)) {
+        query.addBindValue(remind->scheduleID());
+        query.addBindValue(dtToString(remind->recurrenceId()));
+        query.addBindValue(remind->remindCount());
+        query.addBindValue(remind->notifyid());
+        query.addBindValue(dtToString(remind->dtRemind()));
+        query.addBindValue(dtToString(remind->dtStart()));
+        query.addBindValue(dtToString(remind->dtEnd()));
+        query.addBindValue(remind->alarmID());
+        if (!query.exec()) {
+            qWarning() << Q_FUNC_INFO << query.lastError();
+        }
+    } else {
         qWarning() << Q_FUNC_INFO << query.lastError();
     }
 }
@@ -719,11 +802,15 @@ void DAccountDataBase::deleteRemindInfoByAlarmID(const QString &alarmID)
 {
     QString strSql("DELETE FROM remindTask  WHERE alarmID=?;");
     QSqlQuery query(m_database);
-    query.prepare(strSql);
-    query.addBindValue(alarmID);
-    if (!query.exec()) {
+    if (query.prepare(strSql)) {
+        query.addBindValue(alarmID);
+        if (!query.exec()) {
+            qWarning() << Q_FUNC_INFO << query.lastError();
+        }
+    } else {
         qWarning() << Q_FUNC_INFO << query.lastError();
     }
+
     if (query.isActive()) {
         query.finish();
     }
@@ -734,24 +821,29 @@ DRemindData::Ptr DAccountDataBase::getRemindData(const QString &alarmID)
     QString strSql("SELECT alarmID, scheduleID, recurID, remindCount, notifyID, dtRemind, dtStart, dtEnd \
                    FROM remindTask WHERE  alarmID = ? ;");
     QSqlQuery query(m_database);
-    query.prepare(strSql);
-    query.addBindValue(alarmID);
     DRemindData::Ptr remindData;
-    if (query.exec()) {
-        while (query.next()) {
-            remindData = DRemindData::Ptr(new DRemindData);
-            remindData->setAlarmID(query.value("alarmID").toString());
-            remindData->setScheduleID(query.value("scheduleID").toString());
-            remindData->setRemindCount(query.value("remindCount").toInt());
-            remindData->setNotifyid(query.value("notifyID").toInt());
-            remindData->setDtStart(dtFromString(query.value("dtStart").toString()));
-            remindData->setDtEnd(dtFromString(query.value("dtEnd").toString()));
-            remindData->setDtRemind(dtFromString(query.value("dtRemind").toString()));
-            remindData->setRecurrenceId(dtFromString(query.value("recurID").toString()));
+    if (query.prepare(strSql)) {
+        query.addBindValue(alarmID);
+
+        if (query.exec()) {
+            while (query.next()) {
+                remindData = DRemindData::Ptr(new DRemindData);
+                remindData->setAlarmID(query.value("alarmID").toString());
+                remindData->setScheduleID(query.value("scheduleID").toString());
+                remindData->setRemindCount(query.value("remindCount").toInt());
+                remindData->setNotifyid(query.value("notifyID").toInt());
+                remindData->setDtStart(dtFromString(query.value("dtStart").toString()));
+                remindData->setDtEnd(dtFromString(query.value("dtEnd").toString()));
+                remindData->setDtRemind(dtFromString(query.value("dtRemind").toString()));
+                remindData->setRecurrenceId(dtFromString(query.value("recurID").toString()));
+            }
+        } else {
+            qWarning() << Q_FUNC_INFO << query.lastError();
         }
     } else {
         qWarning() << Q_FUNC_INFO << query.lastError();
     }
+
     if (query.isActive()) {
         query.finish();
     }
@@ -763,25 +855,31 @@ DRemindData::List DAccountDataBase::getValidRemindJob()
     QString strSql("SELECT alarmID,scheduleID, recurID, remindCount, notifyID, dtRemind, dtStart, dtEnd \
                    FROM remindTask WHERE  dtRemind > ? ;");
     QSqlQuery query(m_database);
-    query.prepare(strSql);
-    query.addBindValue(dtToString(QDateTime::currentDateTime()));
     DRemindData::List remindList;
-    if (query.exec()) {
-        while (query.next()) {
-            DRemindData::Ptr remindData = DRemindData::Ptr(new DRemindData);
-            remindData->setAlarmID(query.value("alarmID").toString());
-            remindData->setScheduleID(query.value("scheduleID").toString());
-            remindData->setRemindCount(query.value("remindCount").toInt());
-            remindData->setNotifyid(query.value("notifyID").toInt());
-            remindData->setDtStart(dtFromString(query.value("dtStart").toString()));
-            remindData->setDtEnd(dtFromString(query.value("dtEnd").toString()));
-            remindData->setDtRemind(dtFromString(query.value("dtRemind").toString()));
-            remindData->setRecurrenceId(dtFromString(query.value("recurID").toString()));
-            remindList.append(remindData);
+    if (query.prepare(strSql)) {
+        query.addBindValue(dtToString(QDateTime::currentDateTime()));
+
+        if (query.exec()) {
+            while (query.next()) {
+                DRemindData::Ptr remindData = DRemindData::Ptr(new DRemindData);
+                remindData->setAccountID(m_account->accountID());
+                remindData->setAlarmID(query.value("alarmID").toString());
+                remindData->setScheduleID(query.value("scheduleID").toString());
+                remindData->setRemindCount(query.value("remindCount").toInt());
+                remindData->setNotifyid(query.value("notifyID").toInt());
+                remindData->setDtStart(dtFromString(query.value("dtStart").toString()));
+                remindData->setDtEnd(dtFromString(query.value("dtEnd").toString()));
+                remindData->setDtRemind(dtFromString(query.value("dtRemind").toString()));
+                remindData->setRecurrenceId(dtFromString(query.value("recurID").toString()));
+                remindList.append(remindData);
+            }
+        } else {
+            qWarning() << Q_FUNC_INFO << query.lastError();
         }
     } else {
         qWarning() << Q_FUNC_INFO << query.lastError();
     }
+
     if (query.isActive()) {
         query.finish();
     }
@@ -806,25 +904,30 @@ DRemindData::List DAccountDataBase::getRemindByScheduleID(const QString &schedul
     QString strSql("SELECT alarmID, scheduleID, recurID, remindCount, notifyID, dtRemind, dtStart, dtEnd \
                    FROM remindTask WHERE  scheduleID = ? ;");
     QSqlQuery query(m_database);
-    query.prepare(strSql);
-    query.addBindValue(scheduleID);
     DRemindData::List remindList;
-    if (query.exec()) {
-        while (query.next()) {
-            DRemindData::Ptr remindData = DRemindData::Ptr(new DRemindData);
-            remindData->setAlarmID(query.value("alarmID").toString());
-            remindData->setScheduleID(query.value("scheduleID").toString());
-            remindData->setRemindCount(query.value("remindCount").toInt());
-            remindData->setNotifyid(query.value("notifyID").toInt());
-            remindData->setDtStart(dtFromString(query.value("dtStart").toString()));
-            remindData->setDtEnd(dtFromString(query.value("dtEnd").toString()));
-            remindData->setDtRemind(dtFromString(query.value("dtRemind").toString()));
-            remindData->setRecurrenceId(dtFromString(query.value("recurID").toString()));
-            remindList.append(remindData);
+    if (query.prepare(strSql)) {
+        query.addBindValue(scheduleID);
+
+        if (query.exec()) {
+            while (query.next()) {
+                DRemindData::Ptr remindData = DRemindData::Ptr(new DRemindData);
+                remindData->setAlarmID(query.value("alarmID").toString());
+                remindData->setScheduleID(query.value("scheduleID").toString());
+                remindData->setRemindCount(query.value("remindCount").toInt());
+                remindData->setNotifyid(query.value("notifyID").toInt());
+                remindData->setDtStart(dtFromString(query.value("dtStart").toString()));
+                remindData->setDtEnd(dtFromString(query.value("dtEnd").toString()));
+                remindData->setDtRemind(dtFromString(query.value("dtRemind").toString()));
+                remindData->setRecurrenceId(dtFromString(query.value("recurID").toString()));
+                remindList.append(remindData);
+            }
+        } else {
+            qWarning() << Q_FUNC_INFO << query.lastError();
         }
     } else {
         qWarning() << Q_FUNC_INFO << query.lastError();
     }
+
     if (query.isActive()) {
         query.finish();
     }
@@ -837,16 +940,20 @@ void DAccountDataBase::addUploadTask(const DUploadTaskData::Ptr &uploadTask)
                    (taskID, uploadType, uploadObject, objectID, dtCreate)      \
                    VALUES(?, ?, ?, ?, ?);");
     QSqlQuery query(m_database);
-    query.prepare(strSql);
-    uploadTask->setTaskID(createUuid());
-    query.addBindValue(uploadTask->taskID());
-    query.addBindValue(uploadTask->taskType());
-    query.addBindValue(uploadTask->taskObject());
-    query.addBindValue(uploadTask->objectId());
-    query.addBindValue(dtToString(QDateTime::currentDateTime()));
-    if (!query.exec()) {
+    if (query.prepare(strSql)) {
+        uploadTask->setTaskID(createUuid());
+        query.addBindValue(uploadTask->taskID());
+        query.addBindValue(uploadTask->taskType());
+        query.addBindValue(uploadTask->taskObject());
+        query.addBindValue(uploadTask->objectId());
+        query.addBindValue(dtToString(QDateTime::currentDateTime()));
+        if (!query.exec()) {
+            qWarning() << Q_FUNC_INFO << query.lastError();
+        }
+    } else {
         qWarning() << Q_FUNC_INFO << query.lastError();
     }
+
     if (query.isActive()) {
         query.finish();
     }
@@ -858,8 +965,7 @@ DUploadTaskData::List DAccountDataBase::getUploadTask()
     QString strSql("SELECT taskID, uploadType, uploadObject, objectID, dtCreate     \
                   FROM uploadTask;");
     QSqlQuery query(m_database);
-    query.prepare(strSql);
-    if (query.exec()) {
+    if (query.prepare(strSql) && query.exec()) {
         while (query.next()) {
             DUploadTaskData::Ptr upload = DUploadTaskData::Ptr(new DUploadTaskData);
             upload->setTaskID(query.value("taskID").toString());
@@ -882,11 +988,15 @@ void DAccountDataBase::deleteUploadTask(const QString &taskID)
 {
     QString strSql("DELETE FROM uploadTask   WHERE taskID = ?;");
     QSqlQuery query(m_database);
-    query.prepare(strSql);
-    query.addBindValue(taskID);
-    if (!query.exec()) {
+    if (query.prepare(strSql)) {
+        query.addBindValue(taskID);
+        if (!query.exec()) {
+            qWarning() << Q_FUNC_INFO << query.lastError();
+        }
+    } else {
         qWarning() << Q_FUNC_INFO << query.lastError();
     }
+
     if (query.isActive()) {
         query.finish();
     }
@@ -899,8 +1009,7 @@ void DAccountDataBase::createDB()
     QFile file;
     file.setFileName(getDBPath());
     //如果不存在该文件则创建
-    if (!file.exists()) {
-        m_database.open();
+    if (!file.exists() && m_database.open()) {
         m_database.close();
     }
     //将权限修改为600（对文件的所有者可以读写，其他用户不可读不可写）
@@ -1017,7 +1126,9 @@ void DAccountDataBase::createDB()
         if (query.isActive()) {
             query.finish();
         }
-        m_database.commit();
+        if (!m_database.commit()) {
+            qWarning() << m_database.lastError();
+        }
     }
 }
 
@@ -1116,12 +1227,16 @@ void DAccountDataBase::initAccountDB()
                    syncFreq,intervalTime,syncTag)           \
                VALUES(0,0,?,?,'',0,0,0,0);");
     QSqlQuery query(m_database);
-    query.prepare(strSql);
-    query.addBindValue("localAccount");
-    query.addBindValue("localAccount");
-    if (!query.exec()) {
+    if (query.prepare(strSql)) {
+        query.addBindValue("localAccount");
+        query.addBindValue("localAccount");
+        if (!query.exec()) {
+            qWarning() << "initAccountDB error:" << query.lastError();
+        }
+    } else {
         qWarning() << "initAccountDB error:" << query.lastError();
     }
+
     if (query.isActive()) {
         query.finish();
     }

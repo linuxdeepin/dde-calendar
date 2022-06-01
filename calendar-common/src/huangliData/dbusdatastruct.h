@@ -27,7 +27,20 @@
 class CaLunarDayInfo
 {
 public:
-    CaLunarDayInfo() {}
+    CaLunarDayInfo()
+        : mGanZhiYear("")
+        , mGanZhiMonth("")
+        , mGanZhiDay("")
+        , mLunarMonthName("")
+        , mLunarDayName("")
+        , mLunarLeapMonth(0)
+        , mZodiac("")
+        , mTerm("")
+        , mSolarFestival("")
+        , mLunarFestival("")
+        , mWorktime(0)
+    {
+    }
 
     static void registerMetaType();
 
@@ -52,7 +65,11 @@ public:
 class CaLunarMonthInfo
 {
 public:
-    CaLunarMonthInfo() {}
+    CaLunarMonthInfo()
+        : mFirstDayWeek(0)
+        , mDays(0)
+    {
+    }
 
     static void registerMetaType();
 
@@ -70,8 +87,19 @@ class CaHuangLiDayInfo
 {
 public:
     CaHuangLiDayInfo()
-        : mLunarLeapMonth(0)
+        : mGanZhiYear("")
+        , mGanZhiMonth("")
+        , mGanZhiDay("")
+        , mLunarMonthName("")
+        , mLunarDayName("")
+        , mLunarLeapMonth(0)
+        , mZodiac("")
+        , mTerm("")
+        , mSolarFestival("")
+        , mLunarFestival("")
         , mWorktime(0)
+        , mSuit("")
+        , mAvoid("")
     {
     }
     static void registerMetaType();
@@ -100,7 +128,11 @@ public:
 class CaHuangLiMonthInfo
 {
 public:
-    CaHuangLiMonthInfo() {}
+    CaHuangLiMonthInfo()
+        : mFirstDayWeek(0)
+        , mDays(0)
+    {
+    }
     static void registerMetaType();
 
     friend QDebug operator<<(QDebug argument, const CaHuangLiMonthInfo &what);

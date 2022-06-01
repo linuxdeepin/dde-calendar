@@ -46,8 +46,7 @@ DAccount::List DAccountManagerDataBase::getAccountList()
                    accountDescription, accountType, dbName,dBusPath,dBusInterface, dtCreate, dtDelete, dtUpdate, isDeleted         \
                    FROM accountManager");
     QSqlQuery query(m_database);
-    query.prepare(strSql);
-    if (query.exec()) {
+    if (query.prepare(strSql) && query.exec()) {
         while (query.next()) {
             DAccount::Type type = static_cast<DAccount::Type>(query.value("accountType").toInt());
             DAccount::Ptr account(new DAccount(type));
@@ -75,25 +74,29 @@ DAccount::Ptr DAccountManagerDataBase::getAccountByID(const QString &accountID)
                    accountDescription, accountType, dbName,dBusPath,dBusInterface, dtCreate, dtDelete, dtUpdate, isDeleted         \
                    FROM accountManager WHERE accountID = ?");
     QSqlQuery query(m_database);
-    query.prepare(strSql);
-    query.addBindValue(accountID);
-    if (query.exec() && query.next()) {
-        DAccount::Type type = static_cast<DAccount::Type>(query.value("accountType").toInt());
-        DAccount::Ptr account(new DAccount(type));
-        account->setAccountID(accountID);
-        account->setAccountName(query.value("accountName").toString());
-        account->setDisplayName(query.value("displayName").toString());
-        account->setSyncState(static_cast<DAccount::AccountSyncState>(query.value("syncState").toInt()));
-        account->setAvatar(query.value("accountAvatar").toString());
-        account->setDescription(query.value("accountDescription").toString());
-        account->setDbName(query.value("dbName").toString());
-        account->setDbusPath(query.value("dBusPath").toString());
-        account->setDbusInterface(query.value("dBusInterface").toString());
-        account->setDtCreate(QDateTime::fromString(query.value("dtCreate").toString(), Qt::ISODate));
-        return account;
+    if (query.prepare(strSql)) {
+        query.addBindValue(accountID);
+        if (query.exec() && query.next()) {
+            DAccount::Type type = static_cast<DAccount::Type>(query.value("accountType").toInt());
+            DAccount::Ptr account(new DAccount(type));
+            account->setAccountID(accountID);
+            account->setAccountName(query.value("accountName").toString());
+            account->setDisplayName(query.value("displayName").toString());
+            account->setSyncState(static_cast<DAccount::AccountSyncState>(query.value("syncState").toInt()));
+            account->setAvatar(query.value("accountAvatar").toString());
+            account->setDescription(query.value("accountDescription").toString());
+            account->setDbName(query.value("dbName").toString());
+            account->setDbusPath(query.value("dBusPath").toString());
+            account->setDbusInterface(query.value("dBusInterface").toString());
+            account->setDtCreate(QDateTime::fromString(query.value("dtCreate").toString(), Qt::ISODate));
+            return account;
+        } else {
+            qWarning() << "getAccountByID error:" << query.lastError();
+        }
     } else {
         qWarning() << "getAccountByID error:" << query.lastError();
     }
+
     return nullptr;
 }
 
@@ -107,23 +110,28 @@ QString DAccountManagerDataBase::addAccountInfo(const DAccount::Ptr &accountInfo
                     accountDescription, accountType, dbName,dBusPath,dBusInterface, dtCreate,         \
                      isDeleted)                                                \
                    VALUES(?,?, ?, ?,?,?,?,?,?,?,?,?)");
-    query.prepare(strSql);
-    query.addBindValue(accountInfo->accountID());
-    query.addBindValue(accountInfo->accountName());
-    query.addBindValue(accountInfo->displayName());
-    query.addBindValue(accountInfo->syncState());
-    query.addBindValue(accountInfo->avatar());
-    query.addBindValue(accountInfo->description());
-    query.addBindValue(accountInfo->accountType());
-    query.addBindValue(accountInfo->dbName());
-    query.addBindValue(accountInfo->dbusPath());
-    query.addBindValue(accountInfo->dbusInterface());
-    query.addBindValue(dtToString(accountInfo->dtCreate()));
-    query.addBindValue(0);
-    if (!query.exec()) {
+    if (query.prepare(strSql)) {
+        query.addBindValue(accountInfo->accountID());
+        query.addBindValue(accountInfo->accountName());
+        query.addBindValue(accountInfo->displayName());
+        query.addBindValue(accountInfo->syncState());
+        query.addBindValue(accountInfo->avatar());
+        query.addBindValue(accountInfo->description());
+        query.addBindValue(accountInfo->accountType());
+        query.addBindValue(accountInfo->dbName());
+        query.addBindValue(accountInfo->dbusPath());
+        query.addBindValue(accountInfo->dbusInterface());
+        query.addBindValue(dtToString(accountInfo->dtCreate()));
+        query.addBindValue(0);
+        if (!query.exec()) {
+            qWarning() << "addAccountInfo error:" << query.lastError();
+            accountInfo->setAccountID("");
+        }
+    } else {
         qWarning() << "addAccountInfo error:" << query.lastError();
         accountInfo->setAccountID("");
     }
+
     return accountInfo->accountID();
 }
 
@@ -134,22 +142,24 @@ bool DAccountManagerDataBase::updateAccountInfo(const DAccount::Ptr &accountInfo
                    accountAvatar=?, accountDescription=?, accountType=?, dbName=?,               \
                    dBusPath = ? ,dBusInterface = ? WHERE accountID=?");
     QSqlQuery query(m_database);
-    query.prepare(strSql);
-    query.addBindValue(accountInfo->accountName());
-    query.addBindValue(accountInfo->displayName());
-    query.addBindValue(accountInfo->syncState());
-    query.addBindValue(accountInfo->avatar());
-    query.addBindValue(accountInfo->description());
-    query.addBindValue(accountInfo->accountType());
-    query.addBindValue(accountInfo->dbName());
-    query.addBindValue(accountInfo->dbusPath());
-    query.addBindValue(accountInfo->dbusInterface());
-    query.addBindValue(accountInfo->accountID());
-    bool res = true;
-    if (!query.exec()) {
-        qWarning() << "updateAccountInfo error:" << query.lastError();
-        res = false;
+    bool res = false;
+    if (query.prepare(strSql)) {
+        query.addBindValue(accountInfo->accountName());
+        query.addBindValue(accountInfo->displayName());
+        query.addBindValue(accountInfo->syncState());
+        query.addBindValue(accountInfo->avatar());
+        query.addBindValue(accountInfo->description());
+        query.addBindValue(accountInfo->accountType());
+        query.addBindValue(accountInfo->dbName());
+        query.addBindValue(accountInfo->dbusPath());
+        query.addBindValue(accountInfo->dbusInterface());
+        query.addBindValue(accountInfo->accountID());
+        res = query.exec();
     }
+    if (!res) {
+        qWarning() << "updateAccountInfo error:" << query.lastError();
+    }
+
     return res;
 }
 
@@ -158,12 +168,16 @@ bool DAccountManagerDataBase::deleteAccountInfo(const QString &accountID)
     QString strSql("DELETE FROM accountManager      \
                    WHERE accountID=?");
     QSqlQuery query(m_database);
-    query.prepare(strSql);
+    bool res = false;
+    if (query.prepare(strSql)) {
+        query.addBindValue(accountID);
+
+        res = query.exec();
+    }
     query.addBindValue(accountID);
-    bool res = true;
-    if (!query.exec()) {
+
+    if (!res) {
         qWarning() << "deleteAccountInfo error:" << query.lastError();
-        res = false;
     }
     return res;
 }
@@ -174,8 +188,7 @@ DCalendarGeneralSettings::Ptr DAccountManagerDataBase::getCalendarGeneralSetting
     QString strSql("SELECT  firstDayOfWeek, timeShowType        \
                    FROM calendargeneralsettings WHERE id = 1");
     QSqlQuery query(m_database);
-    query.prepare(strSql);
-    if (query.exec() && query.next()) {
+    if (query.prepare(strSql) && query.exec() && query.next()) {
         cgSet->setFirstDayOfWeek(static_cast<Qt::DayOfWeek>(query.value("firstDayOfWeek").toInt()));
         cgSet->setTimeShowType(static_cast<DCalendarGeneralSettings::TimeShowType>(query.value("timeShowType").toInt()));
     }
@@ -188,15 +201,16 @@ void DAccountManagerDataBase::setCalendarGeneralSettings(const DCalendarGeneralS
                    SET firstDayOfWeek=?, timeShowType=?         \
                    WHERE id=1;");
     QSqlQuery query(m_database);
-    query.prepare(strSql);
-    query.addBindValue(cgSet->firstDayOfWeek());
-    query.addBindValue(cgSet->timeShowType());
-    if (!query.exec()) {
+    if (query.prepare(strSql)) {
+        query.addBindValue(cgSet->firstDayOfWeek());
+        query.addBindValue(cgSet->timeShowType());
+        if (!query.exec()) {
+            qWarning() << "UPDATE calendargeneralsettings error," << query.lastError();
+        }
+    } else {
         qWarning() << "UPDATE calendargeneralsettings error," << query.lastError();
     }
 }
-
-
 
 void DAccountManagerDataBase::createDB()
 {
@@ -275,25 +289,28 @@ void DAccountManagerDataBase::initAccountManagerDB()
                    VALUES(:accountID,:accountName,:displayName,:syncState,:accountAvatar,   \
                    :accountDescription,:accountType,:dbName,:dBusPath,:dBusInterface,:dtCreate,:dtUpdate,            \
                     :isDeleted);");
-        query.prepare(strsql);
-        query.bindValue(":accountID", DDataBase::createUuid());
-        query.bindValue(":accountName", "localAccount");
-        query.bindValue(":displayName", "localAccount");
-        query.bindValue(":syncState", 0);
-        query.bindValue(":accountAvatar", "");
-        query.bindValue(":accountDescription", "");
-        query.bindValue(":accountType", 0);
-        query.bindValue(":dbName", m_loaclDB);
-        query.bindValue(":dBusPath", serviceBasePath + "/account_local");
-        query.bindValue(":dBusInterface", serviceBaseName + ".account_local");
-        query.bindValue(":dtCreate", currentDateTime);
-        query.bindValue(":isDeleted", 0);
+        if (query.prepare(strsql)) {
+            query.bindValue(":accountID", DDataBase::createUuid());
+            query.bindValue(":accountName", "localAccount");
+            query.bindValue(":displayName", "localAccount");
+            query.bindValue(":syncState", 0);
+            query.bindValue(":accountAvatar", "");
+            query.bindValue(":accountDescription", "");
+            query.bindValue(":accountType", 0);
+            query.bindValue(":dbName", m_loaclDB);
+            query.bindValue(":dBusPath", serviceBasePath + "/account_local");
+            query.bindValue(":dBusInterface", serviceBaseName + ".account_local");
+            query.bindValue(":dtCreate", currentDateTime);
+            query.bindValue(":isDeleted", 0);
 
-        if (query.exec()) {
-            if (query.isActive()) {
-                query.finish();
+            if (query.exec()) {
+                if (query.isActive()) {
+                    query.finish();
+                }
+                m_database.commit();
+            } else {
+                qWarning() << __FUNCTION__ << query.lastError();
             }
-            m_database.commit();
         } else {
             qWarning() << __FUNCTION__ << query.lastError();
         }
@@ -305,14 +322,17 @@ void DAccountManagerDataBase::initAccountManagerDB()
         QString strsql("INSERT INTO calendargeneralsettings     \
                        (firstDayOfWeek, timeShowType)       \
                        VALUES(?, ?)");
-        query.prepare(strsql);
-        query.addBindValue(7);
-        query.addBindValue(2);
-        if (query.exec()) {
-            if (query.isActive()) {
-                query.finish();
+        if (query.prepare(strsql)) {
+            query.addBindValue(7);
+            query.addBindValue(2);
+            if (query.exec()) {
+                if (query.isActive()) {
+                    query.finish();
+                }
+                m_database.commit();
+            } else {
+                qWarning() << __FUNCTION__ << query.lastError();
             }
-            m_database.commit();
         } else {
             qWarning() << __FUNCTION__ << query.lastError();
         }

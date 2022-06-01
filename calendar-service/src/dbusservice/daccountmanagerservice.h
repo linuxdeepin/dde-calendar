@@ -25,6 +25,7 @@
 #include "daccountmanagemodule.h"
 
 #include <QString>
+#include <QTimer>
 
 /**
  * @brief The DAccountManagerService class      帐户管理服务
@@ -80,6 +81,7 @@ private:
 
 private:
     DAccountManageModule::Ptr m_accountManager;
+    QTimer m_timer;
 };
 
 #endif // ACCOUNTMANAGERSERVICE_H

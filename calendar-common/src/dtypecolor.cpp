@@ -26,6 +26,9 @@
 #include <QDebug>
 
 DTypeColor::DTypeColor()
+    : m_colorID(0)
+    , m_colorCode("")
+    , m_privilege(PriUser)
 {
 }
 

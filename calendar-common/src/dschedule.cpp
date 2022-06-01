@@ -100,6 +100,10 @@ void DSchedule::setAlarmType(const DSchedule::AlarmType &alarmType)
 
     //清除提醒规则
     this->clearAlarms();
+    //如果为从不则退出
+    if (alarmType == AlarmType::Alarm_None || alarmType == AlarmType::Alarm_AllDay_None)
+        return;
+
     QMap<int, AlarmType> alarmMap = getAlarmMap();
     QMap<int, AlarmType>::const_iterator iter = alarmMap.constBegin();
     for (; iter != alarmMap.constEnd(); ++iter) {
@@ -312,7 +316,6 @@ QMap<int, DSchedule::AlarmType> DSchedule::getAlarmMap()
         {-Duration_Day, Alarm_1Day_Front},
         {-Duration_Day * 2, Alarm_2Day_Front},
         {-Duration_Week, Alarm_1Week_Front},
-        {0, Alarm_AllDay_None},
         {9 * Duration_Hour, Alarm_9Hour_After},
         {-15 * Duration_Hour, Alarm_15Min_Front},
         {-39 * Duration_Hour, Alarm_39Hour_Front},

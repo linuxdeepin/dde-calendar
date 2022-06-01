@@ -458,7 +458,7 @@ void CMonthGraphicsview::setDragPixmap(QDrag *drag, DragInfoItem *item)
 
 bool CMonthGraphicsview::MeetCreationConditions(const QDateTime &date)
 {
-    return  qAbs(date.daysTo(m_PressDate) < 43);
+    return qAbs(date.daysTo(m_PressDate)) < 43;
 }
 
 bool CMonthGraphicsview::IsEqualtime(const QDateTime &timeFirst, const QDateTime &timeSecond)

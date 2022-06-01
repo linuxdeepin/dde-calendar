@@ -40,6 +40,7 @@ public:
     enum TaskObject {
         Task_ScheduleType, //日程类型
         Task_Schedule, //日程
+        Task_Account, //帐户信息，（比如unionID的相关系统设置）
     };
 
     typedef QSharedPointer<DUploadTaskData> Ptr;
