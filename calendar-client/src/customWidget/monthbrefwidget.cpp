@@ -22,7 +22,6 @@
 #include "constants.h"
 #include "scheduledatamanage.h"
 #include "calendarglobalenv.h"
-#include "configsettings.h"
 
 #include <DPaletteHelper>
 #include <QMouseEvent>
@@ -67,7 +66,7 @@ void MonthBrefWidget::setShowMonthDate(const QDate& monthDate)
 {
     //获取当月第一天
     QDate date = QDate(monthDate.year(), monthDate.month(), 1);
-    int firstday = gSetting->getFirstDayOfWeek();
+    int firstday = CalendarManager::getInstance()->getFirstDayOfWeek();
     int day = date.dayOfWeek();
     //计算当前月日历第一天该显示的时间
     date = date.addDays(-(day-firstday+7)%7);

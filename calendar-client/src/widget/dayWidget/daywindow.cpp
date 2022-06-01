@@ -142,9 +142,9 @@ void CDayWindow::updateShowDate(const bool isUpdateBar)
     int w = m_scheduleView->width() - 72;
     m_scheduleView->setRange(w, 1032, getSelectDate(), getSelectDate());
     //设置时间显示格式
-    m_scheduleView->setTimeFormat(m_calendarManager->getCalendarDateDataManage()->getTimeFormat());
+    m_scheduleView->setTimeFormat(m_calendarManager->getTimeFormat());
     //获取需要显示的时间
-    QVector<QDate> _monthDate = m_calendarManager->getCalendarDateDataManage()->getMonthDate(getSelectDate().year(), getSelectDate().month());
+    QVector<QDate> _monthDate = m_calendarManager->getMonthDate(getSelectDate().year(), getSelectDate().month());
     m_daymonthView->setShowDate(_monthDate, getSelectDate(), getCurrendDateTime().date());
     //如果为中文环境则显示农历信息
     if (getShowLunar())
@@ -166,7 +166,7 @@ void CDayWindow::updateShowSchedule()
 
     QSet<QDate> scheduleDate = gScheduleManager->getAllScheduleDate();
     QVector<bool> monthFlag{};
-    QVector<QDate> monthDate = m_calendarManager->getCalendarDateDataManage()->getMonthDate(getSelectDate().year(), getSelectDate().month());
+    QVector<QDate> monthDate = m_calendarManager->getMonthDate(getSelectDate().year(), getSelectDate().month());
 
     for (QDate date : monthDate) {
         monthFlag.push_back((scheduleDate.find(date) != scheduleDate.end()));

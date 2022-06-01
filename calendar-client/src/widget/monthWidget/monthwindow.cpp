@@ -149,14 +149,14 @@ void CMonthWindow::setYearData()
 void CMonthWindow::updateShowDate(const bool isUpdateBar)
 {
     setYearData();
-    const QDate _selectDate = m_calendarManager->getCalendarDateDataManage()->getSelectDate();
-    Qt::DayOfWeek _firstWeek = m_calendarManager->getCalendarDateDataManage()->getWeekFirstDay();
+    const QDate _selectDate = m_calendarManager->getSelectDate();
+    Qt::DayOfWeek _firstWeek = m_calendarManager->getFirstDayOfWeek();
     m_monthView->setFirstWeekday(_firstWeek);
-    QVector<QDate> _monthShowData = m_calendarManager->getCalendarDateDataManage()->getMonthDate(_selectDate.year(), _selectDate.month());
+    QVector<QDate> _monthShowData = m_calendarManager->getMonthDate(_selectDate.year(), _selectDate.month());
     m_startDate = _monthShowData.first();
     m_stopDate = _monthShowData.last();
     m_monthView->setShowDate(_monthShowData);
-    m_monthView->setRemindWidgetTimeFormat(m_calendarManager->getCalendarDateDataManage()->getTimeFormat());
+    m_monthView->setRemindWidgetTimeFormat(m_calendarManager->getTimeFormat());
     if (isUpdateBar)
         m_monthDayView->setSelectDate(_selectDate); //设置12个月份显示
     //如果为中文环境则显示班休和农历信息
@@ -202,12 +202,12 @@ void CMonthWindow::updateShowSchedule()
  */
 void CMonthWindow::updateShowLunar()
 {
-    getLunarInfo();
-    m_YearLunarLabel->setText(m_lunarYear);
-    QMap<QDate, int> _monthFestivalInfo = m_calendarManager->getScheduleTask()->getFestivalInfo(m_startDate, m_stopDate);
-    m_monthView->setFestival(_monthFestivalInfo);
-    QMap<QDate, CaHuangLiDayInfo> _monthHuangLiInfo = m_calendarManager->getScheduleTask()->getHuangLiInfo(m_startDate, m_stopDate);
-    m_monthView->setHuangLiInfo(_monthHuangLiInfo);
+//    getLunarInfo();
+//    m_YearLunarLabel->setText(m_lunarYear);
+//    QMap<QDate, int> _monthFestivalInfo = m_calendarManager->getScheduleTask()->getFestivalInfo(m_startDate, m_stopDate);
+//    m_monthView->setFestival(_monthFestivalInfo);
+//    QMap<QDate, CaHuangLiDayInfo> _monthHuangLiInfo = m_calendarManager->getScheduleTask()->getHuangLiInfo(m_startDate, m_stopDate);
+//    m_monthView->setHuangLiInfo(_monthHuangLiInfo);
 }
 
 /**

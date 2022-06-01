@@ -40,7 +40,7 @@ CScheduleItem::CScheduleItem(QRectF rect, QGraphicsItem *parent, int type)
     , m_type(type)
     , m_totalNum(0)
     , m_transparentcolor("#000000")
-    , m_timeFormat(CalendarManager::getInstance()->getCalendarDateDataManage()->getTimeFormat())
+    , m_timeFormat(CalendarManager::getInstance()->getTimeFormat())
 {
     m_transparentcolor.setAlphaF(0.05);
     connect(CalendarManager::getInstance(), &CalendarManager::signalTimeFormatChanged, this, &CScheduleItem::timeFormatChanged);

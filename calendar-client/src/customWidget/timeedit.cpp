@@ -31,9 +31,9 @@ const int viewContainerMaxHeight = 305;
 
 CTimeEdit::CTimeEdit(QWidget *parent)
     : DComboBox(parent)
-    , m_timeFormat(CalendarManager::getInstance()->getCalendarDateDataManage()->getTimeFormat())
+    , m_timeFormat(CalendarManager::getInstance()->getTimeFormat())
     , m_timeFormatValue(
-          CalendarManager::getInstance()->getCalendarDateDataManage()->getTimeFormatValue())
+          CalendarManager::getInstance()->getTimeFormatValue())
     , m_timeEdit(new CCustomTimeEdit())
     , m_hasFocus(false)
     , m_miniTime(QTime(0, 0, 0))

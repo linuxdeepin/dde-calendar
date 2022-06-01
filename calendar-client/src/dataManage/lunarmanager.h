@@ -22,6 +22,7 @@
 #define LUNARMANAGER_H
 
 #include "dbushuanglirequest.h"
+#include "huangliData/dbusdatastruct.h"
 #include <QObject>
 
 class LunarManager : public QObject
@@ -29,8 +30,6 @@ class LunarManager : public QObject
     Q_OBJECT
 public:
     explicit LunarManager(QObject *parent = nullptr);
-
-    typedef std::function<void(bool)> CallbackFunc;
 
     //按月获取节假日信息
     void getFestivalMonth(quint32 year, quint32 month, CallbackFunc callback = nullptr);

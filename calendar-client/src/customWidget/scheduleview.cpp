@@ -43,7 +43,7 @@ CScheduleView::CScheduleView(QWidget *parent, ScheduleViewPos viewType)
     : DFrame(parent)
     , m_viewPos(viewType)
     , m_touchGesture(this)
-    , m_timeFormat(CalendarManager::getInstance()->getCalendarDateDataManage()->getTimeFormat())
+    , m_timeFormat(CalendarManager::getInstance()->getTimeFormat())
 {
     initUI();
     initConnection();

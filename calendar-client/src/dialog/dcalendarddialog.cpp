@@ -27,8 +27,8 @@
 
 DCalendarDDialog::DCalendarDDialog(QWidget *parent)
     : DDialog(parent)
-    , m_timeFormat(CalendarManager::getInstance()->getCalendarDateDataManage()->getTimeFormat())
-    , m_dateFormat(CalendarManager::getInstance()->getCalendarDateDataManage()->getDateFormat())
+    , m_timeFormat(CalendarManager::getInstance()->getTimeFormat())
+    , m_dateFormat(CalendarManager::getInstance()->getDateFormat())
 {
     connect(CalendarManager::getInstance(), &CalendarManager::signalTimeFormatChanged, this, &DCalendarDDialog::setTimeFormat);
     connect(CalendarManager::getInstance(), &CalendarManager::signalDateFormatChanged, this, &DCalendarDDialog::setDateFormat);

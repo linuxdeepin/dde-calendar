@@ -55,6 +55,7 @@ public:
     DScheduleType();
     explicit DScheduleType(const QString &accountID);
     QString accountID() const;
+    void setAccountID(const QString &accountID);
 
     Privilege privilege() const;
     void setPrivilege(const Privilege &privilege);

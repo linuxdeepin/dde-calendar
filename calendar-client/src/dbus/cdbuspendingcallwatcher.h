@@ -23,14 +23,27 @@
 
 #include <QDBusPendingCallWatcher>
 
+/**
+ * @brief The CallMessge struct
+ * dbus请求回调数据
+ */
+struct CallMessge{
+    int code;       //返回码，0:请求成功，大于0:请求失败
+    QString msg;    //返回码说明，根据实际需求可返回任意字符串
+};
+
+/**
+ * @brief CallbackFunc
+ * dbus请求回调函数类型
+ */
+typedef std::function<void(CallMessge)> CallbackFunc;
+
 //继承QDbus回调观察者，将部分自定义的数据包装在回调类中
 class CDBusPendingCallWatcher : public QDBusPendingCallWatcher
 {
     Q_OBJECT
 public:
     explicit CDBusPendingCallWatcher(const QDBusPendingCall &call, QString member, QObject *parent = nullptr);
-
-    typedef std::function<void(bool)> CallbackFunc;
 
     //设置回调函数
     void setCallbackFunc(CallbackFunc func);

@@ -93,13 +93,13 @@ void DbusAccountManagerRequest::clientIsShow(bool isShow)
  */
 void DbusAccountManagerRequest::slotCallFinished(CDBusPendingCallWatcher *call)
 {
-    bool ret = true;
+    int ret = 0;
     bool canCall = true;
     //错误处理
     if (call->isError()) {
         //打印错误信息
         qWarning() << call->reply().member() << call->error().message();
-        ret = false;
+        ret = 1;
     } else if (call->getmember() == "getAccountList") {
         //"getAccountList"方法回调事件
         QDBusPendingReply<QString> reply = *call;
@@ -111,7 +111,7 @@ void DbusAccountManagerRequest::slotCallFinished(CDBusPendingCallWatcher *call)
             emit signalGetAccountListFinish(accountList);
         } else {
             qWarning() << "AccountList Parsing failed!";
-            ret = false;
+            ret = 2;
         }
     } else if (call->getmember() == "getCalendarGeneralSettings") {
         QDBusPendingReply<QString> reply = *call;
@@ -122,7 +122,7 @@ void DbusAccountManagerRequest::slotCallFinished(CDBusPendingCallWatcher *call)
             emit signalGetGeneralSettingsFinish(ptr);
         } else {
             qWarning() << "AccountList Parsing failed!";
-            ret = false;
+            ret = 2;
         }
     } else if (call->getmember() == "setCalendarGeneralSettings") {
         canCall = false;
@@ -132,7 +132,7 @@ void DbusAccountManagerRequest::slotCallFinished(CDBusPendingCallWatcher *call)
 
     //执行回调函数
     if (canCall && call->getCallbackFunc() != nullptr) {
-        call->getCallbackFunc()(ret);
+        call->getCallbackFunc()({ret, ""});
     }
     //释放内存
     call->deleteLater();

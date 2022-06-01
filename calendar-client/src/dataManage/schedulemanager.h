@@ -59,6 +59,7 @@ public:
 
     //重置一年的日程信息
     void resetSchedule(int year);
+    void resetSchedule(const QDateTime& start, const QDateTime& end);
 
 signals:
     //日程数据更新信号

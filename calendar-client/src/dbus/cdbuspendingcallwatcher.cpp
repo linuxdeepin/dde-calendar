@@ -45,7 +45,7 @@ void CDBusPendingCallWatcher::setCallbackFunc(CallbackFunc func)
  * 获取回调函数
  * @return 回调函数
  */
-CDBusPendingCallWatcher::CallbackFunc CDBusPendingCallWatcher::getCallbackFunc()
+CallbackFunc CDBusPendingCallWatcher::getCallbackFunc()
 {
     return m_func;
 }

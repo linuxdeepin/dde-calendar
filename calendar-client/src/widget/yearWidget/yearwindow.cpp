@@ -481,7 +481,7 @@ void CYearWindow::setSearchWFlag(bool flag)
 void CYearWindow::updateShowDate(const bool isUpdateBar)
 {
     Q_UNUSED(isUpdateBar);
-    m_scheduleView->setTimeFormat(m_calendarManager->getCalendarDateDataManage()->getTimeFormat());
+    m_scheduleView->setTimeFormat(m_calendarManager->getTimeFormat());
     m_yearWidget->setShowDate(getSelectDate());
 }
 
@@ -501,7 +501,8 @@ void CYearWindow::updateShowSchedule()
  */
 void CYearWindow::updateShowLunar()
 {
-    getLunarInfo();
+    //TODO 获取农历信息
+//    getLunarInfo();
     m_yearWidget->setLunarYearDate(m_lunarYear);
     //如果正在切换则退出
     if (m_StackedWidget->IsRunning())
@@ -625,7 +626,8 @@ void CYearWindow::setYearData()
     if (getShowLunar()) {
         m_yearLabel->setText(QString::number(getSelectDate().year()) + tr("Y"));
         //获取农历信息
-        getLunarInfo();
+        //TODO 获取农历信息
+//        getLunarInfo();
         //显示农历信息
         setLunarShow();
     } else {

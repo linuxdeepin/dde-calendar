@@ -182,16 +182,17 @@ bool CScheduleDlg::selectScheduleType()
         type->setDisplayName(m_typeComBox->lineEdit()->text());
         type->setTypeColor(*m_colorSeletorWideget->getSelectedColorInfo().data());
         //创建日程类型，等待回调
-        m_accountItem->createJobType(type, [&](bool status) {
-            if (status) {
+        m_accountItem->createJobType(type, [&](CallMessge call) {
+            if (call.code == 0) {
                 //日程已创建且数据刷新完毕
-                //根据日程类型名去获取日程类型实例
-                DScheduleType::Ptr type = m_accountItem->getScheduleTypeByName(m_typeComBox->lineEdit()->text());
+                //根据返回的日程类型id去获取日程类型实例，再次确认是否创建成功
+                DScheduleType::Ptr type = m_accountItem->getScheduleTypeByID(call.msg);
                 if (nullptr != type) {
                     //创建日程
                     createSchedule(type->typeID());
                 }
             }
+            //关闭本弹窗
             this->close();
         });
     } else if (m_typeComBox->currentIndex() >= 0) {

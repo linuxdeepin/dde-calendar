@@ -178,10 +178,10 @@ void AccountManager::setCalendarGeneralSettings(DCalendarGeneralSettings::Ptr pt
  * 等待数据获取完成的事件，若数据已获取完成则直接执行回调函数，若数据还没有获取完成则将回调函数保存，待数据获取完成后执行
  * @param callback 回调函数
  */
-void AccountManager::waitingData(CallbackFunc callback)
+void AccountManager::waitingData(Func callback)
 {
     if (m_dataInitFinished) {
-        callback(true);
+        callback();
     } else {
         m_waitingCallList.append(callback);
     }
@@ -194,8 +194,8 @@ void AccountManager::waitingData(CallbackFunc callback)
 void AccountManager::execWaitingCall()
 {
     m_dataInitFinished = true;
-    for (CallbackFunc call : m_waitingCallList) {
-        call(true);
+    for (Func call : m_waitingCallList) {
+        call();
     }
     //回调函数只是用一次
     m_waitingCallList.clear();
@@ -223,11 +223,10 @@ void AccountManager::slotGetAccountListFinish(DAccount::List accountList)
     for (AccountItem::Ptr p : getAccountList()) {
         connect(p.data(), &AccountItem::signalScheduleUpdate, this, &AccountManager::signalScheduleUpdate);
         connect(p.data(), &AccountItem::signalSearchScheduleUpdate, this, &AccountManager::signalSearchScheduleUpdate);
+        connect(p.data(), &AccountItem::signalScheduleTypeUpdate, this, &AccountManager::signalScheduleTypeUpdate);
     }
 
-    if (m_dataInitFinished) {
-        emit signalAccountUpdate();
-    }
+    emit signalAccountUpdate();
 }
 
 /**
@@ -240,8 +239,7 @@ void AccountManager::slotGetGeneralSettingsFinish(DCalendarGeneralSettings::Ptr 
     m_settings = ptr;
     if (!m_dataInitFinished) {
         execWaitingCall();
-        emit signalDataInitFinished();
-    } else {
-        emit signalGeneralSettingsUpdate();
     }
+    emit signalDataInitFinished();
+    emit signalGeneralSettingsUpdate();
 }

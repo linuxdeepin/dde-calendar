@@ -27,11 +27,15 @@
 CScheduleDataManage *CScheduleDataManage::m_vscheduleDataManage = new CScheduleDataManage;
 
 //
-CSchedulesColor CScheduleDataManage::getScheduleColorByType(const QString &type)
+CSchedulesColor CScheduleDataManage::getScheduleColorByType(const QString &typeId)
 {
     CSchedulesColor color;
     DTypeColor colorinfo;
-    QColor typeColor = QColor(gAccounManager->getScheduleTypeByScheduleTypeId(type)->typeColor().colorCode());
+    DScheduleType::Ptr type = gAccounManager->getScheduleTypeByScheduleTypeId(typeId);
+    QColor typeColor;
+    if (nullptr != type) {
+        typeColor = type->typeColor().colorCode();
+    }
 
     color.orginalColor = typeColor;
     color.normalColor = color.orginalColor;

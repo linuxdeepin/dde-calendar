@@ -53,6 +53,11 @@ QString DScheduleType::accountID() const
     return m_accountID;
 }
 
+void DScheduleType::setAccountID(const QString &accountID)
+{
+    m_accountID = accountID;
+}
+
 DScheduleType::Privilege DScheduleType::privilege() const
 {
     return m_privilege;
@@ -206,6 +211,10 @@ bool DScheduleType::fromJsonString(DScheduleType::Ptr &scheduleType, const QStri
         return false;
     }
     QJsonObject rootObj = jsonDoc.object();
+    if (rootObj.contains("accountID")) {
+        scheduleType->setAccountID(rootObj.value("accountID").toString());
+    }
+
     if (rootObj.contains("typeID")) {
         scheduleType->setTypeID(rootObj.value("typeID").toString());
     }
@@ -275,6 +284,7 @@ bool DScheduleType::toJsonString(const DScheduleType::Ptr &scheduleType, QString
     }
     //序列化
     QJsonObject rootObject;
+    rootObject.insert("accountID", scheduleType->accountID());
     rootObject.insert("typeID", scheduleType->typeID());
     rootObject.insert("typeName", scheduleType->typeName());
     rootObject.insert("displayName", scheduleType->displayName());
@@ -314,6 +324,10 @@ bool DScheduleType::fromJsonListString(DScheduleType::List &stList, const QStrin
         for (auto ja : jsonArray) {
             QJsonObject typeObject = ja.toObject();
             DScheduleType::Ptr scheduleType = DScheduleType::Ptr(new DScheduleType);
+            if (typeObject.contains("accountID")) {
+                scheduleType->setAccountID(typeObject.value("accountID").toString());
+            }
+
             if (typeObject.contains("typeID")) {
                 scheduleType->setTypeID(typeObject.value("typeID").toString());
             }
@@ -386,6 +400,7 @@ bool DScheduleType::toJsonListString(const DScheduleType::List &stList, QString 
 
     for (auto &scheduleType : stList) {
         QJsonObject typeObject;
+        typeObject.insert("accountID", scheduleType->accountID());
         typeObject.insert("typeID", scheduleType->typeID());
         typeObject.insert("typeName", scheduleType->typeName());
         typeObject.insert("displayName", scheduleType->displayName());

@@ -160,9 +160,10 @@ void DbusAccountRequest::deleteSchedulesByScheduleTypeID(const QString &typeID)
 void DbusAccountRequest::querySchedulesWithParameter(const DScheduleQueryPar::Ptr &params)
 {
     //key为空为正常日程获取，不为空则为搜索日程
-    QString callName = "querySchedulesWithParameter";
-    if (!params->key().isEmpty()) {
-        callName = "searchSchedulesWithParameter";
+    QString callName = "searchSchedulesWithParameter";
+    if (params->key().isEmpty()) {
+        callName = "querySchedulesWithParameter";
+        m_priParams = params;
     }
     QString jsonStr = DScheduleQueryPar::toJsonString(params);
     asyncCall("querySchedulesWithParameter", callName, QVariant(jsonStr));
@@ -175,13 +176,12 @@ void DbusAccountRequest::getSysColors()
 
 void DbusAccountRequest::slotCallFinished(CDBusPendingCallWatcher* call)
 {
+    int ret = 0;
     bool canCall = true;
 
     if (call->isError()) {
         qWarning() << call->reply().member() << call->error().message();
-        if (call->getCallbackFunc() != nullptr) {
-            call->getCallbackFunc()(false);
-        }
+        ret = 1;
     } else {
         if (call->getmember() == "getAccountInfo") {
             QDBusPendingReply<QString> reply = *call;
@@ -192,6 +192,7 @@ void DbusAccountRequest::slotCallFinished(CDBusPendingCallWatcher* call)
                 emit signalGetAccountInfoFinish(ptr);
             } else {
                 qWarning() << "AccountInfo Parsing failed!";
+                ret = 2;
             }
         } else if (call->getmember() == "getScheduleTypeList") {
             QDBusPendingReply<QString> reply = *call;
@@ -201,6 +202,7 @@ void DbusAccountRequest::slotCallFinished(CDBusPendingCallWatcher* call)
                 emit signalGetScheduleTypeListFinish(stList);
             } else {
                 qWarning() << "ScheduleTypeList Parsing failed!";
+                ret = 2;
             }
         } else if (call->getmember() == "querySchedulesWithParameter") {
             QDBusPendingReply<QString> reply = *call;
@@ -218,13 +220,32 @@ void DbusAccountRequest::slotCallFinished(CDBusPendingCallWatcher* call)
             DTypeColor::List list = DTypeColor::fromJsonString(str);
             emit signalGetSysColorsFinish(list);
         } else if (call->getmember() == "createScheduleType") {
+            //创建日程类型结束
+            QDBusPendingReply<QString> reply = *call;
+            QString scheduleTypeId = reply.argumentAt<0>();
             canCall = false;
-            setCallbackFunc(call->getCallbackFunc());
+            //在发起数据获取刷新数据，并将本回调函数和数据传到下一个事件中
+            CallbackFunc func = call->getCallbackFunc();
+            setCallbackFunc([=](CallMessge) {
+                func({0, scheduleTypeId});
+            });
             getScheduleTypeList();
+        } else if (call->getmember() == "createSchedule") {
+            //创建日程结束
+            canCall = false;
+            //重新读取日程数据
+            setCallbackFunc(call->getCallbackFunc());
+            querySchedulesWithParameter(m_priParams);
+        } else if (call->getmember() == "deleteScheduleByScheduleID") {
+            //删除日程结束
+            canCall = false;
+            //重新读取日程数据
+            setCallbackFunc(call->getCallbackFunc());
+            querySchedulesWithParameter(m_priParams);
         }
 
         if (canCall && call->getCallbackFunc() != nullptr) {
-            call->getCallbackFunc()(true);
+            call->getCallbackFunc()({ret, ""});
         }
     }
     call->deleteLater();

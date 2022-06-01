@@ -19,13 +19,13 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "cweekwidget.h"
-#include "configsettings.h"
+#include "calendarmanage.h"
 #include "constants.h"
 #include <QLocale>
 #include <QPainter>
 
 CWeekWidget::CWeekWidget(QWidget *parent) : QPushButton(parent)
-  , m_firstDay(gSetting->getFirstDayOfWeek())
+  , m_firstDay(CalendarManager::getInstance()->getFirstDayOfWeek())
 {
     setMinimumHeight(10);
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
@@ -70,7 +70,7 @@ void CWeekWidget::paintEvent(QPaintEvent *event)
     //获取一周首日
     int firstDay = m_firstDay;
     if (m_autoFirstDay) {
-        firstDay = gSetting->getFirstDayOfWeek();
+        firstDay = CalendarManager::getInstance()->getFirstDayOfWeek();
     }
     //绘制周一到周日
     for (int i = Qt::Monday; i <= Qt::Sunday; ++i) {

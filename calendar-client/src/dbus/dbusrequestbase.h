@@ -36,9 +36,6 @@ public:
                              const QDBusConnection &connection = QDBusConnection::sessionBus(),
                              QObject *parent = nullptr);
 
-    //回调函数指针
-    typedef std::function<void(bool)> CallbackFunc;
-
     //设置回调函数
     void setCallbackFunc(CallbackFunc func);
 

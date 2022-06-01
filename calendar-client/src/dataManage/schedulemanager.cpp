@@ -48,6 +48,13 @@ void ScheduleManager::resetSchedule(int year)
     }
 }
 
+void ScheduleManager::resetSchedule(const QDateTime& start, const QDateTime& end)
+{
+    for (AccountItem::Ptr p : gAccounManager->getAccountList()) {
+        p->querySchedulesWithParameter(start, end);
+    }
+}
+
 /**
  * @brief ScheduleManager::updateSchedule
  * 更新日程数据
@@ -244,7 +251,7 @@ void ScheduleManager::searchSchedule(const QString &key, const QDateTime &startT
     count = 0;
     for (AccountItem::Ptr p : gAccounManager->getAccountList()) {
         count ++;
-        p->querySchedulesWithParameter(key, startTime, endTime, [&](bool) {
+        p->querySchedulesWithParameter(key, startTime, endTime, [&](CallMessge) {
             count--;
             if (count == 0) {
                 this->updateSearchSchedule();

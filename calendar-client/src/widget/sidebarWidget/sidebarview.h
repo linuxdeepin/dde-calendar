@@ -39,6 +39,10 @@ signals:
 public slots:
     //自定义itemWidget控件状态改变事件
     void slotItemWidgetStatusChange(bool status, QString id);
+    //账户更新事件
+    void slotAccountUpdate();
+    //日程类型更新事件
+    void slotScheduleTypeUpdate();
 
 protected:
     void paintEvent(QPaintEvent *event) override;
@@ -58,7 +62,7 @@ private:
 
 private:
     QTreeWidget *m_treeWidget = nullptr;        //树结构
-    SidebarAccountItemWidget* m_accountItemWidget = nullptr;
+    SidebarAccountItemWidget* m_localItemWidget = nullptr;
     SidebarAccountItemWidget* m_unionItemWidget = nullptr;
 
     SidebarCalendarWidget *m_calendarWidget = nullptr;  //小日历

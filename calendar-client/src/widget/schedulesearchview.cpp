@@ -47,7 +47,7 @@ DGUI_USE_NAMESPACE
 CScheduleSearchItem::CScheduleSearchItem(QWidget *parent)
     : DLabel(parent)
     , m_rightMenu(new DMenu(this))
-    , m_timeFormat(CalendarManager::getInstance()->getCalendarDateDataManage()->getTimeFormat())
+    , m_timeFormat(CalendarManager::getInstance()->getTimeFormat())
 {
     //设置对象名称和辅助显示名称
     this->setObjectName("CScheduleDataItem");
@@ -472,8 +472,6 @@ CScheduleSearchView::CScheduleSearchView(QWidget *parent)
     m_labellist.clear();
 
     connect(m_gradientItemList, &CScheduleListWidget::signalListWidgetClicked, this, &CScheduleSearchView::slotListWidgetClicked);
-    CScheduleTask *_scheduleTask = CalendarManager::getInstance()->getScheduleTask();
-    connect(_scheduleTask, &CScheduleTask::jobsUpdate, this, &CScheduleSearchView::updateSearch);
     connect(gScheduleManager, &ScheduleManager::signalSearchScheduleUpdate, this, &CScheduleSearchView::slotScearedScheduleUpdate);
 }
 

@@ -31,7 +31,7 @@ class AccountItem : public QObject
 public:
     explicit AccountItem(const DAccount::Ptr& account, QObject *parent = nullptr);
 
-    typedef std::function<void(bool)> CallbackFunc;
+    typedef std::function<void()> Func;
     typedef QSharedPointer<AccountItem> Ptr;
 
     void resetAccount();
@@ -86,7 +86,7 @@ public:
     void querySchedulesWithParameter(const DScheduleQueryPar::Ptr&, CallbackFunc callback = nullptr);
 
     //监听日程类型数据完成事件
-    void monitorScheduleTypeData(CallbackFunc callback);
+    void monitorScheduleTypeData(Func callback);
 
 signals:
     void signalAccountDataUpdate();
@@ -125,7 +125,7 @@ private:
     QVector<DSchedule> m_searchScheduleInfoVector {};
 
     //回调函数
-    QMap<QString, QList<CallbackFunc>> m_callbackMap;
+    QMap<QString, QList<Func>> m_callbackMap;
     QMap<QString, bool> m_dataStatus;   //数据状态
 
 };

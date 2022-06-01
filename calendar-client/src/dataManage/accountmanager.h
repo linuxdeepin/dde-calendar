@@ -29,7 +29,7 @@ class AccountManager : public QObject
 {
     Q_OBJECT
 public:
-    typedef std::function<void(bool)> CallbackFunc;
+    typedef std::function<void()> Func;
 
     ~AccountManager() override;
 
@@ -55,7 +55,7 @@ public:
     void setCalendarGeneralSettings(DCalendarGeneralSettings::Ptr ptr, CallbackFunc callback = nullptr);
 
     //等待数据获取完成的事件
-    void waitingData(CallbackFunc callback);
+    void waitingData(Func callback);
 
 signals:
     void signalDataInitFinished();
@@ -91,7 +91,7 @@ private:
 
     DbusAccountManagerRequest *m_dbusRequest;
 
-    QList<CallbackFunc> m_waitingCallList;
+    QList<Func> m_waitingCallList;
 
     bool m_dataInitFinished = false;
 };

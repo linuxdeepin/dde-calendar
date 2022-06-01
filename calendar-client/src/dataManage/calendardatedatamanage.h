@@ -47,7 +47,7 @@ public:
     //获取当前时间
     QDateTime getCurrentDate() const;
     //获取全年的时间
-    QMap<int, QVector<QDate> > getYearDate();
+//    QMap<int, QVector<QDate> > getYearDate();
     //获取月份的所有时间
     static QVector<QDate> getMonthDate(const int &year, const int &month);
     //获取一周的所有时间

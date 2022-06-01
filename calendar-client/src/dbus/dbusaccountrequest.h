@@ -134,6 +134,9 @@ public slots:
 
     void slotCallFinished(CDBusPendingCallWatcher*) override;
 
+private:
+    DScheduleQueryPar::Ptr m_priParams; //上一次查询日程的数据
+
 };
 
 #endif // DBUSACCOUNTREQUEST_H

@@ -77,14 +77,14 @@ QDateTime CalendarDateDataManager::getCurrentDate() const
  * @param year              设置的年份
  * @return                  返回全年的时间，按照月份分组
  */
-QMap<int, QVector<QDate> > CalendarDateDataManager::getYearDate()
-{
-    QMap<int, QVector<QDate> > _resultMap;
-    for (int i = 1; i < 13; ++i) {
-        _resultMap[i] = getMonthDate(m_showDateRange.showYear, i);
-    }
-    return _resultMap;
-}
+//QMap<int, QVector<QDate> > CalendarDateDataManager::getYearDate()
+//{
+//    QMap<int, QVector<QDate> > _resultMap;
+//    for (int i = 1; i < 13; ++i) {
+//        _resultMap[i] = getMonthDate(m_showDateRange.showYear, i);
+//    }
+//    return _resultMap;
+//}
 
 /**
  * @brief getMonthDate      获取月份的所有时间

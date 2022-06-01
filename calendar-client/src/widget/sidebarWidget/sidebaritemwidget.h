@@ -48,6 +48,8 @@ public:
 
     //设置选中状态
     void setSelectStatus(bool);
+    //获取当前状态
+    bool getSelectStatus();
     //切换状态
     void switchState();
     //设置item

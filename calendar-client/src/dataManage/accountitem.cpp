@@ -251,16 +251,16 @@ void AccountItem::querySchedulesWithParameter(const DScheduleQueryPar::Ptr &para
  * 监听日程类型数据完成事件
  * @param callback 回调函数
  */
-void AccountItem::monitorScheduleTypeData(CallbackFunc callback)
+void AccountItem::monitorScheduleTypeData(Func callback)
 {
     auto statusIterator = m_dataStatus.find("ScheduleType");
     if (statusIterator != m_dataStatus.end() && statusIterator.value()) {
-        callback(true);
+        callback();
     } else {
         m_dataStatus.insert("ScheduleType", false);
     }
     auto iterator = m_callbackMap.find("ScheduleType");
-    QList<CallbackFunc> funcList;
+    QList<Func> funcList;
     if (iterator == m_callbackMap.end()) {
         funcList.append(callback);
     } else {
@@ -292,8 +292,8 @@ void AccountItem::slotGetScheduleTypeListFinish(DScheduleType::List scheduleType
     m_dataStatus.insert("ScheduleType", true);
     auto iterator = m_callbackMap.find("ScheduleType");
     if (iterator != m_callbackMap.end()) {
-        for (CallbackFunc func : iterator.value()) {
-            func(true);
+        for (Func func : iterator.value()) {
+            func();
         }
     }
     emit signalScheduleTypeUpdate();

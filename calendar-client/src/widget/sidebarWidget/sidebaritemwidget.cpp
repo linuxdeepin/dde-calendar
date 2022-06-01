@@ -25,7 +25,12 @@
 SidebarItemWidget::SidebarItemWidget(QWidget *parent)
     : QWidget(parent)
 {
-
+    QPalette pa = this->palette();
+    pa.setBrush(QPalette::Base, QColor("#FF0000"));
+    pa.setBrush(QPalette::Background, QColor("#FF0000"));
+    setPalette(pa);
+//    setBackgroundRole(QPalette::Highlight);
+//    setFixedWidth(300);
 }
 
 SidebarItemWidget *SidebarItemWidget::getAccountItemWidget(AccountItem::Ptr ptr)
@@ -58,6 +63,16 @@ void SidebarItemWidget::setSelectStatus(bool status)
     //根据控件类型设置响应控件状态
     updateStatus();
     emit signalStatusChange(m_selectStatus, m_id);
+}
+
+/**
+ * @brief SidebarItemWidget::getSelectStatus
+ * 获取当前状态
+ * @return
+ */
+bool SidebarItemWidget::getSelectStatus()
+{
+    return m_selectStatus;
 }
 
 /**
@@ -119,6 +134,7 @@ void SidebarTypeItemWidget::initView()
     QPalette palette = m_checkBox->palette();
     palette.setBrush(QPalette::Highlight, QColor(m_scheduleType->getColorCode()));
     m_checkBox->setPalette(palette);
+    m_checkBox->setChecked((m_scheduleType->showState() == DScheduleType::Show));
     connect(m_checkBox, &QCheckBox::clicked, this, [this]() {
         setSelectStatus(m_checkBox->isChecked());
     });
@@ -144,6 +160,7 @@ void SidebarTypeItemWidget::initView()
 
 void SidebarTypeItemWidget::updateStatus()
 {
+    m_scheduleType->setShowState(m_selectStatus?DScheduleType::Show:DScheduleType::Hide);
     if (m_selectStatus != m_checkBox->isChecked()) {
         m_checkBox->setChecked(m_selectStatus);
     }
@@ -208,6 +225,7 @@ AccountItem::Ptr SidebarAccountItemWidget::getAccountItem()
 
 void SidebarAccountItemWidget::updateStatus()
 {
+    m_accountItem->getAccount()->setIsExpandDisplay(m_selectStatus);
     if (m_selectStatus) {
         m_headIconButton->setIcon(DStyle::SP_ArrowDown);
     } else {
