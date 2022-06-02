@@ -366,10 +366,10 @@ void CWeekWindow::updateShowSchedule()
  */
 void CWeekWindow::updateShowLunar()
 {
-//    getLunarInfo();
-//    m_YearLunarLabel->setText(m_lunarYear);
-//    QMap<QDate, CaHuangLiDayInfo> _weekHuangLiInfo = m_calendarManager->getScheduleTask()->getHuangLiInfo(m_startDate, m_stopDate);
-//    m_weekHeadView->setHunagLiInfo(_weekHuangLiInfo);
+    getLunarInfo();
+    m_YearLunarLabel->setText(m_lunarYear);
+    QMap<QDate, CaHuangLiDayInfo> weekHuangLiInfo = gLunarManager->getHuangLiDayMap(m_startDate, m_stopDate);
+    m_weekHeadView->setHunagLiInfo(weekHuangLiInfo);
 }
 
 /**

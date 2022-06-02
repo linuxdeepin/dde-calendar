@@ -35,11 +35,29 @@ void DbusAccountRequest::getAccountInfo()
     asyncCall("getAccountInfo");
 }
 
+/**
+ * @brief DbusAccountRequest::updateAccountInfo
+ * 更新账户信息
+ * @param account
+ */
 void DbusAccountRequest::updateAccountInfo(const DAccount::Ptr& account)
 {
     QString jsonStr;
     DAccount::toJsonString(account, jsonStr);
     asyncCall("updateAccountInfo", QVariant(jsonStr));
+}
+
+/**
+ * @brief DbusAccountRequest::updateAccountExpandStatus
+ * 更新账户列表展开状态
+ * @param accountInfo
+ */
+void DbusAccountRequest::updateAccountExpandStatus(const DAccount::Ptr &accountInfo)
+{
+    QString jsonStr;
+    DAccount::toJsonString(accountInfo, jsonStr);
+    QString callName = "updateAccountExpandStatus";
+    asyncCall("updateAccountInfo", callName, QVariant(jsonStr));
 }
 
 /**
@@ -83,6 +101,19 @@ void DbusAccountRequest::updateScheduleType(const DScheduleType::Ptr &typeInfo)
     QString jsonStr;
     DScheduleType::toJsonString(typeInfo, jsonStr);
     asyncCall("updateScheduleType", QVariant(jsonStr));
+}
+
+/**
+ * @brief DbusAccountRequest::updateScheduleTypeShowState
+ * 更新类型显示状态
+ * @param typeInfo
+ */
+void DbusAccountRequest::updateScheduleTypeShowState(const DScheduleType::Ptr &typeInfo)
+{
+    QString jsonStr;
+    DScheduleType::toJsonString(typeInfo, jsonStr);
+    QString callName = "updateScheduleTypeShowState";
+    asyncCall("updateScheduleType", callName, QVariant(jsonStr));
 }
 
 /**
@@ -238,6 +269,12 @@ void DbusAccountRequest::slotCallFinished(CDBusPendingCallWatcher* call)
             querySchedulesWithParameter(m_priParams);
         } else if (call->getmember() == "deleteScheduleByScheduleID") {
             //删除日程结束
+            canCall = false;
+            //重新读取日程数据
+            setCallbackFunc(call->getCallbackFunc());
+            querySchedulesWithParameter(m_priParams);
+        } else if (call->getmember() == "updateScheduleTypeShowState") {
+            //更新日程类型显示状态结束
             canCall = false;
             //重新读取日程数据
             setCallbackFunc(call->getCallbackFunc());

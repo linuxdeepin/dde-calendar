@@ -388,7 +388,7 @@ QString CScheduleDBus::getHuangLiShortName(const QDate &date)
 //    if (GetHuangLiDay(date, info)) {
 //        return info.mLunarMonthName + info.mLunarDayName;
 //    }
-    return "";
+//    return "";
 }
 
 

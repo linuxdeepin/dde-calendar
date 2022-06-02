@@ -22,6 +22,7 @@
 #define SCHEDULEMANAGER_H
 
 #include "accountmanager.h"
+#include "lunarmanager.h"
 #include <QObject>
 
 class ScheduleManager : public QObject
@@ -82,6 +83,8 @@ private:
 private:
     QMap<QDate, DSchedule::List> m_scheduleMap;     //一年的日程数据
     QMap<QDate, DSchedule::List> m_searchScheduleMap;   //被搜索的日程数据
+
+    LunarManager m_lunarManager;
 };
 #define gScheduleManager ScheduleManager::getInstace()
 #endif // SCHEDULEMANAGER_H

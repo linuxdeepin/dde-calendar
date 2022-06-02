@@ -46,6 +46,12 @@ public:
      */
     void updateAccountInfo(const DAccount::Ptr &accountInfo);
     /**
+     * @brief updateAccountExpandStatus
+     * 更新账户列表展开状态
+     * @param accountInfo
+     */
+    void updateAccountExpandStatus(const DAccount::Ptr &accountInfo);
+    /**
      * @brief getScheduleTypeList      获取日程类型信息集
      * @return
      */
@@ -71,6 +77,13 @@ public:
      * @return                      是否成功，true:更新成功
      */
     void updateScheduleType(const DScheduleType::Ptr &typeInfo);
+
+    /**
+     * @brief updateScheduleTypeShowState
+     * 更新类型显示状态
+     * @param typeInfo
+     */
+    void updateScheduleTypeShowState(const DScheduleType::Ptr &typeInfo);
 
     /**
      * @brief deleteScheduleTypeByID     根据日程类型ID删除日程类型

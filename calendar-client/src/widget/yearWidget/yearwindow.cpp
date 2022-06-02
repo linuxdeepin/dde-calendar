@@ -491,7 +491,6 @@ void CYearWindow::updateShowDate(const bool isUpdateBar)
 void CYearWindow::updateShowSchedule()
 {
     //获取显示日期中是否包含日程信息标志
-//    QMap<QDate, bool> _fullInfo = m_calendarManager->getScheduleTask()->getDateHasSchedule();
     m_yearWidget->setDateHasScheduleSign(ScheduleManager::getInstace()->getAllScheduleDate());
 
 }
@@ -502,7 +501,7 @@ void CYearWindow::updateShowSchedule()
 void CYearWindow::updateShowLunar()
 {
     //TODO 获取农历信息
-//    getLunarInfo();
+    getLunarInfo();
     m_yearWidget->setLunarYearDate(m_lunarYear);
     //如果正在切换则退出
     if (m_StackedWidget->IsRunning())
@@ -516,7 +515,6 @@ void CYearWindow::updateShowLunar()
 void CYearWindow::updateSearchScheduleInfo()
 {
     //获取搜索日程信息
-//    QMap<QDate, QVector<DSchedule>> _searchSchedule = m_calendarManager->getScheduleTask()->getSearchScheduleInfo();
     m_yearWidget->setSearchSchedule(gScheduleManager->getAllSearchedScheduleDate());
 }
 

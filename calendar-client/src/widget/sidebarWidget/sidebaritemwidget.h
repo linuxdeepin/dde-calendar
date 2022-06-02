@@ -39,6 +39,7 @@ class SidebarItemWidget : public QWidget
 {
     Q_OBJECT
 public:
+
     SidebarItemWidget(QWidget *parent = nullptr);
 
     //获取顶层item控件，有箭头
@@ -67,7 +68,6 @@ public slots:
 protected:
     void mouseDoubleClickEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
-
     virtual void updateStatus() = 0;
 
 protected:

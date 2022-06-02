@@ -22,6 +22,8 @@
 #define DBUSHUANGLIREQUEST_H
 
 #include "dbusrequestbase.h"
+#include "huangliData/lunardatastruct.h"
+#include "huangliData/dbusdatastruct.h"
 
 //黄历数据请求类
 class DbusHuangLiRequest : public DbusRequestBase
@@ -31,11 +33,11 @@ public:
     explicit DbusHuangLiRequest(QObject *parent = nullptr);
 
     //按月获取节假日信息
-    void getFestivalMonth(quint32 year, quint32 month);
+    bool getFestivalMonth(quint32 year, quint32 month, FestivalInfo&);
     //按天获取黄历信息
-    void getHuangLiDay(quint32 year, quint32 month, quint32 day);
+    bool getHuangLiDay(quint32 year, quint32 month, quint32 day, CaHuangLiDayInfo &);
     //按月获取黄历信息
-    void getHuangLiMonth(quint32 year, quint32 month, bool fill);
+    bool getHuangLiMonth(quint32 year, quint32 month, bool fill, CaHuangLiMonthInfo &);
     //获取农历信息
     void getLunarInfoBySolar(quint32 year, quint32 month, quint32 day);
     //获取农历月日程

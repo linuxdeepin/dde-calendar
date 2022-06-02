@@ -19,18 +19,14 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "sidebaritemwidget.h"
+#include "accountmanager.h"
 #include <DFontSizeManager>
 #include <QVBoxLayout>
 
 SidebarItemWidget::SidebarItemWidget(QWidget *parent)
     : QWidget(parent)
 {
-    QPalette pa = this->palette();
-    pa.setBrush(QPalette::Base, QColor("#FF0000"));
-    pa.setBrush(QPalette::Background, QColor("#FF0000"));
-    setPalette(pa);
-//    setBackgroundRole(QPalette::Highlight);
-//    setFixedWidth(300);
+    setFixedWidth(220);
 }
 
 SidebarItemWidget *SidebarItemWidget::getAccountItemWidget(AccountItem::Ptr ptr)
@@ -62,6 +58,11 @@ void SidebarItemWidget::setSelectStatus(bool status)
     m_selectStatus = status;
     //根据控件类型设置响应控件状态
     updateStatus();
+
+    if (m_item && m_item->isExpanded() != status) {
+        //设置列表展开状态
+        m_item->setExpanded(status);
+    }
     emit signalStatusChange(m_selectStatus, m_id);
 }
 
@@ -92,14 +93,6 @@ void SidebarItemWidget::switchState()
 void SidebarItemWidget::setItem(QTreeWidgetItem *item)
 {
     m_item = item;
-    //连接状态切换事件
-    connect(this, &SidebarItemWidget::signalStatusChange, this, [this](bool status) {
-        if (m_item->isExpanded() == status) {
-            return ;
-        }
-        //设置列表展开状态
-        m_item->setExpanded(status);
-    });
 }
 
 QTreeWidgetItem* SidebarItemWidget::getTreeItem()
@@ -123,6 +116,7 @@ SidebarTypeItemWidget::SidebarTypeItemWidget(DScheduleType::Ptr ptr, QWidget *pa
     , m_scheduleType(ptr)
 {
     initView();
+    m_id = m_scheduleType->accountID();
 }
 
 void SidebarTypeItemWidget::initView()
@@ -134,7 +128,7 @@ void SidebarTypeItemWidget::initView()
     QPalette palette = m_checkBox->palette();
     palette.setBrush(QPalette::Highlight, QColor(m_scheduleType->getColorCode()));
     m_checkBox->setPalette(palette);
-    m_checkBox->setChecked((m_scheduleType->showState() == DScheduleType::Show));
+    setSelectStatus((m_scheduleType->showState() == DScheduleType::Show));
     connect(m_checkBox, &QCheckBox::clicked, this, [this]() {
         setSelectStatus(m_checkBox->isChecked());
     });
@@ -151,6 +145,7 @@ void SidebarTypeItemWidget::initView()
     m_titleLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     m_titleLabel->setText(m_scheduleType->displayName());
 
+    vLayout->addSpacing(2);
     vLayout->addWidget(m_checkBox);
     vLayout->addWidget(m_titleLabel, 1);
     this->setLayout(vLayout);
@@ -160,8 +155,12 @@ void SidebarTypeItemWidget::initView()
 
 void SidebarTypeItemWidget::updateStatus()
 {
-    m_scheduleType->setShowState(m_selectStatus?DScheduleType::Show:DScheduleType::Hide);
-    if (m_selectStatus != m_checkBox->isChecked()) {
+    AccountItem::Ptr account = gAccounManager->getAccountItemByAccountId(m_scheduleType->accountID());
+    if (account) {
+        if (m_selectStatus != (m_scheduleType->showState() == DScheduleType::Show)) {
+            m_scheduleType->setShowState(m_selectStatus? DScheduleType::Show:DScheduleType::Hide);
+            account->updateScheduleTypeShowState(m_scheduleType);
+        }
         m_checkBox->setChecked(m_selectStatus);
     }
 }
@@ -225,7 +224,7 @@ AccountItem::Ptr SidebarAccountItemWidget::getAccountItem()
 
 void SidebarAccountItemWidget::updateStatus()
 {
-    m_accountItem->getAccount()->setIsExpandDisplay(m_selectStatus);
+    m_accountItem->updateAccountExpandStatus(m_selectStatus);
     if (m_selectStatus) {
         m_headIconButton->setIcon(DStyle::SP_ArrowDown);
     } else {

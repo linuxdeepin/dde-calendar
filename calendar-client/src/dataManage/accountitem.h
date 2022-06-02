@@ -54,12 +54,17 @@ public:
 
     //更新账户信息
     void updateAccountInfo(CallbackFunc callback = nullptr);
+    //更新账户列表展开状态
+    void updateAccountExpandStatus(bool expandStatus, CallbackFunc callback = nullptr);
 
     //创建日程类型
     void createJobType(const DScheduleType::Ptr &typeInfo, CallbackFunc callback = nullptr);
 
     //更新类型信息
     void updateScheduleType(const DScheduleType::Ptr &typeInfo, CallbackFunc callback = nullptr);
+
+    //更新类型显示状态
+    void updateScheduleTypeShowState(const DScheduleType::Ptr& scheduleInfo, CallbackFunc callback = nullptr);
 
     //根据类型ID删除日程类型
     void deleteScheduleTypeByID(const QString &typeID, CallbackFunc callback = nullptr);

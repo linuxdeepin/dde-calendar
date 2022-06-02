@@ -52,7 +52,6 @@ void SidebarView::initView()
     m_treeWidget->setFrameStyle(QFrame::NoFrame); //去除边框
     m_treeWidget->setIndentation(0);    //设置item前间距为0
     m_treeWidget->setFocusPolicy(Qt::TabFocus);
-
     m_calendarWidget = new SidebarCalendarWidget(this);
     m_calendarWidget->setFixedSize(180, 220);
 
@@ -102,8 +101,7 @@ void SidebarView::initLocalAccountItem()
     m_localItemWidget = new SidebarAccountItemWidget(localAccount);
     m_treeWidget->setItemWidget(localItem, 0, m_localItemWidget);
     m_localItemWidget->setItem(localItem);
-
-//    resetJobTypeChildItem(m_localItemWidget);
+    connect(m_localItemWidget, &SidebarItemWidget::signalStatusChange, this, &SidebarView::slotItemWidgetStatusChange);
     m_localItemWidget->setSelectStatus(localAccount->getAccount()->isExpandDisplay());
 }
 
@@ -123,8 +121,7 @@ void SidebarView::initUnionAccountItem()
     m_unionItemWidget = new SidebarAccountItemWidget(unionAccount);
     m_treeWidget->setItemWidget(localItem, 0, m_localItemWidget);
     m_unionItemWidget->setItem(localItem);
-
-//    resetJobTypeChildItem(m_localItemWidget);
+    connect(m_unionItemWidget, &SidebarItemWidget::signalStatusChange, this, &SidebarView::slotItemWidgetStatusChange);
     m_unionItemWidget->setSelectStatus(unionAccount->getAccount()->isExpandDisplay());
 }
 
@@ -158,11 +155,37 @@ void SidebarView::resetJobTypeChildItem(SidebarAccountItemWidget *parentItemWidg
             parentItem->addChild(item);
             SidebarItemWidget *widget = new SidebarTypeItemWidget(p, this);
             m_treeWidget->setItemWidget(item, 0, widget);
+            connect(widget, &SidebarItemWidget::signalStatusChange, this, &SidebarView::slotItemWidgetStatusChange);
         }
     }
-    item = new QTreeWidgetItem(parentItemWidget->getTreeItem());
-    parentItem->addChild(item);
-//    m_treeWidget->setIndentation(0);    //设置item前间距为0
+    //刷新列表项位置，主要用于解决初始添加时最后一项显示位置和其他项位置不一致问题
+    resetTreeItemPos();
+}
+
+/**
+ * @brief SidebarView::resetTreeItemPos
+ * 刷新列表项位置，主要用于解决初始添加时最后一项显示位置和其他项位置不一致问题
+ */
+void SidebarView::resetTreeItemPos()
+{
+    int index = 0;
+    while (true){
+        QTreeWidgetItem *item = m_treeWidget->topLevelItem(index);
+        if (nullptr == item) {
+            break;
+        }
+        QWidget* ptmpWidget = nullptr;
+        ptmpWidget = m_treeWidget->itemWidget(item, 0);
+        int x = ptmpWidget->x();
+        QTreeWidgetItem *ptmp = nullptr;
+        for(int i = 0; i < item->childCount(); i++)
+        {
+            ptmp = item->child(i);
+            ptmpWidget = m_treeWidget->itemWidget(ptmp, 0);
+            ptmpWidget->move(x, ptmpWidget->y());
+        }
+        index++;
+    }
 }
 
 /**
@@ -171,10 +194,8 @@ void SidebarView::resetJobTypeChildItem(SidebarAccountItemWidget *parentItemWidg
  * @param status 状态
  * @param id    id
  */
-void SidebarView::slotItemWidgetStatusChange(bool status, QString id)
+void SidebarView::slotItemWidgetStatusChange(bool , QString )
 {
-    Q_UNUSED(status)
-    Q_UNUSED(id)
 }
 
 /**

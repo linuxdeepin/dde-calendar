@@ -221,6 +221,11 @@ void CalendarManager::setYearBeginAndEndDate(const int year)
     m_showDateRange.stopDate = getFirstDayOfWeek(_firstDayOfDec).addDays(42 - 1);
     //更新日程
     gScheduleManager->resetSchedule(QDateTime(m_showDateRange.startDate), QDateTime(m_showDateRange.stopDate));
+    if (m_showLunar) {
+        //刷新农历和节假日信息
+        gLunarManager->queryLunarInfo(m_showDateRange.startDate, m_showDateRange.stopDate);
+        gLunarManager->queryFestivalInfo(m_showDateRange.startDate, m_showDateRange.stopDate);
+    }
 }
 
 /**

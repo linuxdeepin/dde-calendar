@@ -59,7 +59,7 @@ protected:
                    const QVariant &arg6 = QVariant(),
                    const QVariant &arg7 = QVariant(),
                    const QVariant &arg8 = QVariant());
-    void asyncCall(const QString &method, QString callName,
+    void asyncCall(const QString &method, const QString &callName,
                    const QVariant &arg1 = QVariant(),
                    const QVariant &arg2 = QVariant(),
                    const QVariant &arg3 = QVariant(),

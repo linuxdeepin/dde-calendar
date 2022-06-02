@@ -33,9 +33,59 @@ DbusHuangLiRequest::DbusHuangLiRequest(QObject *parent)
  * @param year
  * @param month
  */
-void DbusHuangLiRequest::getFestivalMonth(quint32 year, quint32 month)
+bool DbusHuangLiRequest::getFestivalMonth(quint32 year, quint32 month, FestivalInfo& festivalInfo)
 {
-    asyncCall("getFestivalMonth", QVariant(year), QVariant(month));
+    QDBusPendingReply<QString> reply = call("getFestivalMonth", QVariant(year), QVariant(month));
+
+    if (reply.isError()) {
+        qWarning() << reply.error().message();
+        return false;
+    }
+
+    QString json = reply.argumentAt<0>();
+    QJsonParseError json_error;
+    QJsonDocument jsonDoc(QJsonDocument::fromJson(json.toLocal8Bit(), &json_error));
+
+    if (json_error.error != QJsonParseError::NoError) {
+        return false;
+    }
+    //解析数据
+    QJsonArray rootarry = jsonDoc.array();
+    for (int i = 0; i < rootarry.size(); i++) {
+        QJsonObject subObj = rootarry.at(i).toObject();
+        //因为是预先定义好的JSON数据格式，所以这里可以这样读取
+        if (subObj.contains("id")) {
+            festivalInfo.ID = subObj.value("id").toString();
+        }
+        if (subObj.contains("name")) {
+            festivalInfo.FestivalName = subObj.value("name").toString();
+        }
+        if (subObj.contains("description")) {
+            festivalInfo.description = subObj.value("description").toString();
+        }
+        if (subObj.contains("rest")) {
+            festivalInfo.Rest = subObj.value("rest").toString();
+        }
+        if (subObj.contains("month")) {
+            festivalInfo.month = subObj.value("month").toInt();
+        }
+        if (subObj.contains("list")) {
+            QJsonArray sublistArray = subObj.value("list").toArray();
+            for (int j = 0; j < sublistArray.size(); j++) {
+                QJsonObject hsubObj = sublistArray.at(j).toObject();
+                HolidayInfo dayinfo;
+                if (hsubObj.contains("status")) {
+                    dayinfo.status = static_cast<char>(hsubObj.value("status").toInt());
+                }
+                if (hsubObj.contains("date")) {
+                    dayinfo.date = QDate::fromString(hsubObj.value("date").toString(), "yyyy-M-d");
+                }
+                festivalInfo.listHoliday.append(dayinfo);
+            }
+        }
+        festivalInfo.year = static_cast<int>(year);
+    }
+    return true;
 }
 
 /**
@@ -45,9 +95,19 @@ void DbusHuangLiRequest::getFestivalMonth(quint32 year, quint32 month)
  * @param month
  * @param day
  */
-void DbusHuangLiRequest::getHuangLiDay(quint32 year, quint32 month, quint32 day)
+bool DbusHuangLiRequest::getHuangLiDay(quint32 year, quint32 month, quint32 day, CaHuangLiDayInfo &info)
 {
-    asyncCall("getHuangLiDay", QVariant(year), QVariant(month), QVariant(day));
+    QDBusPendingReply<QString> reply = call("getHuangLiDay", QVariant(year), QVariant(month), QVariant(day));
+
+    if (reply.isError()) {
+        qWarning() << reply.error().message();
+        return false;
+    }
+
+    QString json = reply.argumentAt<0>();
+    bool isVoild;
+    info.strJsonToInfo(json, isVoild);
+    return isVoild;
 }
 
 /**
@@ -57,9 +117,19 @@ void DbusHuangLiRequest::getHuangLiDay(quint32 year, quint32 month, quint32 day)
  * @param month
  * @param fill
  */
-void DbusHuangLiRequest::getHuangLiMonth(quint32 year, quint32 month, bool fill)
+bool DbusHuangLiRequest::getHuangLiMonth(quint32 year, quint32 month, bool fill, CaHuangLiMonthInfo &info)
 {
-    asyncCall("getHuangLiMonth", QVariant(year), QVariant(month), QVariant(fill));
+    QDBusPendingReply<QString> reply = call("getHuangLiMonth", QVariant(year), QVariant(month), QVariant(fill));
+
+    if (reply.isError()) {
+        qWarning() << reply.error().message();
+        return false;
+    }
+    QString json = reply.argumentAt<0>();
+
+    bool infoIsVaild;
+    info.strJsonToInfo(json, infoIsVaild);
+    return infoIsVaild;
 }
 
 /**
@@ -91,11 +161,6 @@ void DbusHuangLiRequest::slotCallFinished(CDBusPendingCallWatcher* call)
     if (call->isError()) {
         qWarning() << call->reply().member() << call->error().message();
         return;
-    }
-
-    if (call->getmember() == "getFestivalMonth") {
-        QDBusPendingReply<QString> reply = *call;
-        QString str = reply.argumentAt<0>();
     }
     call->deleteLater();
 }

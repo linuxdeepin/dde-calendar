@@ -202,12 +202,12 @@ void CMonthWindow::updateShowSchedule()
  */
 void CMonthWindow::updateShowLunar()
 {
-//    getLunarInfo();
-//    m_YearLunarLabel->setText(m_lunarYear);
-//    QMap<QDate, int> _monthFestivalInfo = m_calendarManager->getScheduleTask()->getFestivalInfo(m_startDate, m_stopDate);
-//    m_monthView->setFestival(_monthFestivalInfo);
-//    QMap<QDate, CaHuangLiDayInfo> _monthHuangLiInfo = m_calendarManager->getScheduleTask()->getHuangLiInfo(m_startDate, m_stopDate);
-//    m_monthView->setHuangLiInfo(_monthHuangLiInfo);
+    getLunarInfo();
+    m_YearLunarLabel->setText(m_lunarYear);
+    QMap<QDate, int> _monthFestivalInfo = gLunarManager->getFestivalInfoDateMap(m_startDate, m_stopDate);
+    m_monthView->setFestival(_monthFestivalInfo);
+    QMap<QDate, CaHuangLiDayInfo> _monthHuangLiInfo = gLunarManager->getHuangLiDayMap(m_startDate, m_stopDate);
+    m_monthView->setHuangLiInfo(_monthHuangLiInfo);
 }
 
 /**

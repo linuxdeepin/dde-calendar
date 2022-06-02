@@ -59,6 +59,8 @@ private:
 
     //重置日程类型item
     void resetJobTypeChildItem(SidebarAccountItemWidget *parentItemWidget);
+    //重置item位置
+    void resetTreeItemPos();
 
 private:
     QTreeWidget *m_treeWidget = nullptr;        //树结构

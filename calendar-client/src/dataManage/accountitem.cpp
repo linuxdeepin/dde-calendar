@@ -116,6 +116,19 @@ void AccountItem::updateAccountInfo(CallbackFunc callback)
 }
 
 /**
+ * @brief AccountItem::updateAccountExpandStatus
+ * 更新账户列表展开状态
+ * @param expandStatus 展开状态
+ * @param callback
+ */
+void AccountItem::updateAccountExpandStatus(bool expandStatus, CallbackFunc callback)
+{
+    m_account->setIsExpandDisplay(expandStatus);
+    m_dbusRequest->setCallbackFunc(callback);
+    m_dbusRequest->updateAccountExpandStatus(m_account);
+}
+
+/**
  * @brief AccountItem::createJobType
  * 创建日程类型
  * @param typeInfo 日程类型数据
@@ -138,6 +151,18 @@ void AccountItem::updateScheduleType(const DScheduleType::Ptr &typeInfo, Callbac
 {
     m_dbusRequest->setCallbackFunc(callback);
     m_dbusRequest->updateScheduleType(typeInfo);
+}
+
+/**
+ * @brief AccountItem::updateScheduleTypeShowState
+ * 更新类型显示状态
+ * @param scheduleInfo
+ * @param callback
+ */
+void AccountItem::updateScheduleTypeShowState(const DScheduleType::Ptr& scheduleInfo, CallbackFunc callback)
+{
+    m_dbusRequest->setCallbackFunc(callback);
+    m_dbusRequest->updateScheduleTypeShowState(scheduleInfo);
 }
 
 /**

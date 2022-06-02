@@ -20,6 +20,7 @@
 */
 #include "cdateedit.h"
 #include "lunarcalendarwidget.h"
+#include "lunarmanager.h"
 
 #include <QCoreApplication>
 #include <QLineEdit>
@@ -195,9 +196,7 @@ void CDateEdit::slotSelectionChanged()
 
 QString CDateEdit::getLunarName(const QDate &date)
 {
-    CaHuangLiDayInfo info;
-    CScheduleDBus::getInstance()->GetHuangLiDay(date, info);
-    return info.mLunarMonthName + info.mLunarDayName;
+    return gLunarManager->getHuangLiShortName(date);
 }
 
 void CDateEdit::setLineEditTextFormat(QLineEdit *lineEdit, const QList<QTextLayout::FormatRange> &formats)

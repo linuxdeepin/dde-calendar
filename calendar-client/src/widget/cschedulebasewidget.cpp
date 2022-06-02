@@ -30,7 +30,7 @@ CScheduleBaseWidget::CScheduleBaseWidget(QWidget *parent)
     if (m_calendarManager == nullptr) {
         m_calendarManager = CalendarManager::getInstance();
         //获取一年的日程信息
-//        updateDBusData();
+        updateDBusData();
     }
     m_calendarManager->addShowWidget(this);
 }
@@ -167,14 +167,10 @@ void CScheduleBaseWidget::deleteselectSchedule()
 CaHuangLiDayInfo CScheduleBaseWidget::getLunarInfo()
 {
     //TODO 农历获取
-    return CaHuangLiDayInfo();
-//    QMap<QDate, CaHuangLiDayInfo> _huangLiInfo = m_calendarManager->getScheduleTask()->getHuangLiInfo(getSelectDate(), getSelectDate());
-//    QMap<QDate, CaHuangLiDayInfo>::const_iterator interator = _huangLiInfo.constBegin();
-//    if (interator == _huangLiInfo.constEnd())
-//        return CaHuangLiDayInfo();
-//    m_lunarYear = QString("-%0%1年-").arg(interator.value().mGanZhiYear).arg(interator.value().mZodiac);
-//    m_lunarDay = QString("-农历%0%1-").arg(interator.value().mLunarMonthName).arg(interator.value().mLunarDayName);
-//    return interator.value();
+    CaHuangLiDayInfo huangLiInfo = gLunarManager->getHuangLiDay(getSelectDate());
+    m_lunarYear = QString("-%0%1年-").arg(huangLiInfo.mGanZhiYear).arg(huangLiInfo.mZodiac);
+    m_lunarDay = QString("-农历%0%1-").arg(huangLiInfo.mLunarMonthName).arg(huangLiInfo.mLunarDayName);
+    return huangLiInfo;
 }
 
 void CScheduleBaseWidget::slotScheduleUpdate()
