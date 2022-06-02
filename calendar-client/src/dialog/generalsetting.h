@@ -18,9 +18,11 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef COMMONSETTING_H
-#define COMMONSETTING_H
+#ifndef GENRALSETTING_H
+#define GENERALSETTING_H
 
+#include "accountmanager.h"
+#include "calendarmanage.h"
 #include "dsettingsdialog.h"
 
 #include <QObject>
@@ -29,16 +31,16 @@ DWIDGET_USE_NAMESPACE
 DCORE_USE_NAMESPACE
 DTK_USE_NAMESPACE
 
-class Commonsetting : public QObject
+class Generalsetting : public QObject
 {
     Q_OBJECT
 public:
-    explicit Commonsetting(QObject *parent = nullptr);
-    virtual ~Commonsetting();
+    explicit Generalsetting(QObject *parent = nullptr);
+    virtual ~Generalsetting();
 
     static QPair<QWidget*, QWidget*> createComboboxFirstDayofWeek(QObject *obj);
 
     static QPair<QWidget*, QWidget*> createComboboxTime(QObject *obj);
 };
 
-#endif // COMMONSETTING_H
+#endif // GENERALSETTING_H

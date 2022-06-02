@@ -35,8 +35,8 @@
 #include "ctitlewidget.h"
 #include "tabletconfig.h"
 #include "calendarglobalenv.h"
-#include "commonsetting.h"
 #include "userlogin.h"
+#include "generalsetting.h"
 
 #include "scheduletypeeditdlg.h"
 
@@ -442,7 +442,6 @@ void Calendarmainwindow::initConnection()
             &Calendarmainwindow::slotSearchSelectSchedule);
     connect(m_scheduleSearchView, &CScheduleSearchView::signalScheduleHide, this,
             &Calendarmainwindow::setScheduleHide);
-
     connect(m_scheduleSearchView, &CScheduleSearchView::signalSelectCurrentItem, this,
             &Calendarmainwindow::slotSetSearchFocus);
     //更新当前时间
@@ -799,7 +798,6 @@ void Calendarmainwindow::changeEvent(QEvent *event)
 
 void Calendarmainwindow::mousePressEvent(QMouseEvent *event)
 {
-    Q_UNUSED(event);
     setScheduleHide();
     if (event->button() & Qt::LeftButton)
         m_startPos = event->pos();
@@ -848,9 +846,8 @@ void Calendarmainwindow::slotOpenSettingDialog()
         m_dsdSetting->setIcon(CDynamicIcon::getInstance()->getPixmap());
         m_dsdSetting->setFixedSize(682, 506);
         m_dsdSetting->widgetFactory()->registerWidget("login",Userlogin::createloginButton);
-
-        m_dsdSetting->widgetFactory()->registerWidget("FirstDayofWeek",Commonsetting::createComboboxFirstDayofWeek);
-        m_dsdSetting->widgetFactory()->registerWidget("Time",Commonsetting::createComboboxTime);
+        m_dsdSetting->widgetFactory()->registerWidget("FirstDayofWeek",Generalsetting::createComboboxFirstDayofWeek);
+        m_dsdSetting->widgetFactory()->registerWidget("Time",Generalsetting::createComboboxTime);
         m_dsdSetting->widgetFactory()->registerWidget("JobTypeListView", [](QObject *obj) -> QWidget * {
             if (DSettingsOption *option = qobject_cast<DSettingsOption *>(obj)) {
                 Q_UNUSED(option)

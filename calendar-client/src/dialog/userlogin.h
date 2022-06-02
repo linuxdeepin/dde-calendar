@@ -24,6 +24,7 @@
 #include "dsettingsdialog.h"
 
 #include <QObject>
+#include <QDBusArgument>
 
 DWIDGET_USE_NAMESPACE
 DCORE_USE_NAMESPACE
@@ -35,10 +36,39 @@ public:
     explicit Userlogin(QObject *parent = nullptr);
     virtual ~Userlogin();
 
+    struct AccountInfo {
+        void clear()
+        {
+            userName.clear();
+            avatarPath.clear();
+            nickName.clear();
+            userId.clear();
+        }
+        QString avatarPath;
+        QString userName;
+        QString nickName;
+        QString userId;
+    };
+
     static QPair<QWidget*, QWidget*> createloginButton(QObject *obj);
+
+signals:
+    void loggedIn();
+    void loggedOut(bool isManualQuit);
+
 protected:
     QIcon *m_switchIconLight {};
     QIcon *m_switchIconDark {};
+
+private:
+    AccountInfo m_accountInfo;
+    bool m_loginStatus;
+    bool m_isManualQuit = false;
+
+    void addUserInfo(const QDBusArgument &argument);
+private slots:
+    void userInfoChanged(const QString &str, const QVariantMap &map, const QStringList &list);
+
 };
 
 #endif // USERLOGIN_H

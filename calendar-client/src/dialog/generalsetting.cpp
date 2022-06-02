@@ -18,27 +18,26 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "commonsetting.h"
+#include "generalsetting.h"
 
-#include <DCommandLinkButton>
-#include <DSettingsWidgetFactory>
 #include <DComboBox>
 #include <QHBoxLayout>
 #include <DSettingsOption>
+#include <DCommandLinkButton>
+#include <DSettingsWidgetFactory>
 
-
-Commonsetting::Commonsetting(QObject *parent)
+Generalsetting::Generalsetting(QObject *parent)
     : QObject(parent)
 {
 
 }
 
-Commonsetting::~Commonsetting()
+Generalsetting::~Generalsetting()
 {
 
 }
 
-QPair<QWidget*, QWidget*> Commonsetting::createComboboxFirstDayofWeek(QObject *obj)
+QPair<QWidget*, QWidget*> Generalsetting::createComboboxFirstDayofWeek(QObject *obj)
 {
     auto option = qobject_cast<DTK_CORE_NAMESPACE::DSettingsOption *>(obj);
 
@@ -60,7 +59,7 @@ QPair<QWidget*, QWidget*> Commonsetting::createComboboxFirstDayofWeek(QObject *o
     return optionWidget;
 }
 
-QPair<QWidget*, QWidget*> Commonsetting::createComboboxTime(QObject *obj)
+QPair<QWidget*, QWidget*> Generalsetting::createComboboxTime(QObject *obj)
 {
     auto option = qobject_cast<DTK_CORE_NAMESPACE::DSettingsOption *>(obj);
 
