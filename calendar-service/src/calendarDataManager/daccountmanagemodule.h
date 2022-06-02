@@ -21,7 +21,7 @@
 #ifndef DACCOUNTMANAGEMODULE_H
 #define DACCOUNTMANAGEMODULE_H
 
-#include "dunioniddbus.h"
+#include "syncoperation.h"
 #include "daccount.h"
 #include "daccountmodule.h"
 #include "daccountmanagerdatabase.h"
@@ -85,7 +85,7 @@ public slots:
 
 private:
     DAccountManagerDataBase::Ptr m_accountManagerDB;
-    DUnionIDDbus::Ptr m_unionIDDbus;
+    Syncoperation::Ptr m_syncoperation;
     DAccount::List m_accountList;
     QMap<QString, DAccountModule::Ptr> m_accountModuleMap;
     QMap<QString, DAccountService::Ptr> m_AccountServiceMap[accountTypeCount];

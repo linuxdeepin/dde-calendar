@@ -24,6 +24,7 @@
 #include "daccountmanagerservice.h"
 #include "units.h"
 
+#include "dbuscloudsync.h"
 #include <QDBusConnection>
 #include <QDBusError>
 
@@ -59,4 +60,10 @@ DServiceManager::DServiceManager(QObject *parent)
     //        qCritical() << "registerObject failed:" << sessionBus.lastError();
     //        exit(0x0002);
     //    }
+    //创建云同步回调服务
+    DServiceBase *cloudsyncService = new class Dbuscloudsync(this);
+    if (!sessionBus.registerObject(cloudsyncService->getPath(), cloudsyncService->getInterface(), cloudsyncService, options)) {
+        qCritical() << "registerObject  cloudsyncService failed:" << sessionBus.lastError();
+        exit(0x0004);
+    }
 }

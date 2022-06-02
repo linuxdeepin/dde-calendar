@@ -26,33 +26,102 @@
 #include <QtDBus/QtDBus>
 #include <QSharedPointer>
 
-const QString unionid_service = "com.deepin.sync.Daemon";
-const QString unionid_path = "/com/deepin/utcloud/Daemon";
-
 class DUnionIDDbus : public QDBusAbstractInterface
 {
     Q_OBJECT
 public:
-    typedef QSharedPointer<DUnionIDDbus> Ptr;
-
-    explicit DUnionIDDbus(const QString &service, const QString &path, const QDBusConnection &connection, QObject *parent = nullptr);
-
     static inline const char *staticInterfaceName()
     {
         return "com.deepin.utcloud.Daemon";
     }
 
+public:
+    explicit DUnionIDDbus(const QString &service, const QString &path, const QDBusConnection &connection, QObject *parent = nullptr);
+
+    ~DUnionIDDbus();
+
+public slots:
+    /**
+     * @brief login     调用系统用户登入接口
+     * @param
+     * @return
+     */
+    inline QDBusPendingReply<> login()
+    {
+        QList<QVariant> argumentList;
+        return asyncCallWithArgumentList(QStringLiteral("login"), argumentList);
+    }
+    /**
+     * @brief logout     调用系统用户登出接口
+     * @param
+     * @return
+     */
+    inline QDBusPendingReply<> logout()
+    {
+        QList<QVariant> argumentList;
+        return asyncCallWithArgumentList(QStringLiteral("logout"), argumentList);
+    }
+    /**
+     * @brief Upload     云同步上传接口
+     * @param key  数据标识或文件绝对路径等
+     * @return data  上传成功数据的元信息ID值
+     *         err   错误信息
+     */
+    inline QDBusPendingReply<QString> Upload(const QString &key)
+    {
+        QList<QVariant> argumentList;
+        argumentList << QVariant::fromValue(key);
+        return asyncCallWithArgumentList(QStringLiteral("Upload"), argumentList);
+    }
+
+    /**
+     * @brief Download     云同步下载接口
+     * @param key  数据标识或文件绝对路径等
+     *        path1 指定缓存数据的路径
+     * @return path2 下载数据的路径
+     *         err   错误信息
+     */
+    inline QDBusPendingReply<QString> Download(const QString &key , const QString &path1)
+    {
+        QList<QVariant> argumentList;
+        argumentList << QVariant::fromValue(key) << QVariant::fromValue(path1);
+        return asyncCallWithArgumentList(QStringLiteral("Download"), argumentList);
+    }
+
+    /**
+     * @brief Delete     云同步删除接口
+     * @param key  数据标识或文件绝对路径等
+     * @return id  删除id
+     *         err   错误信息
+     */
+    inline QDBusPendingReply<QString> Delete(const QString &key)
+    {
+        QList<QVariant> argumentList;
+        argumentList << QVariant::fromValue(key);
+        return asyncCallWithArgumentList(QStringLiteral("Delete"), argumentList);
+    }
+
+    /**
+     * @brief Metadata     元数据获取接口
+     * @param key  数据标识或文件绝对路径等
+     * @return meta  元数据信息
+     *         err   错误信息
+     */
+    inline QDBusPendingReply<QByteArray> Metadata(const QString &key)
+    {
+        QList<QVariant> argumentList;
+        argumentList << QVariant::fromValue(key);
+        return asyncCallWithArgumentList(QStringLiteral("Metadata"), argumentList);
+    }
+
+Q_SIGNALS: // SIGNALS
+    void LoginStatus(int32_t value) const;
+
+#if 0
     //获取帐户信息
     DAccount::Ptr getUserData();
 
-    //TODO:
-    void download(const QString &key, const QString &path);
-    void login();
-    void logout();
-    void upload(const QString &path);
-    void deleteFile(const QString &key);
-    void metadata(const QString &meta);
-    void onAuthorized();
+
 
 private:
     DAccount::Ptr accountChangeHandle(const QString &accountInfo);
@@ -79,6 +148,16 @@ public slots:
 
 private:
     DAccount::Ptr m_account;
+#endif
 };
+
+
+namespace com {
+  namespace deepin {
+    namespace sync {
+      typedef ::DUnionIDDbus cloudopt;
+    }
+  }
+}
 
 #endif // DUNIONIDDBUS_H

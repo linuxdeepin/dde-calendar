@@ -26,21 +26,27 @@
 
 DUnionIDDbus::DUnionIDDbus(const QString &service, const QString &path, const QDBusConnection &connection, QObject *parent)
     : QDBusAbstractInterface(service, path, staticInterfaceName(), connection, parent)
-    , m_account(new DAccount(DAccount::Account_UnionID))
 {
     if (!this->isValid()) {
         qWarning() << "Error connecting remote object, service:" << this->service() << ",path:" << this->path() << ",interface" << this->interface();
     }
     //关联后端dbus触发信号
-    if (!QDBusConnection::sessionBus().connect(this->service(), this->path(), this->interface(), "", this, SLOT(propertyChanged(QDBusMessage)))) {
-        qWarning() << "the connection was fail!";
-    }
+    // if (!QDBusConnection::sessionBus().connect(this->service(), this->path(), this->interface(), "", this, SLOT(propertyChanged(QDBusMessage)))) {
+    //     qWarning() << "the connection was fail!";
+    // }
 }
 
+DUnionIDDbus::~DUnionIDDbus()
+{
+
+}
+
+#if 0
 DAccount::Ptr DUnionIDDbus::getUserData()
 {
     return accountChangeHandle(getPropertyByName("UserData").toString());
 }
+
 
 DAccount::Ptr DUnionIDDbus::accountChangeHandle(const QString &accountInfo)
 {
@@ -100,3 +106,4 @@ void DUnionIDDbus::slotDBusError(const QDBusError &error)
 {
     qWarning() << Q_FUNC_INFO << error;
 }
+#endif

@@ -26,7 +26,7 @@
 DAccountManageModule::DAccountManageModule(QObject *parent)
     : QObject(parent)
     , m_accountManagerDB(new DAccountManagerDataBase)
-    , m_unionIDDbus(new DUnionIDDbus(unionid_service, unionid_path, QDBusConnection::sessionBus()))
+    , m_syncoperation(new Syncoperation)
 {
     //新文件路径
     QString newDbPatch = getDBPath();
@@ -152,11 +152,11 @@ void DAccountManageModule::uploadNetWorkAccountData()
 void DAccountManageModule::unionIDDataMerging()
 {
     m_accountList = m_accountManagerDB->getAccountList();
-    DAccount::Ptr accountUnionid = m_unionIDDbus->getUserData();
+    DAccount::Ptr accountUnionid = m_syncoperation->optUserData();
     //如果已登陆unionid
     if (!accountUnionid.isNull()) {
         DAccount::Ptr unionidDB;
-        auto hasUnionid = [=, &unionidDB](const DAccount::Ptr &account) {
+        auto hasUnionid = [ =, &unionidDB](const DAccount::Ptr & account) {
             if (account->accountType() == DAccount::Account_UnionID) {
                 unionidDB = account;
                 return true;
@@ -166,7 +166,7 @@ void DAccountManageModule::unionIDDataMerging()
         //如果数据库中有unionid帐户
         if (std::any_of(m_accountList.begin(), m_accountList.end(), hasUnionid)) {
             if (unionidDB->avatar() == accountUnionid->avatar() && unionidDB->accountName() == accountUnionid->accountName()
-                && unionidDB->displayName() == accountUnionid->displayName()) {
+                    && unionidDB->displayName() == accountUnionid->displayName()) {
             } else {
                 unionidDB->setAvatar(accountUnionid->avatar());
                 unionidDB->setAccountName(accountUnionid->accountName());
