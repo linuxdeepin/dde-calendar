@@ -85,13 +85,13 @@ void CScheduleDlg::setData(const DSchedule::Ptr &info)
     if (m_type == 1) {
         //如果为新建则设置为提示信息
         m_textEdit->setPlaceholderText(info->summary());
-        m_accountItem = gAccounManager->getLocalAccountItem();
+        m_accountItem = gAccountManager->getLocalAccountItem();
     } else {
         //如果为编辑则显示
         m_textEdit->setPlainText(info->summary());
         //光标移动到文末
         m_textEdit->moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
-        m_accountItem = gAccounManager->getAccountItemByScheduleTypeId(info->scheduleTypeID());
+        m_accountItem = gAccountManager->getAccountItemByScheduleTypeId(info->scheduleTypeID());
     }
 
     if (nullptr != m_accountItem) {
@@ -100,7 +100,7 @@ void CScheduleDlg::setData(const DSchedule::Ptr &info)
         m_typeComBox->updateJobType(m_accountItem);
     } else {
         //TODO:目前日程类型的所属账户id与账户id对应不上，理论上m_accountItem不会为空值，待与后端沟通
-        m_accountItem = gAccounManager->getLocalAccountItem();
+        m_accountItem = gAccountManager->getLocalAccountItem();
     }
 
     m_beginDateEdit->setDate(info->dtStart().date());
@@ -186,7 +186,7 @@ bool CScheduleDlg::selectScheduleType()
             if (call.code == 0) {
                 //日程已创建且数据刷新完毕
                 //根据返回的日程类型id去获取日程类型实例，再次确认是否创建成功
-                DScheduleType::Ptr type = m_accountItem->getScheduleTypeByID(call.msg);
+                DScheduleType::Ptr type = m_accountItem->getScheduleTypeByID(call.msg.toString());
                 if (nullptr != type) {
                     //创建日程
                     createSchedule(type->typeID());
@@ -547,7 +547,7 @@ void CScheduleDlg::slotJobComboBoxEditingFinished()
 
 void CScheduleDlg::slotAccoutBoxActivated(const QString &text)
 {
-    m_accountItem = gAccounManager->getAccountItemByAccountName(text);
+    m_accountItem = gAccountManager->getAccountItemByAccountName(text);
     m_typeComBox->updateJobType(m_accountItem);
     m_colorSeletorWideget->resetColorButton(m_accountItem);
 }
@@ -1175,7 +1175,7 @@ void CScheduleDlg::initConnection()
 
 void CScheduleDlg::initAccountComBox()
 {
-    QList<AccountItem::Ptr> accountList = gAccounManager->getAccountList();
+    QList<AccountItem::Ptr> accountList = gAccountManager->getAccountList();
     for (AccountItem::Ptr p : accountList) {
         m_accountComBox->addItem(p->getAccount()->accountName());
     }
@@ -1193,7 +1193,7 @@ void CScheduleDlg::initDateEdit()
 
 void CScheduleDlg::initJobTypeComboBox()
 {
-    m_accountItem = gAccounManager->getAccountItemByAccountName(m_accountComBox->currentText());
+    m_accountItem = gAccountManager->getAccountItemByAccountName(m_accountComBox->currentText());
     m_typeComBox->updateJobType(m_accountItem);
     m_colorSeletorWideget->resetColorButton(m_accountItem);
 }

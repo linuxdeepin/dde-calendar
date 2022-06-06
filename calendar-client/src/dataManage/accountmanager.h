@@ -95,7 +95,9 @@ private:
 
     bool m_dataInitFinished = false;
 };
-#define gAccounManager AccountManager::getInstance()
-#define gLocalAccountItem gAccounManager->getLocalAccountItem()
-#define gUosAccountItem gAccounManager->getUnionAccountItem()
+
+#define gAccountManager AccountManager::getInstance()
+#define gLocalAccountItem gAccountManager->getLocalAccountItem()
+#define gUosAccountItem gAccountManager->getUnionAccountItem()
+
 #endif // ACCOUNTMANAGER_H

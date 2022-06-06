@@ -33,7 +33,7 @@ ScheduleManager* ScheduleManager::getInstace()
 
 void ScheduleManager::initconnect()
 {
-    connect(gAccounManager, &AccountManager::signalScheduleUpdate, this, &ScheduleManager::slotScheduleUpdate);
+    connect(gAccountManager, &AccountManager::signalScheduleUpdate, this, &ScheduleManager::slotScheduleUpdate);
 }
 
 /**
@@ -43,14 +43,14 @@ void ScheduleManager::initconnect()
  */
 void ScheduleManager::resetSchedule(int year)
 {
-    for (AccountItem::Ptr p : gAccounManager->getAccountList()) {
+    for (AccountItem::Ptr p : gAccountManager->getAccountList()) {
         p->querySchedulesWithParameter(year);
     }
 }
 
 void ScheduleManager::resetSchedule(const QDateTime& start, const QDateTime& end)
 {
-    for (AccountItem::Ptr p : gAccounManager->getAccountList()) {
+    for (AccountItem::Ptr p : gAccountManager->getAccountList()) {
         p->querySchedulesWithParameter(start, end);
     }
 }
@@ -62,12 +62,12 @@ void ScheduleManager::resetSchedule(const QDateTime& start, const QDateTime& end
 void ScheduleManager::updateSchedule()
 {
     m_scheduleMap.clear();
-    if (nullptr != gAccounManager->getLocalAccountItem()) {
-        m_scheduleMap = gAccounManager->getLocalAccountItem()->getScheduleMap();
+    if (nullptr != gAccountManager->getLocalAccountItem()) {
+        m_scheduleMap = gAccountManager->getLocalAccountItem()->getScheduleMap();
     }
 
-    if (nullptr != gAccounManager->getUnionAccountItem()) {
-        QMap<QDate, DSchedule::List> scheduleMap = gAccounManager->getUnionAccountItem()->getScheduleMap();
+    if (nullptr != gAccountManager->getUnionAccountItem()) {
+        QMap<QDate, DSchedule::List> scheduleMap = gAccountManager->getUnionAccountItem()->getScheduleMap();
         if (m_scheduleMap.size() == 0) {
             m_scheduleMap = scheduleMap;
         } else {
@@ -90,12 +90,12 @@ void ScheduleManager::updateSchedule()
 void ScheduleManager::updateSearchSchedule()
 {
     m_searchScheduleMap.clear();
-    if (nullptr != gAccounManager->getLocalAccountItem()) {
-        m_searchScheduleMap = gAccounManager->getLocalAccountItem()->getScheduleMap();
+    if (nullptr != gAccountManager->getLocalAccountItem()) {
+        m_searchScheduleMap = gAccountManager->getLocalAccountItem()->getScheduleMap();
     }
 
-    if (nullptr != gAccounManager->getUnionAccountItem()) {
-        QMap<QDate, DSchedule::List> scheduleMap = gAccounManager->getUnionAccountItem()->getScheduleMap();
+    if (nullptr != gAccountManager->getUnionAccountItem()) {
+        QMap<QDate, DSchedule::List> scheduleMap = gAccountManager->getUnionAccountItem()->getScheduleMap();
         if (m_searchScheduleMap.size() == 0) {
             m_searchScheduleMap = scheduleMap;
         } else {
@@ -229,7 +229,7 @@ DSchedule::List ScheduleManager::getScheduleByDay(QDate date)
 DScheduleType::Ptr ScheduleManager::getScheduleTypeByScheduleId(const QString& id)
 {
     DScheduleType::Ptr type = nullptr;
-    for (AccountItem::Ptr p : gAccounManager->getAccountList()) {
+    for (AccountItem::Ptr p : gAccountManager->getAccountList()) {
         type = p->getScheduleTypeByID(id);
         if (nullptr != type) {
             break;
@@ -249,7 +249,7 @@ void ScheduleManager::searchSchedule(const QString &key, const QDateTime &startT
 {
     static int count = 0;
     count = 0;
-    for (AccountItem::Ptr p : gAccounManager->getAccountList()) {
+    for (AccountItem::Ptr p : gAccountManager->getAccountList()) {
         count ++;
         p->querySchedulesWithParameter(key, startTime, endTime, [&](CallMessge) {
             count--;

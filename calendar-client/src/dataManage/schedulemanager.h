@@ -55,7 +55,7 @@ public:
 
     //搜索日程
     void searchSchedule(const QString &key, const QDateTime &startTime, const QDateTime &endTime);
-    //情况搜索的日程
+    //清空搜索的日程
     void clearSearchSchedule();
 
     //重置一年的日程信息

@@ -29,7 +29,7 @@
  */
 struct CallMessge{
     int code;       //返回码，0:请求成功，大于0:请求失败
-    QString msg;    //返回码说明，根据实际需求可返回任意字符串
+    QVariant msg;    //返回值，根据实际需求可返回任意数据
 };
 
 /**

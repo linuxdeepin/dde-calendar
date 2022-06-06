@@ -69,8 +69,8 @@ void SidebarView::initView()
 void SidebarView::initConnection()
 {
     //监听日程类型更新事件
-    connect(gAccounManager, &AccountManager::signalAccountUpdate, this, &SidebarView::slotAccountUpdate);
-    connect(gAccounManager, &AccountManager::signalScheduleTypeUpdate, this, &SidebarView::slotScheduleTypeUpdate);
+    connect(gAccountManager, &AccountManager::signalAccountUpdate, this, &SidebarView::slotAccountUpdate);
+    connect(gAccountManager, &AccountManager::signalScheduleTypeUpdate, this, &SidebarView::slotScheduleTypeUpdate);
 }
 
 /**
@@ -83,52 +83,75 @@ void SidebarView::initData()
 
     initLocalAccountItem();
     initUnionAccountItem();
+    //刷新列表展开状态
+    initExpandStatus();
 }
 
+/**
+ * @brief SidebarView::initExpandStatus
+ * 初始化列表展开状态
+ */
+void SidebarView::initExpandStatus()
+{
+    //初始化列表展开状态
+    QList<SidebarAccountItemWidget*> itemWidget;
+    itemWidget << m_localItemWidget << m_unionItemWidget;
+    for (SidebarAccountItemWidget *widget : itemWidget) {
+        if (widget != nullptr) {
+            //先进行一次反的展开状态目的是解决使用widget填充item时添加列表项后最后一项的widget没有隐藏问题
+            bool ret = widget->getAccountItem()->getAccount()->isExpandDisplay();
+            widget->getTreeItem()->setExpanded(!ret);
+            widget->setSelectStatus(ret);
+        }
+    }
+}
+
+/**
+ * @brief SidebarView::initLocalAccountItem
+ * 初始化本地账户列表
+ */
 void SidebarView::initLocalAccountItem()
 {
     if (nullptr != m_localItemWidget) {
         m_localItemWidget->deleteLater();
     }
-    QSharedPointer<AccountItem> localAccount = gAccounManager->getLocalAccountItem();
+    QSharedPointer<AccountItem> localAccount = gAccountManager->getLocalAccountItem();
     if (nullptr == localAccount) {
         return;
     }
     QTreeWidgetItem *localItem = new QTreeWidgetItem();
     m_treeWidget->addTopLevelItem(localItem);
-    localItem->setSizeHint(0, QSize(200, 30));
     QString localName = localAccount->getAccount()->accountName();
     m_localItemWidget = new SidebarAccountItemWidget(localAccount);
     m_treeWidget->setItemWidget(localItem, 0, m_localItemWidget);
     m_localItemWidget->setItem(localItem);
-    connect(m_localItemWidget, &SidebarItemWidget::signalStatusChange, this, &SidebarView::slotItemWidgetStatusChange);
-    m_localItemWidget->setSelectStatus(localAccount->getAccount()->isExpandDisplay());
 }
 
+/**
+ * @brief SidebarView::initUnionAccountItem
+ * 初始化unionID账户列表
+ */
 void SidebarView::initUnionAccountItem()
 {
     if (nullptr != m_unionItemWidget) {
         m_unionItemWidget->deleteLater();
     }
-    QSharedPointer<AccountItem> unionAccount = gAccounManager->getUnionAccountItem();
+    QSharedPointer<AccountItem> unionAccount = gAccountManager->getUnionAccountItem();
     if (nullptr == unionAccount) {
         return;
     }
-    QTreeWidgetItem *localItem = new QTreeWidgetItem();
-    m_treeWidget->addTopLevelItem(localItem);
-    localItem->setSizeHint(0, QSize(200, 30));
+    QTreeWidgetItem *unionItem = new QTreeWidgetItem();
+    m_treeWidget->addTopLevelItem(unionItem);
     QString localName = unionAccount->getAccount()->accountName();
     m_unionItemWidget = new SidebarAccountItemWidget(unionAccount);
-    m_treeWidget->setItemWidget(localItem, 0, m_localItemWidget);
-    m_unionItemWidget->setItem(localItem);
-    connect(m_unionItemWidget, &SidebarItemWidget::signalStatusChange, this, &SidebarView::slotItemWidgetStatusChange);
-    m_unionItemWidget->setSelectStatus(unionAccount->getAccount()->isExpandDisplay());
+    m_treeWidget->setItemWidget(unionItem, 0, m_unionItemWidget);
+    m_unionItemWidget->setItem(unionItem);
 }
 
 /**
  * @brief SidebarView::resetLocalChildItem
- * 重置本地日程类型选项
- * @param parentItem
+ * 重置日程类型选项
+ * @param parentItemWidget 父列表控件
  */
 void SidebarView::resetJobTypeChildItem(SidebarAccountItemWidget *parentItemWidget)
 {
@@ -151,51 +174,35 @@ void SidebarView::resetJobTypeChildItem(SidebarAccountItemWidget *parentItemWidg
         if (nullptr != p) {
             item = new QTreeWidgetItem(parentItemWidget->getTreeItem());
             item->setTextAlignment(0, Qt::AlignVCenter | Qt::AlignLeft);
-            item->setSizeHint(0, QSize(500, 30));
+            item->setSizeHint(0, QSize(220, 40));
             parentItem->addChild(item);
             SidebarItemWidget *widget = new SidebarTypeItemWidget(p, this);
             m_treeWidget->setItemWidget(item, 0, widget);
-            connect(widget, &SidebarItemWidget::signalStatusChange, this, &SidebarView::slotItemWidgetStatusChange);
         }
     }
     //刷新列表项位置，主要用于解决初始添加时最后一项显示位置和其他项位置不一致问题
-    resetTreeItemPos();
+    resetTreeItemPos(parentItemWidget->getTreeItem());
 }
 
 /**
  * @brief SidebarView::resetTreeItemPos
  * 刷新列表项位置，主要用于解决初始添加时最后一项显示位置和其他项位置不一致问题
  */
-void SidebarView::resetTreeItemPos()
+void SidebarView::resetTreeItemPos(QTreeWidgetItem *item)
 {
-    int index = 0;
-    while (true){
-        QTreeWidgetItem *item = m_treeWidget->topLevelItem(index);
-        if (nullptr == item) {
-            break;
-        }
-        QWidget* ptmpWidget = nullptr;
-        ptmpWidget = m_treeWidget->itemWidget(item, 0);
-        int x = ptmpWidget->x();
-        QTreeWidgetItem *ptmp = nullptr;
-        for(int i = 0; i < item->childCount(); i++)
-        {
-            ptmp = item->child(i);
-            ptmpWidget = m_treeWidget->itemWidget(ptmp, 0);
-            ptmpWidget->move(x, ptmpWidget->y());
-        }
-        index++;
+    if (nullptr == item) {
+        return;
     }
-}
-
-/**
- * @brief SidebarView::slotItemWidgetStatusChange
- * itemWidget状态改变事件
- * @param status 状态
- * @param id    id
- */
-void SidebarView::slotItemWidgetStatusChange(bool , QString )
-{
+    QWidget* ptmpWidget = nullptr;
+    ptmpWidget = m_treeWidget->itemWidget(item, 0);
+    int x = ptmpWidget->x();
+    QTreeWidgetItem *ptmp = nullptr;
+    for(int i = 0; i < item->childCount(); i++)
+    {
+        ptmp = item->child(i);
+        ptmpWidget = m_treeWidget->itemWidget(ptmp, 0);
+        ptmpWidget->move(x, ptmpWidget->y());
+    }
 }
 
 /**
@@ -216,6 +223,8 @@ void SidebarView::slotScheduleTypeUpdate()
     //初始化列表数据
     resetJobTypeChildItem(m_localItemWidget);
     resetJobTypeChildItem(m_unionItemWidget);
+    //刷新列表展开状态
+    initExpandStatus();
 }
 
 void SidebarView::paintEvent(QPaintEvent *event)

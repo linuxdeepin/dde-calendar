@@ -166,7 +166,6 @@ void CScheduleBaseWidget::deleteselectSchedule()
  */
 CaHuangLiDayInfo CScheduleBaseWidget::getLunarInfo()
 {
-    //TODO 农历获取
     CaHuangLiDayInfo huangLiInfo = gLunarManager->getHuangLiDay(getSelectDate());
     m_lunarYear = QString("-%0%1年-").arg(huangLiInfo.mGanZhiYear).arg(huangLiInfo.mZodiac);
     m_lunarDay = QString("-农历%0%1-").arg(huangLiInfo.mLunarMonthName).arg(huangLiInfo.mLunarDayName);

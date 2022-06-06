@@ -37,8 +37,6 @@ public:
 signals:
 
 public slots:
-    //自定义itemWidget控件状态改变事件
-    void slotItemWidgetStatusChange(bool status, QString id);
     //账户更新事件
     void slotAccountUpdate();
     //日程类型更新事件
@@ -52,6 +50,8 @@ private:
     void initConnection();
     //初始化数据
     void initData();
+    //初始化列表展开状态
+    void initExpandStatus();
     //初始化本地账户列表
     void initLocalAccountItem();
     //初始化union账户列表
@@ -60,7 +60,7 @@ private:
     //重置日程类型item
     void resetJobTypeChildItem(SidebarAccountItemWidget *parentItemWidget);
     //重置item位置
-    void resetTreeItemPos();
+    void resetTreeItemPos(QTreeWidgetItem *item);
 
 private:
     QTreeWidget *m_treeWidget = nullptr;        //树结构

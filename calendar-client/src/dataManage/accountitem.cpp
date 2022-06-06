@@ -116,16 +116,14 @@ DTypeColor::List AccountItem::getColorTypeList()
 //}
 
 /**
- * @brief AccountItem::updateAccountExpandStatus
+ * @brief AccountItem::setAccountExpandStatus
  * 更新账户列表展开状态
  * @param expandStatus 展开状态
- * @param callback
  */
-void AccountItem::updateAccountExpandStatus(bool expandStatus, CallbackFunc callback)
+void AccountItem::setAccountExpandStatus(bool expandStatus)
 {
     m_account->setIsExpandDisplay(expandStatus);
-    m_dbusRequest->setCallbackFunc(callback);
-    m_dbusRequest->updateAccountExpandStatus(m_account);
+    m_dbusRequest->setAccountExpandStatus(expandStatus);
 }
 
 /**

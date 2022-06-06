@@ -43,7 +43,7 @@ DAccount::List DAccountManagerDataBase::getAccountList()
 {
     DAccount::List accountList;
     QString strSql("SELECT accountID,accountName, displayName, syncState, accountAvatar,               \
-                   accountDescription, accountType, dbName,dBusPath,dBusInterface, dtCreate, dtDelete, dtUpdate, isDeleted         \
+                   accountDescription, accountType, dbName,dBusPath,dBusInterface, dtCreate, expandStatus, dtDelete, dtUpdate, isDeleted         \
                    FROM accountManager");
     QSqlQuery query(m_database);
     if (query.prepare(strSql) && query.exec()) {
@@ -59,6 +59,7 @@ DAccount::List DAccountManagerDataBase::getAccountList()
             account->setDbName(query.value("dbName").toString());
             account->setDbusPath(query.value("dBusPath").toString());
             account->setDbusInterface(query.value("dBusInterface").toString());
+            account->setIsExpandDisplay(query.value("expandStatus").toBool());
             account->setDtCreate(QDateTime::fromString(query.value("dtCreate").toString(), Qt::ISODate));
             accountList.append(account);
         }
@@ -71,7 +72,7 @@ DAccount::List DAccountManagerDataBase::getAccountList()
 DAccount::Ptr DAccountManagerDataBase::getAccountByID(const QString &accountID)
 {
     QString strSql("SELECT accountName, displayName, syncState, accountAvatar,               \
-                   accountDescription, accountType, dbName,dBusPath,dBusInterface, dtCreate, dtDelete, dtUpdate, isDeleted         \
+                   accountDescription, accountType, dbName,dBusPath,dBusInterface, dtCreate, dtDelete, dtUpdate, expandStatus, isDeleted         \
                    FROM accountManager WHERE accountID = ?");
     QSqlQuery query(m_database);
     if (query.prepare(strSql)) {
@@ -88,6 +89,7 @@ DAccount::Ptr DAccountManagerDataBase::getAccountByID(const QString &accountID)
             account->setDbName(query.value("dbName").toString());
             account->setDbusPath(query.value("dBusPath").toString());
             account->setDbusInterface(query.value("dBusInterface").toString());
+            account->setIsExpandDisplay(query.value("expandStatus").toBool());
             account->setDtCreate(QDateTime::fromString(query.value("dtCreate").toString(), Qt::ISODate));
             return account;
         } else {
@@ -110,8 +112,8 @@ QString DAccountManagerDataBase::addAccountInfo(const DAccount::Ptr &accountInfo
     QString strSql("INSERT INTO accountManager                                          \
                    (accountID, accountName, displayName, syncState, accountAvatar,  \
                     accountDescription, accountType, dbName,dBusPath,dBusInterface, dtCreate,         \
-                     isDeleted)                                                \
-                   VALUES(?,?, ?, ?,?,?,?,?,?,?,?,?)");
+                     expandStatus, isDeleted)                                                \
+                   VALUES(?,?, ?, ?,?,?,?,?,?,?,?,?,?)");
     if (query.prepare(strSql)) {
         query.addBindValue(accountInfo->accountID());
         query.addBindValue(accountInfo->accountName());
@@ -123,6 +125,7 @@ QString DAccountManagerDataBase::addAccountInfo(const DAccount::Ptr &accountInfo
         query.addBindValue(accountInfo->dbName());
         query.addBindValue(accountInfo->dbusPath());
         query.addBindValue(accountInfo->dbusInterface());
+        query.addBindValue(accountInfo->isExpandDisplay());
         query.addBindValue(dtToString(accountInfo->dtCreate()));
         query.addBindValue(0);
         if (!query.exec()) {
@@ -142,7 +145,7 @@ bool DAccountManagerDataBase::updateAccountInfo(const DAccount::Ptr &accountInfo
     QString strSql("UPDATE accountManager                                                           \
                    SET accountName=?, displayName=?, syncState= ?,                   \
                    accountAvatar=?, accountDescription=?, accountType=?, dbName=?,               \
-                   dBusPath = ? ,dBusInterface = ? WHERE accountID=?");
+                   dBusPath = ? ,dBusInterface = ?, expandStatus = ? WHERE accountID=?");
     QSqlQuery query(m_database);
     bool res = false;
     if (query.prepare(strSql)) {
@@ -155,6 +158,7 @@ bool DAccountManagerDataBase::updateAccountInfo(const DAccount::Ptr &accountInfo
         query.addBindValue(accountInfo->dbName());
         query.addBindValue(accountInfo->dbusPath());
         query.addBindValue(accountInfo->dbusInterface());
+        query.addBindValue(accountInfo->isExpandDisplay());
         query.addBindValue(accountInfo->accountID());
         res = query.exec();
     }
@@ -249,6 +253,7 @@ void DAccountManagerDataBase::createDB()
                                dtCreate DATETIME not null,    \
                                dtDelete DATETIME,             \
                                dtUpdate DATETIME,             \
+                               expandStatus  integer,               \
                                isDeleted INTEGER not null)");
         res = query.exec(accountManagerSql);
         if (!res) {
@@ -286,10 +291,10 @@ void DAccountManagerDataBase::initAccountManagerDB()
                        (accountID, accountName, displayName,                    \
                        syncState, accountAvatar, accountDescription,            \
                        accountType, dbName,dBusPath,dBusInterface,dtCreate, dtUpdate,      \
-                       isDeleted)                                \
+                       expandStatus, isDeleted)                                \
                    VALUES(:accountID,:accountName,:displayName,:syncState,:accountAvatar,   \
                    :accountDescription,:accountType,:dbName,:dBusPath,:dBusInterface,:dtCreate,:dtUpdate,            \
-                    :isDeleted);");
+                   :expandStatus, :isDeleted);");
         if (query.prepare(strsql)) {
             query.bindValue(":accountID", DDataBase::createUuid());
             query.bindValue(":accountName", "localAccount");
@@ -302,6 +307,7 @@ void DAccountManagerDataBase::initAccountManagerDB()
             query.bindValue(":dBusPath", serviceBasePath + "/account_local");
             query.bindValue(":dBusInterface", accountServiceInterface);
             query.bindValue(":dtCreate", dtToString(currentDateTime));
+            query.bindValue(":expandStatus", 1);
             query.bindValue(":isDeleted", 0);
 
             if (query.exec()) {

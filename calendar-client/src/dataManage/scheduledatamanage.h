@@ -51,7 +51,7 @@ public:
         return m_theme;
     }
 private:
-    CScheduleDataManage(QObject *parent = nullptr);
+    explicit CScheduleDataManage(QObject *parent = nullptr);
     ~CScheduleDataManage();
 private:
     int m_theme = 0;
@@ -62,7 +62,7 @@ class JobTypeInfoManager : public QObject
 {
     Q_OBJECT
 private:
-    JobTypeInfoManager(QObject *parent = nullptr);
+    explicit JobTypeInfoManager(QObject *parent = nullptr);
 public:
     static JobTypeInfoManager *instance();
     /**

@@ -500,7 +500,7 @@ void CYearWindow::updateShowSchedule()
  */
 void CYearWindow::updateShowLunar()
 {
-    //TODO 获取农历信息
+    //获取农历信息
     getLunarInfo();
     m_yearWidget->setLunarYearDate(m_lunarYear);
     //如果正在切换则退出
@@ -624,8 +624,8 @@ void CYearWindow::setYearData()
     if (getShowLunar()) {
         m_yearLabel->setText(QString::number(getSelectDate().year()) + tr("Y"));
         //获取农历信息
-        //TODO 获取农历信息
-//        getLunarInfo();
+        //获取农历信息
+        getLunarInfo();
         //显示农历信息
         setLunarShow();
     } else {

@@ -34,19 +34,19 @@ CScheduleOperation::CScheduleOperation(const AccountItem::Ptr &accountItem, QWid
 {
     //如果为空默认设置为本地帐户
     if (m_accountItem.isNull()) {
-        m_accountItem = gAccounManager->getLocalAccountItem();
+        m_accountItem = gAccountManager->getLocalAccountItem();
     }
 }
 
 CScheduleOperation::CScheduleOperation(const QString &scheduleTypeID, QWidget *parent)
     : QObject(parent)
-    , m_accountItem(gAccounManager->getAccountItemByScheduleTypeId(scheduleTypeID))
+    , m_accountItem(gAccountManager->getAccountItemByScheduleTypeId(scheduleTypeID))
     , m_widget(parent)
 {
     //如果为空默认设置为本地帐户
     if (m_accountItem.isNull()) {
         qWarning() << "Cannot get account by schedule type,scheduleTypeID:" << scheduleTypeID;
-        m_accountItem = gAccounManager->getLocalAccountItem();
+        m_accountItem = gAccountManager->getLocalAccountItem();
     }
 }
 
@@ -412,11 +412,11 @@ void CScheduleOperation::showLunarMessageDialog(const DSchedule::Ptr &newinfo, c
 bool CScheduleOperation::isFestival(const DSchedule::Ptr &schedule)
 {
     //判断是否为节假日日程
-    AccountItem::Ptr account = gAccounManager->getAccountItemByScheduleTypeId(schedule->scheduleTypeID());
+    AccountItem::Ptr account = gAccountManager->getAccountItemByScheduleTypeId(schedule->scheduleTypeID());
     if (account.isNull()) {
         qWarning() << "Cannot get account by schedule type,scheduleTypeID:" << schedule->scheduleTypeID();
     }
-    DScheduleType::Ptr scheduleType = gAccounManager->getScheduleTypeByScheduleTypeId(schedule->scheduleTypeID());
+    DScheduleType::Ptr scheduleType = gAccountManager->getScheduleTypeByScheduleTypeId(schedule->scheduleTypeID());
     //如果为本地日程且日程类型为None则表示为节假日日程
     return account->getAccount()->accountType() == DAccount::Account_Local && scheduleType->privilege() == 0;
 }
@@ -425,7 +425,7 @@ bool CScheduleOperation::scheduleIsInvariant(const DSchedule::Ptr &schedule)
 {
     //如果为网络帐户，且没有网络或者帐户开关关闭
     //TODO:网络判断
-    AccountItem::Ptr accountItem = gAccounManager->getAccountItemByScheduleTypeId(schedule->scheduleTypeID());
+    AccountItem::Ptr accountItem = gAccountManager->getAccountItemByScheduleTypeId(schedule->scheduleTypeID());
     DAccount::Ptr account = accountItem->getAccount();
     if (account->accountType() == DAccount::Account_UnionID) {
         //如果uid日历同步关闭则日程不可修改

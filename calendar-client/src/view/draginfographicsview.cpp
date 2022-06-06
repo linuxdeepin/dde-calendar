@@ -406,10 +406,10 @@ void DragInfoGraphicsView::dragMoveEvent(QDragMoveEvent *event)
         m_MoveDate = gDate;
         QJsonObject rootobj = jsonDoc.object();
         //TODO: 数据修改
-        //        m_DragScheduleInfo = ScheduleDataInfo::JsonToSchedule(rootobj);
-        //        m_DragScheduleInfo.setIsMoveInfo(true);
-        MoveInfoProcess(m_DragScheduleInfo, event->posF());
-        DragInfoItem::setPressSchedule(m_DragScheduleInfo);
+//        DSchedule::fromJsonString(m_DragScheduleInfo, str);
+//        m_DragScheduleInfo.setIsMoveInfo(true);
+//        MoveInfoProcess(m_DragScheduleInfo, event->posF());
+//        DragInfoItem::setPressSchedule(m_DragScheduleInfo);
     }
 }
 

@@ -46,11 +46,11 @@ public:
     //     */
     //    void updateAccountInfo(const DAccount::Ptr &accountInfo);
     /**
-     * @brief updateAccountExpandStatus
-     * 更新账户列表展开状态
-     * @param accountInfo
+     * @brief setAccountExpandStatus
+     * 设置账户列表展开状态
+     * @param expandStatus 展开状态
      */
-    void updateAccountExpandStatus(const DAccount::Ptr &accountInfo);
+    void setAccountExpandStatus(bool expandStatus);
     /**
      * @brief getScheduleTypeList      获取日程类型信息集
      * @return

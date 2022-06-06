@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
         ww.slotTheme(DGuiApplicationHelper::instance()->themeType());
         ww.show();
         //准备数据  TODO:测试稳定后因放在界面构造前面
-        gAccounManager->resetAccount();
+        gAccountManager->resetAccount();
         return app->exec();
     }
     return 0;

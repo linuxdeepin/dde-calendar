@@ -624,7 +624,7 @@ void CDayMonthWidget::paintCell(QWidget *cell)
             painter.setPen(pen);
             painter.setBrush(QBrush(m_ceventColor));
             painter.setPen(Qt::NoPen);
-            int r = int(cell->width() * (4.0 / 25));
+            int r = int(cell->width() * 0.1);
             if (r < 4) {
                 r = 4;
             } else if (r > 7) {

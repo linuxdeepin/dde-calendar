@@ -540,6 +540,11 @@ void Calendarmainwindow::resizeEvent(QResizeEvent *event)
     setSearchWidth(m_scheduleSearchViewMaxWidth);
     setScheduleHide();
 
+    //窗口宽度小于826时隐藏侧边栏
+    if (this->width() < 826) {
+        m_titleWidget->setSidebarStatus(false);
+    }
+
     //保存窗口大小
     CConfigSettings::getInstance()->setOption("base.windowWidth", event->size().width());
     CConfigSettings::getInstance()->setOption("base.windowHeight", event->size().height());
@@ -776,6 +781,10 @@ void Calendarmainwindow::slotSidebarStatusChange(bool status)
 {
     //设置账户侧边栏显示状态
     m_sidebarView->setVisible(status);
+    //展开侧边栏后最小宽度为826
+    if (status && width() < 826) {
+        resize(826, height());
+    }
     //将状态保存在配置文件中
     gSetting->setUserSidebarStatus(status);
 }
@@ -997,7 +1006,7 @@ QPair<QWidget *, QWidget *> Calendarmainwindow::createCalendarAccount(QObject *o
     widget->setFixedSize(150, 36);
     QPair<QWidget *, QWidget *> optionWidget = DSettingsWidgetFactory::createStandardItem(QByteArray(), option, widget);
 
-    for(auto account : gAccounManager->getAccountList()) {
+    for(auto account : gAccountManager->getAccountList()) {
         if(DAccount::Account_Local == account->getAccount()->accountType()) {
             widget->addItem(tr("Local account"), DAccount::Account_Local);
         }

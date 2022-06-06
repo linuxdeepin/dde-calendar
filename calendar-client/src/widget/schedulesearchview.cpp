@@ -559,8 +559,7 @@ void CScheduleSearchView::deleteSchedule()
 {
     currentDItemIndex = m_scheduleSearchItem.indexOf(m_selectItem);
     //如果存在该item且为节日日程不可操作
-    if (currentDItemIndex >= 0
-        && CScheduleOperation::isFestival(m_selectItem->getData())
+    if (currentDItemIndex >= 0 && CScheduleOperation::isFestival(m_selectItem->getData())
         //TODO:如果为不可修改日程也不可被删除
     ) {
         m_selectItem->slotDelete();

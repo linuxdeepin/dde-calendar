@@ -52,7 +52,7 @@ SidebarItemWidget *SidebarItemWidget::getTypeItemWidget(DScheduleType::Ptr ptr)
  */
 void SidebarItemWidget::setSelectStatus(bool status)
 {
-    if (status == m_selectStatus) {
+    if (status == m_selectStatus && m_item && status == m_item->isExpanded()) {
         return;
     }
     m_selectStatus = status;
@@ -155,7 +155,7 @@ void SidebarTypeItemWidget::initView()
 
 void SidebarTypeItemWidget::updateStatus()
 {
-    AccountItem::Ptr account = gAccounManager->getAccountItemByAccountId(m_scheduleType->accountID());
+    AccountItem::Ptr account = gAccountManager->getAccountItemByAccountId(m_scheduleType->accountID());
     if (account) {
         if (m_selectStatus != (m_scheduleType->showState() == DScheduleType::Show)) {
             m_scheduleType->setShowState(m_selectStatus? DScheduleType::Show:DScheduleType::Hide);
@@ -213,7 +213,6 @@ void SidebarAccountItemWidget::initView()
     } else {
         m_rearIconButton->hide();   //尾部控件隐藏
     }
-
     setFixedHeight(36);
 }
 
@@ -224,7 +223,7 @@ AccountItem::Ptr SidebarAccountItemWidget::getAccountItem()
 
 void SidebarAccountItemWidget::updateStatus()
 {
-    m_accountItem->updateAccountExpandStatus(m_selectStatus);
+    m_accountItem->setAccountExpandStatus(m_selectStatus);
     if (m_selectStatus) {
         m_headIconButton->setIcon(DStyle::SP_ArrowDown);
     } else {

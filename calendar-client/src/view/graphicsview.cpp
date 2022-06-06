@@ -146,15 +146,15 @@ void CGraphicsView::setInfo(const DSchedule::List &info)
 bool MScheduleTimeThan(const DSchedule::Ptr &s1, const DSchedule::Ptr &s2)
 {
     //TODO:日程排序
-    //    if (s1.getBeginDateTime().date().daysTo(s1.getEndDateTime().date()) == s2.getBeginDateTime().date().daysTo(s2.getEndDateTime().date())) {
-    //        if (s1.getBeginDateTime() == s2.getBeginDateTime()) {
-    //            return s1.getBeginDateTime().secsTo(s1.getEndDateTime()) > s2.getBeginDateTime().secsTo(s2.getEndDateTime());
-    //        } else {
-    //            return s1.getBeginDateTime() < s2.getBeginDateTime();
-    //        }
-    //    } else {
-    //        return s1.getBeginDateTime().date().daysTo(s1.getEndDateTime().date()) > s2.getBeginDateTime().date().daysTo(s2.getEndDateTime().date());
-    //    }
+//    if (s1.getBeginDateTime().date().daysTo(s1.getEndDateTime().date()) == s2.getBeginDateTime().date().daysTo(s2.getEndDateTime().date())) {
+//        if (s1.getBeginDateTime() == s2.getBeginDateTime()) {
+//            return s1.getBeginDateTime().secsTo(s1.getEndDateTime()) > s2.getBeginDateTime().secsTo(s2.getEndDateTime());
+//        } else {
+//            return s1.getBeginDateTime() < s2.getBeginDateTime();
+//        }
+//    } else {
+//        return s1.getBeginDateTime().date().daysTo(s1.getEndDateTime().date()) > s2.getBeginDateTime().date().daysTo(s2.getEndDateTime().date());
+//    }
 }
 
 void CGraphicsView::upDateInfoShow(const CGraphicsView::DragStatus &status, const DSchedule::Ptr &info)

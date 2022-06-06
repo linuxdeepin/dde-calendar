@@ -55,7 +55,7 @@ public:
     //更新账户信息
     //    void updateAccountInfo(CallbackFunc callback = nullptr);
     //更新账户列表展开状态
-    void updateAccountExpandStatus(bool expandStatus, CallbackFunc callback = nullptr);
+    void setAccountExpandStatus(bool expandStatus);
 
     //创建日程类型
     void createJobType(const DScheduleType::Ptr &typeInfo, CallbackFunc callback = nullptr);

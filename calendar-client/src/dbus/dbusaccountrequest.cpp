@@ -19,6 +19,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "dbusaccountrequest.h"
+#include <QDBusInterface>
 
 #include <QDBusReply>
 #include <QDBusInterface>
@@ -51,17 +52,14 @@ void DbusAccountRequest::getAccountInfo()
 //}
 
 /**
- * @brief DbusAccountRequest::updateAccountExpandStatus
- * 更新账户列表展开状态
- * @param accountInfo
+ * @brief DbusAccountRequest::setAccountExpandStatus
+ * 设置账户列表展开状态
+ * @param expandStatus 展开状态
  */
-void DbusAccountRequest::updateAccountExpandStatus(const DAccount::Ptr &accountInfo)
+void DbusAccountRequest::setAccountExpandStatus(bool expandStatus)
 {
-    //TODO:通过帐户属性设置展开状态
-    //    QString jsonStr;
-    //    DAccount::toJsonString(accountInfo, jsonStr);
-    //    QString callName = "updateAccountExpandStatus";
-    //    asyncCall("updateAccountInfo", callName, QVariant(jsonStr));
+    QDBusInterface interface(this->service(), this->path(), this->interface(), QDBusConnection::sessionBus(), this);
+    interface.setProperty("isExpand", QVariant(expandStatus));
 }
 
 /**

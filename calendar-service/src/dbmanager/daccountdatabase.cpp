@@ -439,6 +439,7 @@ DScheduleType::Ptr DAccountDataBase::getScheduleTypeByID(const QString &typeID, 
             type->setDtCreate(query.value("dtCreate").toDateTime());
             type->setDtUpdate(query.value("dtUpdate").toDateTime());
             type->setDtDelete(query.value("dtDelete").toDateTime());
+            type->setShowState(static_cast<DScheduleType::ShowState>(query.value("showState").toInt()));
             type->setDeleted(query.value("isDeleted").toInt());
             systemTypeTran(type);
         }
@@ -490,6 +491,7 @@ DScheduleType::List DAccountDataBase::getScheduleTypeList(const int isDeleted)
                 type->setDtCreate(query.value("dtCreate").toDateTime());
                 type->setDtCreate(query.value("dtUpdate").toDateTime());
                 type->setDtCreate(query.value("dtDelete").toDateTime());
+                type->setShowState(static_cast<DScheduleType::ShowState>(query.value("showState").toInt()));
                 type->setDeleted(query.value("isDeleted").toInt());
                 systemTypeTran(type);
                 typeList.append(type);
@@ -621,7 +623,7 @@ QString DAccountDataBase::getFestivalTypeID()
 DAccount::Ptr DAccountDataBase::getAccountInfo()
 {
     QString strSql("SELECT syncState,accountState, accountName, displayName, cloudPath,      \
-                   accountType, syncFreq, intervalTime, syncTag ,dtLastUpdate         \
+                   accountType, syncFreq, intervalTime, syncTag, expandStatus, dtLastUpdate         \
                    FROM account WHERE id = 1;");
     QSqlQuery query(m_database);
     if (query.prepare(strSql) && query.exec() && query.next()) {
@@ -634,6 +636,7 @@ DAccount::Ptr DAccountDataBase::getAccountInfo()
         m_account->setSyncFreq(query.value("syncFreq").toInt());
         m_account->setIntervalTime(query.value("intervalTime").toInt());
         m_account->setSyncTag(query.value("syncTag").toInt());
+        m_account->setIsExpandDisplay(query.value("expandStatus").toBool());
         m_account->setDtLastSync(dtFromString(query.value("dtLastUpdate").toString()));
     } else {
         qWarning() << query.lastError();
@@ -649,7 +652,7 @@ void DAccountDataBase::updateAccountInfo(const DAccount::Ptr &account)
     QString strSql("UPDATE account                                                              \
                    SET syncState=?, accountState = ?,accountName=?, displayName=?,                               \
                   cloudPath=?, accountType=?, syncFreq=?, intervalTime=?, syncTag=?             \
-                  ,dtLastUpdate = ? WHERE id=1;");
+                  , expandStatus = ?, dtLastUpdate = ? WHERE id=1;");
     QSqlQuery query(m_database);
     if (query.prepare(strSql)) {
         query.addBindValue(account->syncState());
@@ -661,6 +664,7 @@ void DAccountDataBase::updateAccountInfo(const DAccount::Ptr &account)
         query.addBindValue(account->syncFreq());
         query.addBindValue(account->intervalTime());
         query.addBindValue(account->syncTag());
+        query.addBindValue(account->isExpandDisplay());
         query.addBindValue(account->dtLastSync());
         if (!query.exec()) {
             qWarning() << query.lastError();
@@ -1025,6 +1029,7 @@ void DAccountDataBase::createDB()
                                  syncFreq integer not null,             \
                                  intervalTime integer,                  \
                                  syncTag    integer,                    \
+                                 expandStatus  integer,                 \
                                  dtLastUpdate DATETIME                  \
                                 )");
         res = query.exec(createAccountSql);
@@ -1229,8 +1234,8 @@ void DAccountDataBase::initAccountDB()
                    account                                  \
                (syncState,accountState,accountName,         \
                    displayName,cloudPath,accountType,       \
-                   syncFreq,intervalTime,syncTag)           \
-               VALUES(?,?,?,?,?,?,?,?,?);");
+                   syncFreq,intervalTime,syncTag, expandStatus)           \
+               VALUES(?,?,?,?,?,?,?,?,?,?);");
     QSqlQuery query(m_database);
     if (query.prepare(strSql)) {
         query.addBindValue(m_account->syncState());
@@ -1242,6 +1247,7 @@ void DAccountDataBase::initAccountDB()
         query.addBindValue(m_account->syncFreq());
         query.addBindValue(m_account->intervalTime());
         query.addBindValue(m_account->syncTag());
+        query.addBindValue(m_account->isExpandDisplay());
         if (!query.exec()) {
             qWarning() << "initAccountDB error:" << query.lastError();
         }
