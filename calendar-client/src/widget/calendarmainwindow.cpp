@@ -861,7 +861,7 @@ void Calendarmainwindow::slotOpenSettingDialog()
                                   {"groups":[
                                       {
                                           "key":"setting_account",
-                                          "name":"Account setting",
+                                          "name":"Account settings",
                                           "groups":[
                                               {
                                                   "key":"account",
@@ -896,23 +896,23 @@ void Calendarmainwindow::slotOpenSettingDialog()
                                        ]
                                    },
                                    {
-                                       "key":"setting_common",
-                                       "name":"Common setting",
+                                       "key":"general settings",
+                                       "name":"General settings",
                                        "groups":[
                                            {
-                                               "key":"common",
-                                               "name":"Common",
+                                               "key":"general",
+                                               "name":"General",
                                                "options":[
                                                    {
                                                        "key":"firstday",
-                                                       "name":"firstdayofweek",
+                                                       "name":"First day of week",
                                                        "type":"FirstDayofWeek",
                                                        "text":"Sunday",
                                                        "default":""
                                                    },
                                                    {
                                                        "key":"time",
-                                                       "name":"time",
+                                                       "name":"Time",
                                                        "type":"Time",
                                                       "default":""
                                                    }

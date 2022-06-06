@@ -46,16 +46,24 @@ QPair<QWidget*, QWidget*> Generalsetting::createComboboxFirstDayofWeek(QObject *
     QComboBox* combobox = new QComboBox(widget);
     QHBoxLayout* layout = new QHBoxLayout(widget);
     QStringList firstDayofWeekList;
-    firstDayofWeekList<<tr("Sunday")<<tr("Monday")<<tr("Tuesday")<<tr("Wednesday")<<tr("Thursday")<<tr("Friday")<<tr("Saturday");
+    firstDayofWeekList<<tr("7")<<tr("1");
     combobox->addItems(firstDayofWeekList);
     combobox->setFixedSize(150,36);
     layout->addWidget(combobox);
     widget->layout()->setAlignment(Qt::AlignRight);
     QPair<QWidget *, QWidget *> optionWidget = DSettingsWidgetFactory::createStandardItem(QByteArray(), option, widget);
+    option->connect(combobox, &QComboBox::currentTextChanged, option, [=] (const QString day)
+    {
+        CalendarManager::getInstance()->setFirstDayOfWeek(day.toInt());
+    });
+
     // 获取初始值
     option->setValue(option->defaultValue());
+
     if (widget != nullptr)
         widget->deleteLater();
+
+
     return optionWidget;
 }
 
@@ -68,7 +76,7 @@ QPair<QWidget*, QWidget*> Generalsetting::createComboboxTime(QObject *obj)
     QComboBox* combobox = new QComboBox(widget);
     QHBoxLayout* layout = new QHBoxLayout(widget);
     QStringList firstDayofWeekList;
-    firstDayofWeekList<<tr("24 hour")<<tr("12 hour");
+    firstDayofWeekList<<tr("24-hour clock")<<tr("12-hour clock");
     combobox->addItems(firstDayofWeekList);
     combobox->setFixedSize(150,36);
     layout->addWidget(combobox);
@@ -80,3 +88,4 @@ QPair<QWidget*, QWidget*> Generalsetting::createComboboxTime(QObject *obj)
         widget->deleteLater();
     return optionWidget;
 }
+

@@ -41,6 +41,7 @@ public:
     static QPair<QWidget*, QWidget*> createComboboxFirstDayofWeek(QObject *obj);
 
     static QPair<QWidget*, QWidget*> createComboboxTime(QObject *obj);
+
 };
 
 #endif // GENERALSETTING_H

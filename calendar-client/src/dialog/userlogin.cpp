@@ -59,7 +59,7 @@ QPair<QWidget*, QWidget*> Userlogin::createloginButton(QObject *obj)
     layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(buttonImg);
     layout->addStretch();
-    buttonLogin->setText(tr("login","button"));
+    buttonLogin->setText(tr("Sign In","button"));
     layout->addWidget(buttonLogin);
     widget->layout()->setAlignment(Qt::AlignLeft);
     QPair<QWidget *, QWidget *> optionWidget = DSettingsWidgetFactory::createStandardItem(QByteArray(), option, widget);
@@ -71,7 +71,7 @@ QPair<QWidget*, QWidget*> Userlogin::createloginButton(QObject *obj)
             buttonImg->setHidden(true);
             QPushButton* buttonLogout = new QPushButton(widget);
             layout->addWidget(buttonLogout);
-            buttonLogout->setText(tr("logout","button"));
+            buttonLogout->setText(tr("Sign Out","button"));
         }
     });
     option->setValue(option->defaultValue());
