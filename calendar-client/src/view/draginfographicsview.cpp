@@ -227,84 +227,86 @@ void DragInfoGraphicsView::mouseMoveEvent(QMouseEvent *event)
         DragInfoItem::setPressFlag(false);
     }
 
-    DragInfoItem *item = dynamic_cast<DragInfoItem *>(itemAt(event->pos()));
-
-    if (item != nullptr) {
-        if (isCanDragge(item->getData())) {
-            if (m_DragStatus == NONE) {
-                switch (getPosInItem(event->pos(), item->rect())) {
-                case LEFT:
-                case RIGHT:
-                    setCursor(Qt::SplitHCursor);
-                    break;
-                case TOP:
-                case BOTTOM:
-                    setCursor(Qt::SplitVCursor);
-                    break;
-                default:
-                    setCursor(Qt::ArrowCursor);
-                    break;
+    if (m_DragStatus == NONE) {
+        DragInfoItem *item = dynamic_cast<DragInfoItem *>(itemAt(event->pos()));
+        if (item != nullptr) {
+            if (isCanDragge(item->getData())) {
+                if (m_DragStatus == NONE) {
+                    switch (getPosInItem(event->pos(), item->rect())) {
+                    case LEFT:
+                    case RIGHT:
+                        setCursor(Qt::SplitHCursor);
+                        break;
+                    case TOP:
+                    case BOTTOM:
+                        setCursor(Qt::SplitVCursor);
+                        break;
+                    default:
+                        setCursor(Qt::ArrowCursor);
+                        break;
+                    }
                 }
+            }
+        } else {
+            if (m_DragStatus == NONE) {
+                setCursor(Qt::ArrowCursor);
             }
         }
     } else {
-        if (m_DragStatus == NONE) {
-            setCursor(Qt::ArrowCursor);
-        }
-    }
-    QDateTime gDate =  getPosDate(event->pos());
-    switch (m_DragStatus) {
-    case IsCreate:
-        m_isCreate = JudgeIsCreate(event->pos());
-        if (m_isCreate) {
+        QDateTime gDate = getPosDate(event->pos());
+        switch (m_DragStatus) {
+        case IsCreate:
+            m_isCreate = JudgeIsCreate(event->pos());
+            if (m_isCreate) {
+                if (!IsEqualtime(m_MoveDate, gDate)) {
+                    m_MoveDate = gDate;
+                    m_DragScheduleInfo = getScheduleInfo(m_PressDate, m_MoveDate);
+                    upDateInfoShow(IsCreate, m_DragScheduleInfo);
+                    //更新背景上显示的item
+                    updateBackgroundShowItem();
+                    setPressSelectInfo(m_DragScheduleInfo);
+                }
+            }
+            break;
+        case ChangeBegin:
             if (!IsEqualtime(m_MoveDate, gDate)) {
                 m_MoveDate = gDate;
-                m_DragScheduleInfo = getScheduleInfo(m_PressDate, m_MoveDate);
-                upDateInfoShow(IsCreate, m_DragScheduleInfo);
-                //更新背景上显示的item
-                updateBackgroundShowItem();
-                setPressSelectInfo(m_DragScheduleInfo);
+                //获取日程开始时间
+                QDateTime _beginTime = getDragScheduleInfoBeginTime(m_MoveDate);
+                m_DragScheduleInfo->setDtStart(_beginTime);
+                m_DragScheduleInfo->setDtEnd(m_InfoEndTime);
+                upDateInfoShow(ChangeBegin, m_DragScheduleInfo);
             }
-        }
-        break;
-    case ChangeBegin:
-        if (!IsEqualtime(m_MoveDate, gDate)) {
-            m_MoveDate = gDate;
-            //获取日程开始时间
-            QDateTime _beginTime = getDragScheduleInfoBeginTime(m_MoveDate);
-            m_DragScheduleInfo->setDtStart(_beginTime);
-            m_DragScheduleInfo->setDtEnd(m_InfoEndTime);
-            upDateInfoShow(ChangeBegin, m_DragScheduleInfo);
-        }
-        break;
-    case ChangeEnd:
-        if (!IsEqualtime(m_MoveDate, gDate)) {
-            m_MoveDate = gDate;
-            m_DragScheduleInfo->setDtStart(m_InfoBeginTime);
-            //获取结束时间
-            QDateTime _endTime = getDragScheduleInfoEndTime(m_MoveDate);
-            m_DragScheduleInfo->setDtEnd(_endTime);
-            upDateInfoShow(ChangeEnd, m_DragScheduleInfo);
-        }
-        break;
-    case ChangeWhole: {
-        if (!m_PressRect.contains(event->pos())) {
-            //拖拽前设置是否已经更新日程界面标志为否
-            m_hasUpdateMark = false;
-            m_Drag->exec(Qt::MoveAction);
-            m_Drag = nullptr;
-            m_DragStatus = NONE;
-            setCursor(Qt::ArrowCursor);
-            //如果拖拽结束后没有修改日程则更新下界面日程显示
-            if (!m_hasUpdateMark) {
-                updateInfo();
+            break;
+        case ChangeEnd:
+            if (!IsEqualtime(m_MoveDate, gDate)) {
+                m_MoveDate = gDate;
+                m_DragScheduleInfo->setDtStart(m_InfoBeginTime);
+                //获取结束时间
+                QDateTime _endTime = getDragScheduleInfoEndTime(m_MoveDate);
+                m_DragScheduleInfo->setDtEnd(_endTime);
+                upDateInfoShow(ChangeEnd, m_DragScheduleInfo);
             }
+            break;
+        case ChangeWhole: {
+            if (!m_PressRect.contains(event->pos())) {
+                //拖拽前设置是否已经更新日程界面标志为否
+                m_hasUpdateMark = false;
+                m_Drag->exec(Qt::MoveAction);
+                m_Drag = nullptr;
+                m_DragStatus = NONE;
+                setCursor(Qt::ArrowCursor);
+                //如果拖拽结束后没有修改日程则更新下界面日程显示
+                if (!m_hasUpdateMark) {
+                    updateInfo();
+                }
+            }
+        } break;
+        default:
+            break;
         }
     }
-    break;
-    default:
-        break;
-    }
+
     DGraphicsView::mouseMoveEvent(event);
 }
 
@@ -722,6 +724,8 @@ DSchedule::Ptr DragInfoGraphicsView::getScheduleInfo(const QDateTime &beginDate,
     }
     info->setSummary(tr("New Event"));
     info->setAllDay(true);
+    //设置默认日程类型为工作
+    info->setScheduleTypeID("107c369e-b13a-4d45-9ff3-de4eb3c0475b");
     //设置提醒规则
     info->setAlarmType(DSchedule::Alarm_15Hour_Front);
     return info;
@@ -811,6 +815,8 @@ void DragInfoGraphicsView::setShowRadius(bool leftShow, bool rightShow)
 
 bool DragInfoGraphicsView::isCanDragge(const DSchedule::Ptr &info)
 {
+    if (info.isNull())
+        return false;
     //是否为节假日日程判断
     if (CScheduleOperation::isFestival(info))
         return false;

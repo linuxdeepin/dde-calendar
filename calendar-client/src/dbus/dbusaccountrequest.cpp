@@ -20,10 +20,13 @@
 */
 #include "dbusaccountrequest.h"
 
+#include <QDBusReply>
+#include <QDBusInterface>
+#include <QtDebug>
+
 DbusAccountRequest::DbusAccountRequest(const QString &path, const QString &interface, QObject *parent)
     : DbusRequestBase(path, interface, QDBusConnection::sessionBus(), parent)
 {
-
 }
 
 /**
@@ -161,6 +164,25 @@ void DbusAccountRequest::updateSchedule(const DSchedule::Ptr &scheduleInfo)
     QString jsonStr;
     DSchedule::toJsonString(scheduleInfo, jsonStr);
     asyncCall("updateSchedule", QVariant(jsonStr));
+}
+
+DSchedule::Ptr DbusAccountRequest::getScheduleByScheduleID(const QString &scheduleID)
+{
+    QList<QVariant> argumentList;
+    argumentList << QVariant::fromValue(scheduleID);
+    QDBusPendingCall pCall = asyncCallWithArgumentList(QStringLiteral("getScheduleByScheduleID"), argumentList);
+    pCall.waitForFinished();
+    QDBusMessage reply = pCall.reply();
+    if (reply.type() != QDBusMessage::ReplyMessage) {
+        qWarning() << "getScheduleTypeByID error ," << reply;
+        return nullptr;
+    }
+    QDBusReply<QString> scheduleReply = reply;
+
+    QString scheduleStr = scheduleReply.value();
+    DSchedule::Ptr schedule;
+    DSchedule::fromJsonString(schedule, scheduleStr);
+    return schedule;
 }
 
 /**

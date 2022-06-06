@@ -135,6 +135,7 @@ DSchedule::Ptr DAccountDataBase::getScheduleByScheduleID(const QString &schedule
             if (query.next()) {
                 QString &&icsStr = query.value("ics").toString();
                 DSchedule::fromIcsString(schedule, icsStr);
+                schedule->setScheduleTypeID(query.value("scheduleTypeID").toString());
             }
         } else {
             qWarning() << Q_FUNC_INFO << query.lastError();

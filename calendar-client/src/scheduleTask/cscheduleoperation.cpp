@@ -45,9 +45,8 @@ CScheduleOperation::CScheduleOperation(const QString &scheduleTypeID, QWidget *p
 {
     //如果为空默认设置为本地帐户
     if (m_accountItem.isNull()) {
-        m_accountItem = gAccounManager->getLocalAccountItem();
-    } else {
         qWarning() << "Cannot get account by schedule type,scheduleTypeID:" << scheduleTypeID;
+        m_accountItem = gAccounManager->getLocalAccountItem();
     }
 }
 
@@ -73,47 +72,50 @@ bool CScheduleOperation::createSchedule(const DSchedule::Ptr &scheduleInfo)
 bool CScheduleOperation::changeSchedule(const DSchedule::Ptr &newInfo, const DSchedule::Ptr &oldInfo)
 {
     bool _result {false};
-    //TODO:重复规则
-    //    if (newInfo.getRepetitionRule().getRuleId() == 0 && newInfo.getRepetitionRule().getRuleId() == oldInfo.getRepetitionRule().getRuleId()) {
-    //        //如果为普通日程且没有修改重复类型则更新日程
-    //        _result = m_DBusManager->UpdateJob(newInfo);
-    //    } else {
-    //        //如果切换了全天状态则提醒是否修改全部
-    //        if (newInfo.allDay() != oldInfo.allDay()) {
-    //            CScheduleCtrlDlg msgBox(m_widget);
-    //            msgBox.setText(
-    //                tr("All occurrences of a repeating event must have the same all-day status."));
-    //            msgBox.setInformativeText(tr("Do you want to change all occurrences?"));
-    //            msgBox.addPushButton(tr("Cancel", "button"), true);
-    //            msgBox.addWaringButton(tr("Change All"), true);
-    //            msgBox.exec();
 
-    //            if (msgBox.clickButton() == 0) {
-    //                _result = false;
-    //            } else if (msgBox.clickButton() == 1) {
-    //                //更新日程
-    //                showLunarMessageDialog(newInfo, oldInfo);
-    //                _result =  m_DBusManager->UpdateJob(newInfo);
-    //            }
-    //        } else if (oldInfo.getRepetitionRule().getRuleId() != newInfo.getRepetitionRule().getRuleId()) {
-    //            //修改重复规则
-    //            CScheduleCtrlDlg msgBox(m_widget);
-    //            msgBox.setText(tr("You are changing the repeating rule of this event."));
-    //            msgBox.setInformativeText(tr("Do you want to change all occurrences?"));
-    //            msgBox.addPushButton(tr("Cancel", "button"), true);
-    //            msgBox.addWaringButton(tr("Change All"), true);
-    //            msgBox.exec();
-    //            if (msgBox.clickButton() == 0) {
-    //                _result = false;
-    //            } else if (msgBox.clickButton() == 1) {
-    //                //更新日程
-    //                showLunarMessageDialog(newInfo, oldInfo);
-    //                _result = m_DBusManager->UpdateJob(newInfo);
-    //            }
-    //        } else {
-    //            _result = changeRecurInfo(newInfo, oldInfo);
-    //        }
-    //    }
+    if (newInfo->getRRuleType() == DSchedule::RRule_None && newInfo->getRRuleType() == oldInfo->getRRuleType()) {
+        //如果为普通日程且没有修改重复类型则更新日程
+        m_accountItem->updateSchedule(newInfo);
+        _result = true;
+        //        _result = m_DBusManager->UpdateJob(newInfo);
+    } else {
+        //如果切换了全天状态则提醒是否修改全部
+        if (newInfo->allDay() != oldInfo->allDay()) {
+            CScheduleCtrlDlg msgBox(m_widget);
+            msgBox.setText(
+                tr("All occurrences of a repeating event must have the same all-day status."));
+            msgBox.setInformativeText(tr("Do you want to change all occurrences?"));
+            msgBox.addPushButton(tr("Cancel", "button"), true);
+            msgBox.addWaringButton(tr("Change All"), true);
+            msgBox.exec();
+
+            if (msgBox.clickButton() == 0) {
+                _result = false;
+            } else if (msgBox.clickButton() == 1) {
+                //更新日程
+                showLunarMessageDialog(newInfo, oldInfo);
+                m_accountItem->updateSchedule(newInfo);
+            }
+        } else if (newInfo->getRRuleType() != oldInfo->getRRuleType()) {
+            //修改重复规则
+            CScheduleCtrlDlg msgBox(m_widget);
+            msgBox.setText(tr("You are changing the repeating rule of this event."));
+            msgBox.setInformativeText(tr("Do you want to change all occurrences?"));
+            msgBox.addPushButton(tr("Cancel", "button"), true);
+            msgBox.addWaringButton(tr("Change All"), true);
+            msgBox.exec();
+            if (msgBox.clickButton() == 0) {
+                _result = false;
+            } else if (msgBox.clickButton() == 1) {
+                //更新日程
+                showLunarMessageDialog(newInfo, oldInfo);
+                m_accountItem->updateSchedule(newInfo);
+                //                _result = m_DBusManager->UpdateJob(newInfo);
+            }
+        } else {
+            _result = changeRecurInfo(newInfo, oldInfo);
+        }
+    }
     return  _result;
 }
 
@@ -125,83 +127,77 @@ bool CScheduleOperation::deleteSchedule(const DSchedule::Ptr &scheduleInfo)
 {
     bool _restuleBool {false};
     //如果为普通日程
-    //TODO:代办
-    //    if (scheduleInfo.getRepetitionRule().getRuleId() == 0) {
-    //        CScheduleCtrlDlg msgBox(m_widget);
-    //        msgBox.setText(tr("You are deleting an event."));
-    //        msgBox.setInformativeText(tr("Are you sure you want to delete this event?"));
-    //        msgBox.addPushButton(tr("Cancel", "button"), true);
-    //        msgBox.addWaringButton(tr("Delete", "button"), true);
-    //        msgBox.exec();
-    //        if (msgBox.clickButton() == 0) {
-    //            return false;
-    //        } else if (msgBox.clickButton() == 1) {
-    //            m_DBusManager->DeleteJob(scheduleInfo.getID());
-    //            _restuleBool = true;
-    //        }
-    //    } else {
-    //        //如果为重复日程的第一个
-    //        if (scheduleInfo.getRecurID() == 0) {
-    //            CScheduleCtrlDlg msgBox(m_widget);
-    //            msgBox.setText(tr("You are deleting an event."));
-    //            msgBox.setInformativeText(tr("Do you want to delete all occurrences of this event, or only the selected occurrence?"));
-    //            msgBox.addPushButton(tr("Cancel", "button"));
-    //            msgBox.addPushButton(tr("Delete All"));
-    //            msgBox.addWaringButton(tr("Delete Only This Event"));
-    //            msgBox.exec();
-    //            if (msgBox.clickButton() == 0) {
-    //                return false;
-    //            } else if (msgBox.clickButton() == 1) {
-    //                //删除所有日程
-    ////                m_DBusManager->DeleteJob(scheduleInfo.getID());
-    //                _restuleBool = true;
-    //            } else if (msgBox.clickButton() == 2) {
-    //                //仅删除此日程
-    //                DSchedule newschedule;
-    //                //TODO:获取日程
-    ////                m_DBusManager->GetJob(scheduleInfo.getID(), newschedule);
-    ////                newschedule.getIgnoreTime().append(scheduleInfo.getBeginDateTime());
-    //                m_DBusManager->UpdateJob(newschedule);
-    //                _restuleBool = true;
-    //            }
-    //        } else {
-    //            CScheduleCtrlDlg msgBox(m_widget);
-    //            msgBox.setText(tr("You are deleting an event."));
-    //            msgBox.setInformativeText(tr("Do you want to delete this and all future occurrences of this event, or only the selected occurrence?"));
-    //            msgBox.addPushButton(tr("Cancel", "button"));
-    //            msgBox.addPushButton(tr("Delete All Future Events"));
-    //            msgBox.addWaringButton(tr("Delete Only This Event"));
-    //            msgBox.exec();
+    if (scheduleInfo->getRRuleType() == DSchedule::RRule_None) {
+        CScheduleCtrlDlg msgBox(m_widget);
+        msgBox.setText(tr("You are deleting an event."));
+        msgBox.setInformativeText(tr("Are you sure you want to delete this event?"));
+        msgBox.addPushButton(tr("Cancel", "button"), true);
+        msgBox.addWaringButton(tr("Delete", "button"), true);
+        msgBox.exec();
+        if (msgBox.clickButton() == 0) {
+            return false;
+        } else if (msgBox.clickButton() == 1) {
+            //            m_DBusManager->DeleteJob(scheduleInfo.getID());
+            m_accountItem->deleteScheduleByID(scheduleInfo->uid());
+            _restuleBool = true;
+        }
+    } else {
+        //获取原始日程
+        DSchedule::Ptr primevalSchedule = m_accountItem->getScheduleByScheduleID(scheduleInfo->uid());
+        //如果为重复日程的第一个
+        if (DSchedule::numberOfRepetitions(primevalSchedule, scheduleInfo->dtStart()) == 1) {
+            CScheduleCtrlDlg msgBox(m_widget);
+            msgBox.setText(tr("You are deleting an event."));
+            msgBox.setInformativeText(tr("Do you want to delete all occurrences of this event, or only the selected occurrence?"));
+            msgBox.addPushButton(tr("Cancel", "button"));
+            msgBox.addPushButton(tr("Delete All"));
+            msgBox.addWaringButton(tr("Delete Only This Event"));
+            msgBox.exec();
+            if (msgBox.clickButton() == 0) {
+                return false;
+            } else if (msgBox.clickButton() == 1) {
+                //删除所有日程
+                m_accountItem->deleteScheduleByID(scheduleInfo->uid());
+                _restuleBool = true;
+            } else if (msgBox.clickButton() == 2) {
+                //仅删除此日程
+                primevalSchedule->recurrence()->addExDateTime(scheduleInfo->dtStart());
+                m_accountItem->updateSchedule(primevalSchedule);
+                _restuleBool = true;
+            }
+        } else {
+            CScheduleCtrlDlg msgBox(m_widget);
+            msgBox.setText(tr("You are deleting an event."));
+            msgBox.setInformativeText(tr("Do you want to delete this and all future occurrences of this event, or only the selected occurrence?"));
+            msgBox.addPushButton(tr("Cancel", "button"));
+            msgBox.addPushButton(tr("Delete All Future Events"));
+            msgBox.addWaringButton(tr("Delete Only This Event"));
+            msgBox.exec();
 
-    //            if (msgBox.clickButton() == 0) {
-    //                return false;
-    //            } else if (msgBox.clickButton() == 1) {
-    //                //删除选中日程及之后的日程
-    //                ScheduleDataInfo newschedule;
-    //                //获取原始日程信息
-    //                m_DBusManager->GetJob(scheduleInfo.getID(), newschedule);
-    //                //修改重复规则
-    //                changeRepetitionRule(newschedule, scheduleInfo);
-    //                //如果修改后的日程为普通日程且忽略列表内包含日程开始时间则删除该日程
-    //                if (newschedule.getRepetitionRule().getRuleId() == RepetitionRule::RRule_NONE && newschedule.getIgnoreTime().contains(newschedule.getBeginDateTime())) {
-    //                    //删除日程
-    //                    m_DBusManager->DeleteJob(newschedule.getID());
-    //                } else {
-    //                    //更新日程
-    //                    m_DBusManager->UpdateJob(newschedule);
-    //                }
+            if (msgBox.clickButton() == 0) {
+                return false;
+            } else if (msgBox.clickButton() == 1) {
+                //删除选中日程及之后的日程
+                //修改重复规则
+                changeRepetitionRule(primevalSchedule, scheduleInfo);
+                //如果修改后的日程为普通日程且忽略列表内包含日程开始时间则删除该日程
+                if (primevalSchedule->getRRuleType() == DSchedule::RRule_None) {
+                    //删除日程
+                    m_accountItem->deleteScheduleByID(primevalSchedule->uid());
+                } else {
+                    //更新日程
+                    m_accountItem->updateSchedule(primevalSchedule);
+                }
 
-    //                _restuleBool = true;
-    //            } else if (msgBox.clickButton() == 2) {
-    //                ScheduleDataInfo newschedule;
-    //                m_DBusManager->GetJob(scheduleInfo.getID(), newschedule);
-    //                newschedule.getIgnoreTime().append(scheduleInfo.getBeginDateTime());
-    //                m_DBusManager->UpdateJob(newschedule);
-    //                _restuleBool = true;
-    //            }
-    //        }
-    //    }
-    return  _restuleBool;
+                _restuleBool = true;
+            } else if (msgBox.clickButton() == 2) {
+                primevalSchedule->recurrence()->addExDateTime(scheduleInfo->dtStart());
+                m_accountItem->updateSchedule(primevalSchedule);
+                _restuleBool = true;
+            }
+        }
+    }
+    return _restuleBool;
 }
 
 QString CScheduleOperation::queryScheduleStr(const QString &key, const QDateTime &startTime, const QDateTime &endTime)
@@ -225,16 +221,14 @@ bool CScheduleOperation::queryScheduleInfo(const QString &key, const QDateTime &
 void CScheduleOperation::deleteOnlyInfo(const DSchedule::Ptr &scheduleInfo)
 {
     //如果为纪念日或节日则不处理
-    //TODO:日程类型
     if (isFestival(scheduleInfo))
         return;
-    //    如果为普通日程则删除
+    //如果为普通日程则删除
     if (scheduleInfo->recurs()) {
-        //TODO:仅删除此日程
-        //        DSchedule::Ptr newschedule = m_accountItem.get;
-        //        m_DBusManager->GetJob(scheduleInfo.getID(), newschedule);
-        //        newschedule.getIgnoreTime().append(scheduleInfo.getBeginDateTime());
-        //        m_DBusManager->UpdateJob(newschedule);
+        //仅删除此日程
+        DSchedule::Ptr newschedule = m_accountItem->getScheduleByScheduleID(scheduleInfo->uid());
+        newschedule->recurrence()->addExDateTime(scheduleInfo->dtStart());
+        m_accountItem->updateSchedule(newschedule);
     } else {
         m_accountItem->deleteScheduleByID(scheduleInfo->uid());
     }
@@ -249,93 +243,85 @@ bool CScheduleOperation::changeRecurInfo(const DSchedule::Ptr &newinfo, const DS
 {
     bool _result{false};
     //如果为重复类型第一个
-    //TODO:代办
-    //    if (newinfo.getRecurID() == 0) {
-    //        CScheduleCtrlDlg msgBox(m_widget);
-    //        msgBox.setText(tr("You are changing a repeating event."));
-    //        msgBox.setInformativeText(
-    //            tr("Do you want to change only this occurrence of the event, or all "
-    //               "occurrences?"));
-    //        msgBox.addPushButton(tr("Cancel", "button"));
-    //        msgBox.addPushButton(tr("All"));
-    //        msgBox.addsuggestButton(tr("Only This Event"));
-    //        msgBox.exec();
+    // 获取原始数据
+    DSchedule::Ptr primevalScheduleData = m_accountItem->getScheduleByScheduleID(oldinfo->uid());
+    int primevalDuration = primevalScheduleData->recurrence()->duration();
+    int num = DSchedule::numberOfRepetitions(primevalScheduleData, newinfo->dtStart());
+    if (num == 1) {
+        CScheduleCtrlDlg msgBox(m_widget);
+        msgBox.setText(tr("You are changing a repeating event."));
+        msgBox.setInformativeText(
+            tr("Do you want to change only this occurrence of the event, or all "
+               "occurrences?"));
+        msgBox.addPushButton(tr("Cancel", "button"));
+        msgBox.addPushButton(tr("All"));
+        msgBox.addsuggestButton(tr("Only This Event"));
+        msgBox.exec();
 
-    //        if (msgBox.clickButton() == 0) {
-    //            _result = false;
-    //        } else if (msgBox.clickButton() == 1) {
-    //            //修改所有日程
-    //            ScheduleDataInfo _scheduleDataInfo = newinfo;
-    //            RepetitionRule _rule = _scheduleDataInfo.getRepetitionRule();
-    //            //如果此重复日程只有它一个则将修改为普通日程
-    //            if ((_rule.getRuleType() == 1 && _rule.getEndCount() < 1) ||
-    //                    (_rule.getRuleType() == 2 && _scheduleDataInfo.getBeginDateTime().daysTo(_rule.getEndDate()) < 0)) {
-    //                _rule.setRuleId(RepetitionRule::RRuleID::RRule_NONE);
-    //                _rule.setRuleType(RepetitionRule::RRuleEndType::RRuleType_NEVER);
-    //            }
-    //            _scheduleDataInfo.setRepetitionRule(_rule);
-    //            //TODO 清空忽略日程
-    //            _scheduleDataInfo.getIgnoreTime().clear();
-    //            //更新日程
-    //            showLunarMessageDialog(_scheduleDataInfo, oldinfo);
-    //            _result = m_DBusManager->UpdateJob(_scheduleDataInfo);
-    //        } else if (msgBox.clickButton() == 2) {
-    //            //仅修改此日程
-    //            _result = changeOnlyInfo(newinfo, oldinfo);
-    //        }
-    //    } else {
-    //        CScheduleCtrlDlg msgBox(m_widget);
-    //        msgBox.setText(tr("You are changing a repeating event."));
-    //        msgBox.setInformativeText(
-    //            tr("Do you want to change only this occurrence of the event, or this and "
-    //               "all future occurrences?"));
-    //        msgBox.addPushButton(tr("Cancel", "button"));
-    //        msgBox.addPushButton(tr("All Future Events"));
-    //        msgBox.addsuggestButton(tr("Only This Event"));
-    //        msgBox.exec();
+        if (msgBox.clickButton() == 0) {
+            _result = false;
+        } else if (msgBox.clickButton() == 1) {
+            //修改所有日程
+            //如果此重复日程只有它一个则将修改为普通日程
+            DSchedule::Ptr _scheduleDataInfo(newinfo->clone());
+            if ((_scheduleDataInfo->recurrence()->duration() == 1)
+                || _scheduleDataInfo->dtStart().daysTo(_scheduleDataInfo->recurrence()->endDateTime())) {
+                _scheduleDataInfo->setRRuleType(DSchedule::RRule_None);
+            }
+            //更新日程
+            showLunarMessageDialog(_scheduleDataInfo, oldinfo);
+            m_accountItem->updateSchedule(_scheduleDataInfo);
+        } else if (msgBox.clickButton() == 2) {
+            //仅修改此日程
+            _result = changeOnlyInfo(newinfo, oldinfo);
+        }
+    } else {
+        CScheduleCtrlDlg msgBox(m_widget);
+        msgBox.setText(tr("You are changing a repeating event."));
+        msgBox.setInformativeText(
+            tr("Do you want to change only this occurrence of the event, or this and "
+               "all future occurrences?"));
+        msgBox.addPushButton(tr("Cancel", "button"));
+        msgBox.addPushButton(tr("All Future Events"));
+        msgBox.addsuggestButton(tr("Only This Event"));
+        msgBox.exec();
 
-    //        if (msgBox.clickButton() == 0) {
-    //            _result = false;
-    //        } else if (msgBox.clickButton() == 1) {
-    //            // 根据id获取日程并修改
-    //            ScheduleDataInfo updatescheduleData;
-    //            // 获取原始数据
-    //            m_DBusManager->GetJob(oldinfo.getID(), updatescheduleData);
-    //            //修改重复规则
-    //            changeRepetitionRule(updatescheduleData, newinfo);
-    //            //如果修改后的日程为普通日程且忽略列表内包含日程开始时间则删除该日程
-    //            if (updatescheduleData.getRepetitionRule().getRuleId() == RepetitionRule::RRule_NONE && updatescheduleData.getIgnoreTime().contains(updatescheduleData.getBeginDateTime())) {
-    //                //删除日程
-    //                m_DBusManager->DeleteJob(updatescheduleData.getID());
-    //            } else {
-    //                //更新日程
-    //                m_DBusManager->UpdateJob(updatescheduleData);
-    //            }
-    //            //创建日程
-    //            ScheduleDataInfo newschedule = newinfo;
-    //            //获取重复规则
-    //            RepetitionRule _rule = newschedule.getRepetitionRule();
-    //            if (_rule.getRuleType() == 1) {
-    //                //更新重复规则
-    //                _rule.setEndCount(qAbs(_rule.getEndCount() - newschedule.getRecurID()));
-    //                if (_rule.getEndCount() < 1) {
-    //                    _rule.setRuleId(RepetitionRule::RRuleID::RRule_NONE);
-    //                    _rule.setRuleType(RepetitionRule::RRuleEndType::RRuleType_NEVER);
-    //                }
-    //            }
-    //            newschedule.setRecurID(0);
-    //            newschedule.setID(0);
-    //            newschedule.setRepetitionRule(_rule);
-    //            //创建新日程
-    //            //如果为农历且重复类型为每年
-    //            if (newschedule.getIsLunar() && RepetitionRule::RRule_EVEYEAR == newschedule.getRepetitionRule().getRuleId()) {
-    //                lunarMessageDialogShow(newschedule);
-    //            }
-    //            _result = m_DBusManager->CreateJob(newschedule);
-    //        } else if (msgBox.clickButton() == 2) {
-    //            _result = changeOnlyInfo(newinfo, oldinfo);
-    //        }
-    //    }
+        if (msgBox.clickButton() == 0) {
+            _result = false;
+        } else if (msgBox.clickButton() == 1) {
+            // 根据id获取日程并修改
+            //修改重复规则
+            changeRepetitionRule(primevalScheduleData, newinfo);
+            //如果修改后的日程为普通日程且忽略列表内包含日程开始时间则删除该日程
+            if (primevalScheduleData->getRRuleType() == DSchedule::RRule_None) {
+                //删除日程
+                m_accountItem->deleteScheduleByID(primevalScheduleData->uid());
+            } else {
+                //更新日程
+                m_accountItem->updateSchedule(primevalScheduleData);
+            }
+
+            //创建日程
+            DSchedule::Ptr newschedule(newinfo->clone());
+            int newDuration = primevalDuration - num + 1;
+            //如果重复次数大于1
+            if (newDuration > 1) {
+                newschedule->recurrence()->setDuration(newDuration);
+            } else {
+                newschedule->setRRuleType(DSchedule::RRule_None);
+            }
+            newschedule->setRecurrenceId(QDateTime());
+            //创建新日程
+            //如果为农历且重复类型为每年
+            if (newschedule->lunnar() && DSchedule::RRule_Year == newschedule->getRRuleType()) {
+                lunarMessageDialogShow(newschedule);
+            }
+            m_accountItem->createSchedule(newschedule);
+            _result = true;
+        } else if (msgBox.clickButton() == 2) {
+            _result = changeOnlyInfo(newinfo, oldinfo);
+        }
+    }
     return _result;
 }
 
@@ -346,20 +332,19 @@ bool CScheduleOperation::changeRecurInfo(const DSchedule::Ptr &newinfo, const DS
  */
 bool CScheduleOperation::changeOnlyInfo(const DSchedule::Ptr &newinfo, const DSchedule::Ptr &oldinfo)
 {
-    //TODO:修改日程
-    //    DSchedule newschedule = newinfo;
-    //    newschedule.getRepetitionRule().clear();
-    //    newschedule.setRecurID(0);
-    //    newschedule.setID(0);
-    //    newschedule.getIgnoreTime().clear();
-    //    //创建日程
-    //    m_DBusManager->CreateJob(newschedule);
-    //    DSchedule updatescheduleData;
-    //    //获取原始信息
-    //    m_DBusManager->GetJob(oldinfo.getID(), updatescheduleData);
-    //    updatescheduleData.getIgnoreTime().append(oldinfo.getBeginDateTime());
+    //修改日程
+    DSchedule::Ptr newschedule(newinfo->clone());
+    newschedule->setRRuleType(DSchedule::RRule_None);
+    newschedule->setRecurrenceId(QDateTime());
+    //创建日程
+    m_accountItem->createSchedule(newschedule);
+
+    //获取原始信息
+    DSchedule::Ptr updatescheduleData = m_accountItem->getScheduleByScheduleID(oldinfo->uid());
+    updatescheduleData->recurrence()->addExDateTime(oldinfo->dtStart());
     //更新原始信息
-    return false; //m_DBusManager->UpdateJob(updatescheduleData);
+    m_accountItem->updateSchedule(updatescheduleData);
+    return true;
 }
 
 /**
@@ -369,117 +354,23 @@ bool CScheduleOperation::changeOnlyInfo(const DSchedule::Ptr &newinfo, const DSc
  */
 void CScheduleOperation::changeRepetitionRule(DSchedule::Ptr &newinfo, const DSchedule::Ptr &oldinfo)
 {
-    //TODO:修改重复规则
-    //    switch (newinfo.getRepetitionRule().getRuleType()) {
-    //    case RepetitionRule::RRuleType_FREQ: {
-    //        //如果为结束与次数则修改结束次数
-    //        newinfo.getRepetitionRule().setEndCount(oldinfo.getRecurID() - 1);
-    //        //结束次数为0表示不重复，设置为普通日程
-    //        if (newinfo.getRepetitionRule().getEndCount() < 1) {
-    //            newinfo.getRepetitionRule().setRuleId(RepetitionRule::RRuleID::RRule_NONE);
-    //            newinfo.getRepetitionRule().setRuleType(RepetitionRule::RRuleEndType::RRuleType_NEVER);
-    //        }
-    //        break;
-    //    }
-    //    default: {
-    //        //如果该日程结束类型为永不和结束于日期则修改结束日期
-    //        newinfo.getRepetitionRule().setRuleType(RepetitionRule::RRuleType_DATE);
-    //        //设置结束日期，默认为0点
-    //        QDateTime endDate(QDate(oldinfo.getBeginDateTime().date().addDays(-1)), QTime());
-    //        newinfo.getRepetitionRule().setEndDate(endDate);
-    //        break;
-    //    }
-    //    }
-}
-
-/**
- * @brief CScheduleOperation::createJobType      创建日程类型
- * @param newinfo
- * @param oldinfo
- */
-bool CScheduleOperation::createJobType(const DScheduleType::Ptr &jobTypeInfo) //新增时，颜色可能是：自定义/默认类型。以“自定义颜色编码默认为0”来区分.
-{
-    //创建日程
-    QString strJson = "";
-    //TODO:创建日程类型
-
-    //    int colorTypeNo = jobTypeInfo.getColorInfo().getTypeNo();
-
-    //    //以“自定义颜色编码默认为0”来区分.
-    //    if (0 == colorTypeNo) {
-    //        colorTypeNo = JobTypeInfoManager::instance()->getNextColorTypeNo();
-    //        jobTypeInfo.getColorInfo().setTypeNo(colorTypeNo);
-    //        //保存新选择的颜色值
-    //        CConfigSettings::getInstance()->setOption("LastUserColor", jobTypeInfo.getColorInfo().getColorHex());
-    //    }
-    //    //保存选择的颜色编号,只记录系统默认颜色的编号
-    //    if (jobTypeInfo.getColorInfo().getTypeNo() < 10)
-    //        CConfigSettings::getInstance()->setOption("LastSysColorTypeNo", jobTypeInfo.getColorInfo().getTypeNo());
-
-    //    if (0 == jobTypeInfo.getJobTypeNo()) {
-    //        jobTypeInfo.setJobTypeNo(JobTypeInfoManager::instance()->getNextTypeNo());
-    //        jobTypeInfo.getColorInfo().setTypeNo(colorTypeNo);
-    //    }
-    //    jobTypeInfo.setAuthority(7);//自定义日程类型默认权限为7
-
-    //TODO:数据序列化
-    //    JobTypeInfo::jobTypeInfoToJsonStr(jobTypeInfo, strJson);
-    //    return m_DBusManager->AddJobType(strJson);// no:10,hex:#123
-}
-
-/**
- * @brief CScheduleOperation::updateJobType      修改日程类型
- * @param oldJobTypeInfo
- * @param newJobTypeInfo
- * 只能更新名称和颜色
- * 颜色可能是：自定义-自定义、自定义-默认类型、默认类型-默认类型
- */
-bool CScheduleOperation::updateJobType(const DScheduleType::Ptr &oldJobTypeInfo, const DScheduleType::Ptr &newJobTypeInfo)
-{
-    //如果oldJobTypeInfo中typeno为0，则是新增
-    //修改日程类型
-    //    if (0 == oldJobTypeInfo.getJobTypeNo()) {
-    //        return createJobType(newJobTypeInfo);
-    //    }
-    //    bool bRet = true;
-    //    //如果修改的日程类型没有改变则不处理
-    //    if (oldJobTypeInfo == newJobTypeInfo) {
-    //        return bRet;
-    //    }
-
-    //    //更新日程类型
-    //    newJobTypeInfo.setJobTypeNo(oldJobTypeInfo.getJobTypeNo());
-    //    //以“自定义颜色编码默认为0”来区分.
-    //    if (0 == newJobTypeInfo.getColorTypeNo()) {
-    //        //配置新颜色编号
-    //        if (oldJobTypeInfo.getColorTypeNo() > 9) {
-    //            newJobTypeInfo.getColorInfo().setTypeNo(oldJobTypeInfo.getColorTypeNo());
-    //        } else {
-    //            newJobTypeInfo.getColorInfo().setTypeNo(JobTypeInfoManager::instance()->getNextColorTypeNo());
-    //        }
-    //        //保存新选择的颜色值
-    //        CConfigSettings::getInstance()->setOption("LastUserColor", newJobTypeInfo.getColorInfo().getColorHex());
-    //    }
-
-    //    bRet = updateJobType(newJobTypeInfo);
-    //    //如果更新成功，且是系统默认颜色，缓存编号，只记录系统默认颜色的编号
-    //    if (bRet && newJobTypeInfo.getColorInfo().getTypeNo() < 10) {
-    //        CConfigSettings::getInstance()->setOption("LastSysColorTypeNo", newJobTypeInfo.getColorInfo().getTypeNo());
-    //    }
-    return false;
-}
-/**
- * @brief CScheduleOperation::updateJobType      修改日程类型
- * @param jobTypeInfo
- * 只能更新名称和颜色编号
- */
-bool CScheduleOperation::updateJobType(const DScheduleType &jobTypeInfo)
-{
-    //修改日程
-    QString strJson = "";
-    //TODO:s修改日程类型
-    //    JobTypeInfo::jobTypeInfoToJsonStr(jobTypeInfo, strJson);
-    //    return m_DBusManager->UpdateJobType(strJson);
+    int num = DSchedule::numberOfRepetitions(newinfo, oldinfo->dtStart());
+    //修改重复规则
+    if (newinfo->recurrence()->duration() > 0) {
+        //如果为结束与次数则修改结束次数
+        int duration = num - 1;
+        if (duration > 1) {
+            newinfo->recurrence()->setDuration(duration);
+        } else {
+            //结束次数小于等于0表示不重复，设置为普通日程
+            newinfo->setRRuleType(DSchedule::RRule_None);
+        }
+    } else {
+        //如果该日程结束类型为永不和结束于日期则修改结束日期
+        newinfo->recurrence()->setDuration(0);
+        QDateTime dtEnd(QDate(oldinfo->dtStart().date().addDays(-1)), QTime());
+        newinfo->recurrence()->setEndDateTime(dtEnd);
+    }
 }
 
 void CScheduleOperation::lunarMessageDialogShow(const DSchedule::Ptr &newinfo)
@@ -506,74 +397,25 @@ void CScheduleOperation::lunarMessageDialogShow(const DSchedule::Ptr &newinfo)
 void CScheduleOperation::showLunarMessageDialog(const DSchedule::Ptr &newinfo, const DSchedule::Ptr &oldinfo)
 {
     //在阴历每年重复情况下如果修改了开始时间或重复规则
-    //TODO:农历日程重复每年闰月是否提示
-    //    if (newinfo.getIsLunar() && RepetitionRule::RRule_EVEYEAR == newinfo.getRepetitionRule().getRuleId()) {
-    //        if (oldinfo.getBeginDateTime().date() != newinfo.getBeginDateTime().date()
-    //                || oldinfo.getRepetitionRule().getRuleId() != newinfo.getRepetitionRule().getRuleId()
-    //                || oldinfo.getIsLunar() != newinfo.getIsLunar()) {
-    //            //判断是否为闰月
-    //            lunarMessageDialogShow(newinfo);
-    //        }
-    //    }
+    //农历日程重复每年闰月是否提示
+    if (newinfo->lunnar() && DSchedule::RRule_Year == newinfo->getRRuleType()) {
+        if (oldinfo->dtStart().date() != newinfo->dtStart().date()
+            || oldinfo->getRRuleType() != newinfo->getRRuleType()
+            || oldinfo->lunnar() != newinfo->lunnar()) {
+            //判断是否为闰月
+            lunarMessageDialogShow(newinfo);
+        }
+    }
 }
 
-/**
- * @brief CScheduleOperation::getJobTypeList      获取日程类型列表
- * @param lstJobTypeInfo
- * @return 操作结果
- */
-bool CScheduleOperation::getJobTypeList(DScheduleType::List &lstJobTypeInfo)
-{
-    lstJobTypeInfo = m_accountItem->getScheduleTypeList();
-    //    QString strJson;
-    //    if (!m_DBusManager->GetJobTypeList(strJson)) {
-    //        return false;
-    //    }
-    //TODO:类型序列化
-    //    JobTypeInfo::jsonStrToJobTypeInfoList(strJson, lstJobTypeInfo);
-    return true;
-}
-
-/**
- * @brief CScheduleOperation::deleteJobType      删除日程类型
- * @param iJobTypeNo
- * @return 操作结果
- */
-bool CScheduleOperation::deleteJobType(const QString &iJobTypeNo)
-{
-    //删除日程类型
-    //TODO:删除日程
-    return false; //m_DBusManager->DeleteJobType(iJobTypeNo);
-}
-/**
- * @brief CScheduleOperation::isJobTypeUsed      获取日程类型是否被使用
- * @param iJobTypeNo
- * @return 操作结果
- */
-bool CScheduleOperation::isJobTypeUsed(const QString &iJobTypeNo)
-{
-    //获取日程类型是否被使用
-    //TODO:判断日程是否被使用
-    return false; //m_DBusManager->isJobTypeUsed(iJobTypeNo);
-}
-
-/**
- * @brief CScheduleOperation::getColorTypeList      获取颜色类型列表
- * @param lstColorTypeInfo
- * @return 操作结果
- */
-bool CScheduleOperation::getColorTypeList(DTypeColor::List &lstColorTypeInfo)
-{
-    lstColorTypeInfo = m_accountItem->getColorTypeList();
-    return true;
-    //TODO:类型颜色序列化
-    //    return JobTypeInfo::jsonStrToColorTypeInfoList(strJson, lstColorTypeInfo);
-}
 
 bool CScheduleOperation::isFestival(const DSchedule::Ptr &schedule)
 {
     //判断是否为节假日日程
     AccountItem::Ptr account = gAccounManager->getAccountItemByScheduleTypeId(schedule->scheduleTypeID());
+    if (account.isNull()) {
+        qWarning() << "Cannot get account by schedule type,scheduleTypeID:" << schedule->scheduleTypeID();
+    }
     DScheduleType::Ptr scheduleType = gAccounManager->getScheduleTypeByScheduleTypeId(schedule->scheduleTypeID());
     //如果为本地日程且日程类型为None则表示为节假日日程
     return account->getAccount()->accountType() == DAccount::Account_Local && scheduleType->privilege() == 0;

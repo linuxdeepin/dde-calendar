@@ -97,6 +97,7 @@ bool DSchedule::operator>(const DSchedule &schedule) const
 
 void DSchedule::setAlarmType(const DSchedule::AlarmType &alarmType)
 {
+    //TODO:提醒规则设置有问题，需要修复
     //如果提醒规则没有变化则退出
     if (alarmType == getAlarmType()) {
         return;
@@ -117,6 +118,7 @@ void DSchedule::setAlarmType(const DSchedule::AlarmType &alarmType)
             alarm->setType(KCalendarCore::Alarm::Display);
             alarm->setDisplayAlarm(this->summary());
             KCalendarCore::Duration duration(iter.key());
+            qInfo() << iter.key();
             alarm->setStartOffset(duration);
             addAlarm(alarm);
             break;
@@ -204,6 +206,11 @@ DSchedule::RRuleType DSchedule::getRRuleType()
         }
     }
     return rtype;
+}
+
+int DSchedule::numberOfRepetitions(const Ptr &scheudle, const QDateTime &datetime)
+{
+    return scheudle->recurrence()->durationTo(datetime);
 }
 
 bool DSchedule::fromJsonString(DSchedule::Ptr &schedule, const QString &json)

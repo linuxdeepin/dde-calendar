@@ -52,19 +52,6 @@ public:
     //删除日程 仅删除此日程 不弹框提醒
     void deleteOnlyInfo(const DSchedule::Ptr &scheduleInfo);
 
-    //创建日程类型
-    bool createJobType(const DScheduleType::Ptr &jobTypeInfo); //新增时，颜色可能是：自定义/默认类型。以“自定义颜色编码默认为0”来区分.
-    //更新日程类型
-    //更新名称和颜色，颜色可能是：自定义-自定义、自定义-默认类型、默认类型-默认类型
-    bool updateJobType(const DScheduleType::Ptr &oldJobTypeInfo, const DScheduleType::Ptr &newJobTypeInfo);
-    //获取日程类型列表
-    bool getJobTypeList(DScheduleType::List &lstJobTypeInfo);
-    //删除日程类型
-    bool deleteJobType(const QString &iJobTypeNo);
-    //    //获取日程类型是否被使用
-    bool isJobTypeUsed(const QString &iJobTypeNo);
-    //获取颜色类型列表
-    bool getColorTypeList(DTypeColor::List &lstColorTypeInfo);
 
     //是否为节假日日程
     static bool isFestival(const DSchedule::Ptr &schedule);
@@ -78,8 +65,7 @@ private:
     bool changeOnlyInfo(const DSchedule::Ptr &newinfo, const DSchedule::Ptr &oldinfo);
     //修改重复规则
     void changeRepetitionRule(DSchedule::Ptr &newinfo, const DSchedule::Ptr &oldinfo);
-    //更新日程类型(这里的接口是私有的，供updateJobType同名接口调用，在另一接口中做修改的逻辑，这里实现功能)
-    bool updateJobType(const DScheduleType &jobTypeInfo);
+
     //农历每年闰月提示信息
     void lunarMessageDialogShow(const DSchedule::Ptr &newinfo);
     //根据新旧日程信息判断是否提示

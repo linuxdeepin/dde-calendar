@@ -113,6 +113,8 @@ public:
      */
     void updateSchedule(const DSchedule::Ptr &scheduleInfo);
 
+    DSchedule::Ptr getScheduleByScheduleID(const QString &scheduleID);
+
     /**
      * @brief deleteScheduleByScheduleID      根据日程ID删除日程
      * @param ScheduleID                 日程ID

@@ -276,6 +276,7 @@ public:
     void setDuration(int duration);
 
     /** Returns the number of recurrences up to and including the date/time specified.
+     * 返回指定日期/时间之前（包括指定日期/时间）的重复次数。
      *  @warning This function can be very time consuming - use it sparingly!
      */
     Q_REQUIRED_RESULT int durationTo(const QDateTime &dt) const;

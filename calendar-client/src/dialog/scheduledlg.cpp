@@ -294,17 +294,17 @@ bool CScheduleDlg::createSchedule(const QString &scheduleTypeId)
 
     CScheduleOperation _scheduleOperation(m_accountItem, this);
 
+    bool res = false;
     if (m_type == 1) {
         //创建日程
         schedule->setUid("0");
-        _scheduleOperation.createSchedule(schedule);
+        res = _scheduleOperation.createSchedule(schedule);
 
     } else if (m_type == 0) {
         schedule->setUid(m_ScheduleDataInfo->uid());
-        _scheduleOperation.changeSchedule(schedule, m_ScheduleDataInfo);
-        //TODO：修改日程,根据返回的参数判断是否关闭对话框
+        res = _scheduleOperation.changeSchedule(schedule, m_ScheduleDataInfo);
     }
-    return true;
+    return res;
 }
 
 void CScheduleDlg::updateEndTimeListAndTimeDiff(const QDateTime &begin, const QDateTime &end)
@@ -1209,6 +1209,7 @@ void CScheduleDlg::initRmindRpeatUI()
 
     //重复规则
     m_beginrepeatCombox->setCurrentIndex(m_ScheduleDataInfo->getRRuleType());
+    slotbRpeatactivated(m_beginrepeatCombox->currentIndex());
     if (m_ScheduleDataInfo->recurrence()->duration() < 0) {
         //永不
         m_endrepeatCombox->setCurrentIndex(0);
@@ -1221,6 +1222,7 @@ void CScheduleDlg::initRmindRpeatUI()
         m_endrepeatCombox->setCurrentIndex(1);
         m_endrepeattimes->setText(QString::number(m_ScheduleDataInfo->recurrence()->duration()));
     }
+    sloteRpeatactivated(m_endrepeatCombox->currentIndex());
 }
 
 void CScheduleDlg::setTheMe(const int type)

@@ -212,6 +212,11 @@ void AccountItem::updateSchedule(const DSchedule::Ptr &scheduleInfo, CallbackFun
     m_dbusRequest->updateSchedule(scheduleInfo);
 }
 
+DSchedule::Ptr AccountItem::getScheduleByScheduleID(const QString &scheduleID)
+{
+    return m_dbusRequest->getScheduleByScheduleID(scheduleID);
+}
+
 /**
  * @brief AccountItem::deleteScheduleByID
  * 根据日程ID删除日程

@@ -423,13 +423,16 @@ void CGraphicsView::mousePressEvent(QMouseEvent *event)
 
 void CGraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
-    CScheduleItem *item = dynamic_cast<CScheduleItem *>(itemAt(event->pos()));
+    if (m_DragStatus == NONE) {
+        CScheduleItem *item = dynamic_cast<CScheduleItem *>(itemAt(event->pos()));
 
-    if (item != nullptr && item->getType() == 1) {
-        setCursor(Qt::ArrowCursor);
-        DGraphicsView::mouseMoveEvent(event);
-        return;
+        if (item != nullptr && item->getType() == 1) {
+            setCursor(Qt::ArrowCursor);
+            DGraphicsView::mouseMoveEvent(event);
+            return;
+        }
     }
+
     DragInfoGraphicsView::mouseMoveEvent(event);
 }
 void CGraphicsView::slotDoubleEvent(int type)
@@ -591,7 +594,7 @@ CGraphicsView::PosInItem CGraphicsView::getPosInItem(const QPoint &p, const QRec
 
 DSchedule::Ptr CGraphicsView::getScheduleInfo(const QDateTime &beginDate, const QDateTime &endDate)
 {
-    DSchedule::Ptr info;
+    DSchedule::Ptr info(new DSchedule);
     if (beginDate.secsTo(endDate) > 0) {
         info->setDtStart(beginDate);
 
@@ -610,7 +613,9 @@ DSchedule::Ptr CGraphicsView::getScheduleInfo(const QDateTime &beginDate, const 
     }
     info->setSummary(tr("New Event"));
     info->setAllDay(false);
-    info->setAlarmType(DSchedule::Alarm_15Hour_Front);
+    //设置默认日程类型为工作
+    info->setScheduleTypeID("107c369e-b13a-4d45-9ff3-de4eb3c0475b");
+    info->setAlarmType(DSchedule::Alarm_15Min_Front);
     return info;
 }
 

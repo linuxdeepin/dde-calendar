@@ -87,6 +87,9 @@ public:
     void setRRuleType(const RRuleType &rtype);
     RRuleType getRRuleType();
 
+    //重复日程相对于原始日程重复的次数，若为第一个日程则返回0
+    static int numberOfRepetitions(const DSchedule::Ptr &scheudle, const QDateTime &datetime);
+
     static bool fromJsonString(DSchedule::Ptr &schedule, const QString &json);
     static bool toJsonString(const DSchedule::Ptr &schedule, QString &json);
 

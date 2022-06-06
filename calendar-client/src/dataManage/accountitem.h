@@ -78,6 +78,9 @@ public:
     //更新日程
     void updateSchedule(const DSchedule::Ptr &scheduleInfo, CallbackFunc callback = nullptr);
 
+    //根据日程ID获取日程
+    DSchedule::Ptr getScheduleByScheduleID(const QString &scheduleID);
+
     //根据日程ID删除日程
     void deleteScheduleByID(const QString &scheduleID, CallbackFunc callback = nullptr);
 
