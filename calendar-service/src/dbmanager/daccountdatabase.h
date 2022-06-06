@@ -74,7 +74,7 @@ public:
     QString getFestivalTypeID();
     ///////////////帐户信息
     DAccount::Ptr getAccountInfo();
-    void setAccountInfo(const DAccount::Ptr &account);
+    void updateAccountInfo(const DAccount::Ptr &account);
 
     ///////////////////类型颜色
     bool addTypeColor(const int typeColorNo, const QString &strColorHex, const int privilege);
@@ -133,7 +133,8 @@ public:
 protected:
     virtual void initScheduleType();
     //初始化系统类型
-    virtual DScheduleType::List initSysType();
+    virtual void initSysType();
+    void systemTypeTran(const DScheduleType::Ptr &type);
 
 private:
     void createDB() override;

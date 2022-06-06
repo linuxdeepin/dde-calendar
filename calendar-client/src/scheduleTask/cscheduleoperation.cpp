@@ -25,13 +25,30 @@
 #include "configsettings.h"
 #include "dcalendarddialog.h"
 #include "cdynamicicon.h"
+#include "accountmanager.h"
 
-CScheduleOperation::CScheduleOperation(QWidget *parent)
+CScheduleOperation::CScheduleOperation(const AccountItem::Ptr &accountItem, QWidget *parent)
     : QObject(parent)
-    , m_DBusManager(CScheduleDBus::getInstance())
+    , m_accountItem(accountItem)
     , m_widget(parent)
 {
+    //如果为空默认设置为本地帐户
+    if (m_accountItem.isNull()) {
+        m_accountItem = gAccounManager->getLocalAccountItem();
+    }
+}
 
+CScheduleOperation::CScheduleOperation(const QString &scheduleTypeID, QWidget *parent)
+    : QObject(parent)
+    , m_accountItem(gAccounManager->getAccountItemByScheduleTypeId(scheduleTypeID))
+    , m_widget(parent)
+{
+    //如果为空默认设置为本地帐户
+    if (m_accountItem.isNull()) {
+        m_accountItem = gAccounManager->getLocalAccountItem();
+    } else {
+        qWarning() << "Cannot get account by schedule type,scheduleTypeID:" << scheduleTypeID;
+    }
 }
 
 /**
@@ -41,11 +58,10 @@ CScheduleOperation::CScheduleOperation(QWidget *parent)
 bool CScheduleOperation::createSchedule(const DSchedule::Ptr &scheduleInfo)
 {
     //如果为农历且重复类型为每年
-    //TODO:是否提示
-    //    if (scheduleInfo.getIsLunar() && RepetitionRule::RRule_EVEYEAR == scheduleInfo.getRepetitionRule().getRuleId()) {
-    //        lunarMessageDialogShow(scheduleInfo);
-    //    }
-//    return m_DBusManager->CreateJob(scheduleInfo);
+    if (scheduleInfo->lunnar() && scheduleInfo->getRRuleType() == DSchedule::RRule_Year) {
+        lunarMessageDialogShow(scheduleInfo);
+    }
+    m_accountItem->createSchedule(scheduleInfo);
     return true;
 }
 
@@ -191,36 +207,37 @@ bool CScheduleOperation::deleteSchedule(const DSchedule::Ptr &scheduleInfo)
 QString CScheduleOperation::queryScheduleStr(const QString &key, const QDateTime &startTime, const QDateTime &endTime)
 {
     QString _resultStr;
-    m_DBusManager->QueryJobs(key, startTime, endTime, _resultStr);
+    //TODO：查新日程
+    //    m_DBusManager->QueryJobs(key, startTime, endTime, _resultStr);
     return _resultStr;
 }
 
 bool CScheduleOperation::queryScheduleInfo(const QString &key, const QDateTime &startTime, const QDateTime &endTime, QMap<QDate, QVector<DSchedule>> &info)
 {
-    return m_DBusManager->QueryJobs(key, startTime, endTime, info);
+    //TODO:查新日程
+    //    return m_DBusManager->QueryJobs(key, startTime, endTime, info);
 }
 
 /**
  * @brief CScheduleOperation::deleteOnlyInfo        删除日程 仅删除此日程 不弹框提醒
  * @param scheduleInfo
  */
-void CScheduleOperation::deleteOnlyInfo(const DSchedule &scheduleInfo)
+void CScheduleOperation::deleteOnlyInfo(const DSchedule::Ptr &scheduleInfo)
 {
     //如果为纪念日或节日则不处理
     //TODO:日程类型
-    //    if (scheduleInfo.getType() == 4)
-    //        return;
-    //如果为普通日程则删除
-    //TODO:重复规则
-    //    if (scheduleInfo.getRepetitionRule().getRuleId() == RepetitionRule::RRule_NONE) {
-    //        m_DBusManager->DeleteJob(scheduleInfo.getID());
-    //    } else {
-    //        //仅删除此日程
-    //        ScheduleDataInfo newschedule;
-    //        m_DBusManager->GetJob(scheduleInfo.getID(), newschedule);
-    //        newschedule.getIgnoreTime().append(scheduleInfo.getBeginDateTime());
-    //        m_DBusManager->UpdateJob(newschedule);
-    //    }
+    if (isFestival(scheduleInfo))
+        return;
+    //    如果为普通日程则删除
+    if (scheduleInfo->recurs()) {
+        //TODO:仅删除此日程
+        //        DSchedule::Ptr newschedule = m_accountItem.get;
+        //        m_DBusManager->GetJob(scheduleInfo.getID(), newschedule);
+        //        newschedule.getIgnoreTime().append(scheduleInfo.getBeginDateTime());
+        //        m_DBusManager->UpdateJob(newschedule);
+    } else {
+        m_accountItem->deleteScheduleByID(scheduleInfo->uid());
+    }
 }
 
 /**
@@ -228,7 +245,7 @@ void CScheduleOperation::deleteOnlyInfo(const DSchedule &scheduleInfo)
  * @param newinfo
  * @param oldinfo
  */
-bool CScheduleOperation::changeRecurInfo(const DSchedule &newinfo, const DSchedule &oldinfo)
+bool CScheduleOperation::changeRecurInfo(const DSchedule::Ptr &newinfo, const DSchedule::Ptr &oldinfo)
 {
     bool _result{false};
     //如果为重复类型第一个
@@ -327,7 +344,7 @@ bool CScheduleOperation::changeRecurInfo(const DSchedule &newinfo, const DSchedu
  * @param newinfo
  * @param oldinfo
  */
-bool CScheduleOperation::changeOnlyInfo(const DSchedule &newinfo, const DSchedule &oldinfo)
+bool CScheduleOperation::changeOnlyInfo(const DSchedule::Ptr &newinfo, const DSchedule::Ptr &oldinfo)
 {
     //TODO:修改日程
     //    DSchedule newschedule = newinfo;
@@ -350,7 +367,7 @@ bool CScheduleOperation::changeOnlyInfo(const DSchedule &newinfo, const DSchedul
  * @param newinfo
  * @param oldinfo
  */
-void CScheduleOperation::changeRepetitionRule(DSchedule &newinfo, const DSchedule &oldinfo)
+void CScheduleOperation::changeRepetitionRule(DSchedule::Ptr &newinfo, const DSchedule::Ptr &oldinfo)
 {
     //TODO:修改重复规则
     //    switch (newinfo.getRepetitionRule().getRuleType()) {
@@ -380,7 +397,7 @@ void CScheduleOperation::changeRepetitionRule(DSchedule &newinfo, const DSchedul
  * @param newinfo
  * @param oldinfo
  */
-bool CScheduleOperation::createJobType(DScheduleType &jobTypeInfo) //新增时，颜色可能是：自定义/默认类型。以“自定义颜色编码默认为0”来区分.
+bool CScheduleOperation::createJobType(const DScheduleType::Ptr &jobTypeInfo) //新增时，颜色可能是：自定义/默认类型。以“自定义颜色编码默认为0”来区分.
 {
     //创建日程
     QString strJson = "";
@@ -407,7 +424,7 @@ bool CScheduleOperation::createJobType(DScheduleType &jobTypeInfo) //新增时�
 
     //TODO:数据序列化
     //    JobTypeInfo::jobTypeInfoToJsonStr(jobTypeInfo, strJson);
-    return m_DBusManager->AddJobType(strJson);// no:10,hex:#123
+    //    return m_DBusManager->AddJobType(strJson);// no:10,hex:#123
 }
 
 /**
@@ -417,7 +434,7 @@ bool CScheduleOperation::createJobType(DScheduleType &jobTypeInfo) //新增时�
  * 只能更新名称和颜色
  * 颜色可能是：自定义-自定义、自定义-默认类型、默认类型-默认类型
  */
-bool CScheduleOperation::updateJobType(DScheduleType &oldJobTypeInfo, DScheduleType &newJobTypeInfo)
+bool CScheduleOperation::updateJobType(const DScheduleType::Ptr &oldJobTypeInfo, const DScheduleType::Ptr &newJobTypeInfo)
 {
     //如果oldJobTypeInfo中typeno为0，则是新增
     //修改日程类型
@@ -460,16 +477,16 @@ bool CScheduleOperation::updateJobType(const DScheduleType &jobTypeInfo)
 {
     //修改日程
     QString strJson = "";
-    //修改日程类型
+    //TODO:s修改日程类型
     //    JobTypeInfo::jobTypeInfoToJsonStr(jobTypeInfo, strJson);
-    return m_DBusManager->UpdateJobType(strJson);
+    //    return m_DBusManager->UpdateJobType(strJson);
 }
 
-void CScheduleOperation::lunarMessageDialogShow(const DSchedule &newinfo)
+void CScheduleOperation::lunarMessageDialogShow(const DSchedule::Ptr &newinfo)
 {
     //如果该日程为闰月日程，因为对应的闰月需要间隔好多年，所以添加对应的提示信息
     CaHuangLiDayInfo huangLiInfo;
-    CScheduleDBus::getInstance()->GetHuangLiDay(newinfo.dtStart().date(), huangLiInfo);
+    CScheduleDBus::getInstance()->GetHuangLiDay(newinfo->dtStart().date(), huangLiInfo);
     if (huangLiInfo.mLunarMonthName.contains("闰")) {
         DCalendarDDialog prompt(m_widget);
         prompt.setIcon(QIcon(CDynamicIcon::getInstance()->getPixmap()));
@@ -486,7 +503,7 @@ void CScheduleOperation::lunarMessageDialogShow(const DSchedule &newinfo)
     }
 }
 
-void CScheduleOperation::showLunarMessageDialog(const DSchedule &newinfo, const DSchedule &oldinfo)
+void CScheduleOperation::showLunarMessageDialog(const DSchedule::Ptr &newinfo, const DSchedule::Ptr &oldinfo)
 {
     //在阴历每年重复情况下如果修改了开始时间或重复规则
     //TODO:农历日程重复每年闰月是否提示
@@ -505,12 +522,13 @@ void CScheduleOperation::showLunarMessageDialog(const DSchedule &newinfo, const 
  * @param lstJobTypeInfo
  * @return 操作结果
  */
-bool CScheduleOperation::getJobTypeList(QList<DScheduleType> &lstJobTypeInfo)
+bool CScheduleOperation::getJobTypeList(DScheduleType::List &lstJobTypeInfo)
 {
-    QString strJson;
-    if (!m_DBusManager->GetJobTypeList(strJson)) {
-        return false;
-    }
+    lstJobTypeInfo = m_accountItem->getScheduleTypeList();
+    //    QString strJson;
+    //    if (!m_DBusManager->GetJobTypeList(strJson)) {
+    //        return false;
+    //    }
     //TODO:类型序列化
     //    JobTypeInfo::jsonStrToJobTypeInfoList(strJson, lstJobTypeInfo);
     return true;
@@ -544,12 +562,34 @@ bool CScheduleOperation::isJobTypeUsed(const QString &iJobTypeNo)
  * @param lstColorTypeInfo
  * @return 操作结果
  */
-bool CScheduleOperation::getColorTypeList(QList<DTypeColor> &lstColorTypeInfo)
+bool CScheduleOperation::getColorTypeList(DTypeColor::List &lstColorTypeInfo)
 {
-    QString strJson;
-    if (!m_DBusManager->GetJobTypeColorList(strJson)) {
-        return false;
-    }
+    lstColorTypeInfo = m_accountItem->getColorTypeList();
+    return true;
     //TODO:类型颜色序列化
     //    return JobTypeInfo::jsonStrToColorTypeInfoList(strJson, lstColorTypeInfo);
+}
+
+bool CScheduleOperation::isFestival(const DSchedule::Ptr &schedule)
+{
+    //判断是否为节假日日程
+    AccountItem::Ptr account = gAccounManager->getAccountItemByScheduleTypeId(schedule->scheduleTypeID());
+    DScheduleType::Ptr scheduleType = gAccounManager->getScheduleTypeByScheduleTypeId(schedule->scheduleTypeID());
+    //如果为本地日程且日程类型为None则表示为节假日日程
+    return account->getAccount()->accountType() == DAccount::Account_Local && scheduleType->privilege() == 0;
+}
+
+bool CScheduleOperation::scheduleIsInvariant(const DSchedule::Ptr &schedule)
+{
+    //如果为网络帐户，且没有网络或者帐户开关关闭
+    //TODO:网络判断
+    AccountItem::Ptr accountItem = gAccounManager->getAccountItemByScheduleTypeId(schedule->scheduleTypeID());
+    DAccount::Ptr account = accountItem->getAccount();
+    if (account->accountType() == DAccount::Account_UnionID) {
+        //如果uid日历同步关闭则日程不可修改
+        if (account->accountState().testFlag(DAccount::Account_Close)) {
+            return true;
+        }
+    }
+    return false;
 }

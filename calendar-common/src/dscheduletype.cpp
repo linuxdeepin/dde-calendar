@@ -58,12 +58,12 @@ void DScheduleType::setAccountID(const QString &accountID)
     m_accountID = accountID;
 }
 
-DScheduleType::Privilege DScheduleType::privilege() const
+DScheduleType::Privileges DScheduleType::privilege() const
 {
     return m_privilege;
 }
 
-void DScheduleType::setPrivilege(const Privilege &privilege)
+void DScheduleType::setPrivilege(const Privileges &privilege)
 {
     m_privilege = privilege;
 }
@@ -297,7 +297,7 @@ bool DScheduleType::toJsonString(const DScheduleType::Ptr &scheduleType, QString
     rootObject.insert("TypeColor", colorObject);
 
     rootObject.insert("description", scheduleType->description());
-    rootObject.insert("privilege", scheduleType->privilege());
+    rootObject.insert("privilege", int(scheduleType->privilege()));
     rootObject.insert("dtCreate", dtToString(scheduleType->dtCreate()));
     rootObject.insert("dtDelete", dtToString(scheduleType->dtDelete()));
     rootObject.insert("dtUpdate", dtToString(scheduleType->dtUpdate()));
@@ -413,7 +413,7 @@ bool DScheduleType::toJsonListString(const DScheduleType::List &stList, QString 
         typeObject.insert("TypeColor", colorObject);
 
         typeObject.insert("description", scheduleType->description());
-        typeObject.insert("privilege", scheduleType->privilege());
+        typeObject.insert("privilege", int(scheduleType->privilege()));
         typeObject.insert("dtCreate", dtToString(scheduleType->dtCreate()));
         typeObject.insert("dtDelete", dtToString(scheduleType->dtDelete()));
         typeObject.insert("dtUpdate", dtToString(scheduleType->dtUpdate()));

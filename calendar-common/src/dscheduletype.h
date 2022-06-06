@@ -57,8 +57,8 @@ public:
     QString accountID() const;
     void setAccountID(const QString &accountID);
 
-    Privilege privilege() const;
-    void setPrivilege(const Privilege &privilege);
+    Privileges privilege() const;
+    void setPrivilege(const Privileges &privilege);
 
     DTypeColor typeColor() const;
     void setTypeColor(const DTypeColor &typeColor);
@@ -114,7 +114,7 @@ private:
     QString m_typePath; //类型云端路径
     DTypeColor m_typeColor; //相关颜色信息
     QString m_description; //类型相关描述
-    Privilege m_privilege; //类型权限
+    Privileges m_privilege; //类型权限
     QDateTime m_dtCreate; //创建时间
     QDateTime m_dtUpdate; //更新时间
     QDateTime m_dtDelete; //删除时间
@@ -124,5 +124,6 @@ private:
 };
 
 Q_DECLARE_METATYPE(DScheduleType)
+Q_DECLARE_OPERATORS_FOR_FLAGS(DScheduleType::Privileges)
 
 #endif // DSCHEDULEYPE_H

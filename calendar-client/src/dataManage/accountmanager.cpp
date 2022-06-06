@@ -84,7 +84,7 @@ AccountItem::Ptr AccountManager::getUnionAccountItem()
     return m_unionAccountItem;
 }
 
-DScheduleType::Ptr AccountManager::getScheduleTypeByScheduleTypeId(const QString& schduleTypeId)
+DScheduleType::Ptr AccountManager::getScheduleTypeByScheduleTypeId(const QString &schduleTypeId)
 {
     DScheduleType::Ptr type = nullptr;
     for (AccountItem::Ptr p : gAccounManager->getAccountList()) {
@@ -96,13 +96,13 @@ DScheduleType::Ptr AccountManager::getScheduleTypeByScheduleTypeId(const QString
     return type;
 }
 
-AccountItem::Ptr AccountManager::getAccountItemByScheduleTypeId(const QString& schduleTypeId)
+AccountItem::Ptr AccountManager::getAccountItemByScheduleTypeId(const QString &schduleTypeId)
 {
     DScheduleType::Ptr type = getScheduleTypeByScheduleTypeId(schduleTypeId);
     return getAccountItemByAccountId(type->accountID());
 }
 
-AccountItem::Ptr AccountManager::getAccountItemByAccountId(const QString& accountId)
+AccountItem::Ptr AccountManager::getAccountItemByAccountId(const QString &accountId)
 {
     AccountItem::Ptr account = nullptr;
     for (AccountItem::Ptr p : gAccounManager->getAccountList()) {
@@ -114,7 +114,7 @@ AccountItem::Ptr AccountManager::getAccountItemByAccountId(const QString& accoun
     return account;
 }
 
-AccountItem::Ptr AccountManager::getAccountItemByAccountName(const QString& accountName)
+AccountItem::Ptr AccountManager::getAccountItemByAccountName(const QString &accountName)
 {
     AccountItem::Ptr account = nullptr;
     for (AccountItem::Ptr p : gAccounManager->getAccountList()) {

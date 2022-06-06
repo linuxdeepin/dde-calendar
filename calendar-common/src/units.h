@@ -26,6 +26,7 @@
 
 const QString serviceBaseName = "com.deepin.dataserver.Calendar";
 const QString serviceBasePath = "/com/deepin/dataserver/Calendar";
+#define accountServiceInterface "com.deepin.dataserver.Calendar.Account"
 
 QString dtToString(const QDateTime &dt);
 QDateTime dtFromString(const QString &st);

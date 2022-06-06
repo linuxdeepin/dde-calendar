@@ -20,9 +20,10 @@
 */
 #include "accountitem.h"
 
-AccountItem::AccountItem(const DAccount::Ptr& account, QObject *parent) : QObject(parent)
-  , m_account(account)
-  , m_dbusRequest(new DbusAccountRequest(account->dbusPath(), account->dbusInterface(), this))
+AccountItem::AccountItem(const DAccount::Ptr &account, QObject *parent)
+    : QObject(parent)
+    , m_account(account)
+    , m_dbusRequest(new DbusAccountRequest(account->dbusPath(), account->dbusInterface(), this))
 {
     initConnect();
 }
@@ -103,17 +104,16 @@ DTypeColor::List AccountItem::getColorTypeList()
     return m_typeColorList;
 }
 
-
-/**
- * @brief AccountItem::updateAccountInfo
- * 更新账户信息
- * @param callback
- */
-void AccountItem::updateAccountInfo(CallbackFunc callback)
-{
-    m_dbusRequest->setCallbackFunc(callback);
-    m_dbusRequest->updateAccountInfo(m_account);
-}
+///**
+// * @brief AccountItem::updateAccountInfo
+// * 更新账户信息
+// * @param callback
+// */
+//void AccountItem::updateAccountInfo(CallbackFunc callback)
+//{
+//    m_dbusRequest->setCallbackFunc(callback);
+//    m_dbusRequest->updateAccountInfo(m_account);
+//}
 
 /**
  * @brief AccountItem::updateAccountExpandStatus
@@ -159,7 +159,7 @@ void AccountItem::updateScheduleType(const DScheduleType::Ptr &typeInfo, Callbac
  * @param scheduleInfo
  * @param callback
  */
-void AccountItem::updateScheduleTypeShowState(const DScheduleType::Ptr& scheduleInfo, CallbackFunc callback)
+void AccountItem::updateScheduleTypeShowState(const DScheduleType::Ptr &scheduleInfo, CallbackFunc callback)
 {
     m_dbusRequest->setCallbackFunc(callback);
     m_dbusRequest->updateScheduleTypeShowState(scheduleInfo);
@@ -195,7 +195,7 @@ void AccountItem::scheduleTypeIsUsed(const QString &typeID, CallbackFunc callbac
  * @param scheduleInfo  日程数据
  * @param callback 回调函数
  */
-void AccountItem::createSchedule(const DSchedule::Ptr& scheduleInfo, CallbackFunc callback)
+void AccountItem::createSchedule(const DSchedule::Ptr &scheduleInfo, CallbackFunc callback)
 {
     m_dbusRequest->setCallbackFunc(callback);
     m_dbusRequest->createSchedule(scheduleInfo);
@@ -207,7 +207,7 @@ void AccountItem::createSchedule(const DSchedule::Ptr& scheduleInfo, CallbackFun
  * @param scheduleInfo 新的日程数据
  * @param callback 回调函数
  */
-void AccountItem::updateSchedule(const DSchedule::Ptr& scheduleInfo, CallbackFunc callback)
+void AccountItem::updateSchedule(const DSchedule::Ptr &scheduleInfo, CallbackFunc callback)
 {
     m_dbusRequest->setCallbackFunc(callback);
     m_dbusRequest->updateSchedule(scheduleInfo);
@@ -239,17 +239,17 @@ void AccountItem::deleteSchedulesByTypeID(const QString &typeID, CallbackFunc ca
 
 void AccountItem::querySchedulesWithParameter(const int year, CallbackFunc callback)
 {
-    QDateTime start = QDateTime(QDate(year-1, 12, 1));
-    QDateTime end = QDateTime(QDate(year+1, 1, 31));
+    QDateTime start = QDateTime(QDate(year - 1, 12, 1));
+    QDateTime end = QDateTime(QDate(year + 1, 1, 31));
     querySchedulesWithParameter(start, end, callback);
 }
 
-void AccountItem::querySchedulesWithParameter(const QDateTime& start, const QDateTime& end, CallbackFunc callback)
+void AccountItem::querySchedulesWithParameter(const QDateTime &start, const QDateTime &end, CallbackFunc callback)
 {
     querySchedulesWithParameter("", start, end, callback);
 }
 
-void AccountItem::querySchedulesWithParameter(const QString& key, const QDateTime& start, const QDateTime& end, CallbackFunc callback)
+void AccountItem::querySchedulesWithParameter(const QString &key, const QDateTime &start, const QDateTime &end, CallbackFunc callback)
 {
     DScheduleQueryPar::Ptr ptr;
     ptr.reset(new DScheduleQueryPar);

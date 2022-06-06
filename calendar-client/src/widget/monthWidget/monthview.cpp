@@ -222,7 +222,6 @@ DSchedule::Ptr CMonthView::getScheduleInfo(const QDate &beginDate, const QDate &
     }
     info->setSummary(tr("New Event"));
     info->setAllDay(true);
-    //TODO:设置提醒规则
-    //    info.setRemindData(RemindData(1, QTime(9, 0)));
+    info->setAlarmType(DSchedule::Alarm_15Hour_Front);
     return info;
 }

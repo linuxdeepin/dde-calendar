@@ -115,11 +115,14 @@ public:
     QString dbusInterface() const;
     void setDbusInterface(const QString &dbusInterface);
 
-    AccountState accountState() const;
-    void setAccountState(const AccountState &accountState);
+    AccountStates accountState() const;
+    void setAccountState(const AccountStates &accountState);
 
     QDateTime dtLastSync() const;
     void setDtLastSync(const QDateTime &dtLastSync);
+
+    static QString syncFreqToJsonString(const DAccount::Ptr &account);
+    static void syncFreqFromJsonString(const DAccount::Ptr &account, const QString &syncFreqStr);
 
 private:
     QString m_displayName; //显示名称
@@ -132,7 +135,7 @@ private:
     QString m_avatar; //头像
     QString m_description; //描述
     int m_syncTag; //同步标识,用来与云端标识比对
-    AccountState m_accountState; //帐户状态
+    AccountStates m_accountState; //帐户状态
     AccountSyncState m_syncState; //同步状态
     QDateTime m_dtCreate;
     QDateTime m_dtDelete;
@@ -144,5 +147,7 @@ private:
 
     bool m_isExpandDisplay; //左侧帐户列表信息是否展开显示
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(DAccount::AccountStates)
 
 #endif // DACCOUNT_H

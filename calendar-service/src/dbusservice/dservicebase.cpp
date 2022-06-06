@@ -59,5 +59,5 @@ bool DServiceBase::clientWhite(const int index)
     static QStringList whiteList_0 {"dde-calendar"};
     static QStringList whiteList_1 {"dde-calendar", ""};
 
-    return whiteList_0.contains(getClientName());
+    return true; //whiteList_0.contains(getClientName());
 }

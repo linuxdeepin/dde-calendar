@@ -182,14 +182,14 @@ void CMyScheduleView::setPaletteTextColor(QWidget *widget, QColor textColor)
  */
 void CMyScheduleView::updateDateTimeFormat()
 {
-    //TODO:获取类型
-    //    if (m_scheduleInfo.getType() == DDECalendar::FestivalTypeID) {
-    //        m_timeLabel->setText(m_scheduleInfo.dtStart().toString(m_dateFormat));
-    //    } else {
-    //        QString beginName = getDataByFormat(m_scheduleInfo.dtStart().date(), m_dateFormat) + " " + m_scheduleInfo.dtStart().time().toString(m_timeFormat);
-    //        QString endName = getDataByFormat(m_scheduleInfo.dtEnd().date(), m_dateFormat) + " " + m_scheduleInfo.dtEnd().time().toString(m_timeFormat);
-    //        m_timeLabel->setText(beginName + " ~ " + endName);
-    //    }
+    //如果为节假日
+    if (CScheduleOperation::isFestival(m_scheduleInfo)) {
+        m_timeLabel->setText(m_scheduleInfo->dtStart().toString(m_dateFormat));
+    } else {
+        QString beginName = getDataByFormat(m_scheduleInfo->dtStart().date(), m_dateFormat) + " " + m_scheduleInfo->dtStart().time().toString(m_timeFormat);
+        QString endName = getDataByFormat(m_scheduleInfo->dtEnd().date(), m_dateFormat) + " " + m_scheduleInfo->dtEnd().time().toString(m_timeFormat);
+        m_timeLabel->setText(beginName + " ~ " + endName);
+    }
     slotAutoFeed();
 }
 
@@ -294,9 +294,8 @@ void CMyScheduleView::initUI()
     mainLayout->addSpacing(5);
     mainLayout->addWidget(m_timeLabel);
 
-    //TODO:日程类型判断
-    //    if (m_scheduleInfo.getType() == DDECalendar::FestivalTypeID) {
-    if (false) {
+    //如果为节假日日程
+    if (CScheduleOperation::isFestival(m_scheduleInfo)) {
         addButton(tr("OK", "button"), false, DDialog::ButtonNormal);
         QAbstractButton *button_ok = getButton(0);
         button_ok->setFixedSize(360, 36);
@@ -307,6 +306,7 @@ void CMyScheduleView::initUI()
             QAbstractButton *button = getButton(i);
             button->setFixedSize(165, 36);
         }
+        //TODO:如果为不可修改日程则设置删除按钮无效
     }
 
     //这种中心铺满的weiget，显示日程标题和时间的控件
@@ -327,9 +327,8 @@ void CMyScheduleView::initConnection()
     QObject::connect(DGuiApplicationHelper::instance(), &DGuiApplicationHelper::themeTypeChanged,
                      this,
                      &CMyScheduleView::setLabelTextColor);
-    //TODO:日程类型判断
-    //    if (m_scheduleInfo.getType() == DDECalendar::FestivalTypeID) {
-    if (false) {
+    //如果为节假日日程
+    if (CScheduleOperation::isFestival(m_scheduleInfo)) {
         connect(this, &DDialog::buttonClicked, this, &CMyScheduleView::close);
     } else {
         connect(this, &DDialog::buttonClicked, this, &CMyScheduleView::slotBtClick);

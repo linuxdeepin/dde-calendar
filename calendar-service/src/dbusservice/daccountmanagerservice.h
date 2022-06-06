@@ -34,7 +34,7 @@
 class DAccountManagerService : public DServiceBase
 {
     Q_OBJECT
-    Q_CLASSINFO("D-Bus Interface", "com.deepin.dataserver.AccountManager")
+    Q_CLASSINFO("D-Bus Interface", "com.deepin.dataserver.Calendar.AccountManager")
     Q_PROPERTY(int firstDayOfWeek READ getfirstDayOfWeek WRITE setFirstDayOfWeek)
     Q_PROPERTY(int timeFormatType READ getTimeFormatType WRITE setTimeFormatType)
 public:
@@ -74,9 +74,9 @@ public slots:
 signals:
     Q_SCRIPTABLE void accountUpdate(const QStringList &accountIDs);
 private:
-    int getfirstDayOfWeek();
+    int getfirstDayOfWeek() const;
     void setFirstDayOfWeek(const int firstday);
-    int getTimeFormatType();
+    int getTimeFormatType() const;
     void setTimeFormatType(const int timeType);
 
 private:

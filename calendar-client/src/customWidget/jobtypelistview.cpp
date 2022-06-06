@@ -196,6 +196,7 @@ void JobTypeListView::slotDeleteJobType()
     //TODO:获取日程编号
     QString &&typeNo = info.typeID();
 
+    //TODO:根据帐户获取对应信息
     CScheduleOperation so;
     if (so.isJobTypeUsed(typeNo)) {
         CScheduleCtrlDlg msgBox(this);

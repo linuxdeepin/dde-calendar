@@ -23,13 +23,18 @@
 
 #include "dservicebase.h"
 #include "daccountmodule.h"
+#include "units.h"
 
 #include <QSharedPointer>
 
 class DAccountService : public DServiceBase
 {
     Q_OBJECT
-    Q_CLASSINFO("D-Bus Interface", "com.deepin.dataserver.account")
+    Q_CLASSINFO("D-Bus Interface", accountServiceInterface)
+    Q_PROPERTY(bool isExpand READ getExpand WRITE setExpand)
+    Q_PROPERTY(bool accountState READ getAccountState WRITE setAccountState)
+    Q_PROPERTY(bool syncState READ getSyncState)
+    Q_PROPERTY(QString syncFreq READ getSyncFreq WRITE setSyncFreq)
 public:
     typedef QSharedPointer<DAccountService> Ptr;
 
@@ -120,14 +125,23 @@ public slots:
 
     Q_SCRIPTABLE QString getSysColors();
 
-public:
-    /**
-     * @brief updateAccountInfo     更新帐户信息
-     * @param accountInfo           帐户信息
-     */
-    void updateAccountInfo(const QString &accountInfo);
 signals:
     //TODO: 日程更新信号，日程颜色更新信号
+    void scheduleUpdate();
+    void scheduleTypeUpdate();
+
+private:
+    //帐户列表是否展开
+    bool getExpand();
+    void setExpand(const bool &isExpand);
+    //帐户状态。
+    int getAccountState();
+    void setAccountState(const int accountState);
+    //获取同步状态
+    int getSyncState();
+    //设置同步频率相关信息
+    QString getSyncFreq();
+    void setSyncFreq(const QString &freq);
 
 public slots:
 private:

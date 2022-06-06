@@ -103,10 +103,7 @@ void CAllDayEventWeekView::MoveInfoProcess(DSchedule::Ptr &info, const QPointF &
     } else {
         qint64 offset = info->dtStart().daysTo(info->dtEnd());
         info->setAllDay(true);
-        //        info.remind = true;
-        //TODO:提醒规则
-        //        info.getRemindData().setRemindTime(QTime(9, 0));
-        //        info.getRemindData().setRemindNum(1);
+        info->setAlarmType(DSchedule::Alarm_15Hour_Front);
         m_DragScheduleInfo->setDtStart(QDateTime(m_MoveDate.date(), QTime(0, 0, 0)));
         m_DragScheduleInfo->setDtEnd(QDateTime(m_MoveDate.addDays(offset).date(), QTime(23, 59, 59)));
     }

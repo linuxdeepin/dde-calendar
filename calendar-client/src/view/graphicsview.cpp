@@ -610,8 +610,7 @@ DSchedule::Ptr CGraphicsView::getScheduleInfo(const QDateTime &beginDate, const 
     }
     info->setSummary(tr("New Event"));
     info->setAllDay(false);
-    //TODO:设置提醒规则
-    //    info.setRemindData(RemindData(1, QTime(9, 0)));
+    info->setAlarmType(DSchedule::Alarm_15Hour_Front);
     return info;
 }
 

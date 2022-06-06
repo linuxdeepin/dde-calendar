@@ -40,11 +40,11 @@ public:
      * @return
      */
     void getAccountInfo();
-    /**
-     * @brief updateAccountInfo     更新帐户信息
-     * @param accountInfo           帐户信息
-     */
-    void updateAccountInfo(const DAccount::Ptr &accountInfo);
+    //    /**
+    //     * @brief updateAccountInfo     更新帐户信息
+    //     * @param accountInfo           帐户信息
+    //     */
+    //    void updateAccountInfo(const DAccount::Ptr &accountInfo);
     /**
      * @brief updateAccountExpandStatus
      * 更新账户列表展开状态
@@ -145,7 +145,7 @@ signals:
 
 public slots:
 
-    void slotCallFinished(CDBusPendingCallWatcher*) override;
+    void slotCallFinished(CDBusPendingCallWatcher *) override;
 
 private:
     DScheduleQueryPar::Ptr m_priParams; //上一次查询日程的数据

@@ -227,9 +227,10 @@ void ScheduleTypeEditDlg::slotBtnNext()
     //TODO:设置颜色
     //    m_jobTypeNew.setColorInfo(m_colorSeletor->getSelectedColorInfo());
 
+    //TODO:需要获取操作帐户
     CScheduleOperation so;
     //更新或创建日程类型
-    so.updateJobType(m_jobTypeOld, m_jobTypeNew);
+    //    so.updateJobType(m_jobTypeOld, m_jobTypeNew);
 }
 
 void ScheduleTypeEditDlg::slotEditingFinished()

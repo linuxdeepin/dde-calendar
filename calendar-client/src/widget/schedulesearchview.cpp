@@ -182,12 +182,12 @@ void CScheduleSearchItem::slotSchotCutClicked()
     //选中该item时才可以使用快捷键
     if (m_tabFocus) {
         //节日日程不能使用
-        //TODO:日程类型判断
-        //        if (m_ScheduleInfo.getType() == DDECalendar::FestivalTypeID)
-        //            return;
+        if (CScheduleOperation::isFestival(m_ScheduleInfo))
+            return;
         m_rightMenu->clear();
         m_rightMenu->addAction(m_editAction);
         m_rightMenu->addAction(m_deleteAction);
+        //TODO:如果为不可修改日程则需要设置删除按钮无效
         //获取item坐标,并转换为全局坐标
         QPointF itemPos = QPointF(this->rect().x() + this->rect().width() / 2,
                                   this->rect().y() + this->rect().height() / 2);
@@ -342,15 +342,16 @@ void CScheduleSearchItem::paintEvent(QPaintEvent *e)
 void CScheduleSearchItem::contextMenuEvent(QContextMenuEvent *event)
 {
     Q_UNUSED(event);
-    //TODO:判断是否为节假日日程
-    //    if (m_ScheduleInfo.getType() == DDECalendar::FestivalTypeID)
-    //        return;
+    //判断是否为节假日日程
+    if (CScheduleOperation::isFestival(m_ScheduleInfo))
+        return;
     //在有些环境中弹出右击菜单不会触发leaveEvent，主动更新leave对应的事件处理
     m_mouseStatus = M_NONE;
     update();
     m_rightMenu->clear();
     m_rightMenu->addAction(m_editAction);
     m_rightMenu->addAction(m_deleteAction);
+    //TODO:如果为不可修改日程则需要设置删除按钮无效
     m_rightMenu->exec(QCursor::pos());
 }
 
@@ -559,8 +560,8 @@ void CScheduleSearchView::deleteSchedule()
     currentDItemIndex = m_scheduleSearchItem.indexOf(m_selectItem);
     //如果存在该item且为节日日程不可操作
     if (currentDItemIndex >= 0
-        //TODO:日程类型判断
-        //            && m_selectItem->getData().getType() != DDECalendar::FestivalTypeID
+        && CScheduleOperation::isFestival(m_selectItem->getData())
+        //TODO:如果为不可修改日程也不可被删除
     ) {
         m_selectItem->slotDelete();
     }

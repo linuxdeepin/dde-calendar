@@ -222,6 +222,9 @@ bool CScheduleDlg::createSchedule(const QString &scheduleTypeId)
     endDateTime.setDate(m_endDateEdit->date());
     endDateTime.setTime(m_endTimeEdit->getTime());
 
+    schedule->setDtStart(beginDateTime);
+    schedule->setDtEnd(endDateTime);
+
     //设置是否为农历日程
     switch (m_calendarCategoryRadioGroup->checkedId()) {
     case 1:
@@ -289,19 +292,17 @@ bool CScheduleDlg::createSchedule(const QString &scheduleTypeId)
         schedule->recurrence()->setDuration(-1);
     }
 
-    schedule->setDtStart(beginDateTime);
-    schedule->setDtEnd(endDateTime);
-    CScheduleOperation _scheduleOperation(this);
+    CScheduleOperation _scheduleOperation(m_accountItem, this);
 
     if (m_type == 1) {
         //创建日程
         schedule->setUid("0");
-        m_accountItem->createSchedule(schedule);
+        _scheduleOperation.createSchedule(schedule);
 
     } else if (m_type == 0) {
         schedule->setUid(m_ScheduleDataInfo->uid());
-        m_accountItem->updateSchedule(schedule);
-        //修改日程,根据返回的参数判断是否关闭对话框
+        _scheduleOperation.changeSchedule(schedule, m_ScheduleDataInfo);
+        //TODO：修改日程,根据返回的参数判断是否关闭对话框
     }
     return true;
 }

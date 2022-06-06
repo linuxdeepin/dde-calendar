@@ -196,7 +196,7 @@ bool DAccount::toJsonString(const DAccount::Ptr &account, QString &jsonStr)
     rootObj.insert("avatar", account->avatar());
     rootObj.insert("description", account->description());
     rootObj.insert("syncTag", account->syncTag());
-    rootObj.insert("accountState", account->accountState());
+    rootObj.insert("accountState", int(account->accountState()));
     rootObj.insert("syncState", account->syncState());
     rootObj.insert("dtCreate", dtToString(account->dtCreate()));
     rootObj.insert("dbName", account->dbName());
@@ -359,12 +359,12 @@ void DAccount::setDbusInterface(const QString &dbusInterface)
     m_dbusInterface = dbusInterface;
 }
 
-DAccount::AccountState DAccount::accountState() const
+DAccount::AccountStates DAccount::accountState() const
 {
     return m_accountState;
 }
 
-void DAccount::setAccountState(const AccountState &accountState)
+void DAccount::setAccountState(const AccountStates &accountState)
 {
     m_accountState = accountState;
 }
@@ -377,4 +377,31 @@ QDateTime DAccount::dtLastSync() const
 void DAccount::setDtLastSync(const QDateTime &dtLastSync)
 {
     m_dtLastSync = dtLastSync;
+}
+
+QString DAccount::syncFreqToJsonString(const DAccount::Ptr &account)
+{
+    QJsonObject rootObj;
+    rootObj.insert("syncFreq", account->syncFreq());
+    rootObj.insert("m_intervalTime", account->intervalTime());
+    QJsonDocument jsonDoc;
+    jsonDoc.setObject(rootObj);
+    return QString::fromUtf8(jsonDoc.toJson(QJsonDocument::Compact));
+}
+
+void DAccount::syncFreqFromJsonString(const DAccount::Ptr &account, const QString &syncFreqStr)
+{
+    QJsonParseError jsonError;
+    QJsonDocument jsonDoc(QJsonDocument::fromJson(syncFreqStr.toLocal8Bit(), &jsonError));
+    if (jsonError.error != QJsonParseError::NoError) {
+        qWarning() << "error:" << jsonError.errorString();
+        return;
+    }
+    QJsonObject rootObj = jsonDoc.object();
+    if (rootObj.contains("syncFreq")) {
+        account->setSyncFreq(rootObj.value("syncFreq").toInt());
+    }
+    if (rootObj.contains("m_intervalTime")) {
+        account->setIntervalTime(rootObj.value("m_intervalTime").toInt());
+    }
 }

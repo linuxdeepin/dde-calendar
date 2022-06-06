@@ -85,10 +85,14 @@ bool DSchedule::operator==(const DSchedule &schedule) const
 
 bool DSchedule::operator<(const DSchedule &schedule) const
 {
+    return this->allDay() > schedule.allDay() || this->priority() < schedule.priority()
+           || this->dtStart() < schedule.dtStart() || this->created() < schedule.created();
 }
 
 bool DSchedule::operator>(const DSchedule &schedule) const
 {
+    return this->allDay() < schedule.allDay() || this->priority() > schedule.priority()
+           || this->dtStart() > schedule.dtStart() || this->created() > schedule.created();
 }
 
 void DSchedule::setAlarmType(const DSchedule::AlarmType &alarmType)
@@ -140,28 +144,36 @@ void DSchedule::setRRuleType(const DSchedule::RRuleType &rtype)
         return;
     clearRecurrence();
 
-    KCalendarCore::Recurrence *recurrence = this->recurrence();
-    KCalendarCore::RecurrenceRule *rrule = new KCalendarCore::RecurrenceRule();
+    QString rules;
     switch (rtype) {
     case RRule_Year:
-        rrule->setRRule("FREQ=YEARLY");
+        rules = "FREQ=YEARLY";
         break;
     case RRule_Month:
-        rrule->setRRule("FREQ=MONTHLY");
+        rules = "FREQ=MONTHLY";
         break;
     case RRule_Week:
-        rrule->setRRule("FREQ=WEEKLY");
+        rules = "FREQ=WEEKLY";
         break;
     case RRule_Work:
-        rrule->setRRule("FREQ=DAILY;BYDAY=MO,TU,WE,TH,FR");
+        rules = "FREQ=DAILY;BYDAY=MO,TU,WE,TH,FR";
         break;
     case RRule_Day:
-        rrule->setRRule("FREQ=DAILY");
+        rules = "FREQ=DAILY";
         break;
     default:
+        rules = "";
         break;
     }
-    recurrence->addRRule(rrule);
+    if (!rules.isEmpty()) {
+        KCalendarCore::Recurrence *recurrence = this->recurrence();
+        KCalendarCore::RecurrenceRule *rrule = new KCalendarCore::RecurrenceRule();
+
+        KCalendarCore::ICalFormat ical;
+        if (ical.fromString(rrule, rules)) {
+            recurrence->addRRule(rrule);
+        }
+    }
 }
 
 DSchedule::RRuleType DSchedule::getRRuleType()

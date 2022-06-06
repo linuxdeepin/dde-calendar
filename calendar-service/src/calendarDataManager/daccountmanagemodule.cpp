@@ -153,26 +153,69 @@ void DAccountManageModule::unionIDDataMerging()
 {
     m_accountList = m_accountManagerDB->getAccountList();
     DAccount::Ptr accountUnionid = m_syncoperation->optUserData();
-    //如果已登陆unionid
-    if (!accountUnionid.isNull()) {
-        DAccount::Ptr unionidDB;
-        auto hasUnionid = [ =, &unionidDB](const DAccount::Ptr & account) {
-            if (account->accountType() == DAccount::Account_UnionID) {
-                unionidDB = account;
-                return true;
-            }
-            return false;
-        };
+
+    DAccount::Ptr unionidDB;
+    auto hasUnionid = [=, &unionidDB](const DAccount::Ptr &account) {
+        if (account->accountType() == DAccount::Account_UnionID) {
+            unionidDB = account;
+            return true;
+        }
+        return false;
+    };
+    //如果unionid帐户不存在，则判断数据库中是否有登陆前的信息
+    //若有则移除
+    if (accountUnionid.isNull()) {
         //如果数据库中有unionid帐户
         if (std::any_of(m_accountList.begin(), m_accountList.end(), hasUnionid)) {
-            if (unionidDB->avatar() == accountUnionid->avatar() && unionidDB->accountName() == accountUnionid->accountName()
-                    && unionidDB->displayName() == accountUnionid->displayName()) {
+            m_accountManagerDB->deleteAccountInfo(unionidDB->accountID());
+        }
+    } else {
+        //如果unionID登陆了
+        //设置DBus路径和数据库名
+
+        //如果数据库中有unionid帐户
+        if (std::any_of(m_accountList.begin(), m_accountList.end(), hasUnionid)) {
+            //如果是一个帐户则判断信息是否一致，不一致需更新
+            if (unionidDB->accountName() == accountUnionid->accountName()) {
+                if (unionidDB->avatar() != accountUnionid->avatar() || unionidDB->displayName() != accountUnionid->displayName()) {
+                    unionidDB->avatar() = accountUnionid->avatar();
+                    unionidDB->displayName() = accountUnionid->displayName();
+                    m_accountManagerDB->updateAccountInfo(unionidDB);
+                }
             } else {
-                unionidDB->setAvatar(accountUnionid->avatar());
-                unionidDB->setAccountName(accountUnionid->accountName());
-                unionidDB->setDisplayName(accountUnionid->displayName());
-                m_accountManagerDB->updateAccountInfo(unionidDB);
+                m_accountManagerDB->deleteAccountInfo(unionidDB->accountID());
+                //如果不是一个帐户则移除再设置
+                initAccountDBusInfo(accountUnionid);
+                m_accountManagerDB->addAccountInfo(accountUnionid);
             }
+        } else {
+            initAccountDBusInfo(accountUnionid);
+            m_accountManagerDB->addAccountInfo(accountUnionid);
         }
     }
+    //更新最新的帐户信息
+    m_accountList = m_accountManagerDB->getAccountList();
+}
+
+void DAccountManageModule::initAccountDBusInfo(const DAccount::Ptr &account)
+{
+    QString typeStr = "";
+    switch (account->accountType()) {
+    case DAccount::Type::Account_UnionID:
+        typeStr = "uid";
+        break;
+    case DAccount::Type::Account_CalDav:
+        typeStr = "caldav";
+        break;
+    default:
+        typeStr = "default";
+        break;
+    }
+    account->setAccountID(DDataBase::createUuid());
+    QString sortID = account->accountID().mid(0, 5);
+    account->setAccountType(DAccount::Account_UnionID);
+    account->setDtCreate(QDateTime::currentDateTime());
+    account->setDbName(QString("account_%1_%2.db").arg(typeStr).arg(sortID));
+    account->setDbusPath(QString("%1/account_%2_%3").arg(serviceBasePath).arg(typeStr).arg(sortID));
+    account->setDbusInterface(accountServiceInterface);
 }

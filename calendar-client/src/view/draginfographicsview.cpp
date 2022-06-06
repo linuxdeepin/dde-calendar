@@ -330,12 +330,14 @@ void DragInfoGraphicsView::contextMenuEvent(QContextMenuEvent *event)
     DragInfoItem *infoitem = dynamic_cast<DragInfoItem *>(listItem);
 
     if (infoitem != nullptr) {
-        //TODO:是否为节假日日程判断
-        //        if (infoitem->getData().getType() != DDECalendar::FestivalTypeID) {
-        if (true) {
+        //是否为节假日日程判断
+        if (!CScheduleOperation::isFestival(infoitem->getData())) {
             m_rightMenu->clear();
             m_rightMenu->addAction(m_editAction);
             m_rightMenu->addAction(m_deleteAction);
+            //如果日程是不可修改的则设置删除按钮无效
+            m_deleteAction->setEnabled(!CScheduleOperation::scheduleIsInvariant(infoitem->getData()));
+
             QAction *action_t = m_rightMenu->exec(QCursor::pos());
 
             if (action_t == m_editAction) {
@@ -359,25 +361,22 @@ void DragInfoGraphicsView::contextMenuEvent(QContextMenuEvent *event)
 void DragInfoGraphicsView::dragEnterEvent(QDragEnterEvent *event)
 {
     if (event->mimeData()->hasFormat("Info")) {
-        QJsonParseError json_error;
         QString str = event->mimeData()->data("Info");
-        QJsonDocument jsonDoc(QJsonDocument::fromJson(str.toLocal8Bit(), &json_error));
+        DSchedule::Ptr info;
+        DSchedule::fromJsonString(info, str);
 
-        if (json_error.error != QJsonParseError::NoError) {
+        if (info.isNull()) {
             event->ignore();
         }
-        QJsonObject rootobj = jsonDoc.object();
-        //TODO: 数据修改
-        //        DSchedule info = ScheduleDataInfo::JsonToSchedule(rootobj);
 
-        //        //如果该日程是不能被拖拽的则忽略不接受
-        //        if ((event->source() != this && info.getRepetitionRule().getRuleId() > 0) || !isCanDragge(info)) {
-        //            event->ignore();
-        //        } else {
-        //            event->accept();
-        //            //设置被修改的日程原始信息
-        //            m_PressScheduleInfo = info;
-        //        }
+        //如果该日程是不能被拖拽的则忽略不接受
+        if ((event->source() != this && info->recurrenceId().isValid()) || !isCanDragge(info)) {
+            event->ignore();
+        } else {
+            event->accept();
+            //设置被修改的日程原始信息
+            m_PressScheduleInfo = info;
+        }
     } else {
         event->ignore();
     }
@@ -502,14 +501,14 @@ void DragInfoGraphicsView::updateScheduleInfo(const DSchedule::Ptr &info)
     CalendarGlobalEnv::getGlobalEnv()->getValueByKey("MainWindow", variant);
     QObject *parent = static_cast<QObject *>(variant.value<void *>());
     //设置父类为主窗口
-    CScheduleOperation _scheduleOperation(qobject_cast<QWidget *>(parent));
-//    if (_scheduleOperation.changeSchedule(info, m_PressScheduleInfo)) {
-//        //如果日程修改成功则更新更新标志
-//        m_hasUpdateMark = true;
-//    } else {
-//        //如果取消更新则主动更新显示
-//        updateInfo();
-//    }
+    CScheduleOperation _scheduleOperation(info->scheduleTypeID(), qobject_cast<QWidget *>(parent));
+    if (_scheduleOperation.changeSchedule(info, m_PressScheduleInfo)) {
+        //如果日程修改成功则更新更新标志
+        m_hasUpdateMark = true;
+    } else {
+        //如果取消更新则主动更新显示
+        updateInfo();
+    }
 }
 
 void DragInfoGraphicsView::DragPressEvent(const QPoint &pos, DragInfoItem *item)
@@ -551,8 +550,10 @@ void DragInfoGraphicsView::DragPressEvent(const QPoint &pos, DragInfoItem *item)
             m_DragStatus = ChangeWhole;
             QMimeData *mimeData = new QMimeData();
             mimeData->setText(m_DragScheduleInfo->summary());
-            //TODO:数据转换
-            //            mimeData->setData("Info", ScheduleDataInfo::ScheduleToJsonStr(m_DragScheduleInfo).toUtf8());
+            QString strData;
+            DSchedule::toJsonString(m_DragScheduleInfo, strData);
+            //数据转换
+            mimeData->setData("Info", strData.toUtf8());
 
             if (m_Drag == nullptr) {
                 m_Drag = new QDrag(this);
@@ -665,7 +666,7 @@ void DragInfoGraphicsView::stopTouchAnimation()
 void DragInfoGraphicsView::DeleteItem(const DSchedule::Ptr &info)
 {
     //删除日程
-    CScheduleOperation _scheduleOperation(this);
+    CScheduleOperation _scheduleOperation(info->scheduleTypeID(), this);
     _scheduleOperation.deleteSchedule(info);
 }
 
@@ -721,10 +722,8 @@ DSchedule::Ptr DragInfoGraphicsView::getScheduleInfo(const QDateTime &beginDate,
     }
     info->setSummary(tr("New Event"));
     info->setAllDay(true);
-    //TODO:设置提醒规则，
-    //    info.setRemindData(RemindData(1, QTime(9, 0)));
-    //    info.setID(0);
-    //    info.setRecurID(0);
+    //设置提醒规则
+    info->setAlarmType(DSchedule::Alarm_15Hour_Front);
     return info;
 }
 
@@ -812,9 +811,8 @@ void DragInfoGraphicsView::setShowRadius(bool leftShow, bool rightShow)
 
 bool DragInfoGraphicsView::isCanDragge(const DSchedule::Ptr &info)
 {
-    //TODO:是否为节假日日程判断
-    //        if (infoitem->getData().getType() != DDECalendar::FestivalTypeID) {
-    if (true)
+    //是否为节假日日程判断
+    if (CScheduleOperation::isFestival(info))
         return false;
     if (info->lunnar() && !QLocale::system().name().startsWith("zh_"))
         return false;
@@ -839,12 +837,11 @@ void DragInfoGraphicsView::slotDeleteItem()
         }
     }
 
-    //判断是否有效,如果为有效日程且日程类型不为节日或纪念日则删除
+    //判断是否有效,如果为有效日程且日程类型不为节日或纪念日或不可更改日程则删除
     if (_pressSchedule->isValid()
-        //TODO:是否为节假日日程判断
-        //           && _pressSchedule.getType() != 4
-    ) {
-        CScheduleOperation _scheduleOperation(this);
+        && !CScheduleOperation::isFestival(_pressSchedule)
+        && !CScheduleOperation::scheduleIsInvariant(_pressSchedule)) {
+        CScheduleOperation _scheduleOperation(_pressSchedule->scheduleTypeID(), this);
         _scheduleOperation.deleteSchedule(_pressSchedule);
         //设置选择日程为无效日程
         setPressSelectInfo(DSchedule::Ptr());
@@ -879,15 +876,15 @@ void DragInfoGraphicsView::slotContextMenu(CFocusItem *item)
     DragInfoItem *infoitem = dynamic_cast<DragInfoItem *>(item);
     if (infoitem != nullptr) {
         //如果为节假日则退出不展示右击菜单
-        //TODO:是否为节假日日程判断
-        //        if (infoitem->getData().getType() != DDECalendar::FestivalTypeID) {
-        if (false)
+        if (CScheduleOperation::isFestival(infoitem->getData()))
             return;
         //快捷键调出右击菜单
         m_Scene->setIsContextMenu(true);
         m_rightMenu->clear();
         m_rightMenu->addAction(m_editAction);
         m_rightMenu->addAction(m_deleteAction);
+        //如果日程不可修改则设置删除无效
+        m_deleteAction->setEnabled(!CScheduleOperation::scheduleIsInvariant(infoitem->getData()));
         QPointF itemPos = QPointF(infoitem->rect().x() + infoitem->rect().width() / 2, infoitem->rect().y() + infoitem->rect().height() / 2);
         QPointF scene_pos = infoitem->mapToScene(itemPos);
         QPointF view_pos = mapFromScene(scene_pos);

@@ -35,17 +35,17 @@ void DbusAccountRequest::getAccountInfo()
     asyncCall("getAccountInfo");
 }
 
-/**
- * @brief DbusAccountRequest::updateAccountInfo
- * 更新账户信息
- * @param account
- */
-void DbusAccountRequest::updateAccountInfo(const DAccount::Ptr& account)
-{
-    QString jsonStr;
-    DAccount::toJsonString(account, jsonStr);
-    asyncCall("updateAccountInfo", QVariant(jsonStr));
-}
+///**
+// * @brief DbusAccountRequest::updateAccountInfo
+// * 更新账户信息
+// * @param account
+// */
+//void DbusAccountRequest::updateAccountInfo(const DAccount::Ptr& account)
+//{
+//    QString jsonStr;
+//    DAccount::toJsonString(account, jsonStr);
+//    asyncCall("updateAccountInfo", QVariant(jsonStr));
+//}
 
 /**
  * @brief DbusAccountRequest::updateAccountExpandStatus
@@ -54,10 +54,11 @@ void DbusAccountRequest::updateAccountInfo(const DAccount::Ptr& account)
  */
 void DbusAccountRequest::updateAccountExpandStatus(const DAccount::Ptr &accountInfo)
 {
-    QString jsonStr;
-    DAccount::toJsonString(accountInfo, jsonStr);
-    QString callName = "updateAccountExpandStatus";
-    asyncCall("updateAccountInfo", callName, QVariant(jsonStr));
+    //TODO:通过帐户属性设置展开状态
+    //    QString jsonStr;
+    //    DAccount::toJsonString(accountInfo, jsonStr);
+    //    QString callName = "updateAccountExpandStatus";
+    //    asyncCall("updateAccountInfo", callName, QVariant(jsonStr));
 }
 
 /**
@@ -205,7 +206,7 @@ void DbusAccountRequest::getSysColors()
     asyncCall("getSysColors");
 }
 
-void DbusAccountRequest::slotCallFinished(CDBusPendingCallWatcher* call)
+void DbusAccountRequest::slotCallFinished(CDBusPendingCallWatcher *call)
 {
     int ret = 0;
     bool canCall = true;

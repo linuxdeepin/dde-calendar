@@ -76,6 +76,7 @@ public:
 
 private:
     void unionIDDataMerging();
+    void initAccountDBusInfo(const DAccount::Ptr &account);
 signals:
     void firstDayOfWeekChange(const int firstDay);
     void timeFormatTypeChange(const int timeType);

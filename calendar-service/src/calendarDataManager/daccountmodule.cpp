@@ -37,7 +37,6 @@ DAccountModule::DAccountModule(const DAccount::Ptr &account, QObject *parent)
 {
     QString newDbPatch = getDBPath();
     m_accountDB->setDBPath(newDbPatch + "/" + account->dbName());
-    m_accountDB->dbOpen();
     m_accountDB->initDBData();
     m_account = m_accountDB->getAccountInfo();
     //若程序没有开启定时任务则开启对应的定时任务
@@ -50,6 +49,48 @@ QString DAccountModule::getAccountInfo()
     m_account = m_accountDB->getAccountInfo();
     DAccount::toJsonString(m_account, accountInfo);
     return accountInfo;
+}
+
+bool DAccountModule::getExpand()
+{
+    return m_account->isExpandDisplay();
+}
+
+void DAccountModule::setExpand(const bool &isExpand)
+{
+    if (m_account->isExpandDisplay() != isExpand) {
+        m_account->setIsExpandDisplay(isExpand);
+        m_accountDB->updateAccountInfo(m_account);
+    }
+}
+
+int DAccountModule::getAccountState()
+{
+    return m_account->accountState();
+}
+
+void DAccountModule::setAccountState(const int accountState)
+{
+    if (m_account->accountState() != accountState) {
+        m_account->setAccountState(static_cast<DAccount::AccountState>(accountState));
+        m_accountDB->updateAccountInfo(m_account);
+    }
+}
+
+int DAccountModule::getSyncState()
+{
+    return m_account->syncState();
+}
+
+QString DAccountModule::getSyncFreq()
+{
+    return DAccount::syncFreqToJsonString(m_account);
+}
+
+void DAccountModule::setSyncFreq(const QString &freq)
+{
+    DAccount::syncFreqFromJsonString(m_account, freq);
+    m_accountDB->updateAccountInfo(m_account);
 }
 
 QString DAccountModule::getScheduleTypeList()
@@ -122,6 +163,10 @@ bool DAccountModule::deleteScheduleTypeByID(const QString &typeID)
     } else {
         m_accountDB->deleteScheduleTypeByID(typeID, 1);
     }
+    if (scheduleType.isNull()) {
+        qWarning() << "scheduleType isNull, typeID:" << typeID;
+        return false;
+    }
 
     //如果为用户颜色则删除颜色
     if (scheduleType->typeColor().privilege() > 1) {
@@ -141,14 +186,19 @@ bool DAccountModule::updateScheduleType(const QString &typeInfo)
     DScheduleType::fromJsonString(scheduleType, typeInfo);
     DScheduleType::Ptr oldScheduleType = m_accountDB->getScheduleTypeByID(scheduleType->typeID());
     //如果颜色有改动
-    if (oldScheduleType->typeColor() != scheduleType->typeColor()) {
-        if (!oldScheduleType->typeColor().isSysColorInfo()) {
-            m_accountDB->deleteTypeColor(oldScheduleType->typeColor().colorID());
-        }
-        if (!scheduleType->typeColor().isSysColorInfo()) {
-            m_accountDB->addTypeColor(scheduleType->typeColor().colorID(), scheduleType->typeColor().colorCode(), scheduleType->typeColor().privilege());
+    if (oldScheduleType.isNull()) {
+        qWarning() << "get oldScheduleType error,typeID:" << scheduleType->typeID();
+    } else {
+        if (oldScheduleType->typeColor() != scheduleType->typeColor()) {
+            if (!oldScheduleType->typeColor().isSysColorInfo()) {
+                m_accountDB->deleteTypeColor(oldScheduleType->typeColor().colorID());
+            }
+            if (!scheduleType->typeColor().isSysColorInfo()) {
+                m_accountDB->addTypeColor(scheduleType->typeColor().colorID(), scheduleType->typeColor().colorCode(), scheduleType->typeColor().privilege());
+            }
         }
     }
+    scheduleType->setDtUpdate(QDateTime::currentDateTime());
     bool isSucc = m_accountDB->updateScheduleType(scheduleType);
 
     if (isSucc) {
@@ -310,7 +360,7 @@ QString DAccountModule::querySchedulesWithParameter(const QString &params)
 
     bool extend = queryPar->queryType() == DScheduleQueryPar::Query_None;
     //根据条件判断是否需要添加节假日日程
-    if (isChineseEnv() && extend) {
+    if (isChineseEnv() && extend && m_account->accountType() == DAccount::Account_Local) {
         scheduleList.append(getFestivalSchedule(queryPar->dtStart(), queryPar->dtEnd(), queryPar->key()));
     }
 

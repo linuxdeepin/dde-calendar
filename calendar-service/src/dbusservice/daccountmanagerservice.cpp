@@ -110,7 +110,7 @@ void DAccountManagerService::calendarIsShow(const bool &isShow)
     }
 }
 
-int DAccountManagerService::getfirstDayOfWeek()
+int DAccountManagerService::getfirstDayOfWeek() const
 {
     return m_accountManager->getfirstDayOfWeek();
 }
@@ -120,7 +120,7 @@ void DAccountManagerService::setFirstDayOfWeek(const int firstday)
     m_accountManager->setFirstDayOfWeek(firstday);
 }
 
-int DAccountManagerService::getTimeFormatType()
+int DAccountManagerService::getTimeFormatType() const
 {
     return m_accountManager->getTimeFormatType();
 }

@@ -41,6 +41,16 @@ public:
 
     //获取帐户信息
     QString getAccountInfo();
+    //设置获取帐户是否展开
+    bool getExpand();
+    void setExpand(const bool &isExpand);
+    //帐户状态。
+    int getAccountState();
+    void setAccountState(const int accountState);
+    //获取同步状态
+    int getSyncState();
+    QString getSyncFreq();
+    void setSyncFreq(const QString &freq);
 
     //获取类型
     QString getScheduleTypeList();

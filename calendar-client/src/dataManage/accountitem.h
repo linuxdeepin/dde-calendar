@@ -29,7 +29,7 @@ class AccountItem : public QObject
 {
     Q_OBJECT
 public:
-    explicit AccountItem(const DAccount::Ptr& account, QObject *parent = nullptr);
+    explicit AccountItem(const DAccount::Ptr &account, QObject *parent = nullptr);
 
     typedef std::function<void()> Func;
     typedef QSharedPointer<AccountItem> Ptr;
@@ -53,7 +53,7 @@ public:
     DTypeColor::List getColorTypeList();
 
     //更新账户信息
-    void updateAccountInfo(CallbackFunc callback = nullptr);
+    //    void updateAccountInfo(CallbackFunc callback = nullptr);
     //更新账户列表展开状态
     void updateAccountExpandStatus(bool expandStatus, CallbackFunc callback = nullptr);
 
@@ -64,7 +64,7 @@ public:
     void updateScheduleType(const DScheduleType::Ptr &typeInfo, CallbackFunc callback = nullptr);
 
     //更新类型显示状态
-    void updateScheduleTypeShowState(const DScheduleType::Ptr& scheduleInfo, CallbackFunc callback = nullptr);
+    void updateScheduleTypeShowState(const DScheduleType::Ptr &scheduleInfo, CallbackFunc callback = nullptr);
 
     //根据类型ID删除日程类型
     void deleteScheduleTypeByID(const QString &typeID, CallbackFunc callback = nullptr);
@@ -73,10 +73,10 @@ public:
     void scheduleTypeIsUsed(const QString &typeID, CallbackFunc callback);
 
     //创建日程
-    void createSchedule(const DSchedule::Ptr& scheduleInfo, CallbackFunc callback = nullptr);
+    void createSchedule(const DSchedule::Ptr &scheduleInfo, CallbackFunc callback = nullptr);
 
     //更新日程
-    void updateSchedule(const DSchedule::Ptr& scheduleInfo, CallbackFunc callback = nullptr);
+    void updateSchedule(const DSchedule::Ptr &scheduleInfo, CallbackFunc callback = nullptr);
 
     //根据日程ID删除日程
     void deleteScheduleByID(const QString &scheduleID, CallbackFunc callback = nullptr);
@@ -86,9 +86,9 @@ public:
 
     //根据查询条件查询数据
     void querySchedulesWithParameter(const int year, CallbackFunc callback = nullptr);
-    void querySchedulesWithParameter(const QDateTime& start, const QDateTime& end, CallbackFunc callback = nullptr);
-    void querySchedulesWithParameter(const QString& key, const QDateTime& start, const QDateTime& end, CallbackFunc callback = nullptr);
-    void querySchedulesWithParameter(const DScheduleQueryPar::Ptr&, CallbackFunc callback = nullptr);
+    void querySchedulesWithParameter(const QDateTime &start, const QDateTime &end, CallbackFunc callback = nullptr);
+    void querySchedulesWithParameter(const QString &key, const QDateTime &start, const QDateTime &end, CallbackFunc callback = nullptr);
+    void querySchedulesWithParameter(const DScheduleQueryPar::Ptr &, CallbackFunc callback = nullptr);
 
     //监听日程类型数据完成事件
     void monitorScheduleTypeData(Func callback);
@@ -118,7 +118,7 @@ private:
     DAccount::Ptr m_account;    //账户数据
     DScheduleType::List m_scheduleTypeList; //日程类型数据
     DTypeColor::List m_typeColorList;    //颜色数据
-    DbusAccountRequest* m_dbusRequest = nullptr;    //dbus请求实例
+    DbusAccountRequest *m_dbusRequest = nullptr; //dbus请求实例
     //一年的日程信息
     QMap<QDate, DSchedule::List> m_scheduleMap{};
     //搜索的日程信息

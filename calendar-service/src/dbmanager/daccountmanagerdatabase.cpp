@@ -104,7 +104,9 @@ QString DAccountManagerDataBase::addAccountInfo(const DAccount::Ptr &accountInfo
 {
     QSqlQuery query(m_database);
     //生成唯一标识
-    accountInfo->setAccountID(DDataBase::createUuid());
+    if (accountInfo->accountID().isEmpty()) {
+        accountInfo->setAccountID(DDataBase::createUuid());
+    }
     QString strSql("INSERT INTO accountManager                                          \
                    (accountID, accountName, displayName, syncState, accountAvatar,  \
                     accountDescription, accountType, dbName,dBusPath,dBusInterface, dtCreate,         \
@@ -268,7 +270,6 @@ void DAccountManagerDataBase::createDB()
         if (query.isActive()) {
             query.finish();
         }
-        m_database.commit();
     }
 }
 
@@ -299,15 +300,14 @@ void DAccountManagerDataBase::initAccountManagerDB()
             query.bindValue(":accountType", 0);
             query.bindValue(":dbName", m_loaclDB);
             query.bindValue(":dBusPath", serviceBasePath + "/account_local");
-            query.bindValue(":dBusInterface", serviceBaseName + ".account_local");
-            query.bindValue(":dtCreate", currentDateTime);
+            query.bindValue(":dBusInterface", accountServiceInterface);
+            query.bindValue(":dtCreate", dtToString(currentDateTime));
             query.bindValue(":isDeleted", 0);
 
             if (query.exec()) {
                 if (query.isActive()) {
                     query.finish();
                 }
-                m_database.commit();
             } else {
                 qWarning() << __FUNCTION__ << query.lastError();
             }

@@ -25,6 +25,8 @@ DAccountService::DAccountService(const QString &path, const QString &interface, 
     : DServiceBase(path, interface, parent)
     , m_accountModel(accountModule)
 {
+    connect(m_accountModel.data(), &DAccountModule::signalScheduleUpdate, this, &DAccountService::scheduleUpdate);
+    connect(m_accountModel.data(), &DAccountModule::signalScheduleTypeUpdate, this, &DAccountService::scheduleTypeUpdate);
     //TODO:为了便于调试先注释,待开发完成取消注释
     //    DServiceExitControl exitControl;
 }
@@ -147,6 +149,37 @@ QString DAccountService::getSysColors()
     return m_accountModel->getSysColors();
 }
 
-void DAccountService::updateAccountInfo(const QString &accountInfo)
+bool DAccountService::getExpand()
 {
+    return m_accountModel->getExpand();
+}
+
+void DAccountService::setExpand(const bool &isExpand)
+{
+    m_accountModel->setExpand(isExpand);
+}
+
+int DAccountService::getAccountState()
+{
+    return m_accountModel->getAccountState();
+}
+
+void DAccountService::setAccountState(const int accountState)
+{
+    m_accountModel->setAccountState(accountState);
+}
+
+int DAccountService::getSyncState()
+{
+    return m_accountModel->getSyncState();
+}
+
+QString DAccountService::getSyncFreq()
+{
+    return m_accountModel->getSyncFreq();
+}
+
+void DAccountService::setSyncFreq(const QString &freq)
+{
+    m_accountModel->setSyncFreq(freq);
 }

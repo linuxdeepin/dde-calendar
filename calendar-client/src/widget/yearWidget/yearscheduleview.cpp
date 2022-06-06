@@ -22,6 +22,7 @@
 #include "scheduledatamanage.h"
 #include "constants.h"
 #include "schedulemanager.h"
+#include "cscheduleoperation.h"
 
 #include <QPainter>
 #include <QRect>
@@ -85,9 +86,8 @@ void CYearScheduleView::setData(DSchedule::List &vListData)
 
     for (int i = 0; i < valldayListData.count(); i++) {
         DSchedule::List::iterator iter = valldayListData.begin();
-//        if (valldayListData.at(i).getType() == DDECalendar::FestivalTypeID) {};
-        //TODO:类型判断
-        if (true) {
+        //如果为节假日日程
+        if (CScheduleOperation::isFestival(valldayListData.at(i))) {
             DSchedule::Ptr moveDate;
             moveDate = valldayListData.at(i);
             valldayListData.removeAt(i);
@@ -379,9 +379,7 @@ void CYearScheduleOutView::mousePressEvent(QMouseEvent *event)
             //跳转到周视图
         } else {
             //如果日程类型不为节假日或纪念日则显示编辑框
-            //TODO:日程类型判断
-            //            if (scheduleinfoList.at(currentIndex).getType() != DDECalendar::FestivalTypeID) {
-            if (true) {
+            if (!CScheduleOperation::isFestival(scheduleinfoList.at(currentIndex))) {
                 //因为提示框会消失，所以设置CScheduleDlg的父类为主窗口
                 CScheduleDlg dlg(0, qobject_cast<QWidget *>(this->parent()));
                 dlg.setData(scheduleinfoList.at(currentIndex));

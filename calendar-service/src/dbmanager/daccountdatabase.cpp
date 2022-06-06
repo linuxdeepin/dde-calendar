@@ -34,7 +34,7 @@ DAccountDataBase::DAccountDataBase(const DAccount::Ptr &account, QObject *parent
     : DDataBase(parent)
     , m_account(account)
 {
-    setConnectionName("accountLocal");
+    setConnectionName(m_account->accountName());
 }
 
 QString DAccountDataBase::createSchedule(const DSchedule::Ptr &schedule)
@@ -228,9 +228,9 @@ bool DAccountDataBase::deleteSchedulesByScheduleTypeID(const QString &typeID, co
 DSchedule::List DAccountDataBase::querySchedulesByKey(const QString &key)
 {
     DSchedule::List scheduleList;
-    QString strSql("SELECT  scheduleID, scheduleTypeID, summary, description, allDay, dtStart, dtEnd,   \
-                   isAlarm,titlePinyin,isLunar, ics, fileName, dtCreate, dtUpdate, dtDelete, isDeleted  \
-                   FROM schedules");
+    QString strSql("SELECT s.scheduleID, s.scheduleTypeID, s.summary, s.description, s.allDay, s.dtStart, s.dtEnd,   \
+             s.isAlarm,s.titlePinyin,s.isLunar, s.ics, s.fileName, s.dtCreate, s.dtUpdate, s.dtDelete, s.isDeleted      \
+               FROM  schedules s  inner join scheduleType st WHERE st.showState =1 and s.scheduleTypeID  = st.typeID ");
     //如果关键字不为空，添加查询条件
     pinyinsearch *psearch = pinyinsearch::getPinPinSearch();
     QMap<QString, QString> sqlBindValue;
@@ -238,17 +238,17 @@ DSchedule::List DAccountDataBase::querySchedulesByKey(const QString &key)
     if (psearch->CanQueryByPinyin(key)) {
         //可以按照拼音查询
         QString pinyin = psearch->CreatePinyinQuery(strKey.toLower());
-        strSql += QString(" where instr(UPPER(summary), UPPER(:key)) OR titlePinyin LIKE :pinyin");
+        strSql += QString(" where instr(UPPER(s.summary), UPPER(:key)) OR s.titlePinyin LIKE :pinyin");
         sqlBindValue[":key"] = key;
         sqlBindValue[":pinyin"] = pinyin;
     } else if (!key.isEmpty()) {
         //按照key查询
-        strSql += QString(" where instr(UPPER(summary), UPPER(:key))");
+        strSql += QString(" where instr(UPPER(s.summary), UPPER(:key))");
         sqlBindValue[":key"] = key;
     }
 
     strSql.append(QString(" order by :strsort "));
-    sqlBindValue[":strsort"] = "dtStart asc";
+    sqlBindValue[":strsort"] = "s.dtStart asc";
 
     QSqlQuery query(m_database);
     if (query.prepare(strSql)) {
@@ -356,6 +356,9 @@ void DAccountDataBase::initDBData()
         initScheduleDB();
         initScheduleType();
         initAccountDB();
+    } else {
+        //如果存在则连接数据库
+        dbOpen();
     }
 }
 
@@ -368,14 +371,17 @@ QString DAccountDataBase::createScheduleType(const DScheduleType::Ptr &scheduleT
                VALUES(?,?,?,?,?,?,?,?,?,?,?)");
     QSqlQuery query(m_database);
     if (query.prepare(strSql)) {
-        scheduleType->setTypeID(DDataBase::createUuid());
+        if (scheduleType->typeID().size() < 30) {
+            scheduleType->setTypeID(DDataBase::createUuid());
+        }
+
         query.addBindValue(scheduleType->typeID());
         query.addBindValue(scheduleType->typeName());
         query.addBindValue(scheduleType->displayName());
         query.addBindValue(scheduleType->typePath());
         query.addBindValue(scheduleType->typeColor().colorID());
         query.addBindValue(scheduleType->description());
-        query.addBindValue(scheduleType->privilege());
+        query.addBindValue(int(scheduleType->privilege()));
         query.addBindValue(scheduleType->showState());
         query.addBindValue(scheduleType->syncTag());
         query.addBindValue(dtToString(scheduleType->dtCreate()));
@@ -399,19 +405,6 @@ QString DAccountDataBase::createScheduleType(const DScheduleType::Ptr &scheduleT
 DScheduleType::Ptr DAccountDataBase::getScheduleTypeByID(const QString &typeID, const int isDeleted)
 {
     DScheduleType::Ptr type;
-    DScheduleType::List typeList = initSysType();
-    auto predicate = [=, &type](DScheduleType::Ptr t) {
-        bool res = false;
-        if (t->typeID() == typeID) {
-            type = t;
-            res = true;
-        }
-        return res;
-    };
-    //如果能够匹配内置的类型
-    if (std::any_of(typeList.begin(), typeList.end(), predicate) && isDeleted == 0) {
-        return type;
-    }
     QString strSql("SELECT                              \
                    st.typeID , st.typeName ,st.typeDisplayName ,        \
                    st.typePath ,st.typeColorID ,tc.ColorHex ,           \
@@ -426,6 +419,8 @@ DScheduleType::Ptr DAccountDataBase::getScheduleTypeByID(const QString &typeID, 
                    st.typeID = ? AND st.isDeleteD = ?");
     QSqlQuery query(m_database);
     if (query.prepare(strSql)) {
+        query.addBindValue(typeID);
+        query.addBindValue(isDeleted);
         if (query.exec() && query.next()) {
             type = DScheduleType::Ptr(new DScheduleType(m_account->accountID()));
             type->setTypeID(typeID);
@@ -444,6 +439,7 @@ DScheduleType::Ptr DAccountDataBase::getScheduleTypeByID(const QString &typeID, 
             type->setDtUpdate(query.value("dtUpdate").toDateTime());
             type->setDtDelete(query.value("dtDelete").toDateTime());
             type->setDeleted(query.value("isDeleted").toInt());
+            systemTypeTran(type);
         }
     } else {
         qWarning() << query.lastError();
@@ -475,9 +471,6 @@ DScheduleType::List DAccountDataBase::getScheduleTypeList(const int isDeleted)
     QSqlQuery query(m_database);
     if (query.prepare(strSql)) {
         query.addBindValue(isDeleted);
-
-        DScheduleType::List sysTypeList = initSysType();
-        typeList.append(sysTypeList);
         if (query.exec()) {
             while (query.next()) {
                 DScheduleType::Ptr type = DScheduleType::Ptr(new DScheduleType(m_account->accountID()));
@@ -497,6 +490,7 @@ DScheduleType::List DAccountDataBase::getScheduleTypeList(const int isDeleted)
                 type->setDtCreate(query.value("dtUpdate").toDateTime());
                 type->setDtCreate(query.value("dtDelete").toDateTime());
                 type->setDeleted(query.value("isDeleted").toInt());
+                systemTypeTran(type);
                 typeList.append(type);
             }
         } else {
@@ -570,7 +564,7 @@ bool DAccountDataBase::updateScheduleType(const DScheduleType::Ptr &scheduleType
     QSqlQuery query(m_database);
     QString strSql("UPDATE scheduleType                     \
                        SET typeName=?, typeDisplayName=?, typePath=?, typeColorID=?, description=?,     \
-                       privilege=?, showState=?, dtCreate=?, dtUpdate=?, dtDelete=?, isDeleted=?        \
+                       privilege=?, showState=?, dtUpdate=?, dtDelete=?, isDeleted=?        \
                        WHERE typeID = ?");
     if (query.prepare(strSql)) {
         query.addBindValue(scheduleType->typeName());
@@ -578,9 +572,8 @@ bool DAccountDataBase::updateScheduleType(const DScheduleType::Ptr &scheduleType
         query.addBindValue(scheduleType->typePath());
         query.addBindValue(scheduleType->typeColor().colorID());
         query.addBindValue(scheduleType->description());
-        query.addBindValue(scheduleType->privilege());
+        query.addBindValue(int(scheduleType->privilege()));
         query.addBindValue(scheduleType->showState());
-        query.addBindValue(dtConvert(scheduleType->dtCreate()));
         query.addBindValue(dtConvert(scheduleType->dtUpdate()));
         query.addBindValue(dtConvert(scheduleType->dtDelete()));
         query.addBindValue(scheduleType->deleted());
@@ -650,7 +643,7 @@ DAccount::Ptr DAccountDataBase::getAccountInfo()
     return m_account;
 }
 
-void DAccountDataBase::setAccountInfo(const DAccount::Ptr &account)
+void DAccountDataBase::updateAccountInfo(const DAccount::Ptr &account)
 {
     QString strSql("UPDATE account                                                              \
                    SET syncState=?, accountState = ?,accountName=?, displayName=?,                               \
@@ -659,7 +652,7 @@ void DAccountDataBase::setAccountInfo(const DAccount::Ptr &account)
     QSqlQuery query(m_database);
     if (query.prepare(strSql)) {
         query.addBindValue(account->syncState());
-        query.addBindValue(account->accountState());
+        query.addBindValue(int(account->accountState()));
         query.addBindValue(account->accountName());
         query.addBindValue(account->displayName());
         query.addBindValue(account->cloudPath());
@@ -1026,7 +1019,7 @@ void DAccountDataBase::createDB()
                                  accountState integer not null,         \
                                  accountName text not null,             \
                                  displayName text not null,             \
-                                 cloudPath text not null,               \
+                                 cloudPath text  ,                      \
                                  accountType integer not null,          \
                                  syncFreq integer not null,             \
                                  intervalTime integer,                  \
@@ -1126,9 +1119,6 @@ void DAccountDataBase::createDB()
         if (query.isActive()) {
             query.finish();
         }
-        if (!m_database.commit()) {
-            qWarning() << m_database.lastError();
-        }
     }
 }
 
@@ -1140,6 +1130,7 @@ void DAccountDataBase::initScheduleDB()
 void DAccountDataBase::initScheduleType()
 {
     //创建数据库时，需要初始化的类型数据
+    initSysType();
     //添加节假日日程类型，不会展示在类型列表中
     DScheduleType::Ptr scheduleType(new DScheduleType);
     scheduleType->setTypeID(createUuid());
@@ -1152,56 +1143,69 @@ void DAccountDataBase::initScheduleType()
     createScheduleType(scheduleType);
 }
 
-DScheduleType::List DAccountDataBase::initSysType()
+void DAccountDataBase::initSysType()
 {
-    static DScheduleType::List typeList;
-    if (typeList.size() == 0) {
+    //如果为本地帐户则初始化本地日程类型数据
+    if (m_account->accountType() == DAccount::Account_Local) {
         //工作类型
         DScheduleType::Ptr workType(new DScheduleType(m_account->accountID()));
         workType->setTypeID("107c369e-b13a-4d45-9ff3-de4eb3c0475b");
         workType->setDtCreate(QDateTime::currentDateTime());
         workType->setPrivilege(DScheduleType::Read);
-        workType->setTypeName(tr("Work"));
-        workType->setDisplayName(tr("Work"));
+        workType->setTypeName("Work");
+        workType->setDisplayName("Work");
         DTypeColor workColor;
         workColor.setColorID(1);
         workColor.setColorCode("#ff5e97");
         workColor.setPrivilege(DTypeColor::PriSystem);
         workType->setTypeColor(workColor);
         workType->setShowState(DScheduleType::Show);
-        typeList.append(workType);
+        createScheduleType(workType);
 
         //生活
         DScheduleType::Ptr lifeType(new DScheduleType(m_account->accountID()));
         lifeType->setTypeID("24cf3ae3-541d-487f-83df-f068416b56b6");
         lifeType->setDtCreate(QDateTime::currentDateTime());
         lifeType->setPrivilege(DScheduleType::Read);
-        lifeType->setTypeName(tr("Life"));
-        lifeType->setDisplayName(tr("Life"));
+        lifeType->setTypeName("Life");
+        lifeType->setDisplayName("Life");
         DTypeColor lifeColor;
         lifeColor.setColorID(7);
         lifeColor.setColorCode("#5d51ff");
         lifeColor.setPrivilege(DTypeColor::PriSystem);
         lifeType->setTypeColor(lifeColor);
         lifeType->setShowState(DScheduleType::Show);
-        typeList.append(lifeType);
+        createScheduleType(lifeType);
 
         //其他
         DScheduleType::Ptr otherType(new DScheduleType(m_account->accountID()));
         otherType->setTypeID("403bf009-2005-4679-9c76-e73d9f83a8b4");
         otherType->setDtCreate(QDateTime::currentDateTime());
         otherType->setPrivilege(DScheduleType::Read);
-        otherType->setTypeName(tr("Other"));
-        otherType->setDisplayName(tr("Other"));
+        otherType->setTypeName("Other");
+        otherType->setDisplayName("Other");
         DTypeColor otherColor;
         otherColor.setColorID(4);
         otherColor.setColorCode("#5bdd80");
         otherColor.setPrivilege(DTypeColor::PriSystem);
         otherType->setTypeColor(otherColor);
         otherType->setShowState(DScheduleType::Show);
-        typeList.append(otherType);
+        createScheduleType(otherType);
     }
-    return typeList;
+}
+
+void DAccountDataBase::systemTypeTran(const DScheduleType::Ptr &type)
+{
+    //如果为本地帐户且类型为默认类型
+    if (m_account->accountType() == DAccount::Account_Local && type->privilege() == DScheduleType::Privilege::Read) {
+        if (type->displayName() == "Work") {
+            type->setDisplayName(tr("Work"));
+        } else if (type->displayName() == "Life") {
+            type->setDisplayName(tr("Life"));
+        } else if (type->displayName() == "Other") {
+            type->setDisplayName(tr("Other"));
+        }
+    }
 }
 
 void DAccountDataBase::initTypeColor()
@@ -1225,11 +1229,18 @@ void DAccountDataBase::initAccountDB()
                (syncState,accountState,accountName,         \
                    displayName,cloudPath,accountType,       \
                    syncFreq,intervalTime,syncTag)           \
-               VALUES(0,0,?,?,'',0,0,0,0);");
+               VALUES(?,?,?,?,?,?,?,?,?);");
     QSqlQuery query(m_database);
     if (query.prepare(strSql)) {
-        query.addBindValue("localAccount");
-        query.addBindValue("localAccount");
+        query.addBindValue(m_account->syncState());
+        query.addBindValue(int(m_account->accountState()));
+        query.addBindValue(m_account->accountName());
+        query.addBindValue(m_account->displayName());
+        query.addBindValue(m_account->cloudPath());
+        query.addBindValue(m_account->accountType());
+        query.addBindValue(m_account->syncFreq());
+        query.addBindValue(m_account->intervalTime());
+        query.addBindValue(m_account->syncTag());
         if (!query.exec()) {
             qWarning() << "initAccountDB error:" << query.lastError();
         }
