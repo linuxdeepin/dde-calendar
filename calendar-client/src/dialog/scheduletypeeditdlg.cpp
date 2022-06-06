@@ -49,6 +49,17 @@ ScheduleTypeEditDlg::ScheduleTypeEditDlg(const DScheduleType &jobTypeOld, QWidge
     init();
 }
 
+DScheduleType ScheduleTypeEditDlg::newJsonType()
+{
+    m_jobTypeNew.setTypeColor(*m_colorSeletor->getSelectedColorInfo());
+    return m_jobTypeNew;
+}
+
+void ScheduleTypeEditDlg::setAccount(AccountItem::Ptr account)
+{
+    m_colorSeletor->resetColorButton(account);
+}
+
 void ScheduleTypeEditDlg::init()
 {
     initView();
@@ -218,19 +229,13 @@ void ScheduleTypeEditDlg::slotFocusChanged(bool onFocus)
 
 void ScheduleTypeEditDlg::slotBtnCancel()
 {
-    this->close();
+    this->reject();
 }
 
 void ScheduleTypeEditDlg::slotBtnNext()
 {
-    //先修改颜色
-    //TODO:设置颜色
-    //    m_jobTypeNew.setColorInfo(m_colorSeletor->getSelectedColorInfo());
-
-    //TODO:需要获取操作帐户
-    CScheduleOperation so;
-    //更新或创建日程类型
-    //    so.updateJobType(m_jobTypeOld, m_jobTypeNew);
+    m_jobTypeNew.setTypeColor(*m_colorSeletor->getSelectedColorInfo());
+    this->accept();
 }
 
 void ScheduleTypeEditDlg::slotEditingFinished()

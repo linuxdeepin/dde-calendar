@@ -46,7 +46,7 @@ QPair<QWidget*, QWidget*> Generalsetting::createComboboxFirstDayofWeek(QObject *
     QComboBox* combobox = new QComboBox(widget);
     QHBoxLayout* layout = new QHBoxLayout(widget);
     QStringList firstDayofWeekList;
-    firstDayofWeekList<<tr("7")<<tr("1");
+    firstDayofWeekList << "7" << "1";
     combobox->addItems(firstDayofWeekList);
     combobox->setFixedSize(150,36);
     layout->addWidget(combobox);

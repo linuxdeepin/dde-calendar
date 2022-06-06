@@ -183,10 +183,9 @@ void AccountItem::deleteScheduleTypeByID(const QString &typeID, CallbackFunc cal
  * @param typeID 日程类型id
  * @param callback 回调函数
  */
-void AccountItem::scheduleTypeIsUsed(const QString &typeID, CallbackFunc callback)
+bool AccountItem::scheduleTypeIsUsed(const QString &typeID)
 {
-    m_dbusRequest->setCallbackFunc(callback);
-    m_dbusRequest->scheduleTypeByUsed(typeID);
+    return m_dbusRequest->scheduleTypeByUsed(typeID);
 }
 
 /**

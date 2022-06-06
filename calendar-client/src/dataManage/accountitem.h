@@ -70,7 +70,7 @@ public:
     void deleteScheduleTypeByID(const QString &typeID, CallbackFunc callback = nullptr);
 
     //类型是否被日程使用
-    void scheduleTypeIsUsed(const QString &typeID, CallbackFunc callback);
+    bool scheduleTypeIsUsed(const QString &typeID);
 
     //创建日程
     void createSchedule(const DSchedule::Ptr &scheduleInfo, CallbackFunc callback = nullptr);

@@ -133,9 +133,10 @@ void DbusAccountRequest::deleteScheduleTypeByID(const QString &typeID)
  * @param typeID                日程类型ID
  * @return
  */
-void DbusAccountRequest::scheduleTypeByUsed(const QString &typeID)
+bool DbusAccountRequest::scheduleTypeByUsed(const QString &typeID)
 {
-    asyncCall("scheduleTypeByUsed", QVariant(typeID));
+    QDBusMessage ret = call("scheduleTypeByUsed", QVariant(typeID));
+    return ret.arguments().value(0).toBool();
 }
 
 /**
@@ -258,9 +259,11 @@ void DbusAccountRequest::slotCallFinished(CDBusPendingCallWatcher *call)
             canCall = false;
             //在发起数据获取刷新数据，并将本回调函数和数据传到下一个事件中
             CallbackFunc func = call->getCallbackFunc();
-            setCallbackFunc([=](CallMessge) {
-                func({0, scheduleTypeId});
-            });
+            if(func) {
+                setCallbackFunc([=](CallMessge) {
+                    func({0, scheduleTypeId});
+                });
+            }
             getScheduleTypeList();
         } else if (call->getmember() == "createSchedule") {
             //创建日程结束
@@ -280,6 +283,9 @@ void DbusAccountRequest::slotCallFinished(CDBusPendingCallWatcher *call)
             //重新读取日程数据
             setCallbackFunc(call->getCallbackFunc());
             querySchedulesWithParameter(m_priParams);
+        } else if(call->getmember() == "updateScheduleType"
+                  || call->getmember() == "deleteScheduleTypeByID") {
+            getScheduleTypeList();
         }
 
         if (canCall && call->getCallbackFunc() != nullptr) {

@@ -172,6 +172,7 @@ bool DAccountModule::deleteScheduleTypeByID(const QString &typeID)
     if (scheduleType->typeColor().privilege() > 1) {
         m_accountDB->deleteTypeColor(scheduleType->typeColor().colorID());
     }
+    emit signalScheduleTypeUpdate();
     return true;
 }
 

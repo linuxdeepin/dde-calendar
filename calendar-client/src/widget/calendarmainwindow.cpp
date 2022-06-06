@@ -39,6 +39,7 @@
 #include "generalsetting.h"
 
 #include "scheduletypeeditdlg.h"
+#include "accountmanager.h"
 
 #include <DHiDPIHelper>
 #include <DPalette>
@@ -64,6 +65,9 @@
 #include <QColorDialog>
 #include <QApplication>
 #include <QWidgetAction>
+
+#include <stdlib.h>
+#include <functional>
 
 DGUI_USE_NAMESPACE
 DWIDGET_USE_NAMESPACE
@@ -844,18 +848,12 @@ void Calendarmainwindow::slotOpenSettingDialog()
         m_dsdSetting = new DSettingsDialog(this);
         m_dsdSetting->setIcon(CDynamicIcon::getInstance()->getPixmap());
         m_dsdSetting->setFixedSize(682, 506);
-        m_dsdSetting->widgetFactory()->registerWidget("login", Userlogin::createloginButton);
-        m_dsdSetting->widgetFactory()->registerWidget("FirstDayofWeek", Generalsetting::createComboboxFirstDayofWeek);
-        m_dsdSetting->widgetFactory()->registerWidget("Time", Generalsetting::createComboboxTime);
-        m_dsdSetting->widgetFactory()->registerWidget("JobTypeListView", [](QObject *obj) -> QWidget * {
-            if (DSettingsOption *option = qobject_cast<DSettingsOption *>(obj)) {
-                Q_UNUSED(option)
-                JobTypeListView *lv = new JobTypeListView();
-                lv->setObjectName("JobTypeListView");
-                return lv;
-            }
-            return nullptr;
-        });
+        m_dsdSetting->widgetFactory()->registerWidget("login",Userlogin::createloginButton);
+        m_dsdSetting->widgetFactory()->registerWidget("FirstDayofWeek",Generalsetting::createComboboxFirstDayofWeek);
+        m_dsdSetting->widgetFactory()->registerWidget("Time",Generalsetting::createComboboxTime);
+        m_dsdSetting->widgetFactory()->registerWidget("AccountCombobox", std::bind(&Calendarmainwindow::createCalendarAccount, this, std::placeholders::_1));
+        m_dsdSetting->widgetFactory()->registerWidget("JobTypeListView", std::bind(&Calendarmainwindow::createJobTypeListView, this, std::placeholders::_1));
+
 
         QString strJson = QString(R"(
                                   {"groups":[
@@ -881,6 +879,18 @@ void Calendarmainwindow::slotOpenSettingDialog()
                                       "key":"setting_base",
                                       "name":"Manage calendar",
                                       "groups":[
+                                         {
+                                             "key":"acccount_items",
+                                              "name":"",
+                                              "options":[
+                                                  {
+                                                      "key":"AccountCombobox",
+                                                      "type":"AccountCombobox",
+                                                      "name":"Calendar account",
+                                                      "default":""
+                                                  }
+                                              ]
+                                          },
                                           {
                                               "key":"event_types",
                                                "name":"Event types",
@@ -955,10 +965,7 @@ void Calendarmainwindow::slotOpenSettingDialog()
                     //当日常类型超过上限时，更新button的状态
                     connect(view, &JobTypeListView::signalAddStatusChanged, addButton, &DIconButton::setEnabled);
                     //新增类型
-                    connect(addButton, &DIconButton::clicked, this, [=] {
-                        ScheduleTypeEditDlg a(m_dsdSetting);
-                        a.exec();
-                    });
+                    connect(addButton, &DIconButton::clicked, this, &Calendarmainwindow::signal_addScheduleType);
                 }
                 if (wid->accessibleName().contains("DefaultWidgetAtContentRow")) {
                     //DefaultWidgetAtContentRow是设置对话框右边每一个option条目对应widget的accessibleName的前缀，所以如果后续有更多条目，需要做修改
@@ -981,6 +988,40 @@ void Calendarmainwindow::slotOpenSettingDialog()
 void Calendarmainwindow::dragEnterEvent(QDragEnterEvent *event)
 {
     event->acceptProposedAction();
+}
+
+QPair<QWidget *, QWidget *> Calendarmainwindow::createCalendarAccount(QObject *obj)
+{
+    auto option = qobject_cast<DTK_CORE_NAMESPACE::DSettingsOption *>(obj);
+    DComboBox *widget = new DComboBox;
+    widget->setFixedSize(150, 36);
+    QPair<QWidget *, QWidget *> optionWidget = DSettingsWidgetFactory::createStandardItem(QByteArray(), option, widget);
+
+    for(auto account : gAccounManager->getAccountList()) {
+        if(DAccount::Account_Local == account->getAccount()->accountType()) {
+            widget->addItem(tr("Local account"), DAccount::Account_Local);
+        }
+        if(DAccount::Account_UnionID == account->getAccount()->accountType()) {
+            widget->addItem(tr("Union ID"), DAccount::Account_UnionID);
+        }
+    }
+    //TODO:控制中心退出账号时，更新账户列表
+
+    //TODO:切换账号时，更新日程类型
+    connect(widget, QOverload<int>::of(&DComboBox::currentIndexChanged), this, &Calendarmainwindow::signal_calendarAccountChanged);
+    return optionWidget;
+}
+
+QWidget *Calendarmainwindow::createJobTypeListView(QObject *obj)
+{
+    Q_UNUSED(obj)
+    JobTypeListView *lv = new JobTypeListView;
+    lv->setObjectName("JobTypeListView");
+    lv->updateCalendarAccount(DAccount::Account_Local);
+    connect(this, &Calendarmainwindow::signal_calendarAccountChanged, lv, &JobTypeListView::updateCalendarAccount);
+    connect(this, &Calendarmainwindow::signal_addScheduleType, lv, &JobTypeListView::slotAddScheduleType);
+
+    return lv;
 }
 
 /**

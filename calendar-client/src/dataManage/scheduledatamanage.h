@@ -70,12 +70,12 @@ public:
      */
     void updateInfo();
     //查询列表、返回列表
-    QList<DScheduleType> getJobTypeList()
+    DScheduleType::List getJobTypeList()
     {
         return m_lstJobType;
     }
 
-    QList<DTypeColor> getJobTypeColorList()
+    DTypeColor::List getJobTypeColorList()
     {
         return  m_lstJobTypeColor;
     }
@@ -94,7 +94,7 @@ public:
      */
     bool getSysJobTypeColor(int colorTypeNo, DTypeColor &DTypeColor);
     //查询日程类型
-    bool getJobTypeByNo(QString iNo, DScheduleType &jobType);
+    bool getJobTypeByNo(QString iNo, DScheduleType::Ptr jobType);
     //查询日程类型颜色
     bool getJobTypeColorByNo(int iNo, DTypeColor &jobType);
 
@@ -114,8 +114,8 @@ public:
     void removeFromNoticeBill(QObject *obj);
 
 private:
-    QList<DScheduleType> m_lstJobType;
-    QList<DTypeColor> m_lstJobTypeColor;
+    DScheduleType::List m_lstJobType;
+    DTypeColor::List m_lstJobTypeColor;
     QMap<QObject *, QByteArray> noticeObjBill;//当日程类型改变时，会触发notice对应的回调函数
 };
 #endif // SCHEDULEVIEW_H

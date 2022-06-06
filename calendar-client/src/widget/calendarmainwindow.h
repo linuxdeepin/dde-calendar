@@ -141,6 +141,14 @@ private:
     bool m_setButtonFocus {false};
     bool m_isNormalStateShow {true}; //是否为正常状态显示
     QPoint m_startPos;
+
+    //设置界面相关函数
+    QPair<QWidget*, QWidget*> createCalendarAccount(QObject *obj);
+    QWidget *createJobTypeListView(QObject *obj);
+
+signals:
+    void signal_calendarAccountChanged(int account_type);
+    void signal_addScheduleType();
 };
 
 #endif // CALENDARMAINWINDOW_H

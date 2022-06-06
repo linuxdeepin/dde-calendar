@@ -97,7 +97,7 @@ public:
      * @param typeID                日程类型ID
      * @return
      */
-    void scheduleTypeByUsed(const QString &typeID);
+    bool scheduleTypeByUsed(const QString &typeID);
 
     /**
      * @brief createSchedule             创建日程

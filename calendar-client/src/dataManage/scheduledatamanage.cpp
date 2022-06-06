@@ -109,8 +109,8 @@ JobTypeInfoManager *JobTypeInfoManager::instance()
  */
 bool JobTypeInfoManager::isSysJobTypeColor(int colorTypeNo)
 {
-    for (DTypeColor typecolor : m_lstJobTypeColor) {
-        if ((typecolor.colorID() == colorTypeNo) && (typecolor.privilege() == 1)) { //设定1为展示权限
+    for (auto typecolor : m_lstJobTypeColor) {
+        if ((typecolor->colorID() == colorTypeNo) && (typecolor->privilege() == 1)) { //设定1为展示权限
             return true;
         }
     }
@@ -124,9 +124,9 @@ bool JobTypeInfoManager::isSysJobTypeColor(int colorTypeNo)
  */
 bool JobTypeInfoManager::getSysJobTypeColor(int colorTypeNo, DTypeColor &jobTypeColorInfo)
 {
-    for (DTypeColor typecolor : m_lstJobTypeColor) {
-        if ((typecolor.colorID() == colorTypeNo) && (typecolor.privilege() == 1)) { //设定1为展示权限
-            jobTypeColorInfo = typecolor;
+    for (auto typecolor : m_lstJobTypeColor) {
+        if ((typecolor->colorID() == colorTypeNo) && (typecolor->privilege() == 1)) { //设定1为展示权限
+            jobTypeColorInfo = *typecolor;
             return true;
         }
     }
@@ -134,10 +134,10 @@ bool JobTypeInfoManager::getSysJobTypeColor(int colorTypeNo, DTypeColor &jobType
 }
 
 //查询日程类型
-bool JobTypeInfoManager::getJobTypeByNo(QString iNo, DScheduleType &jobType)
+bool JobTypeInfoManager::getJobTypeByNo(QString iNo, DScheduleType::Ptr jobType)
 {
-    for (DScheduleType &jb : m_lstJobType) {
-        if (jb.typeID() == iNo) {
+    for (auto jb : m_lstJobType) {
+        if (jb->typeID() == iNo) {
             jobType = jb;
             return true;
         }
@@ -147,9 +147,9 @@ bool JobTypeInfoManager::getJobTypeByNo(QString iNo, DScheduleType &jobType)
 //查询日程类型颜色
 bool JobTypeInfoManager::getJobTypeColorByNo(int iNo, DTypeColor &jobType)
 {
-    for (DTypeColor &color : m_lstJobTypeColor) {
-        if (color.colorID() == iNo) {
-            jobType = color;
+    for (auto &color : m_lstJobTypeColor) {
+        if (color->colorID() == iNo) {
+            jobType = *color;
             return true;
         }
     }
@@ -159,8 +159,8 @@ bool JobTypeInfoManager::getJobTypeColorByNo(int iNo, DTypeColor &jobType)
 //查询日程类型名称是否重复
 bool JobTypeInfoManager::isJobTypeNameUsed(QString strName)
 {
-    for (DScheduleType &jb : m_lstJobType) {
-        if (jb.displayName() == strName) {
+    for (auto jb : m_lstJobType) {
+        if (jb->displayName() == strName) {
             return true;
         }
     }
@@ -169,9 +169,9 @@ bool JobTypeInfoManager::isJobTypeNameUsed(QString strName)
 
 bool JobTypeInfoManager::isJobTypeNameUsed(const DScheduleType &info)
 {
-    for (DScheduleType &jb : m_lstJobType) {
+    for (auto jb : m_lstJobType) {
         //
-        if (jb.displayName() == info.displayName() && jb.typeID() != info.typeID()) {
+        if (jb->displayName() == info.displayName() && jb->typeID() != info.typeID()) {
             return true;
         }
     }
@@ -197,9 +197,9 @@ bool JobTypeInfoManager::isJobTypeNameUsed(const DScheduleType &info)
 int JobTypeInfoManager::getNextColorTypeNo()
 {
     int colorTypeNo = 1;
-    for (DTypeColor &jobColor : m_lstJobTypeColor) {
-        if (jobColor.colorID() >= colorTypeNo) {
-            colorTypeNo = jobColor.colorID() + 1;
+    for (auto &jobColor : m_lstJobTypeColor) {
+        if (jobColor->colorID() >= colorTypeNo) {
+            colorTypeNo = jobColor->colorID() + 1;
         }
     }
     return colorTypeNo;
