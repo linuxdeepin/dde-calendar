@@ -50,6 +50,14 @@ public:
         Sync_StorageFull, //存储已满
     };
 
+    enum SyncFreqType{
+        SyncFreq_Maunal, //手动同步
+        SyncFreq_15Mins,
+        SyncFreq_30Mins,
+        SyncFreq_1hour,
+        SyncFreq_24hour,
+    };
+
     typedef QSharedPointer<DAccount> Ptr;
     typedef QVector<DAccount::Ptr> List;
 
@@ -106,8 +114,8 @@ public:
     QString cloudPath() const;
     void setCloudPath(const QString &cloudPath);
 
-    int syncFreq() const;
-    void setSyncFreq(int syncFreq);
+    SyncFreqType syncFreq() const;
+    void setSyncFreq(SyncFreqType syncFreq);
 
     int intervalTime() const;
     void setIntervalTime(int intervalTime);
@@ -142,7 +150,7 @@ private:
     QDateTime m_dtUpdate;
     QDateTime m_dtLastSync; //最后一次同步时间
     QString m_cloudPath;
-    int m_syncFreq; //同步频率
+    SyncFreqType m_syncFreq; //同步频率
     int m_intervalTime; //当同步频率为自定义时，才有效，单位（min）
 
     bool m_isExpandDisplay; //左侧帐户列表信息是否展开显示

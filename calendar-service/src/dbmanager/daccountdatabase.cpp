@@ -633,7 +633,7 @@ DAccount::Ptr DAccountDataBase::getAccountInfo()
         m_account->setDisplayName(query.value("displayName").toString());
         m_account->setCloudPath(query.value("cloudPath").toString());
         m_account->setAccountType(static_cast<DAccount::Type>(query.value("accountType").toInt()));
-        m_account->setSyncFreq(query.value("syncFreq").toInt());
+        m_account->setSyncFreq(static_cast<DAccount::SyncFreqType>(query.value("syncFreq").toInt()));
         m_account->setIntervalTime(query.value("intervalTime").toInt());
         m_account->setSyncTag(query.value("syncTag").toInt());
         m_account->setIsExpandDisplay(query.value("expandStatus").toBool());

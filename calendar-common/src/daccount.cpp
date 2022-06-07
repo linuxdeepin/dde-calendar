@@ -39,7 +39,7 @@ DAccount::DAccount(DAccount::Type type)
     , m_syncTag(0)
     , m_accountState(Account_Close)
     , m_syncState(Sync_Normal)
-    , m_syncFreq(0)
+    , m_syncFreq(SyncFreq_Maunal)
     , m_intervalTime(0)
     , m_isExpandDisplay(true)
 {
@@ -333,12 +333,12 @@ void DAccount::setCloudPath(const QString &cloudPath)
     m_cloudPath = cloudPath;
 }
 
-int DAccount::syncFreq() const
+DAccount::SyncFreqType DAccount::syncFreq() const
 {
     return m_syncFreq;
 }
 
-void DAccount::setSyncFreq(int syncFreq)
+void DAccount::setSyncFreq(SyncFreqType syncFreq)
 {
     m_syncFreq = syncFreq;
 }
@@ -403,7 +403,7 @@ void DAccount::syncFreqFromJsonString(const DAccount::Ptr &account, const QStrin
     }
     QJsonObject rootObj = jsonDoc.object();
     if (rootObj.contains("syncFreq")) {
-        account->setSyncFreq(rootObj.value("syncFreq").toInt());
+        account->setSyncFreq(SyncFreqType(rootObj.value("syncFreq").toInt()));
     }
     if (rootObj.contains("m_intervalTime")) {
         account->setIntervalTime(rootObj.value("m_intervalTime").toInt());

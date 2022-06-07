@@ -36,7 +36,6 @@
 #include "tabletconfig.h"
 #include "calendarglobalenv.h"
 #include "userlogin.h"
-#include "generalsetting.h"
 
 #include "scheduletypeeditdlg.h"
 #include "accountmanager.h"
@@ -51,6 +50,8 @@
 #include <DSettingsGroup>
 #include <DSettingsOption>
 #include <DSettingsWidgetFactory>
+#include <DBackgroundGroup>
+
 
 #include <QDesktopWidget>
 #include <QJsonDocument>
@@ -858,101 +859,61 @@ void Calendarmainwindow::slotOpenSettingDialog()
         m_dsdSetting->setIcon(CDynamicIcon::getInstance()->getPixmap());
         m_dsdSetting->setFixedSize(682, 506);
         m_dsdSetting->widgetFactory()->registerWidget("login",Userlogin::createloginButton);
-        m_dsdSetting->widgetFactory()->registerWidget("FirstDayofWeek",Generalsetting::createComboboxFirstDayofWeek);
-        m_dsdSetting->widgetFactory()->registerWidget("Time",Generalsetting::createComboboxTime);
-        m_dsdSetting->widgetFactory()->registerWidget("AccountCombobox", std::bind(&Calendarmainwindow::createCalendarAccount, this, std::placeholders::_1));
-        m_dsdSetting->widgetFactory()->registerWidget("JobTypeListView", std::bind(&Calendarmainwindow::createJobTypeListView, this, std::placeholders::_1));
+        m_dsdSetting->widgetFactory()->registerWidget("FirstDayofWeek",     std::bind(&Calendarmainwindow::createComboboxFirstDayofWeek,this, std::placeholders::_1));
+        m_dsdSetting->widgetFactory()->registerWidget("Time",               std::bind(&Calendarmainwindow::createComboboxTime,          this, std::placeholders::_1));
+        m_dsdSetting->widgetFactory()->registerWidget("AccountCombobox",    std::bind(&Calendarmainwindow::createAccountCombobox,       this, std::placeholders::_1));
+        m_dsdSetting->widgetFactory()->registerWidget("JobTypeListView",    std::bind(&Calendarmainwindow::createJobTypeListView,       this, std::placeholders::_1));
+        m_dsdSetting->widgetFactory()->registerWidget("SyncTagRadioButton", std::bind(&Calendarmainwindow::createSyncTagRadioButton,    this, std::placeholders::_1));
+        m_dsdSetting->widgetFactory()->registerWidget("SyncTimeCombobox",   std::bind(&Calendarmainwindow::createSyncFreqCombobox,      this, std::placeholders::_1));
+        m_dsdSetting->widgetFactory()->registerWidget("ManualSyncButton",   std::bind(&Calendarmainwindow::createManualSyncButton,      this, std::placeholders::_1));
+        QString strJson;
+
+        //静态的翻译不会真的翻译，但是会更新ts文件
+        //像static QString a = QObject::tr("hello"), a实际等于hello，但是ts会有hello这个词条
+        //调用DSetingDialog时会用到上述场景
+        static CalendarSettingSetting setting_account = {
+            "setting_account",            QObject::tr("Account setting"), {
+                {"account",               QObject::tr("Account"),                     {{"login",               "",                                   "login",                ""}}},
+                {"account_sync_items",    QObject::tr("Select items to be synced"),   {{"Account_Calendar",    QObject::tr("Events"),                "SyncTagRadioButton",   ""},
+                                                                                       {"Account_Setting",      QObject::tr("General settings"),      "SyncTagRadioButton",   ""}}},
+                {"sync_interval",         "",                                         {{"Sync_interval",       QObject::tr("Sync interval"),         "SyncTimeCombobox",     ""}}},
+                {"manual_sync",           "",                                         {{"manual_sync",         "",                                   "ManualSyncButton",     ""}}},
+            }
+        };
+        static CalendarSettingSetting setting_base = {
+            "setting_base",               QObject::tr("Manage calendar"), {
+                {"acccount_items",        "",                                         {{"AccountCombobox",     QObject::tr("Calendar account"),      "AccountCombobox",      ""}}},
+                {"event_types",           QObject::tr("Event types"),                 {{"JobTypeListView",     "",                                   "JobTypeListView",      ""}}}
+            }
+        };
+
+        static CalendarSettingSetting setting_general = {
+            "setting_general",            QObject::tr("General settings"), {
+                {"general",               QObject::tr("General"),                     {{"firstday",            QObject::tr("First day of week"),     "FirstDayofWeek",       "",     "Sunday"},
+                                                                                       {"time",                 QObject::tr("Time"),                  "Time",                 ""}}}
+            }
+        };
 
 
-        QString strJson = QString(R"(
-                                  {"groups":[
-                                      {
-                                          "key":"setting_account",
-                                          "name":"Account settings",
-                                          "groups":[
-                                              {
-                                                  "key":"account",
-                                                  "name":"Account",
-                                                  "options":[
-                                                      {
-                                                          "key":"login",
-                                                          "type":"login",
-                                                          "name":"",
-                                                          "default":""
-                                                      }
-                                                  ]
-                                              }
-                                          ]
-                                      },
-                                  {
-                                      "key":"setting_base",
-                                      "name":"Manage calendar",
-                                      "groups":[
-                                         {
-                                             "key":"acccount_items",
-                                              "name":"",
-                                              "options":[
-                                                  {
-                                                      "key":"AccountCombobox",
-                                                      "type":"AccountCombobox",
-                                                      "name":"Calendar account",
-                                                      "default":""
-                                                  }
-                                              ]
-                                          },
-                                          {
-                                              "key":"event_types",
-                                               "name":"Event types",
-                                               "options":[
-                                                   {
-                                                       "key":"JobTypeListView",
-                                                       "type":"JobTypeListView",
-                                                       "name":"JobTypeListView",
-                                                       "default":""
-                                                   }
-                                               ]
-                                           }
-                                       ]
-                                   },
-                                   {
-                                       "key":"general settings",
-                                       "name":"General settings",
-                                       "groups":[
-                                           {
-                                               "key":"general",
-                                               "name":"General",
-                                               "options":[
-                                                   {
-                                                       "key":"firstday",
-                                                       "name":"First day of week",
-                                                       "type":"FirstDayofWeek",
-                                                       "text":"Sunday",
-                                                       "default":""
-                                                   },
-                                                   {
-                                                       "key":"time",
-                                                       "name":"Time",
-                                                       "type":"Time",
-                                                      "default":""
-                                                   }
-                                               ]
-                                           }
-                                       ]
-                                   }
-                               ]
-                           }
-                       )");
+        CalendarSettingSettings calendarSettings;
+        calendarSettings.append(setting_account);
+        calendarSettings.append(setting_base);
+        calendarSettings.append(setting_general);
+
+        //社区版不含云同步相关内容
+        if(DSysInfo::uosEditionType() == DSysInfo::UosCommunity) {
+            calendarSettings.removeFirst();
+        }
+
+        QJsonObject obj;
+        obj.insert("groups", calendarSettings.toJson());
+        strJson = QJsonDocument(obj).toJson(QJsonDocument::Compact);
 
         auto settings = Dtk::Core::DSettings::fromJson(strJson.toLatin1());
-
-        //settings->setBackend(&backend);
         m_dsdSetting->setObjectName("SettingDialog");
-
         m_dsdSetting->updateSettings(settings);
-
         //恢复默认设置按钮不显示
         m_dsdSetting->setResetVisible(false);
-
         //QList<Widget>
         QList<QWidget *> lstwidget = m_dsdSetting->findChildren<QWidget *>();
         if (lstwidget.size() > 0) { //accessibleName
@@ -983,6 +944,16 @@ void Calendarmainwindow::slotOpenSettingDialog()
             }
         }
     }
+
+    //移除立刻同步按钮的背景色
+    QWidget  *ManualSyncWidget = m_dsdSetting->findChild<QWidget *>("ManualSyncWidget");
+    ManualSyncWidget     = ManualSyncWidget == nullptr ? nullptr : ManualSyncWidget->parentWidget();
+    ManualSyncWidget     = ManualSyncWidget == nullptr ? nullptr : ManualSyncWidget->parentWidget();
+    DBackgroundGroup *bk = ManualSyncWidget == nullptr ? nullptr : qobject_cast<DBackgroundGroup *>(ManualSyncWidget);
+    if(bk) {
+        bk->setBackgroundRole(QPalette::Base);
+    }
+
     //内容定位到顶端
     m_dsdSetting->exec();
     //使用完后释放
@@ -999,7 +970,10 @@ void Calendarmainwindow::dragEnterEvent(QDragEnterEvent *event)
     event->acceptProposedAction();
 }
 
-QPair<QWidget *, QWidget *> Calendarmainwindow::createCalendarAccount(QObject *obj)
+/**
+ * @brief Calendarmainwindow::createAccountCombobox 关联账户的combobox
+ */
+QPair<QWidget *, QWidget *> Calendarmainwindow::createAccountCombobox(QObject *obj)
 {
     auto option = qobject_cast<DTK_CORE_NAMESPACE::DSettingsOption *>(obj);
     DComboBox *widget = new DComboBox;
@@ -1021,6 +995,9 @@ QPair<QWidget *, QWidget *> Calendarmainwindow::createCalendarAccount(QObject *o
     return optionWidget;
 }
 
+/**
+ * @brief Calendarmainwindow::createJobTypeListView 日程类型的listview
+ */
 QWidget *Calendarmainwindow::createJobTypeListView(QObject *obj)
 {
     Q_UNUSED(obj)
@@ -1034,6 +1011,167 @@ QWidget *Calendarmainwindow::createJobTypeListView(QObject *obj)
 }
 
 /**
+ * @brief Calendarmainwindow::createSyncFreqCombobox 同步频率的combobox
+ */
+QPair<QWidget *, QWidget *> Calendarmainwindow::createSyncFreqCombobox(QObject *obj)
+{
+    auto option = qobject_cast<DTK_CORE_NAMESPACE::DSettingsOption *>(obj);
+
+    DComboBox *widget = new DComboBox;
+    widget->setMaximumWidth(150);
+    widget->addItem(tr("Manual"),   DAccount::SyncFreq_Maunal);
+    widget->addItem(tr("15 mins"),  DAccount::SyncFreq_15Mins);
+    widget->addItem(tr("30 mins"),  DAccount::SyncFreq_30Mins);
+    widget->addItem(tr("1 hour"),   DAccount::SyncFreq_1hour);
+    widget->addItem(tr("24 hours"), DAccount::SyncFreq_24hour);
+
+    QPair<QWidget *, QWidget *> optionWidget = DSettingsWidgetFactory::createStandardItem(QByteArray(), option, widget);
+
+    int index = widget->findData(gUosAccountItem->getAccount()->syncFreq());
+    widget->setCurrentIndex(index);
+
+    //TODO:更新union账户的的同步频率
+    connect(widget, QOverload<int>::of(&DComboBox::currentIndexChanged), this, &Calendarmainwindow::slotSetUosSyncFreq);
+
+    return optionWidget;
+}
+
+/**
+ * @brief Calendarmainwindow::createSyncTagRadioButton 同步项的radiobutton
+ */
+QPair<QWidget *, QWidget *> Calendarmainwindow::createSyncTagRadioButton(QObject *obj)
+{
+    auto option = qobject_cast<DTK_CORE_NAMESPACE::DSettingsOption *>(obj);
+    DAccount::AccountState type = DAccount::Account_Calendar;
+    if(option->key().endsWith("Account_Calendar"))
+        type = DAccount::Account_Calendar;
+    if(option->key().endsWith("Account_Setting"))
+        type = DAccount::Account_Setting;
+
+    SyncTagRadioButton *widget = new SyncTagRadioButton(type);
+    widget->setFixedSize(16, 16);
+    QPair<QWidget *, QWidget *> optionWidget = DSettingsWidgetFactory::createStandardItem(QByteArray(), option, widget);
+
+    //iconLabel
+    QLabel *iconLabel = new QLabel;
+    iconLabel->setFixedHeight(16);
+    if(DAccount::Account_Calendar == type)
+        iconLabel->setPixmap(DHiDPIHelper::loadNxPixmap(":/resources/icon/sync_schedule.svg"));
+    if(DAccount::Account_Setting == type)
+        iconLabel->setPixmap(DHiDPIHelper::loadNxPixmap(":/resources/icon/sync_setting.svg"));
+
+    //iconWidget
+    QHBoxLayout *layout = new QHBoxLayout;
+    layout->addWidget(iconLabel);
+    layout->addWidget(optionWidget.first);
+    QWidget *iconWidget = new QWidget;
+    iconWidget->setLayout(layout);
+    optionWidget.first = iconWidget;
+
+    return optionWidget;
+}
+
+/**
+ * @brief Calendarmainwindow::createManualSyncButton 立刻同步的button
+ */
+QWidget *Calendarmainwindow::createManualSyncButton(QObject *obj)
+{
+    Q_UNUSED(obj)
+    QWidget *widget = new QWidget;
+    widget->setObjectName("ManualSyncWidget");
+    QPushButton *button = new QPushButton(widget);
+    button->setFixedSize(266, 36);
+    button->setText(tr("Sync Now"));
+
+    QLabel *label = new QLabel;
+    label->setText("last sync time");
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(button, 0, Qt::AlignCenter);
+    layout->addWidget(label, 0, Qt::AlignCenter);
+    widget->setLayout(layout);
+    connect(button, &QPushButton::clicked, this, &Calendarmainwindow::slotUosManualSync);
+    //TODO:立刻同步和最后一次同步时间
+    return widget;
+}
+
+QPair<QWidget *, QWidget *> Calendarmainwindow::createComboboxFirstDayofWeek(QObject *obj)
+{
+    auto option = qobject_cast<DTK_CORE_NAMESPACE::DSettingsOption *>(obj);
+
+    // 构建自定义Item
+    QWidget* widget = new QWidget();
+    QComboBox* combobox = new QComboBox(widget);
+    QHBoxLayout* layout = new QHBoxLayout(widget);
+    combobox->addItem(tr("Sunday"));
+    combobox->addItem(tr("Monday"));
+
+    combobox->setFixedSize(150,36);
+    layout->addWidget(combobox);
+    widget->layout()->setAlignment(Qt::AlignRight);
+    QPair<QWidget *, QWidget *> optionWidget = DSettingsWidgetFactory::createStandardItem(QByteArray(), option, widget);
+    option->connect(combobox, &QComboBox::currentTextChanged, option, [=] (const QString day)
+    {
+        if (day == "Sunday")
+        {
+            CalendarManager::getInstance()->setFirstDayOfWeek(Qt::Sunday);
+        }
+        else
+        {
+            CalendarManager::getInstance()->setFirstDayOfWeek(Qt::Monday);
+        }
+    });
+
+    // 获取初始值
+    option->setValue(option->defaultValue());
+
+    if (widget != nullptr)
+        widget->deleteLater();
+
+
+    return optionWidget;
+}
+
+QPair<QWidget *, QWidget *> Calendarmainwindow::createComboboxTime(QObject *obj)
+{
+    auto option = qobject_cast<DTK_CORE_NAMESPACE::DSettingsOption *>(obj);
+
+    // 构建自定义Item
+    QWidget* widget = new QWidget();
+    QComboBox* combobox = new QComboBox(widget);
+    QHBoxLayout* layout = new QHBoxLayout(widget);
+    combobox->addItem(tr("24-hour clock"));
+    combobox->addItem(tr("12-hour clock"));
+
+    combobox->setFixedSize(150,36);
+    layout->addWidget(combobox);
+    widget->layout()->setAlignment(Qt::AlignRight);
+    QPair<QWidget *, QWidget *> optionWidget = DSettingsWidgetFactory::createStandardItem(QByteArray(), option, widget);
+    // 获取初始值
+    option->setValue(option->defaultValue());
+    if (widget != nullptr)
+        widget->deleteLater();
+    return optionWidget;
+}
+
+/**
+ * @brief Calendarmainwindow::slotSetUosSyncFreq 设置UOS账户的同步频率
+ * @param freq
+ */
+void Calendarmainwindow::slotSetUosSyncFreq(int freq)
+{
+    QComboBox *com = qobject_cast<QComboBox *>(sender());
+    if(!com)
+        return;
+    gUosAccountItem->getAccount()->setSyncFreq(DAccount::SyncFreqType(com->itemData(freq).toInt()));
+}
+
+void Calendarmainwindow::slotUosManualSync()
+{
+    gUosAccountItem->getAccount()->syncFreq();
+}
+
+/**
  * @brief CDayWindow::dropEvent          拖拽释放事件
  * @param event
  */
@@ -1044,4 +1182,81 @@ void Calendarmainwindow::dropEvent(QDropEvent *event)
     int diffPosy = pos.y() - m_startPos.y();
     if ((diffPosx >= 16 || diffPosx <= -16) || (diffPosy >= 16 || diffPosy <= -16))
         slotNewSchedule();
+}
+
+
+CalendarSetting::SyncTagRadioButton::SyncTagRadioButton(DAccount::AccountState type, QWidget *parent)
+    : QWidget(parent)
+    , m_type(type)
+{
+    setObjectName("SyncTagRadioButton");
+    m_state = gUosAccountItem->getAccount()->accountState();
+    updateState();
+}
+
+void CalendarSetting::SyncTagRadioButton::updateState()
+{
+    setChecked(m_state & m_type);
+    //TODO:是否联网
+    //    setEnabled((*m_state & DAccount::Account_Open) && m_isOnline);
+}
+
+void CalendarSetting::SyncTagRadioButton::updateState(bool isOnline)
+{
+    m_isOnline = isOnline;
+    updateState();
+}
+
+bool CalendarSetting::SyncTagRadioButton::isChecked()
+{
+    return m_checked;
+}
+
+DAccount::AccountState CalendarSetting::SyncTagRadioButton::type()
+{
+    return m_type;
+}
+
+void CalendarSetting::SyncTagRadioButton::setChecked(bool checked)
+{
+    if(m_checked == checked)
+        return;
+
+    m_checked = checked;
+    update();
+
+    //实现遍历所有的radiobutton获取account state
+    DAccount::AccountStates states = gUosAccountItem->getAccount()->accountState();
+    QObject *parent = this->parent();
+    parent = parent == nullptr ? nullptr : parent->parent();
+    if(parent) {
+        for(auto obj : parent->findChildren<QWidget *>("SyncTagRadioButton")) {
+            SyncTagRadioButton *rb = static_cast<SyncTagRadioButton *>(obj);
+            if(rb->isChecked())
+                states |= rb->type();
+            else
+                states &= ~rb->type();
+        }
+    }
+    gUosAccountItem->getAccount()->setAccountState(states);
+
+}
+
+void CalendarSetting::SyncTagRadioButton::paintEvent(QPaintEvent *event)
+{
+    Q_UNUSED(event)
+    if(!m_checked)
+        return;
+
+    QPainter painter(this);
+    QIcon icon = DStyle::standardIcon(this->style(), DStyle::SP_IndicatorChecked);
+    int y = (this->height() - 16) / 2;
+    int x = (this->width() - 16) / 2;
+    icon.paint(&painter, QRect(x, y, 16, 16), Qt::AlignCenter, isEnabled() ? QIcon::Normal : QIcon::Disabled);
+}
+
+void CalendarSetting::SyncTagRadioButton::mouseReleaseEvent(QMouseEvent *event)
+{
+    QWidget::mouseReleaseEvent(event);
+    setChecked(!m_checked);
 }
