@@ -49,7 +49,7 @@ public slots:
     void slotAddScheduleType();
 
     bool updateJobType();
-    void updateCalendarAccount(int account_type);
+    void updateCalendarAccount(QString account_id);
 
 private:
     QStandardItemModel *m_modelJobType {nullptr};
@@ -57,8 +57,7 @@ private:
 
     friend JobTypeListViewStyle;
 
-    DAccount::Type m_account_type = DAccount::Account_Local;
-    AccountItem::Ptr account();
+    QString m_account_id;
 };
 
 class JobTypeListViewStyle : public DStyledItemDelegate

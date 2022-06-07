@@ -44,8 +44,7 @@ void JobTypeListView::initUI()
     //
     updateJobType();
 
-    connect(gLocalAccountItem.get(), &AccountItem::signalScheduleTypeUpdate, this, &JobTypeListView::updateJobType);
-    connect(gUosAccountItem.get(), &AccountItem::signalScheduleTypeUpdate, this, &JobTypeListView::updateJobType);
+    connect(gAccountManager, &AccountManager::signalScheduleTypeUpdate, this, &JobTypeListView::updateJobType);
 }
 
 bool JobTypeListView::viewportEvent(QEvent *event)
@@ -124,14 +123,13 @@ bool JobTypeListView::viewportEvent(QEvent *event)
 }
 bool JobTypeListView::updateJobType()
 {
-    AccountItem *acc = qobject_cast<AccountItem *>(sender());
-    if(acc && acc != account().get()) {
+    AccountItem::Ptr account = gAccountManager->getAccountItemByAccountId(m_account_id);
+    if(!account)
         return false;
-    }
     m_modelJobType->removeRows(0, m_modelJobType->rowCount());//先清理
     m_iIndexCurrentHover = -1;
 
-    DScheduleType::List lstJobType = account()->getScheduleTypeList();
+    DScheduleType::List lstJobType = account->getScheduleTypeList();
     int viewHeight = 0;
     for (int i = 0; i < lstJobType.size(); i++) {
         viewHeight += addJobTypeItem(*lstJobType[i]);
@@ -142,33 +140,34 @@ bool JobTypeListView::updateJobType()
     return true;
 }
 
-void JobTypeListView::updateCalendarAccount(int account_type)
+void JobTypeListView::updateCalendarAccount(QString account_id)
 {
-    m_account_type = DAccount::Type(account_type);
+    m_account_id = account_id;
     updateJobType();
 }
 
 void JobTypeListView::slotAddScheduleType()
 {
+    AccountItem::Ptr account = gAccountManager->getAccountItemByAccountId(m_account_id);
+    if(!account)
+        return;
+
     ScheduleTypeEditDlg dialog(this);
-    dialog.setAccount(account());
+    dialog.setAccount(account);
     if(QDialog::Rejected == dialog.exec())
         return;
     DScheduleType::Ptr type(new DScheduleType(dialog.newJsonType()));
-    account()->createJobType(type);
-}
-
-AccountItem::Ptr JobTypeListView::account()
-{
-    if(m_account_type == DAccount::Account_UnionID && gUosAccountItem)
-        return gUosAccountItem;
-    return gLocalAccountItem;
+    account->createJobType(type);
 }
 
 bool JobTypeListView::canAdd()
 {
+    AccountItem::Ptr account = gAccountManager->getAccountItemByAccountId(m_account_id);
+    if(!account)
+        return false;
+
     //最多20个类型
-    return account()->getScheduleTypeList().count() < 20;
+    return account->getScheduleTypeList().count() < 20;
 }
 
 int JobTypeListView::addJobTypeItem(const DScheduleType &info)
@@ -207,17 +206,20 @@ void JobTypeListView::slotUpdateJobType()
     QStandardItem *item = m_modelJobType->item(index);
     if (!item)
         return;
+    AccountItem::Ptr account = gAccountManager->getAccountItemByAccountId(m_account_id);
+    if(!account)
+        return;
 
     DScheduleType info = item->data(RoleJobTypeInfo).value<DScheduleType>();
     ScheduleTypeEditDlg dialog(info, this);
-    dialog.setAccount(account());
+    dialog.setAccount(account);
     if(QDialog::Accepted == dialog.exec()) {
         DScheduleType::Ptr type(new DScheduleType(dialog.newJsonType()));
         qInfo() << type->typeID();
         if (type->typeID() == "0") {
-            account()->createJobType(type);
+            account->createJobType(type);
         } else {
-            account()->updateScheduleType(type);
+            account->updateScheduleType(type);
         }
     }
 }
@@ -227,11 +229,16 @@ void JobTypeListView::slotDeleteJobType()
     DStandardItem *item = dynamic_cast<DStandardItem *>(m_modelJobType->item(m_iIndexCurrentHover));
     if (!item)
         return;
+    AccountItem::Ptr account = gAccountManager->getAccountItemByAccountId(m_account_id);
+    if(!account)
+        return;
 
     DScheduleType info = item->data(RoleJobTypeInfo).value<DScheduleType>();
+    //TODO:获取日程编号
     QString typeNo = info.typeID();
 
-    if (account()->scheduleTypeIsUsed(typeNo)) {
+    //TODO:根据帐户获取对应信息
+    if (account->scheduleTypeIsUsed(typeNo)) {
         CScheduleCtrlDlg msgBox(this);
         msgBox.setText(tr("You are deleting an event type."));
         msgBox.setInformativeText(tr("All events under this type will be deleted and cannot be recovered."));
@@ -242,10 +249,10 @@ void JobTypeListView::slotDeleteJobType()
             return;
         } else if (msgBox.clickButton() == 1) {
             //删除日程类型时，后端会删除关联日程
-            this->account()->deleteScheduleTypeByID(typeNo);
+            account->deleteScheduleTypeByID(typeNo);
         }
     } else {
-        this->account()->deleteScheduleTypeByID(typeNo);
+        account->deleteScheduleTypeByID(typeNo);
     }
 }
 
