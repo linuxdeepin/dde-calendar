@@ -137,3 +137,10 @@ void DbusAccountManagerRequest::slotCallFinished(CDBusPendingCallWatcher *call)
     //释放内存
     call->deleteLater();
 }
+
+void DbusAccountManagerRequest::slotDbusCall(const QDBusMessage &msg)
+{
+    if (msg.member() == "accountUpdate") {
+        getAccountList();
+    }
+}

@@ -104,17 +104,6 @@ DTypeColor::List AccountItem::getColorTypeList()
     return m_typeColorList;
 }
 
-///**
-// * @brief AccountItem::updateAccountInfo
-// * 更新账户信息
-// * @param callback
-// */
-//void AccountItem::updateAccountInfo(CallbackFunc callback)
-//{
-//    m_dbusRequest->setCallbackFunc(callback);
-//    m_dbusRequest->updateAccountInfo(m_account);
-//}
-
 /**
  * @brief AccountItem::setAccountExpandStatus
  * 更新账户列表展开状态
@@ -124,6 +113,33 @@ void AccountItem::setAccountExpandStatus(bool expandStatus)
 {
     m_account->setIsExpandDisplay(expandStatus);
     m_dbusRequest->setAccountExpandStatus(expandStatus);
+}
+
+void AccountItem::setAccountState(DAccount::AccountStates state)
+{
+    m_account->setAccountState(state);
+    m_dbusRequest->setAccountState(state);
+}
+
+void AccountItem::setSyncFreq(int freq)
+{
+    m_account->setSyncFreq(freq);
+    m_dbusRequest->setSyncFreq(freq);
+}
+
+DAccount::AccountStates AccountItem::getAccountState()
+{
+    return m_dbusRequest->getAccountState();
+}
+
+bool AccountItem::getSyncState()
+{
+    return m_dbusRequest->getSyncState();
+}
+
+int AccountItem::getSyncFreq()
+{
+    return m_dbusRequest->getSyncFreq();
 }
 
 /**
@@ -301,29 +317,6 @@ bool AccountItem::querySchedulesByExternal(const QString &key, const QDateTime &
 }
 
 /**
- * @brief AccountItem::monitorScheduleTypeData
- * 监听日程类型数据完成事件
- * @param callback 回调函数
- */
-void AccountItem::monitorScheduleTypeData(Func callback)
-{
-    auto statusIterator = m_dataStatus.find("ScheduleType");
-    if (statusIterator != m_dataStatus.end() && statusIterator.value()) {
-        callback();
-    } else {
-        m_dataStatus.insert("ScheduleType", false);
-    }
-    auto iterator = m_callbackMap.find("ScheduleType");
-    QList<Func> funcList;
-    if (iterator == m_callbackMap.end()) {
-        funcList.append(callback);
-    } else {
-        funcList = iterator.value();
-    }
-    m_callbackMap.insert("ScheduleType", funcList);
-}
-
-/**
  * @brief AccountItem::slotGetAccountInfoFinish
  * 获取账户信息完成事件
  * @param account 账户数据
@@ -342,14 +335,6 @@ void AccountItem::slotGetAccountInfoFinish(DAccount::Ptr account)
 void AccountItem::slotGetScheduleTypeListFinish(DScheduleType::List scheduleTypeList)
 {
     m_scheduleTypeList = scheduleTypeList;
-
-    m_dataStatus.insert("ScheduleType", true);
-    auto iterator = m_callbackMap.find("ScheduleType");
-    if (iterator != m_callbackMap.end()) {
-        for (Func func : iterator.value()) {
-            func();
-        }
-    }
     emit signalScheduleTypeUpdate();
 }
 

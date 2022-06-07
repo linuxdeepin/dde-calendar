@@ -54,6 +54,8 @@ signals:
 public slots:
     //dbus调用完成事件
     void slotCallFinished(CDBusPendingCallWatcher *) override;
+    //后端发送信号事件
+    void slotDbusCall(const QDBusMessage &msg) override;
 };
 
 #endif // DBUSACCOUNTMANAGERREQUEST_H

@@ -181,9 +181,7 @@ void CScheduleItem::paintBackground(QPainter *painter, const QRectF &rect, const
     //判断是否为选中日程
     if (m_vScheduleInfo == m_pressInfo) {
         //判断当前日程是否为拖拽移动日程
-        //TODO:拖拽日程
-        //        if (m_vScheduleInfo.getIsMoveInfo() == m_pressInfo.getIsMoveInfo()) {
-        if (false) {
+        if (m_vScheduleInfo->isMoved() == m_pressInfo->isMoved()) {
             m_vHighflag = true;
         } else {
             painter->setOpacity(0.4);

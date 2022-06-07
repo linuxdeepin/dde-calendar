@@ -137,7 +137,6 @@ DCalendarGeneralSettings::Ptr AccountManager::getGeneralSettings()
  */
 void AccountManager::resetAccount()
 {
-    m_dataInitFinished = false;
     m_localAccountItem.clear();
     m_unionAccountItem.clear();
     m_dbusRequest->getAccountList();
@@ -171,34 +170,6 @@ void AccountManager::setCalendarGeneralSettings(DCalendarGeneralSettings::Ptr pt
 {
     m_dbusRequest->setCallbackFunc(callback);
     m_dbusRequest->setCalendarGeneralSettings(ptr);
-}
-
-/**
- * @brief AccountManager::waitingData
- * 等待数据获取完成的事件，若数据已获取完成则直接执行回调函数，若数据还没有获取完成则将回调函数保存，待数据获取完成后执行
- * @param callback 回调函数
- */
-void AccountManager::waitingData(Func callback)
-{
-    if (m_dataInitFinished) {
-        callback();
-    } else {
-        m_waitingCallList.append(callback);
-    }
-}
-
-/**
- * @brief AccountManager::execWaitingCall
- * 执行回调函数
- */
-void AccountManager::execWaitingCall()
-{
-    m_dataInitFinished = true;
-    for (Func call : m_waitingCallList) {
-        call();
-    }
-    //回调函数只是用一次
-    m_waitingCallList.clear();
 }
 
 /**
@@ -237,9 +208,6 @@ void AccountManager::slotGetAccountListFinish(DAccount::List accountList)
 void AccountManager::slotGetGeneralSettingsFinish(DCalendarGeneralSettings::Ptr ptr)
 {
     m_settings = ptr;
-    if (!m_dataInitFinished) {
-        execWaitingCall();
-    }
     emit signalDataInitFinished();
     emit signalGeneralSettingsUpdate();
 }

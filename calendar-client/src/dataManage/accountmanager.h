@@ -29,8 +29,6 @@ class AccountManager : public QObject
 {
     Q_OBJECT
 public:
-    typedef std::function<void()> Func;
-
     ~AccountManager() override;
 
     static AccountManager *getInstance();
@@ -54,9 +52,6 @@ public:
     //设置通用设置
     void setCalendarGeneralSettings(DCalendarGeneralSettings::Ptr ptr, CallbackFunc callback = nullptr);
 
-    //等待数据获取完成的事件
-    void waitingData(Func callback);
-
 signals:
     void signalDataInitFinished();
     void signalAccountUpdate();
@@ -73,15 +68,11 @@ public slots:
     //获取通用设置完成事件
     void slotGetGeneralSettingsFinish(DCalendarGeneralSettings::Ptr ptr);
 
-
 protected:
     explicit AccountManager(QObject *parent = nullptr);
 
 private:
     void initConnect();
-
-    //运行等待数据完成的回调函数
-    void execWaitingCall();
 
 private:
     static AccountManager *m_accountManager;
@@ -90,10 +81,6 @@ private:
     DCalendarGeneralSettings::Ptr m_settings;
 
     DbusAccountManagerRequest *m_dbusRequest;
-
-    QList<Func> m_waitingCallList;
-
-    bool m_dataInitFinished = false;
 };
 
 #define gAccountManager AccountManager::getInstance()

@@ -36,21 +36,23 @@ public:
     explicit DbusAccountRequest(const QString &path, const QString &interface, QObject *parent = nullptr);
 
     /**
-     * @brief getAccountInfo        获取帐户信息
-     * @return
-     */
-    void getAccountInfo();
-    //    /**
-    //     * @brief updateAccountInfo     更新帐户信息
-    //     * @param accountInfo           帐户信息
-    //     */
-    //    void updateAccountInfo(const DAccount::Ptr &accountInfo);
-    /**
      * @brief setAccountExpandStatus
      * 设置账户列表展开状态
      * @param expandStatus 展开状态
      */
     void setAccountExpandStatus(bool expandStatus);
+
+    void setAccountState(DAccount::AccountStates state);
+    void setSyncFreq(int freq);
+    DAccount::AccountStates getAccountState();
+    bool getSyncState();
+    int getSyncFreq();
+    /**
+     * @brief getAccountInfo        获取帐户信息
+     * @return
+     */
+    void getAccountInfo();
+
     /**
      * @brief getScheduleTypeList      获取日程类型信息集
      * @return

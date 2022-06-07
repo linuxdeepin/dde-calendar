@@ -70,6 +70,9 @@ public:
     QString scheduleTypeID() const;
     void setScheduleTypeID(const QString &typeID);
 
+    bool isMoved();
+    void setMoved(bool moved);
+
     bool isValid() const;
 
     bool operator==(const DSchedule &schedule) const;
@@ -112,6 +115,7 @@ private:
     QString m_fileName; //日程对应文件名称
     //日程类型
     QString m_scheduleTypeID;
+    bool m_moved = false;
 };
 
 #endif // DSCHEDULE_H

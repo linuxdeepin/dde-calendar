@@ -39,18 +39,6 @@ void DbusAccountRequest::getAccountInfo()
     asyncCall("getAccountInfo");
 }
 
-///**
-// * @brief DbusAccountRequest::updateAccountInfo
-// * 更新账户信息
-// * @param account
-// */
-//void DbusAccountRequest::updateAccountInfo(const DAccount::Ptr& account)
-//{
-//    QString jsonStr;
-//    DAccount::toJsonString(account, jsonStr);
-//    asyncCall("updateAccountInfo", QVariant(jsonStr));
-//}
-
 /**
  * @brief DbusAccountRequest::setAccountExpandStatus
  * 设置账户列表展开状态
@@ -60,6 +48,36 @@ void DbusAccountRequest::setAccountExpandStatus(bool expandStatus)
 {
     QDBusInterface interface(this->service(), this->path(), this->interface(), QDBusConnection::sessionBus(), this);
     interface.setProperty("isExpand", QVariant(expandStatus));
+}
+
+void DbusAccountRequest::setAccountState(DAccount::AccountStates state)
+{
+    QDBusInterface interface(this->service(), this->path(), this->interface(), QDBusConnection::sessionBus(), this);
+    interface.setProperty("accountState", QVariant(state));
+}
+
+void DbusAccountRequest::setSyncFreq(int freq)
+{
+    QDBusInterface interface(this->service(), this->path(), this->interface(), QDBusConnection::sessionBus(), this);
+    interface.setProperty("syncFreq", QVariant(freq));
+}
+
+DAccount::AccountStates DbusAccountRequest::getAccountState()
+{
+    QDBusInterface interface(this->service(), this->path(), this->interface(), QDBusConnection::sessionBus(), this);
+    return static_cast<DAccount::AccountStates>(interface.property("accountState").toInt());
+}
+
+bool DbusAccountRequest::getSyncState()
+{
+    QDBusInterface interface(this->service(), this->path(), this->interface(), QDBusConnection::sessionBus(), this);
+    return interface.property("syncState").toBool();
+}
+
+int DbusAccountRequest::getSyncFreq()
+{
+    QDBusInterface interface(this->service(), this->path(), this->interface(), QDBusConnection::sessionBus(), this);
+    return interface.property("syncFreq").toInt();
 }
 
 /**

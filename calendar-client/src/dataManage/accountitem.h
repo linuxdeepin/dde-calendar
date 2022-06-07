@@ -31,7 +31,6 @@ class AccountItem : public QObject
 public:
     explicit AccountItem(const DAccount::Ptr &account, QObject *parent = nullptr);
 
-    typedef std::function<void()> Func;
     typedef QSharedPointer<AccountItem> Ptr;
 
     void resetAccount();
@@ -52,10 +51,19 @@ public:
     //获取颜色类型列表
     DTypeColor::List getColorTypeList();
 
-    //更新账户信息
-    //    void updateAccountInfo(CallbackFunc callback = nullptr);
     //更新账户列表展开状态
     void setAccountExpandStatus(bool expandStatus);
+
+    //设置账号状态
+    void setAccountState(DAccount::AccountStates state);
+    //设置同步频率
+    void setSyncFreq(int freq);
+    //获取账号状态
+    DAccount::AccountStates getAccountState();
+    //获取同步状态
+    bool getSyncState();
+    //获取同步频率
+    int getSyncFreq();
 
     //创建日程类型
     void createJobType(const DScheduleType::Ptr &typeInfo, CallbackFunc callback = nullptr);
@@ -97,9 +105,6 @@ public:
     QString querySchedulesByExternal(const QString &key, const QDateTime &start, const QDateTime &end);
     bool querySchedulesByExternal(const QString &key, const QDateTime &start, const QDateTime &end, QMap<QDate, DSchedule::List>& out);
 
-    //监听日程类型数据完成事件
-    void monitorScheduleTypeData(Func callback);
-
 signals:
     void signalAccountDataUpdate();
     void signalScheduleUpdate();
@@ -131,8 +136,6 @@ private:
     //搜索的日程信息
     QMap<QDate, DSchedule::List> m_searchedScheduleMap{};
 
-    //回调函数
-    QMap<QString, QList<Func>> m_callbackMap;
     QMap<QString, bool> m_dataStatus;   //数据状态
 
 };

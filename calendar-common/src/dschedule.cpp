@@ -69,9 +69,20 @@ void DSchedule::setScheduleTypeID(const QString &typeID)
     m_scheduleTypeID = typeID;
 }
 
+bool DSchedule::isMoved()
+{
+    return this->m_moved;
+}
+
+void DSchedule::setMoved(bool moved)
+{
+    this->m_moved = moved;
+}
+
 bool DSchedule::isValid() const
 {
     //TODO:添加判断日程是否有效
+    return true;
 }
 
 bool DSchedule::operator==(const DSchedule &schedule) const

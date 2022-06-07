@@ -555,7 +555,7 @@ void CScheduleView::updateSchedule()
             }
         }
     }
-//    m_alldaylist->setInfo(allInfo);
+    m_alldaylist->setInfo(allInfo);
     m_graphicsView->setInfo(nonAllInfo);
     updateAllday();
     m_graphicsView->updateInfo();

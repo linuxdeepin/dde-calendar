@@ -406,11 +406,10 @@ void DragInfoGraphicsView::dragMoveEvent(QDragMoveEvent *event)
     if (!IsEqualtime(m_MoveDate, gDate)) {
         m_MoveDate = gDate;
         QJsonObject rootobj = jsonDoc.object();
-        //TODO: 数据修改
-//        DSchedule::fromJsonString(m_DragScheduleInfo, str);
-//        m_DragScheduleInfo.setIsMoveInfo(true);
-//        MoveInfoProcess(m_DragScheduleInfo, event->posF());
-//        DragInfoItem::setPressSchedule(m_DragScheduleInfo);
+        DSchedule::fromJsonString(m_DragScheduleInfo, str);
+        m_DragScheduleInfo->setMoved(true);
+        MoveInfoProcess(m_DragScheduleInfo, event->posF());
+        DragInfoItem::setPressSchedule(m_DragScheduleInfo);
     }
 }
 
@@ -795,12 +794,11 @@ void DragInfoGraphicsView::slideEvent(QPointF &startPoint, QPointF &stopPort)
 void DragInfoGraphicsView::updateInfo()
 {
     //如果拖拽日程有效则更新为不是移动日程
-    //TODO: 判断是否更新
-    //    if (m_DragScheduleInfo.isValid() && m_DragScheduleInfo.getID() != 0) {
-    //        m_DragScheduleInfo.setIsMoveInfo(false);
-    //        //设置选择日程状态
-    //        setPressSelectInfo(m_DragScheduleInfo);
-    //    }
+    if (m_DragScheduleInfo && m_DragScheduleInfo->isValid() && m_DragScheduleInfo->uid() != "0") {
+        m_DragScheduleInfo->setMoved(false);
+        //设置选择日程状态
+        setPressSelectInfo(m_DragScheduleInfo);
+    }
 }
 
 int DragInfoGraphicsView::getDragStatus() const
