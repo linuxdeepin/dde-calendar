@@ -256,14 +256,23 @@ CWeekScheduleView::~CWeekScheduleView()
 void CWeekScheduleView::setData(QMap<QDate, DSchedule::List> &data, const QDate &startDate, const QDate &stopDate)
 {
     //显示一周的日程
-//    Q_ASSERT(startDate.daysTo(stopDate) == 6);
+    Q_ASSERT(startDate.daysTo(stopDate) == 6);
     m_ScheduleInfo.clear();
     beginDate = startDate;
     endDate = stopDate;
     for (int i = 0 ; i <= beginDate.daysTo(endDate); ++i) {
         for (int j = 0; j < data[beginDate.addDays(i)].size(); ++j) {
-            if (!m_ScheduleInfo.contains(data[beginDate.addDays(i)].at(j))) {
-                m_ScheduleInfo.append(data[beginDate.addDays(i)].at(j));
+            bool have = false;
+            DSchedule::Ptr info = data[beginDate.addDays(i)].at(j);
+            //过滤重复日程
+            for (DSchedule::Ptr p : m_ScheduleInfo) {
+                if (p->uid() == info->uid()) {
+                    have = true;
+                    break;
+                }
+            }
+            if (!have) {
+                m_ScheduleInfo.append(info);
             }
         }
     }
