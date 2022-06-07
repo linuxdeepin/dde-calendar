@@ -121,7 +121,7 @@ void AccountItem::setAccountState(DAccount::AccountStates state)
     m_dbusRequest->setAccountState(state);
 }
 
-void AccountItem::setSyncFreq(int freq)
+void AccountItem::setSyncFreq(DAccount::SyncFreqType freq)
 {
     m_account->setSyncFreq(freq);
     m_dbusRequest->setSyncFreq(freq);
@@ -137,7 +137,7 @@ bool AccountItem::getSyncState()
     return m_dbusRequest->getSyncState();
 }
 
-int AccountItem::getSyncFreq()
+DAccount::SyncFreqType AccountItem::getSyncFreq()
 {
     return m_dbusRequest->getSyncFreq();
 }

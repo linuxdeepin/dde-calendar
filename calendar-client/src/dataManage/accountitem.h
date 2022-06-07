@@ -57,13 +57,13 @@ public:
     //设置账号状态
     void setAccountState(DAccount::AccountStates state);
     //设置同步频率
-    void setSyncFreq(int freq);
+    void setSyncFreq(DAccount::SyncFreqType freq);
     //获取账号状态
     DAccount::AccountStates getAccountState();
     //获取同步状态
     bool getSyncState();
     //获取同步频率
-    int getSyncFreq();
+    DAccount::SyncFreqType getSyncFreq();
 
     //创建日程类型
     void createJobType(const DScheduleType::Ptr &typeInfo, CallbackFunc callback = nullptr);

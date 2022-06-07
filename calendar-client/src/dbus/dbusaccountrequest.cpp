@@ -56,7 +56,7 @@ void DbusAccountRequest::setAccountState(DAccount::AccountStates state)
     interface.setProperty("accountState", QVariant(state));
 }
 
-void DbusAccountRequest::setSyncFreq(int freq)
+void DbusAccountRequest::setSyncFreq(DAccount::SyncFreqType freq)
 {
     QDBusInterface interface(this->service(), this->path(), this->interface(), QDBusConnection::sessionBus(), this);
     interface.setProperty("syncFreq", QVariant(freq));
@@ -74,10 +74,10 @@ bool DbusAccountRequest::getSyncState()
     return interface.property("syncState").toBool();
 }
 
-int DbusAccountRequest::getSyncFreq()
+DAccount::SyncFreqType DbusAccountRequest::getSyncFreq()
 {
     QDBusInterface interface(this->service(), this->path(), this->interface(), QDBusConnection::sessionBus(), this);
-    return interface.property("syncFreq").toInt();
+    return static_cast<DAccount::SyncFreqType>(interface.property("syncFreq").toInt());
 }
 
 /**
