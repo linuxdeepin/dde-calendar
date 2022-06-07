@@ -97,7 +97,6 @@ bool DSchedule::operator>(const DSchedule &schedule) const
 
 void DSchedule::setAlarmType(const DSchedule::AlarmType &alarmType)
 {
-    //TODO:提醒规则设置有问题，需要修复
     //如果提醒规则没有变化则退出
     if (alarmType == getAlarmType()) {
         return;
@@ -118,7 +117,6 @@ void DSchedule::setAlarmType(const DSchedule::AlarmType &alarmType)
             alarm->setType(KCalendarCore::Alarm::Display);
             alarm->setDisplayAlarm(this->summary());
             KCalendarCore::Duration duration(iter.key());
-            qInfo() << iter.key();
             alarm->setStartOffset(duration);
             addAlarm(alarm);
             break;
@@ -131,7 +129,7 @@ DSchedule::AlarmType DSchedule::getAlarmType()
     AlarmType alarmType = allDay() ? Alarm_AllDay_None : Alarm_None;
     KCalendarCore::Alarm::List alarmList = this->alarms();
     if (alarmList.size() > 0) {
-        KCalendarCore::Duration duration = alarmList.at(0)->duration();
+        KCalendarCore::Duration duration = alarmList.at(0)->startOffset();
         QMap<int, AlarmType> alarmMap = getAlarmMap();
         if (alarmMap.contains(duration.value())) {
             alarmType = alarmMap[duration.value()];
@@ -336,7 +334,7 @@ QMap<int, DSchedule::AlarmType> DSchedule::getAlarmMap()
         {-Duration_Day * 2, Alarm_2Day_Front},
         {-Duration_Week, Alarm_1Week_Front},
         {9 * Duration_Hour, Alarm_9Hour_After},
-        {-15 * Duration_Hour, Alarm_15Min_Front},
+        {-15 * Duration_Hour, Alarm_15Hour_Front},
         {-39 * Duration_Hour, Alarm_39Hour_Front},
         {-159 * Duration_Hour, Alarm_159Hour_Front}};
     return alarmMap;
