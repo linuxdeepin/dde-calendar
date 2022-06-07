@@ -126,11 +126,6 @@ private:
     QMap<QDate, DSchedule::List> m_scheduleMap{};
     //搜索的日程信息
     QMap<QDate, DSchedule::List> m_searchedScheduleMap{};
-    //一年是否含有日程
-    QMap<QDate, bool>               m_fullInfo{};
-    //一年的班休信息
-    QMap<QDate, int>                m_festivalInfo{};
-    QVector<DSchedule> m_searchScheduleInfoVector {};
 
     //回调函数
     QMap<QString, QList<Func>> m_callbackMap;

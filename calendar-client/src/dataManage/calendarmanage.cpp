@@ -33,7 +33,7 @@ CalendarManager *CalendarManager::getInstance()
     CaHuangLiDayInfo::registerMetaType();
     if (m_scheduleManager == nullptr) {
         m_scheduleManager = new  CalendarManager;
-        qRegisterMetaType<QMap<QDate, QVector<DSchedule>>>("QMap<QDate,QVector<DSchedule> >");
+        //        qRegisterMetaType<QMap<QDate, QVector<DSchedule>>>("QMap<QDate,QVector<DSchedule> >");
         qRegisterMetaType<QMap<QDate, bool>>("QMap<QDate,bool>");
         qRegisterMetaType<QMap<QDate, CaHuangLiDayInfo> >("QMap<QDate, CaHuangLiDayInfo>");
         qRegisterMetaType<QMap<QDate, int>>("QMap<QDate, int>");
@@ -130,7 +130,7 @@ QDate CalendarManager::getFirstDayOfWeek(const QDate &date)
     //根据选择时间周工作日和每周第一天的周工作日得到偏移量
     int _offset = date.dayOfWeek() - getFirstDayOfWeek();
     //根据偏移量获取需要添加还有减去的偏移天数
-    const int _offsetDay = (_offset + 7)%7;
+    const int _offsetDay = (_offset + 7) % 7;
     //返回这周第一天的日期
     return date.addDays(-_offsetDay);
 }

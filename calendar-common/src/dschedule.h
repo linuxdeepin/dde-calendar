@@ -72,8 +72,6 @@ public:
 
     bool isValid() const;
 
-    DSchedule &operator=(const DSchedule &schedule);
-
     bool operator==(const DSchedule &schedule) const;
 
     bool operator<(const DSchedule &schedule) const;

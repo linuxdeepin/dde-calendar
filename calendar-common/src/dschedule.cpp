@@ -71,12 +71,7 @@ void DSchedule::setScheduleTypeID(const QString &typeID)
 
 bool DSchedule::isValid() const
 {
-}
-
-DSchedule &DSchedule::operator=(const DSchedule &schedule)
-{
-    //TODO:待修改
-    return *this;
+    //TODO:添加判断日程是否有效
 }
 
 bool DSchedule::operator==(const DSchedule &schedule) const

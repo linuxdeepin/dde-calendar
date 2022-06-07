@@ -200,19 +200,19 @@ bool CScheduleOperation::deleteSchedule(const DSchedule::Ptr &scheduleInfo)
     return _restuleBool;
 }
 
-QString CScheduleOperation::queryScheduleStr(const QString &key, const QDateTime &startTime, const QDateTime &endTime)
-{
-    QString _resultStr;
-    //TODO：查新日程
-    //    m_DBusManager->QueryJobs(key, startTime, endTime, _resultStr);
-    return _resultStr;
-}
+//QString CScheduleOperation::queryScheduleStr(const QString &key, const QDateTime &startTime, const QDateTime &endTime)
+//{
+//    QString _resultStr;
+//    //TODO：查新日程
+//    //    m_DBusManager->QueryJobs(key, startTime, endTime, _resultStr);
+//    return _resultStr;
+//}
 
-bool CScheduleOperation::queryScheduleInfo(const QString &key, const QDateTime &startTime, const QDateTime &endTime, QMap<QDate, QVector<DSchedule>> &info)
-{
-    //TODO:查新日程
-    //    return m_DBusManager->QueryJobs(key, startTime, endTime, info);
-}
+//bool CScheduleOperation::queryScheduleInfo(const QString &key, const QDateTime &startTime, const QDateTime &endTime, QMap<QDate, QVector<DSchedule>> &info)
+//{
+//    //TODO:查新日程
+//    //    return m_DBusManager->QueryJobs(key, startTime, endTime, info);
+//}
 
 /**
  * @brief CScheduleOperation::deleteOnlyInfo        删除日程 仅删除此日程 不弹框提醒

@@ -46,9 +46,9 @@ public:
     //删除日程  false :取消删除  true: 确定删除
     bool deleteSchedule(const DSchedule::Ptr &scheduleInfo);
     //查询日程
-    QString queryScheduleStr(const QString &key, const QDateTime &startTime, const QDateTime &endTime);
+    //    QString queryScheduleStr(const QString &key, const QDateTime &startTime, const QDateTime &endTime);
     //获取查询日程
-    bool queryScheduleInfo(const QString &key, const QDateTime &startTime, const QDateTime &endTime, QMap<QDate, QVector<DSchedule>> &info);
+    //    bool queryScheduleInfo(const QString &key, const QDateTime &startTime, const QDateTime &endTime, DSchedule::Map &info);
     //删除日程 仅删除此日程 不弹框提醒
     void deleteOnlyInfo(const DSchedule::Ptr &scheduleInfo);
 

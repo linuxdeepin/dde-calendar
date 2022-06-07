@@ -36,6 +36,7 @@ ExportedInterface::ExportedInterface(QObject *parent)
 
 QVariant ExportedInterface::invoke(const QString &action, const QString &parameters) const
 {
+    //TODO:对外接口数据设置
     DSchedule::Ptr info;
     Exportpara para;
     QString tstr = parameters;
@@ -56,8 +57,8 @@ QVariant ExportedInterface::invoke(const QString &action, const QString &paramet
         dynamic_cast<Calendarmainwindow *>(m_object)->viewWindow(para.viewType);
     } else if (action == "QUERY") {
         // 对外接口查询日程
-        QString qstr = _scheduleOperation.queryScheduleStr(para.ADTitleName, para.ADStartTime, para.ADEndTime);
-        return QVariant(qstr);
+        //        QString qstr = _scheduleOperation.queryScheduleStr(para.ADTitleName, para.ADStartTime, para.ADEndTime);
+        //        return QVariant(qstr);
     } else if (action == "CANCEL") {
         //对外接口删除日程
 //        QMap<QDate, DSchedule::List> out;
