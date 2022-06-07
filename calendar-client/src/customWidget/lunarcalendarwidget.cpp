@@ -19,7 +19,6 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "lunarcalendarwidget.h"
-#include "cscheduledbus.h"
 #include "lunarmanager.h"
 
 #include <DPalette>

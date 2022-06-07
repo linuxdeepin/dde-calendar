@@ -617,10 +617,6 @@ void CScheduleDlg::slotTypeEditTextChanged(const QString &text)
         //名称为全空格，返回
         m_typeComBox->showAlertMessage(tr("The name can not only contain whitespaces"));
         m_typeComBox->setAlert(true);
-    } else if (JobTypeInfoManager::instance()->isJobTypeNameUsed(tStitlename)) {
-        //重名，返回
-        m_typeComBox->showAlertMessage(tr("The name already exists"));
-        m_typeComBox->setAlert(true);
     } else {
         //如果日程类型编辑框存在焦点（没有编辑结束）且有警告则取消警告和提示信息
         if (m_typeComBox->hasFocus() && m_typeComBox->isAlert()) {
@@ -1398,7 +1394,7 @@ void CScheduleDlg::setOkBtnEnabled()
     //根据类型输入框的内容判断保存按钮是否有效
     if (m_OkBt != nullptr && m_typeComBox->lineEdit() != nullptr) {
         const QString &typeStr = m_typeComBox->lineEdit()->text();
-        if (typeStr.isEmpty() || typeStr.trimmed().isEmpty() || m_accountItem->getScheduleTypeByName(typeStr)) {
+        if (typeStr.isEmpty() || typeStr.trimmed().isEmpty()) {
             m_OkBt->setEnabled(false);
             //若内容无效直接退出，不判断结束次数是否为空
             return;

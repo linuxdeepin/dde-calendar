@@ -23,7 +23,7 @@ JobTypeListView::JobTypeListView(QWidget *parent) : QTableView(parent)
 
 JobTypeListView::~JobTypeListView()
 {
-    JobTypeInfoManager::instance()->removeFromNoticeBill(this);
+//    JobTypeInfoManager::instance()->removeFromNoticeBill(this);
 }
 
 void JobTypeListView::initUI()

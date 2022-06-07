@@ -20,12 +20,12 @@
 */
 #include "cscheduleoperation.h"
 
-#include "cscheduledbus.h"
 #include "schedulectrldlg.h"
 #include "configsettings.h"
 #include "dcalendarddialog.h"
 #include "cdynamicicon.h"
 #include "accountmanager.h"
+#include "lunarmanager.h"
 
 CScheduleOperation::CScheduleOperation(const AccountItem::Ptr &accountItem, QWidget *parent)
     : QObject(parent)
@@ -376,8 +376,7 @@ void CScheduleOperation::changeRepetitionRule(DSchedule::Ptr &newinfo, const DSc
 void CScheduleOperation::lunarMessageDialogShow(const DSchedule::Ptr &newinfo)
 {
     //如果该日程为闰月日程，因为对应的闰月需要间隔好多年，所以添加对应的提示信息
-    CaHuangLiDayInfo huangLiInfo;
-    CScheduleDBus::getInstance()->GetHuangLiDay(newinfo->dtStart().date(), huangLiInfo);
+    CaHuangLiDayInfo huangLiInfo = gLunarManager->getHuangLiDay(newinfo->dtStart().date());;
     if (huangLiInfo.mLunarMonthName.contains("闰")) {
         DCalendarDDialog prompt(m_widget);
         prompt.setIcon(QIcon(CDynamicIcon::getInstance()->getPixmap()));

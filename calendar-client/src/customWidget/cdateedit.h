@@ -21,8 +21,6 @@
 #ifndef CDATEEDIT_H
 #define CDATEEDIT_H
 
-#include "cscheduledbus.h"
-
 #include <QDateEdit>
 #include <QTextLayout>
 

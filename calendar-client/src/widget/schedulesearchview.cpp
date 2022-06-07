@@ -941,12 +941,13 @@ CScheduleListWidget::CScheduleListWidget(QWidget *parent)
     grabGesture(Qt::PanGesture);
 
     //日程类型发生改变，刷新界面
-    JobTypeInfoManager::instance()->addToNoticeBill(this->viewport(), "update");
+    connect(gAccountManager, &AccountManager::signalScheduleTypeUpdate, [&](){
+        this->viewport()->update();
+    });
 }
 
 CScheduleListWidget::~CScheduleListWidget()
 {
-    JobTypeInfoManager::instance()->removeFromNoticeBill(this->viewport());
 }
 
 void CScheduleListWidget::mousePressEvent(QMouseEvent *event)

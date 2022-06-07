@@ -67,6 +67,7 @@ void CDayMonthView::setShowDate(const QVector<QDate> &showDate, const QDate &sel
     m_currentDate = currentDate;
     m_dayMonthWidget->setShowDate(showDate, selectDate, currentDate);
     updateDateShow();
+    update();
 }
 
 void CDayMonthView::setLunarVisible(bool visible)

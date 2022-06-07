@@ -92,12 +92,13 @@ DragInfoGraphicsView::DragInfoGraphicsView(DWidget *parent)
     connect(m_Scene, &CGraphicsScene::signalsetNextFocus, this, &DragInfoGraphicsView::slotsetNextFocus);
     setFocusPolicy(Qt::StrongFocus);
     //日程类型发生改变，刷新界面
-    JobTypeInfoManager::instance()->addToNoticeBill(this->viewport(), "update");
+    connect(gAccountManager, &AccountManager::signalScheduleTypeUpdate, [&](){
+        this->viewport()->update();
+    });
 }
 
 DragInfoGraphicsView::~DragInfoGraphicsView()
 {
-    JobTypeInfoManager::instance()->removeFromNoticeBill(this->viewport());
 }
 
 void DragInfoGraphicsView::mousePressEvent(QMouseEvent *event)

@@ -47,7 +47,6 @@ void CConfigSettings::init()
 
 void CConfigSettings::initSetting()
 {
-    m_firstDayOfWeek = value("firstDayOfWeek", 1).toInt();
     m_userSidebarStatus = value("userSidebarStatus", true).toBool();
 }
 
@@ -99,18 +98,6 @@ CConfigSettings *CConfigSettings::operator->() const
     return getInstance();
 }
 
-Qt::DayOfWeek CConfigSettings::getFirstDayOfWeek()
-{
-    return Qt::DayOfWeek(m_firstDayOfWeek);
-}
-
-void CConfigSettings::setFirstDayOfWeek(int day)
-{
-    m_firstDayOfWeek = day;
-    setOption("firstDayOfWeek", m_firstDayOfWeek);
-    emit signalFirstDayOfWeekChange();
-}
-
 bool CConfigSettings::getUserSidebarStatus()
 {
     return m_userSidebarStatus;
@@ -121,4 +108,3 @@ void CConfigSettings::setUserSidebarStatus(bool status)
     m_userSidebarStatus = status;
     setOption("userSidebarStatus", m_userSidebarStatus);
 }
-

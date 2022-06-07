@@ -202,17 +202,7 @@ void ScheduleTypeEditDlg::slotEditTextChanged(const QString &strName)
         return;
     }
     m_jobTypeNew.setDisplayName(tStitlename);
-    //在编辑日程状态下不对编辑的日程类型名做重名处理
-    bool isUsed = m_dialogType == DialogEditType ? JobTypeInfoManager::instance()->isJobTypeNameUsed(m_jobTypeNew)
-                                                 : JobTypeInfoManager::instance()->isJobTypeNameUsed(tStitlename);
 
-    if (isUsed) {
-        //重名，返回
-        m_lineEdit->showAlertMessage(tr("The name already exists"));
-        m_lineEdit->setAlert(true);
-        this->getButton(1)->setEnabled(false);
-        return;
-    }
     m_lineEdit->setAlert(false);
     m_lineEdit->hideAlertMessage();
     this->getButton(1)->setEnabled(true);

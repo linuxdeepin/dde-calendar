@@ -785,12 +785,10 @@ YearFrame::~YearFrame()
  */
 void YearFrame::setShowDate(const QDate &selectDate)
 {
-    if (m_selectDate.year() != selectDate.year()) {
-        QDate _showMonth(selectDate.year(), 1, 1);
-        for (int i = 0; i < DDEYearCalendar::FrameSizeOfEveryYear; i++) {
-            QDate _setShowMonth = _showMonth.addMonths(i);
-            m_monthViewList.at(i)->setShowMonthDate(_setShowMonth);
-        }
+    QDate _showMonth(selectDate.year(), 1, 1);
+    for (int i = 0; i < DDEYearCalendar::FrameSizeOfEveryYear; i++) {
+        QDate _setShowMonth = _showMonth.addMonths(i);
+        m_monthViewList.at(i)->setShowMonthDate(_setShowMonth);
     }
     m_selectDate = selectDate;
     //更新显示界面
