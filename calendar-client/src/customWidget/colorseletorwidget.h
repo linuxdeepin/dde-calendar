@@ -66,10 +66,10 @@ public:
      */
     void setSelectedColorById(int colorId);
     /**
-     * @brief selectColor 设置选择的色彩控件
-     * @param color 色彩
+     * @brief setSelectedColor 设置选择的色彩控件
+     * @param color 色彩实例
      */
-    void setSelectedColor(const DTypeColor::Ptr &color);
+    void setSelectedColor(const DTypeColor&);
     /**
      * @brief resetColorButton
      * 重置色彩控件
@@ -100,7 +100,7 @@ private:
     QButtonGroup *m_colorGroup = nullptr;     //所有色彩控件
     DTypeColor::Ptr m_colorInfo; //当前已选择的色彩
     CRadioButton *m_userColorBtn = nullptr; //用户自定义的色彩控件
-    int m_userColorBtnId = -1; //用户自定义的色彩控件id
+    const int m_userColorBtnId = 999; //用户自定义的色彩控件id
 };
 
 #endif // COLORSELETOR_H

@@ -20,6 +20,7 @@
 */
 #include "ddatabase.h"
 
+#include <QDateTime>
 #include <QUuid>
 #include <QFile>
 
@@ -47,6 +48,11 @@ void DDataBase::setDBPath(const QString &DBPath)
 QString DDataBase::createUuid()
 {
     return QUuid::createUuid().toString(QUuid::WithoutBraces);
+}
+
+int DDataBase::createColorId()
+{
+    return (int(QDateTime().currentDateTime().toTime_t())%(60*60*24*365*10));
 }
 
 QString DDataBase::getConnectionName() const

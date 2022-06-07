@@ -135,6 +135,8 @@ public:
      * @return                              查询到的日程集
      */
     void querySchedulesWithParameter(const DScheduleQueryPar::Ptr &params);
+    //对外查询接口，同步
+    bool querySchedulesByExternal(const DScheduleQueryPar::Ptr &params, QString &json);
 
     void getSysColors();
 

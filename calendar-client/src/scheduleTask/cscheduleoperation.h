@@ -32,7 +32,6 @@ class CScheduleDBus;
  * @brief The CScheduleOperation class
  * 日程操作类,创建,修改和删除日程
  */
-//TODO:此类需要修改
 class CScheduleOperation : public QObject
 {
     Q_OBJECT
@@ -45,10 +44,6 @@ public:
     bool changeSchedule(const DSchedule::Ptr &newInfo, const DSchedule::Ptr &oldInfo);
     //删除日程  false :取消删除  true: 确定删除
     bool deleteSchedule(const DSchedule::Ptr &scheduleInfo);
-    //查询日程
-    //    QString queryScheduleStr(const QString &key, const QDateTime &startTime, const QDateTime &endTime);
-    //获取查询日程
-    //    bool queryScheduleInfo(const QString &key, const QDateTime &startTime, const QDateTime &endTime, DSchedule::Map &info);
     //删除日程 仅删除此日程 不弹框提醒
     void deleteOnlyInfo(const DSchedule::Ptr &scheduleInfo);
 

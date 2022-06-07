@@ -93,6 +93,10 @@ public:
     void querySchedulesWithParameter(const QString &key, const QDateTime &start, const QDateTime &end, CallbackFunc callback = nullptr);
     void querySchedulesWithParameter(const DScheduleQueryPar::Ptr &, CallbackFunc callback = nullptr);
 
+    //对外请求接口，同步
+    QString querySchedulesByExternal(const QString &key, const QDateTime &start, const QDateTime &end);
+    bool querySchedulesByExternal(const QString &key, const QDateTime &start, const QDateTime &end, QMap<QDate, DSchedule::List>& out);
+
     //监听日程类型数据完成事件
     void monitorScheduleTypeData(Func callback);
 

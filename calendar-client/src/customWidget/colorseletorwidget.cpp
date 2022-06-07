@@ -19,6 +19,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "colorseletorwidget.h"
+#include "configsettings.h"
 #include <QPushButton>
 
 ColorSeletorWidget::ColorSeletorWidget(QWidget *parent) : QWidget(parent)
@@ -50,6 +51,10 @@ void ColorSeletorWidget::resetColorButton(const AccountItem::Ptr& account)
         }
     }
 
+    //自定义控件单独添加
+    m_colorGroup->addButton(m_userColorBtn, m_userColorBtnId);
+    m_colorLayout->addWidget(m_userColorBtn);
+
     if (m_colorGroup->buttons().size() > 0) {
         m_colorGroup->buttons().at(0)->click();
     }
@@ -65,11 +70,11 @@ void ColorSeletorWidget::reset()
         m_colorLayout->removeWidget(btn);
         delete btn;
     }
-    if (m_userColorBtn) {
-        m_userColorBtn->deleteLater();
+    if (nullptr == m_userColorBtn) {
+        m_userColorBtn = new CRadioButton(this);
+        m_userColorBtn->setFixedSize(18, 18);
     }
-    m_userColorBtn = nullptr;
-    m_userColorBtnId = -1;
+    m_userColorBtn->hide();
 }
 
 void ColorSeletorWidget::addColor(const DTypeColor::Ptr &cInfo)
@@ -82,15 +87,14 @@ void ColorSeletorWidget::addColor(const DTypeColor::Ptr &cInfo)
     radio->setFixedSize(18, 18);
     m_colorGroup->addButton(radio, count);
     m_colorLayout->addWidget(radio);
-    //TODO
-    if (DTypeColor::PriUser == cInfo->privilege()) {
-        m_userColorBtn = radio;             //记录用户色彩指针
-        m_userColorBtnId = count;
-    }
 }
 
 DTypeColor::Ptr ColorSeletorWidget::getSelectedColorInfo()
 {
+    if (m_colorInfo->colorID() == 0) {
+        CConfigSettings::getInstance()->setOption("LastUserColor", m_colorInfo->colorCode());
+    }
+    CConfigSettings::getInstance()->setOption("LastSysColorTypeNo", m_colorInfo->colorID());
     return m_colorInfo;
 }
 
@@ -106,9 +110,11 @@ void ColorSeletorWidget::setSelectedColorByIndex(int index)
 
 void ColorSeletorWidget::setSelectedColorById(int colorId)
 {
-    //如果是用户自定义颜色则直接选中
+    //如果是用户自定义颜色则直接选第一个
     if ((colorId > 9 || colorId < 1) && m_userColorBtn) {
-        m_userColorBtn->click();
+        if (m_colorGroup->buttons().size() > 0) {
+            m_colorGroup->buttons().at(0)->click();
+        }
         return;
     }
 
@@ -131,24 +137,25 @@ void ColorSeletorWidget::setSelectedColorById(int colorId)
     }
 }
 
-void ColorSeletorWidget::setSelectedColor(const DTypeColor::Ptr &colorInfo)
+void ColorSeletorWidget::setSelectedColor(const DTypeColor& colorInfo)
 {
-    if (DTypeColor::PriUser == colorInfo->privilege()) {
-        setUserColor(colorInfo);
-    }
-
-    bool isFind = false;
-    //遍历所有控件
-    for (QAbstractButton *but : m_colorGroup->buttons()) {
-        if (nullptr != but && qobject_cast<CRadioButton *>(but)->getColor().name() == colorInfo->colorCode()) {
-            but->click();
-            isFind = true;
+    bool finding = false;
+    auto iterator = m_colorEntityMap.begin();
+    while (iterator != m_colorEntityMap.end()) {
+        if (iterator.value()->colorID() == colorInfo.colorID()) {
+            QAbstractButton *btn = m_colorGroup->button(iterator.key());
+            if (btn) {
+                btn->click();
+                finding = true;
+            }
             break;
         }
+        iterator++;
     }
-    if (!isFind) {
-        //TODO:设置颜色
-        //        setUserColor(JobTypeColorInfo(0, colorInfo.getColorHex(), TypeUser));
+    if (!finding) {
+        DTypeColor::Ptr ptr;
+        ptr.reset(new DTypeColor(colorInfo));
+        setUserColor(ptr);
     }
 }
 
@@ -205,11 +212,11 @@ void ColorSeletorWidget::slotAddColorButClicked()
 
 void ColorSeletorWidget::setUserColor(const DTypeColor::Ptr &colorInfo)
 {
-    if (DTypeColor::PriUser != colorInfo->privilege()) {
+    if (nullptr == m_userColorBtn || DTypeColor::PriUser != colorInfo->privilege()) {
         return;
     }
-    if (nullptr == m_userColorBtn) {
-        addColor(colorInfo);
+    if (!m_userColorBtn->isVisible()) {
+        m_userColorBtn->show();
     }
     m_userColorBtn->setColor(colorInfo->colorCode());
     m_colorEntityMap[m_userColorBtnId] = colorInfo;

@@ -213,7 +213,12 @@ void JobTypeListView::slotUpdateJobType()
     dialog.setAccount(account());
     if(QDialog::Accepted == dialog.exec()) {
         DScheduleType::Ptr type(new DScheduleType(dialog.newJsonType()));
-        account()->updateScheduleType(type);
+        qInfo() << type->typeID();
+        if (type->typeID() == "0") {
+            account()->createJobType(type);
+        } else {
+            account()->updateScheduleType(type);
+        }
     }
 }
 
@@ -224,10 +229,8 @@ void JobTypeListView::slotDeleteJobType()
         return;
 
     DScheduleType info = item->data(RoleJobTypeInfo).value<DScheduleType>();
-    //TODO:获取日程编号
     QString typeNo = info.typeID();
 
-    //TODO:根据帐户获取对应信息
     if (account()->scheduleTypeIsUsed(typeNo)) {
         CScheduleCtrlDlg msgBox(this);
         msgBox.setText(tr("You are deleting an event type."));

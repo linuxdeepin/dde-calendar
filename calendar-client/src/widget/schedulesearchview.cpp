@@ -146,22 +146,22 @@ void CScheduleSearchItem::setDurationSize(QFont font)
 }
 void CScheduleSearchItem::slotEdit()
 {
-//    CScheduleDlg dlg(0, this);
-//    dlg.setData(m_ScheduleInfo);
-//    dlg.exec();
+    CScheduleDlg dlg(0, this);
+    dlg.setData(m_ScheduleInfo);
+    dlg.exec();
 }
 
 void CScheduleSearchItem::slotDelete()
 {
     //删除日程
-//    CScheduleOperation _scheduleOperation(this);
-//    bool _isDelete = _scheduleOperation.deleteSchedule(m_ScheduleInfo);
-//    删除日程后，将焦点设置给父类
-//    if (_isDelete) {
-//        parentWidget()->setFocus(Qt::TabFocusReason);
-//    } else {
-//        this->setFocus();
-//    }
+    CScheduleOperation _scheduleOperation(m_ScheduleInfo->scheduleTypeID(), this);
+    bool _isDelete = _scheduleOperation.deleteSchedule(m_ScheduleInfo);
+    //删除日程后，将焦点设置给父类
+    if (_isDelete) {
+        parentWidget()->setFocus(Qt::TabFocusReason);
+    } else {
+        this->setFocus();
+    }
 }
 
 /**
@@ -187,7 +187,6 @@ void CScheduleSearchItem::slotSchotCutClicked()
         m_rightMenu->clear();
         m_rightMenu->addAction(m_editAction);
         m_rightMenu->addAction(m_deleteAction);
-        //TODO:如果为不可修改日程则需要设置删除按钮无效
         //获取item坐标,并转换为全局坐标
         QPointF itemPos = QPointF(this->rect().x() + this->rect().width() / 2,
                                   this->rect().y() + this->rect().height() / 2);
@@ -288,8 +287,6 @@ void CScheduleSearchItem::paintEvent(QPaintEvent *e)
     if (nullptr != type) {
         bColor = type->typeColor().colorCode();
     }
-
-//    bColor = gdColor.orginalColor;
     QPen pen(bColor);
     pen.setWidth(2);
     painter.setPen(pen);
@@ -351,8 +348,11 @@ void CScheduleSearchItem::contextMenuEvent(QContextMenuEvent *event)
     m_rightMenu->clear();
     m_rightMenu->addAction(m_editAction);
     m_rightMenu->addAction(m_deleteAction);
-    //TODO:如果为不可修改日程则需要设置删除按钮无效
+    //不可修改的日程删除按钮无效
+    m_deleteAction->setEnabled(!CScheduleOperation::scheduleIsInvariant(m_ScheduleInfo));
     m_rightMenu->exec(QCursor::pos());
+    //恢复按钮状态
+    m_deleteAction->setEnabled(true);
 }
 
 void CScheduleSearchItem::mouseDoubleClickEvent(QMouseEvent *event)
@@ -559,9 +559,7 @@ void CScheduleSearchView::deleteSchedule()
 {
     currentDItemIndex = m_scheduleSearchItem.indexOf(m_selectItem);
     //如果存在该item且为节日日程不可操作
-    if (currentDItemIndex >= 0 && CScheduleOperation::isFestival(m_selectItem->getData())
-        //TODO:如果为不可修改日程也不可被删除
-    ) {
+    if (currentDItemIndex >= 0 && !CScheduleOperation::isFestival(m_selectItem->getData())) {
         m_selectItem->slotDelete();
     }
 }

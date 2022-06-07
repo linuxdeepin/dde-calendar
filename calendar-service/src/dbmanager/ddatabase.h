@@ -34,6 +34,8 @@ public:
     QString getDBPath() const;
     void setDBPath(const QString &DBPath);
     static QString createUuid();
+    //创建日程颜色随机id
+    static int createColorId();
 
     QString getConnectionName() const;
     void setConnectionName(const QString &connectionName);

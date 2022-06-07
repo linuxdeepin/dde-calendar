@@ -58,6 +58,32 @@ DScheduleType ScheduleTypeEditDlg::newJsonType()
 void ScheduleTypeEditDlg::setAccount(AccountItem::Ptr account)
 {
     m_colorSeletor->resetColorButton(account);
+
+    //将用户上一次选择的自定义颜色添加进去
+    QString colorName = CConfigSettings::getInstance()->value("LastUserColor", "").toString();
+    if (!colorName.isEmpty()) {
+        //设置颜色
+        DTypeColor::Ptr typeColor;
+        typeColor.reset(new DTypeColor);
+        typeColor->setColorID(0);
+        typeColor->setColorCode(colorName);
+        typeColor->setPrivilege(DTypeColor::PriUser);
+        m_colorSeletor->setUserColor(typeColor);
+    }
+    switch (m_dialogType) {
+    case DialogEditType: {
+        //编辑日程类型
+        //设置颜色
+        m_colorSeletor->setSelectedColor(m_jobTypeOld.typeColor());
+    } break;
+    default: {
+        //默认新建日程，选中上一次选中的颜色
+        int colorId = CConfigSettings::getInstance()->value("LastSysColorTypeNo", -1).toInt();
+        if (colorId >= 0) {
+            m_colorSeletor->setSelectedColorById(colorId);
+        }
+    } break;
+    }
 }
 
 void ScheduleTypeEditDlg::init()
@@ -140,28 +166,6 @@ void ScheduleTypeEditDlg::initData()
     m_lineEdit->setText(m_jobTypeOld.displayName());
     m_typeText = m_jobTypeOld.displayName(); //编辑时要初始化数据
     this->getButton(1)->setEnabled(!m_jobTypeOld.displayName().isEmpty()); //如果是新增，则保存按钮默认不可用
-
-    //将用户上一次选择的自定义颜色添加进去
-    QString colorName = CConfigSettings::getInstance()->value("LastUserColor", "").toString();
-    if (!colorName.isEmpty()) {
-        //TODO:设置颜色
-        //        m_colorSeletor->setUserColor(JobTypeColorInfo(0, colorName, 7));
-    }
-
-    switch (m_dialogType) {
-    case DialogEditType: {
-        //编辑日程类型
-        //TODO:设置颜色
-        //        m_colorSeletor->setSelectedColor(m_jobTypeOld.getColorInfo());
-    } break;
-    default: {
-        //默认新建日程，选中上一次选中的颜色
-        int colorId = CConfigSettings::getInstance()->value("LastSysColorTypeNo", -1).toInt();
-        if (colorId > 0) {
-            m_colorSeletor->setSelectedColorById(colorId);
-        }
-    } break;
-    }
 }
 
 void ScheduleTypeEditDlg::slotEditTextChanged(const QString &strName)

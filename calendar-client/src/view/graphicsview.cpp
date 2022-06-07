@@ -145,16 +145,16 @@ void CGraphicsView::setInfo(const DSchedule::List &info)
 
 bool MScheduleTimeThan(const DSchedule::Ptr &s1, const DSchedule::Ptr &s2)
 {
-    //TODO:日程排序
-//    if (s1.getBeginDateTime().date().daysTo(s1.getEndDateTime().date()) == s2.getBeginDateTime().date().daysTo(s2.getEndDateTime().date())) {
-//        if (s1.getBeginDateTime() == s2.getBeginDateTime()) {
-//            return s1.getBeginDateTime().secsTo(s1.getEndDateTime()) > s2.getBeginDateTime().secsTo(s2.getEndDateTime());
-//        } else {
-//            return s1.getBeginDateTime() < s2.getBeginDateTime();
-//        }
-//    } else {
-//        return s1.getBeginDateTime().date().daysTo(s1.getEndDateTime().date()) > s2.getBeginDateTime().date().daysTo(s2.getEndDateTime().date());
-//    }
+    //日程排序
+    if (s1->dtStart().date().daysTo(s1->dtEnd().date()) == s2->dtStart().date().daysTo(s2->dtEnd().date())) {
+            if (s1->dtStart() == s2->dtStart()) {
+                return s1->dtStart().secsTo(s1->dtEnd()) > s2->dtStart().secsTo(s2->dtEnd());
+            } else {
+                return s1->dtStart() < s2->dtEnd();
+            }
+        } else {
+            return s1->dtStart().date().daysTo(s1->dtEnd().date()) > s2->dtStart().date().daysTo(s2->dtEnd().date());
+        }
 }
 
 void CGraphicsView::upDateInfoShow(const CGraphicsView::DragStatus &status, const DSchedule::Ptr &info)
@@ -227,7 +227,7 @@ void CGraphicsView::upDateInfoShow(const CGraphicsView::DragStatus &status, cons
                         DSchedule::Ptr tdetaliinfo = info.at(m).vData.at(index);
                         tdetaliinfo->setSummary("...");
                         //TODO:设置类型
-                        //                        tdetaliinfo.setType(3);
+                        tdetaliinfo->setScheduleTypeID("3");
                         addScheduleItem(tdetaliinfo, currentDate, tNum, tNum, 1,
                                         m_viewType, m_sMaxNum);
                     } else {
@@ -272,8 +272,8 @@ void CGraphicsView::MoveInfoProcess(DSchedule::Ptr &info, const QPointF &pos)
         info->setDtEnd(info->dtEnd().addSecs(offset));
     } else {
         info->setAllDay(false);
-        //TODO:提醒规则
-        //        info.setRemindData(RemindData());
+        //提醒规则
+        info->setRRuleType(DSchedule::RRule_None);
         info->setDtStart(m_MoveDate);
         info->setDtEnd(m_MoveDate.addSecs(3600));
     }

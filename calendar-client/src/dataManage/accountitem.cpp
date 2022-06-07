@@ -273,6 +273,33 @@ void AccountItem::querySchedulesWithParameter(const DScheduleQueryPar::Ptr &para
     m_dbusRequest->querySchedulesWithParameter(params);
 }
 
+QString AccountItem::querySchedulesByExternal(const QString &key, const QDateTime &start, const QDateTime &end)
+{
+    DScheduleQueryPar::Ptr ptr;
+    ptr.reset(new DScheduleQueryPar);
+    ptr->setKey(key);
+    ptr->setDtStart(start);
+    ptr->setDtEnd(end);
+    QString json;
+    m_dbusRequest->querySchedulesByExternal(ptr, json);
+    return json;
+}
+
+bool AccountItem::querySchedulesByExternal(const QString &key, const QDateTime &start, const QDateTime &end, QMap<QDate, DSchedule::List>& out)
+{
+    DScheduleQueryPar::Ptr ptr;
+    ptr.reset(new DScheduleQueryPar);
+    ptr->setKey(key);
+    ptr->setDtStart(start);
+    ptr->setDtEnd(end);
+    QString json;
+    if (m_dbusRequest->querySchedulesByExternal(ptr, json)) {
+        out = DSchedule::fromMapString(json);
+        return true;
+    }
+    return false;
+}
+
 /**
  * @brief AccountItem::monitorScheduleTypeData
  * 监听日程类型数据完成事件

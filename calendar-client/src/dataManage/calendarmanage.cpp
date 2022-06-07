@@ -319,15 +319,12 @@ void CalendarManager::initData()
     //获取本地语言判断是否为中文
     m_showLunar = QLocale::system().language() == QLocale::Chinese;
     //获取每周第一天
-    //TODO 获取每周第一天
-//    const int _weekFirstDay = m_timeDateDbus->weekBegins();
     //获取时间日期格式
     const int _timeFormat = m_timeDateDbus->shortTimeFormat();
     const int _dateFormat = m_timeDateDbus->shortDateFormat();
     //设置时间日期格式
     setTimeFormatChanged(_timeFormat);
     setDateFormatChanged(_dateFormat);
-//    setWeekBegins(_weekFirstDay);
     setYearBeginAndEndDate(m_selectDate.year());
 }
 

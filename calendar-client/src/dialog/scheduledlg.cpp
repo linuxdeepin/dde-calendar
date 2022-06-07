@@ -80,6 +80,7 @@ CScheduleDlg::~CScheduleDlg()
 
 void CScheduleDlg::setData(const DSchedule::Ptr &info)
 {
+    qInfo() << info->lunnar();
     m_ScheduleDataInfo = info;
 
     if (m_type == 1) {
@@ -99,7 +100,6 @@ void CScheduleDlg::setData(const DSchedule::Ptr &info)
         m_accountComBox->setCurrentText(m_accountItem->getAccount()->accountName());
         m_typeComBox->updateJobType(m_accountItem);
     } else {
-        //TODO:目前日程类型的所属账户id与账户id对应不上，理论上m_accountItem不会为空值，待与后端沟通
         m_accountItem = gAccountManager->getLocalAccountItem();
     }
 
@@ -112,6 +112,11 @@ void CScheduleDlg::setData(const DSchedule::Ptr &info)
 
     m_currentDate = info->dtStart();
     m_EndDate = info->dtEnd();
+    if (info->lunnar()) {
+        m_lunarRadioBtn->click();
+    } else {
+        m_solarRadioBtn->click();
+    }
 
     updateEndTimeListAndTimeDiff(m_currentDate, m_EndDate);
     slotallDayStateChanged(info->allDay());
@@ -1191,7 +1196,7 @@ void CScheduleDlg::initJobTypeComboBox()
 {
     m_accountItem = gAccountManager->getAccountItemByAccountName(m_accountComBox->currentText());
     m_typeComBox->updateJobType(m_accountItem);
-    m_colorSeletorWideget->resetColorButton(m_accountItem);
+    resetColor(m_accountItem);
 }
 
 void CScheduleDlg::initRmindRpeatUI()
@@ -1254,14 +1259,14 @@ void CScheduleDlg::setTabFouseOrder()
     setTabOrder(m_rmindCombox, m_beginrepeatCombox);
     setTabOrder(m_beginrepeatCombox, m_endrepeatCombox);
     //TODO:获取重复规则
-    //    //结束于次数，设置tab顺序
-    //    if (m_ScheduleDataInfo.getRepetitionRule().getRuleType() ==
-    //            RepetitionRule::RRuleEndType::RRuleType_FREQ)
-    //        setTabOrder(m_endrepeatCombox, m_endrepeattimes);
-    //    //结束于日期，设置tab顺序
-    //    if (m_ScheduleDataInfo.getRepetitionRule().getRuleType() ==
-    //            RepetitionRule::RRuleEndType::RRuleType_DATE)
-    //        setTabOrder(m_endrepeatCombox, m_endRepeatDate);
+//        //结束于次数，设置tab顺序
+//        if (m_ScheduleDataInfo->getRRuleType() ==
+//                RepetitionRule::RRuleEndType::RRuleType_FREQ)
+//            setTabOrder(m_endrepeatCombox, m_endrepeattimes);
+//        //结束于日期，设置tab顺序
+//        if (m_ScheduleDataInfo.getRepetitionRule().getRuleType() ==
+//                RepetitionRule::RRuleEndType::RRuleType_DATE)
+//            setTabOrder(m_endrepeatCombox, m_endRepeatDate);
 }
 
 void CScheduleDlg::updateIsOneMoreDay(const QDateTime &begin, const QDateTime &end)
@@ -1362,13 +1367,17 @@ void CScheduleDlg::resetColor(const AccountItem::Ptr &account)
     //将用户上一次选择的自定义颜色添加进去
     QString colorName = CConfigSettings::getInstance()->value("LastUserColor", "").toString();
     if (!colorName.isEmpty()) {
-        //TODO:设置颜色
-        //        m_colorSeletorWideget->setUserColor(JobTypeColorInfo(0, colorName, 7));
+        //设置颜色
+        DTypeColor::Ptr typeColor;
+        typeColor.reset(new DTypeColor);
+        typeColor->setColorID(0);
+        typeColor->setColorCode(colorName);
+        typeColor->setPrivilege(DTypeColor::PriUser);
+        m_colorSeletorWideget->setUserColor(typeColor);
     }
-
     //选中上一次选中的颜色
     int colorId = CConfigSettings::getInstance()->value("LastSysColorTypeNo", -1).toInt();
-    if (colorId > 0) {
+    if (colorId >= 0) {
         m_colorSeletorWideget->setSelectedColorById(colorId);
     }
 }

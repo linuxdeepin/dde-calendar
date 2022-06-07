@@ -212,14 +212,10 @@ void CMyScheduleView::slotBtClick(int buttonIndex, const QString &buttonName)
 {
     Q_UNUSED(buttonName);
     if (buttonIndex == 0) {
-        //TODO: 删除日程
-//        AccountItem::Ptr accountItem = gAccounManager->getAccountItemByScheduleTypeId(m_scheduleInfo->scheduleTypeID());
-//        if (nullptr != accountItem) {
-//            //删除日程
-//            accountItem->deleteScheduleByID(m_scheduleInfo->scheduleTypeID(), [&](CallMessge) {
-//                accept();
-//            });
-//        }
+        //删除日程
+        if (CScheduleOperation().deleteSchedule(m_scheduleInfo)) {
+            accept();
+        }
         return;
     }
     if (buttonIndex == 1) {

@@ -22,6 +22,7 @@
 #include "scheduledatamanage.h"
 #include "calendarmainwindow.h"
 #include "cscheduleoperation.h"
+#include "accountmanager.h"
 
 #include <QJsonDocument>
 #include <QJsonParseError>
@@ -36,7 +37,7 @@ ExportedInterface::ExportedInterface(QObject *parent)
 
 QVariant ExportedInterface::invoke(const QString &action, const QString &parameters) const
 {
-    //TODO:对外接口数据设置
+    //对外接口数据设置
     DSchedule::Ptr info;
     Exportpara para;
     QString tstr = parameters;
@@ -56,24 +57,27 @@ QVariant ExportedInterface::invoke(const QString &action, const QString &paramet
     } else if (action == "VIEW") {
         dynamic_cast<Calendarmainwindow *>(m_object)->viewWindow(para.viewType);
     } else if (action == "QUERY") {
-        // 对外接口查询日程
-        //        QString qstr = _scheduleOperation.queryScheduleStr(para.ADTitleName, para.ADStartTime, para.ADEndTime);
-        //        return QVariant(qstr);
+        if (gLocalAccountItem) {
+            QString qstr = gLocalAccountItem->querySchedulesByExternal(para.ADTitleName, para.ADStartTime, para.ADEndTime);
+            return QVariant(qstr);
+        } else {
+            return "";
+        }
     } else if (action == "CANCEL") {
         //对外接口删除日程
-//        QMap<QDate, DSchedule::List> out;
-//        //        //口查询日程
-//        if (_scheduleOperation.queryScheduleInfo(para.ADTitleName, para.ADStartTime, para.ADEndTime, out)) {
-//            //删除查询到的日程
-//            QMap<QDate, DSchedule::List>::const_iterator _iterator = nullptr;
-//            for (_iterator = out.constBegin(); _iterator != out.constEnd(); ++_iterator) {
-//                for (int i = 0 ; i < _iterator.value().size(); ++i) {
-//                    _scheduleOperation.deleteOnlyInfo(_iterator.value().at(i));
-//                }
-//            }
-//        } else {
-//            return QVariant(false);
-//        }
+        QMap<QDate, DSchedule::List> out;
+        //        //口查询日程
+        if (gLocalAccountItem && gLocalAccountItem->querySchedulesByExternal(para.ADTitleName, para.ADStartTime, para.ADEndTime, out)) {
+            //删除查询到的日程
+            QMap<QDate, DSchedule::List>::const_iterator _iterator = nullptr;
+            for (_iterator = out.constBegin(); _iterator != out.constEnd(); ++_iterator) {
+                for (int i = 0 ; i < _iterator.value().size(); ++i) {
+                    _scheduleOperation.deleteOnlyInfo(_iterator.value().at(i));
+                }
+            }
+        } else {
+            return QVariant(false);
+        }
     }
     return QVariant(true);
 }
@@ -87,8 +91,8 @@ bool ExportedInterface::analysispara(QString &parameters, DSchedule::Ptr &info, 
         return false;
     }
     QJsonObject rootObj = jsonDoc.object();
-    //TODO:数据反序列化
-    //    info = ScheduleDataInfo::JsonToSchedule(rootObj);
+    //数据反序列化
+    DSchedule::fromJsonString(info, parameters);
 
     if (rootObj.contains("ViewName")) {
         para.viewType = rootObj.value("ViewName").toInt();

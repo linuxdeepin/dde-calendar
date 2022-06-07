@@ -222,6 +222,17 @@ void DbusAccountRequest::querySchedulesWithParameter(const DScheduleQueryPar::Pt
     asyncCall("querySchedulesWithParameter", callName, QVariant(jsonStr));
 }
 
+bool DbusAccountRequest::querySchedulesByExternal(const DScheduleQueryPar::Ptr &params, QString &json)
+{
+    QDBusPendingReply<QString> reply = call("querySchedulesWithParameter", QVariant(params));
+    if (reply.isError()) {
+        qWarning() << reply.error().message();
+        return false;
+    }
+    json = reply.argumentAt<0>();
+    return true;
+}
+
 void DbusAccountRequest::getSysColors()
 {
     asyncCall("getSysColors");
@@ -291,8 +302,8 @@ void DbusAccountRequest::slotCallFinished(CDBusPendingCallWatcher *call)
             //重新读取日程数据
             setCallbackFunc(call->getCallbackFunc());
             querySchedulesWithParameter(m_priParams);
-        } else if (call->getmember() == "deleteScheduleByScheduleID") {
-            //删除日程结束
+        } else if (call->getmember() == "deleteScheduleByScheduleID" || call->getmember() ==  "updateSchedule") {
+            //删除或修改日程结束
             canCall = false;
             //重新读取日程数据
             setCallbackFunc(call->getCallbackFunc());

@@ -114,7 +114,8 @@ QString DAccountModule::createScheduleType(const QString &typeInfo)
     DScheduleType::Ptr scheduleType;
     DScheduleType::fromJsonString(scheduleType, typeInfo);
     //如果颜色为用户自定义则需要在数据库中记录
-    if (scheduleType->typeColor().privilege() == DTypeColor::PriUser) {
+    if (scheduleType->typeColor().colorID() == 0) {
+        scheduleType->setColorID(DDataBase::createColorId());
         m_accountDB->addTypeColor(scheduleType->typeColor().colorID(), scheduleType->typeColor().colorCode(), 7);
     }
     QString scheduleTypeID = m_accountDB->createScheduleType(scheduleType);
