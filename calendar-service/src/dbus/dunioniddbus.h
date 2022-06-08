@@ -49,7 +49,7 @@ public slots:
     inline QDBusPendingReply<> login()
     {
         QList<QVariant> argumentList;
-        return asyncCallWithArgumentList(QStringLiteral("login"), argumentList);
+        return asyncCallWithArgumentList(QStringLiteral("Login"), argumentList);
     }
     /**
      * @brief logout     调用系统用户登出接口
@@ -59,7 +59,7 @@ public slots:
     inline QDBusPendingReply<> logout()
     {
         QList<QVariant> argumentList;
-        return asyncCallWithArgumentList(QStringLiteral("logout"), argumentList);
+        return asyncCallWithArgumentList(QStringLiteral("Logout"), argumentList);
     }
     /**
      * @brief Upload     云同步上传接口

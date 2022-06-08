@@ -70,9 +70,13 @@ public slots:
 
     //日历打开关闭
     Q_SCRIPTABLE void calendarIsShow(const bool &isShow);
+    //账户登录
+    Q_SCRIPTABLE void login();
+    //账户登出
+    Q_SCRIPTABLE void logout();
 
 signals:
-    Q_SCRIPTABLE void accountUpdate(const QStringList &accountIDs);
+    Q_SCRIPTABLE void accountUpdate();
 private:
     int getfirstDayOfWeek() const;
     void setFirstDayOfWeek(const int firstday);

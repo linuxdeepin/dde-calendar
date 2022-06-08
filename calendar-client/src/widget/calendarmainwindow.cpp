@@ -35,7 +35,7 @@
 #include "ctitlewidget.h"
 #include "tabletconfig.h"
 #include "calendarglobalenv.h"
-#include "userlogin.h"
+#include "settingWidget/userloginwidget.h"
 
 #include "scheduletypeeditdlg.h"
 #include "accountmanager.h"
@@ -80,6 +80,32 @@ const int CalendarViewSwitchWidth = 804; //当宽度小于这个尺寸时，视�
 
 const int Calendar_Default_Width = 860; //默认宽度
 const int Calendar_Default_Height = 634; //默认高度
+
+//静态的翻译不会真的翻译，但是会更新ts文件
+//像static QString a = QObject::tr("hello"), a实际等于hello，但是ts会有hello这个词条
+//调用DSetingDialog时会用到上述场景
+static CalendarSettingSetting setting_account = {
+    "setting_account",            QObject::tr("Account setting"), {
+        {"account",               QObject::tr("Account"),                     {{"login",               "",                                   "login",                ""}}},
+        {"account_sync_items",    QObject::tr("Select items to be synced"),   {{"Account_Calendar",    QObject::tr("Events"),                "SyncTagRadioButton",   ""},
+                                                                               {"Account_Setting",     QObject::tr("General settings"),      "SyncTagRadioButton",   ""}}},
+        {"sync_interval",         "",                                         {{"Sync_interval",       QObject::tr("Sync interval"),         "SyncTimeCombobox",     ""}}},
+        {"manual_sync",           "",                                         {{"manual_sync",         "",                                   "ManualSyncButton",     ""}}},
+    }
+};
+static CalendarSettingSetting setting_base = {
+    "setting_base",               QObject::tr("Manage calendar"), {
+        {"acccount_items",        "",                                         {{"AccountCombobox",     QObject::tr("Calendar account"),      "AccountCombobox",      ""}}},
+        {"event_types",           QObject::tr("Event types"),                 {{"JobTypeListView",     "",                                   "JobTypeListView",      ""}}}
+    }
+};
+
+static CalendarSettingSetting setting_general = {
+    "setting_general",            QObject::tr("General settings"), {
+        {"general",               QObject::tr("General"),                     {{"firstday",            QObject::tr("First day of week"),     "FirstDayofWeek",       "",     "Sunday"},
+                                                                               {"time",                QObject::tr("Time"),                  "Time",                 ""}}}
+    }
+};
 
 Calendarmainwindow::Calendarmainwindow(int index, QWidget *w)
     : DMainWindow(w)
@@ -858,7 +884,7 @@ void Calendarmainwindow::slotOpenSettingDialog()
         m_dsdSetting = new DSettingsDialog(this);
         m_dsdSetting->setIcon(CDynamicIcon::getInstance()->getPixmap());
         m_dsdSetting->setFixedSize(682, 506);
-        m_dsdSetting->widgetFactory()->registerWidget("login",Userlogin::createloginButton);
+        m_dsdSetting->widgetFactory()->registerWidget("login",UserloginWidget::createloginButton);
         m_dsdSetting->widgetFactory()->registerWidget("FirstDayofWeek",     std::bind(&Calendarmainwindow::createComboboxFirstDayofWeek,this, std::placeholders::_1));
         m_dsdSetting->widgetFactory()->registerWidget("Time",               std::bind(&Calendarmainwindow::createComboboxTime,          this, std::placeholders::_1));
         m_dsdSetting->widgetFactory()->registerWidget("AccountCombobox",    std::bind(&Calendarmainwindow::createAccountCombobox,       this, std::placeholders::_1));
@@ -867,33 +893,6 @@ void Calendarmainwindow::slotOpenSettingDialog()
         m_dsdSetting->widgetFactory()->registerWidget("SyncTimeCombobox",   std::bind(&Calendarmainwindow::createSyncFreqCombobox,      this, std::placeholders::_1));
         m_dsdSetting->widgetFactory()->registerWidget("ManualSyncButton",   std::bind(&Calendarmainwindow::createManualSyncButton,      this, std::placeholders::_1));
         QString strJson;
-
-        //静态的翻译不会真的翻译，但是会更新ts文件
-        //像static QString a = QObject::tr("hello"), a实际等于hello，但是ts会有hello这个词条
-        //调用DSetingDialog时会用到上述场景
-        static CalendarSettingSetting setting_account = {
-            "setting_account",            QObject::tr("Account setting"), {
-                {"account",               QObject::tr("Account"),                     {{"login",               "",                                   "login",                ""}}},
-                {"account_sync_items",    QObject::tr("Select items to be synced"),   {{"Account_Calendar",    QObject::tr("Events"),                "SyncTagRadioButton",   ""},
-                                                                                       {"Account_Setting",     QObject::tr("General settings"),      "SyncTagRadioButton",   ""}}},
-                {"sync_interval",         "",                                         {{"Sync_interval",       QObject::tr("Sync interval"),         "SyncTimeCombobox",     ""}}},
-                {"manual_sync",           "",                                         {{"manual_sync",         "",                                   "ManualSyncButton",     ""}}},
-            }
-        };
-        static CalendarSettingSetting setting_base = {
-            "setting_base",               QObject::tr("Manage calendar"), {
-                {"acccount_items",        "",                                         {{"AccountCombobox",     QObject::tr("Calendar account"),      "AccountCombobox",      ""}}},
-                {"event_types",           QObject::tr("Event types"),                 {{"JobTypeListView",     "",                                   "JobTypeListView",      ""}}}
-            }
-        };
-
-        static CalendarSettingSetting setting_general = {
-            "setting_general",            QObject::tr("General settings"), {
-                {"general",               QObject::tr("General"),                     {{"firstday",            QObject::tr("First day of week"),     "FirstDayofWeek",       "",     "Sunday"},
-                                                                                       {"time",                QObject::tr("Time"),                  "Time",                 ""}}}
-            }
-        };
-
 
         CalendarSettingSettings calendarSettings;
         calendarSettings.append(setting_account);

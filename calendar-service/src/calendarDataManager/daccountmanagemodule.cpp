@@ -25,6 +25,7 @@
 
 DAccountManageModule::DAccountManageModule(QObject *parent)
     : QObject(parent)
+    , m_syncFileManage(new SyncFileManage())
     , m_accountManagerDB(new DAccountManagerDataBase)
 {
     //新文件路径
@@ -51,6 +52,8 @@ DAccountManageModule::DAccountManageModule(QObject *parent)
         }
     }
     m_generalSetting = m_accountManagerDB->getCalendarGeneralSettings();
+
+    QObject::connect(m_syncFileManage->getSyncoperation(), &Syncoperation::signalLoginStatusChange, this, &DAccountManageModule::slotUidLoginStatueChange);
 }
 
 QString DAccountManageModule::getAccountList()
@@ -148,10 +151,21 @@ void DAccountManageModule::uploadNetWorkAccountData()
     }
 }
 
+//账户登录
+void DAccountManageModule::login()
+{
+    m_syncFileManage->getSyncoperation()->optlogin();
+}
+//账户登出
+void DAccountManageModule::logout()
+{
+    m_syncFileManage->getSyncoperation()->optlogout();
+}
+
 void DAccountManageModule::unionIDDataMerging()
 {
     m_accountList = m_accountManagerDB->getAccountList();
-    DAccount::Ptr accountUnionid = nullptr;
+    DAccount::Ptr accountUnionid = m_syncFileManage->getuserInfo();
 
     DAccount::Ptr unionidDB;
     auto hasUnionid = [ =, &unionidDB](const DAccount::Ptr & account) {
@@ -163,7 +177,7 @@ void DAccountManageModule::unionIDDataMerging()
     };
     //如果unionid帐户不存在，则判断数据库中是否有登陆前的信息
     //若有则移除
-    if (accountUnionid.isNull()) {
+    if (accountUnionid.isNull() || accountUnionid->accountID().isEmpty()) {
         //如果数据库中有unionid帐户
         if (std::any_of(m_accountList.begin(), m_accountList.end(), hasUnionid)) {
             m_accountManagerDB->deleteAccountInfo(unionidDB->accountID());
@@ -217,4 +231,30 @@ void DAccountManageModule::initAccountDBusInfo(const DAccount::Ptr &account)
     account->setDbName(QString("account_%1_%2.db").arg(typeStr).arg(sortID));
     account->setDbusPath(QString("%1/account_%2_%3").arg(serviceBasePath).arg(typeStr).arg(sortID));
     account->setDbusInterface(accountServiceInterface);
+}
+
+void DAccountManageModule::slotUidLoginStatueChange(const bool staus)
+{
+    //将云端帐户信息基本数据与本地数据合并
+    unionIDDataMerging();
+    //如果UID帐户退出
+    //需要 m_accountList m_accountModuleMap m_AccountServiceMap 去除对应帐号信息
+
+    emit signalLoginStatusChange();
+
+//    QDBusConnection::RegisterOptions options = QDBusConnection::ExportAllSlots | QDBusConnection::ExportAllSignals | QDBusConnection::ExportAllProperties;
+//    QDBusConnection sessionBus = QDBusConnection::sessionBus();
+
+//    //根据获取到的帐户信息创建对应的帐户服务
+//    foreach (auto account, m_accountList) {
+//        DAccountModule::Ptr accountModule = DAccountModule::Ptr(new DAccountModule(account));
+//        m_accountModuleMap[account->accountID()] = accountModule;
+//        DAccountService::Ptr accountService = DAccountService::Ptr(new DAccountService(account->dbusPath(), account->dbusInterface(), accountModule, this));
+//        if (!sessionBus.registerObject(accountService->getPath(), accountService->getInterface(), accountService.data(), options)) {
+//            qWarning() << "registerObject accountService failed:" << sessionBus.lastError();
+//        } else {
+//            m_AccountServiceMap[account->accountType()].insert(account->accountID(), accountService);
+//        }
+//    }
+//    m_generalSetting = m_accountManagerDB->getCalendarGeneralSettings();
 }

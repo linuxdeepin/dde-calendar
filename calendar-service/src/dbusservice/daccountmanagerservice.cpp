@@ -32,6 +32,7 @@ DAccountManagerService::DAccountManagerService(QObject *parent)
 {
     //TODO:为了便于调试先注释,待开发完成取消注释
     //    DServiceExitControl exitControl;
+    connect(m_accountManager.data(), &DAccountManageModule::signalLoginStatusChange, this, &DAccountManagerService::accountUpdate);
 }
 
 QString DAccountManagerService::getAccountList()
@@ -110,6 +111,16 @@ void DAccountManagerService::calendarIsShow(const bool &isShow)
         });
         m_timer.start(2000);
     }
+}
+
+void DAccountManagerService::login()
+{
+    m_accountManager->login();
+}
+
+void DAccountManagerService::logout()
+{
+    m_accountManager->logout();
 }
 
 int DAccountManagerService::getfirstDayOfWeek() const

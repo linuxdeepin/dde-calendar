@@ -59,6 +59,11 @@ public:
 Q_SIGNALS:
     void UserDatachanged(const QVariantMap  &value) const;
     void LoginStatuschanged(const int32_t value) const;
+    void signalLoginStatusChange(const bool staus);
+
+private slots:
+    void slotDbusCall(const QDBusMessage &msg);
+
 private:
     DAccount::Ptr accountChangeHandle(const QDBusArgument &accountInfo);
 

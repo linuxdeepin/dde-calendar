@@ -400,6 +400,7 @@ bool CScheduleOperation::isFestival(const DSchedule::Ptr &schedule)
     AccountItem::Ptr account = gAccountManager->getAccountItemByScheduleTypeId(schedule->scheduleTypeID());
     if (account.isNull()) {
         qWarning() << "Cannot get account by schedule type,scheduleTypeID:" << schedule->scheduleTypeID();
+        return false;
     }
     DScheduleType::Ptr scheduleType = gAccountManager->getScheduleTypeByScheduleTypeId(schedule->scheduleTypeID());
     //如果为本地日程且日程类型为None则表示为节假日日程

@@ -21,7 +21,7 @@
 #ifndef DACCOUNTMANAGEMODULE_H
 #define DACCOUNTMANAGEMODULE_H
 
-#include "syncoperation.h"
+#include "syncfilemanage.h"
 #include "daccount.h"
 #include "daccountmodule.h"
 #include "daccountmanagerdatabase.h"
@@ -74,17 +74,25 @@ public:
     void downloadByAccountID(const QString &accountID);
     void uploadNetWorkAccountData();
 
+    //账户登录
+    void login();
+    //账户登出
+    void logout();
+
 private:
     void unionIDDataMerging();
     void initAccountDBusInfo(const DAccount::Ptr &account);
 signals:
     void firstDayOfWeekChange(const int firstDay);
     void timeFormatTypeChange(const int timeType);
+    void signalLoginStatusChange();
 
 public slots:
     //TODO：监听网络帐户管理信号和Union ID登陆退出状态
+    void slotUidLoginStatueChange(const bool staus);
 
 private:
+    SyncFileManage *m_syncFileManage = nullptr;
     DAccountManagerDataBase::Ptr m_accountManagerDB;
     DAccount::List m_accountList;
     QMap<QString, DAccountModule::Ptr> m_accountModuleMap;

@@ -45,6 +45,11 @@ public:
     //
     void clientIsShow(bool isShow);
 
+    //账户登录
+    void login();
+    //账户登出
+    void logout();
+
 signals:
     //获取账户列表数据完成信号
     void signalGetAccountListFinish(DAccount::List accountList);

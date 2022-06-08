@@ -814,7 +814,7 @@ void DragInfoGraphicsView::setShowRadius(bool leftShow, bool rightShow)
 
 bool DragInfoGraphicsView::isCanDragge(const DSchedule::Ptr &info)
 {
-    if (info.isNull())
+    if (info.isNull() || info->scheduleTypeID().isEmpty())
         return false;
     //是否为节假日日程判断
     if (CScheduleOperation::isFestival(info))

@@ -99,6 +99,9 @@ DScheduleType::Ptr AccountManager::getScheduleTypeByScheduleTypeId(const QString
 AccountItem::Ptr AccountManager::getAccountItemByScheduleTypeId(const QString &schduleTypeId)
 {
     DScheduleType::Ptr type = getScheduleTypeByScheduleTypeId(schduleTypeId);
+    if (nullptr == type) {
+        return nullptr;
+    }
     return getAccountItemByAccountId(type->accountID());
 }
 
@@ -173,6 +176,24 @@ void AccountManager::setCalendarGeneralSettings(DCalendarGeneralSettings::Ptr pt
 }
 
 /**
+ * @brief login
+ * 账户登录
+ */
+void AccountManager::login()
+{
+    m_dbusRequest->login();
+}
+
+/**
+ * @brief loginout
+ * 账户登出
+ */
+void AccountManager::loginout()
+{
+    m_dbusRequest->logout();
+}
+
+/**
  * @brief AccountManager::slotGetAccountListFinish
  * 获取账户信息完成事件
  * @param accountList 账户列表
@@ -186,8 +207,14 @@ void AccountManager::slotGetAccountListFinish(DAccount::List accountList)
         }
 
         if (account->accountType() == DAccount::Account_UnionID) {
-            m_unionAccountItem.reset(new AccountItem(account, this));
-            m_unionAccountItem->resetAccount();
+            if (!m_unionAccountItem) {
+                m_unionAccountItem.reset(new AccountItem(account, this));
+                m_unionAccountItem->resetAccount();
+            } else if (m_unionAccountItem && m_unionAccountItem->getAccount()->accountID() != account->accountID()) {
+                emit m_unionAccountItem->signalLogout();
+                m_unionAccountItem.reset(new AccountItem(account, this));
+                m_unionAccountItem->resetAccount();
+            }
         }
     }
 

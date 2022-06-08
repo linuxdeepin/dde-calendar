@@ -404,6 +404,7 @@ void CGraphicsView::mouseDoubleClickEvent(QMouseEvent *event)
         return;
     }
     m_updateDflag = false;
+    //TODO: item->getData()中的scheduleType为""，不是正常日程，有崩溃风险，待分析解决
     CMyScheduleView dlg(item->getData(), this);
     connect(&dlg, &CMyScheduleView::signalsEditorDelete, this, &CGraphicsView::slotDoubleEvent);
     dlg.exec();

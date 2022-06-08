@@ -107,6 +107,11 @@ void SyncFileManage::onUserDatachanged(const QVariantMap  &value)
     // m_userinfo = value; 这边是否直接更新？？？
 }
 
+Syncoperation *SyncFileManage::getSyncoperation()
+{
+    return m_syncoperation;
+}
+
 void SyncFileManage::onLoginStatuschanged(const int32_t value)
 {
     qInfo() << value;

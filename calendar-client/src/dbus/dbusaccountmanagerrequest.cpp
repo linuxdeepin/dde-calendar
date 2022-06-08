@@ -78,6 +78,24 @@ void DbusAccountManagerRequest::setCalendarGeneralSettings(DCalendarGeneralSetti
     asyncCall("setCalendarGeneralSettings", QVariant(jsonStr));
 }
 
+/**
+ * @brief DbusAccountManagerRequest::login
+ * 账户登录
+ */
+void DbusAccountManagerRequest::login()
+{
+    asyncCall("login");
+}
+
+/**
+ * @brief DbusAccountManagerRequest::loginout
+ * 账户登出
+ */
+void DbusAccountManagerRequest::logout()
+{
+    asyncCall("logout");
+}
+
 void DbusAccountManagerRequest::clientIsShow(bool isShow)
 {
     QList<QVariant> argumentList;
@@ -140,6 +158,7 @@ void DbusAccountManagerRequest::slotCallFinished(CDBusPendingCallWatcher *call)
 
 void DbusAccountManagerRequest::slotDbusCall(const QDBusMessage &msg)
 {
+    qInfo() << msg.member();
     if (msg.member() == "accountUpdate") {
         getAccountList();
     }

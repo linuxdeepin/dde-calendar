@@ -47,6 +47,8 @@ public:
      */
     DAccount::Ptr getuserInfo();
 
+    Syncoperation *getSyncoperation();
+
 public Q_SLOTS:
     void onUserDatachanged(const QVariantMap  &value);
     void onLoginStatuschanged(const int32_t value);

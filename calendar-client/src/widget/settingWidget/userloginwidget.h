@@ -25,50 +25,43 @@
 
 #include <QObject>
 #include <QDBusArgument>
+#include <QLabel>
+#include <DIconButton>
+#include <DPushButton>
+#include <QNetworkAccessManager>
 
 DWIDGET_USE_NAMESPACE
-DCORE_USE_NAMESPACE
-DTK_USE_NAMESPACE
 
-class Userlogin: public QObject
+//配置界面账户登录部件
+class UserloginWidget: public QWidget
 {
 public:
-    explicit Userlogin(QObject *parent = nullptr);
-    virtual ~Userlogin();
-
-    struct AccountInfo {
-        void clear()
-        {
-            userName.clear();
-            avatarPath.clear();
-            nickName.clear();
-            userId.clear();
-        }
-        QString avatarPath;
-        QString userName;
-        QString nickName;
-        QString userId;
-    };
+    explicit UserloginWidget(QWidget *parent = nullptr);
+    virtual ~UserloginWidget();
 
     static QPair<QWidget*, QWidget*> createloginButton(QObject *obj);
 
 signals:
-    void loggedIn();
-    void loggedOut(bool isManualQuit);
 
-protected:
-    QIcon *m_switchIconLight {};
-    QIcon *m_switchIconDark {};
+public slots:
+    void slotLoginBtnClicked();
+    void slotLogoutBtnClicked();
+    void slotAccountUpdate();
+    //网络图片请求完成事件
+    void slotReplyPixmapLoad(QNetworkReply*);
 
 private:
-    AccountInfo m_accountInfo;
+    void initView();
+    void initConnect();
+
+private:
     bool m_loginStatus;
     bool m_isManualQuit = false;
-
-    void addUserInfo(const QDBusArgument &argument);
-private slots:
-    void userInfoChanged(const QString &str, const QVariantMap &map, const QStringList &list);
-
+    QLabel *m_userNameLabel = nullptr;
+    DIconButton *m_buttonImg = nullptr;
+    QPushButton *m_buttonLogin = nullptr;
+    QPushButton *m_buttonLoginOut = nullptr;
+    QNetworkAccessManager *m_networkManager;
 };
 
 #endif // USERLOGIN_H

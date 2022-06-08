@@ -15,6 +15,9 @@ Syncoperation::Syncoperation(QObject *parent)
                                           "PropertiesChanged",
                                           argumentMatch, QString(),
                                           this, SLOT(onPropertiesChanged(QString, QVariantMap, QStringList)));
+    if (!QDBusConnection::sessionBus().connect(m_syncInter->service(), m_syncInter->path(), m_syncInter->interface(), "", this, SLOT(slotDbusCall(QDBusMessage)))) {
+        qWarning() << "the connection was fail!" << "path: " << m_syncInter->path() << "interface: " << m_syncInter->interface();
+    };
 }
 
 Syncoperation::~Syncoperation()
@@ -32,6 +35,7 @@ void Syncoperation::optlogout()
 {
     //异步调用无需等待结果,由后续LoginStatus触发处理
     m_syncInter->logout();
+    emit signalLoginStatusChange(false);
 }
 
 SyncoptResult Syncoperation::optUpload(const QString &key)
@@ -161,6 +165,18 @@ bool Syncoperation::optUserData(QVariantMap &userInfoMap)
     } else {
         qWarning() << "Download failed:";
         return false;
+    }
+}
+
+void Syncoperation::slotDbusCall(const QDBusMessage &msg)
+{
+    if (msg.member() == "LoginStatus") {
+        QDBusPendingReply<int> reply = msg;
+        int value = reply.argumentAt<0>();
+        if (value == 0) {
+            //发送登录信息
+            emit signalLoginStatusChange(true);
+        }
     }
 }
 

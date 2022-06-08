@@ -51,6 +51,10 @@ public:
 
     //设置通用设置
     void setCalendarGeneralSettings(DCalendarGeneralSettings::Ptr ptr, CallbackFunc callback = nullptr);
+    //账户登录
+    void login();
+    //账户登出
+    void loginout();
 
 signals:
     void signalDataInitFinished();
