@@ -93,7 +93,7 @@ bool DSchedule::operator==(const DSchedule &schedule) const
 bool DSchedule::operator<(const DSchedule &schedule) const
 {
     return this->allDay() > schedule.allDay() || this->priority() < schedule.priority()
-           || this->dtStart() < schedule.dtStart() || this->created() < schedule.created();
+           || this->dtStart() < schedule.dtStart() || this->created() < schedule.created() || this->summary() < schedule.summary();
 }
 
 bool DSchedule::operator>(const DSchedule &schedule) const
@@ -359,5 +359,19 @@ void DSchedule::setFileName(const QString &fileName)
 
 QDebug operator<<(QDebug debug, const DSchedule &scheduleJsonData)
 {
+    QDebugStateSaver saver(debug);
+    debug.noquote() << "dtStart:" << dtToString(scheduleJsonData.dtStart())
+                    << " ,dtEnd:" << dtToString(scheduleJsonData.dtEnd())
+                    << " ,dtCreate:" << dtToString(scheduleJsonData.created())
+                    << " ,summary:" << scheduleJsonData.summary()
+                    << " ,scheduleTypeID:" << scheduleJsonData.scheduleTypeID()
+                    << ",Uid:" << scheduleJsonData.uid()
+                    << " ,rrule:" << scheduleJsonData.recurrence()->defaultRRule()->rrule();
     return debug;
+}
+
+bool DSchedules::scheduleThan(const DSchedule::Ptr &s1, const DSchedule::Ptr &s2)
+{
+    return s1->allDay() > s2->allDay() || s1->priority() < s2->priority()
+           || s1->dtStart() < s2->dtStart() || s1->created() < s2->created() || s1->summary() < s2->summary();
 }

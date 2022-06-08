@@ -66,12 +66,12 @@ void DAccountModule::setExpand(const bool &isExpand)
 
 int DAccountModule::getAccountState()
 {
-    return m_account->accountState();
+    return int(m_account->accountState());
 }
 
 void DAccountModule::setAccountState(const int accountState)
 {
-    if (m_account->accountState() != accountState) {
+    if (int(m_account->accountState()) != accountState) {
         m_account->setAccountState(static_cast<DAccount::AccountState>(accountState));
         m_accountDB->updateAccountInfo(m_account);
     }

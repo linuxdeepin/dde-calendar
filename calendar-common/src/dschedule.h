@@ -120,4 +120,8 @@ private:
     bool m_moved = false;
 };
 
+namespace DSchedules {
+bool scheduleThan(const DSchedule::Ptr &s1, const DSchedule::Ptr &s2);
+}
+
 #endif // DSCHEDULE_H

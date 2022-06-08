@@ -540,17 +540,22 @@ void CScheduleView::updateSchedule()
     m_graphicsView->clearSchedule();
     DSchedule::List allInfo;
     DSchedule::List nonAllInfo;
+    QStringList scheduleIDsList;
 
     QMap<QDate, DSchedule::List>::const_iterator _iterator = m_showSchedule.constBegin();
     for (; _iterator != m_showSchedule.constEnd(); ++_iterator) {
         for (int i = 0; i < _iterator->size(); ++i) {
             if (_iterator.value().at(i)->allDay()) {
-                if (!allInfo.contains(_iterator.value().at(i))) {
+                //过滤
+                if (!scheduleIDsList.contains(_iterator.value().at(i)->instanceIdentifier())) {
                     allInfo.append(_iterator.value().at(i));
+                    scheduleIDsList.append(_iterator.value().at(i)->instanceIdentifier());
                 }
             } else {
-                if (!nonAllInfo.contains(_iterator.value().at(i))) {
+                //过滤
+                if (!scheduleIDsList.contains(_iterator.value().at(i)->instanceIdentifier())) {
                     nonAllInfo.append(_iterator.value().at(i));
+                    scheduleIDsList.append(_iterator.value().at(i)->instanceIdentifier());
                 }
             }
         }
