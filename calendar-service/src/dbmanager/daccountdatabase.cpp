@@ -239,12 +239,12 @@ DSchedule::List DAccountDataBase::querySchedulesByKey(const QString &key)
     if (psearch->CanQueryByPinyin(key)) {
         //可以按照拼音查询
         QString pinyin = psearch->CreatePinyinQuery(strKey.toLower());
-        strSql += QString(" where instr(UPPER(s.summary), UPPER(:key)) OR s.titlePinyin LIKE :pinyin");
+        strSql += QString(" and instr(UPPER(s.summary), UPPER(:key)) OR s.titlePinyin LIKE :pinyin");
         sqlBindValue[":key"] = key;
         sqlBindValue[":pinyin"] = pinyin;
     } else if (!key.isEmpty()) {
         //按照key查询
-        strSql += QString(" where instr(UPPER(s.summary), UPPER(:key))");
+        strSql += QString(" and instr(UPPER(s.summary), UPPER(:key))");
         sqlBindValue[":key"] = key;
     }
 
@@ -278,32 +278,33 @@ DSchedule::List DAccountDataBase::querySchedulesByKey(const QString &key)
     return scheduleList;
 }
 
-DSchedule::List DAccountDataBase::querySchedulesByRRule(const QString &key, const ushort &rruleType)
+DSchedule::List DAccountDataBase::querySchedulesByRRule(const QString &key, const int &rruleType)
 {
     DSchedule::List scheduleList;
     QString strSql("SELECT  scheduleID, scheduleTypeID, summary, description, allDay, dtStart, dtEnd,   \
                    isAlarm,titlePinyin,isLunar, ics, fileName, dtCreate, dtUpdate, dtDelete, isDeleted  \
-                   FROM schedules WHERE  summary  = ? ;");
+                   FROM schedules ");
     QSqlQuery query(m_database);
+    if (!key.isEmpty()) {
+        strSql += " WHERE  summary  = ? ";
+    }
     if (query.prepare(strSql)) {
-        query.addBindValue(key);
+        if (!key.isEmpty()) {
+            query.addBindValue(key);
+        }
 
         if (query.exec()) {
-            if (query.next()) {
+            while (query.next()) {
                 DSchedule::Ptr schedule = DSchedule::Ptr(new DSchedule);
                 QString &&icsStr = query.value("ics").toString();
                 DSchedule::fromIcsString(schedule, icsStr);
+                schedule->setScheduleTypeID(query.value("scheduleTypeID").toString());
+                DSchedule::RRuleType rRuleType = schedule->getRRuleType();
                 //如果存在重复规则
                 if (schedule->recurs()) {
                     //如果为需要获取的重复规则
-                    if (rruleType == schedule->recurrence()->recurrenceType()) {
+                    if (rruleType == rRuleType) {
                         scheduleList.append(schedule);
-                    } else if (rruleType > 7) {
-                        //如果为工作日
-                        if (schedule->recurrence()->recurrenceType() == 4
-                            && schedule->recurrence()->defaultRRuleConst()->rrule().contains("BYDAY=MO,TU,WE,TH,FR")) {
-                            scheduleList.append(schedule);
-                        }
                     }
                 }
             }

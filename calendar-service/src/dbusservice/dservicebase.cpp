@@ -23,6 +23,7 @@
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusConnectionInterface>
 #include <QFile>
+#include <QtDebug>
 
 DServiceBase::DServiceBase(const QString &path, const QString &interface, QObject *parent)
     : QObject(parent)

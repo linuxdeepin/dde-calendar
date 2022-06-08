@@ -97,7 +97,6 @@ QColor ItemWidget::getBackgroundColor()
 
 void ItemWidget::setTheMe(const int type)
 {
-    m_scheduleColor.setTheMe(type);
     QColor titleColor;
     QColor datetimeColor;
     if (type == 0 || type == 1) {
@@ -119,18 +118,16 @@ void ItemWidget::setTheMe(const int type)
         m_BackgroundColor = "#FFFFFF";
         m_BackgroundColor.setAlphaF(0.05);
     }
-    //    DPalette palette;
-    //    setTitleColor(palette.color(DPalette::Normal, DPalette::BrightText));
     setTitleColor(titleColor);
     setDateTimeColor(datetimeColor);
 }
 
 QColor ItemWidget::ScheduleColor()
 {
-    return m_scheduleColor.getColorByTypeId(m_scheduleInfo.type.ID).splitColor;
+    return CScheduleDataManage::getScheduleDataManage()->getScheduleColorByType(m_scheduleInfo->scheduleTypeID()).orginalColor;
 }
 
-ScheduleDtailInfo ItemWidget::getScheduleInfo() const
+DSchedule::Ptr ItemWidget::getScheduleInfo() const
 {
     return m_scheduleInfo;
 }
@@ -150,18 +147,18 @@ void ItemWidget::setDateTimeColor(const QColor &DateTimeColor)
     m_DateTimeColor = DateTimeColor;
 }
 
-ScheduleDtailInfo ItemWidget::scheduleInfo() const
+DSchedule::Ptr ItemWidget::scheduleInfo() const
 {
     return m_scheduleInfo;
 }
 
-void ItemWidget::setScheduleInfo(const ScheduleDtailInfo &scheduleInfo)
+void ItemWidget::setScheduleInfo(const DSchedule::Ptr &scheduleInfo)
 {
     m_scheduleInfo = scheduleInfo;
-    setScheduleBeginTime(scheduleInfo.beginDateTime);
-    setScheduleEndTime(scheduleInfo.endDateTime);
-    setShowDate(scheduleInfo.beginDateTime.date());
-    setTitleContent(scheduleInfo.titleName);
+    setScheduleBeginTime(scheduleInfo->dtStart());
+    setScheduleEndTime(scheduleInfo->dtEnd());
+    setShowDate(scheduleInfo->dtStart().date());
+    setTitleContent(scheduleInfo->summary());
 }
 
 void ItemWidget::setTitleColor(const QColor &TitleColor)

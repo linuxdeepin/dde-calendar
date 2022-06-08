@@ -19,24 +19,27 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "createschedulewidget.h"
+
+#include "buttonwidget.h"
+#include "../globaldef.h"
+#include "dscheduledatamanager.h"
+
 #include <QPainter>
 #include <QVBoxLayout>
 #include <QProcess>
 #include <QPushButton>
-
-#include "buttonwidget.h"
-#include "../globaldef.h"
+#include <QDBusMessage>
+#include <QDBusConnection>
 
 createSchedulewidget::createSchedulewidget(QWidget *parent)
     : IconDFrame(parent)
-    , m_scheduleDtailInfo(ScheduleDtailInfo())
+    , m_scheduleDtailInfo(new DSchedule)
     , m_scheduleitemwidget(new scheduleitemwidget(this))
 {
     connect(m_scheduleitemwidget, &scheduleitemwidget::signalItemPress, this, &createSchedulewidget::slotItemPress);
-    //    updateUI();
 }
 
-ScheduleDtailInfo &createSchedulewidget::getScheduleDtailInfo()
+DSchedule::Ptr createSchedulewidget::getScheduleDtailInfo()
 {
     return m_scheduleDtailInfo;
 }
@@ -64,20 +67,37 @@ void createSchedulewidget::setschedule()
     m_beginTime = m_BeginDateTime;
     m_endTime = m_EndDateTime;
 
-    m_scheduleDtailInfo.beginDateTime = m_beginTime;
-    m_scheduleDtailInfo.endDateTime = m_endTime;
-    m_scheduleDtailInfo.titleName = m_titleName;
-    m_scheduleDtailInfo.type.ID = 3;
-    m_scheduleDtailInfo.id = 0;
-    m_scheduleDtailInfo.RecurID = 0;
-    m_scheduleDtailInfo.allday = false;
-    m_scheduleDtailInfo.remind = true;
-    m_scheduleDtailInfo.remindData.n = 0;
-    m_scheduleDtailInfo.rpeat = m_rpeat;
-    //    if (m_rpeat != 0) {
-    //结束重复于类型为：永不
-    m_scheduleDtailInfo.enddata.type = 0;
-    //    }
+    m_scheduleDtailInfo->setDtStart(m_beginTime);
+    m_scheduleDtailInfo->setDtEnd(m_endTime);
+    m_scheduleDtailInfo->setSummary(m_titleName);
+    m_scheduleDtailInfo->setScheduleTypeID("403bf009-2005-4679-9c76-e73d9f83a8b4");
+    m_scheduleDtailInfo->setAllDay(false);
+
+    m_scheduleDtailInfo->setAlarmType(DSchedule::Alarm_Begin);
+    switch (m_rpeat) {
+    case 1:
+        m_scheduleDtailInfo->setRRuleType(DSchedule::RRule_Day);
+        break;
+    case 2:
+        m_scheduleDtailInfo->setRRuleType(DSchedule::RRule_Work);
+        break;
+    case 3:
+        m_scheduleDtailInfo->setRRuleType(DSchedule::RRule_Week);
+        break;
+    case 4:
+        m_scheduleDtailInfo->setRRuleType(DSchedule::RRule_Month);
+        break;
+    case 5:
+        m_scheduleDtailInfo->setRRuleType(DSchedule::RRule_Year);
+        break;
+    default:
+        m_scheduleDtailInfo->setRRuleType(DSchedule::RRule_None);
+        break;
+    }
+    if (m_scheduleDtailInfo->getRRuleType() != DSchedule::RRule_None) {
+        //结束重复于类型为：永不
+        m_scheduleDtailInfo->recurrence()->setDuration(-1);
+    }
 }
 
 void createSchedulewidget::scheduleEmpty(bool isEmpty)
@@ -85,11 +105,11 @@ void createSchedulewidget::scheduleEmpty(bool isEmpty)
     m_scheduleEmpty = isEmpty;
 }
 
-void createSchedulewidget::updateUI()
+void createSchedulewidget::updateUI(const QString &scheduleID)
 {
     if (m_scheduleEmpty) {
         //获取筛选到的日程信息
-        getCreatScheduleFromDbus();
+        getCreatScheduleFromDbus(scheduleID);
         //如果筛选到的日程不为空，则展示日程插件
         if (!m_scheduleInfo.isEmpty()) {
             QVBoxLayout *mainlayout = new QVBoxLayout();
@@ -116,11 +136,6 @@ void createSchedulewidget::updateUI()
     }
 }
 
-void createSchedulewidget::setScheduleDbus(CSchedulesDBus *dbus)
-{
-    m_dbus = dbus;
-}
-
 bool createSchedulewidget::buttonclicked()
 {
     return m_buttonclicked;
@@ -137,12 +152,13 @@ void createSchedulewidget::slotsbuttonchance(int index, const QString &text)
     }
 }
 
-void createSchedulewidget::slotItemPress(const ScheduleDtailInfo &info)
+void createSchedulewidget::slotItemPress(const DSchedule::Ptr &info)
 {
     QProcess proc;
     proc.startDetached(PROCESS_OPEN_CALENDAR);
     QThread::msleep(750);
-    QString schedulestr = CSchedulesDBus::createScheduleDtailInfojson(info);
+    QString schedulestr;
+    DSchedule::toJsonString(info, schedulestr);
     QDBusMessage message = QDBusMessage::createMethodCall(DBUS_CALENDAR_SERVICE,
                                                           DBUS_CALENDAR_PATCH,
                                                           DBUS_CALENDAR_INTFACE,
@@ -152,48 +168,8 @@ void createSchedulewidget::slotItemPress(const ScheduleDtailInfo &info)
     QDBusMessage response = QDBusConnection::sessionBus().call(message);
 }
 
-void createSchedulewidget::getCreatScheduleFromDbus()
+void createSchedulewidget::getCreatScheduleFromDbus(const QString &scheduleID)
 {
-    //存放查询的日程信息
-    QVector<ScheduleDateRangeInfo> out;
-    //存放符合筛选条件的日程信息
-    QVector<ScheduleDtailInfo> scheduleinfo;
-    //清空容器
-    scheduleinfo.clear();
-    out.clear();
-    //通过dbus获取和新建的日程具有相同titlename，beginDateTime，endDateTime的日程
-    m_dbus->QueryJobs(m_scheduleDtailInfo.titleName, m_scheduleDtailInfo.beginDateTime, m_scheduleDtailInfo.endDateTime, out);
-    //筛选具体日程
-    for (int i = 0; i < out.count(); i++) {
-        for (int j = 0; j < out.at(i).vData.count(); j++) {
-            //筛选条件
-            if (out.at(i).vData.at(j).titleName == m_scheduleDtailInfo.titleName
-                    && out.at(i).vData.at(j).beginDateTime == m_scheduleDtailInfo.beginDateTime
-                    && out.at(i).vData.at(j).endDateTime == m_scheduleDtailInfo.endDateTime
-                    && out.at(i).vData.at(j).rpeat == m_scheduleDtailInfo.rpeat
-                    && out.at(i).vData.at(j).allday == m_scheduleDtailInfo.allday
-                    && out.at(i).vData.at(j).type.ID == m_scheduleDtailInfo.type.ID
-                    && out.at(i).vData.at(j).RecurID == m_scheduleDtailInfo.RecurID
-                    && out.at(i).vData.at(j).remind == m_scheduleDtailInfo.remind
-                    && out.at(i).vData.at(j).remindData.n == m_scheduleDtailInfo.remindData.n) {
-                if (m_scheduleDtailInfo.rpeat > 0 && out.at(i).vData.at(j).enddata.type != m_scheduleDtailInfo.enddata.type)
-                    continue;
-                scheduleinfo.append(out.at(i).vData.at(j));
-            }
-        }
-    }
-    //如果和新建日程具有相同信息的日程有多个，则取id最大的那一个
-    if (scheduleinfo.count() > 1) {
-        for (int i = 0; i < scheduleinfo.count() - 1; i++) {
-            if (scheduleinfo.at(i).id < scheduleinfo.at(i + 1).id) {
-                m_scheduleInfo.clear();
-                m_scheduleInfo.append(scheduleinfo.at(i + 1));
-            } else {
-                m_scheduleInfo.clear();
-                m_scheduleInfo.append(scheduleinfo.at(i));
-            }
-        }
-    } else {
-        m_scheduleInfo = scheduleinfo;
-    }
+    DSchedule::Ptr schedule = DScheduleDataManager::getInstance()->queryScheduleByScheduleID(scheduleID);
+    m_scheduleInfo.append(schedule);
 }

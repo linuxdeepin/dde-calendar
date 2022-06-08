@@ -60,6 +60,8 @@ public:
 
     typedef QSharedPointer<DSchedule> Ptr;
     typedef QVector<DSchedule::Ptr> List;
+    typedef QMap<QDate, List> Map;
+    typedef QMap<QDate, List>::Iterator Iter;
 
     DSchedule();
     DSchedule(const DSchedule &schedule);

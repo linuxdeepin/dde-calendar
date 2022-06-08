@@ -33,7 +33,7 @@ class createScheduleTask : public scheduleBaseTask
 {
     Q_OBJECT
 public:
-    explicit createScheduleTask(CSchedulesDBus *dbus);
+    createScheduleTask();
     Reply SchedulePress(semanticAnalysisTask &semanticTask) override;
 
 private:
@@ -52,12 +52,12 @@ private:
      * @param createJsonData jsondata句柄
      * @return 日程信息
      */
-    QVector<ScheduleDtailInfo> createScheduleWithRepeatStatus(CreateJsonData *createJsonData);
+    QString createScheduleWithRepeatStatus(CreateJsonData *createJsonData);
     /**
      * @brief creareScheduleUI 新建日程插件
      * @param schedule 日程信息
      */
-    void creareScheduleUI(QVector<ScheduleDtailInfo> schedule);
+    void creareScheduleUI(const QString &scheduleID);
     /**
      * @brief getReply 获取回复语
      * @param createJsonData jsondata句柄
@@ -83,45 +83,45 @@ private:
      * @brief setNotRepeatDay 获取非重复的日程
      * @return 日程信息
      */
-    QVector<ScheduleDtailInfo> getNotRepeatDaySchedule();
+    QString getNotRepeatDaySchedule();
     /**
      * @brief getEveryDaySchedule 获取每天重复的日程
      * @return 日程信息
      */
-    QVector<ScheduleDtailInfo> getEveryDaySchedule();
+    QString getEveryDaySchedule();
     /**
      * @brief getEveryWeekSchedule 获取每周重复的日程
      * @param dateRange 开始和结束的周数
      * @return 日程信息
      */
-    QVector<ScheduleDtailInfo> getEveryWeekSchedule(QVector<int> dateRange);
+    QString getEveryWeekSchedule(QVector<int> dateRange);
     /**
      * @brief getEveryMonthSchedule 获取每月重复的日程
      * @param dateRange 开始和结束的日期数
      * @return 日程信息
      */
-    QVector<ScheduleDtailInfo> getEveryMonthSchedule(QVector<int> dateRange);
+    QString getEveryMonthSchedule(QVector<int> dateRange);
     /**
      * @brief getEveryDYearSchedule 获取每年重复的日程
      * @return 日程信息
      */
-    QVector<ScheduleDtailInfo> getEveryYearSchedule();
+    QString getEveryYearSchedule();
     /**
      * @brief getEveryWorkDaySchedule 获取工作日的日程
      * @return 日程信息
      */
-    QVector<ScheduleDtailInfo> getEveryWorkDaySchedule();
+    QString getEveryWorkDaySchedule();
     /**
      * @brief getEveryRestDaySchedule 获取休息日的日程
      * @return 日程信息
      */
-    QVector<ScheduleDtailInfo> getEveryRestDaySchedule();
+    QString getEveryRestDaySchedule();
     /**
      * @brief getFirstSchedule 获取第一个日程
      * @param scheduleInfo 所有日程信息的容器
      * @return 第一个日程的日程信息
      */
-    ScheduleDtailInfo getFirstSchedule(QVector<ScheduleDtailInfo> scheduleInfo);
+    DSchedule::Ptr getFirstSchedule(DSchedule::List scheduleInfo);
     /**
      * @brief getCreatesDays 获取新建日程的天数
      * @param firstDay 开始日期
@@ -265,7 +265,7 @@ private:
      * @param endDateTime 日程结束时间
      * @return 日程信息
      */
-    ScheduleDtailInfo setDateTimeAndGetSchedule(QDateTime beginDateTime, QDateTime endDateTime);
+    DSchedule::Ptr setDateTimeAndGetSchedule(QDateTime beginDateTime, QDateTime endDateTime);
     /**
      * @brief analysisWorkDayDate 解析工作日的日程的日期
      * @return 日期容器

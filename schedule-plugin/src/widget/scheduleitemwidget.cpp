@@ -36,7 +36,7 @@ scheduleitemwidget::~scheduleitemwidget()
 {
 }
 
-void scheduleitemwidget::setScheduleDtailInfo(QVector<ScheduleDtailInfo> &scheduleInfo)
+void scheduleitemwidget::setScheduleDtailInfo(const DSchedule::List &scheduleInfo)
 {
     m_scheduleInfo = scheduleInfo;
     sortScheduleWithTime();
@@ -84,7 +84,7 @@ void scheduleitemwidget::sortScheduleWithTime()
 {
     for (int i = 0; i < m_scheduleInfo.count(); i++) {
         for (int j = 0; j < m_scheduleInfo.count() - i - 1; j++) {
-            if (m_scheduleInfo[j].beginDateTime > m_scheduleInfo[j + 1].beginDateTime)
+            if (m_scheduleInfo[j]->dtStart() > m_scheduleInfo[j + 1]->dtStart())
                 std::swap(m_scheduleInfo[j], m_scheduleInfo[j + 1]);
         }
     }
@@ -123,10 +123,10 @@ void scheduleitem::drawTime(QPainter &painter)
     painter.setPen(getDateTimeColor());
     painter.setFont(getDateTimeFont());
     QString timestr;
-    if (scheduleInfo().allday) {
+    if (scheduleInfo()->allDay()) {
         timestr = ALL_DAY;
     } else {
-        timestr = QString("%1-%2").arg(scheduleInfo().beginDateTime.toString("hh:mm")).arg(scheduleInfo().endDateTime.toString("hh:mm"));
+        timestr = QString("%1-%2").arg(scheduleInfo()->dtStart().toString("hh:mm")).arg(scheduleInfo()->dtEnd().toString("hh:mm"));
     }
     painter.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter,
                      timestr);
@@ -159,7 +159,7 @@ scheduleitemdate::scheduleitemdate(QWidget *parent)
     setFixedHeight(20);
 }
 
-void scheduleitemdate::setScheduleDtailInfo(ScheduleDtailInfo &scheduelDtailInfo)
+void scheduleitemdate::setScheduleDtailInfo(const DSchedule::Ptr &scheduelDtailInfo)
 {
     m_scheduleDtailInfo = scheduelDtailInfo;
 }
@@ -184,6 +184,6 @@ void scheduleitemdate::paintEvent(QPaintEvent *event)
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setPen(DetailsColor());
     painter.drawText(QRect(m_LeftMargin, 0, this->rect().width(), 20), Qt::AlignLeft | Qt::AlignVCenter,
-                     QString("%1 %2").arg(m_scheduleDtailInfo.beginDateTime.date().toString("yyyy年MM月dd日")).arg(m_scheduleDtailInfo.beginDateTime.toString("dddd")));
+                     QString("%1 %2").arg(m_scheduleDtailInfo->dtStart().date().toString("yyyy年MM月dd日")).arg(m_scheduleDtailInfo->dtStart().toString("dddd")));
     painter.restore();
 }

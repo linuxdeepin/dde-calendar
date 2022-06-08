@@ -21,8 +21,8 @@
 #ifndef ITEMWIDGET_H
 #define ITEMWIDGET_H
 
-#include "../data/schedulecolourmanage.h"
-#include "../data/schedulestructs.h"
+#include "scheduledatamanage.h"
+#include "dschedule.h"
 
 #include <QPainter>
 #include <DWidget>
@@ -38,7 +38,8 @@ public:
     enum Item_Position { ItemTop,
                          ItemMiddle,
                          ItemBottom,
-                         ItemOnly };
+                         ItemOnly
+    };
 
 public:
     explicit ItemWidget(QWidget *parent = nullptr);
@@ -59,10 +60,10 @@ public:
     QDateTime getScheduleEndTime() const;
     void setScheduleEndTime(const QDateTime &ScheduleEndTime);
 
-    ScheduleDtailInfo scheduleInfo() const;
-    void setScheduleInfo(const ScheduleDtailInfo &scheduleInfo);
+    DSchedule::Ptr scheduleInfo() const;
+    void setScheduleInfo(const DSchedule::Ptr &scheduleInfo);
 
-    ScheduleDtailInfo getScheduleInfo() const;
+    DSchedule::Ptr getScheduleInfo() const;
 
 protected:
     QFont getTitleFont() const;
@@ -107,8 +108,7 @@ private:
      */
     QColor m_BackgroundColor{"#000000"};
 
-    ScheduleColourManage m_scheduleColor;
-    ScheduleDtailInfo m_scheduleInfo;
+    DSchedule::Ptr m_scheduleInfo;
 };
 
 #endif // ITEMWIDGET_H

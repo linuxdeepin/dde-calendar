@@ -20,31 +20,29 @@
 */
 #include "schedulemanagetask.h"
 
-#include "../dbus/schedulesdbus.h"
 #include "../globaldef.h"
 #include "../widget/schedulelistwidget.h"
 #include "../data/createjsondata.h"
 #include "../data/queryjsondata.h"
 #include "../data/canceljsondata.h"
 #include "../data/changejsondata.h"
-#include "../widget/viewschedulewidget.h"
 #include "createscheduletask.h"
 #include "queryscheduletask.h"
 #include "cancelscheduletask.h"
 #include "changescheduletask.h"
+#include "accountmanager.h"
 
 DWIDGET_USE_NAMESPACE
 
-ScheduleManageTask *ScheduleManageTask::m_scheduleManageTask = nullptr;
 
 ScheduleManageTask::ScheduleManageTask(QObject *parent)
     : QObject(parent)
-    , m_dbus(new CSchedulesDBus(DBUS_SERVICE, DBUS_PATCH, QDBusConnection::sessionBus(), this))
 {
-    m_scheduleTaskMap[JSON_CREATE] = new createScheduleTask(m_dbus);
-    m_scheduleTaskMap[JSON_VIEW] = new queryScheduleTask(m_dbus);
-    m_scheduleTaskMap[JSON_CANCEL] = new cancelScheduleTask(m_dbus);
-    m_scheduleTaskMap[JSON_CHANGE] = new changeScheduleTask(m_dbus);
+    gAccounManager->resetAccount();
+    m_scheduleTaskMap[JSON_CREATE] = new createScheduleTask();
+    m_scheduleTaskMap[JSON_VIEW] = new queryScheduleTask();
+    m_scheduleTaskMap[JSON_CANCEL] = new cancelScheduleTask();
+    m_scheduleTaskMap[JSON_CHANGE] = new changeScheduleTask();
 
     QMap<QString, scheduleBaseTask *>::Iterator inter = m_scheduleTaskMap.begin();
     for (; inter != m_scheduleTaskMap.end(); ++inter) {
@@ -65,18 +63,12 @@ ScheduleManageTask::~ScheduleManageTask()
 
 ScheduleManageTask *ScheduleManageTask::getInstance()
 {
-    if (m_scheduleManageTask == nullptr) {
-        m_scheduleManageTask = new ScheduleManageTask();
-    }
-    return m_scheduleManageTask;
+    static ScheduleManageTask scheduleManageTask;
+    return &scheduleManageTask;
 }
 
 void ScheduleManageTask::releaseInstance()
 {
-    if (m_scheduleManageTask != nullptr) {
-        delete m_scheduleManageTask;
-        m_scheduleManageTask = nullptr;
-    }
 }
 
 void ScheduleManageTask::process(semanticAnalysisTask &semanticTask)
@@ -89,10 +81,10 @@ void ScheduleManageTask::process(semanticAnalysisTask &semanticTask)
         }
     }
     Reply reply;
-    if (m_preScheduleTask == nullptr){
+    if (m_preScheduleTask == nullptr) {
         REPLY_ONLY_TTS(reply, G_ERR_TTS, G_ERR_TTS, true);
     } else {
-        reply =m_preScheduleTask->SchedulePress(semanticTask);
+        reply = m_preScheduleTask->SchedulePress(semanticTask);
         connectHideEventToInitState(reply);
     }
     setReply(reply);
@@ -113,10 +105,10 @@ void ScheduleManageTask::slotWidgetHideInitState()
 void ScheduleManageTask::connectHideEventToInitState(Reply reply)
 {
     //判断回复内容是否有回复窗口
-    if(reply.getReplyWidget() !=nullptr){
+    if (reply.getReplyWidget() != nullptr) {
         //转换为IconDFrame窗口
         IconDFrame *_iconWidget = qobject_cast<IconDFrame *>(reply.getReplyWidget());
-        if(_iconWidget != nullptr){
+        if (_iconWidget != nullptr) {
             //如果转换成功则关联
             connect(_iconWidget, &IconDFrame::widgetIsHide,
                     this, &ScheduleManageTask::slotWidgetHideInitState, Qt::UniqueConnection);

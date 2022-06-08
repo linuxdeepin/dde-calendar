@@ -120,6 +120,7 @@ void CDynamicIcon::setIcon()
 {
     QIcon icon(this->getPixmap());
     qApp->setProductIcon(icon);
+    qApp->setWindowIcon(icon);
 
     if (qApp->aboutDialog() != nullptr)
         qApp->aboutDialog()->setProductIcon(icon);

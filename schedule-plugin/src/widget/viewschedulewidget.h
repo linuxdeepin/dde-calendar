@@ -21,10 +21,11 @@
 #ifndef VIEWSCHEDULEWIDGET_H
 #define VIEWSCHEDULEWIDGET_H
 
-#include <QWidget>
 #include "icondframe.h"
-#include "../data/schedulestructs.h"
+#include "dschedule.h"
 #include "scheduleitemwidget.h"
+
+#include <QWidget>
 
 class viewschedulewidget : public IconDFrame
 {
@@ -32,31 +33,23 @@ class viewschedulewidget : public IconDFrame
 public:
     explicit viewschedulewidget(QWidget *parent = nullptr);
     ~viewschedulewidget();
-    void setScheduleDateRangeInfo(QVector<ScheduleDateRangeInfo> &scheduleDateInfo);
-    void viewScheduleInfoShow(QVector<ScheduleDateRangeInfo> m_showdate);
-    int getScheduleNum(QVector<ScheduleDateRangeInfo> m_showdate);
+    void setScheduleDateRangeInfo(const DSchedule::Map &scheduleDateInfo);
+    void viewScheduleInfoShow(const DSchedule::Map &showSchedule);
+    int getScheduleNum(DSchedule::Map scheduleList);
     void setQueryBeginDateTime(QDateTime begindatetime);
     void setQueryEndDateTime(QDateTime enddatetime);
-
-    QVector<ScheduleDateRangeInfo> queryScheduleWithTime(QVector<ScheduleDateRangeInfo> &scheduleinfo, QTime beginT, QTime endT);
-    QVector<ScheduleDateRangeInfo> queryScheduleWithDate(QVector<ScheduleDateRangeInfo> &scheduleinfo, QDate beginD, QDate endD);
-    QVector<ScheduleDateRangeInfo> queryScheduleWithWeek(QVector<ScheduleDateRangeInfo> &scheduleinfo, QVector<int> weekDay, int dayofweek = 0, QTime beginT = QTime(0, 0, 0), QTime endT = QTime(0, 0, 0));
-    QVector<ScheduleDateRangeInfo> queryScheduleWithMonth(QVector<ScheduleDateRangeInfo> &scheduleinfo, QVector<int> monthDay, int dayofmonth = 0, QTime beginT = QTime(0, 0, 0), QTime endT = QTime(0, 0, 0));
-
-    QVector<ScheduleDateRangeInfo> getAllScheduleInfo();
-    QVector<ScheduleDateRangeInfo> getAllRpeatScheduleInfo(int rpeat);
     /**
      * @brief getNextScheduleInfo 获取下一个日程
      * @return 下一个日程信息
      */
-    QVector<ScheduleDateRangeInfo> getNextScheduleInfo();
+    DSchedule::Map getNextScheduleInfo();
 public slots:
-    void slotItemPress(const ScheduleDtailInfo &info);
+    void slotItemPress(const DSchedule::Ptr &info);
 
 private:
-    QVector<ScheduleDtailInfo> m_scheduleInfo;
-    QVector<ScheduleDateRangeInfo> m_scheduleDateInfo;
-    QVector<ScheduleDateRangeInfo> m_showdate;
+    DSchedule::List m_scheduleInfo;
+    DSchedule::Map m_scheduleDateInfo;
+    DSchedule::Map m_showdate;
     QDateTime m_beginDateTime;
     QDateTime m_endDateTime;
 };

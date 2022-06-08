@@ -22,9 +22,8 @@
 #include "../state/schedulestate.h"
 #include "../globaldef.h"
 
-scheduleBaseTask::scheduleBaseTask(CSchedulesDBus *dbus, scheduleState *state)
+scheduleBaseTask::scheduleBaseTask(scheduleState *state)
     : QObject()
-    , m_dbus(dbus)
     , m_State(state)
 {
 }
@@ -53,13 +52,13 @@ Reply scheduleBaseTask::SchedulePress(semanticAnalysisTask &semanticTask)
     return reply;
 }
 
-Reply scheduleBaseTask::getFeedbackByQuerySchedule(const QVector<ScheduleDtailInfo> &info)
+Reply scheduleBaseTask::getFeedbackByQuerySchedule(const DSchedule::List &info)
 {
     Q_UNUSED(info);
     return Reply();
 }
 
-Reply scheduleBaseTask::getReplyBySelectSchedule(const ScheduleDtailInfo &info)
+Reply scheduleBaseTask::getReplyBySelectSchedule(const DSchedule::Ptr &info)
 {
     Q_UNUSED(info);
     return Reply();
@@ -72,14 +71,14 @@ Reply scheduleBaseTask::InitState(const JsonData *jsonData, bool isUpdateState)
     return Reply();
 }
 
-Reply scheduleBaseTask::repeatScheduleHandle(const ScheduleDtailInfo &info, bool isOnlyOne)
+Reply scheduleBaseTask::repeatScheduleHandle(const DSchedule::Ptr &info, bool isOnlyOne)
 {
     Q_UNUSED(info);
     Q_UNUSED(isOnlyOne);
     return Reply();
 }
 
-Reply scheduleBaseTask::confirwScheduleHandle(const ScheduleDtailInfo &info)
+Reply scheduleBaseTask::confirwScheduleHandle(const DSchedule::Ptr &info)
 {
     Q_UNUSED(info);
     return Reply();

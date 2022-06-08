@@ -33,7 +33,7 @@ class DAccountService : public DServiceBase
     Q_CLASSINFO("D-Bus Interface", accountServiceInterface)
     Q_PROPERTY(bool isExpand READ getExpand WRITE setExpand)
     Q_PROPERTY(bool accountState READ getAccountState WRITE setAccountState)
-    Q_PROPERTY(bool syncState READ getSyncState)
+    Q_PROPERTY(int syncState READ getSyncState)
     Q_PROPERTY(QString syncFreq READ getSyncFreq WRITE setSyncFreq)
 public:
     typedef QSharedPointer<DAccountService> Ptr;

@@ -97,6 +97,7 @@ bool DAccountService::scheduleTypeByUsed(const QString &typeID)
 
 QString DAccountService::createSchedule(const QString &scheduleInfo)
 {
+    qInfo() << getClientName();
     DServiceExitControl exitControl;
     if (!clientWhite(0)) {
         return QString();

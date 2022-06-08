@@ -105,7 +105,7 @@ void modifyScheduleItem::drawTime(QPainter &painter)
     painter.setPen(getDateTimeColor());
     painter.setFont(getDateTimeFont());
     QString timestr;
-    if (scheduleInfo().allday) {
+    if (scheduleInfo()->allDay()) {
         timestr = ALL_DAY;
     } else {
         timestr = QString("%1-%2").arg(getScheduleBeginTime().toString("hh:mm")).arg(getScheduleEndTime().toString("hh:mm"));

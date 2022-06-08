@@ -97,6 +97,9 @@ private:
     QMap<QDate, DSchedule::List> getScheduleTimesOn(const QDateTime &dtStart, const QDateTime &dtEnd, const DSchedule::List &scheduleList, bool extend = true);
     DSchedule::List getFestivalSchedule(const QDateTime &dtStart, const QDateTime &dtEnd, const QString &key);
 
+    //根据重复规则扩展非农历重复日程
+    void extendRecurrence(DSchedule::Map &scheduleMap, const DSchedule::Ptr &schedule, const QDateTime &dtStart, const QDateTime &dtEnd, bool extend = true);
+
     /**
      * @brief closeNotification     关闭通知弹框
      * @param scheduleId            日程id

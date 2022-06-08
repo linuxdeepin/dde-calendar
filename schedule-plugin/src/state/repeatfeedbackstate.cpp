@@ -24,8 +24,8 @@
 #include "../data/clocaldata.h"
 #include "../data/changejsondata.h"
 
-repeatfeedbackstate::repeatfeedbackstate(CSchedulesDBus *dbus, scheduleBaseTask *task)
-    : scheduleState(dbus, task)
+repeatfeedbackstate::repeatfeedbackstate(scheduleBaseTask *task)
+    : scheduleState(task)
 {
 }
 
@@ -44,11 +44,11 @@ Reply repeatfeedbackstate::getReplyByIntent(bool isOK)
 scheduleState::Filter_Flag repeatfeedbackstate::eventFilter(const JsonData *jsonData)
 {
     if (jsonData->getPropertyStatus() == JsonData::NEXT
-            //如果语义包含时间则为修改初始状态
-            || jsonData->getDateTime().suggestDatetime.size()>0
-           // 如果语义包含内容则为修改初始状态
-            || !jsonData->TitleName().isEmpty()
-            //如果语义包含重复类型则为修改初始状态
+        //如果语义包含时间则为修改初始状态
+        || jsonData->getDateTime().suggestDatetime.size() > 0
+        // 如果语义包含内容则为修改初始状态
+        || !jsonData->TitleName().isEmpty()
+        //如果语义包含重复类型则为修改初始状态
         || jsonData->getRepeatStatus() != JsonData::NONE) {
         return Fileter_Init;
     }
@@ -60,7 +60,7 @@ scheduleState::Filter_Flag repeatfeedbackstate::eventFilter(const JsonData *json
         || jsonData->offset() > 0) {
         return Fileter_Err;
     }
-    Filter_Flag  result = changeDateErrJudge(jsonData,Fileter_Init);
+    Filter_Flag result = changeDateErrJudge(jsonData, Fileter_Init);
     return result;
 }
 

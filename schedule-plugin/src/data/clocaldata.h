@@ -21,16 +21,20 @@
 #ifndef CLOCALDATA_H
 #define CLOCALDATA_H
 
-#include "schedulestructs.h"
+#include "dschedule.h"
 #include "timedatastruct.h"
+
+#include <QSharedPointer>
+
 class CLocalData
 {
 public:
+    typedef QSharedPointer<CLocalData> Ptr;
     CLocalData();
-    QVector<ScheduleDtailInfo> scheduleInfoVector() const;
-    void setScheduleInfoVector(const QVector<ScheduleDtailInfo> &scheduleInfoVector);
-    ScheduleDtailInfo SelectInfo() const;
-    void setSelectInfo(const ScheduleDtailInfo &SelectInfo);
+    DSchedule::List scheduleInfoVector() const;
+    void setScheduleInfoVector(const DSchedule::List &scheduleInfoVector);
+    DSchedule::Ptr SelectInfo() const;
+    void setSelectInfo(const DSchedule::Ptr &SelectInfo);
     void setToTitleName(const QString &title);
     QString getToTitleName() const;
     /**
@@ -45,14 +49,13 @@ public:
     SemanticsDateTime getToTime() const;
     int getOffet() const;
     void setOffset(int offset);
-    CLocalData *getDataByPoint(const CLocalData *localData);
-    void setNewInfo(const ScheduleDtailInfo &newInfo);
-    ScheduleDtailInfo getNewInfo() const;
+    void setNewInfo(const DSchedule::Ptr &newInfo);
+    DSchedule::Ptr getNewInfo() const;
 
 private:
-    QVector<ScheduleDtailInfo> m_scheduleInfoVector {};
-    ScheduleDtailInfo m_SelectInfo {};
-    ScheduleDtailInfo m_NewInfo {};
+    DSchedule::List m_scheduleInfoVector {};
+    DSchedule::Ptr m_SelectInfo {};
+    DSchedule::Ptr m_NewInfo {};
     QString m_ToTitleName {""};
     SemanticsDateTime m_ToTime {};
     int m_offset {-1};

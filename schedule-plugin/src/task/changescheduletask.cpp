@@ -29,13 +29,14 @@
 #include "../state/queryschedulestate.h"
 #include "../state/repeatfeedbackstate.h"
 #include "../state/getchangedatastate.h"
+#include "dscheduledatamanager.h"
 
-changeScheduleTask::changeScheduleTask(CSchedulesDBus *dbus)
-    : scheduleBaseTask(dbus, new queryScheduleState(dbus, this))
+changeScheduleTask::changeScheduleTask()
+    : scheduleBaseTask(new queryScheduleState(this))
 {
 }
 
-Reply changeScheduleTask::getFeedbackByQuerySchedule(const QVector<ScheduleDtailInfo> &infoVector)
+Reply changeScheduleTask::getFeedbackByQuerySchedule(const DSchedule::List &infoVector)
 {
     Reply m_reply;
     scheduleState *nextState = nullptr;
@@ -51,9 +52,8 @@ Reply changeScheduleTask::getFeedbackByQuerySchedule(const QVector<ScheduleDtail
         currentState->getLocalData()->setSelectInfo(infoVector.at(0));
         m_reply = getReplyBySelectSchedule(infoVector.at(0));
     } else {
-        nextState = new SelectAndQueryState(m_dbus, this);
-        CLocalData *m_Data = new CLocalData();
-        m_Data->getDataByPoint(currentState->getLocalData());
+        nextState = new SelectAndQueryState(this);
+        CLocalData::Ptr m_Data = currentState->getLocalData();
         m_Data->setScheduleInfoVector(infoVector);
         nextState->setLocalData(m_Data);
         m_reply = getListScheduleReply(infoVector);
@@ -65,7 +65,7 @@ Reply changeScheduleTask::getFeedbackByQuerySchedule(const QVector<ScheduleDtail
 void changeScheduleTask::slotSelectScheduleIndex(int index)
 {
     scheduleState *currentState = getCurrentState();
-    CLocalData *localData = currentState->getLocalData();
+    CLocalData::Ptr localData = currentState->getLocalData();
     if (!(localData->scheduleInfoVector().size() < index)) {
         localData->setSelectInfo(localData->scheduleInfoVector().at(index - 1));
         Reply reply = getReplyBySelectSchedule(localData->scheduleInfoVector().at(index - 1));
@@ -109,13 +109,12 @@ scheduleState *changeScheduleTask::getCurrentState()
     return currentState;
 }
 
-Reply changeScheduleTask::getReplyBySelectSchedule(const ScheduleDtailInfo &info)
+Reply changeScheduleTask::getReplyBySelectSchedule(const DSchedule::Ptr &info)
 {
     Reply m_reply;
     scheduleState *nextState = nullptr;
-    CLocalData *m_Data = new CLocalData();
     scheduleState *currentState = getCurrentState();
-    m_Data->getDataByPoint(currentState->getLocalData());
+    CLocalData::Ptr m_Data = currentState->getLocalData();
     m_Data->setSelectInfo(info);
     if (m_Data->getOffet() < 0) {
         m_Data->setOffset(1);
@@ -124,7 +123,7 @@ Reply changeScheduleTask::getReplyBySelectSchedule(const ScheduleDtailInfo &info
         QWidget *infoWidget = createInquiryWidget(info);
         REPLY_WIDGET_TTS(m_reply, infoWidget, CHANGE_TO_TTS, CHANGE_TO_TTS, false);
         //添加获取修改信息状态
-        nextState = new getChangeDataState(m_dbus, this);
+        nextState = new getChangeDataState(this);
         nextState->setLocalData(m_Data);
     } else {
         //获取下一个状态
@@ -137,7 +136,7 @@ Reply changeScheduleTask::getReplyBySelectSchedule(const ScheduleDtailInfo &info
 Reply changeScheduleTask::InitState(const JsonData *jsonData, bool isUpdateState)
 {
     Reply m_reply;
-    scheduleState *nextState = new queryScheduleState(m_dbus, this);
+    scheduleState *nextState = new queryScheduleState(this);
     scheduleState *currentState = getCurrentState();
     currentState->setNextState(nextState);
     if (jsonData != nullptr) {
@@ -154,25 +153,25 @@ Reply changeScheduleTask::InitState(const JsonData *jsonData, bool isUpdateState
     return m_reply;
 }
 
-Reply changeScheduleTask::repeatScheduleHandle(const ScheduleDtailInfo &info, bool isOnlyOne)
+Reply changeScheduleTask::repeatScheduleHandle(const DSchedule::Ptr &info, bool isOnlyOne)
 {
     changeRepeatSchedule(info, isOnlyOne);
     Reply reply;
     REPLY_ONLY_TTS(reply, CONFIRM_CHANGE_TTS, CONFIRM_CHANGE_TTS, true);
-    scheduleState *nextState = new queryScheduleState(m_dbus, this);
+    scheduleState *nextState = new queryScheduleState(this);
     scheduleState *currentState = getCurrentState();
     currentState->setNextState(nextState);
     return reply;
 }
 
-Reply changeScheduleTask::confirwScheduleHandle(const ScheduleDtailInfo &info)
+Reply changeScheduleTask::confirwScheduleHandle(const DSchedule::Ptr &info)
 {
     Q_UNUSED(info);
     scheduleState *currentState = getCurrentState();
     changeOrdinarySchedule(currentState->getLocalData()->getNewInfo());
     Reply reply;
     REPLY_ONLY_TTS(reply, CONFIRM_CHANGE_TTS, CONFIRM_CHANGE_TTS, true);
-    scheduleState *nextState = new queryScheduleState(m_dbus, this);
+    scheduleState *nextState = new queryScheduleState(this);
     currentState->setNextState(nextState);
     return reply;
 }
@@ -191,7 +190,7 @@ Reply changeScheduleTask::confirmInfo(bool isOK)
     }
 }
 
-QWidget *changeScheduleTask::createRepeatWidget(const ScheduleDtailInfo &info)
+QWidget *changeScheduleTask::createRepeatWidget(const DSchedule::Ptr &info)
 {
     repeatScheduleWidget *repeatWidget = new repeatScheduleWidget(repeatScheduleWidget::Operation_Change, repeatScheduleWidget::Widget_Repeat);
     repeatWidget->setSchedule(info);
@@ -199,7 +198,7 @@ QWidget *changeScheduleTask::createRepeatWidget(const ScheduleDtailInfo &info)
     return repeatWidget;
 }
 
-QWidget *changeScheduleTask::createConfirmWidget(const ScheduleDtailInfo &info)
+QWidget *changeScheduleTask::createConfirmWidget(const DSchedule::Ptr &info)
 {
     repeatScheduleWidget *cwidget = new repeatScheduleWidget(repeatScheduleWidget::Operation_Change, repeatScheduleWidget::Widget_Confirm);
     cwidget->setSchedule(info);
@@ -207,7 +206,7 @@ QWidget *changeScheduleTask::createConfirmWidget(const ScheduleDtailInfo &info)
     return cwidget;
 }
 
-QWidget *changeScheduleTask::createInquiryWidget(const ScheduleDtailInfo &info)
+QWidget *changeScheduleTask::createInquiryWidget(const DSchedule::Ptr &info)
 {
     repeatScheduleWidget *infoWidget =
         new repeatScheduleWidget(repeatScheduleWidget::Operation_Change, repeatScheduleWidget::Widget_Confirm, false);
@@ -215,7 +214,7 @@ QWidget *changeScheduleTask::createInquiryWidget(const ScheduleDtailInfo &info)
     return infoWidget;
 }
 
-Reply changeScheduleTask::getListScheduleReply(const QVector<ScheduleDtailInfo> &infoVector)
+Reply changeScheduleTask::getListScheduleReply(const DSchedule::List &infoVector)
 {
     scheduleListWidget *m_viewWidget = new scheduleListWidget();
     connect(m_viewWidget, &scheduleListWidget::signalSelectScheduleIndex, this, &changeScheduleTask::slotSelectScheduleIndex);
@@ -229,7 +228,7 @@ Reply changeScheduleTask::getListScheduleReply(const QVector<ScheduleDtailInfo> 
     return reply;
 }
 
-scheduleState *changeScheduleTask::getNextStateBySelectScheduleInfo(const ScheduleDtailInfo &info, CLocalData *localData, Reply &reply)
+scheduleState *changeScheduleTask::getNextStateBySelectScheduleInfo(const DSchedule::Ptr &info, const CLocalData::Ptr &localData, Reply &reply)
 {
     QString m_TTSMessage;
     QString m_DisplyMessage;
@@ -241,18 +240,18 @@ scheduleState *changeScheduleTask::getNextStateBySelectScheduleInfo(const Schedu
     if (getNewInfo()) {
         //需要显示的窗口
         QWidget *_showWidget;
-        if (info.rpeat == 0) {
+        if (info->getRRuleType() == DSchedule::RRule_None) {
             m_TTSMessage = CONFIRM_SCHEDULE_CHANGE_TTS;
             m_DisplyMessage = CONFIRM_SCHEDULE_CHANGE_TTS;
             _showWidget = createConfirmWidget(currentState->getLocalData()->getNewInfo());
             //设置下一个状态为普通日程确认状态
-            nextState = new confirwFeedbackState(m_dbus, this);
+            nextState = new confirwFeedbackState(this);
         } else {
             m_TTSMessage = REPEST_SCHEDULE_CHANGE_TTS;
             m_DisplyMessage = REPEST_SCHEDULE_CHANGE_TTS;
             _showWidget = createRepeatWidget(currentState->getLocalData()->getNewInfo());
             //设置下一个状态为重复日程确认状态
-            nextState = new repeatfeedbackstate(m_dbus, this);
+            nextState = new repeatfeedbackstate(this);
         }
         //设置修改的日程信息
         localData->setNewInfo(currentState->getLocalData()->getNewInfo());
@@ -264,7 +263,7 @@ scheduleState *changeScheduleTask::getNextStateBySelectScheduleInfo(const Schedu
         m_TTSMessage = CHANGE_TIME_OUT_TTS;
         m_DisplyMessage = CHANGE_TIME_OUT_TTS;
         REPLY_ONLY_TTS(reply, m_TTSMessage, m_DisplyMessage, true);
-        nextState = new queryScheduleState(m_dbus, this);
+        nextState = new queryScheduleState(this);
     };
     return nextState;
 }
@@ -272,9 +271,9 @@ scheduleState *changeScheduleTask::getNextStateBySelectScheduleInfo(const Schedu
 bool changeScheduleTask::getNewInfo()
 {
     scheduleState *currentState = getCurrentState();
-    ScheduleDtailInfo m_NewInfo = currentState->getLocalData()->SelectInfo();
+    DSchedule::Ptr m_NewInfo = currentState->getLocalData()->SelectInfo();
     if (!currentState->getLocalData()->getToTitleName().isEmpty())
-        m_NewInfo.titleName = currentState->getLocalData()->getToTitleName();
+        m_NewInfo->setSummary(currentState->getLocalData()->getToTitleName());
     QVector<DateTimeInfo> m_ToTime = currentState->getLocalData()->getToTime().dateTime;
     //获取建议时间
     QVector<SuggestDatetimeInfo> m_suggestDatetime = currentState->getLocalData()->getToTime().suggestDatetime;
@@ -283,24 +282,24 @@ bool changeScheduleTask::getNewInfo()
             //如果存在日期信息
             if (m_ToTime.at(0).hasDate) {
                 //设置修改的开始日期
-                m_NewInfo.beginDateTime.setDate(m_ToTime.at(0).m_Date);
+                m_NewInfo->setDtStart(QDateTime(m_ToTime.at(0).m_Date));
                 //设置修改的结束日期
-                m_NewInfo.endDateTime.setDate(m_ToTime.at(0).m_Date);
+                m_NewInfo->setDtEnd(QDateTime(m_ToTime.at(0).m_Date));
             }
             //如果修改的DateTime带时间则设置该时间，否则保持原来的时间点
             if (m_ToTime.at(0).hasTime) {
                 //如果修改的日期为当天则取suggestTime时间
-                if (m_NewInfo.beginDateTime.date() == QDate::currentDate()) {
-                    m_NewInfo.beginDateTime = m_suggestDatetime.at(0).datetime;
+                if (m_NewInfo->dtStart().date() == QDate::currentDate()) {
+                    m_NewInfo->setDtStart(m_suggestDatetime.at(0).datetime);
                 } else {
-                    m_NewInfo.beginDateTime.setTime(m_ToTime.at(0).m_Time);
+                    m_NewInfo->setDtStart(QDateTime(m_NewInfo->dtStart().date(), m_ToTime.at(0).m_Time));
                 }
-                m_NewInfo.endDateTime = m_NewInfo.beginDateTime.addSecs(3600);
+                m_NewInfo->setDtEnd(m_NewInfo->dtStart().addSecs(3600));
                 //如果存在时间点则将全天的日程修改为非全天并修改提醒规则
-                if (m_NewInfo.allday) {
-                    m_NewInfo.allday = false;
-                    m_NewInfo.remind = true;
-                    m_NewInfo.remindData.n = 0;
+                if (m_NewInfo->allDay()) {
+                    m_NewInfo->setAllDay(false);
+                    //非全天设置为立即提醒
+                    m_NewInfo->setAlarmType(DSchedule::Alarm_Begin);
                 }
             }
         }
@@ -308,23 +307,23 @@ bool changeScheduleTask::getNewInfo()
             //如果存在日期信息
             if (m_ToTime.at(0).hasDate) {
                 //设置修改的开始日期
-                m_NewInfo.beginDateTime.setDate(m_ToTime.at(0).m_Date);
+                m_NewInfo->setDtStart(QDateTime(m_ToTime.at(0).m_Date));
             }
             //如果修改的DateTime带时间则设置该时间，否则保持原来的时间点
             if (m_ToTime.at(0).hasTime) {
-                m_NewInfo.beginDateTime.setTime(m_ToTime.at(0).m_Time);
+                m_NewInfo->setDtStart(QDateTime(m_NewInfo->dtStart().date(), m_ToTime.at(0).m_Time));
             }
             //如果存在日期信息
             if (m_ToTime.at(1).hasDate) {
                 //设置修改的结束日期
-                m_NewInfo.endDateTime.setDate(m_ToTime.at(1).m_Date);
+                m_NewInfo->setDtEnd(QDateTime(m_ToTime.at(1).m_Date));
             }
             //如果修改的DateTime带时间则设置该时间，否则保持原来的时间点
             if (m_ToTime.at(1).hasTime)
-                m_NewInfo.endDateTime.setTime(m_ToTime.at(1).m_Time);
+                m_NewInfo->setDtEnd(QDateTime(m_NewInfo->dtEnd().date(), m_ToTime.at(1).m_Time));
             //如果开始时间大于结束时间则设置结束时间为开始时间往后一小时
-            if (m_NewInfo.endDateTime < m_NewInfo.beginDateTime) {
-                m_NewInfo.endDateTime = m_NewInfo.beginDateTime.addSecs(3600);
+            if (m_NewInfo->dtEnd() < m_NewInfo->dtStart()) {
+                m_NewInfo->setDtEnd(m_NewInfo->dtStart().addSecs(3600));
             }
             //TODO 对于多个时间点还未支持,全天非全天的修改待做
         }
@@ -333,7 +332,7 @@ bool changeScheduleTask::getNewInfo()
     return changeDateTimeIsInNormalRange(m_NewInfo);
 }
 
-void changeScheduleTask::changeRepeatSchedule(const ScheduleDtailInfo &info, bool isOnlyOne)
+void changeScheduleTask::changeRepeatSchedule(const DSchedule::Ptr &info, bool isOnlyOne)
 {
     if (isOnlyOne) {
         changeOnlyInfo(info);
@@ -342,70 +341,80 @@ void changeScheduleTask::changeRepeatSchedule(const ScheduleDtailInfo &info, boo
     }
 }
 
-void changeScheduleTask::changeOnlyInfo(const ScheduleDtailInfo &info)
+void changeScheduleTask::changeOnlyInfo(const DSchedule::Ptr &info)
 {
+    Q_UNUSED(info)
     scheduleState *currentState = getCurrentState();
-    ScheduleDtailInfo newschedule = currentState->getLocalData()->getNewInfo();
-    newschedule.rpeat = 0;
-    newschedule.RecurID = 0;
-    newschedule.id = 0;
-    newschedule.ignore.clear();
-    m_dbus->CreateJob(newschedule);
-    ScheduleDtailInfo updatescheduleData;
-    m_dbus->GetJob(info.id, updatescheduleData);
-    updatescheduleData.ignore.append(info.beginDateTime);
-    m_dbus->UpdateJob(updatescheduleData);
+    DSchedule::Ptr newschedule = currentState->getLocalData()->getNewInfo();
+    //原始信息
+    DSchedule::Ptr updatescheduleData = DScheduleDataManager::getInstance()->queryScheduleByScheduleID(newschedule->uid());
+    updatescheduleData->recurrence()->addExDateTime(newschedule->dtStart());
+    newschedule->setRRuleType(DSchedule::RRule_None);
+    newschedule->setUid(DScheduleDataManager::getInstance()->createSchedule(newschedule));
+
+    DScheduleDataManager::getInstance()->updateSchedule(updatescheduleData);
 }
 
-void changeScheduleTask::changeAllInfo(const ScheduleDtailInfo &info)
+void changeScheduleTask::changeAllInfo(const DSchedule::Ptr &info)
 {
     scheduleState *currentState = getCurrentState();
-    ScheduleDtailInfo newinfo = currentState->getLocalData()->getNewInfo();
-    if (info.RecurID == 0) {
-        ScheduleDtailInfo scheduleDtailInfo = newinfo;
-        if (scheduleDtailInfo.enddata.type == 1 && scheduleDtailInfo.enddata.tcount < 1) {
-            scheduleDtailInfo.enddata.type = 0;
-        } else if (scheduleDtailInfo.enddata.type == 2 && scheduleDtailInfo.beginDateTime.daysTo(scheduleDtailInfo.enddata.date) < 0) {
-            scheduleDtailInfo.enddata.type = 0;
-            scheduleDtailInfo.rpeat = 0;
-        }
-        m_dbus->UpdateJob(scheduleDtailInfo);
+    DSchedule::Ptr newinfo = currentState->getLocalData()->getNewInfo();
+    if (info->getRRuleType() == DSchedule::RRule_None) {
+        DSchedule::Ptr schedule = newinfo;
+        DScheduleDataManager::getInstance()->updateSchedule(schedule);
     } else {
-        ScheduleDtailInfo newschedule = newinfo;
-        newschedule.RecurID = 0;
-        newschedule.id = 0;
-        if (newschedule.enddata.type == 1) {
-            newschedule.enddata.tcount = qAbs(newinfo.enddata.tcount - newinfo.RecurID);
-            if (newschedule.enddata.tcount < 1) {
-                newschedule.enddata.type = 0;
-                newschedule.rpeat = 0;
-            }
-        }
-        m_dbus->CreateJob(newschedule);
-        ScheduleDtailInfo updatescheduleData;
-        m_dbus->GetJob(info.id, updatescheduleData);
-        if (updatescheduleData.enddata.type == 1) {
-            updatescheduleData.enddata.tcount = newinfo.RecurID - 1;
-            if (updatescheduleData.enddata.tcount < 1) {
-                updatescheduleData.enddata.type = 0;
-                updatescheduleData.rpeat = 0;
-            }
+        //获取原始日程信息
+        DSchedule::Ptr updatescheduleData = DScheduleDataManager::getInstance()->queryScheduleByScheduleID(info->uid());
+        //第几次重复日程
+        int repetNum = DSchedule::numberOfRepetitions(updatescheduleData, newinfo->dtStart());
+        if (repetNum == 1) {
+            //如果为第一个
+            DScheduleDataManager::getInstance()->updateSchedule(newinfo);
+
         } else {
-            //如果为结束与日期或永不,则都修改为结束语日期并修改结束日期
-            updatescheduleData.enddata.type = 2;
-            updatescheduleData.enddata.date =
-                info.beginDateTime.addDays(-1);
+            //如果不是第一个
+            if (newinfo->recurrence()->duration() > 1) {
+                int duration = newinfo->recurrence()->duration() - repetNum + 1;
+                //结束于次数
+                if (duration < 2) {
+                    newinfo->setRRuleType(DSchedule::RRule_None);
+                } else {
+                    newinfo->recurrence()->setDuration(duration);
+                }
+                //修改原始日程，如果原始日程剩余的重复次数为1，则修改为普通日程
+                updatescheduleData->recurrence()->setDuration(repetNum - 1);
+                if (updatescheduleData->recurrence()->duration() == 1) {
+                    updatescheduleData->setRRuleType(DSchedule::RRule_None);
+                }
+            } else if (newinfo->recurrence()->duration() == 0) {
+                //结束于时间
+                if (newinfo->dtStart().date() == newinfo->recurrence()->endDateTime().date()) {
+                    newinfo->setRRuleType(DSchedule::RRule_None);
+                }
+                updatescheduleData->recurrence()->setEndDate(newinfo->dtStart().date().addDays(-1));
+                if (updatescheduleData->dtStart().date() == updatescheduleData->recurrence()->endDate()) {
+                    updatescheduleData->setRRuleType(DSchedule::RRule_None);
+                }
+            } else {
+                //永不
+                updatescheduleData->recurrence()->setEndDate(newinfo->dtStart().date().addDays(-1));
+                if (updatescheduleData->dtStart().date() == updatescheduleData->recurrence()->endDate()) {
+                    updatescheduleData->setRRuleType(DSchedule::RRule_None);
+                }
+            }
+            DScheduleDataManager::getInstance()->createSchedule(newinfo);
+            //修改原始日程
+            DScheduleDataManager::getInstance()->updateSchedule(updatescheduleData);
         }
-        m_dbus->UpdateJob(updatescheduleData);
     }
 }
 
-void changeScheduleTask::changeOrdinarySchedule(const ScheduleDtailInfo &info)
+void changeScheduleTask::changeOrdinarySchedule(const DSchedule::Ptr &info)
 {
-    m_dbus->UpdateJob(info);
+    DScheduleDataManager::getInstance()->updateSchedule(info);
 }
 
-bool changeScheduleTask::changeDateTimeIsInNormalRange(const ScheduleDtailInfo &info)
+bool changeScheduleTask::changeDateTimeIsInNormalRange(const DSchedule::Ptr &info)
 {
     bool result {true};
     //当前时间
@@ -413,12 +422,12 @@ bool changeScheduleTask::changeDateTimeIsInNormalRange(const ScheduleDtailInfo &
     //最大时间
     QDateTime maxDateTime = currentDateTime.addMonths(6);
     //如果开始时间为过期时间则为false
-    if (info.beginDateTime < currentDateTime) {
+    if (info->dtStart() < currentDateTime) {
         result = false;
     };
     //如果开始时间或结束时间大于最大时间则为false
-    if (info.beginDateTime > maxDateTime
-            || info.endDateTime > maxDateTime) {
+    if (info->dtStart() > maxDateTime
+        || info->dtEnd() > maxDateTime) {
         result = false;
     }
     return  result;

@@ -87,6 +87,7 @@ bool DSchedule::isValid() const
 
 bool DSchedule::operator==(const DSchedule &schedule) const
 {
+    return (this->summary() == schedule.summary() && this->uid() == schedule.uid() && this->instanceIdentifier() == schedule.instanceIdentifier() && this->dtStart() == schedule.dtStart() && this->dtEnd() == schedule.dtEnd() && this->alarms() == schedule.alarms() && this->recurrence() == schedule.recurrence());
 }
 
 bool DSchedule::operator<(const DSchedule &schedule) const

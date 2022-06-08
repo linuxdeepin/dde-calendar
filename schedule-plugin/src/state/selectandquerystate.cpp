@@ -23,8 +23,8 @@
 #include "../task/schedulebasetask.h"
 #include "../data/changejsondata.h"
 
-SelectAndQueryState::SelectAndQueryState(CSchedulesDBus *dbus, scheduleBaseTask *task)
-    : scheduleState(dbus, task)
+SelectAndQueryState::SelectAndQueryState(scheduleBaseTask *task)
+    : scheduleState(task)
 {
 }
 
@@ -40,14 +40,14 @@ scheduleState::Filter_Flag SelectAndQueryState::eventFilter(const JsonData *json
 {
     //如果语义包含全部关键字则为修改初始状态
     if (jsonData->getPropertyStatus() == JsonData::ALL
-    //如果语义包含下一个关键字则为修改初始状态
+        //如果语义包含下一个关键字则为修改初始状态
         || jsonData->getPropertyStatus() == JsonData::NEXT
         || jsonData->isVaild()
         //如果语义包含时间则为修改初始状态
-            || jsonData->getDateTime().suggestDatetime.size()>0
-           // 如果语义包含内容则为修改初始状态
-            || !jsonData->TitleName().isEmpty()
-            //如果语义包含重复类型则为修改初始状态
+        || jsonData->getDateTime().suggestDatetime.size() > 0
+        // 如果语义包含内容则为修改初始状态
+        || !jsonData->TitleName().isEmpty()
+        //如果语义包含重复类型则为修改初始状态
         || jsonData->getRepeatStatus() != JsonData::NONE) {
         return Filter_Flag::Fileter_Init;
     }
@@ -85,30 +85,30 @@ Reply SelectAndQueryState::normalEvent(const JsonData *jsonData)
     //获取第N个日程
     if (jsonData->getPropertyStatus() == JsonData::LAST) {
         offset = showcount;
-    }else {
+    } else {
         offset = jsonData->offset();
     }
-    if(offset > 0){
+    if (offset > 0) {
         m_localData->setOffset(offset);
         m_localData->setSelectInfo(m_localData->scheduleInfoVector().at(offset - 1));
-        ScheduleDtailInfo info = m_localData->SelectInfo();
+        DSchedule::Ptr info = m_localData->SelectInfo();
         //如果语义为“第xx个修改到xxx”，添加对修改信息的获取
         //类型转换
         JsonData *queryData = const_cast<JsonData *>(jsonData);
         changejsondata *mchangeJsonData = dynamic_cast<changejsondata *>(queryData);
         //如果有修改时间的信息则赋值
-        if(mchangeJsonData->toDateTime().suggestDatetime.size()>0){
+        if (mchangeJsonData->toDateTime().suggestDatetime.size() > 0) {
             m_localData->setToTime(mchangeJsonData->toDateTime());
         }
         //如果有修改内容的信息则获取
-        if(!mchangeJsonData->toPlaceStr().isEmpty()){
+        if (!mchangeJsonData->toPlaceStr().isEmpty()) {
             m_localData->setToTitleName(mchangeJsonData->toPlaceStr());
         }
         return m_Task->getReplyBySelectSchedule(m_localData->SelectInfo());
-    }else {
-        qDebug()<<"offset <=0";
+    } else {
+        qDebug() << "offset <=0";
         Reply reply;
-        REPLY_ONLY_TTS(reply,G_ERR_TTS,G_ERR_TTS,false);
+        REPLY_ONLY_TTS(reply, G_ERR_TTS, G_ERR_TTS, false);
         return reply;
     }
 }

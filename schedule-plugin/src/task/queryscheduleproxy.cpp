@@ -22,27 +22,27 @@
 
 #include "../globaldef.h"
 #include "../data/changejsondata.h"
+#include "dscheduledatamanager.h"
 
-bool scheduleSort(const ScheduleDtailInfo &s1, const ScheduleDtailInfo &s2)
+bool scheduleSort(const DSchedule::Ptr &s1, const DSchedule::Ptr &s2)
 {
-    if (s1.beginDateTime < s2.beginDateTime) {
+    if (s1->dtStart() < s2->dtStart()) {
         return true;
-    } else if (s1.beginDateTime == s2.beginDateTime) {
-        return s1.endDateTime < s2.endDateTime;
+    } else if (s1->dtStart() == s2->dtStart()) {
+        return s1->dtEnd() < s2->dtEnd();
     } else {
         return false;
     }
 }
 
-queryScheduleProxy::queryScheduleProxy(JsonData *jsonData, CSchedulesDBus *dbus)
+queryScheduleProxy::queryScheduleProxy(JsonData *jsonData)
     : m_queryJsonData(jsonData)
-    , m_dbus(dbus)
 {
 }
 
-QVector<ScheduleDtailInfo> queryScheduleProxy::querySchedule()
+DSchedule::Map queryScheduleProxy::querySchedule()
 {
-    QVector<ScheduleDtailInfo> scheduleInfo {};
+    DSchedule::Map scheduleInfo {};
     scheduleInfo.clear();
     switch (m_queryJsonData->getRepeatStatus()) {
     case JsonData::RepeatStatus::NONE:
@@ -134,7 +134,17 @@ QVector<ScheduleDtailInfo> queryScheduleProxy::querySchedule()
     return scheduleInfo;
 }
 
-QVector<ScheduleDtailInfo> queryScheduleProxy::queryWeeklySchedule(QDateTime &beginTime, QDateTime &endTime, int beginW, int endW)
+DSchedule::List queryScheduleProxy::scheduleMapToList(const DSchedule::Map &scheduleMap)
+{
+    DSchedule::List scheduleList;
+    DSchedule::Map::const_iterator iter = scheduleMap.constBegin();
+    for (; iter != scheduleMap.constEnd(); ++iter) {
+        scheduleList.append(iter.value());
+    }
+    return scheduleList;
+}
+
+DSchedule::Map queryScheduleProxy::queryWeeklySchedule(QDateTime &beginTime, QDateTime &endTime, int beginW, int endW)
 {
     QSet<int> weeklySet;
     if (beginW == endW) {
@@ -164,8 +174,9 @@ QVector<ScheduleDtailInfo> queryScheduleProxy::queryWeeklySchedule(QDateTime &be
             weeklySet.insert(w);
         }
     }
-    QVector<ScheduleDateRangeInfo> out {};
-    m_dbus->QueryJobsWithRule(beginTime, endTime, DBUS_RRUL_EVEW, out);
+    //TODO:查询数据
+    //    m_dbus->QueryJobsWithRule(beginTime, endTime, DBUS_RRUL_EVEW, out);
+    DSchedule::Map out = DScheduleDataManager::getInstance()->queryScheduleByRRule(beginTime, endTime, DScheduleQueryPar::RRule_Week);
 
     if (beginW == 0 || endW == 0) {
         weeklySet.clear();
@@ -174,37 +185,33 @@ QVector<ScheduleDtailInfo> queryScheduleProxy::queryWeeklySchedule(QDateTime &be
     return WeeklyScheduleFileter(out, weeklySet);
 }
 
-QVector<ScheduleDtailInfo> queryScheduleProxy::queryMonthlySchedule(QDateTime &beginTime, QDateTime &endTime, int beginM, int endM)
+DSchedule::Map queryScheduleProxy::queryMonthlySchedule(QDateTime &beginTime, QDateTime &endTime, int beginM, int endM)
 {
-    QVector<ScheduleDateRangeInfo> out {};
-    m_dbus->QueryJobsWithRule(beginTime, endTime, DBUS_RRUL_EVEM, out);
+    DSchedule::Map out = DScheduleDataManager::getInstance()->queryScheduleByRRule(beginTime, endTime, DScheduleQueryPar::RRule_Month);
     return MonthlyScheduleFileter(out, beginM, endM);
 }
 
-QVector<ScheduleDtailInfo> queryScheduleProxy::queryEveryDaySchedule(QDateTime &beginTime, QDateTime &endTime)
+DSchedule::Map queryScheduleProxy::queryEveryDaySchedule(QDateTime &beginTime, QDateTime &endTime)
 {
-    QVector<ScheduleDateRangeInfo> out {};
-    m_dbus->QueryJobsWithRule(beginTime, endTime, DBUS_RRUL_EVED, out);
+    DSchedule::Map out = DScheduleDataManager::getInstance()->queryScheduleByRRule(beginTime, endTime, DScheduleQueryPar::RRule_Day);
     return sortAndFilterSchedule(out);
 }
 
-QVector<ScheduleDtailInfo> queryScheduleProxy::queryEveryYearSchedule(QDateTime &beginTime, QDateTime &endTime)
+DSchedule::Map queryScheduleProxy::queryEveryYearSchedule(QDateTime &beginTime, QDateTime &endTime)
 {
-    QVector<ScheduleDateRangeInfo> out {};
-    m_dbus->QueryJobsWithRule(beginTime, endTime, DBUS_RRUL_EVEY, out);
+    DSchedule::Map out = DScheduleDataManager::getInstance()->queryScheduleByRRule(beginTime, endTime, DScheduleQueryPar::RRule_Year);
     return sortAndFilterSchedule(out);
 }
 
-QVector<ScheduleDtailInfo> queryScheduleProxy::queryWorkingDaySchedule(QDateTime &beginTime, QDateTime &endTime)
+DSchedule::Map queryScheduleProxy::queryWorkingDaySchedule(QDateTime &beginTime, QDateTime &endTime)
 {
-    QVector<ScheduleDateRangeInfo> out {};
-    m_dbus->QueryJobsWithRule(beginTime, endTime, DBUS_RRUL_WORK, out);
+    DSchedule::Map out = DScheduleDataManager::getInstance()->queryScheduleByRRule(beginTime, endTime, DScheduleQueryPar::RRule_Work);
     return sortAndFilterSchedule(out);
 }
 
-QVector<ScheduleDtailInfo> queryScheduleProxy::queryNonRepeatingSchedule()
+DSchedule::Map queryScheduleProxy::queryNonRepeatingSchedule()
 {
-    QVector<ScheduleDtailInfo> mScheduleInfoVector {};
+    DSchedule::Map mScheduleInfoVector {};
     mScheduleInfoVector.clear();
     SemanticsDateTime queryDatetime = getQueryDateTime(m_queryJsonData);
     //如果开始时间大于结束时间则退出
@@ -213,12 +220,14 @@ QVector<ScheduleDtailInfo> queryScheduleProxy::queryNonRepeatingSchedule()
     }
     switch (m_queryJsonData->getPropertyStatus()) {
     case JsonData::PropertyStatus::ALL: {
+        //查询所有日程
         DateTimeLimit timeLimit = getTimeLimitByTimeInfo(queryDatetime);
         if (!getTimeIsExpired()) {
             mScheduleInfoVector = queryAllSchedule(m_queryJsonData->TitleName(), timeLimit.beginTime, timeLimit.endTime);
         }
     } break;
     case JsonData::PropertyStatus::NEXT: {
+        //查询下个日程
         TIME_FRAME_IN_THE_NEXT_SIX_MONTHT
         mScheduleInfoVector = queryNextNumSchedule(beginTime, endTime, 1);
     } break;
@@ -226,6 +235,7 @@ QVector<ScheduleDtailInfo> queryScheduleProxy::queryNonRepeatingSchedule()
     } break;
     default: {
         //NONE
+        //查询所有日程
         DateTimeLimit timeLimit = getTimeLimitByTimeInfo(queryDatetime);
         if (!getTimeIsExpired()) {
             mScheduleInfoVector = queryAllSchedule(m_queryJsonData->TitleName(), timeLimit.beginTime, timeLimit.endTime);
@@ -235,69 +245,88 @@ QVector<ScheduleDtailInfo> queryScheduleProxy::queryNonRepeatingSchedule()
     return mScheduleInfoVector;
 }
 
-QVector<ScheduleDtailInfo> queryScheduleProxy::queryNextNumSchedule(QDateTime &beginTime, QDateTime &endTime, int NextNum)
+DSchedule::Map queryScheduleProxy::queryNextNumSchedule(QDateTime &beginTime, QDateTime &endTime, int NextNum)
 {
-    QVector<ScheduleDtailInfo> mScheduleInfoVector {};
-    QVector<ScheduleDateRangeInfo> out {};
-    m_dbus->QueryJobsWithLimit(beginTime, endTime, NextNum, out);
+    DSchedule::Map out = DScheduleDataManager::getInstance()->queryScheduleByLimit(beginTime, endTime, NextNum);
     return sortAndFilterSchedule(out);
 }
 
-QVector<ScheduleDtailInfo> queryScheduleProxy::queryAllSchedule(QString key, QDateTime &beginTime, QDateTime &endTime)
+DSchedule::Map queryScheduleProxy::queryAllSchedule(QString key, QDateTime &beginTime, QDateTime &endTime)
 {
-    QVector<ScheduleDateRangeInfo> out {};
-    m_dbus->QueryJobs(key, beginTime, endTime, out);
+    DSchedule::Map out = DScheduleDataManager::getInstance()->queryScheduleBySummary(beginTime, endTime, key);
     return sortAndFilterSchedule(out);
 }
 
-QVector<ScheduleDtailInfo> queryScheduleProxy::sortAndFilterSchedule(QVector<ScheduleDateRangeInfo> &out)
+DSchedule::Map queryScheduleProxy::sortAndFilterSchedule(DSchedule::Map &out)
 {
-    QVector<ScheduleDtailInfo> scheduleInfo {};
-    for (int i = 0; i < out.size(); ++i) {
-        for (int j = 0; j < out[i].vData.size(); ++j) {
-            if (!(scheduleInfo.contains(out[i].vData[j]) || out[i].vData[j].type.ID == 4)) {
-                scheduleInfo.append(out[i].vData[j]);
+    DSchedule::Map scheduleInfo {};
+    DSchedule::Iter iter = out.begin();
+    for (; iter != out.end(); ++iter) {
+        DSchedule::List scheduleList;
+        for (int i = 0; i < iter->size(); ++i) {
+            if (!(scheduleList.contains(iter.value().at(i))
+                  || DScheduleDataManager::getInstance()->isFestivalSchedule(iter.value().at(i)->scheduleTypeID()))) {
+                scheduleList.append(iter.value().at(i));
             }
         }
+        if (scheduleList.size() > 0) {
+            scheduleInfo[iter.key()] = scheduleList;
+        }
     }
-    std::sort(scheduleInfo.begin(), scheduleInfo.end(), scheduleSort);
+    //TODO:排序
+    //    std::sort(scheduleInfo.begin(), scheduleInfo.end(), scheduleSort);
     return scheduleInfo;
 }
 
-QVector<ScheduleDtailInfo> queryScheduleProxy::WeeklyScheduleFileter(QVector<ScheduleDateRangeInfo> &out, QSet<int> &weeklySet)
+DSchedule::Map queryScheduleProxy::WeeklyScheduleFileter(DSchedule::Map &out, QSet<int> &weeklySet)
 {
-    QVector<ScheduleDtailInfo> scheduleInfo {};
+    DSchedule::Map scheduleInfo {};
     if (weeklySet.size() == 0) {
         return sortAndFilterSchedule(out);
     } else {
-        for (int i = 0; i < out.size(); ++i) {
-            for (int j = 0; j < out[i].vData.size(); ++j) {
-                if (!(scheduleInfo.contains(out[i].vData[j])) && weeklyIsIntersections(out[i].vData[j].beginDateTime, out[i].vData[j].endDateTime, weeklySet)) {
-                    scheduleInfo.append(out[i].vData[j]);
+        DSchedule::Iter iter = out.begin();
+        for (; iter != out.end(); ++iter) {
+            DSchedule::List scheduleList;
+            for (int i = 0; i < iter->size(); ++i) {
+                DSchedule::Ptr schedule = iter.value().at(i);
+                if (!(scheduleList.contains(schedule)
+                      || weeklyIsIntersections(schedule->dtStart(), schedule->dtEnd(), weeklySet))) {
+                    scheduleList.append(iter.value().at(i));
                 }
+            }
+            if (scheduleList.size() > 0) {
+                scheduleInfo[iter.key()] = scheduleList;
             }
         }
     }
     return scheduleInfo;
 }
 
-QVector<ScheduleDtailInfo> queryScheduleProxy::MonthlyScheduleFileter(QVector<ScheduleDateRangeInfo> &out, int beginM, int endM)
+DSchedule::Map queryScheduleProxy::MonthlyScheduleFileter(DSchedule::Map &out, int beginM, int endM)
 {
     if (beginM == 0 || endM == 0) {
         return sortAndFilterSchedule(out);
     }
-    QVector<ScheduleDtailInfo> scheduleInfo {};
-    for (int i = 0; i < out.size(); ++i) {
-        for (int j = 0; j < out[i].vData.size(); ++j) {
-            if (!(scheduleInfo.contains(out[i].vData[j])) && monthlyIsIntersections(out[i].vData[j].beginDateTime, out[i].vData[j].endDateTime, beginM, endM)) {
-                scheduleInfo.append(out[i].vData[j]);
+    DSchedule::Map scheduleInfo {};
+
+    DSchedule::Iter iter = out.begin();
+    for (; iter != out.end(); ++iter) {
+        DSchedule::List scheduleList;
+        for (int i = 0; i < iter->size(); ++i) {
+            DSchedule::Ptr schedule = iter.value().at(i);
+            if (!(scheduleList.contains(schedule)
+                  || monthlyIsIntersections(schedule->dtStart(), schedule->dtEnd(), beginM, endM))) {
+                scheduleList.append(iter.value().at(i));
             }
+        }
+        if (scheduleList.size() > 0) {
+            scheduleInfo[iter.key()] = scheduleList;
         }
     }
     return scheduleInfo;
 }
 
-bool queryScheduleProxy::monthlyIsIntersections(QDateTime &beginTime, QDateTime &endTime, int beginM, int endM)
+bool queryScheduleProxy::monthlyIsIntersections(const QDateTime &beginTime, const QDateTime &endTime, int beginM, int endM)
 {
     bool b_monthly = false;
     int beginDay = beginTime.date().day();
@@ -331,24 +360,32 @@ bool queryScheduleProxy::checkedTimeIsIntersection(QTime &beginTime, QTime &endT
     return b_checked;
 }
 
-QVector<ScheduleDtailInfo> queryScheduleProxy::scheduleFileterByTime(QVector<ScheduleDtailInfo> &scheduleInfo, QTime &fileterBeginTime, QTime &fileterEndTime)
+DSchedule::Map queryScheduleProxy::scheduleFileterByTime(DSchedule::Map &scheduleInfo, QTime &fileterBeginTime, QTime &fileterEndTime)
 {
-    QVector<ScheduleDtailInfo> mScheduleFileter {};
+    DSchedule::Map mScheduleFileter {};
     qint64 timeoffset_Secs = 0;
     bool isApppend = false;
-    for (int i = 0; i < scheduleInfo.size(); ++i) {
-        timeoffset_Secs = scheduleInfo.at(i).beginDateTime.secsTo(scheduleInfo.at(i).endDateTime);
-        if (timeoffset_Secs < ONE_DAY_SECS) {
-            QTime begTime = scheduleInfo.at(i).beginDateTime.time();
-            QTime endTime = scheduleInfo.at(i).endDateTime.time();
-            isApppend = checkedTimeIsIntersection(begTime, endTime, fileterBeginTime, fileterEndTime);
-        } else {
-            isApppend = true;
+    DSchedule::Map::const_iterator iter = scheduleInfo.constBegin();
+    for (; iter != scheduleInfo.constEnd(); ++iter) {
+        DSchedule::List scheduleList;
+        for (int i = 0; i < iter.value().size(); ++i) {
+            timeoffset_Secs = iter.value().at(i)->dtStart().secsTo(iter.value().at(i)->dtEnd());
+            if (timeoffset_Secs < ONE_DAY_SECS) {
+                QTime begTime = iter.value().at(i)->dtStart().time();
+                QTime endTime = iter.value().at(i)->dtEnd().time();
+                isApppend = checkedTimeIsIntersection(begTime, endTime, fileterBeginTime, fileterEndTime);
+            } else {
+                isApppend = true;
+            }
+            if (isApppend) {
+                scheduleList.append(iter.value().at(i));
+            }
         }
-        if (isApppend) {
-            mScheduleFileter.append(scheduleInfo.at(i));
+        if (scheduleList.size() > 0) {
+            mScheduleFileter[iter.key()] = scheduleList;
         }
     }
+
     return mScheduleFileter;
 }
 
@@ -359,35 +396,51 @@ QVector<ScheduleDtailInfo> queryScheduleProxy::scheduleFileterByTime(QVector<Sch
  * @param fileterEndDate 查询的结束时间
  * @return 过滤后的日程信息
  */
-QVector<ScheduleDtailInfo> queryScheduleProxy::scheduleFileterByDate(QVector<ScheduleDtailInfo> &scheduleInfo, QDate &fileterBeginDate, QDate &fileterEndDate)
+DSchedule::Map queryScheduleProxy::scheduleFileterByDate(DSchedule::Map &scheduleInfo, QDate &fileterBeginDate, QDate &fileterEndDate)
 {
-    QVector<ScheduleDtailInfo> mScheduleFileter {};
+    DSchedule::Map mScheduleFileter {};
     //遍历查询到的日程
-    for (int i = 0; i < scheduleInfo.size(); i++) {
-        //查询到的日程的开始结束日期
-        QDate beginD = scheduleInfo.at(i).beginDateTime.date();
-        QDate endD = scheduleInfo.at(i).endDateTime.date();
-        //过滤添加包含查询日期的日程
-        if ((fileterBeginDate <= beginD && fileterEndDate >= beginD)
+
+    DSchedule::Map::const_iterator iter = scheduleInfo.constBegin();
+    for (; iter != scheduleInfo.constEnd(); ++iter) {
+        DSchedule::List scheduleList;
+        for (int i = 0; i < iter.value().size(); ++i) {
+            //查询到的日程的开始结束日期
+            QDate beginD = iter.value().at(i)->dtStart().date();
+            QDate endD = iter.value().at(i)->dtEnd().date();
+            //过滤添加包含查询日期的日程
+            if ((fileterBeginDate <= beginD && fileterEndDate >= beginD)
                 || (fileterBeginDate >= beginD && fileterBeginDate <= endD)) {
-            mScheduleFileter.append(scheduleInfo.at(i));
+                scheduleList.append(iter.value().at(i));
+            }
+        }
+        if (scheduleList.size() > 0) {
+            mScheduleFileter[iter.key()] = scheduleList;
         }
     }
+
     return mScheduleFileter;
 }
 
-QVector<ScheduleDtailInfo> queryScheduleProxy::scheduleFileterByTitleName(QVector<ScheduleDtailInfo> &scheduleInfo, const QString &strName)
+DSchedule::Map queryScheduleProxy::scheduleFileterByTitleName(DSchedule::Map &scheduleInfo, const QString &strName)
 {
-    QVector<ScheduleDtailInfo> mScheduleFileter {};
-    for (int i = 0; i < scheduleInfo.size(); ++i) {
-        if (scheduleInfo.at(i).titleName.contains(strName)) {
-            mScheduleFileter.append(scheduleInfo.at(i));
+    DSchedule::Map mScheduleFileter {};
+    DSchedule::Map::const_iterator iter = scheduleInfo.constBegin();
+    for (; iter != scheduleInfo.constEnd(); ++iter) {
+        DSchedule::List scheduleList;
+        for (int i = 0; i < iter.value().size(); ++i) {
+            if (iter.value().at(i)->summary().contains(strName)) {
+                scheduleList.append(iter.value().at(i));
+            }
+        }
+        if (scheduleList.size() > 0) {
+            mScheduleFileter[iter.key()] = scheduleList;
         }
     }
     return mScheduleFileter;
 }
 
-bool queryScheduleProxy::weeklyIsIntersections(QDateTime &beginTime, QDateTime &endTime, QSet<int> &weeklySet)
+bool queryScheduleProxy::weeklyIsIntersections(const QDateTime &beginTime, const QDateTime &endTime, QSet<int> &weeklySet)
 {
     QSet<int> scheduleWeekSet;
     bool returnValue = false;

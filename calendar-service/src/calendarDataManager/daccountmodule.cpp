@@ -355,7 +355,22 @@ QString DAccountModule::querySchedulesWithParameter(const QString &params)
     }
     DSchedule::List scheduleList;
     if (queryPar->queryType() == DScheduleQueryPar::Query_RRule) {
-        scheduleList = m_accountDB->querySchedulesByRRule(queryPar->key(), queryPar->queryType());
+        scheduleList = m_accountDB->querySchedulesByRRule(queryPar->key(), queryPar->rruleType());
+    } else if (queryPar->queryType() == DScheduleQueryPar::Query_ScheduleID) {
+        DSchedule::Ptr schedule = m_accountDB->getScheduleByScheduleID(queryPar->key());
+        if (schedule.isNull()) {
+            return QString();
+        }
+        QMap<QDate, DSchedule::List> m_scheduleMap;
+        //相差多少天
+        int days = static_cast<int>(queryPar->dtStart().daysTo(queryPar->dtEnd()));
+        for (int i = 0; i <= days; ++i) {
+            DSchedule::List scheduleList;
+            m_scheduleMap[queryPar->dtStart().addDays(i).date()] = scheduleList;
+        }
+        extendRecurrence(m_scheduleMap, schedule, queryPar->dtStart(), queryPar->dtEnd(), false);
+        return DSchedule::toMapString(m_scheduleMap);
+
     } else {
         scheduleList = m_accountDB->querySchedulesByKey(queryPar->key());
     }
@@ -371,7 +386,25 @@ QString DAccountModule::querySchedulesWithParameter(const QString &params)
 
     //如果为查询前N个日程，则取前N个日程
     if (queryPar->queryType() == DScheduleQueryPar::Query_Top) {
-        //TODO:
+        int scheduleNum = 0;
+        DSchedule::Map filterSchedule;
+        DSchedule::Map::const_iterator iter = scheduleMap.constBegin();
+        for (; iter != scheduleMap.constEnd(); ++iter) {
+            if (iter.value().size() == 0) {
+                continue;
+            }
+            if (scheduleNum + iter.value().size() > queryPar->queryTop()) {
+                DSchedule::List scheduleList;
+                int residuesNum = queryPar->queryTop() - scheduleNum;
+                for (int i = 0; i < residuesNum; ++i) {
+                    scheduleList.append(iter.value().at(i));
+                }
+                filterSchedule[iter.key()] = scheduleList;
+            } else {
+                filterSchedule[iter.key()] = iter.value();
+            }
+        }
+        scheduleMap = filterSchedule;
     }
     return DSchedule::toMapString(scheduleMap);
 }
@@ -591,28 +624,7 @@ QMap<QDate, DSchedule::List> DAccountModule::getScheduleTimesOn(const QDateTime 
                 }
             } else {
                 //非农历日程
-                QList<QDateTime> dtList = schedule->recurrence()->timesInInterval(dtStart, dtEnd);
-                foreach (auto &dt, dtList) {
-                    QDateTime scheduleDtEnd = dt.addSecs(interval);
-                    DSchedule::Ptr newSchedule = DSchedule::Ptr(schedule->clone());
-                    newSchedule->setDtStart(dt);
-                    newSchedule->setDtEnd(scheduleDtEnd);
-
-                    //只有重复日程设置RecurrenceId
-                    if (schedule->dtStart() != dt) {
-                        newSchedule->setRecurrenceId(dt);
-                    }
-                    if (extend) {
-                        //需要扩展的天数
-                        int extenddays = static_cast<int>(dt.daysTo(scheduleDtEnd));
-                        for (int i = 0; i <= extenddays; ++i) {
-                            m_scheduleMap[dt.date().addDays(i)].append(newSchedule);
-                        }
-
-                    } else {
-                        m_scheduleMap[dt.date()].append(newSchedule);
-                    }
-                }
+                extendRecurrence(m_scheduleMap, schedule, dtStart, dtEnd, extend);
             }
         } else {
             //普通日程
@@ -655,6 +667,39 @@ DSchedule::List DAccountModule::getFestivalSchedule(const QDateTime &dtStart, co
         }
     }
     return scheduleList;
+}
+
+void DAccountModule::extendRecurrence(DSchedule::Map &scheduleMap, const DSchedule::Ptr &schedule, const QDateTime &dtStart, const QDateTime &dtEnd, bool extend)
+{
+    if (schedule->recurs()) {
+        //获取日程的开始结束时间差
+        qint64 interval = schedule->dtStart().secsTo(schedule->dtEnd());
+        QList<QDateTime> dtList = schedule->recurrence()->timesInInterval(dtStart, dtEnd);
+        foreach (auto &dt, dtList) {
+            QDateTime scheduleDtEnd = dt.addSecs(interval);
+            DSchedule::Ptr newSchedule = DSchedule::Ptr(schedule->clone());
+            newSchedule->setDtStart(dt);
+            newSchedule->setDtEnd(scheduleDtEnd);
+
+            //只有重复日程设置RecurrenceId
+            if (schedule->dtStart() != dt) {
+                newSchedule->setRecurrenceId(dt);
+            }
+            if (extend) {
+                //需要扩展的天数
+                int extenddays = static_cast<int>(dt.daysTo(scheduleDtEnd));
+                for (int i = 0; i <= extenddays; ++i) {
+                    scheduleMap[dt.date().addDays(i)].append(newSchedule);
+                }
+            } else {
+                scheduleMap[dt.date()].append(newSchedule);
+            }
+        }
+    } else {
+        if (!(schedule->dtStart() > dtEnd || schedule->dtEnd() < dtStart)) {
+            scheduleMap[schedule->dtStart().date()].append(schedule);
+        }
+    }
 }
 
 void DAccountModule::closeNotification(const QString &scheduleId)

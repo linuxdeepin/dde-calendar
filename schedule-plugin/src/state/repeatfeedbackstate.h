@@ -25,7 +25,7 @@
 class repeatfeedbackstate : public scheduleState
 {
 public:
-    repeatfeedbackstate(CSchedulesDBus *dbus, scheduleBaseTask *task);
+    explicit repeatfeedbackstate(scheduleBaseTask *task);
     Reply getReplyByIntent(bool isOK) override;
 
 protected:

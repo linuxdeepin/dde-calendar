@@ -30,7 +30,7 @@ scheduleListWidget::scheduleListWidget(QWidget *parent)
 {
 }
 
-void scheduleListWidget::setScheduleInfoVector(const QVector<ScheduleDtailInfo> &ScheduleInfoVector)
+void scheduleListWidget::setScheduleInfoVector(const DSchedule::List &ScheduleInfoVector)
 {
     m_ScheduleInfoVector = ScheduleInfoVector;
     updateUI();

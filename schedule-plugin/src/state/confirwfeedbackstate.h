@@ -26,7 +26,7 @@
 class confirwFeedbackState : public scheduleState
 {
 public:
-    confirwFeedbackState(CSchedulesDBus *dbus, scheduleBaseTask *task);
+    explicit confirwFeedbackState(scheduleBaseTask *task);
     Reply getReplyByIntent(bool isOK) override;
 
 protected:

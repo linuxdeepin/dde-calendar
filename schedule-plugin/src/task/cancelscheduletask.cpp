@@ -29,16 +29,17 @@
 #include "../state/repeatfeedbackstate.h"
 #include "../data/clocaldata.h"
 #include "../state/confirwfeedbackstate.h"
+#include "dscheduledatamanager.h"
 
-cancelScheduleTask::cancelScheduleTask(CSchedulesDBus *dbus)
-    : scheduleBaseTask(dbus, new queryScheduleState(dbus, this))
+cancelScheduleTask::cancelScheduleTask()
+    : scheduleBaseTask(new queryScheduleState(this))
 {
 }
 
 void cancelScheduleTask::slotSelectScheduleIndex(int index)
 {
     scheduleState *currentState = getCurrentState();
-    CLocalData *localData = currentState->getLocalData();
+    CLocalData::Ptr localData = currentState->getLocalData();
     if (!(localData->scheduleInfoVector().size() < index)) {
         Reply reply = getReplyBySelectSchedule(localData->scheduleInfoVector().at(index - 1));
         updateState();
@@ -81,7 +82,7 @@ scheduleState *cancelScheduleTask::getCurrentState()
     return currentState;
 }
 
-Reply cancelScheduleTask::getFeedbackByQuerySchedule(const QVector<ScheduleDtailInfo> &infoVector)
+Reply cancelScheduleTask::getFeedbackByQuerySchedule(const DSchedule::List &infoVector)
 {
     Reply m_reply;
     scheduleState *nextState = nullptr;
@@ -96,8 +97,8 @@ Reply cancelScheduleTask::getFeedbackByQuerySchedule(const QVector<ScheduleDtail
     } else if (infoVector.size() == 1) {
         m_reply = getReplyBySelectSchedule(infoVector.at(0));
     } else {
-        nextState = new selectInquiryState(m_dbus, this);
-        CLocalData *m_Data = new CLocalData();
+        nextState = new selectInquiryState(this);
+        CLocalData::Ptr m_Data(new CLocalData());
         m_Data->setScheduleInfoVector(infoVector);
         nextState->setLocalData(m_Data);
         m_reply = getListScheduleReply(infoVector);
@@ -106,18 +107,18 @@ Reply cancelScheduleTask::getFeedbackByQuerySchedule(const QVector<ScheduleDtail
     return m_reply;
 }
 
-Reply cancelScheduleTask::getReplyBySelectSchedule(const ScheduleDtailInfo &info)
+Reply cancelScheduleTask::getReplyBySelectSchedule(const DSchedule::Ptr &info)
 {
     Reply m_reply;
-    CLocalData *m_Data = new CLocalData();
+    CLocalData::Ptr m_Data(new CLocalData());
     scheduleState *nextState = nullptr;
     scheduleState *currentState = getCurrentState();
     m_Data->setSelectInfo(info);
-    if (info.rpeat == 0) {
-        nextState = new confirwFeedbackState(m_dbus, this);
+    if (info->getRRuleType() == DSchedule::RRuleType::RRule_None) {
+        nextState = new confirwFeedbackState(this);
         m_reply = getConfirwScheduleReply(info);
     } else {
-        nextState = new repeatfeedbackstate(m_dbus, this);
+        nextState = new repeatfeedbackstate(this);
         m_reply = getRepeatReply(info);
     }
     nextState->setLocalData(m_Data);
@@ -128,7 +129,7 @@ Reply cancelScheduleTask::getReplyBySelectSchedule(const ScheduleDtailInfo &info
 Reply cancelScheduleTask::InitState(const JsonData *jsonData, bool isUpdateState)
 {
     Reply m_reply;
-    scheduleState *nextState = new queryScheduleState(m_dbus, this);
+    scheduleState *nextState = new queryScheduleState(this);
     scheduleState *currentState = getCurrentState();
     currentState->setNextState(nextState);
     if (jsonData != nullptr) {
@@ -142,23 +143,23 @@ Reply cancelScheduleTask::InitState(const JsonData *jsonData, bool isUpdateState
     return m_reply;
 }
 
-Reply cancelScheduleTask::repeatScheduleHandle(const ScheduleDtailInfo &info, bool isOnlyOne)
+Reply cancelScheduleTask::repeatScheduleHandle(const DSchedule::Ptr &info, bool isOnlyOne)
 {
     deleteRepeatSchedule(info, isOnlyOne);
     Reply reply;
     REPLY_ONLY_TTS(reply, CONFIRM_DELETION_TTS, CONFIRM_DELETION_TTS, true);
-    scheduleState *nextState = new queryScheduleState(m_dbus, this);
+    scheduleState *nextState = new queryScheduleState(this);
     scheduleState *currentState = getCurrentState();
     currentState->setNextState(nextState);
     return reply;
 }
 
-Reply cancelScheduleTask::confirwScheduleHandle(const ScheduleDtailInfo &info)
+Reply cancelScheduleTask::confirwScheduleHandle(const DSchedule::Ptr &info)
 {
     deleteOrdinarySchedule(info);
     Reply reply;
     REPLY_ONLY_TTS(reply, CONFIRM_DELETION_TTS, CONFIRM_DELETION_TTS, true);
-    scheduleState *nextState = new queryScheduleState(m_dbus, this);
+    scheduleState *nextState = new queryScheduleState(this);
     scheduleState *currentState = getCurrentState();
     currentState->setNextState(nextState);
     return reply;
@@ -174,7 +175,7 @@ Reply cancelScheduleTask::confirmInfo(bool isOK)
     }
 }
 
-QWidget *cancelScheduleTask::createRepeatWidget(const ScheduleDtailInfo &info)
+QWidget *cancelScheduleTask::createRepeatWidget(const DSchedule::Ptr &info)
 {
     repeatScheduleWidget *repeatWidget = new repeatScheduleWidget(repeatScheduleWidget::Operation_Cancel, repeatScheduleWidget::Widget_Repeat);
     repeatWidget->setSchedule(info);
@@ -182,7 +183,7 @@ QWidget *cancelScheduleTask::createRepeatWidget(const ScheduleDtailInfo &info)
     return repeatWidget;
 }
 
-QWidget *cancelScheduleTask::createConfirmWidget(const ScheduleDtailInfo &info)
+QWidget *cancelScheduleTask::createConfirmWidget(const DSchedule::Ptr &info)
 {
     repeatScheduleWidget *cwidget = new repeatScheduleWidget(repeatScheduleWidget::Operation_Cancel, repeatScheduleWidget::Widget_Confirm);
     cwidget->setSchedule(info);
@@ -190,7 +191,7 @@ QWidget *cancelScheduleTask::createConfirmWidget(const ScheduleDtailInfo &info)
     return cwidget;
 }
 
-Reply cancelScheduleTask::getListScheduleReply(const QVector<ScheduleDtailInfo> &infoVector)
+Reply cancelScheduleTask::getListScheduleReply(const DSchedule::List &infoVector)
 {
     scheduleListWidget *m_viewWidget = new scheduleListWidget();
     m_viewWidget->setScheduleInfoVector(infoVector);
@@ -204,7 +205,7 @@ Reply cancelScheduleTask::getListScheduleReply(const QVector<ScheduleDtailInfo> 
     return reply;
 }
 
-Reply cancelScheduleTask::getConfirwScheduleReply(const ScheduleDtailInfo &info)
+Reply cancelScheduleTask::getConfirwScheduleReply(const DSchedule::Ptr &info)
 {
     QString m_TTSMessage;
     QString m_DisplyMessage;
@@ -216,7 +217,7 @@ Reply cancelScheduleTask::getConfirwScheduleReply(const ScheduleDtailInfo &info)
     return reply;
 }
 
-Reply cancelScheduleTask::getRepeatReply(const ScheduleDtailInfo &info)
+Reply cancelScheduleTask::getRepeatReply(const DSchedule::Ptr &info)
 {
     QString m_TTSMessage;
     QString m_DisplyMessage;
@@ -228,27 +229,25 @@ Reply cancelScheduleTask::getRepeatReply(const ScheduleDtailInfo &info)
     return reply;
 }
 
-void cancelScheduleTask::deleteRepeatSchedule(const ScheduleDtailInfo &info, bool isOnlyOne)
+void cancelScheduleTask::deleteRepeatSchedule(const DSchedule::Ptr &info, bool isOnlyOne)
 {
     if (isOnlyOne) {
-        ScheduleDtailInfo newschedule;
-        m_dbus->GetJob(info.id, newschedule);
-        newschedule.ignore.append(info.beginDateTime);
-        m_dbus->UpdateJob(newschedule);
+        DSchedule::Ptr newschedule = DScheduleDataManager::getInstance()->queryScheduleByScheduleID(info->uid());
+        newschedule->recurrence()->addExDateTime(info->dtStart());
+        DScheduleDataManager::getInstance()->updateSchedule(newschedule);
     } else {
-        if (info.RecurID == 0) {
-            m_dbus->DeleteJob(info.id);
+        if (info->recurrenceId().isValid() == 0) {
+            DScheduleDataManager::getInstance()->deleteScheduleByScheduleID(info->uid());
         } else {
-            ScheduleDtailInfo newschedule;
-            m_dbus->GetJob(info.id, newschedule);
-            newschedule.enddata.type = 2;
-            newschedule.enddata.date = info.beginDateTime.addDays(-1);
-            m_dbus->UpdateJob(newschedule);
+            DSchedule::Ptr newschedule = DScheduleDataManager::getInstance()->queryScheduleByScheduleID(info->uid());
+            newschedule->recurrence()->setDuration(0);
+            newschedule->recurrence()->setEndDateTime(info->dtStart().addDays(-1));
+            DScheduleDataManager::getInstance()->updateSchedule(newschedule);
         }
     }
 }
 
-void cancelScheduleTask::deleteOrdinarySchedule(const ScheduleDtailInfo &info)
+void cancelScheduleTask::deleteOrdinarySchedule(const DSchedule::Ptr &info)
 {
-    m_dbus->DeleteJob(info.id);
+    DScheduleDataManager::getInstance()->deleteScheduleByScheduleID(info->uid());
 }

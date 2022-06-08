@@ -24,22 +24,22 @@ CLocalData::CLocalData()
 {
 }
 
-QVector<ScheduleDtailInfo> CLocalData::scheduleInfoVector() const
+DSchedule::List CLocalData::scheduleInfoVector() const
 {
     return m_scheduleInfoVector;
 }
 
-void CLocalData::setScheduleInfoVector(const QVector<ScheduleDtailInfo> &scheduleInfoVector)
+void CLocalData::setScheduleInfoVector(const DSchedule::List &scheduleInfoVector)
 {
     m_scheduleInfoVector = scheduleInfoVector;
 }
 
-ScheduleDtailInfo CLocalData::SelectInfo() const
+DSchedule::Ptr CLocalData::SelectInfo() const
 {
     return m_SelectInfo;
 }
 
-void CLocalData::setSelectInfo(const ScheduleDtailInfo &SelectInfo)
+void CLocalData::setSelectInfo(const DSchedule::Ptr &SelectInfo)
 {
     m_SelectInfo = SelectInfo;
 }
@@ -74,24 +74,12 @@ void CLocalData::setOffset(int offset)
     m_offset = offset;
 }
 
-CLocalData *CLocalData::getDataByPoint(const CLocalData *localData)
-{
-    if (this == localData || localData == nullptr)
-        return this;
-    this->m_offset = localData->m_offset;
-    this->m_SelectInfo = localData->m_SelectInfo;
-    this->m_ToTime = localData->m_ToTime;
-    this->m_scheduleInfoVector = localData->m_scheduleInfoVector;
-    this->m_ToTitleName = localData->m_ToTitleName;
-    return this;
-}
-
-void CLocalData::setNewInfo(const ScheduleDtailInfo &newInfo)
+void CLocalData::setNewInfo(const DSchedule::Ptr &newInfo)
 {
     m_NewInfo = newInfo;
 }
 
-ScheduleDtailInfo CLocalData::getNewInfo() const
+DSchedule::Ptr CLocalData::getNewInfo() const
 {
     return m_NewInfo;
 }

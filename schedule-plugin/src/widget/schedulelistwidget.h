@@ -23,7 +23,7 @@
 
 #include <DFrame>
 
-#include "../data/schedulestructs.h"
+#include "dschedule.h"
 #include "icondframe.h"
 
 DWIDGET_USE_NAMESPACE
@@ -33,14 +33,14 @@ class scheduleListWidget : public IconDFrame
 public:
     explicit scheduleListWidget(QWidget *parent = nullptr);
 
-    void setScheduleInfoVector(const QVector<ScheduleDtailInfo> &ScheduleInfoVector);
+    void setScheduleInfoVector(const DSchedule::List &ScheduleInfoVector);
 
     void updateUI();
 signals:
     void signalSelectScheduleIndex(int index);
 
 private:
-    QVector<ScheduleDtailInfo> m_ScheduleInfoVector;
+    DSchedule::List m_ScheduleInfoVector;
 };
 
 #endif // SCHEDULELISTWIDGET_H

@@ -22,7 +22,7 @@
 #define REPEATSCHEDULEWIDGET_H
 
 #include "icondframe.h"
-#include "../data/schedulestructs.h"
+#include "dschedule.h"
 
 class scheduleitemwidget;
 class repeatScheduleWidget : public IconDFrame
@@ -38,7 +38,7 @@ public:
 
 public:
     explicit repeatScheduleWidget(Operation_type operation, Widget_type widgetype, bool tocreateBtn = true, QWidget *parent = nullptr);
-    void setSchedule(const ScheduleDtailInfo &info);
+    void setSchedule(const DSchedule::Ptr &info);
 
 private:
     void initUI();
@@ -49,7 +49,7 @@ public slots:
 
 private:
     scheduleitemwidget *m_scheduleitemwidget {nullptr};
-    QVector<ScheduleDtailInfo> m_scheduleInfo;
+    DSchedule::List m_scheduleInfo;
     Operation_type m_OperationType {Operation_Cancel};
     Widget_type m_WidgetType {Widget_Confirm};
     int m_buttonCount {0};

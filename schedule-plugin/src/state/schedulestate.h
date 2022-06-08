@@ -33,16 +33,17 @@ class scheduleState
 public:
     enum Filter_Flag { Fileter_Err,
                        Fileter_Normal,
-                       Fileter_Init };
+                       Fileter_Init
+    };
 
 public:
-    scheduleState(CSchedulesDBus *dbus, scheduleBaseTask *task);
+    scheduleState(scheduleBaseTask *task);
     virtual ~scheduleState();
     Reply process(const JsonData *jsonData);
     void setNextState(scheduleState *nextState);
     scheduleState *getNextState() const;
-    void setLocalData(CLocalData *localData);
-    CLocalData *getLocalData() const;
+    void setLocalData(const CLocalData::Ptr &localData);
+    CLocalData::Ptr getLocalData() const;
     virtual Reply getReplyByIntent(bool isOK) = 0;
 
 protected:
@@ -56,12 +57,12 @@ protected:
      * @param defaultflag       默认返回标志
      * @return          过滤标志
      */
-    Filter_Flag changeDateErrJudge(const JsonData *jsonData,const Filter_Flag &defaultflag);
+    Filter_Flag changeDateErrJudge(const JsonData *jsonData, const Filter_Flag &defaultflag);
+
 protected:
-    CSchedulesDBus *m_dbus {nullptr};
     scheduleBaseTask *m_Task {nullptr};
     scheduleState *m_nextState {nullptr};
-    CLocalData *m_localData {nullptr};
+    CLocalData::Ptr m_localData {nullptr};
 };
 
 #endif // SCHEDULESTATE_H

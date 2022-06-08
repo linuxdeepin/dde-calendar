@@ -34,16 +34,17 @@ public:
     enum QueryType {
         Query_None,
         Query_RRule, //查询重复规则
-        Query_Top //查询前多少个
+        Query_Top, //查询前多少个
+        Query_ScheduleID //查询日程ID
     };
 
     enum RRuleType {
-        RRule_None = 0, //无
-        RRule_Day = 4, //每天
-        RRule_Week = 5, //每周
-        RRule_Month = 6, //每月
-        RRule_Year = 7, //每年
-        RRule_Work = 8, //每个工作日
+        RRule_None, //从不
+        RRule_Day, //每天
+        RRule_Work, //每工作日
+        RRule_Week, //每周
+        RRule_Month, //每月
+        RRule_Year, //每年
     };
 
     DScheduleQueryPar();
@@ -70,7 +71,7 @@ public:
     void setRruleType(const RRuleType &rruleType);
 
 private:
-    QString m_key; //查询关键字
+    QString m_key; //查询关键字，如果查询类型为日程ID，则表示日程ID
     int m_queryTop; //查询范围内前多少个日程
     RRuleType m_rruleType; //查询对应重复规则的日程
     QueryType m_queryType; //查询的类型

@@ -22,12 +22,12 @@
 #define SELECTINQUIRYSTATE_H
 
 #include "schedulestate.h"
-#include "../data/schedulestructs.h"
+#include "dschedule.h"
 
 class selectInquiryState : public scheduleState
 {
 public:
-    selectInquiryState(CSchedulesDBus *dbus, scheduleBaseTask *task);
+    explicit selectInquiryState(scheduleBaseTask *task);
     Reply getReplyByIntent(bool isOK) override;
 
 protected:

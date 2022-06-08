@@ -23,12 +23,12 @@
 
 #include "schedulestate.h"
 /**
- * @brief The getChangeDataState class	    获取修改信息状态
+ * @brief The getChangeDataState class      获取修改信息状态
  */
 class getChangeDataState : public scheduleState
 {
 public:
-    getChangeDataState(CSchedulesDBus *dbus, scheduleBaseTask *task);
+    explicit getChangeDataState(scheduleBaseTask *task);
     /**
      * @brief getReplyByIntent  根据意图判断回复
      * @param isOK  确认 或 取消

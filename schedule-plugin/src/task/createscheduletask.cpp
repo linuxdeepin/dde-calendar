@@ -21,9 +21,10 @@
 #include "createscheduletask.h"
 
 #include "../globaldef.h"
+#include "dscheduledatamanager.h"
 
-createScheduleTask::createScheduleTask(CSchedulesDBus *dbus)
-    : scheduleBaseTask(dbus)
+createScheduleTask::createScheduleTask()
+    : scheduleBaseTask()
 {
 }
 
@@ -76,8 +77,8 @@ Reply createScheduleTask::SchedulePress(semanticAnalysisTask &semanticTask)
             //设置日程titlename
             setScheduleTitleName(createJsonData);
             //创建日程和插件
-            QVector<ScheduleDtailInfo> scheduleinfo = createScheduleWithRepeatStatus(createJsonData);
-            creareScheduleUI(scheduleinfo);
+            QString scheduleID = createScheduleWithRepeatStatus(createJsonData);
+            creareScheduleUI(scheduleID);
             //带有插件的回复语
             REPLY_WIDGET_TTS(m_reply, m_widget, getReply(createJsonData), getReply(createJsonData), true);
         }
@@ -170,10 +171,10 @@ void createScheduleTask::setScheduleTitleName(CreateJsonData *createJsonData)
         m_widget->setTitleName(createJsonData->TitleName());
 }
 
-QVector<ScheduleDtailInfo> createScheduleTask::createScheduleWithRepeatStatus(CreateJsonData *createJsonData)
+QString createScheduleTask::createScheduleWithRepeatStatus(CreateJsonData *createJsonData)
 {
     //创建的日程信息
-    QVector<ScheduleDtailInfo> schedule;
+    QString scheduleID;
     //重复日程的时间
     QVector<int> getDayNum = createJsonData->getRepeatNum();
     //根据不同类型分别创建日程
@@ -181,53 +182,49 @@ QVector<ScheduleDtailInfo> createScheduleTask::createScheduleWithRepeatStatus(Cr
     case CreateJsonData::NONE: {
         //非重复日程，不能创建过期日程
         if (m_begintime >= QDateTime::currentDateTime() && m_begintime < QDateTime::currentDateTime().addMonths(6)) {
-            schedule = getNotRepeatDaySchedule();
+            scheduleID = getNotRepeatDaySchedule();
         }
     }
     break;
     case CreateJsonData::EVED:
         //每天重复日程
-        schedule = getEveryDaySchedule();
+        scheduleID = getEveryDaySchedule();
         break;
     case CreateJsonData::EVEW: {
         //每周重复日程
-        schedule = getEveryWeekSchedule(getDayNum);
+        scheduleID = getEveryWeekSchedule(getDayNum);
     }
     break;
     case CreateJsonData::EVEM: {
         //每月重复日程
-        schedule = getEveryMonthSchedule(getDayNum);
+        scheduleID = getEveryMonthSchedule(getDayNum);
     }
     break;
     case CreateJsonData::EVEY: {
         //每年重复日程,不能创建过期或者超过半年的日程
         if (m_begintime > QDateTime::currentDateTime() && m_begintime < QDateTime::currentDateTime().addMonths(6))
-            schedule = getEveryYearSchedule();
+            scheduleID = getEveryYearSchedule();
     }
     break;
     case CreateJsonData::WORKD:
         //工作日
-        schedule = getEveryWorkDaySchedule();
+        scheduleID = getEveryWorkDaySchedule();
         break;
     case CreateJsonData::RESTD: {
         //休息日
-        schedule = getEveryRestDaySchedule();
+        scheduleID = getEveryRestDaySchedule();
     }
     break;
     }
-    return schedule;
+    return scheduleID;
 }
 
-void createScheduleTask::creareScheduleUI(QVector<ScheduleDtailInfo> schedule)
+void createScheduleTask::creareScheduleUI(const QString &scheduleID)
 {
-    if (!schedule.isEmpty()) {
-        //设置日程时间
-        setDateTimeAndGetSchedule(getFirstSchedule(schedule).beginDateTime, getFirstSchedule(schedule).endDateTime);
-        //设置dbus
-        m_widget->setScheduleDbus(m_dbus);
+    if (!scheduleID.isEmpty()) {
         m_widget->scheduleEmpty(true);
         //更新界面
-        m_widget->updateUI();
+        m_widget->updateUI(scheduleID);
     } else {
         qCritical("Creat ScheduleInfo is Empty!");
     }
@@ -285,42 +282,32 @@ bool createScheduleTask::beginDateTimeBeforeCurrent()
         return false;
 }
 
-QVector<ScheduleDtailInfo> createScheduleTask::getNotRepeatDaySchedule()
+QString createScheduleTask::getNotRepeatDaySchedule()
 {
-    QVector<ScheduleDtailInfo> schedule;
     //设置重复类型
     m_widget->setRpeat(0);
     //创建日程
-    ScheduleDtailInfo scheduleinfo = setDateTimeAndGetSchedule(m_begintime, m_endtime);
-    m_dbus->CreateJob(scheduleinfo);
-    //将所有日程添加到日程容器中
-    schedule.append(scheduleinfo);
-
-    return schedule;
+    DSchedule::Ptr scheduleinfo = setDateTimeAndGetSchedule(m_begintime, m_endtime);
+    return DScheduleDataManager::getInstance()->createSchedule(scheduleinfo);
 }
 
-QVector<ScheduleDtailInfo> createScheduleTask::getEveryDaySchedule()
+QString createScheduleTask::getEveryDaySchedule()
 {
-    QVector<ScheduleDtailInfo> schedule;
     //设置重复类型
     m_widget->setRpeat(1);
-    ScheduleDtailInfo scheduleinfo = setDateTimeAndGetSchedule(m_begintime, m_endtime);
-    //创建日程
-    m_dbus->CreateJob(scheduleinfo);
-    //将所有日程添加到日程容器中
-    schedule.append(scheduleinfo);
+    DSchedule::Ptr scheduleinfo = setDateTimeAndGetSchedule(m_begintime, m_endtime);
     //设置完成后，将everyDayState设置为false
     everyDayState = false;
-
-    return schedule;
+    //创建日程
+    return DScheduleDataManager::getInstance()->createSchedule(scheduleinfo);
 }
 
-QVector<ScheduleDtailInfo> createScheduleTask::getEveryWeekSchedule(QVector<int> dateRange)
+QString createScheduleTask::getEveryWeekSchedule(QVector<int> dateRange)
 {
-    QVector<QDateTime> beginDateTime {};
-    QVector<ScheduleDtailInfo> schedule;
+    QStringList scheduleIDs;
     //设置重复类型
     m_widget->setRpeat(3);
+    QVector<QDateTime> beginDateTime {};
     //获取解析时间
     beginDateTime = analysisEveryWeekDate(dateRange);
     //每天重复
@@ -331,18 +318,16 @@ QVector<ScheduleDtailInfo> createScheduleTask::getEveryWeekSchedule(QVector<int>
         //设置日程结束时间
         m_endtime.setDate(beginDateTime.at(i).date());
         //创建日程
-        m_dbus->CreateJob(setDateTimeAndGetSchedule(beginDateTime.at(i), m_endtime));
-        //将所有日程添加到日程容器中
-        schedule.append(setDateTimeAndGetSchedule(beginDateTime.at(i), m_endtime));
+        scheduleIDs.append(DScheduleDataManager::getInstance()->createSchedule(setDateTimeAndGetSchedule(beginDateTime.at(i), m_endtime)));
     }
-
-    return schedule;
+    //创建多个日程返回第一个
+    return scheduleIDs.isEmpty() ? QString() : scheduleIDs.first();
 }
 
-QVector<ScheduleDtailInfo> createScheduleTask::getEveryMonthSchedule(QVector<int> dateRange)
+QString createScheduleTask::getEveryMonthSchedule(QVector<int> dateRange)
 {
     QVector<QDateTime> beginDateTime {};
-    QVector<ScheduleDtailInfo> schedule;
+    QStringList scheduleIDs;
     //设置重复类型
     m_widget->setRpeat(4);
     //获取解析日期
@@ -355,53 +340,48 @@ QVector<ScheduleDtailInfo> createScheduleTask::getEveryMonthSchedule(QVector<int
         //设置日程结束时间
         m_endtime.setDate(beginDateTime.at(i).date());
         //创建日程
-        m_dbus->CreateJob(setDateTimeAndGetSchedule(beginDateTime.at(i), m_endtime));
-        //将所有日程添加到日程容器中
-        schedule.append(setDateTimeAndGetSchedule(beginDateTime.at(i), m_endtime));
+        scheduleIDs.append(DScheduleDataManager::getInstance()->createSchedule(setDateTimeAndGetSchedule(beginDateTime.at(i), m_endtime)));
     }
-
-    return schedule;
+    //创建多个日程返回第一个
+    return scheduleIDs.isEmpty() ? QString() : scheduleIDs.first();
 }
 
-QVector<ScheduleDtailInfo> createScheduleTask::getEveryYearSchedule()
+QString createScheduleTask::getEveryYearSchedule()
 {
-    QVector<ScheduleDtailInfo> schedule;
     //设置重复类型
     m_widget->setRpeat(5);
     //创建日程
-    m_dbus->CreateJob(setDateTimeAndGetSchedule(m_begintime, m_endtime));
-    //将多有日程添加到日程容器中
-    schedule.append(setDateTimeAndGetSchedule(m_begintime, m_endtime));
-
-    return schedule;
+    return DScheduleDataManager::getInstance()->createSchedule(setDateTimeAndGetSchedule(m_begintime, m_endtime));
 }
 
-QVector<ScheduleDtailInfo> createScheduleTask::getEveryWorkDaySchedule()
+QString createScheduleTask::getEveryWorkDaySchedule()
 {
-    QVector<QDateTime> beginDateTime {};
-    QVector<ScheduleDtailInfo> schedule;
+    //    QVector<QDateTime> beginDateTime {};
+    //    DSchedule::List schedule;
 
     //获取解析日期
-    beginDateTime = analysisWorkDayDate();
+    //    beginDateTime = analysisWorkDayDate();
     //设置重复类型
     m_widget->setRpeat(2);
+    //创建日程
+    return DScheduleDataManager::getInstance()->createSchedule(setDateTimeAndGetSchedule(m_begintime, m_endtime));
 
-    for (int i = 0; i < beginDateTime.count(); i++) {
-        //设置日程结束时间
-        m_endtime.setDate(beginDateTime.at(i).date());
-        //创建日程
-        m_dbus->CreateJob(setDateTimeAndGetSchedule(beginDateTime.at(i), m_endtime));
-        //将所有日程添加到日程容器中
-        schedule.append(setDateTimeAndGetSchedule(beginDateTime.at(i), m_endtime));
-    }
+    //    for (int i = 0; i < beginDateTime.count(); i++) {
+    //        //设置日程结束时间
+    //        m_endtime.setDate(beginDateTime.at(i).date());
+    //        //创建日程
+    //        DScheduleDataManager::getInstance()->createSchedule(setDateTimeAndGetSchedule(beginDateTime.at(i), m_endtime));
+    //        //将所有日程添加到日程容器中
+    //        schedule.append(setDateTimeAndGetSchedule(beginDateTime.at(i), m_endtime));
+    //    }
 
-    return schedule;
+    //    return schedule;
 }
 
-QVector<ScheduleDtailInfo> createScheduleTask::getEveryRestDaySchedule()
+QString createScheduleTask::getEveryRestDaySchedule()
 {
     QVector<QDateTime> beginDateTime {};
-    QVector<ScheduleDtailInfo> schedule;
+    QStringList scheduleIDs;
     //设置重复类型
     m_widget->setRpeat(3);
     //获取解析的时间
@@ -411,23 +391,22 @@ QVector<ScheduleDtailInfo> createScheduleTask::getEveryRestDaySchedule()
         //设置日程结束时间
         m_endtime.setDate(beginDateTime.at(i).date());
         //创建日程
-        m_dbus->CreateJob(setDateTimeAndGetSchedule(beginDateTime.at(i), m_endtime));
-        //将所有日程添加到日程容器中
-        schedule.append(setDateTimeAndGetSchedule(beginDateTime.at(i), m_endtime));
+        scheduleIDs.append(DScheduleDataManager::getInstance()->createSchedule(setDateTimeAndGetSchedule(beginDateTime.at(i), m_endtime)));
     }
 
-    return schedule;
+    //创建多个日程返回第一个
+    return scheduleIDs.isEmpty() ? QString() : scheduleIDs.first();
 }
 
-ScheduleDtailInfo createScheduleTask::getFirstSchedule(QVector<ScheduleDtailInfo> scheduleInfo)
+DSchedule::Ptr createScheduleTask::getFirstSchedule(DSchedule::List scheduleInfo)
 {
     //第一个日程的时间
-    QDate earlyDate = scheduleInfo.at(0).beginDateTime.date();
+    QDate earlyDate = scheduleInfo.at(0)->dtStart().date();
     //第一个日程的索引
     int index = 0;
     for (int i = 1; i < scheduleInfo.count(); i++) {
-        if (earlyDate > scheduleInfo.at(i).beginDateTime.date()) {
-            earlyDate = scheduleInfo.at(i).beginDateTime.date();
+        if (earlyDate > scheduleInfo.at(i)->dtStart().date()) {
+            earlyDate = scheduleInfo.at(i)->dtStart().date();
             index = i;
         }
     }
@@ -616,7 +595,7 @@ QVector<QDateTime> createScheduleTask::getWeekBackPartDateTime(QDate BeginDate, 
     return beginDateTime;
 }
 
-ScheduleDtailInfo createScheduleTask::setDateTimeAndGetSchedule(QDateTime beginDateTime, QDateTime endDateTime)
+DSchedule::Ptr createScheduleTask::setDateTimeAndGetSchedule(QDateTime beginDateTime, QDateTime endDateTime)
 {
     m_widget->setDateTime(beginDateTime, endDateTime);
     m_widget->setschedule();

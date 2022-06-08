@@ -24,8 +24,8 @@
 #include "../widget/repeatschedulewidget.h"
 #include "../task/schedulebasetask.h"
 
-selectInquiryState::selectInquiryState(CSchedulesDBus *dbus, scheduleBaseTask *task)
-    : scheduleState(dbus, task)
+selectInquiryState::selectInquiryState(scheduleBaseTask *task)
+    : scheduleState(task)
 {
 }
 
@@ -79,7 +79,7 @@ Reply selectInquiryState::normalEvent(const JsonData *jsonData)
         offset = jsonData->offset();
     }
     Reply m_reply;
-    ScheduleDtailInfo info = m_localData->scheduleInfoVector().at(offset - 1);
+    DSchedule::Ptr info = m_localData->scheduleInfoVector().at(offset - 1);
 
     return m_Task->getReplyBySelectSchedule(info);
 }

@@ -22,18 +22,19 @@
 #define CHANGESCHEDULETASK_H
 
 #include "schedulebasetask.h"
+#include "dschedule.h"
+#include "clocaldata.h"
 
-class CLocalData;
 class changeScheduleTask : public scheduleBaseTask
 {
     Q_OBJECT
 public:
-    explicit changeScheduleTask(CSchedulesDBus *dbus);
-    Reply getFeedbackByQuerySchedule(const QVector<ScheduleDtailInfo> &infoVector) override;
-    Reply getReplyBySelectSchedule(const ScheduleDtailInfo &info) override;
+    explicit changeScheduleTask();
+    Reply getFeedbackByQuerySchedule(const DSchedule::List &infoVector) override;
+    Reply getReplyBySelectSchedule(const DSchedule::Ptr &info) override;
     Reply InitState(const JsonData *jsonData, bool isUpdateState = false) override;
-    Reply repeatScheduleHandle(const ScheduleDtailInfo &info, bool isOnlyOne) override;
-    Reply confirwScheduleHandle(const ScheduleDtailInfo &info) override;
+    Reply repeatScheduleHandle(const DSchedule::Ptr &info, bool isOnlyOne) override;
+    Reply confirwScheduleHandle(const DSchedule::Ptr &info) override;
     Reply confirmInfo(bool isOK) override;
 
 public slots:
@@ -42,11 +43,11 @@ public slots:
 
 private:
     scheduleState *getCurrentState();
-    QWidget *createRepeatWidget(const ScheduleDtailInfo &info);
-    QWidget *createConfirmWidget(const ScheduleDtailInfo &info);
-    QWidget *createInquiryWidget(const ScheduleDtailInfo &info);
+    QWidget *createRepeatWidget(const DSchedule::Ptr &info);
+    QWidget *createConfirmWidget(const DSchedule::Ptr &info);
+    QWidget *createInquiryWidget(const DSchedule::Ptr &info);
 
-    Reply getListScheduleReply(const QVector<ScheduleDtailInfo> &infoVector);
+    Reply getListScheduleReply(const DSchedule::List &infoVector);
     /**
      * @brief getNextStateBySelectScheduleInfo      根据选择的日程获取下一个修改状态
      * @param info                                  选择的日程信息
@@ -54,26 +55,26 @@ private:
      * @param reply                                 修改的回复
      * @return                                      下一个状态
      */
-    scheduleState *getNextStateBySelectScheduleInfo(const ScheduleDtailInfo &info, CLocalData *localData, Reply &reply);
+    scheduleState *getNextStateBySelectScheduleInfo(const DSchedule::Ptr &info, const CLocalData::Ptr &localData, Reply &reply);
     /**
      * @brief getNewInfo        根据修改信息获取新的日程信息
      * @return                  在时间范围内返回true
      */
     bool getNewInfo();
 
-    void changeRepeatSchedule(const ScheduleDtailInfo &info, bool isOnlyOne);
-    void changeOnlyInfo(const ScheduleDtailInfo &info);
-    void changeAllInfo(const ScheduleDtailInfo &info);
-    void changeOrdinarySchedule(const ScheduleDtailInfo &info);
+    void changeRepeatSchedule(const DSchedule::Ptr &info, bool isOnlyOne);
+    void changeOnlyInfo(const DSchedule::Ptr &info);
+    void changeAllInfo(const DSchedule::Ptr &info);
+    void changeOrdinarySchedule(const DSchedule::Ptr &info);
     /**
      * @brief changeDateTimeIsInRange   判断修改的日期在正确的时间范围内
      * @param info          修改过的日程
      * @return              在正常范围内则返回true
      */
-    bool changeDateTimeIsInNormalRange(const ScheduleDtailInfo &info);
+    bool changeDateTimeIsInNormalRange(const DSchedule::Ptr &info);
 
 private:
-    QVector<ScheduleDtailInfo> m_scheduleInfo;
+    DSchedule::List m_scheduleInfo;
 };
 
 #endif // CHANGESCHEDULETASK_H

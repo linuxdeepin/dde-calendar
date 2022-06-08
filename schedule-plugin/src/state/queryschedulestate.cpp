@@ -21,13 +21,13 @@
 #include "queryschedulestate.h"
 #include "../task/queryscheduleproxy.h"
 #include "../task/schedulebasetask.h"
-#include "../data/schedulestructs.h"
+#include "dschedule.h"
 #include "../data/changejsondata.h"
 #include "../globaldef.h"
 #include "../data/clocaldata.h"
 
-queryScheduleState::queryScheduleState(CSchedulesDBus *dbus, scheduleBaseTask *task)
-    : scheduleState(dbus, task)
+queryScheduleState::queryScheduleState(scheduleBaseTask *task)
+    : scheduleState(task)
 {
 }
 
@@ -46,17 +46,17 @@ Reply queryScheduleState::ErrEvent()
 
 Reply queryScheduleState::normalEvent(const JsonData *jsonData)
 {
-    QVector<ScheduleDtailInfo> m_scheduleInfo {};
+    DSchedule::List m_scheduleInfo {};
     JsonData *queryData = const_cast<JsonData *>(jsonData);
-    queryScheduleProxy m_querySchedule(queryData, m_dbus);
-    m_scheduleInfo = m_querySchedule.querySchedule();
+    queryScheduleProxy m_querySchedule(queryData);
+    m_scheduleInfo = m_querySchedule.scheduleMapToList(m_querySchedule.querySchedule());
     if (m_querySchedule.getTimeIsExpired()) {
         return m_Task->overdueScheduleProcess();
     } else {
         changejsondata *mchangeJsonData = dynamic_cast<changejsondata *>(queryData);
         if (mchangeJsonData != nullptr) {
-            if (m_localData == nullptr)
-                m_localData = new CLocalData();
+            if (m_localData.isNull())
+                m_localData = CLocalData::Ptr(new CLocalData());
             if (mchangeJsonData->toDateTime().suggestDatetime.size() > 0) {
                 m_localData->setToTime(mchangeJsonData->toDateTime());
             }

@@ -74,13 +74,14 @@ include_directories(${Qt5Gui_PRIVATE_INCLUDE_DIRS})
 # Tell CMake to create the lib
 add_library(${PROJECT_NAME} SHARED ${Schedule_Plugin_SRC} ${APP_QRC} src/interface/service.h)
 
-target_include_directories(${PROJECT_NAME} PUBLIC ${DtkWidget_INCLUDE_DIRS} ${OBJECT_BINARY_DIR})
+target_include_directories(${PROJECT_NAME} PUBLIC ${DtkWidget_INCLUDE_DIRS} ${OBJECT_BINARY_DIR} ../calendar-common/src)
 
 target_link_libraries(${PROJECT_NAME}
     ${Qt5Svg_LIBRARIES}
     ${Qt5DBus_LIBRARIES}
     ${DtkWidget_LIBRARIES}
     ${DFrameworkdbus_LIBRARIES}
+    commondata
 )
 
 # Install files

@@ -29,12 +29,12 @@ class cancelScheduleTask : public scheduleBaseTask
 {
     Q_OBJECT
 public:
-    explicit cancelScheduleTask(CSchedulesDBus *dbus);
-    Reply getFeedbackByQuerySchedule(const QVector<ScheduleDtailInfo> &infoVector) override;
-    Reply getReplyBySelectSchedule(const ScheduleDtailInfo &info) override;
+    cancelScheduleTask();
+    Reply getFeedbackByQuerySchedule(const DSchedule::List &infoVector) override;
+    Reply getReplyBySelectSchedule(const DSchedule::Ptr &info) override;
     Reply InitState(const JsonData *jsonData, bool isUpdateState = false) override;
-    Reply repeatScheduleHandle(const ScheduleDtailInfo &info, bool isOnlyOne) override;
-    Reply confirwScheduleHandle(const ScheduleDtailInfo &info) override;
+    Reply repeatScheduleHandle(const DSchedule::Ptr &info, bool isOnlyOne) override;
+    Reply confirwScheduleHandle(const DSchedule::Ptr &info) override;
     Reply confirmInfo(bool isOK) override;
 public slots:
     void slotSelectScheduleIndex(int index);
@@ -42,16 +42,16 @@ public slots:
 
 private:
     scheduleState *getCurrentState();
-    QWidget *createRepeatWidget(const ScheduleDtailInfo &info);
-    QWidget *createConfirmWidget(const ScheduleDtailInfo &info);
+    QWidget *createRepeatWidget(const DSchedule::Ptr &info);
+    QWidget *createConfirmWidget(const DSchedule::Ptr &info);
 
-    Reply getListScheduleReply(const QVector<ScheduleDtailInfo> &infoVector);
+    Reply getListScheduleReply(const DSchedule::List &infoVector);
 
-    Reply getConfirwScheduleReply(const ScheduleDtailInfo &info);
-    Reply getRepeatReply(const ScheduleDtailInfo &info);
+    Reply getConfirwScheduleReply(const DSchedule::Ptr &info);
+    Reply getRepeatReply(const DSchedule::Ptr &info);
 
-    void deleteRepeatSchedule(const ScheduleDtailInfo &info, bool isOnlyOne = true);
-    void deleteOrdinarySchedule(const ScheduleDtailInfo &info);
+    void deleteRepeatSchedule(const DSchedule::Ptr &info, bool isOnlyOne = true);
+    void deleteOrdinarySchedule(const DSchedule::Ptr &info);
 
 private:
 };

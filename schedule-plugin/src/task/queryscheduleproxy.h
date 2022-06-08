@@ -21,15 +21,16 @@
 #ifndef QUERYSCHEDULEPROXY_H
 #define QUERYSCHEDULEPROXY_H
 
-#include "../data/schedulestructs.h"
+#include "dschedule.h"
 #include "../data/jsondata.h"
-#include "../dbus/schedulesdbus.h"
+#include "accountitem.h"
 
 class queryScheduleProxy
 {
 public:
-    queryScheduleProxy(JsonData *jsonData, CSchedulesDBus *dbus);
-    QVector<ScheduleDtailInfo> querySchedule();
+    queryScheduleProxy(JsonData *jsonData);
+    DSchedule::Map querySchedule();
+    DSchedule::List scheduleMapToList(const DSchedule::Map &scheduleMap);
     bool getTimeIsExpired() const;
 
 private:
@@ -42,26 +43,26 @@ private:
         QTime endTime;
         bool isInvalid {false};
     };
-    QVector<ScheduleDtailInfo> queryWeeklySchedule(QDateTime &beginTime, QDateTime &endTime, int beginW = 0, int endW = 0);
-    QVector<ScheduleDtailInfo> queryMonthlySchedule(QDateTime &beginTime, QDateTime &endTime, int beginM = 0, int endM = 0);
-    QVector<ScheduleDtailInfo> queryEveryDaySchedule(QDateTime &beginTime, QDateTime &endTime);
-    QVector<ScheduleDtailInfo> queryEveryYearSchedule(QDateTime &beginTime, QDateTime &endTime);
-    QVector<ScheduleDtailInfo> queryWorkingDaySchedule(QDateTime &beginTime, QDateTime &endTime);
-    QVector<ScheduleDtailInfo> queryNonRepeatingSchedule();
-    QVector<ScheduleDtailInfo> queryNextNumSchedule(QDateTime &beginTime, QDateTime &endTime, int NextNum);
-    QVector<ScheduleDtailInfo> queryAllSchedule(QString key, QDateTime &beginTime, QDateTime &endTime);
+    DSchedule::Map queryWeeklySchedule(QDateTime &beginTime, QDateTime &endTime, int beginW = 0, int endW = 0);
+    DSchedule::Map queryMonthlySchedule(QDateTime &beginTime, QDateTime &endTime, int beginM = 0, int endM = 0);
+    DSchedule::Map queryEveryDaySchedule(QDateTime &beginTime, QDateTime &endTime);
+    DSchedule::Map queryEveryYearSchedule(QDateTime &beginTime, QDateTime &endTime);
+    DSchedule::Map queryWorkingDaySchedule(QDateTime &beginTime, QDateTime &endTime);
+    DSchedule::Map queryNonRepeatingSchedule();
+    DSchedule::Map queryNextNumSchedule(QDateTime &beginTime, QDateTime &endTime, int NextNum);
+    DSchedule::Map queryAllSchedule(QString key, QDateTime &beginTime, QDateTime &endTime);
 
-    QVector<ScheduleDtailInfo> sortAndFilterSchedule(QVector<ScheduleDateRangeInfo> &out);
-    QVector<ScheduleDtailInfo> WeeklyScheduleFileter(QVector<ScheduleDateRangeInfo> &out, QSet<int> &weeklySet);
-    QVector<ScheduleDtailInfo> MonthlyScheduleFileter(QVector<ScheduleDateRangeInfo> &out, int beginM = 0, int endM = 0);
-    bool monthlyIsIntersections(QDateTime &beginTime, QDateTime &endTime, int beginM = 0, int endM = 0);
+    DSchedule::Map sortAndFilterSchedule(DSchedule::Map &out);
+    DSchedule::Map WeeklyScheduleFileter(DSchedule::Map &out, QSet<int> &weeklySet);
+    DSchedule::Map MonthlyScheduleFileter(DSchedule::Map &out, int beginM = 0, int endM = 0);
+    bool monthlyIsIntersections(const QDateTime &beginTime, const QDateTime &endTime, int beginM = 0, int endM = 0);
 
     bool checkedTimeIsIntersection(QTime &beginTime, QTime &endTime, QTime &fixbeginTime, QTime &fixendTime);
 
-    QVector<ScheduleDtailInfo> scheduleFileterByTime(QVector<ScheduleDtailInfo> &scheduleInfo, QTime &fileterBeginTime, QTime &fileterEndTime);
-    QVector<ScheduleDtailInfo> scheduleFileterByDate(QVector<ScheduleDtailInfo> &scheduleInfo, QDate &fileterBeginDate, QDate &fileterEndDate);
-    QVector<ScheduleDtailInfo> scheduleFileterByTitleName(QVector<ScheduleDtailInfo> &scheduleInfo, const QString &strName);
-    bool weeklyIsIntersections(QDateTime &beginTime, QDateTime &endTime, QSet<int> &weeklySet);
+    DSchedule::Map scheduleFileterByTime(DSchedule::Map &scheduleInfo, QTime &fileterBeginTime, QTime &fileterEndTime);
+    DSchedule::Map scheduleFileterByDate(DSchedule::Map &scheduleInfo, QDate &fileterBeginDate, QDate &fileterEndDate);
+    DSchedule::Map scheduleFileterByTitleName(DSchedule::Map &scheduleInfo, const QString &strName);
+    bool weeklyIsIntersections(const QDateTime &beginTime, const QDateTime &endTime, QSet<int> &weeklySet);
 
     SemanticsDateTime getQueryDateTime(JsonData *jsonData);
 
@@ -76,7 +77,6 @@ private:
     bool timeFrameIsValid(const SemanticsDateTime &timeInfoVect);
 private:
     JsonData *m_queryJsonData;
-    CSchedulesDBus *m_dbus {nullptr};
     bool m_TimeIsExpired {false};
 };
 

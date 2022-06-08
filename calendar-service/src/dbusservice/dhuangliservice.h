@@ -40,7 +40,6 @@ public slots:
     Q_SCRIPTABLE QString getHuangLiMonth(quint32 year, quint32 month, bool fill);
     Q_SCRIPTABLE CaLunarDayInfo getLunarInfoBySolar(quint32 year, quint32 month, quint32 day);
     Q_SCRIPTABLE CaLunarMonthInfo getLunarMonthCalendar(quint32 year, quint32 month, bool fill);
-
 private:
     CalendarHuangLi *m_huangli;
 };

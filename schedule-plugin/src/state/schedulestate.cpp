@@ -25,16 +25,13 @@
 #include "../globaldef.h"
 #include "../state/queryschedulestate.h"
 
-scheduleState::scheduleState(CSchedulesDBus *dbus, scheduleBaseTask *task)
-    : m_dbus(dbus)
-    , m_Task(task)
+scheduleState::scheduleState(scheduleBaseTask *task)
+    : m_Task(task)
 {
 }
 
 scheduleState::~scheduleState()
 {
-    if (m_localData != nullptr)
-        delete m_localData;
 }
 
 Reply scheduleState::process(const JsonData *jsonData)
@@ -42,7 +39,7 @@ Reply scheduleState::process(const JsonData *jsonData)
     Reply reply;
     //如果时间无效
     if (jsonData->getDateTimeInvalid()) {
-        scheduleState *nextState = new queryScheduleState(m_dbus, m_Task);
+        scheduleState *nextState = new queryScheduleState(m_Task);
         setNextState(nextState);
         REPLY_ONLY_TTS(reply, DATETIME_ERR_TTS, DATETIME_ERR_TTS, true);
         return reply;
@@ -71,21 +68,12 @@ scheduleState *scheduleState::getNextState() const
     return m_nextState;
 }
 
-void scheduleState::setLocalData(CLocalData *localData)
+void scheduleState::setLocalData(const CLocalData::Ptr &localData)
 {
-    if (m_localData == localData) {
-        return;
-    }
-    if (m_localData != nullptr) {
-        delete m_localData;
-        m_localData = nullptr;
-    }
-    if (localData == nullptr)
-        return;
     m_localData = localData;
 }
 
-CLocalData *scheduleState::getLocalData() const
+CLocalData::Ptr scheduleState::getLocalData() const
 {
     return m_localData;
 }
