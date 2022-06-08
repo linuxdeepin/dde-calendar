@@ -48,8 +48,8 @@ AccountManager *AccountManager::getInstance()
 
 /**
  * @brief AccountManager::getAccountList
- * 获取账户列表
- * @return 账户列表
+ * 获取帐户列表
+ * @return 帐户列表
  */
 QList<AccountItem::Ptr> AccountManager::getAccountList()
 {
@@ -58,7 +58,7 @@ QList<AccountItem::Ptr> AccountManager::getAccountList()
 
 /**
  * @brief AccountManager::getLocalAccountItem
- * 获取本地账户
+ * 获取本地帐户
  * @return
  */
 AccountItem::Ptr AccountManager::getLocalAccountItem()
@@ -68,7 +68,7 @@ AccountItem::Ptr AccountManager::getLocalAccountItem()
 
 /**
  * @brief AccountManager::getUnionAccountItem
- * 获取unionID账户
+ * 获取unionID帐户
  * @return
  */
 AccountItem::Ptr AccountManager::getUnionAccountItem()
@@ -125,7 +125,7 @@ DCalendarGeneralSettings::Ptr AccountManager::getGeneralSettings()
 
 /**
  * @brief AccountManager::resetAccount
- * 重置账户信息
+ * 重置帐户信息
  */
 void AccountManager::resetAccount()
 {
@@ -138,7 +138,7 @@ void AccountManager::resetAccount()
 /**
  * @brief AccountManager::downloadByAccountID
  * 根据帐户ID下拉数据
- * @param accountID 账户id
+ * @param accountID 帐户id
  * @param callback 回调函数
  */
 void AccountManager::downloadByAccountID(const QString &accountID, CallbackFunc callback)
@@ -194,8 +194,8 @@ void AccountManager::execWaitingCall()
 
 /**
  * @brief AccountManager::slotGetAccountListFinish
- * 获取账户信息完成事件
- * @param accountList 账户列表
+ * 获取帐户信息完成事件
+ * @param accountList 帐户列表
  */
 void AccountManager::slotGetAccountListFinish(DAccount::List accountList)
 {

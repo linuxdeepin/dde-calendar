@@ -200,28 +200,36 @@ void AccountManager::loginout()
  */
 void AccountManager::slotGetAccountListFinish(DAccount::List accountList)
 {
+    bool hasUnionAccount = false;
     for (DAccount::Ptr account : accountList) {
         if (account->accountType() == DAccount::Account_Local) {
-            m_localAccountItem.reset(new AccountItem(account, this));
+            if (!m_localAccountItem) {
+                m_localAccountItem.reset(new AccountItem(account, this));
+            }
             m_localAccountItem->resetAccount();
-        }
 
-        if (account->accountType() == DAccount::Account_UnionID) {
+        } else if (account->accountType() == DAccount::Account_UnionID) {
+            hasUnionAccount = true;
             if (!m_unionAccountItem) {
                 m_unionAccountItem.reset(new AccountItem(account, this));
                 m_unionAccountItem->resetAccount();
             } else if (m_unionAccountItem && m_unionAccountItem->getAccount()->accountID() != account->accountID()) {
-                emit m_unionAccountItem->signalLogout();
+                emit m_unionAccountItem->signalLogout(m_unionAccountItem->getAccount()->accountType());
                 m_unionAccountItem.reset(new AccountItem(account, this));
                 m_unionAccountItem->resetAccount();
             }
         }
+    }
+    if (!hasUnionAccount && m_unionAccountItem) {
+        emit m_unionAccountItem->signalLogout(m_unionAccountItem->getAccount()->accountType());
+        m_unionAccountItem.reset(nullptr);
     }
 
     for (AccountItem::Ptr p : getAccountList()) {
         connect(p.data(), &AccountItem::signalScheduleUpdate, this, &AccountManager::signalScheduleUpdate);
         connect(p.data(), &AccountItem::signalSearchScheduleUpdate, this, &AccountManager::signalSearchScheduleUpdate);
         connect(p.data(), &AccountItem::signalScheduleTypeUpdate, this, &AccountManager::signalScheduleTypeUpdate);
+        connect(p.data(), &AccountItem::signalLogout, this, &AccountManager::signalLogout);
     }
 
     emit signalAccountUpdate();

@@ -71,6 +71,7 @@ void SidebarView::initConnection()
     //监听日程类型更新事件
     connect(gAccountManager, &AccountManager::signalAccountUpdate, this, &SidebarView::slotAccountUpdate);
     connect(gAccountManager, &AccountManager::signalScheduleTypeUpdate, this, &SidebarView::slotScheduleTypeUpdate);
+    connect(gAccountManager, &AccountManager::signalLogout, this, &SidebarView::signalLogout);
 }
 
 /**
@@ -133,13 +134,11 @@ void SidebarView::initLocalAccountItem()
  */
 void SidebarView::initUnionAccountItem()
 {
-    if (nullptr != m_unionItemWidget) {
-        m_unionItemWidget->deleteLater();
-    }
     QSharedPointer<AccountItem> unionAccount = gAccountManager->getUnionAccountItem();
     if (nullptr == unionAccount) {
         return;
     }
+
     QTreeWidgetItem *unionItem = new QTreeWidgetItem();
     m_treeWidget->addTopLevelItem(unionItem);
     QString localName = unionAccount->getAccount()->accountName();
@@ -225,6 +224,28 @@ void SidebarView::slotScheduleTypeUpdate()
     resetJobTypeChildItem(m_unionItemWidget);
     //刷新列表展开状态
     initExpandStatus();
+}
+
+/**
+ * @brief SidebarView::signalLogout
+ * 帐户退出事件
+ * @param accountType
+ */
+void SidebarView::signalLogout(DAccount::Type accountType)
+{
+    //先清空列表
+    m_treeWidget->clear();
+    if (DAccount::Account_UnionID == accountType){
+        if (m_unionItemWidget) {
+            //清空数据
+            m_unionItemWidget->getAccountItem().reset(nullptr);
+            m_unionItemWidget->deleteLater();
+            m_unionItemWidget = nullptr;
+        }
+        //重新加载另一个帐户的数据
+        initLocalAccountItem();
+        resetJobTypeChildItem(m_localItemWidget);
+    }
 }
 
 void SidebarView::paintEvent(QPaintEvent *event)

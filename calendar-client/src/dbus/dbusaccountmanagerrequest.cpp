@@ -158,7 +158,6 @@ void DbusAccountManagerRequest::slotCallFinished(CDBusPendingCallWatcher *call)
 
 void DbusAccountManagerRequest::slotDbusCall(const QDBusMessage &msg)
 {
-    qInfo() << msg.member();
     if (msg.member() == "accountUpdate") {
         getAccountList();
     }

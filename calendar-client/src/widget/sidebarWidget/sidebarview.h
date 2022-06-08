@@ -41,6 +41,8 @@ public slots:
     void slotAccountUpdate();
     //日程类型更新事件
     void slotScheduleTypeUpdate();
+    //帐户登出信号
+    void signalLogout(DAccount::Type);
 
 protected:
     void paintEvent(QPaintEvent *event) override;

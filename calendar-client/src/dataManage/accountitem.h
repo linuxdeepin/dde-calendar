@@ -110,7 +110,7 @@ signals:
     void signalScheduleUpdate();
     void signalScheduleTypeUpdate();
     void signalSearchScheduleUpdate();
-    void signalLogout();
+    void signalLogout(DAccount::Type);
 
 public slots:
     //获取帐户信息完成事件

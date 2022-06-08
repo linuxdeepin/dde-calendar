@@ -9,13 +9,19 @@ Syncoperation::Syncoperation(QObject *parent)
     //用户登录状态改变
     connect(m_syncInter, &SyncInter::LoginStatus, this, &Syncoperation::OnLoginStatus, Qt::QueuedConnection);
     //关联dbus propertiesChanged 属性改变信号
-    QDBusConnection::sessionBus().connect(SYNC_DBUS_PATH,
-                                          SYNC_DBUS_INTERFACE,
-                                          "org.freedesktop.DBus.Properties",
-                                          "PropertiesChanged",
-                                          argumentMatch, QString(),
-                                          this, SLOT(onPropertiesChanged(QString, QVariantMap, QStringList)));
-    if (!QDBusConnection::sessionBus().connect(m_syncInter->service(), m_syncInter->path(), m_syncInter->interface(), "", this, SLOT(slotDbusCall(QDBusMessage)))) {
+//    QDBusConnection::sessionBus().connect(SYNC_DBUS_PATH,
+//                                          SYNC_DBUS_INTERFACE,
+//                                          "org.freedesktop.DBus.Properties",
+//                                          "PropertiesChanged",
+//                                          argumentMatch, "",
+//                                          this, SLOT(onPropertiesChanged(QString, QVariantMap, QStringList)));
+//    if (!QDBusConnection::sessionBus().connect(m_syncInter->service(), m_syncInter->path(), m_syncInter->interface(),
+//                                               "", this, SLOT(slotDbusCall(QDBusMessage)))) {
+//        qWarning() << "the connection was fail!" << "path: " << m_syncInter->path() << "interface: " << m_syncInter->interface();
+//    };
+    //监听org.freedesktop.DBus.Properties接口的信号
+    if (!QDBusConnection::sessionBus().connect(m_syncInter->service(), m_syncInter->path(),
+                                               "org.freedesktop.DBus.Properties", "", this, SLOT(slotDbusCall(QDBusMessage)))) {
         qWarning() << "the connection was fail!" << "path: " << m_syncInter->path() << "interface: " << m_syncInter->interface();
     };
 }
@@ -35,7 +41,6 @@ void Syncoperation::optlogout()
 {
     //异步调用无需等待结果,由后续LoginStatus触发处理
     m_syncInter->logout();
-    emit signalLoginStatusChange(false);
 }
 
 SyncoptResult Syncoperation::optUpload(const QString &key)
@@ -170,25 +175,20 @@ bool Syncoperation::optUserData(QVariantMap &userInfoMap)
 
 void Syncoperation::slotDbusCall(const QDBusMessage &msg)
 {
-    if (msg.member() == "LoginStatus") {
-        QDBusPendingReply<int> reply = msg;
-        int value = reply.argumentAt<0>();
-        if (value == 0) {
-            //发送登录信息
-            emit signalLoginStatusChange(true);
-        }
+    if (msg.member() == "PropertiesChanged") {
+        QDBusPendingReply<QString, QVariantMap, QStringList> reply = msg;
+        onPropertiesChanged(reply.argumentAt<0>(), reply.argumentAt<1>(), reply.argumentAt<2>());
     }
 }
 
 void Syncoperation::OnLoginStatus(const int32_t value)
 {
-    qInfo() << "login status" << value;
     Q_EMIT LoginStatuschanged(value);
 }
 
 void Syncoperation::onPropertiesChanged(const QString &interfaceName, const QVariantMap &changedProperties, const QStringList &invalidatedProperties)
 {
-    if (interfaceName == SYNC_DBUS_INTERFACE) {
+    if (interfaceName == "com.deepin.utcloud.Daemon") {
         //获取到属性改变信号，提取出传输的用户信息数据
         for (QVariantMap::const_iterator it = changedProperties.cbegin(), end = changedProperties.cend(); it != end; ++it) {
             if (it.key() == "UserData") {
@@ -197,6 +197,8 @@ void Syncoperation::onPropertiesChanged(const QString &interfaceName, const QVar
                 QVariantMap userInfoMap;
                 argument >> userInfoMap;
                 Q_EMIT UserDatachanged(userInfoMap);
+                //发送登录信号
+                emit signalLoginStatusChange(true);
             }
         }
     }

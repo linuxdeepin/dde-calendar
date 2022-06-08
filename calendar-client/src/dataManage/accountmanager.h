@@ -66,6 +66,9 @@ signals:
     void signalScheduleTypeUpdate();
     void signalSearchScheduleUpdate();
 
+    //帐户登出信号
+    void signalLogout(DAccount::Type);
+
 public slots:
     //获取帐户信息完成事件
     void slotGetAccountListFinish(DAccount::List accountList);
