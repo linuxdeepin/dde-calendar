@@ -24,7 +24,7 @@
 #include "dbus/dbusaccountmanagerrequest.h"
 #include "accountitem.h"
 
-//所有账户管理类
+//所有帐户管理类
 class AccountManager : public QObject
 {
     Q_OBJECT
@@ -41,7 +41,7 @@ public:
     AccountItem::Ptr getAccountItemByAccountName(const QString &accountName);
     DCalendarGeneralSettings::Ptr getGeneralSettings();
 
-    //重新获取账户信息
+    //重新获取帐户信息
     void resetAccount();
 
     //根据帐户ID下拉数据
@@ -51,9 +51,9 @@ public:
 
     //设置通用设置
     void setCalendarGeneralSettings(DCalendarGeneralSettings::Ptr ptr, CallbackFunc callback = nullptr);
-    //账户登录
+    //帐户登录
     void login();
-    //账户登出
+    //帐户登出
     void loginout();
 
 signals:
@@ -67,7 +67,7 @@ signals:
     void signalSearchScheduleUpdate();
 
 public slots:
-    //获取账户信息完成事件
+    //获取帐户信息完成事件
     void slotGetAccountListFinish(DAccount::List accountList);
     //获取通用设置完成事件
     void slotGetGeneralSettingsFinish(DCalendarGeneralSettings::Ptr ptr);

@@ -806,7 +806,7 @@ void Calendarmainwindow::slotSearchFocusSwitch()
 
 void Calendarmainwindow::slotSidebarStatusChange(bool status)
 {
-    //设置账户侧边栏显示状态
+    //设置帐户侧边栏显示状态
     m_sidebarView->setVisible(status);
     //展开侧边栏后最小宽度为826
     if (status && width() < 826) {
@@ -903,7 +903,7 @@ void Calendarmainwindow::slotOpenSettingDialog()
         if(DSysInfo::uosEditionType() == DSysInfo::UosCommunity) {
             calendarSettings.removeGroup("setting_account");
         }
-        //未登录uos账号时，移除部分选项
+        //未登录uos帐号时，移除部分选项
         if(!gUosAccountItem) {
             calendarSettings.removeGroup("setting_account", "account_sync_items");
             calendarSettings.removeGroup("setting_account", "sync_interval");
@@ -982,7 +982,7 @@ void Calendarmainwindow::dragEnterEvent(QDragEnterEvent *event)
 }
 
 /**
- * @brief Calendarmainwindow::createAccountCombobox 关联账户的combobox
+ * @brief Calendarmainwindow::createAccountCombobox 关联帐户的combobox
  */
 QPair<QWidget *, QWidget *> Calendarmainwindow::createAccountCombobox(QObject *obj)
 {
@@ -992,7 +992,7 @@ QPair<QWidget *, QWidget *> Calendarmainwindow::createAccountCombobox(QObject *o
     widget->setFixedSize(150, 36);
     QPair<QWidget *, QWidget *> optionWidget = DSettingsWidgetFactory::createStandardItem(QByteArray(), option, widget);
  
-    //更新账户列表
+    //更新帐户列表
     auto accountUpdate = [=](){
         QVariant oldAccountID = widget->currentData();
         widget->blockSignals(true);
@@ -1017,10 +1017,10 @@ QPair<QWidget *, QWidget *> Calendarmainwindow::createAccountCombobox(QObject *o
 
         emit signal_calendarAccountChanged(widget->currentData().toString());
     };
-    //TODO:控制中心退出账号时，更新账户列表
+    //TODO:控制中心退出帐号时，更新帐户列表
     connect(gAccountManager, &AccountManager::signalAccountUpdate, this, accountUpdate);
 
-    //TODO:切换账号时，更新日程类型
+    //TODO:切换帐号时，更新日程类型
     connect(widget, QOverload<int>::of(&DComboBox::currentIndexChanged), this, [=](int index){
         emit signal_calendarAccountChanged(widget->itemData(index).toString());
     });
@@ -1065,7 +1065,7 @@ QPair<QWidget *, QWidget *> Calendarmainwindow::createSyncFreqCombobox(QObject *
         index = widget->findData(gUosAccountItem->getAccount()->syncFreq());
     widget->setCurrentIndex(index);
 
-    //TODO:更新union账户的的同步频率
+    //TODO:更新union帐户的的同步频率
     connect(widget, QOverload<int>::of(&DComboBox::currentIndexChanged), this, &Calendarmainwindow::slotSetUosSyncFreq);
 
     return optionWidget;
@@ -1207,7 +1207,7 @@ QPair<QWidget *, QWidget *> Calendarmainwindow::createComboboxTime(QObject *obj)
 }
 
 /**
- * @brief Calendarmainwindow::slotSetUosSyncFreq 设置UOS账户的同步频率
+ * @brief Calendarmainwindow::slotSetUosSyncFreq 设置UOS帐户的同步频率
  * @param freq
  */
 void Calendarmainwindow::slotSetUosSyncFreq(int freq)

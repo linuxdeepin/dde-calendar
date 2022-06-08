@@ -29,7 +29,7 @@ DbusAccountManagerRequest::DbusAccountManagerRequest(QObject *parent)
 
 /**
  * @brief DbusAccountManagerRequest::getAccountList
- * 请求账户列表
+ * 请求帐户列表
  */
 void DbusAccountManagerRequest::getAccountList()
 {
@@ -38,8 +38,8 @@ void DbusAccountManagerRequest::getAccountList()
 
 /**
  * @brief DbusAccountManagerRequest::downloadByAccountID
- * 根据账户id下拉数据
- * @param accountID 账户id
+ * 根据帐户id下拉数据
+ * @param accountID 帐户id
  */
 void DbusAccountManagerRequest::downloadByAccountID(const QString &accountID)
 {
@@ -50,7 +50,7 @@ void DbusAccountManagerRequest::downloadByAccountID(const QString &accountID)
 
 /**
  * @brief DbusAccountManagerRequest::uploadNetWorkAccountData
- * 更新网络账户数据
+ * 更新网络帐户数据
  */
 void DbusAccountManagerRequest::uploadNetWorkAccountData()
 {
@@ -80,7 +80,7 @@ void DbusAccountManagerRequest::setCalendarGeneralSettings(DCalendarGeneralSetti
 
 /**
  * @brief DbusAccountManagerRequest::login
- * 账户登录
+ * 帐户登录
  */
 void DbusAccountManagerRequest::login()
 {
@@ -89,7 +89,7 @@ void DbusAccountManagerRequest::login()
 
 /**
  * @brief DbusAccountManagerRequest::loginout
- * 账户登出
+ * 帐户登出
  */
 void DbusAccountManagerRequest::logout()
 {

@@ -73,7 +73,7 @@ public:
     /**
      * @brief resetColorButton
      * 重置色彩控件
-     * @param account 账户
+     * @param account 帐户
      */
     void resetColorButton(const AccountItem::Ptr& account);
 

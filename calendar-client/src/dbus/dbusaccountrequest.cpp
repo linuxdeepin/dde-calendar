@@ -41,7 +41,7 @@ void DbusAccountRequest::getAccountInfo()
 
 /**
  * @brief DbusAccountRequest::setAccountExpandStatus
- * 设置账户列表展开状态
+ * 设置帐户列表展开状态
  * @param expandStatus 展开状态
  */
 void DbusAccountRequest::setAccountExpandStatus(bool expandStatus)

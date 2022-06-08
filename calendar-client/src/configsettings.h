@@ -58,7 +58,7 @@ public:
 
     void initSetting();
 
-    //账户侧边栏显示状态
+    //帐户侧边栏显示状态
     bool getUserSidebarStatus();
     void setUserSidebarStatus(bool);
 
@@ -75,7 +75,7 @@ protected:
     void releaseInstance();
 private:
     QPointer<QSettings> m_settings;
-    bool m_userSidebarStatus = true;    //账户侧边栏显示状态
+    bool m_userSidebarStatus = true;    //帐户侧边栏显示状态
 };
 
 #define gSetting CConfigSettings::getInstance()

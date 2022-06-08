@@ -95,7 +95,7 @@ void CScheduleDlg::setData(const DSchedule::Ptr &info)
     }
 
     if (nullptr != m_accountItem) {
-        //更新账户下拉框和类型选择框
+        //更新帐户下拉框和类型选择框
         m_accountComBox->setCurrentText(m_accountItem->getAccount()->accountName());
         m_typeComBox->updateJobType(m_accountItem);
     } else {
@@ -760,7 +760,7 @@ void CScheduleDlg::initUI()
     QVBoxLayout *maintlayout = new QVBoxLayout;
     maintlayout->setMargin(0);
     maintlayout->setSpacing(10);
-    //账户
+    //帐户
     {
         QHBoxLayout *hlayout = new QHBoxLayout;
         hlayout->setSpacing(0);

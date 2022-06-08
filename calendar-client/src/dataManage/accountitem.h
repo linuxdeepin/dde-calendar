@@ -24,7 +24,7 @@
 #include "dbus/dbusaccountrequest.h"
 #include <QObject>
 
-//单项账户信息管理类
+//单项帐户信息管理类
 class AccountItem : public QObject
 {
     Q_OBJECT
@@ -35,7 +35,7 @@ public:
 
     void resetAccount();
 
-    //获取账户数据
+    //获取帐户数据
     DAccount::Ptr getAccount();
 
     //获取日程
@@ -51,14 +51,14 @@ public:
     //获取颜色类型列表
     DTypeColor::List getColorTypeList();
 
-    //更新账户列表展开状态
+    //更新帐户列表展开状态
     void setAccountExpandStatus(bool expandStatus);
 
-    //设置账号状态
+    //设置帐号状态
     void setAccountState(DAccount::AccountStates state);
     //设置同步频率
     void setSyncFreq(DAccount::SyncFreqType freq);
-    //获取账号状态
+    //获取帐号状态
     DAccount::AccountStates getAccountState();
     //获取同步状态
     bool getSyncState();
@@ -113,7 +113,7 @@ signals:
     void signalLogout();
 
 public slots:
-    //获取账户信息完成事件
+    //获取帐户信息完成事件
     void slotGetAccountInfoFinish(DAccount::Ptr);
     //获取日程类型数据完成事件
     void slotGetScheduleTypeListFinish(DScheduleType::List);
@@ -128,7 +128,7 @@ private:
     void initConnect();
 
 private:
-    DAccount::Ptr m_account;    //账户数据
+    DAccount::Ptr m_account;    //帐户数据
     DScheduleType::List m_scheduleTypeList; //日程类型数据
     DTypeColor::List m_typeColorList;    //颜色数据
     DbusAccountRequest *m_dbusRequest = nullptr; //dbus请求实例

@@ -257,7 +257,7 @@ private slots:
     //设置最大大小
     void slotSetMaxSize(int size = 0);
     void slotSearchFocusSwitch();
-    //账户侧边栏状态发生改变事件
+    //帐户侧边栏状态发生改变事件
     void slotSidebarStatusChange(bool);
     //拖拽释放事件
     void dropEvent(QDropEvent *event) override;

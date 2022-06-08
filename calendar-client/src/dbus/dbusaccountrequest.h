@@ -28,7 +28,7 @@
 #include "dtypecolor.h"
 #include "dschedulequerypar.h"
 
-//单项账户信息请求类
+//单项帐户信息请求类
 class DbusAccountRequest : public DbusRequestBase
 {
     Q_OBJECT
@@ -37,7 +37,7 @@ public:
 
     /**
      * @brief setAccountExpandStatus
-     * 设置账户列表展开状态
+     * 设置帐户列表展开状态
      * @param expandStatus 展开状态
      */
     void setAccountExpandStatus(bool expandStatus);

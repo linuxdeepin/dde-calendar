@@ -179,7 +179,7 @@ private:
 
 private:
 
-    DComboBox *m_accountComBox = nullptr;   //账户下拉选择框
+    DComboBox *m_accountComBox = nullptr;   //帐户下拉选择框
 
     QLabel *m_typeLabel = nullptr;
     //DComboBox *m_typeComBox = nullptr;

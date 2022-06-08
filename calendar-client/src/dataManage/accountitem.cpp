@@ -38,7 +38,7 @@ void AccountItem::initConnect()
 
 /**
  * @brief AccountItem::resetAccount
- * 重新获取账户相关数据
+ * 重新获取帐户相关数据
  */
 void AccountItem::resetAccount()
 {
@@ -49,7 +49,7 @@ void AccountItem::resetAccount()
 
 /**
  * @brief AccountItem::getAccount
- * 获取账户数据
+ * 获取帐户数据
  * @return
  */
 DAccount::Ptr AccountItem::getAccount()
@@ -106,7 +106,7 @@ DTypeColor::List AccountItem::getColorTypeList()
 
 /**
  * @brief AccountItem::setAccountExpandStatus
- * 更新账户列表展开状态
+ * 更新帐户列表展开状态
  * @param expandStatus 展开状态
  */
 void AccountItem::setAccountExpandStatus(bool expandStatus)
@@ -318,8 +318,8 @@ bool AccountItem::querySchedulesByExternal(const QString &key, const QDateTime &
 
 /**
  * @brief AccountItem::slotGetAccountInfoFinish
- * 获取账户信息完成事件
- * @param account 账户数据
+ * 获取帐户信息完成事件
+ * @param account 帐户数据
  */
 void AccountItem::slotGetAccountInfoFinish(DAccount::Ptr account)
 {
