@@ -247,7 +247,7 @@ void CScheduleView::paintEvent(QPaintEvent *event)
                 painter.save();
                 painter.setFont(font);
                 painter.setPen(m_currenttimecolor);
-                QString str = QTime::currentTime().toString("AP " + m_timeFormat);
+                QString str = QTime::currentTime().toString(m_timeFormat);
                 painter.drawText(QRect((m_leftMargin - hourTextWidth) / 2 - 5,
                                        m_topMargin - 8 + m_vPos[m_vPos.count() - 1], hourTextWidth,
                                        hourTextHeight),

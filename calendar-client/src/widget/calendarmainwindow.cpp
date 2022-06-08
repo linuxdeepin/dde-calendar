@@ -1164,7 +1164,6 @@ QPair<QWidget *, QWidget *> Calendarmainwindow::createComboboxFirstDayofWeek(QOb
             CalendarManager::getInstance()->setFirstDayOfWeek(Qt::Monday);
         }
     });
-
     // 获取初始值
     option->setValue(option->defaultValue());
 
@@ -1190,6 +1189,17 @@ QPair<QWidget *, QWidget *> Calendarmainwindow::createComboboxTime(QObject *obj)
     layout->addWidget(combobox);
     widget->layout()->setAlignment(Qt::AlignRight);
     QPair<QWidget *, QWidget *> optionWidget = DSettingsWidgetFactory::createStandardItem(QByteArray(), option, widget);
+    option->connect(combobox, &QComboBox::currentTextChanged, option, [=] (const QString time)
+    {
+        if (time == "24-hour clock")
+        {
+            CalendarManager::getInstance()->slotTimeFormatChanged(0);
+        }
+        else
+        {
+            CalendarManager::getInstance()->slotTimeFormatChanged(1);
+        }
+    });
     // 获取初始值
     option->setValue(option->defaultValue());
     if (widget != nullptr)

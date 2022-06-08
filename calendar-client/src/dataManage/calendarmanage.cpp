@@ -154,10 +154,10 @@ int CalendarManager::getWeekNumOfYear(const QDate &date)
 void CalendarManager::setTimeFormatChanged(int value)
 {
     m_timeFormatValue = value;
-    if (value) {
+    if (value == 0) {
         m_timeFormat = "hh:mm";
     } else {
-        m_timeFormat = "h:mm";
+        m_timeFormat = "ap h:mm";
     }
 }
 

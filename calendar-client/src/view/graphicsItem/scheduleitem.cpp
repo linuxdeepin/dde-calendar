@@ -265,7 +265,7 @@ void CScheduleItem::paintBackground(QPainter *painter, const QRectF &rect, const
             painter->setPen(gdColor.orginalColor);
 
             QTime stime = m_vScheduleInfo->dtStart().time();
-            QString str = stime.toString("AP " + m_timeFormat);
+            QString str = stime.toString(m_timeFormat);
             QFontMetrics fontMetrics(font);
             qreal drawTextWidth = rect.width() - m_offset * 2;
 
