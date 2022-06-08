@@ -138,8 +138,8 @@ DSchedule::AlarmType DSchedule::getAlarmType()
     if (alarmList.size() > 0) {
         KCalendarCore::Duration duration = alarmList.at(0)->startOffset();
         QMap<int, AlarmType> alarmMap = getAlarmMap();
-        if (alarmMap.contains(duration.value())) {
-            alarmType = alarmMap[duration.value()];
+        if (alarmMap.contains(duration.asSeconds())) {
+            alarmType = alarmMap[duration.asSeconds()];
         }
     }
     return alarmType;

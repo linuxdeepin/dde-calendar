@@ -306,6 +306,10 @@ bool CScheduleDlg::createSchedule(const QString &scheduleTypeId)
 
     } else if (m_type == 0) {
         schedule->setUid(m_ScheduleDataInfo->uid());
+        //如果有重复规则则将原来数据的忽略列表添加进来
+        if (schedule->recurs() && m_ScheduleDataInfo->recurs()) {
+            schedule->recurrence()->setExDateTimes(m_ScheduleDataInfo->recurrence()->exDateTimes());
+        }
         res = _scheduleOperation.changeSchedule(schedule, m_ScheduleDataInfo);
     }
     return res;

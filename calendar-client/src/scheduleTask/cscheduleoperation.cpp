@@ -257,6 +257,7 @@ bool CScheduleOperation::changeRecurInfo(const DSchedule::Ptr &newinfo, const DS
             //更新日程
             showLunarMessageDialog(_scheduleDataInfo, oldinfo);
             m_accountItem->updateSchedule(_scheduleDataInfo);
+            _result = true;
         } else if (msgBox.clickButton() == 2) {
             //仅修改此日程
             _result = changeOnlyInfo(newinfo, oldinfo);
