@@ -13,10 +13,10 @@
 
 
 //云同步错误码
-#define SYNC_No_Error                   0
-#define SYNC_Internal_Error             7500
-#define SYNC_Parameter_Error            7501
-#define SYNC_Login_Expired              7502
+#define SYNC_No_Error                   0               /**/
+#define SYNC_Internal_Error             7500            /**/
+#define SYNC_Parameter_Error            7501            /**/
+#define SYNC_Login_Expired              7502            /**/
 #define SYNC_No_Access                  7503
 #define SYNC_Data_Not_Exist             7504
 #define SYNC_File_Operation_Failed      7505
@@ -39,8 +39,6 @@ class Syncoperation : public QObject
 {
     Q_OBJECT
 public:
-    typedef QSharedPointer<Syncoperation> Ptr;
-
     explicit Syncoperation(QObject *parent = nullptr);
     ~Syncoperation();
 
@@ -50,21 +48,27 @@ public:
 
     SyncoptResult optUpload(const QString &key);
 
-    SyncoptResult optDownload(const QString &key,const QString &path);
+    SyncoptResult optDownload(const QString &key, const QString &path);
 
     SyncoptResult optDelete(const QString &key);
 
     SyncoptResult optMetadata(const QString &key);
 
-    DAccount::Ptr optUserData();
+    bool optUserData(QVariantMap &userInfoMap);
 
+Q_SIGNALS:
+    void UserDatachanged(const QVariantMap  &value) const;
+    void LoginStatuschanged(const int32_t value) const;
 private:
-    void OnLoginStatus(const int32_t value);
-
     DAccount::Ptr accountChangeHandle(const QDBusArgument &accountInfo);
+
+private Q_SLOTS:
+    void OnLoginStatus(const int32_t value);
+    void onPropertiesChanged(const QString &interfaceName,
+                             const QVariantMap &changedProperties,
+                             const QStringList &invalidatedProperties);
 private:
     SyncInter *m_syncInter;
-    DAccount::Ptr m_account;
 };
 
 #endif // SYNCUPLOAD_H

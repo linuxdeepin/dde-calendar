@@ -86,7 +86,6 @@ public slots:
 
 private:
     DAccountManagerDataBase::Ptr m_accountManagerDB;
-    Syncoperation::Ptr m_syncoperation;
     DAccount::List m_accountList;
     QMap<QString, DAccountModule::Ptr> m_accountModuleMap;
     QMap<QString, DAccountService::Ptr> m_AccountServiceMap[accountTypeCount];

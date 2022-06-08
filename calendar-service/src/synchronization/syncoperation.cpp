@@ -3,11 +3,18 @@
 Syncoperation::Syncoperation(QObject *parent)
     : QObject(parent)
     , m_syncInter(new SyncInter(SYNC_DBUS_PATH, SYNC_DBUS_INTERFACE, QDBusConnection::sessionBus(), this))
-    , m_account(new DAccount(DAccount::Account_UnionID))
 {
+    QStringList argumentMatch;
+    argumentMatch << SYNC_DBUS_INTERFACE;
     //用户登录状态改变
     connect(m_syncInter, &SyncInter::LoginStatus, this, &Syncoperation::OnLoginStatus, Qt::QueuedConnection);
-
+    //关联dbus propertiesChanged 属性改变信号
+    QDBusConnection::sessionBus().connect(SYNC_DBUS_PATH,
+                                          SYNC_DBUS_INTERFACE,
+                                          "org.freedesktop.DBus.Properties",
+                                          "PropertiesChanged",
+                                          argumentMatch, QString(),
+                                          this, SLOT(onPropertiesChanged(QString, QVariantMap, QStringList)));
 }
 
 Syncoperation::~Syncoperation()
@@ -137,7 +144,7 @@ SyncoptResult Syncoperation::optMetadata(const QString &key)
     return result;
 }
 
-DAccount::Ptr Syncoperation::optUserData()
+bool Syncoperation::optUserData(QVariantMap &userInfoMap)
 {
     QDBusMessage msg = QDBusMessage::createMethodCall(SYNC_DBUS_PATH,
                                                       SYNC_DBUS_INTERFACE,
@@ -149,33 +156,32 @@ DAccount::Ptr Syncoperation::optUserData()
     if (reply.type() == QDBusMessage::ReplyMessage) {
         QVariant variant = reply.arguments().first();
         QDBusArgument argument = variant.value<QDBusVariant>().variant().value<QDBusArgument>();
-        return accountChangeHandle(argument);
+        argument >> userInfoMap;
+        return true;
     } else {
         qWarning() << "Download failed:";
-        return nullptr;
+        return false;
     }
 }
 
 void Syncoperation::OnLoginStatus(const int32_t value)
 {
-    Q_UNUSED(value);
+    qInfo() << "login status" << value;
+    Q_EMIT LoginStatuschanged(value);
 }
 
-
-DAccount::Ptr Syncoperation::accountChangeHandle(const QDBusArgument &accountInfo)
+void Syncoperation::onPropertiesChanged(const QString &interfaceName, const QVariantMap &changedProperties, const QStringList &invalidatedProperties)
 {
-    QVariantMap userInfoMap;
-    accountInfo >> userInfoMap;
-
-
-    qInfo() << userInfoMap.value("username").toString();
-    qInfo() << userInfoMap.value("profile_image").toString();
-    qInfo() << userInfoMap.value("nickname").toString();
-    qInfo() << userInfoMap.value("uid").toString();
-
-    m_account->setDisplayName(userInfoMap.value("username").toString());
-    m_account->setAccountID(userInfoMap.value("uid").toString());
-    m_account->setAvatar(userInfoMap.value("profile_image").toString());
-    m_account->setAccountName(userInfoMap.value("nickname").toString());
-    return m_account;
+    if (interfaceName == SYNC_DBUS_INTERFACE) {
+        //获取到属性改变信号，提取出传输的用户信息数据
+        for (QVariantMap::const_iterator it = changedProperties.cbegin(), end = changedProperties.cend(); it != end; ++it) {
+            if (it.key() == "UserData") {
+                //用户信心更新的信号，后续处理 TO：
+                QDBusArgument argument = it.value().value<QDBusVariant>().variant().value<QDBusArgument>();
+                QVariantMap userInfoMap;
+                argument >> userInfoMap;
+                Q_EMIT UserDatachanged(userInfoMap);
+            }
+        }
+    }
 }

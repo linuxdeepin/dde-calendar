@@ -26,7 +26,6 @@
 DAccountManageModule::DAccountManageModule(QObject *parent)
     : QObject(parent)
     , m_accountManagerDB(new DAccountManagerDataBase)
-    , m_syncoperation(new Syncoperation)
 {
     //新文件路径
     QString newDbPatch = getDBPath();
@@ -152,10 +151,10 @@ void DAccountManageModule::uploadNetWorkAccountData()
 void DAccountManageModule::unionIDDataMerging()
 {
     m_accountList = m_accountManagerDB->getAccountList();
-    DAccount::Ptr accountUnionid = m_syncoperation->optUserData();
+    DAccount::Ptr accountUnionid = nullptr;
 
     DAccount::Ptr unionidDB;
-    auto hasUnionid = [=, &unionidDB](const DAccount::Ptr &account) {
+    auto hasUnionid = [ =, &unionidDB](const DAccount::Ptr & account) {
         if (account->accountType() == DAccount::Account_UnionID) {
             unionidDB = account;
             return true;

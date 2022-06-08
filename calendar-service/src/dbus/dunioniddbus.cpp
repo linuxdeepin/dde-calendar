@@ -30,10 +30,7 @@ DUnionIDDbus::DUnionIDDbus(const QString &service, const QString &path, const QD
     if (!this->isValid()) {
         qWarning() << "Error connecting remote object, service:" << this->service() << ",path:" << this->path() << ",interface" << this->interface();
     }
-    //关联后端dbus触发信号
-    // if (!QDBusConnection::sessionBus().connect(this->service(), this->path(), this->interface(), "", this, SLOT(propertyChanged(QDBusMessage)))) {
-    //     qWarning() << "the connection was fail!";
-    // }
+
 }
 
 DUnionIDDbus::~DUnionIDDbus()
@@ -41,69 +38,3 @@ DUnionIDDbus::~DUnionIDDbus()
 
 }
 
-#if 0
-DAccount::Ptr DUnionIDDbus::getUserData()
-{
-    return accountChangeHandle(getPropertyByName("UserData").toString());
-}
-
-
-DAccount::Ptr DUnionIDDbus::accountChangeHandle(const QString &accountInfo)
-{
-    //TODO:数据解析
-    QJsonParseError jsonError;
-    QJsonDocument jsonDoc(QJsonDocument::fromJson(accountInfo.toLocal8Bit(), &jsonError));
-    if (jsonError.error != QJsonParseError::NoError) {
-        qWarning() << "error:" << jsonError.errorString();
-        return nullptr;
-    }
-    QJsonObject rootObj = jsonDoc.object();
-    if (rootObj.contains("profile_image")) {
-        m_account->setAvatar(rootObj.value("profile_image").toString());
-    }
-    if (rootObj.contains("uid")) {
-        m_account->setAccountID(rootObj.value("uid").toString());
-    }
-    if (rootObj.contains("username")) {
-        m_account->setDisplayName(rootObj.value("username").toString());
-    }
-    if (rootObj.contains("nickname")) {
-        m_account->setAccountName(rootObj.value("nickname").toString());
-    }
-    return m_account;
-}
-
-QVariant DUnionIDDbus::getPropertyByName(const QString &porpertyName)
-{
-    //TODO:未能获取到正确数据
-    QDBusInterface dbusinterface(this->service(), this->path(), "org.freedesktop.DBus.Properties", QDBusConnection::sessionBus(), this);
-    QList<QVariant> argumentList;
-    argumentList << "com.deepin.utcloud.Daemon";
-    argumentList << porpertyName;
-    QDBusMessage reply = dbusinterface.callWithArgumentList(QDBus::Block, QStringLiteral("Get"), argumentList);
-    if (reply.type() != QDBusMessage::ReplyMessage) {
-        qWarning() << "Get " << porpertyName << " error.";
-        return QVariant();
-    }
-    QDBusReply<QVariant> data = reply;
-    return data;
-}
-
-void DUnionIDDbus::propertyChanged(const QDBusMessage &msg)
-{
-    if (msg.type() == QDBusMessage::SignalMessage && msg.path() == this->path() && msg.interface() == this->interface()) {
-        if (msg.member() == "UserData") {
-            //如果是帐户信息改变信号
-            if (msg.arguments().size() > 0) {
-                accountChangeHandle(msg.arguments().first().toString());
-            }
-            return;
-        }
-    }
-}
-
-void DUnionIDDbus::slotDBusError(const QDBusError &error)
-{
-    qWarning() << Q_FUNC_INFO << error;
-}
-#endif

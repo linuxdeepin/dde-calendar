@@ -81,7 +81,7 @@ public slots:
      * @return path2 下载数据的路径
      *         err   错误信息
      */
-    inline QDBusPendingReply<QString> Download(const QString &key , const QString &path1)
+    inline QDBusPendingReply<QString> Download(const QString &key, const QString &path1)
     {
         QList<QVariant> argumentList;
         argumentList << QVariant::fromValue(key) << QVariant::fromValue(path1);
@@ -117,47 +117,15 @@ public slots:
 Q_SIGNALS: // SIGNALS
     void LoginStatus(int32_t value) const;
 
-#if 0
-    //获取帐户信息
-    DAccount::Ptr getUserData();
-
-
-
-private:
-    DAccount::Ptr accountChangeHandle(const QString &accountInfo);
-    /**
-     * @brief getPropertyByName     根据属性名称获取属性值
-     * @param porpertyName          属性名称
-     * @return
-     */
-    QVariant getPropertyByName(const QString &porpertyName);
-
-signals:
-
-public slots:
-    /**
-     * @brief propertyChanged  关联的dbus服务属性改变
-     * @param msg
-     */
-    void propertyChanged(const QDBusMessage &msg);
-    /**
-     * @brief slotDBusError     服务对象错误信息处理
-     * @param error             错误信息
-     */
-    void slotDBusError(const QDBusError &error);
-
-private:
-    DAccount::Ptr m_account;
-#endif
 };
 
 
 namespace com {
-  namespace deepin {
-    namespace sync {
-      typedef ::DUnionIDDbus cloudopt;
-    }
-  }
+namespace deepin {
+namespace sync {
+typedef ::DUnionIDDbus cloudopt;
+}
+}
 }
 
 #endif // DUNIONIDDBUS_H
