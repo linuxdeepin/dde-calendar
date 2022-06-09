@@ -1075,7 +1075,7 @@ QPair<QWidget *, QWidget *> Calendarmainwindow::createSyncTagRadioButton(QObject
         type = DAccount::Account_Setting;
 
     SyncTagRadioButton *widget = new SyncTagRadioButton(type);
-    widget->setFixedWidth(36);
+    widget->setFixedWidth(16);
     QPair<QWidget *, QWidget *> optionWidget = DSettingsWidgetFactory::createStandardItem(QByteArray(), option, widget);
 
     //iconLabel
@@ -1090,6 +1090,7 @@ QPair<QWidget *, QWidget *> Calendarmainwindow::createSyncTagRadioButton(QObject
     QHBoxLayout *layout = new QHBoxLayout;
     layout->addWidget(iconLabel);
     layout->addWidget(optionWidget.first);
+    layout->setContentsMargins(0, 1, 0, 1);
     QWidget *iconWidget = new QWidget;
     iconWidget->setLayout(layout);
     optionWidget.first = iconWidget;
@@ -1297,11 +1298,8 @@ void CalendarSetting::SyncTagRadioButton::setChecked(bool checked)
 void CalendarSetting::SyncTagRadioButton::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event)
-    if(!m_checked)
-        return;
-
     QPainter painter(this);
-    QIcon icon = DStyle::standardIcon(this->style(), DStyle::SP_IndicatorChecked);
+    QIcon icon = DStyle::standardIcon(this->style(), m_checked ? DStyle::SP_IndicatorChecked : DStyle::SP_IndicatorUnchecked);
     int y = (this->height() - 16) / 2;
     int x = (this->width() - 16) / 2;
     icon.paint(&painter, QRect(x, y, 16, 16), Qt::AlignCenter, isEnabled() ? QIcon::Normal : QIcon::Disabled);
