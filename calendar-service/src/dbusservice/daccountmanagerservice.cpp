@@ -103,6 +103,7 @@ void DAccountManagerService::calendarIsShow(const bool &isShow)
         return;
     }
     exitControl.setClientIsOpen(isShow);
+    m_accountManager->calendarOpen(isShow);
     //如果前端界面被kill掉则不会触发关闭信号，导致一直开启，需要定时判断日历界面开启状态
     //开启定时器判断日程是否打开
     if (!m_timer.isActive()) {

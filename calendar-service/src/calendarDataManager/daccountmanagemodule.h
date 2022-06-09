@@ -79,6 +79,8 @@ public:
     //账户登出
     void logout();
 
+    void calendarOpen(bool isOpen);
+
 private:
     void unionIDDataMerging();
     void initAccountDBusInfo(const DAccount::Ptr &account);

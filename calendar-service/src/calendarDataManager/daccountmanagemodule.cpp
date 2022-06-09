@@ -161,6 +161,17 @@ void DAccountManageModule::logout()
     m_syncFileManage->getSyncoperation()->optlogout();
 }
 
+void DAccountManageModule::calendarOpen(bool isOpen)
+{
+    //每次开启日历时需要同步数据
+    if (isOpen) {
+        QMap<QString, DAccountModule::Ptr>::iterator iter = m_accountModuleMap.begin();
+        for (; iter != m_accountModuleMap.end(); ++iter) {
+            iter.value()->accountDownload();
+        }
+    }
+}
+
 void DAccountManageModule::unionIDDataMerging()
 {
     m_accountList = m_accountManagerDB->getAccountList();
@@ -224,6 +235,8 @@ void DAccountManageModule::initAccountDBusInfo(const DAccount::Ptr &account)
         break;
     }
     QString sortID = DDataBase::createUuid().mid(0, 5);
+    //TODO:获取总开关
+    //account
     account->setAccountType(DAccount::Account_UnionID);
     account->setDtCreate(QDateTime::currentDateTime());
     account->setDbName(QString("account_%1_%2.db").arg(typeStr).arg(sortID));
@@ -294,6 +307,7 @@ void DAccountManageModule::slotUidLoginStatueChange(const bool staus)
             m_accountManagerDB->deleteAccountInfo(accountID);
         }
     }
-
+    //更新帐户信息
+    m_accountList = m_accountManagerDB->getAccountList();
     emit signalLoginStatusChange();
 }

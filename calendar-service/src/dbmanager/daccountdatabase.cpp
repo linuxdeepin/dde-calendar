@@ -1069,22 +1069,23 @@ void DAccountDataBase::initScheduleType()
 {
     //创建数据库时，需要初始化的类型数据
     initSysType();
-    //添加节假日日程类型，不会展示在类型列表中
-    DScheduleType::Ptr scheduleType(new DScheduleType);
-    scheduleType->setTypeID(createUuid());
-    scheduleType->setDtCreate(QDateTime::currentDateTime());
-    scheduleType->setPrivilege(DScheduleType::None);
-    scheduleType->setTypeName("festival");
-    scheduleType->setDisplayName("Holiday schedule type");
-    scheduleType->setColorID(2);
-    scheduleType->setShowState(DScheduleType::Show);
-    createScheduleType(scheduleType);
 }
 
 void DAccountDataBase::initSysType()
 {
     //如果为本地帐户则初始化本地日程类型数据
     if (m_account->accountType() == DAccount::Account_Local) {
+        //添加节假日日程类型，不会展示在类型列表中
+        DScheduleType::Ptr scheduleType(new DScheduleType);
+        scheduleType->setTypeID(createUuid());
+        scheduleType->setDtCreate(QDateTime::currentDateTime());
+        scheduleType->setPrivilege(DScheduleType::None);
+        scheduleType->setTypeName("festival");
+        scheduleType->setDisplayName("Holiday schedule type");
+        scheduleType->setColorID(2);
+        scheduleType->setShowState(DScheduleType::Show);
+        createScheduleType(scheduleType);
+
         //工作类型
         DScheduleType::Ptr workType(new DScheduleType(m_account->accountID()));
         workType->setTypeID("107c369e-b13a-4d45-9ff3-de4eb3c0475b");

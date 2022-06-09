@@ -75,6 +75,8 @@ struct AccountDB : public DAccountDataBase {
     {
         initTypeColor();
     }
+
+    void initScheduleType();
 };
 
 DAccountModule::DAccountModule(const DAccount::Ptr &account, QObject *parent)
@@ -87,6 +89,10 @@ DAccountModule::DAccountModule(const DAccount::Ptr &account, QObject *parent)
     m_accountDB->setDBPath(newDbPatch + "/" + account->dbName());
     m_accountDB->initDBData();
     m_account = m_accountDB->getAccountInfo();
+
+    if (m_account->isNetWorkAccount()) {
+        accountDownload();
+    }
 
     //关联打开日历界面
     connect(m_alarm.data(), &DAlarmManager::signalCallOpenCalendarUI, this, &DAccountModule::slotOpenCalendar);
@@ -949,4 +955,53 @@ void DAccountModule::slotOpenCalendar(const QString &alarmID)
     openCalendar.OpenSchedule(scheduleStr);
     //删除对应提醒任务数据
     m_accountDB->deleteRemindInfoByAlarmID(alarmID);
+}
+
+void AccountDB::initScheduleType()
+{
+    qInfo() << Q_FUNC_INFO;
+    //工作类型
+    DScheduleType::Ptr workType(new DScheduleType(m_account->accountID()));
+    workType->setTypeID(createUuid());
+    workType->setDtCreate(QDateTime::currentDateTime());
+    workType->setPrivilege(DScheduleType::Read);
+    workType->setTypeName("Work");
+    workType->setDisplayName("Work");
+    DTypeColor workColor;
+    workColor.setColorID(1);
+    workColor.setColorCode("#ff5e97");
+    workColor.setPrivilege(DTypeColor::PriSystem);
+    workType->setTypeColor(workColor);
+    workType->setShowState(DScheduleType::Show);
+    createScheduleType(workType);
+
+    //生活
+    DScheduleType::Ptr lifeType(new DScheduleType(m_account->accountID()));
+    lifeType->setTypeID(createUuid());
+    lifeType->setDtCreate(QDateTime::currentDateTime());
+    lifeType->setPrivilege(DScheduleType::Read);
+    lifeType->setTypeName("Life");
+    lifeType->setDisplayName("Life");
+    DTypeColor lifeColor;
+    lifeColor.setColorID(7);
+    lifeColor.setColorCode("#5d51ff");
+    lifeColor.setPrivilege(DTypeColor::PriSystem);
+    lifeType->setTypeColor(lifeColor);
+    lifeType->setShowState(DScheduleType::Show);
+    createScheduleType(lifeType);
+
+    //其他
+    DScheduleType::Ptr otherType(new DScheduleType(m_account->accountID()));
+    otherType->setTypeID(createUuid());
+    otherType->setDtCreate(QDateTime::currentDateTime());
+    otherType->setPrivilege(DScheduleType::Read);
+    otherType->setTypeName("Other");
+    otherType->setDisplayName("Other");
+    DTypeColor otherColor;
+    otherColor.setColorID(4);
+    otherColor.setColorCode("#5bdd80");
+    otherColor.setPrivilege(DTypeColor::PriSystem);
+    otherType->setTypeColor(otherColor);
+    otherType->setShowState(DScheduleType::Show);
+    createScheduleType(otherType);
 }

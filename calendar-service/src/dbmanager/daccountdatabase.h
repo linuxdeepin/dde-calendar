@@ -143,7 +143,7 @@ protected:
     void initTypeColor();
     void initAccountDB();
 
-private:
+protected:
     DAccount::Ptr m_account;
 };
 
