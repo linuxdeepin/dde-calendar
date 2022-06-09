@@ -7,9 +7,6 @@ SyncFileManage::SyncFileManage(QObject *parent)
     , m_account(new DAccount(DAccount::Account_UnionID))
 {
     connect(m_syncoperation, &Syncoperation::UserDatachanged, this, &SyncFileManage::onUserDatachanged);
-    connect(m_syncoperation, &Syncoperation::LoginStatuschanged, this, &SyncFileManage::onLoginStatuschanged);
-    //需要先调用一次用户登入
-    m_syncoperation->optlogin();
 }
 
 SyncFileManage::~SyncFileManage()
@@ -17,12 +14,17 @@ SyncFileManage::~SyncFileManage()
 
 }
 
-int SyncFileManage::SyncDataDownload(QString &UID, QString &filename)
+bool SyncFileManage::SyncDataDownload(const QString &uid, QString &filepath, int *errorcode)
 {
     //文件下载目录检查
-    QString usersyncdir(QString("/tmp/%1_calendar").arg(UID));
+    QString usersyncdir(QString("/tmp/%1_calendar").arg(uid));
     UserSyncDirectory(usersyncdir);
     QString syncDB = usersyncdir + "/" + syncDBname;
+    QFile syncDBfile(syncDB);
+    if (syncDBfile.exists()) {
+        //存在文件即删除
+        syncDBfile.remove();
+    }
 
     SyncoptResult result;
     result = m_syncoperation->optDownload(syncDB, syncDB);
@@ -30,22 +32,30 @@ int SyncFileManage::SyncDataDownload(QString &UID, QString &filename)
         //下载成功
         if (result.data != syncDB) {
             //文件下载路径不正确
-            qDebug() << "down path error!";
+            //将文件移动到正确路径
+            if (!QFile::rename(result.data, syncDB)) {
+                qDebug() << "down path error!";
+                *errorcode = -1;
+                return false;
+            }
         }
-        filename = result.data;
+        filepath = syncDB;
+        return true;
     } else if (result.error_code == SYNC_Data_Not_Exist) {
-        //创建原始云同步数据库
+        //云同步数据库文件不存在
         if (SyncDbCreate(syncDB)) {
-            filename = syncDB;
+            filepath = syncDB;
+            return true;
         } else {
-            return -1;
+            *errorcode = -1;
+            return false;
         }
     }
-
-    return result.error_code;
+    *errorcode = result.error_code;
+    return false;
 }
 
-bool SyncFileManage::SyncDbCreate(QString &DBpath)
+bool SyncFileManage::SyncDbCreate(const QString &DBpath)
 {
     QFile file(DBpath);
     if (!file.exists()) {
@@ -60,6 +70,7 @@ bool SyncFileManage::SyncDbCreate(QString &DBpath)
     QSqlDatabase m_db;
     m_db = QSqlDatabase::addDatabase("QSQLITE");
     m_db.setPassword(syncDBpassword);
+    m_db.setDatabaseName(DBpath);
     if (!m_db.open()) {
         qInfo() << "db open failed";
         return false;
@@ -69,12 +80,35 @@ bool SyncFileManage::SyncDbCreate(QString &DBpath)
     return true;
 }
 
-int SyncFileManage::SyncDataUpload(const QString &filenanme)
+bool SyncFileManage::SyncDbDelete(const QString &DBpath)
+{
+    QFileInfo fileinfo(DBpath);
+    QDir dir = fileinfo.dir();
+
+    if (dir.exists()) {
+        if (!dir.removeRecursively()) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool SyncFileManage::SyncDataUpload(const QString &filepath, int *errorcode)
 {
     SyncoptResult result;
-    result = m_syncoperation->optUpload(filenanme);
+    result = m_syncoperation->optUpload(filepath);
+    if (result.error_code != SYNC_No_Error) {
+        qDebug() << "upload failed";
+        *errorcode = result.error_code;
+        return false;
+    }
 
-    return result.error_code;
+    if (!SyncDbDelete(filepath)) {
+        *errorcode = -1;
+        return false;
+    }
+    return true;
 }
 
 DAccount::Ptr SyncFileManage::getuserInfo()
@@ -98,23 +132,19 @@ DAccount::Ptr SyncFileManage::getuserInfo()
     return m_account;
 }
 
-void SyncFileManage::onUserDatachanged(const QVariantMap  &value)
+void SyncFileManage::onUserDatachanged(const QVariantMap    &value)
 {
     qInfo() << value.value("username").toString();
     qInfo() << value.value("profile_image").toString();
     qInfo() << value.value("nickname").toString();
     qInfo() << value.value("uid").toString();
     // m_userinfo = value; 这边是否直接更新？？？
+    //等待完善
 }
 
 Syncoperation *SyncFileManage::getSyncoperation()
 {
     return m_syncoperation;
-}
-
-void SyncFileManage::onLoginStatuschanged(const int32_t value)
-{
-    qInfo() << value;
 }
 
 void SyncFileManage::UserSyncDirectory(const QString &dir)

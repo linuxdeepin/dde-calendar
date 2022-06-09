@@ -6,8 +6,6 @@ Syncoperation::Syncoperation(QObject *parent)
 {
     QStringList argumentMatch;
     argumentMatch << SYNC_DBUS_INTERFACE;
-    //用户登录状态改变
-    connect(m_syncInter, &SyncInter::LoginStatus, this, &Syncoperation::OnLoginStatus, Qt::QueuedConnection);
     //关联dbus propertiesChanged 属性改变信号
 //    QDBusConnection::sessionBus().connect(SYNC_DBUS_PATH,
 //                                          SYNC_DBUS_INTERFACE,
@@ -181,10 +179,6 @@ void Syncoperation::slotDbusCall(const QDBusMessage &msg)
     }
 }
 
-void Syncoperation::OnLoginStatus(const int32_t value)
-{
-    Q_EMIT LoginStatuschanged(value);
-}
 
 void Syncoperation::onPropertiesChanged(const QString &interfaceName, const QVariantMap &changedProperties, const QStringList &invalidatedProperties)
 {

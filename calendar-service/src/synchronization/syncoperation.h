@@ -13,19 +13,19 @@
 
 
 //云同步错误码
-#define SYNC_No_Error                   0               /**/
-#define SYNC_Internal_Error             7500            /**/
-#define SYNC_Parameter_Error            7501            /**/
-#define SYNC_Login_Expired              7502            /**/
-#define SYNC_No_Access                  7503
-#define SYNC_Data_Not_Exist             7504
-#define SYNC_File_Operation_Failed      7505
-#define SYNC_Network_Request_Error      7506
-#define SYNC_Oss_Operation_Error        7507
-#define SYNC_Space_Not_Available        7508
-#define SYNC_File_Or_Path_Error         7509
-#define SYNC_Invalid_File_Size          7510
-#define SYNC_Metadata_Check_Error       7511
+#define SYNC_No_Error                   0               /*执行正常*/
+#define SYNC_Internal_Error             7500            /*内部错误*/
+#define SYNC_Parameter_Error            7501            /*参数错误*/
+#define SYNC_Login_Expired              7502            /*未登录或登录过期*/
+#define SYNC_No_Access                  7503            /*禁止访问，不在白名单内*/
+#define SYNC_Data_Not_Exist             7504            /*数据不存在*/
+#define SYNC_File_Operation_Failed      7505            /*文件操作失败*/
+#define SYNC_Network_Request_Error      7506            /*网络请求出错错误*/
+#define SYNC_Oss_Operation_Error        7507            /*oss操作出错*/
+#define SYNC_Space_Not_Available        7508            /*空间不可用*/
+#define SYNC_File_Or_Path_Error         7509            /*空间不可用*/
+#define SYNC_Invalid_File_Size          7510            /*文件大小不合法*/
+#define SYNC_Metadata_Check_Error       7511            /*元数据校验出错*/
 
 using SyncInter = com::deepin::sync::cloudopt;
 
@@ -58,17 +58,10 @@ public:
 
 Q_SIGNALS:
     void UserDatachanged(const QVariantMap  &value) const;
-    void LoginStatuschanged(const int32_t value) const;
     void signalLoginStatusChange(const bool staus);
 
-private slots:
-    void slotDbusCall(const QDBusMessage &msg);
-
-private:
-    DAccount::Ptr accountChangeHandle(const QDBusArgument &accountInfo);
-
 private Q_SLOTS:
-    void OnLoginStatus(const int32_t value);
+    void slotDbusCall(const QDBusMessage &msg);
     void onPropertiesChanged(const QString &interfaceName,
                              const QVariantMap &changedProperties,
                              const QStringList &invalidatedProperties);

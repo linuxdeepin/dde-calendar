@@ -115,7 +115,6 @@ public slots:
     }
 
 Q_SIGNALS: // SIGNALS
-    void LoginStatus(int32_t value) const;
 
 };
 

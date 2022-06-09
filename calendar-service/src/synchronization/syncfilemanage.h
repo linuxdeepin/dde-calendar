@@ -25,21 +25,14 @@ public:
      *          返回值： -1 数据库文件创建失败
      *                  云同步错误码
      */
-    int SyncDataDownload(QString &UID, QString &filename);
-    /**
-     * @brief SyncDbCreate   同步数据库文件创建
-     * @param
-     * @return
-     */
-    bool SyncDbCreate(QString &DBpath);
+    bool SyncDataDownload(const QString &uid, QString &filepath, int *errorcode);
 
     /**
      * @brief SyncDataUpload   同步数据上传
      * @param
      * @return
      */
-    int SyncDataUpload(const QString &filenanme);
-
+    bool SyncDataUpload(const QString &filepath, int *errorcode);
     /**
      * @brief getuserInfo   获取用户信息
      * @param
@@ -51,8 +44,20 @@ public:
 
 public Q_SLOTS:
     void onUserDatachanged(const QVariantMap  &value);
-    void onLoginStatuschanged(const int32_t value);
+
 private:
+    /**
+     * @brief SyncDbCreate   同步数据库文件创建
+     * @param
+     * @return
+     */
+    bool SyncDbCreate(const QString &DBpath);
+    /**
+     * @brief SyncDbCreate   同步数据库文件创建
+     * @param
+     * @return
+     */
+    bool SyncDbDelete(const QString &DBpath);
 
     void UserSyncDirectory(const QString &dir);
 private:
