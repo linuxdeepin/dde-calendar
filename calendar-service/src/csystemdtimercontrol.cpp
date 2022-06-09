@@ -94,6 +94,22 @@ void CSystemdTimerControl::startCalendarServiceSystemdTimer()
     }
 }
 
+void CSystemdTimerControl::startDownLoadTask(const QString &accountID)
+{
+}
+
+void CSystemdTimerControl::stopDownLoadTask(const QString &accountID)
+{
+}
+
+void CSystemdTimerControl::startUploadTask()
+{
+}
+
+void CSystemdTimerControl::stopUploadTask()
+{
+}
+
 void CSystemdTimerControl::createPath()
 {
     m_systemdPath = QStandardPaths::writableLocation(QStandardPaths::HomeLocation).append("/.config/systemd/user/");

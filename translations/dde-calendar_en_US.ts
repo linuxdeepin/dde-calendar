@@ -2,6 +2,29 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="en_US">
 <context>
+    <name>AccountItem</name>
+    <message>
+        <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="50"/>
+        <source>Sync successful</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="51"/>
+        <source>Network error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="52"/>
+        <source>Server exception</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="53"/>
+        <source>Storage full</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>CColorPickerWidget</name>
     <message>
         <location filename="../calendar-client/src/customWidget/colorWidget/colorpickerWidget.cpp" line="91"/>
@@ -644,6 +667,44 @@
     </message>
 </context>
 <context>
+    <name>CWeekWidget</name>
+    <message>
+        <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="88"/>
+        <source>Sun</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="88"/>
+        <source>Mon</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="88"/>
+        <source>Tue</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="88"/>
+        <source>Wed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="88"/>
+        <source>Thu</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="88"/>
+        <source>Fri</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="88"/>
+        <source>Sat</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>CWeekWindow</name>
     <message>
         <location filename="../calendar-client/src/widget/weekWidget/weekwindow.cpp" line="110"/>
@@ -985,6 +1046,42 @@
     </message>
 </context>
 <context>
+    <name>SidebarAccountItemWidget</name>
+    <message>
+        <location filename="../calendar-client/src/widget/sidebarWidget/sidebaritemwidget.cpp" line="245"/>
+        <source>Sync successful</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/widget/sidebarWidget/sidebaritemwidget.cpp" line="246"/>
+        <source>Network error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/widget/sidebarWidget/sidebaritemwidget.cpp" line="247"/>
+        <source>Server exception</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/widget/sidebarWidget/sidebaritemwidget.cpp" line="248"/>
+        <source>Storage full</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SidebarCalendarWidget</name>
+    <message>
+        <location filename="../calendar-client/src/widget/sidebarWidget/sidebarcalendarwidget.cpp" line="130"/>
+        <source>Y</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/widget/sidebarWidget/sidebarcalendarwidget.cpp" line="130"/>
+        <source>M</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>TimeJumpDialog</name>
     <message>
         <location filename="../calendar-client/src/dialog/timejumpdialog.cpp" line="44"/>
@@ -995,13 +1092,13 @@
 <context>
     <name>UserloginWidget</name>
     <message>
-        <location filename="../calendar-client/src/widget/settingWidget/userloginwidget.cpp" line="63"/>
+        <location filename="../calendar-client/src/widget/settingWidget/userloginwidget.cpp" line="61"/>
         <source>Sign In</source>
         <comment>button</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/settingWidget/userloginwidget.cpp" line="64"/>
+        <location filename="../calendar-client/src/widget/settingWidget/userloginwidget.cpp" line="62"/>
         <source>Sign Out</source>
         <comment>button</comment>
         <translation type="unfinished"></translation>

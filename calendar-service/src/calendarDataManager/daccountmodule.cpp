@@ -88,7 +88,7 @@ DAccountModule::DAccountModule(const DAccount::Ptr &account, QObject *parent)
     QString newDbPatch = getDBPath();
     m_accountDB->setDBPath(newDbPatch + "/" + account->dbName());
     m_accountDB->initDBData();
-    m_account = m_accountDB->getAccountInfo();
+    m_accountDB->getAccountInfo(m_account);
 
     if (m_account->isNetWorkAccount()) {
         accountDownload();
@@ -101,7 +101,7 @@ DAccountModule::DAccountModule(const DAccount::Ptr &account, QObject *parent)
 QString DAccountModule::getAccountInfo()
 {
     QString accountInfo;
-    m_account = m_accountDB->getAccountInfo();
+    //    m_account = m_accountDB->getAccountInfo();
     DAccount::toJsonString(m_account, accountInfo);
     return accountInfo;
 }
@@ -115,7 +115,7 @@ void DAccountModule::setExpand(const bool &isExpand)
 {
     if (m_account->isExpandDisplay() != isExpand) {
         m_account->setIsExpandDisplay(isExpand);
-        m_accountDB->updateAccountInfo(m_account);
+        m_accountDB->updateAccountInfo();
     }
 }
 
@@ -128,7 +128,7 @@ void DAccountModule::setAccountState(const int accountState)
 {
     if (int(m_account->accountState()) != accountState) {
         m_account->setAccountState(static_cast<DAccount::AccountState>(accountState));
-        m_accountDB->updateAccountInfo(m_account);
+        m_accountDB->updateAccountInfo();
     }
 }
 
@@ -145,7 +145,7 @@ QString DAccountModule::getSyncFreq()
 void DAccountModule::setSyncFreq(const QString &freq)
 {
     DAccount::syncFreqFromJsonString(m_account, freq);
-    m_accountDB->updateAccountInfo(m_account);
+    m_accountDB->updateAccountInfo();
 }
 
 QString DAccountModule::getScheduleTypeList()

@@ -114,7 +114,7 @@ const QString DDataBase::sql_create_accountManager =
     " accountID TEXT NOT NULL PRIMARY KEY,             "
     " accountName TEXT NOT NULL,           "
     " displayName TEXT NOT NULL,           "
-    " syncState INTEGER not null,          "
+    " accountState INTEGER not null,       "
     " accountAvatar TEXT,                  "
     " accountDescription TEXT ,            "
     " accountType INTEGER not null,        "

@@ -41,6 +41,7 @@ DAccountManageModule::DAccountManageModule(QObject *parent)
 
     //根据获取到的帐户信息创建对应的帐户服务
     foreach (auto account, m_accountList) {
+        qInfo() << "accountState:" << int(account->accountState());
         DAccountModule::Ptr accountModule = DAccountModule::Ptr(new DAccountModule(account));
         m_accountModuleMap[account->accountID()] = accountModule;
         DAccountService::Ptr accountService = DAccountService::Ptr(new DAccountService(account->dbusPath(), account->dbusInterface(), accountModule, this));
@@ -72,6 +73,7 @@ QString DAccountManageModule::getCalendarGeneralSettings()
 
 void DAccountManageModule::setCalendarGeneralSettings(const QString &cgSet)
 {
+    qInfo() << cgSet;
     DCalendarGeneralSettings::Ptr cgSetPtr = DCalendarGeneralSettings::Ptr(new DCalendarGeneralSettings);
     DCalendarGeneralSettings::fromJsonString(cgSetPtr, cgSet);
     if (m_generalSetting != cgSetPtr) {
@@ -191,6 +193,7 @@ void DAccountManageModule::unionIDDataMerging()
         //如果数据库中有unionid帐户
         if (std::any_of(m_accountList.begin(), m_accountList.end(), hasUnionid)) {
             m_accountManagerDB->deleteAccountInfo(unionidDB->accountID());
+            m_accountList.removeOne(unionidDB);
         }
     } else {
         //如果unionID登陆了
@@ -206,18 +209,19 @@ void DAccountManageModule::unionIDDataMerging()
                     m_accountManagerDB->updateAccountInfo(unionidDB);
                 }
             } else {
+                m_accountList.removeOne(unionidDB);
                 m_accountManagerDB->deleteAccountInfo(unionidDB->accountID());
                 //如果不是一个帐户则移除再设置
                 initAccountDBusInfo(accountUnionid);
                 m_accountManagerDB->addAccountInfo(accountUnionid);
+                m_accountList.append(accountUnionid);
             }
         } else {
             initAccountDBusInfo(accountUnionid);
             m_accountManagerDB->addAccountInfo(accountUnionid);
+            m_accountList.append(accountUnionid);
         }
     }
-    //更新最新的帐户信息
-    m_accountList = m_accountManagerDB->getAccountList();
 }
 
 void DAccountManageModule::initAccountDBusInfo(const DAccount::Ptr &account)
@@ -235,6 +239,7 @@ void DAccountManageModule::initAccountDBusInfo(const DAccount::Ptr &account)
         break;
     }
     QString sortID = DDataBase::createUuid().mid(0, 5);
+    account->setAccountState(DAccount::AccountState::Account_Setting | DAccount::Account_Calendar);
     //TODO:获取总开关
     //account
     account->setAccountType(DAccount::Account_UnionID);
@@ -279,16 +284,15 @@ void DAccountManageModule::slotUidLoginStatueChange(const bool staus)
         } else {
             initAccountDBusInfo(accountUnionid);
             m_accountManagerDB->addAccountInfo(accountUnionid);
+            m_accountList.append(accountUnionid);
 
-            DAccount::Ptr account = m_accountManagerDB->getAccountByID(accountUnionid->accountID());
-
-            DAccountModule::Ptr accountModule = DAccountModule::Ptr(new DAccountModule(account));
-            m_accountModuleMap[account->accountID()] = accountModule;
-            DAccountService::Ptr accountService = DAccountService::Ptr(new DAccountService(account->dbusPath(), account->dbusInterface(), accountModule, this));
+            DAccountModule::Ptr accountModule = DAccountModule::Ptr(new DAccountModule(accountUnionid));
+            m_accountModuleMap[accountUnionid->accountID()] = accountModule;
+            DAccountService::Ptr accountService = DAccountService::Ptr(new DAccountService(accountUnionid->dbusPath(), accountUnionid->dbusInterface(), accountModule, this));
             if (!sessionBus.registerObject(accountService->getPath(), accountService->getInterface(), accountService.data(), options)) {
                 qWarning() << "registerObject accountService failed:" << sessionBus.lastError();
             } else {
-                m_AccountServiceMap[account->accountType()].insert(account->accountID(), accountService);
+                m_AccountServiceMap[accountUnionid->accountType()].insert(accountUnionid->accountID(), accountService);
             }
         }
     } else {
@@ -303,11 +307,10 @@ void DAccountManageModule::slotUidLoginStatueChange(const bool staus)
             //移除uid帐户信息
             //删除对应数据库
             m_accountModuleMap[accountID]->removeDB();
+            m_accountList.removeOne(m_accountModuleMap[accountID]->account());
             m_accountModuleMap.remove(accountID);
             m_accountManagerDB->deleteAccountInfo(accountID);
         }
     }
-    //更新帐户信息
-    m_accountList = m_accountManagerDB->getAccountList();
     emit signalLoginStatusChange();
 }

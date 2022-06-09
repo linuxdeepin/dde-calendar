@@ -56,6 +56,7 @@ QString DServiceBase::getClientName()
 
 bool DServiceBase::clientWhite(const int index)
 {
+#ifdef CALENDAR_SERVICE_AUTO_EXIT
     //根据编号,获取不同到白名单
     static QVector<QStringList> whiteList {{"dde-calendar", "DeepinAIAssistant"}, {"dde-calendar"}, {"dde-calendar"}};
     if (whiteList.size() < index) {
@@ -67,6 +68,10 @@ bool DServiceBase::clientWhite(const int index)
         }
     }
     return false;
+#else
+    Q_UNUSED(index)
+    return true;
+#endif
 }
 
 void DServiceBase::notifyPropertyChanged(const QString &interface, const QString &propertyName)

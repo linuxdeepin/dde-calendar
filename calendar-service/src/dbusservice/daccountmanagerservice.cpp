@@ -140,6 +140,7 @@ int DAccountManagerService::getfirstDayOfWeek() const
 
 void DAccountManagerService::setFirstDayOfWeek(const int firstday)
 {
+    qInfo() << firstday;
     m_accountManager->setFirstDayOfWeek(firstday);
 }
 

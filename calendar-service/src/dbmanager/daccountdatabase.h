@@ -73,8 +73,8 @@ public:
     //获取节假日类型ID
     QString getFestivalTypeID();
     ///////////////帐户信息
-    DAccount::Ptr getAccountInfo();
-    void updateAccountInfo(const DAccount::Ptr &account);
+    void getAccountInfo(const DAccount::Ptr &account);
+    void updateAccountInfo();
 
     ///////////////////类型颜色
     bool addTypeColor(const int typeColorNo, const QString &strColorHex, const int privilege);
@@ -116,14 +116,6 @@ public:
      * @param Ids                   日程id集
      */
     void deleteRemindInfos(const QStringList &jobIDs);
-
-    /**
-     * @brief getRemindJob      根据日程id和重复id获取对应的提醒日程
-     * @param id                日程id
-     * @param recurid           重复id
-     * @return
-     */
-    DSchedule getRemindJob(const QString &jobID, const qint64 recurid);
 
     //添加上传任务
     void addUploadTask(const DUploadTaskData::Ptr &uploadTask);

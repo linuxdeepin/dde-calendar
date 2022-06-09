@@ -65,6 +65,14 @@ public:
      * @brief startCalendarServiceSystemdTimer      开启日程后端定时器
      */
     void startCalendarServiceSystemdTimer();
+
+    //开启定时下载任务
+    static void startDownLoadTask(const QString &accountID);
+    static void stopDownLoadTask(const QString &accountID);
+    //开启定时上传任务
+    static void startUploadTask();
+    static void stopUploadTask();
+
 private:
     /**
      * @brief removeFile        移除.service和.timer文件

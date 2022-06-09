@@ -621,34 +621,33 @@ QString DAccountDataBase::getFestivalTypeID()
     return typeID;
 }
 
-DAccount::Ptr DAccountDataBase::getAccountInfo()
+void DAccountDataBase::getAccountInfo(const DAccount::Ptr &account)
 {
     QString strSql("SELECT syncState,accountState, accountName, displayName, cloudPath,      \
                    accountType, syncFreq, intervalTime, syncTag, expandStatus, dtLastUpdate         \
                    FROM account WHERE id = 1;");
     QSqlQuery query(m_database);
     if (query.prepare(strSql) && query.exec() && query.next()) {
-        m_account->setSyncState(static_cast<DAccount::AccountSyncState>(query.value("syncState").toInt()));
-        m_account->setAccountState(static_cast<DAccount::AccountState>(query.value("accountState").toInt()));
-        m_account->setAccountName(query.value("accountName").toString());
-        m_account->setDisplayName(query.value("displayName").toString());
-        m_account->setCloudPath(query.value("cloudPath").toString());
-        m_account->setAccountType(static_cast<DAccount::Type>(query.value("accountType").toInt()));
-        m_account->setSyncFreq(static_cast<DAccount::SyncFreqType>(query.value("syncFreq").toInt()));
-        m_account->setIntervalTime(query.value("intervalTime").toInt());
-        m_account->setSyncTag(query.value("syncTag").toInt());
-        m_account->setIsExpandDisplay(query.value("expandStatus").toBool());
-        m_account->setDtLastSync(dtFromString(query.value("dtLastUpdate").toString()));
+        account->setSyncState(static_cast<DAccount::AccountSyncState>(query.value("syncState").toInt()));
+        account->setAccountState(static_cast<DAccount::AccountState>(query.value("accountState").toInt()));
+        account->setAccountName(query.value("accountName").toString());
+        account->setDisplayName(query.value("displayName").toString());
+        account->setCloudPath(query.value("cloudPath").toString());
+        account->setAccountType(static_cast<DAccount::Type>(query.value("accountType").toInt()));
+        account->setSyncFreq(static_cast<DAccount::SyncFreqType>(query.value("syncFreq").toInt()));
+        account->setIntervalTime(query.value("intervalTime").toInt());
+        account->setSyncTag(query.value("syncTag").toInt());
+        account->setIsExpandDisplay(query.value("expandStatus").toBool());
+        account->setDtLastSync(dtFromString(query.value("dtLastUpdate").toString()));
     } else {
         qWarning() << query.lastError();
     }
     if (query.isActive()) {
         query.finish();
     }
-    return m_account;
 }
 
-void DAccountDataBase::updateAccountInfo(const DAccount::Ptr &account)
+void DAccountDataBase::updateAccountInfo()
 {
     QString strSql("UPDATE account                                                              \
                    SET syncState=?, accountState = ?,accountName=?, displayName=?,                               \
@@ -656,17 +655,17 @@ void DAccountDataBase::updateAccountInfo(const DAccount::Ptr &account)
                   , expandStatus = ?, dtLastUpdate = ? WHERE id=1;");
     QSqlQuery query(m_database);
     if (query.prepare(strSql)) {
-        query.addBindValue(account->syncState());
-        query.addBindValue(int(account->accountState()));
-        query.addBindValue(account->accountName());
-        query.addBindValue(account->displayName());
-        query.addBindValue(account->cloudPath());
-        query.addBindValue(account->accountType());
-        query.addBindValue(account->syncFreq());
-        query.addBindValue(account->intervalTime());
-        query.addBindValue(account->syncTag());
-        query.addBindValue(account->isExpandDisplay());
-        query.addBindValue(account->dtLastSync());
+        query.addBindValue(m_account->syncState());
+        query.addBindValue(int(m_account->accountState()));
+        query.addBindValue(m_account->accountName());
+        query.addBindValue(m_account->displayName());
+        query.addBindValue(m_account->cloudPath());
+        query.addBindValue(m_account->accountType());
+        query.addBindValue(m_account->syncFreq());
+        query.addBindValue(m_account->intervalTime());
+        query.addBindValue(m_account->syncTag());
+        query.addBindValue(m_account->isExpandDisplay());
+        query.addBindValue(m_account->dtLastSync());
         if (!query.exec()) {
             qWarning() << query.lastError();
         }
