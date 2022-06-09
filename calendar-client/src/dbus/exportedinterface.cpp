@@ -23,6 +23,8 @@
 #include "calendarmainwindow.h"
 #include "cscheduleoperation.h"
 #include "accountmanager.h"
+#include "units.h"
+#include "compatibledata.h"
 
 #include <QJsonDocument>
 #include <QJsonParseError>
@@ -49,6 +51,9 @@ QVariant ExportedInterface::invoke(const QString &action, const QString &paramet
 
     if (action == "CREATE") {
         // 创建日程
+        if (info.isNull()) {
+            return QVariant(false);
+        }
         bool _createSucc = _scheduleOperation.createSchedule(info);
         //如果创建失败
         if (!_createSucc) {
@@ -58,7 +63,8 @@ QVariant ExportedInterface::invoke(const QString &action, const QString &paramet
         dynamic_cast<Calendarmainwindow *>(m_object)->viewWindow(para.viewType);
     } else if (action == "QUERY") {
         if (gLocalAccountItem) {
-            QString qstr = gLocalAccountItem->querySchedulesByExternal(para.ADTitleName, para.ADStartTime, para.ADEndTime);
+            DSchedule::Map scheduleMap = DSchedule::fromMapString(gLocalAccountItem->querySchedulesByExternal(para.ADTitleName, para.ADStartTime, para.ADEndTime));
+            QString qstr = DDE_Calendar::getExternalSchedule(scheduleMap);
             return QVariant(qstr);
         } else {
             return "";
@@ -66,7 +72,7 @@ QVariant ExportedInterface::invoke(const QString &action, const QString &paramet
     } else if (action == "CANCEL") {
         //对外接口删除日程
         QMap<QDate, DSchedule::List> out;
-        //        //口查询日程
+        //口查询日程
         if (gLocalAccountItem && gLocalAccountItem->querySchedulesByExternal(para.ADTitleName, para.ADStartTime, para.ADEndTime, out)) {
             //删除查询到的日程
             QMap<QDate, DSchedule::List>::const_iterator _iterator = nullptr;
@@ -84,6 +90,8 @@ QVariant ExportedInterface::invoke(const QString &action, const QString &paramet
 
 bool ExportedInterface::analysispara(QString &parameters, DSchedule::Ptr &info, Exportpara &para) const
 {
+    //如果是创建则info有效
+    //如果是其他则para有效
     QJsonParseError json_error;
     QJsonDocument jsonDoc(QJsonDocument::fromJson(parameters.toLocal8Bit(), &json_error));
 
@@ -92,7 +100,7 @@ bool ExportedInterface::analysispara(QString &parameters, DSchedule::Ptr &info, 
     }
     QJsonObject rootObj = jsonDoc.object();
     //数据反序列化
-    DSchedule::fromJsonString(info, parameters);
+    info = DDE_Calendar::getScheduleByExported(parameters);
 
     if (rootObj.contains("ViewName")) {
         para.viewType = rootObj.value("ViewName").toInt();

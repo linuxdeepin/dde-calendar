@@ -72,6 +72,10 @@ public:
     QString scheduleTypeID() const;
     void setScheduleTypeID(const QString &typeID);
 
+    //为了与旧数据兼容处理（与联系人交互中使用的是自增ID作为日程的ID）
+    int dbID() const;
+    void setDbID(int id);
+
     bool isMoved();
     void setMoved(bool moved);
 
@@ -113,11 +117,16 @@ public:
     QString fileName() const;
     void setFileName(const QString &fileName);
 
+    //为了与旧数据兼容处理（与联系人交互中使用的是自增ID作为日程的ID）
+    int compatibleID() const;
+    void setcompatibleID(int compatibleID);
+
 private:
     QString m_fileName; //日程对应文件名称
     //日程类型
     QString m_scheduleTypeID;
     bool m_moved = false;
+    int m_compatibleID; //为了与旧数据兼容处理（与联系人交互中使用的是自增ID作为日程的ID）
 };
 
 namespace DSchedules {

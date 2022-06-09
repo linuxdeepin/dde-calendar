@@ -233,8 +233,13 @@ bool DSchedule::fromJsonString(DSchedule::Ptr &schedule, const QString &json)
     QJsonObject rootObj = jsonDoc.object();
     if (rootObj.contains("schedule")) {
         QString str = rootObj.value("schedule").toString();
-        if (fromIcsString(schedule, str) && rootObj.contains("type")) {
-            schedule->setScheduleTypeID(rootObj.value("type").toString());
+        if (fromIcsString(schedule, str)) {
+            if (rootObj.contains("type")) {
+                schedule->setScheduleTypeID(rootObj.value("type").toString());
+            }
+            if (rootObj.contains("compatibleID")) {
+                schedule->setcompatibleID(rootObj.value("compatibleID").toInt());
+            }
             resBool = true;
         }
     }
@@ -250,6 +255,7 @@ bool DSchedule::toJsonString(const DSchedule::Ptr &schedule, QString &json)
     QJsonObject rootObject;
     rootObject.insert("type", schedule->scheduleTypeID());
     rootObject.insert("schedule", toIcsString(schedule));
+    rootObject.insert("compatibleID", schedule->compatibleID());
     QJsonDocument jsonDoc;
     jsonDoc.setObject(rootObject);
     json = QString::fromUtf8(jsonDoc.toJson(QJsonDocument::Compact));
@@ -355,6 +361,16 @@ QString DSchedule::fileName() const
 void DSchedule::setFileName(const QString &fileName)
 {
     m_fileName = fileName;
+}
+
+int DSchedule::compatibleID() const
+{
+    return m_compatibleID;
+}
+
+void DSchedule::setcompatibleID(int compatibleID)
+{
+    m_compatibleID = compatibleID;
 }
 
 QDebug operator<<(QDebug debug, const DSchedule &scheduleJsonData)
