@@ -120,7 +120,6 @@ bool DbusHuangLiRequest::getHuangLiDay(quint32 year, quint32 month, quint32 day,
 bool DbusHuangLiRequest::getHuangLiMonth(quint32 year, quint32 month, bool fill, CaHuangLiMonthInfo &info)
 {
     QDBusPendingReply<QString> reply = call("getHuangLiMonth", QVariant(year), QVariant(month), QVariant(fill));
-
     if (reply.isError()) {
         qWarning() << reply.error().message();
         return false;

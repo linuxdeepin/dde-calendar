@@ -120,6 +120,10 @@ public slots:
     void sloteRpeatactivated(int index);
     void slotJobComboBoxEditingFinished();
     void slotAccoutBoxActivated(const QString &text);
+    //帐户登出信号
+    void signalLogout(DAccount::Type);
+    //帐户信更新
+    void slotAccountUpdate();
 
 protected:
     bool eventFilter(QObject *obj, QEvent *pEvent) override;
@@ -132,7 +136,6 @@ private:
     void initUI();
     void resetColor(const AccountItem::Ptr&);
     void initConnection();
-    void initAccountComBox();
     void initDateEdit();
     void initJobTypeComboBox();
     void initRmindRpeatUI();

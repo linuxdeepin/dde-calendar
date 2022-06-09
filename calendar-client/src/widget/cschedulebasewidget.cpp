@@ -68,7 +68,6 @@ bool CScheduleBaseWidget::setSelectDate(const QDate &selectDate, const bool isSw
             m_calendarManager->getShowWidget(i)->setYearData();
             m_calendarManager->getShowWidget(i)->updateShowDate();
         }
-//        updateDBusData();
     }
     return _result;
 }

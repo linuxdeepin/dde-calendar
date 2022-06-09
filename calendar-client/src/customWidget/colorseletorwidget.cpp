@@ -45,6 +45,7 @@ void ColorSeletorWidget::resetColorButton(const AccountItem::Ptr& account)
     }
 
     DTypeColor::List colorList =  account->getColorTypeList();
+    //添加默认颜色控件
     for (DTypeColor::Ptr &var : colorList) {
         if (DTypeColor::PriSystem == var->privilege()) {
             addColor(var);
@@ -68,11 +69,17 @@ void ColorSeletorWidget::reset()
     for (QAbstractButton *btn : buttons) {
         m_colorGroup->removeButton(btn);
         m_colorLayout->removeWidget(btn);
+        //自定义控件内存不释放
+        if (btn == m_userColorBtn) {
+            continue;
+        }
         delete btn;
+        btn = nullptr;
     }
     if (nullptr == m_userColorBtn) {
         m_userColorBtn = new CRadioButton(this);
         m_userColorBtn->setFixedSize(18, 18);
+
     }
     m_userColorBtn->hide();
 }

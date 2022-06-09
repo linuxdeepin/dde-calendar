@@ -51,7 +51,7 @@ CScheduleDlg::CScheduleDlg(int type, QWidget *parent, const bool isAllDay)
     initUI();
     initConnection();
     setTabFouseOrder();
-    initAccountComBox();
+    slotAccountUpdate();
 
     if (type == 1) {
         m_titleLabel->setText(tr("New Event"));
@@ -557,7 +557,22 @@ void CScheduleDlg::slotAccoutBoxActivated(const QString &text)
 {
     m_accountItem = gAccountManager->getAccountItemByAccountName(text);
     m_typeComBox->updateJobType(m_accountItem);
-    m_colorSeletorWideget->resetColorButton(m_accountItem);
+    resetColor(m_accountItem);
+    getButtons()[1]->setEnabled(true);
+    //将焦点转移到类型选择框上
+    m_typeComBox->setFocus();
+}
+
+void CScheduleDlg::signalLogout(DAccount::Type type)
+{
+    if (DAccount::Account_UnionID == type) {
+        if (gUosAccountItem == m_accountItem) {
+            //TODO：弹窗提示？
+            qInfo() << m_accountComBox->currentText() << "帐户已退出";
+            getButtons()[1]->setEnabled(false);
+            m_accountItem.reset(nullptr);
+        }
+    }
 }
 
 void CScheduleDlg::slotTypeRpeatactivated(int index)
@@ -1175,10 +1190,13 @@ void CScheduleDlg::initConnection()
     connect(m_typeComBox, &JobTypeComboBox::signalAddTypeBtnClicked, this, &CScheduleDlg::slotBtnAddItemClicked);
     connect(m_typeComBox, &JobTypeComboBox::editTextChanged, this, &CScheduleDlg::slotTypeEditTextChanged);
     connect(m_typeComBox, &JobTypeComboBox::editingFinished, this, &CScheduleDlg::slotJobComboBoxEditingFinished);
+    connect(gAccountManager, &AccountManager::signalLogout, this, &CScheduleDlg::signalLogout);
+    connect(gAccountManager, &AccountManager::signalAccountUpdate, this, &CScheduleDlg::slotAccountUpdate);
 }
 
-void CScheduleDlg::initAccountComBox()
+void CScheduleDlg::slotAccountUpdate()
 {
+    m_accountComBox->clear();
     QList<AccountItem::Ptr> accountList = gAccountManager->getAccountList();
     for (AccountItem::Ptr p : accountList) {
         m_accountComBox->addItem(p->getAccount()->accountName());

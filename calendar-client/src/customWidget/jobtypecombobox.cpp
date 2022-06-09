@@ -121,13 +121,20 @@ void JobTypeComboBox::updateJobType(const AccountItem::Ptr& account)
     if (nullptr == account) {
         return;
     }
-
+    //保存现场
+    bool isEnit = isEditable();
+    QString text = currentText();
     m_lstJobType = account->getScheduleTypeList();
-
     clear(); //更新前先清空原有列表
     for (m_itemNumIndex = 0; m_itemNumIndex < m_lstJobType.size(); m_itemNumIndex++) {
         addJobTypeItem(m_itemNumIndex, m_lstJobType[m_itemNumIndex]->getColorCode(), m_lstJobType[m_itemNumIndex]->displayName());
     }
+    //数据重置后hover标识重置为-1
+    m_hoverSelectedIndex = -1;
+    //恢复原状
+    setEditable(isEnit);
+    setCurrentText(text);
+
 }
 
 void JobTypeComboBox::addJobTypeItem(int idx, QString strColorHex, QString strJobType)

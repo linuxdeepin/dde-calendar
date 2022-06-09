@@ -994,21 +994,12 @@ QPair<QWidget *, QWidget *> Calendarmainwindow::createAccountCombobox(QObject *o
  
     //更新帐户列表
     auto accountUpdate = [=](){
+        //TODO:外部退出帐户时处于新建日程弹窗界面时会崩溃
         QVariant oldAccountID = widget->currentData();
         widget->blockSignals(true);
         widget->clear();
         for(auto account : gAccountManager->getAccountList()) {
-            switch (account->getAccount()->accountType()) {
-            case DAccount::Account_Local:
-                widget->addItem(tr("Local account"), account->getAccount()->accountID());
-                break;
-            case DAccount::Account_UnionID:
-                widget->addItem(tr("Union ID"), account->getAccount()->accountID());
-                break;
-            case DAccount::Account_CalDav:
-                widget->addItem(tr("Calendar account"), account->getAccount()->accountID());
-                break;
-            }
+            widget->addItem(account->getAccount()->accountName(), account->getAccount()->accountID());
         }
         widget->setCurrentIndex(widget->findData(oldAccountID));
         if(widget->currentIndex() < 0)
