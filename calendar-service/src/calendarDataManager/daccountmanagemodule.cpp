@@ -21,7 +21,6 @@
 #include "daccountmanagemodule.h"
 
 #include "units.h"
-#include "dalarmmanager.h"
 
 DAccountManageModule::DAccountManageModule(QObject *parent)
     : QObject(parent)

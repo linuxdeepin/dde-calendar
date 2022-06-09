@@ -58,7 +58,7 @@ QString DAccountDataBase::createSchedule(const DSchedule::Ptr &schedule)
             query.addBindValue(schedule->hasEnabledAlarms());
             query.addBindValue(pinyinsearch::getPinPinSearch()->CreatePinyin(schedule->summary()));
             query.addBindValue(schedule->lunnar());
-            query.addBindValue(schedule->toIcsString(schedule));
+            query.addBindValue(DSchedule::toIcsString(schedule));
             query.addBindValue(schedule->fileName());
             query.addBindValue(dtToString(schedule->created()));
             query.addBindValue(0);

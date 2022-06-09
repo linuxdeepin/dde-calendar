@@ -1253,7 +1253,8 @@ Event::Ptr ICalFormatImpl::readEvent(icalcomponent *vevent, const ICalTimeZoneCa
     //农历
     QString lunnar = event->nonKDECustomProperty(VEVENT_LUNNAR_XPROPERTY);
     if (!lunnar.isEmpty()) {
-        bool isLunnar = (lunnar == QLatin1String("TRUE"));
+        //TODO:多次转换时会出现多个TRUE,待跟踪
+        bool isLunnar = (lunnar.contains(QLatin1String("TRUE")));
         event->setLunnar(isLunnar);
     }
 

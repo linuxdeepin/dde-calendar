@@ -24,6 +24,7 @@
 #include "daccount.h"
 #include "daccountdatabase.h"
 #include "dschedule.h"
+#include "dalarmmanager.h"
 
 #include <QObject>
 #include <QSharedPointer>
@@ -84,7 +85,10 @@ public:
     /**
      * @brief notifyMsgHanding      通知提示框交互处理
      * @param alarmID               提醒任务id
-     * @param operationNum          操作编号 ， 1：打开日历，2：稍后提醒 3： 明天提醒 4： 提前1天提醒 5:关闭按钮
+     * @param operationNum          操作编号
+     *                              1：打开日历，
+     *                              2：稍后提醒 21：15min后提醒 22：一个小时后提醒 23：四个小时后提醒
+     *                              3：明天提醒 4： 提前1天提醒
      */
     void notifyMsgHanding(const QString &alarmID, const qint32 operationNum);
 
@@ -106,6 +110,9 @@ private:
      */
     void closeNotification(const QString &scheduleId);
 
+    //根据提醒任务获取对应的日程信息
+    DSchedule::Ptr getScheduleByRemind(const DRemindData::Ptr &remindData);
+
 signals:
     void signalScheduleUpdate();
     void signalScheduleTypeUpdate();
@@ -113,9 +120,12 @@ signals:
     void signalCloseNotification(quint64 notifyID);
 
 public slots:
+    void slotOpenCalendar(const QString &alarmID);
+
 private:
     DAccount::Ptr m_account;
     DAccountDataBase::Ptr m_accountDB;
+    DAlarmManager::Ptr m_alarm;
 };
 
 #endif // DACCOUNTMODULE_H

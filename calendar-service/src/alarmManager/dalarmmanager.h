@@ -25,14 +25,16 @@
 #include "dschedule.h"
 
 #include <QObject>
+#include <QSharedPointer>
 
-class DbusUIOpenSchedule;
 class DBusNotify;
 //日程提醒管理类
 class DAlarmManager : public QObject
 {
     Q_OBJECT
 public:
+    typedef QSharedPointer<DAlarmManager> Ptr;
+
     explicit DAlarmManager(QObject *parent = nullptr);
     //更新提醒任务
     void updateRemind(const DRemindData::List &remindList);
@@ -59,9 +61,11 @@ private:
     QString getRemindBody(const DSchedule::Ptr &schedule);
 
     QString getBodyTimePart(const QDateTime &nowtime, const QDateTime &jobtime, bool allday, bool isstart);
+signals:
+    //发送打开日历信号
+    void signalCallOpenCalendarUI(const QString &alarmID);
 
 private:
-    DbusUIOpenSchedule *m_dbusuiopen; //打开日历前端dbus操作相关
     DBusNotify *m_dbusnotify; //日程提醒dbus操作相关
 };
 

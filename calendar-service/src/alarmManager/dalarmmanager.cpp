@@ -21,7 +21,6 @@
 #include "dalarmmanager.h"
 
 #include "csystemdtimercontrol.h"
-#include "dbus/dbusuiopenschedule.h"
 #include "dbus/dbusnotify.h"
 
 #define Millisecond 1
@@ -42,10 +41,6 @@ static QString layoutHM("15:04");
 DAlarmManager::DAlarmManager(QObject *parent)
     : QObject(parent)
 {
-    m_dbusuiopen = new DbusUIOpenSchedule("com.deepin.Calendar",
-                                          "/com/deepin/Calendar",
-                                          QDBusConnection::sessionBus(),
-                                          this);
     m_dbusnotify = new DBusNotify("com.deepin.dde.Notification",
                                   "/com/deepin/dde/Notification",
                                   QDBusConnection::sessionBus(),
@@ -96,8 +91,8 @@ void DAlarmManager::notifyMsgHanding(const DRemindData::Ptr &remindData, const i
 {
     switch (operationNum) {
     case 1:
-        //TODO:打开日历
-        //        CallUiOpenSchedule(job);
+        //打开日历
+        emit signalCallOpenCalendarUI(remindData->alarmID());
         break;
     case 2: //稍后提醒
     case 21: //15min后提醒

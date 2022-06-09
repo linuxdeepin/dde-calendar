@@ -25,22 +25,25 @@
 #include "memorycalendar.h"
 #include "lunardateinfo.h"
 #include "lunarmanager.h"
-#include "dalarmmanager.h"
+#include "dbus/dbusuiopenschedule.h"
 
 #include <QStringList>
+#include <QDBusConnection>
 
 #define UPDATEREMINDJOBTIMEINTERVAL 1000 * 60 * 10 //提醒任务更新时间间隔毫秒数（10分钟）
 DAccountModule::DAccountModule(const DAccount::Ptr &account, QObject *parent)
     : QObject(parent)
     , m_account(account)
     , m_accountDB(new DAccountDataBase(account))
+    , m_alarm(new DAlarmManager)
 {
     QString newDbPatch = getDBPath();
     m_accountDB->setDBPath(newDbPatch + "/" + account->dbName());
     m_accountDB->initDBData();
     m_account = m_accountDB->getAccountInfo();
-    //若程序没有开启定时任务则开启对应的定时任务
-    DAlarmManager alarm;
+
+    //关联打开日历界面
+    connect(m_alarm.data(), &DAlarmManager::signalCallOpenCalendarUI, this, &DAccountModule::slotOpenCalendar);
 }
 
 QString DAccountModule::getAccountInfo()
@@ -467,7 +470,7 @@ void DAccountModule::updateRemindSchedules(bool isClear)
     //获取未提醒的稍后日程信息,由于15分钟后，1xxx后等不会修改提醒次数
     //所以需要根据提醒时间，日程id，日程重复id来判断是否是没有被触发点提醒日程
     for (int i = 0; i < noRemindList.size(); i++) {
-        for (int j = accountRemind.size() - 1; j < 0; j--) {
+        for (int j = accountRemind.size() - 1; j >= 0; j--) {
             if (accountRemind.at(j)->scheduleID() == noRemindList.at(i)->scheduleID()
                 && accountRemind.at(j)->recurrenceId() == noRemindList.at(i)->recurrenceId()
                 && accountRemind.at(j)->dtRemind() == noRemindList.at(i)->dtRemind())
@@ -490,10 +493,8 @@ void DAccountModule::updateRemindSchedules(bool isClear)
         m_accountDB->createRemindInfo(remind);
     }
     accountRemind.append(noRemindList);
-
-    DAlarmManager alarmManager;
     //更新提醒任务
-    alarmManager.updateRemind(accountRemind);
+    m_alarm->updateRemind(accountRemind);
 }
 
 void DAccountModule::notifyMsgHanding(const QString &alarmID, const qint32 operationNum)
@@ -529,36 +530,37 @@ void DAccountModule::notifyMsgHanding(const QString &alarmID, const qint32 opera
         remindData->updateRemindTimeByMesc(24 * Hour);
         m_accountDB->updateRemindInfo(remindData);
     } break;
-    case 1: //打开日历
+    case 1: { //打开日历
+    } break;
     case 4: { //提前1天提醒
-        DSchedule::Ptr schedule = m_accountDB->getScheduleByScheduleID(remindData->scheduleID());
-
+        DSchedule::Ptr schedule = getScheduleByRemind(remindData);
+        //TODO:如果是重复日程是否需要修改所有日程的提醒？还是只修改此日程？
         if (schedule->allDay()) {
             schedule->setAlarmType(DSchedule::Alarm_15Min_Front);
         } else {
             schedule->setAlarmType(DSchedule::Alarm_1Day_Front);
         }
         m_accountDB->updateSchedule(schedule);
+        //删除对应提醒任务数据
+        m_accountDB->deleteRemindInfoByAlarmID(alarmID);
+        emit signalScheduleUpdate();
     } break;
     default:
-        //删除对应的数据
+        //删除对应提醒任务数据
         m_accountDB->deleteRemindInfoByAlarmID(alarmID);
         break;
     }
-    DAlarmManager alarm;
-    alarm.notifyMsgHanding(remindData, operationNum);
+
+    m_alarm->notifyMsgHanding(remindData, operationNum);
 }
 
 void DAccountModule::remindJob(const QString &alarmID)
 {
     DRemindData::Ptr remindData = m_accountDB->getRemindData(alarmID);
     remindData->setAccountID(m_account->accountID());
-    DSchedule::Ptr schedule = m_accountDB->getScheduleByScheduleID(remindData->scheduleID());
-    schedule->setDtStart(remindData->dtStart());
-    schedule->setDtEnd(remindData->dtEnd());
-    schedule->setRecurrenceId(remindData->recurrenceId());
-    DAlarmManager alarm;
-    int notifyid = alarm.remindJob(remindData, schedule);
+    DSchedule::Ptr schedule = getScheduleByRemind(remindData);
+
+    int notifyid = m_alarm->remindJob(remindData, schedule);
     remindData->setNotifyid(notifyid);
     m_accountDB->updateRemindInfo(remindData);
 }
@@ -710,4 +712,34 @@ void DAccountModule::closeNotification(const QString &scheduleId)
         m_accountDB->deleteRemindInfoByAlarmID(remind->alarmID());
         emit signalCloseNotification(static_cast<quint32>(remind->notifyid()));
     }
+}
+
+DSchedule::Ptr DAccountModule::getScheduleByRemind(const DRemindData::Ptr &remindData)
+{
+    DSchedule::Ptr schedule = m_accountDB->getScheduleByScheduleID(remindData->scheduleID());
+    if (!schedule.isNull() && schedule->dtStart() != remindData->dtStart()) {
+        schedule->setDtStart(remindData->dtStart());
+        schedule->setDtEnd(remindData->dtEnd());
+        schedule->setRecurrenceId(remindData->recurrenceId());
+    }
+    return schedule;
+}
+
+void DAccountModule::slotOpenCalendar(const QString &alarmID)
+{
+    DbusUIOpenSchedule openCalendar("com.deepin.Calendar",
+                                    "/com/deepin/Calendar",
+                                    QDBusConnection::sessionBus(),
+                                    this);
+    DRemindData::Ptr remindData = m_accountDB->getRemindData(alarmID);
+    if (remindData.isNull()) {
+        qWarning() << "No corresponding reminder ID found";
+        return;
+    }
+    DSchedule::Ptr schedule = getScheduleByRemind(remindData);
+    QString scheduleStr;
+    DSchedule::toJsonString(schedule, scheduleStr);
+    openCalendar.OpenSchedule(scheduleStr);
+    //删除对应提醒任务数据
+    m_accountDB->deleteRemindInfoByAlarmID(alarmID);
 }

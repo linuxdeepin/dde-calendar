@@ -201,7 +201,6 @@ QMap<QByteArray, QString> CustomProperties::customProperties() const
     for (auto it = d->mVolatileProperties.begin(), end = d->mVolatileProperties.end(); it != end; ++it) {
         result.insert(it.key(), it.value());
     }
-
     return result;
 }
 
