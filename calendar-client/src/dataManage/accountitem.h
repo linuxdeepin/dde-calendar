@@ -33,6 +33,9 @@ public:
 
     typedef QSharedPointer<AccountItem> Ptr;
 
+    //同步状态码转状态说明
+    static QString getSyncMsg(DAccount::AccountSyncState code);
+
     void resetAccount();
 
     //获取帐户数据
@@ -40,6 +43,7 @@ public:
 
     //获取日程
     QMap<QDate, DSchedule::List> getScheduleMap();
+    QMap<QDate, DSchedule::List> getSearchScheduleMap();
 
     // 获取日程类型信息集
     DScheduleType::List getScheduleTypeList();

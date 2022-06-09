@@ -20,6 +20,7 @@
 */
 #include "sidebarcalendarwidget.h"
 #include "cschedulebasewidget.h"
+#include "constants.h"
 #include <DPaletteHelper>
 #include <QMouseEvent>
 
@@ -36,6 +37,9 @@ SidebarCalendarWidget::SidebarCalendarWidget(QWidget *parent) : QWidget(parent)
 void SidebarCalendarWidget::initView()
 {
     m_dateLabel = new QLabel();
+    QFont font = m_dateLabel->font();
+    font.setPixelSize(DDECalendar::FontSizeTwelve);
+    m_dateLabel->setFont(font);
     m_nextPage = new QPushButton();
     m_previousPage = new QPushButton();
     m_nextPage->setIcon(DStyle().standardIcon(QStyle::SP_ArrowRight));
@@ -122,7 +126,8 @@ void SidebarCalendarWidget::setDate(QDate& date)
  */
 void SidebarCalendarWidget::setKeyDate(QDate date)
 {
-    QString fd = "yyyy年MM月";
+    QString fd = "";
+    fd.append("yyyy").append(tr("Y")).append("MM").append(tr("M"));
     m_dateLabel->setText(date.toString(fd));
     SidebarCalendarKeyButton::setDisplayedMonth(date);
 
@@ -298,6 +303,10 @@ void SidebarCalendarKeyButton::paintEvent(QPaintEvent *event)
     qreal h = this->height();
     const qreal r = w > h ? h: w;
     QRectF rectf(qRound((w-r)/2), qRound((h-r)/2), r, r);   //绘制区域
+
+    QFont font;
+    font.setPixelSize(DDECalendar::FontSizeTwelve);
+    painter.setFont(font);
 
     if (m_displayedDate == m_selectedData) {
         painter.setPen(Qt::NoPen);

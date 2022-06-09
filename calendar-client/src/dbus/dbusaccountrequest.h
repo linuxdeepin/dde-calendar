@@ -149,9 +149,17 @@ signals:
     void signalSearchScheduleListFinish(QMap<QDate, DSchedule::List>);
     void signalGetSysColorsFinish(DTypeColor::List);
 
-public slots:
+    void signalSyncStateChange(DAccount::AccountSyncState);
 
+public slots:
+    //dbus服务端调用
+    void slotDbusCall(const QDBusMessage &msg) override;
     void slotCallFinished(CDBusPendingCallWatcher *) override;
+
+private:
+    void onPropertiesChanged(const QString &interfaceName,
+                             const QVariantMap &changedProperties,
+                             const QStringList &invalidatedProperties);
 
 private:
     DScheduleQueryPar::Ptr m_priParams; //上一次查询日程的数据

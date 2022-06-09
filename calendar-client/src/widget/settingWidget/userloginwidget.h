@@ -23,7 +23,6 @@
 
 #include "dsettingsdialog.h"
 
-#include <QObject>
 #include <QDBusArgument>
 #include <QLabel>
 #include <DIconButton>

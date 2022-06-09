@@ -28,6 +28,10 @@ DbusRequestBase::DbusRequestBase(const QString &path, const QString &interface, 
     if (!QDBusConnection::sessionBus().connect(this->service(), this->path(), this->interface(), "", this, SLOT(slotDbusCall(QDBusMessage)))) {
         qWarning() << "the connection was fail!" << "path: " << this->path() << "interface: " << this->interface();
     };
+    //关联后端dbus触发信号
+    if (!QDBusConnection::sessionBus().connect(this->service(), this->path(), "org.freedesktop.DBus.Properties", "", this, SLOT(slotDbusCall(QDBusMessage)))) {
+        qWarning() << "the connection was fail!" << "path: " << this->path() << "interface: " << this->interface();
+    };
 }
 
 void DbusRequestBase::setCallbackFunc(CallbackFunc func)

@@ -34,6 +34,25 @@ void AccountItem::initConnect()
     connect(m_dbusRequest, &DbusAccountRequest::signalGetScheduleTypeListFinish, this, &AccountItem::slotGetScheduleTypeListFinish);
     connect(m_dbusRequest, &DbusAccountRequest::signalGetScheduleListFinish, this, &AccountItem::slotGetScheduleListFinish);
     connect(m_dbusRequest, &DbusAccountRequest::signalGetSysColorsFinish, this, &AccountItem::slotGetSysColorsFinish);
+    connect(m_dbusRequest, &DbusAccountRequest::signalSearchScheduleListFinish, this, &AccountItem::slotSearchScheduleListFinish);
+}
+
+/**
+ * @brief AccountItem::getSyncMsg
+ * 同步状态码转状态说明
+ * @param code 状态码
+ * @return
+ */
+QString AccountItem::getSyncMsg(DAccount::AccountSyncState code)
+{
+    QString msg = "";
+    switch (code) {
+    case DAccount::Sync_Normal: msg = tr("Sync successful"); break;
+    case DAccount::Sync_NetworkAnomaly: msg = tr("Network error"); break;
+    case DAccount::Sync_ServerException: msg = tr("Server exception"); break;
+    case DAccount::Sync_StorageFull: msg = tr("Storage full"); break;
+    }
+    return msg;
 }
 
 /**
@@ -61,6 +80,11 @@ DAccount::Ptr AccountItem::getAccount()
 QMap<QDate, DSchedule::List> AccountItem::getScheduleMap()
 {
     return m_scheduleMap;
+}
+
+QMap<QDate, DSchedule::List> AccountItem::getSearchScheduleMap()
+{
+    return m_searchedScheduleMap;
 }
 
 /**

@@ -174,6 +174,8 @@ CaHuangLiDayInfo CScheduleBaseWidget::getLunarInfo()
 void CScheduleBaseWidget::slotScheduleUpdate()
 {
     updateShowSchedule();
+    //刷新日程的同时也要刷新被搜索的日程，保证有搜索日程时显示正常
+    updateSearchScheduleInfo();
 }
 
 void CScheduleBaseWidget::slotSearchedScheduleUpdate()

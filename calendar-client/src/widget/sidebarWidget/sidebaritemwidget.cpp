@@ -26,7 +26,7 @@
 SidebarItemWidget::SidebarItemWidget(QWidget *parent)
     : QWidget(parent)
 {
-    setFixedWidth(220);
+    setFixedWidth(178);
 }
 
 SidebarItemWidget *SidebarItemWidget::getAccountItemWidget(AccountItem::Ptr ptr)
@@ -170,6 +170,7 @@ SidebarAccountItemWidget::SidebarAccountItemWidget(AccountItem::Ptr ptr, QWidget
     , m_accountItem(ptr)
 {
     initView();
+    initConnect();
 }
 
 void SidebarAccountItemWidget::initView()
@@ -206,14 +207,50 @@ void SidebarAccountItemWidget::initView()
     vLayout->addWidget(m_headIconButton);
     vLayout->addWidget(m_titleLabel, 1);
     vLayout->addWidget(m_rearIconButton);
+    vLayout->addSpacing(10);
+
     this->setLayout(vLayout);
 
     if (m_accountItem->getAccount()->accountType() == DAccount::Account_UnionID) {
-        m_rearIconButton->setIcon(QIcon(":/resources/icon/icon_refresh.svg"));
+        resetRearIconButton();
     } else {
         m_rearIconButton->hide();   //尾部控件隐藏
     }
     setFixedHeight(36);
+}
+
+void SidebarAccountItemWidget::initConnect()
+{
+    connect(m_rearIconButton, &DIconButton::clicked, this, &SidebarAccountItemWidget::slotRearIconClicked);
+}
+
+void SidebarAccountItemWidget::resetRearIconButton()
+{
+    //控件不显示则不处理
+    if (m_accountItem->getAccount()->accountType() != DAccount::Account_UnionID) {
+        return;
+    }
+
+    if (m_accountItem) {
+        if (m_accountItem->getAccount()->syncState() == 0) {
+            m_rearIconButton->setEnabled(true);
+            m_rearIconButton->setIcon(QIcon(":/resources/icon/icon_refresh.svg"));
+            m_rearIconButton->setToolTip("");
+        } else {
+            m_rearIconButton->setEnabled(false);
+            m_rearIconButton->setIcon(QIcon(":/resources/icon/icon_warning_light.svg"));
+
+            QString msg = "";
+            switch (m_accountItem->getAccount()->syncState()) {
+            case DAccount::Sync_Normal: msg = tr("Sync successful"); break;
+            case DAccount::Sync_NetworkAnomaly: msg = tr("Network error"); break;
+            case DAccount::Sync_ServerException: msg = tr("Server exception"); break;
+            case DAccount::Sync_StorageFull: msg = tr("Storage full"); break;
+            }
+            m_accountItem->getSyncMsg(m_accountItem->getAccount()->syncState());
+            m_rearIconButton->setToolTip(msg);
+        }
+    }
 }
 
 AccountItem::Ptr SidebarAccountItemWidget::getAccountItem()
@@ -229,5 +266,17 @@ void SidebarAccountItemWidget::updateStatus()
     } else {
         m_headIconButton->setIcon(DStyle::SP_ArrowRight);
     }
+}
+
+//尾部图标控件点击事件
+void SidebarAccountItemWidget::slotRearIconClicked()
+{
+    gAccountManager->downloadByAccountID(m_accountItem->getAccount()->accountID());
+}
+
+//同步状态改变事件
+void SidebarAccountItemWidget::slotSyncStatusChange()
+{
+    resetRearIconButton();
 }
 

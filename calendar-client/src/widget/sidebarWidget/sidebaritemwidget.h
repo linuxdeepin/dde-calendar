@@ -107,12 +107,16 @@ signals:
 
 
 public slots:
+    //尾部图标控件点击事件
+    void slotRearIconClicked();
+    //同步状态改变事件
+    void slotSyncStatusChange();
 
 protected:
     void initView();
+    void initConnect();
     void updateStatus() override;
-
-    void initScheduleType();
+    void resetRearIconButton();
 
 private:
     AccountItem::Ptr m_accountItem;

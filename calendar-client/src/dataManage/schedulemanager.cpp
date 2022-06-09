@@ -90,12 +90,11 @@ void ScheduleManager::updateSchedule()
 void ScheduleManager::updateSearchSchedule()
 {
     m_searchScheduleMap.clear();
-    if (nullptr != gAccountManager->getLocalAccountItem()) {
-        m_searchScheduleMap = gAccountManager->getLocalAccountItem()->getScheduleMap();
+    if (nullptr != gLocalAccountItem) {
+        m_searchScheduleMap = gLocalAccountItem->getSearchScheduleMap();
     }
-
-    if (nullptr != gAccountManager->getUnionAccountItem()) {
-        QMap<QDate, DSchedule::List> scheduleMap = gAccountManager->getUnionAccountItem()->getScheduleMap();
+    if (nullptr != gUosAccountItem) {
+        QMap<QDate, DSchedule::List> scheduleMap = gUosAccountItem->getSearchScheduleMap();
         if (m_searchScheduleMap.size() == 0) {
             m_searchScheduleMap = scheduleMap;
         } else {
@@ -247,6 +246,7 @@ DScheduleType::Ptr ScheduleManager::getScheduleTypeByScheduleId(const QString& i
  */
 void ScheduleManager::searchSchedule(const QString &key, const QDateTime &startTime, const QDateTime &endTime)
 {
+    m_searchScheduleMap.clear();
     static int count = 0;
     count = 0;
     for (AccountItem::Ptr p : gAccountManager->getAccountList()) {

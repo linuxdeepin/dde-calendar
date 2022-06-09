@@ -33,7 +33,6 @@ CalendarManager *CalendarManager::getInstance()
     CaHuangLiDayInfo::registerMetaType();
     if (m_scheduleManager == nullptr) {
         m_scheduleManager = new  CalendarManager;
-        //        qRegisterMetaType<QMap<QDate, QVector<DSchedule>>>("QMap<QDate,QVector<DSchedule> >");
         qRegisterMetaType<QMap<QDate, bool>>("QMap<QDate,bool>");
         qRegisterMetaType<QMap<QDate, CaHuangLiDayInfo> >("QMap<QDate, CaHuangLiDayInfo>");
         qRegisterMetaType<QMap<QDate, int>>("QMap<QDate, int>");

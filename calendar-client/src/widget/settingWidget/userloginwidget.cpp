@@ -21,11 +21,9 @@
 #include "userloginwidget.h"
 #include "accountmanager.h"
 
-#include <QHBoxLayout>
 #include <DSettingsOption>
-#include <DCommandLinkButton>
-#include <DApplicationHelper>
 #include <DSettingsWidgetFactory>
+#include <QHBoxLayout>
 #include <QNetworkReply>
 
 UserloginWidget::UserloginWidget(QWidget *parent)

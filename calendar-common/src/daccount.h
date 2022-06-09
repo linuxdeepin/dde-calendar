@@ -44,7 +44,7 @@ public:
     Q_DECLARE_FLAGS(AccountStates, AccountState)
 
     enum AccountSyncState {
-        Sync_Normal, //正常
+        Sync_Normal = 0, //正常
         Sync_NetworkAnomaly, //网络异常
         Sync_ServerException, //服务器异常
         Sync_StorageFull, //存储已满

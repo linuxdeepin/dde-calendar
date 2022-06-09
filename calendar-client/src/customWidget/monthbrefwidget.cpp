@@ -256,7 +256,7 @@ void CMonthDayRectWidget::paintEvent(QPaintEvent *event)
     QRectF rectf(qRound((w-r)/2), qRound((h-r)/2), r, r);
     //根据高度和宽度设置时间字体的大小
     QFont font;
-    font.setPixelSize(qRound(DDECalendar::FontSizeTwelve + (r - 18) * 6 / 17.0));
+    font.setPixelSize(int(r/20.0*12));
     painter.setFont(font);
 
     QColor highColor = DPaletteHelper::instance()->palette(this).highlight().color();
