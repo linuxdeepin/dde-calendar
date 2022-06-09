@@ -30,7 +30,7 @@
 DAccountManagerDataBase::DAccountManagerDataBase(QObject *parent)
     : DDataBase(parent)
 {
-    setConnectionName("accountmanager");
+    setConnectionName(NameAccountManager);
 }
 
 void DAccountManagerDataBase::initDBData()
@@ -191,29 +191,30 @@ bool DAccountManagerDataBase::deleteAccountInfo(const QString &accountID)
 DCalendarGeneralSettings::Ptr DAccountManagerDataBase::getCalendarGeneralSettings()
 {
     DCalendarGeneralSettings::Ptr cgSet(new DCalendarGeneralSettings);
-    QString strSql("SELECT  firstDayOfWeek, timeShowType        \
-                   FROM calendargeneralsettings WHERE id = 1");
     QSqlQuery query(m_database);
-    if (query.prepare(strSql) && query.exec() && query.next()) {
-        cgSet->setFirstDayOfWeek(static_cast<Qt::DayOfWeek>(query.value("firstDayOfWeek").toInt()));
-        cgSet->setTimeShowType(static_cast<DCalendarGeneralSettings::TimeShowType>(query.value("timeShowType").toInt()));
-    }
+    query.exec("select vch_value from calendargeneralsettings where vch_key = 'firstDayOfWeek' ");
+    if(query.next())
+        cgSet->setFirstDayOfWeek(static_cast<Qt::DayOfWeek>(query.value(0).toInt()));
+
+    query.exec("select vch_value from calendargeneralsettings where vch_key = 'timeShowType' ");
+    if(query.next())
+        cgSet->setTimeShowType(static_cast<DCalendarGeneralSettings::TimeShowType>(query.value(0).toInt()));
+
     return cgSet;
 }
 
 void DAccountManagerDataBase::setCalendarGeneralSettings(const DCalendarGeneralSettings::Ptr &cgSet)
 {
-    QString strSql("UPDATE calendargeneralsettings              \
-                   SET firstDayOfWeek=?, timeShowType=?         \
-                   WHERE id=1;");
     QSqlQuery query(m_database);
-    if (query.prepare(strSql)) {
-        query.addBindValue(cgSet->firstDayOfWeek());
-        query.addBindValue(cgSet->timeShowType());
-        if (!query.exec()) {
-            qWarning() << "UPDATE calendargeneralsettings error," << query.lastError();
-        }
-    } else {
+    query.prepare("update calendargeneralsettings set vch_value = ? where vch_key = 'firstDayOfWeek' ");
+    query.addBindValue(cgSet->firstDayOfWeek());
+    if(!query.exec()) {
+        qWarning() << "UPDATE calendargeneralsettings error," << query.lastError();
+    }
+
+    query.prepare("update calendargeneralsettings set vch_value = ? where vch_key = 'timeShowType' ");
+    query.addBindValue(cgSet->timeShowType());
+    if(!query.exec()) {
         qWarning() << "UPDATE calendargeneralsettings error," << query.lastError();
     }
 }
@@ -238,42 +239,46 @@ void DAccountManagerDataBase::createDB()
         QSqlQuery query(m_database);
         bool res = true;
         //创建帐户管理表
-        QString accountManagerSql("CREATE TABLE accountManager (    \
-                               id INTEGER NOT NULL PRIMARY KEY,     \
-                               accountID TEXT NOT NULL,             \
-                               accountName TEXT NOT NULL,           \
-                               displayName TEXT NOT NULL,           \
-                               syncState INTEGER not null,          \
-                               accountAvatar TEXT,                  \
-                               accountDescription TEXT ,            \
-                               accountType INTEGER not null,        \
-                               dbName TEXT not null,                \
-                               dBusPath TEXT not null,              \
-                               dBusInterface TEXT not null,         \
-                               dtCreate DATETIME not null,    \
-                               dtDelete DATETIME,             \
-                               dtUpdate DATETIME,             \
-                               expandStatus  integer,               \
-                               isDeleted INTEGER not null)");
-        res = query.exec(accountManagerSql);
+        res = query.exec(sql_create_accountManager);
         if (!res) {
             qWarning() << "accountManager create failed.error:" << query.lastError();
         }
 
 
         //日历通用设置
-        QString cgSetSql("CREATE TABLE calendargeneralsettings(     \
-                         id INTEGER NOT NULL PRIMARY KEY,           \
-                         firstDayOfWeek INTEGER NOT NULL,           \
-                         timeShowType INTEGER NOT NULL              \
-                         )");
-        res = query.exec(cgSetSql);
+        res = query.exec(sql_create_calendargeneralsettings);
         if (!res) {
             qWarning() << "uploadTask create failed.error:" << query.lastError();
         }
 
         if (query.isActive()) {
             query.finish();
+        }
+
+        //创建calendargeneralsettings的触发器，数据有变动时，更新dt_update
+        query.exec("SELECT name FROM sqlite_master WHERE type = 'trigger' and name = 'trigger_sync_calendargeneralsettings_datetime_when_insert'");
+        if(!query.next()) {
+            query.exec("CREATE  TRIGGER  trigger_sync_calendargeneralsettings_datetime_when_insert AFTER INSERT "
+                       "ON calendargeneralsettings  "
+                       "BEGIN  "
+                       "    replace into calendargeneralsettings (vch_key, vch_value) values('dt_update', datetime(CURRENT_TIMESTAMP,'localtime')); "
+                       "END;");
+        }
+        query.exec("SELECT name FROM sqlite_master WHERE type = 'trigger' and name = 'trigger_sync_calendargeneralsettings_datetime_when_update'");
+        if(!query.next()) {
+            query.exec("CREATE  TRIGGER  trigger_sync_calendargeneralsettings_datetime_when_update AFTER UPDATE "
+                       "ON calendargeneralsettings  "
+                       "BEGIN  "
+                       "    replace into calendargeneralsettings (vch_key, vch_value) values('dt_update', datetime(CURRENT_TIMESTAMP,'localtime')); "
+                       "END;");
+        }
+        query.exec("SELECT name FROM sqlite_master WHERE type = 'trigger' and name = 'trigger_sync_calendargeneralsettings_datetime_when_delete'");
+        if(!query.next()) {
+            query.exec("CREATE  TRIGGER  trigger_sync_calendargeneralsettings_datetime_when_delete AFTER DELETE "
+                       "ON calendargeneralsettings  "
+                       "BEGIN  "
+                       "    replace into calendargeneralsettings (vch_key, vch_value) values('dt_update', datetime(CURRENT_TIMESTAMP,'localtime')); "
+                       "END;");
         }
     }
 }
@@ -282,7 +287,7 @@ void DAccountManagerDataBase::initAccountManagerDB()
 {
     QDateTime currentDateTime = QDateTime::currentDateTime();
     currentDateTime.setOffsetFromUtc(currentDateTime.offsetFromUtc());
-    m_database = QSqlDatabase::database("accountmanager");
+    m_database = QSqlDatabase::database(NameAccountManager);
     m_database.setDatabaseName(getDBPath());
     //帐户管理表
     {
@@ -325,20 +330,10 @@ void DAccountManagerDataBase::initAccountManagerDB()
     //通用设置
     {
         QSqlQuery query(m_database);
-        QString strsql("INSERT INTO calendargeneralsettings     \
-                       (firstDayOfWeek, timeShowType)       \
-                       VALUES(?, ?)");
-        if (query.prepare(strsql)) {
-            query.addBindValue(7);
-            query.addBindValue(2);
-            if (query.exec()) {
-                if (query.isActive()) {
-                    query.finish();
-                }
-                m_database.commit();
-            } else {
-                qWarning() << __FUNCTION__ << query.lastError();
-            }
+        if(query.exec("insert into calendargeneralsettings values"
+                      "('firstDayOfWeek',  '7'),"
+                      "('timeShowType',    '2')")) {
+            m_database.commit();
         } else {
             qWarning() << __FUNCTION__ << query.lastError();
         }

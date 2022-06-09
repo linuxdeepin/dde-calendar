@@ -40,8 +40,11 @@ public:
     enum TaskObject {
         Task_ScheduleType, //日程类型
         Task_Schedule, //日程
-        Task_Account, //帐户信息，（比如unionID的相关系统设置）
+        Task_Color, //类型颜色
     };
+
+    static QString sql_table_name(int task_obj);
+    static QString sql_table_primary_key(int task_obj);
 
     typedef QSharedPointer<DUploadTaskData> Ptr;
     typedef QVector<Ptr> List;

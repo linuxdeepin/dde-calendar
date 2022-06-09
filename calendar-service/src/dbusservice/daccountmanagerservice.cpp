@@ -62,11 +62,13 @@ void DAccountManagerService::notifyMsgHanding(const QString &accountID, const QS
 void DAccountManagerService::downloadByAccountID(const QString &accountID)
 {
     //TODO:云同步获取数据
+    m_accountManager->downloadByAccountID(accountID);
 }
 
 void DAccountManagerService::uploadNetWorkAccountData()
 {
     //TODO:云同步上传数据
+    m_accountManager->uploadNetWorkAccountData();
 }
 
 QString DAccountManagerService::getCalendarGeneralSettings()

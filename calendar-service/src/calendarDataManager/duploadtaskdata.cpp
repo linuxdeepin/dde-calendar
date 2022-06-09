@@ -20,6 +20,32 @@
 */
 #include "duploadtaskdata.h"
 
+QString DUploadTaskData::sql_table_name(int task_obj)
+{
+    switch(task_obj) {
+    case DUploadTaskData::Task_ScheduleType:
+        return "scheduleType";
+    case DUploadTaskData::Task_Schedule:
+        return "schedules";
+    case DUploadTaskData::Task_Color:
+        return "typeColor";
+    }
+    return "";
+}
+
+QString DUploadTaskData::sql_table_primary_key(int task_obj)
+{
+    switch(task_obj) {
+    case DUploadTaskData::Task_ScheduleType:
+        return "typeID";
+    case DUploadTaskData::Task_Schedule:
+        return "scheduleID";
+    case DUploadTaskData::Task_Color:
+        return "colorID";
+    }
+    return "";
+}
+
 DUploadTaskData::DUploadTaskData()
     : m_taskType(Create)
     , m_taskObject(Task_ScheduleType)

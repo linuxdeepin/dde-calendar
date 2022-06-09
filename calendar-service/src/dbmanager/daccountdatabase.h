@@ -136,7 +136,7 @@ protected:
     virtual void initSysType();
     void systemTypeTran(const DScheduleType::Ptr &type);
 
-private:
+protected:
     void createDB() override;
     //初始化日程数据库
     void initScheduleDB();

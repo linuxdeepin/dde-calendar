@@ -43,9 +43,7 @@ void DbusAccountManagerRequest::getAccountList()
  */
 void DbusAccountManagerRequest::downloadByAccountID(const QString &accountID)
 {
-    QList<QVariant> argumentList;
-    argumentList << QVariant(accountID);
-    asyncCall("downloadByAccountID", argumentList);
+    asyncCall("downloadByAccountID", QVariant(accountID));
 }
 
 /**

@@ -25,14 +25,14 @@ public:
      *          返回值： -1 数据库文件创建失败
      *                  云同步错误码
      */
-    bool SyncDataDownload(const QString &uid, QString &filepath, int *errorcode);
+    bool SyncDataDownload(const QString &uid, QString &filepath, int &errorcode);
 
     /**
      * @brief SyncDataUpload   同步数据上传
      * @param
      * @return
      */
-    bool SyncDataUpload(const QString &filepath, int *errorcode);
+    bool SyncDataUpload(const QString &filepath, int &errorcode);
     /**
      * @brief getuserInfo   获取用户信息
      * @param

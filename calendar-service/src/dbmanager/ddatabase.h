@@ -24,9 +24,36 @@
 #include <QObject>
 #include <QSqlDatabase>
 
+//账户数据库的实例
+#define DBAccountManager QSqlDatabase::database(DDataBase::NameAccountManager)
+//云同步的临时数据库的实例
+#define DBSync QSqlDatabase::database(DDataBase::NameSync)
+
 class DDataBase : public QObject
 {
     Q_OBJECT
+public:
+    //账户数据库的别名
+    static const QString NameAccountManager;
+    //云同步的临时数据库的别名
+    static const QString NameSync;
+    //账户
+    static const QString sql_create_account;
+    //日程表
+    static const QString sql_create_schedules;
+    //类型表
+    static const QString sql_create_scheduleType;
+    //颜色表
+    static const QString sql_create_typeColor;
+    //创建上传任务表
+    static const QString sql_create_uploadTask;
+    //创建提醒任务表
+    static const QString sql_create_remindTask;
+    //创建帐户管理表
+    static const QString sql_create_accountManager;
+    //日历通用设置
+    static const QString sql_create_calendargeneralsettings;
+
 public:
     explicit DDataBase(QObject *parent = nullptr);
     virtual ~DDataBase();

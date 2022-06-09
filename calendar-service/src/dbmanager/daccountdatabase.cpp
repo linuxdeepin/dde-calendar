@@ -1019,106 +1019,37 @@ void DAccountDataBase::createDB()
         QSqlQuery query(m_database);
         bool res = true;
         //帐户信息表
-        QString createAccountSql("CREATE table account(                 \
-                                 id integer not null primary key,       \
-                                 syncState integer not null,            \
-                                 accountState integer not null,         \
-                                 accountName text not null,             \
-                                 displayName text not null,             \
-                                 cloudPath text  ,                      \
-                                 accountType integer not null,          \
-                                 syncFreq integer not null,             \
-                                 intervalTime integer,                  \
-                                 syncTag    integer,                    \
-                                 expandStatus  integer,                 \
-                                 dtLastUpdate DATETIME                  \
-                                )");
-        res = query.exec(createAccountSql);
+        res = query.exec(sql_create_account);
         if (!res) {
             qWarning() << "account create failed.error:" << query.lastError();
         }
 
         //日程表
-        QString createScheduleSql("CREATE TABLE schedules (             \
-                                  id INTEGER NOT NULL PRIMARY KEY,      \
-                                  scheduleID TEXT not null,             \
-                                  scheduleTypeID TEXT not null,         \
-                                  summary TEXT not null,                \
-                                  description TEXT,                     \
-                                  allDay BOOL not null,                 \
-                                  dtStart DATETIME not null,            \
-                                  dtEnd DATETIME not null,              \
-                                  isAlarm   INTEGER  ,                  \
-                                  titlePinyin TEXT,                     \
-                                  isLunar INTEGER not null,             \
-                                  ics TEXT not null,                    \
-                                  fileName  TEXT,                       \
-                                  dtCreate DATETIME not null,           \
-                                  dtUpdate DATETIME ,                   \
-                                  dtDelete DATETIME,                    \
-                                  isDeleted INTEGER not null)");
-        res = query.exec(createScheduleSql);
+        res = query.exec(sql_create_schedules);
         if (!res) {
             qWarning() << "schedules create failed.error:" << query.lastError();
         }
 
         //类型表
-        QString scheduleTypeSql("CREATE TABLE scheduleType (            \
-                                id INTEGER NOT NULL PRIMARY KEY,        \
-                                typeID TEXT not null,                   \
-                                typeName TEXT not null,                 \
-                                typeDisplayName TEXT,                   \
-                                typePath TEXT,                          \
-                                typeColorID INTEGER not null,           \
-                                description TEXT ,                      \
-                                privilege INTEGER not null,             \
-                                showState INTEGER not null,             \
-                                syncTag INTEGER,                        \
-                                dtCreate DATETIME not null,             \
-                                dtUpdate DATETIME,                      \
-                                dtDelete DATETIME,                      \
-                                isDeleted INTEGER not null)");
-        res = query.exec(scheduleTypeSql);
+        res = query.exec(sql_create_scheduleType);
         if (!res) {
             qWarning() << "scheduleType create failed.error:" << query.lastError();
         }
 
         //颜色表
-        QString typeColorSql("CREATE TABLE typeColor (              \
-                             id INTEGER NOT NULL PRIMARY KEY,       \
-                             ColorID INTEGER not null,              \
-                             ColorHex TEXT not null,                \
-                             privilege INTEGER not null)");
-        res = query.exec(typeColorSql);
+        res = query.exec(sql_create_typeColor);
         if (!res) {
             qWarning() << "typeColorSql create failed.error:" << query.lastError();
         }
 
         //创建上传任务表
-        QString uploadSql("CREATE TABLE uploadTask (                \
-                          id INTEGER NOT NULL PRIMARY KEY,          \
-                          taskID TEXT NOT NULL,                     \
-                          uploadType integer NOT NULL,         \
-                          uploadObject integer NOT NULL,            \
-                          objectID TEXT NOT NULL,                   \
-                          dtCreate DATETIME NOT NULL)");
-        res = query.exec(uploadSql);
+        res = query.exec(sql_create_uploadTask);
         if (!res) {
             qWarning() << "uploadTask create failed.error:" << query.lastError();
         }
 
         //创建提醒任务表
-        QString remindTaskSql("CREATE TABLE remindTask (            \
-                              id INTEGER NOT NULL PRIMARY KEY,      \
-                              alarmID TEXT NOT NULL,                \
-                              scheduleID TEXT NOT NULL,             \
-                              recurID DATETIME ,                    \
-                              remindCount INTEGER,                  \
-                              notifyID INTEGER ,                    \
-                              dtRemind DATETIME NOT NULL,           \
-                              dtStart DATETIME NOT NULL,            \
-                              dtEnd DATETIME NOT NULL)");
-        res = query.exec(remindTaskSql);
+        res = query.exec(sql_create_remindTask);
         if (!res) {
             qWarning() << "remindTask create failed.error:" << query.lastError();
         }

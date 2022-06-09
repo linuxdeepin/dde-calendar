@@ -14,7 +14,7 @@ SyncFileManage::~SyncFileManage()
 
 }
 
-bool SyncFileManage::SyncDataDownload(const QString &uid, QString &filepath, int *errorcode)
+bool SyncFileManage::SyncDataDownload(const QString &uid, QString &filepath, int &errorcode)
 {
     //文件下载目录检查
     QString usersyncdir(QString("/tmp/%1_calendar").arg(uid));
@@ -35,7 +35,7 @@ bool SyncFileManage::SyncDataDownload(const QString &uid, QString &filepath, int
             //将文件移动到正确路径
             if (!QFile::rename(result.data, syncDB)) {
                 qDebug() << "down path error!";
-                *errorcode = -1;
+                errorcode = -1;
                 return false;
             }
         }
@@ -47,11 +47,11 @@ bool SyncFileManage::SyncDataDownload(const QString &uid, QString &filepath, int
             filepath = syncDB;
             return true;
         } else {
-            *errorcode = -1;
+            errorcode = -1;
             return false;
         }
     }
-    *errorcode = result.error_code;
+    errorcode = result.error_code;
     return false;
 }
 
@@ -94,18 +94,18 @@ bool SyncFileManage::SyncDbDelete(const QString &DBpath)
     return true;
 }
 
-bool SyncFileManage::SyncDataUpload(const QString &filepath, int *errorcode)
+bool SyncFileManage::SyncDataUpload(const QString &filepath, int &errorcode)
 {
     SyncoptResult result;
     result = m_syncoperation->optUpload(filepath);
     if (result.error_code != SYNC_No_Error) {
         qDebug() << "upload failed";
-        *errorcode = result.error_code;
+        errorcode = result.error_code;
         return false;
     }
 
     if (!SyncDbDelete(filepath)) {
-        *errorcode = -1;
+        errorcode = -1;
         return false;
     }
     return true;

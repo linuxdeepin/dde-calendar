@@ -223,8 +223,7 @@ void DAccountManageModule::initAccountDBusInfo(const DAccount::Ptr &account)
         typeStr = "default";
         break;
     }
-    account->setAccountID(DDataBase::createUuid());
-    QString sortID = account->accountID().mid(0, 5);
+    QString sortID = DDataBase::createUuid().mid(0, 5);
     account->setAccountType(DAccount::Account_UnionID);
     account->setDtCreate(QDateTime::currentDateTime());
     account->setDbName(QString("account_%1_%2.db").arg(typeStr).arg(sortID));
