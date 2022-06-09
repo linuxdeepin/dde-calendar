@@ -700,7 +700,7 @@ void DAccountModule::accountDownload()
                 ThrowQuery source(QSqlDatabase::database(m_account->accountName()));
                 ThrowQuery target(DBSync);
 
-                source.exec("select id,taskID,uploadType,uploadObject,objectID  from uploadTask");
+                source.exec("select taskID,uploadType,uploadObject,objectID  from uploadTask");
                 while(source.next()) {
                     int type = source.value("uploadType").toInt();
                     int obj = source.value("uploadObject").toInt();
@@ -714,7 +714,9 @@ void DAccountModule::accountDownload()
                         replaceIntoRecord(table_name, source.record(), target);
                         break;
                     case DUploadTaskData::Delete:
-                        target.exec("delete from " + table_name + " where " + tabke_key + "=" + id);
+                        target.prepare("delete from " + table_name + " where " + tabke_key + "= ?");
+                        target.addBindValue(id);
+                        target.exec();
                         break;
                     }
                 }
@@ -736,9 +738,9 @@ void DAccountModule::accountDownload()
                 QDateTime targetDt = target.value("vch_value").toDateTime();
 
                 if(sourceDt > targetDt)
-                    replaceIntoTable("calendargeneralsettings", source, target);
-                else
-                    replaceIntoTable("calendargeneralsettings", target, source);
+                    replaceIntoTable("calendargeneralsettings", source, target, true);
+                if(sourceDt < targetDt)
+                    replaceIntoTable("calendargeneralsettings", target, source, true);
             }
         }
 
@@ -759,6 +761,7 @@ void DAccountModule::accountDownload()
             }
         }
         //上传B
+        QSqlDatabase::removeDatabase(DDataBase::NameSync);
         if(!fileManger.SyncDataUpload(filepath, errocde)) {
             throw "upload error:code is " + QString::number(errocde);
         }
