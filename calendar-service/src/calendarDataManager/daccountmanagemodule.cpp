@@ -79,10 +79,10 @@ void DAccountManageModule::setCalendarGeneralSettings(const QString &cgSet)
         DCalendarGeneralSettings::Ptr tmpSetting = DCalendarGeneralSettings::Ptr(m_generalSetting->clone());
         m_generalSetting = cgSetPtr;
         if (tmpSetting->firstDayOfWeek() != m_generalSetting->firstDayOfWeek()) {
-            emit firstDayOfWeekChange(m_generalSetting->firstDayOfWeek());
+            emit firstDayOfWeekChange();
         }
         if (tmpSetting->timeShowType() != m_generalSetting->timeShowType()) {
-            emit timeFormatTypeChange(m_generalSetting->timeShowType());
+            emit timeFormatTypeChange();
         }
     }
 }
@@ -231,28 +231,69 @@ void DAccountManageModule::initAccountDBusInfo(const DAccount::Ptr &account)
     account->setDbusInterface(accountServiceInterface);
 }
 
+void DAccountManageModule::slotFirstDayOfWeek(const int firstDay)
+{
+    if (getfirstDayOfWeek() != firstDay) {
+        setFirstDayOfWeek(firstDay);
+        emit firstDayOfWeekChange();
+    }
+}
+
+void DAccountManageModule::slotTimeFormatType(const int timeType)
+{
+    if (getTimeFormatType() != timeType) {
+        setTimeFormatType(timeType);
+        emit timeFormatTypeChange();
+    }
+}
+
 void DAccountManageModule::slotUidLoginStatueChange(const bool staus)
 {
-    //将云端帐户信息基本数据与本地数据合并
-    unionIDDataMerging();
-    //如果UID帐户退出
-    //需要 m_accountList m_accountModuleMap m_AccountServiceMap 去除对应帐号信息
+    Q_UNUSED(staus)
+    QDBusConnection::RegisterOptions options = QDBusConnection::ExportAllSlots | QDBusConnection::ExportAllSignals | QDBusConnection::ExportAllProperties;
+    QDBusConnection sessionBus = QDBusConnection::sessionBus();
+    //登录或者数据改变
+    DAccount::Ptr accountUnionid = m_syncFileManage->getuserInfo();
+    if (!accountUnionid->accountName().isEmpty()) {
+        if (m_AccountServiceMap[DAccount::Type::Account_UnionID].size() > 0) {
+            //数据改变
+            DAccountModule::Ptr accountModule = m_accountModuleMap[accountUnionid->accountID()];
+            if (!accountModule.isNull()) {
+                accountModule->account()->setAvatar(accountUnionid->avatar());
+                accountModule->account()->setDisplayName(accountUnionid->displayName());
+            }
+            m_accountManagerDB->updateAccountInfo(accountModule->account());
+        } else {
+            initAccountDBusInfo(accountUnionid);
+            m_accountManagerDB->addAccountInfo(accountUnionid);
+
+            DAccount::Ptr account = m_accountManagerDB->getAccountByID(accountUnionid->accountID());
+
+            DAccountModule::Ptr accountModule = DAccountModule::Ptr(new DAccountModule(account));
+            m_accountModuleMap[account->accountID()] = accountModule;
+            DAccountService::Ptr accountService = DAccountService::Ptr(new DAccountService(account->dbusPath(), account->dbusInterface(), accountModule, this));
+            if (!sessionBus.registerObject(accountService->getPath(), accountService->getInterface(), accountService.data(), options)) {
+                qWarning() << "registerObject accountService failed:" << sessionBus.lastError();
+            } else {
+                m_AccountServiceMap[account->accountType()].insert(account->accountID(), accountService);
+            }
+        }
+    } else {
+        //登出
+        if (m_AccountServiceMap[DAccount::Type::Account_UnionID].size() > 0) {
+            //如果存在UID帐户则移除相关信息
+            //移除服务并注销
+            QString accountID = m_AccountServiceMap[DAccount::Type::Account_UnionID].firstKey();
+            DAccountService::Ptr accountService = m_AccountServiceMap[DAccount::Type::Account_UnionID].first();
+            m_AccountServiceMap[DAccount::Type::Account_UnionID].clear();
+            sessionBus.unregisterObject(accountService->getPath());
+            //移除uid帐户信息
+            //删除对应数据库
+            m_accountModuleMap[accountID]->removeDB();
+            m_accountModuleMap.remove(accountID);
+            m_accountManagerDB->deleteAccountInfo(accountID);
+        }
+    }
 
     emit signalLoginStatusChange();
-
-//    QDBusConnection::RegisterOptions options = QDBusConnection::ExportAllSlots | QDBusConnection::ExportAllSignals | QDBusConnection::ExportAllProperties;
-//    QDBusConnection sessionBus = QDBusConnection::sessionBus();
-
-//    //根据获取到的帐户信息创建对应的帐户服务
-//    foreach (auto account, m_accountList) {
-//        DAccountModule::Ptr accountModule = DAccountModule::Ptr(new DAccountModule(account));
-//        m_accountModuleMap[account->accountID()] = accountModule;
-//        DAccountService::Ptr accountService = DAccountService::Ptr(new DAccountService(account->dbusPath(), account->dbusInterface(), accountModule, this));
-//        if (!sessionBus.registerObject(accountService->getPath(), accountService->getInterface(), accountService.data(), options)) {
-//            qWarning() << "registerObject accountService failed:" << sessionBus.lastError();
-//        } else {
-//            m_AccountServiceMap[account->accountType()].insert(account->accountID(), accountService);
-//        }
-//    }
-//    m_generalSetting = m_accountManagerDB->getCalendarGeneralSettings();
 }

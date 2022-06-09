@@ -74,6 +74,9 @@ public:
     //判断数据库是否存在
     bool dbFileExists();
 
+    //删除db数据库文件
+    void removeDB();
+
 protected:
     //创建数据库
     virtual void createDB() = 0;

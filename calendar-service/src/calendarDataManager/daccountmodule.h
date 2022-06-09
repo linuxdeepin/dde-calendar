@@ -97,6 +97,9 @@ public:
     void accountDownload();
     void uploadNetWorkAccountData();
 
+    //删除数据库
+    void removeDB();
+
 private:
     QMap<QDate, DSchedule::List> getScheduleTimesOn(const QDateTime &dtStart, const QDateTime &dtEnd, const DSchedule::List &scheduleList, bool extend = true);
     DSchedule::List getFestivalSchedule(const QDateTime &dtStart, const QDateTime &dtEnd, const QString &key);
@@ -118,6 +121,9 @@ signals:
     void signalScheduleTypeUpdate();
     //关闭通知弹框
     void signalCloseNotification(quint64 notifyID);
+
+    void signalAccountState(int accountState);
+    void signalSyncState(int syncState);
 
 public slots:
     void slotOpenCalendar(const QString &alarmID);

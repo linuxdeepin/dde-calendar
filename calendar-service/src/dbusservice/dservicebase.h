@@ -39,6 +39,7 @@ public:
 protected:
     QString getClientName();
     bool clientWhite(const int index);
+    void notifyPropertyChanged(const QString &interface, const QString &propertyName);
 
 private:
     QString m_path;

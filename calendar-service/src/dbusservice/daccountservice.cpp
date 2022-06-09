@@ -27,6 +27,14 @@ DAccountService::DAccountService(const QString &path, const QString &interface, 
 {
     connect(m_accountModel.data(), &DAccountModule::signalScheduleUpdate, this, &DAccountService::scheduleUpdate);
     connect(m_accountModel.data(), &DAccountModule::signalScheduleTypeUpdate, this, &DAccountService::scheduleTypeUpdate);
+
+    connect(m_accountModel.data(), &DAccountModule::signalAccountState, this, [&]() {
+        notifyPropertyChanged(getInterface(), "accountState");
+    });
+    connect(m_accountModel.data(), &DAccountModule::signalSyncState, this, [&]() {
+        notifyPropertyChanged(getInterface(), "syncState");
+    });
+
     //TODO:为了便于调试先注释,待开发完成取消注释
     //    DServiceExitControl exitControl;
 }

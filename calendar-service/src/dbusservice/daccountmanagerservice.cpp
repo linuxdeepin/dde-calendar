@@ -33,6 +33,13 @@ DAccountManagerService::DAccountManagerService(QObject *parent)
     //TODO:为了便于调试先注释,待开发完成取消注释
     //    DServiceExitControl exitControl;
     connect(m_accountManager.data(), &DAccountManageModule::signalLoginStatusChange, this, &DAccountManagerService::accountUpdate);
+
+    connect(m_accountManager.data(), &DAccountManageModule::firstDayOfWeekChange, this, [&]() {
+        notifyPropertyChanged(getInterface(), "firstDayOfWeek");
+    });
+    connect(m_accountManager.data(), &DAccountManageModule::timeFormatTypeChange, this, [&]() {
+        notifyPropertyChanged(getInterface(), "timeFormatType");
+    });
 }
 
 QString DAccountManagerService::getAccountList()

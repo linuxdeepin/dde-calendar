@@ -126,9 +126,12 @@ public slots:
     Q_SCRIPTABLE QString getSysColors();
 
 signals:
-    //TODO: 日程更新信号，日程颜色更新信号
+    //日程更新信号，日程颜色更新信号
     void scheduleUpdate();
     void scheduleTypeUpdate();
+
+    void signalAccountState();
+    void signalSyncState();
 
 private:
     //帐户列表是否展开

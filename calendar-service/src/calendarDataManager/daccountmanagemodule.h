@@ -83,11 +83,13 @@ private:
     void unionIDDataMerging();
     void initAccountDBusInfo(const DAccount::Ptr &account);
 signals:
-    void firstDayOfWeekChange(const int firstDay);
-    void timeFormatTypeChange(const int timeType);
+    void firstDayOfWeekChange();
+    void timeFormatTypeChange();
     void signalLoginStatusChange();
 
 public slots:
+    void slotFirstDayOfWeek(const int firstDay);
+    void slotTimeFormatType(const int timeType);
     //TODO：监听网络帐户管理信号和Union ID登陆退出状态
     void slotUidLoginStatueChange(const bool staus);
 

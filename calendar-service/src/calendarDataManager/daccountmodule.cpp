@@ -41,30 +41,29 @@
 /**
  * @brief The ThrowQuery class 会抛出相关exec的错误
  */
-class ThrowQuery : public QSqlQuery{
+class ThrowQuery : public QSqlQuery
+{
 public:
     explicit ThrowQuery(QSqlDatabase db) : QSqlQuery(db) {}
 
     void exec()
     {
-        if(!QSqlQuery::exec()) {
+        if (!QSqlQuery::exec()) {
             throw this->lastError().text();
         }
     }
     void exec(const QString &sql)
     {
-        if(!QSqlQuery::exec(sql)) {
+        if (!QSqlQuery::exec(sql)) {
             throw this->lastError().text();
         }
     }
-
 };
 
 /**
  * @brief The AccountDB struct 用于初始化日程类型和类型颜色
  */
-struct AccountDB : public DAccountDataBase
-{
+struct AccountDB : public DAccountDataBase {
     explicit AccountDB(const DAccount::Ptr &account, QObject *parent = nullptr)
         : DAccountDataBase(account, parent) {}
 
@@ -617,7 +616,7 @@ void DAccountModule::accountDownload()
     //sql prepare
     auto prequest = [](int count)->QString {
         QString r;
-        while(count --) {
+        while (count--) {
             r += "?,";
         }
         r.chop(1);
@@ -625,23 +624,22 @@ void DAccountModule::accountDownload()
     };
     //sql bindvalue
     auto prebinds = [](ThrowQuery &query, QSqlRecord source) {
-        for(int k = 0; k < source.count(); k ++)
+        for (int k = 0; k < source.count(); k++)
             query.addBindValue(source.value(k));
-
     };
     //sql replace old table to new table
-    auto replaceIntoTable = [=](const QString &table_name, ThrowQuery source, ThrowQuery target, bool isClear = false){
-        if(isClear)
+    auto replaceIntoTable = [=](const QString &table_name, ThrowQuery source, ThrowQuery target, bool isClear = false) {
+        if (isClear)
             target.exec(" delete from " + table_name);
         source.exec(" select * from " + table_name);
-        while(source.next()) {
+        while (source.next()) {
             target.prepare("replace into " + table_name + " values(" + prequest(source.record().count()) + ")");
             prebinds(target, source.record());
             target.exec();
         }
     };
     //sql replace old record to new table
-    auto replaceIntoRecord = [=](const QString &table_name, QSqlRecord record, ThrowQuery target){
+    auto replaceIntoRecord = [=](const QString &table_name, QSqlRecord record, ThrowQuery target) {
         target.prepare("replace into " + table_name + " values(" + prequest(record.count()) + ")");
         prebinds(target, record);
         target.exec();
@@ -652,14 +650,14 @@ void DAccountModule::accountDownload()
         SyncFileManage fileManger;
         int errocde;
         QString uid = m_account->accountID();
-        if(!fileManger.SyncDataDownload(uid, filepath, errocde)) {
+        if (!fileManger.SyncDataDownload(uid, filepath, errocde)) {
             throw "download error:code is " + QString::number(errocde);
         }
         QSqlDatabase::removeDatabase(DDataBase::NameSync);
         {
             QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", DDataBase::NameSync);
             db.setDatabaseName(filepath);
-            if(!db.open()) {
+            if (!db.open()) {
                 throw db.lastError().text();
             }
         }
@@ -675,7 +673,7 @@ void DAccountModule::accountDownload()
             query.exec("select count(0) from scheduleType");
             query.next();
             //没有数据则设置：默认日程类型、颜色、默认通用设置
-            if(0 == query.value(0).toInt()) {
+            if (0 == query.value(0).toInt()) {
                 AccountDB accountDb(m_account);
                 accountDb.setConnectionName(DDataBase::NameSync);
                 accountDb.dbOpen();
@@ -700,15 +698,15 @@ void DAccountModule::accountDownload()
                 ThrowQuery source(QSqlDatabase::database(m_account->accountName()));
                 ThrowQuery target(DBSync);
 
-                source.exec("select taskID,uploadType,uploadObject,objectID  from uploadTask");
-                while(source.next()) {
+                source.exec("select id,taskID,uploadType,uploadObject,objectID  from uploadTask");
+                while (source.next()) {
                     int type = source.value("uploadType").toInt();
                     int obj = source.value("uploadObject").toInt();
                     QString id = source.value("objectID").toString();
                     QString table_name = DUploadTaskData::sql_table_name(obj);
                     QString tabke_key = DUploadTaskData::sql_table_primary_key(obj);
 
-                    switch(type) {
+                    switch (type) {
                     case DUploadTaskData::Create:
                     case DUploadTaskData::Modify:
                         replaceIntoRecord(table_name, source.record(), target);
@@ -737,9 +735,9 @@ void DAccountModule::accountDownload()
                 target.next();
                 QDateTime targetDt = target.value("vch_value").toDateTime();
 
-                if(sourceDt > targetDt)
+                if (sourceDt > targetDt)
                     replaceIntoTable("calendargeneralsettings", source, target, true);
-                if(sourceDt < targetDt)
+                if (sourceDt < targetDt)
                     replaceIntoTable("calendargeneralsettings", target, source, true);
             }
         }
@@ -761,11 +759,11 @@ void DAccountModule::accountDownload()
             }
         }
         //上传B
+
         QSqlDatabase::removeDatabase(DDataBase::NameSync);
-        if(!fileManger.SyncDataUpload(filepath, errocde)) {
+        if (!fileManger.SyncDataUpload(filepath, errocde)) {
             throw "upload error:code is " + QString::number(errocde);
         }
-
     } catch (const QString &exception) {
         qInfo() << __LINE__ << exception;
     } catch (const char *exception) {
@@ -775,6 +773,11 @@ void DAccountModule::accountDownload()
 
 void DAccountModule::uploadNetWorkAccountData()
 {
+}
+
+void DAccountModule::removeDB()
+{
+    m_accountDB->removeDB();
 }
 
 QMap<QDate, DSchedule::List> DAccountModule::getScheduleTimesOn(const QDateTime &dtStart, const QDateTime &dtEnd, const DSchedule::List &scheduleList, bool extend)

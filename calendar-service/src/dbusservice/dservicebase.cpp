@@ -62,3 +62,17 @@ bool DServiceBase::clientWhite(const int index)
 
     return true; //whiteList_0.contains(getClientName());
 }
+
+void DServiceBase::notifyPropertyChanged(const QString &interface, const QString &propertyName)
+{
+    QDBusMessage signal = QDBusMessage::createSignal(
+        getPath(),
+        "org.freedesktop.DBus.Properties",
+        "PropertiesChanged");
+    signal << interface;
+    QVariantMap changedProps;
+    changedProps.insert(propertyName, property(propertyName.toUtf8()));
+    signal << changedProps;
+    signal << QStringList();
+    QDBusConnection::sessionBus().send(signal);
+}

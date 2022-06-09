@@ -23,7 +23,7 @@
 #define SYNC_Network_Request_Error      7506            /*网络请求出错错误*/
 #define SYNC_Oss_Operation_Error        7507            /*oss操作出错*/
 #define SYNC_Space_Not_Available        7508            /*空间不可用*/
-#define SYNC_File_Or_Path_Error         7509            /*空间不可用*/
+#define SYNC_File_Or_Path_Error 7509 /*文件或者路径出错*/
 #define SYNC_Invalid_File_Size          7510            /*文件大小不合法*/
 #define SYNC_Metadata_Check_Error       7511            /*元数据校验出错*/
 
