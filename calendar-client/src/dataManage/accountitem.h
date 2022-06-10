@@ -115,6 +115,8 @@ signals:
     void signalScheduleTypeUpdate();
     void signalSearchScheduleUpdate();
     void signalLogout(DAccount::Type);
+    void signalDtLastUpdate(QString);
+    void signalAccountStateChange(DAccount::AccountStates);
 
 public slots:
     //获取帐户信息完成事件
@@ -127,7 +129,8 @@ public slots:
     void slotSearchScheduleListFinish(QMap<QDate, DSchedule::List>);
     //获取系统颜色完成
     void slotGetSysColorsFinish(DTypeColor::List);
-
+    //获取最后一次同步时间
+    QString getDtLastUpdate();
 private:
     void initConnect();
 

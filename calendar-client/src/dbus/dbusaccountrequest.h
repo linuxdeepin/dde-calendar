@@ -142,14 +142,17 @@ public:
 
     void getSysColors();
 
+    //获取最后一次同步时间
+    QString getDtLastUpdate();
 signals:
     void signalGetAccountInfoFinish(DAccount::Ptr);
     void signalGetScheduleTypeListFinish(DScheduleType::List);
     void signalGetScheduleListFinish(QMap<QDate, DSchedule::List>);
     void signalSearchScheduleListFinish(QMap<QDate, DSchedule::List>);
     void signalGetSysColorsFinish(DTypeColor::List);
-
+    void signalDtLastUpdate(QString);
     void signalSyncStateChange(DAccount::AccountSyncState);
+    void signalAccountStateChange(DAccount::AccountStates);
 
 public slots:
     //dbus服务端调用

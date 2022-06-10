@@ -35,6 +35,7 @@ class DAccountService : public DServiceBase
     Q_PROPERTY(int accountState READ getAccountState WRITE setAccountState)
     Q_PROPERTY(int syncState READ getSyncState)
     Q_PROPERTY(QString syncFreq READ getSyncFreq WRITE setSyncFreq)
+    Q_PROPERTY(QString dtLastUpdate READ getDtLastUpdate)
 public:
     typedef QSharedPointer<DAccountService> Ptr;
 
@@ -145,6 +146,8 @@ private:
     //设置同步频率相关信息
     QString getSyncFreq();
     void setSyncFreq(const QString &freq);
+    //获取最后一次同步时间
+    QString getDtLastUpdate();
 
 public slots:
 private:

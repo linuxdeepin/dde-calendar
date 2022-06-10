@@ -54,6 +54,7 @@ DAccountManageModule::DAccountManageModule(QObject *parent)
     m_generalSetting = m_accountManagerDB->getCalendarGeneralSettings();
 
     QObject::connect(m_syncFileManage->getSyncoperation(), &Syncoperation::signalLoginStatusChange, this, &DAccountManageModule::slotUidLoginStatueChange);
+    QObject::connect(m_syncFileManage->getSyncoperation(), &Syncoperation::SwitcherChange, this, &DAccountManageModule::slotSwitcherChange);
 }
 
 QString DAccountManageModule::getAccountList()
@@ -272,7 +273,14 @@ void DAccountManageModule::slotUidLoginStatueChange(const bool staus)
     QDBusConnection sessionBus = QDBusConnection::sessionBus();
     //登录或者数据改变
     DAccount::Ptr accountUnionid = m_syncFileManage->getuserInfo();
+    SyncoptResult result = m_syncFileManage->getSyncoperation()->optGetMainSwitcher();
     if (!accountUnionid->accountName().isEmpty()) {
+        //
+        if(result.switch_state){
+            accountUnionid->setAccountState( accountUnionid->accountState() | DAccount::Account_Open);
+        }else {
+            accountUnionid->setAccountState( accountUnionid->accountState() & ~DAccount::Account_Open);
+        }
         if (m_AccountServiceMap[DAccount::Type::Account_UnionID].size() > 0) {
             //数据改变
             DAccountModule::Ptr accountModule = m_accountModuleMap[accountUnionid->accountID()];
@@ -313,4 +321,19 @@ void DAccountManageModule::slotUidLoginStatueChange(const bool staus)
         }
     }
     emit signalLoginStatusChange();
+}
+
+void DAccountManageModule::slotSwitcherChange(const bool state)
+{
+    foreach (auto schedule, m_accountList) {
+        if(schedule->accountType() == DAccount::Account_UnionID){
+            if(state){
+                schedule->setAccountState( schedule->accountState() | DAccount::Account_Open);
+            }else {
+                schedule->setAccountState( schedule->accountState() & ~DAccount::Account_Open);
+            }
+            emit m_accountModuleMap[schedule->accountID()]->signalAccountState();
+            return;
+        }
+    }
 }

@@ -94,6 +94,8 @@ public slots:
     void slotTimeFormatType(const int timeType);
     //TODO：监听网络帐户管理信号和Union ID登陆退出状态
     void slotUidLoginStatueChange(const bool staus);
+    //控制中心的同步开关
+    void slotSwitcherChange(const bool state);
 
 private:
     SyncFileManage *m_syncFileManage = nullptr;

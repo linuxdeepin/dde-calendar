@@ -332,7 +332,7 @@ void DAccountManagerDataBase::initAccountManagerDB()
         QSqlQuery query(m_database);
         if (query.exec("insert into calendargeneralsettings values"
                        "('firstDayOfWeek',  '7'),"
-                       "('timeShowType',    '2')")) {
+                       "('timeShowType',    '0')")) {
             m_database.commit();
         } else {
             qWarning() << __FUNCTION__ << query.lastError();

@@ -35,6 +35,8 @@ void AccountItem::initConnect()
     connect(m_dbusRequest, &DbusAccountRequest::signalGetScheduleListFinish, this, &AccountItem::slotGetScheduleListFinish);
     connect(m_dbusRequest, &DbusAccountRequest::signalGetSysColorsFinish, this, &AccountItem::slotGetSysColorsFinish);
     connect(m_dbusRequest, &DbusAccountRequest::signalSearchScheduleListFinish, this, &AccountItem::slotSearchScheduleListFinish);
+    connect(m_dbusRequest, &DbusAccountRequest::signalDtLastUpdate, this, &AccountItem::signalDtLastUpdate);
+    connect(m_dbusRequest, &DbusAccountRequest::signalAccountStateChange, this, &AccountItem::signalAccountStateChange);
 }
 
 /**
@@ -391,5 +393,10 @@ void AccountItem::slotSearchScheduleListFinish(QMap<QDate, DSchedule::List> map)
 void AccountItem::slotGetSysColorsFinish(DTypeColor::List typeColorList)
 {
     m_typeColorList = typeColorList;
+}
+
+QString AccountItem::getDtLastUpdate()
+{
+    return m_dbusRequest->getDtLastUpdate();
 }
 

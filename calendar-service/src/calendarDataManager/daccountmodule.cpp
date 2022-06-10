@@ -638,7 +638,9 @@ void DAccountModule::accountDownload()
             query.addBindValue(source.value(k));
     };
     //sql replace old table to new table
-    auto replaceIntoTable = [=](const QString &table_name, ThrowQuery source, ThrowQuery target, bool isClear = false) {
+    auto replaceIntoTable = [=](const QString &table_name, QString source_connection_name, QString target_connection_name, bool isClear = false) {
+        ThrowQuery target(QSqlDatabase::database(target_connection_name));
+        ThrowQuery source(QSqlDatabase::database(source_connection_name));
         if (isClear)
             target.exec(" delete from " + table_name);
         source.exec(" select * from " + table_name);
@@ -649,12 +651,43 @@ void DAccountModule::accountDownload()
         }
     };
     //sql replace old record to new table
-    auto replaceIntoRecord = [=](const QString &table_name, QSqlRecord record, ThrowQuery target) {
+    auto replaceIntoRecord = [=](const QString &table_name, QSqlRecord record, QString target_connection_name) {
+        ThrowQuery target(QSqlDatabase::database(target_connection_name));
         target.prepare("replace into " + table_name + " values(" + prequest(record.count()) + ")");
         prebinds(target, record);
         target.exec();
     };
+    auto selectValue = [=](const QString &value_name, const QString &table_name, const QString &key_name, const QVariant &key_value, const QString &connection_name)->QVariant{
+        ThrowQuery query(QSqlDatabase::database(connection_name));
+        query.prepare("select " + value_name + " from " + table_name + " where " + key_name + " = ?");
+        query.addBindValue(key_value);
+        query.exec();
+        query.next();
+        return query.value(0);
+    };
+    auto selectAll = [=](const QString &table_name, const QString &key_name, const QVariant &key_value, const QString &connection_name)->QSqlRecord{
+        ThrowQuery query(QSqlDatabase::database(connection_name));
+        query.prepare("select * from " + table_name + " where " + key_name + " = ?");
+        query.addBindValue(key_value);
+        query.exec();
+        query.next();
+        return query.record();
+    };
+    auto deleteValue = [=](const QString &table_name, const QString &key_name, const QVariant &key_value, const QString &connection_name){
+        ThrowQuery query(QSqlDatabase::database(connection_name));
+        query.prepare("delete from " + table_name + " where " + key_name + " = ?");
+        query.addBindValue(key_value);
+        query.exec();
+    };
+    auto deleteTable = [=](const QString &table_name, const QString &connection_name){
+        ThrowQuery query(QSqlDatabase::database(connection_name));
+        query.exec("delete from " + table_name);
+    };
 
+    /*
+     * A为本地数据库
+     * B为云端下载的临时数据库
+     */
     try {
         QString filepath;
         SyncFileManage fileManger;
@@ -672,8 +705,8 @@ void DAccountModule::accountDownload()
             }
         }
 
-        //初始化表结构
         {
+            qInfo() << "初始化表结构";
             ThrowQuery query(DBSync);
             query.exec(DAccountDataBase::sql_create_schedules);
             query.exec(DAccountDataBase::sql_create_scheduleType);
@@ -682,98 +715,90 @@ void DAccountModule::accountDownload()
 
             query.exec("select count(0) from scheduleType");
             query.next();
-            //没有数据则设置：默认日程类型、颜色、默认通用设置
+
             if (0 == query.value(0).toInt()) {
+                qInfo() << "没有数据则设置：默认日程类型、颜色、默认通用设置";
                 AccountDB accountDb(m_account);
                 accountDb.setConnectionName(DDataBase::NameSync);
                 accountDb.dbOpen();
-                //默认日程类型
+
+                qInfo() << "默认日程类型";
                 accountDb.defaultScheduleType();
 
-                //默认颜色
+                qInfo() << "默认颜色";
                 accountDb.defaultTypeColor();
 
-                //默认通用设置
-                ThrowQuery source(DBAccountManager);
-                ThrowQuery target(DBSync);
-
-                replaceIntoTable("calendargeneralsettings", source, target);
+                if(this->getAccountState() & DAccount::Account_Setting)
+                {
+                    qInfo() << "默认通用设置";
+                    replaceIntoTable("calendargeneralsettings", DDataBase::NameAccountManager, DDataBase::NameSync);
+                }
             }
         }
 
-        //将本地A的task同步到刚刚下载的B里
         {
-            //同步三张表
+            qInfo() << "将本地A的uploadTask同步到刚刚下载的B里";
             {
-                ThrowQuery source(QSqlDatabase::database(m_account->accountName()));
-                ThrowQuery target(DBSync);
-
-                source.exec("select id,taskID,uploadType,uploadObject,objectID  from uploadTask");
-                while (source.next()) {
-                    int type = source.value("uploadType").toInt();
-                    int obj = source.value("uploadObject").toInt();
-                    QString id = source.value("objectID").toString();
+                qInfo() << "同步三张表";
+                ThrowQuery query(QSqlDatabase::database(m_account->accountName()));
+                query.exec("select taskID,uploadType,uploadObject,objectID  from uploadTask");
+                while (query.next()) {
+                    int type = query.value("uploadType").toInt();
+                    int obj = query.value("uploadObject").toInt();
+                    QString key_value = query.value("objectID").toString();
                     QString table_name = DUploadTaskData::sql_table_name(obj);
-                    QString tabke_key = DUploadTaskData::sql_table_primary_key(obj);
+                    QString key_name = DUploadTaskData::sql_table_primary_key(obj);
 
                     switch (type) {
                     case DUploadTaskData::Create:
                     case DUploadTaskData::Modify:
-                        replaceIntoRecord(table_name, source.record(), target);
+                        replaceIntoRecord(table_name, selectAll(table_name, key_name, key_value, m_account->accountName()), DDataBase::NameSync);
                         break;
                     case DUploadTaskData::Delete:
-                        target.prepare("delete from " + table_name + " where " + tabke_key + "= ?");
-                        target.addBindValue(id);
-                        target.exec();
+                        deleteValue(table_name, key_name, key_value, DDataBase::NameSync);
                         break;
                     }
                 }
 
-                //清空uploadTask
-                source.exec("delete from uploadTask");
+                qInfo() << "清空uploadTask";
+                deleteTable("uploadTask", m_account->accountName());
             }
 
-            //同步calendargeneralsettings表
+            if(this->getAccountState() & DAccount::Account_Setting)
             {
-                ThrowQuery source(DBAccountManager);
-                ThrowQuery target(DBSync);
-                source.exec("select vch_value from calendargeneralsettings where vch_key = 'dt_update' ");
-                source.next();
-                QDateTime sourceDt = source.value("vch_value").toDateTime();
-
-                target.exec("select vch_value from calendargeneralsettings where vch_key = 'dt_update' ");
-                target.next();
-                QDateTime targetDt = target.value("vch_value").toDateTime();
-
-                if (sourceDt > targetDt)
-                    replaceIntoTable("calendargeneralsettings", source, target, true);
-                if (sourceDt < targetDt)
-                    replaceIntoTable("calendargeneralsettings", target, source, true);
+                qInfo() << "同步通用设置";
+                QDateTime sourceDate = selectValue("vch_value", "calendargeneralsettings", "vch_key", "dt_update", DDataBase::NameAccountManager).toDateTime();
+                QDateTime targetDate = selectValue("vch_value", "calendargeneralsettings", "vch_key", "dt_update", DDataBase::NameSync).toDateTime();
+                if (sourceDate > targetDate)
+                    replaceIntoTable("calendargeneralsettings", DDataBase::NameAccountManager, DDataBase::NameSync, true);
+                if (sourceDate < targetDate)
+                    replaceIntoTable("calendargeneralsettings", DDataBase::NameSync, DDataBase::NameAccountManager, true);
             }
         }
 
-        //将B的数据和A的数据做对比，然后更新A
         {
-
+            qInfo() << "将B的数据替换A的数据";
             {
-                ThrowQuery source(QSqlDatabase::database(m_account->accountName()));
-                ThrowQuery target(DBSync);
-                replaceIntoTable("schedules", target, source, true);
-                replaceIntoTable("scheduleType", target, source, true);
-                replaceIntoTable("typeColor", target, source, true);
+                replaceIntoTable("schedules",    DDataBase::NameSync, m_account->accountName(), true);
+                replaceIntoTable("scheduleType", DDataBase::NameSync, m_account->accountName(), true);
+                replaceIntoTable("typeColor",    DDataBase::NameSync, m_account->accountName(), true);
             }
+
+            if(this->getAccountState() & DAccount::Account_Setting)
             {
-                ThrowQuery source(DBAccountManager);
-                ThrowQuery target(DBSync);
-                replaceIntoTable("calendargeneralsettings", target, source, true);
+                qInfo() << "更新通用设置";
+                replaceIntoTable("calendargeneralsettings", DDataBase::NameSync, DDataBase::NameAccountManager, true);
             }
         }
-        //上传B
-
+        qInfo() << "上传B";
         QSqlDatabase::removeDatabase(DDataBase::NameSync);
         if (!fileManger.SyncDataUpload(filepath, errocde)) {
             throw "upload error:code is " + QString::number(errocde);
         }
+        m_account->setDtLastSync(QDateTime::currentDateTime());
+        m_accountDB->updateAccountInfo();
+        emit signalDtLastUpdate();
+        qInfo() << "SyncDataUpload SUCCESS";
     } catch (const QString &exception) {
         qInfo() << __LINE__ << exception;
     } catch (const char *exception) {
@@ -784,6 +809,11 @@ void DAccountModule::accountDownload()
 void DAccountModule::uploadNetWorkAccountData()
 {
     //TODO:
+}
+
+QString DAccountModule::getDtLastUpdate()
+{
+    return dtToString(m_account->dtLastSync());
 }
 
 void DAccountModule::removeDB()

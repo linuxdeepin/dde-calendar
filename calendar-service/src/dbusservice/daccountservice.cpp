@@ -34,6 +34,9 @@ DAccountService::DAccountService(const QString &path, const QString &interface, 
     connect(m_accountModel.data(), &DAccountModule::signalSyncState, this, [&]() {
         notifyPropertyChanged(getInterface(), "syncState");
     });
+    connect(m_accountModel.data(), &DAccountModule::signalDtLastUpdate, this, [&]() {
+        notifyPropertyChanged(getInterface(), "dtLastUpdate");
+    });
 }
 
 QString DAccountService::getAccountInfo()
@@ -187,4 +190,9 @@ QString DAccountService::getSyncFreq()
 void DAccountService::setSyncFreq(const QString &freq)
 {
     m_accountModel->setSyncFreq(freq);
+}
+
+QString DAccountService::getDtLastUpdate()
+{
+    return m_accountModel->getDtLastUpdate();
 }

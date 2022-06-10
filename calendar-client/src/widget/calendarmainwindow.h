@@ -171,11 +171,12 @@ struct CalendarSettingSettings : public QList<CalendarSettingSetting>
  */
 class SyncTagRadioButton : public QWidget
 {
+    Q_OBJECT
 public:
     SyncTagRadioButton(DAccount::AccountState type, QWidget *parent = nullptr);
 
-    void updateState();
-    void updateState(bool isOnline);
+    void updateAccountState(DAccount::AccountStates state);
+    void updateOnLineState(bool isOnline);
 
     bool isChecked();
     DAccount::AccountState type();

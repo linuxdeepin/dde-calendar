@@ -100,6 +100,9 @@ public:
     //删除数据库
     void removeDB();
 
+    //获取最后一次同步时间
+    QString getDtLastUpdate();
+
 private:
     QMap<QDate, DSchedule::List> getScheduleTimesOn(const QDateTime &dtStart, const QDateTime &dtEnd, const DSchedule::List &scheduleList, bool extend = true);
     DSchedule::List getFestivalSchedule(const QDateTime &dtStart, const QDateTime &dtEnd, const QString &key);
@@ -122,8 +125,10 @@ signals:
     //关闭通知弹框
     void signalCloseNotification(quint64 notifyID);
 
-    void signalAccountState(int accountState);
-    void signalSyncState(int syncState);
+    void signalAccountState();
+    void signalSyncState();
+
+    void signalDtLastUpdate();
 
 public slots:
     void slotOpenCalendar(const QString &alarmID);

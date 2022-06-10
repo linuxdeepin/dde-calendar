@@ -256,6 +256,13 @@ void DbusAccountRequest::getSysColors()
     asyncCall("getSysColors");
 }
 
+QString DbusAccountRequest::getDtLastUpdate()
+{
+    QDBusInterface interface(this->service(), this->path(), this->interface(), QDBusConnection::sessionBus(), this);
+    QString datetime = interface.property("dtLastUpdate").toString();
+    return datetime;
+}
+
 void DbusAccountRequest::slotCallFinished(CDBusPendingCallWatcher *call)
 {
     int ret = 0;
@@ -358,6 +365,12 @@ void DbusAccountRequest::onPropertiesChanged(const QString &interfaceName, const
         if (it.key() == "syncState") {
             int state = it.value().toInt();
             emit signalSyncStateChange(static_cast<DAccount::AccountSyncState>(state));
+        }
+        if(it.key() == "dtLastUpdate") {
+            emit signalDtLastUpdate(getDtLastUpdate());
+        }
+        if(it.key() == "accountState") {
+            emit signalAccountStateChange(getAccountState());
         }
     }
 }
