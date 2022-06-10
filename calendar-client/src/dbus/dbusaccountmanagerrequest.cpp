@@ -19,12 +19,33 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "dbusaccountmanagerrequest.h"
+#include <QDBusInterface>
 #include <QDebug>
 
 DbusAccountManagerRequest::DbusAccountManagerRequest(QObject *parent)
     : DbusRequestBase("/com/deepin/dataserver/Calendar/AccountManager", "com.deepin.dataserver.Calendar.AccountManager", QDBusConnection::sessionBus(), parent)
 {
 
+}
+
+/**
+ * @brief setFirstDayofWeek
+ * 设置一周首日
+ */
+void DbusAccountManagerRequest::setFirstDayofWeek(int value)
+{
+    QDBusInterface interface(this->service(), this->path(), this->interface(), QDBusConnection::sessionBus(), this);
+    interface.setProperty("firstDayOfWeek", QVariant(value));
+}
+
+/**
+ * @brief DbusAccountManagerRequest::setTimeFormatType
+ * 设置时间显示格式
+ */
+void DbusAccountManagerRequest::setTimeFormatType(int value)
+{
+    QDBusInterface interface(this->service(), this->path(), this->interface(), QDBusConnection::sessionBus(), this);
+    interface.setProperty("timeFormatType", QVariant(value));
 }
 
 /**

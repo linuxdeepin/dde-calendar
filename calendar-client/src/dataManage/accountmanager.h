@@ -51,6 +51,11 @@ public:
 
     //设置通用设置
     void setCalendarGeneralSettings(DCalendarGeneralSettings::Ptr ptr, CallbackFunc callback = nullptr);
+
+    //设置一周首日
+    void setFirstDayofWeek(int);
+    //设置时间显示格式
+    void setTimeFormatType(int);
     //帐户登录
     void login();
     //帐户登出

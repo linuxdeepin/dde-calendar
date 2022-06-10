@@ -175,6 +175,18 @@ void AccountManager::setCalendarGeneralSettings(DCalendarGeneralSettings::Ptr pt
     m_dbusRequest->setCalendarGeneralSettings(ptr);
 }
 
+void AccountManager::setFirstDayofWeek(int value)
+{
+    m_settings->setFirstDayOfWeek(static_cast<Qt::DayOfWeek>(value));
+    m_dbusRequest->setFirstDayofWeek(value);
+}
+
+void AccountManager::setTimeFormatType(int value)
+{
+    m_settings->setTimeShowType(static_cast<DCalendarGeneralSettings::TimeShowType>(value));
+    m_dbusRequest->setTimeFormatType(value);
+}
+
 /**
  * @brief login
  * 帐户登录

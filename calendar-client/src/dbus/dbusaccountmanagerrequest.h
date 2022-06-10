@@ -32,6 +32,11 @@ class DbusAccountManagerRequest : public DbusRequestBase
 public:
     explicit DbusAccountManagerRequest(QObject *parent = nullptr);
 
+    //设置一周首日
+    void setFirstDayofWeek(int);
+    //设置时间显示格式
+    void setTimeFormatType(int);
+
     //获取帐户列表
     void getAccountList();
     //根据帐户id下拉数据

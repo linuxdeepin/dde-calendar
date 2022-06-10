@@ -36,6 +36,7 @@
 #include "tabletconfig.h"
 #include "calendarglobalenv.h"
 #include "settingWidget/userloginwidget.h"
+#include "settingWidget/settingwidgets.h"
 
 #include "scheduletypeeditdlg.h"
 #include "accountmanager.h"
@@ -878,13 +879,14 @@ void Calendarmainwindow::slotapplicationStateChanged(Qt::ApplicationState state)
 
 void Calendarmainwindow::slotOpenSettingDialog()
 {
+    SettingWidgets::init();
     if (nullptr == m_dsdSetting) {
         m_dsdSetting = new DSettingsDialog(this);
         m_dsdSetting->setIcon(CDynamicIcon::getInstance()->getPixmap());
         m_dsdSetting->setFixedSize(682, 506);
         m_dsdSetting->widgetFactory()->registerWidget("login", UserloginWidget::createloginButton);
-        m_dsdSetting->widgetFactory()->registerWidget("FirstDayofWeek", std::bind(&Calendarmainwindow::createComboboxFirstDayofWeek, this, std::placeholders::_1));
-        m_dsdSetting->widgetFactory()->registerWidget("Time",               std::bind(&Calendarmainwindow::createComboboxTime,          this, std::placeholders::_1));
+        m_dsdSetting->widgetFactory()->registerWidget("FirstDayofWeek",     SettingWidgets::createFirstDayofWeekWidget);
+        m_dsdSetting->widgetFactory()->registerWidget("Time",               SettingWidgets::createTimeTypeWidget);
         m_dsdSetting->widgetFactory()->registerWidget("AccountCombobox",    std::bind(&Calendarmainwindow::createAccountCombobox,       this, std::placeholders::_1));
         m_dsdSetting->widgetFactory()->registerWidget("JobTypeListView",    std::bind(&Calendarmainwindow::createJobTypeListView,       this, std::placeholders::_1));
         m_dsdSetting->widgetFactory()->registerWidget("SyncTagRadioButton", std::bind(&Calendarmainwindow::createSyncTagRadioButton,    this, std::placeholders::_1));
@@ -967,6 +969,7 @@ void Calendarmainwindow::slotOpenSettingDialog()
     m_dsdSetting->exec();
     //使用完后释放
     delete m_dsdSetting;
+    gCalendarManager->updateData();
     m_dsdSetting = nullptr;
 }
 
@@ -1125,67 +1128,6 @@ QWidget *Calendarmainwindow::createManualSyncButton(QObject *obj)
 //    connect(gAccountManager, &AccountManager::syncSuccess, this, updateLastUpdateText);
     //TODO:立刻同步和最后一次同步时间
     return widget;
-}
-
-QPair<QWidget *, QWidget *> Calendarmainwindow::createComboboxFirstDayofWeek(QObject *obj)
-{
-    auto option = qobject_cast<DTK_CORE_NAMESPACE::DSettingsOption *>(obj);
-
-    // 构建自定义Item
-    QWidget *widget = new QWidget();
-    QComboBox *combobox = new QComboBox(widget);
-    QHBoxLayout *layout = new QHBoxLayout(widget);
-    combobox->addItem(tr("Sunday"));
-    combobox->addItem(tr("Monday"));
-
-    combobox->setFixedSize(150, 36);
-    layout->addWidget(combobox);
-    widget->layout()->setAlignment(Qt::AlignRight);
-    QPair<QWidget *, QWidget *> optionWidget = DSettingsWidgetFactory::createStandardItem(QByteArray(), option, widget);
-    option->connect(combobox, &QComboBox::currentTextChanged, option, [=](const QString day) {
-        if (day == "Sunday") {
-            CalendarManager::getInstance()->setFirstDayOfWeek(Qt::Sunday);
-        } else {
-            CalendarManager::getInstance()->setFirstDayOfWeek(Qt::Monday);
-        }
-    });
-    // 获取初始值
-    option->setValue(option->defaultValue());
-
-    if (widget != nullptr)
-        widget->deleteLater();
-
-
-    return optionWidget;
-}
-
-QPair<QWidget *, QWidget *> Calendarmainwindow::createComboboxTime(QObject *obj)
-{
-    auto option = qobject_cast<DTK_CORE_NAMESPACE::DSettingsOption *>(obj);
-
-    // 构建自定义Item
-    QWidget *widget = new QWidget();
-    QComboBox *combobox = new QComboBox(widget);
-    QHBoxLayout *layout = new QHBoxLayout(widget);
-    combobox->addItem(tr("24-hour clock"));
-    combobox->addItem(tr("12-hour clock"));
-
-    combobox->setFixedSize(150, 36);
-    layout->addWidget(combobox);
-    widget->layout()->setAlignment(Qt::AlignRight);
-    QPair<QWidget *, QWidget *> optionWidget = DSettingsWidgetFactory::createStandardItem(QByteArray(), option, widget);
-    option->connect(combobox, &QComboBox::currentTextChanged, option, [=](const QString time) {
-        if (time == "24-hour clock") {
-            CalendarManager::getInstance()->slotTimeFormatChanged(0);
-        } else {
-            CalendarManager::getInstance()->slotTimeFormatChanged(1);
-        }
-    });
-    // 获取初始值
-    option->setValue(option->defaultValue());
-    if (widget != nullptr)
-        widget->deleteLater();
-    return optionWidget;
 }
 
 /**

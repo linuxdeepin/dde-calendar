@@ -183,8 +183,7 @@ void CenterWidget::paintEvent(QPaintEvent *e)
     painter.setPen(pen);
     painter.setFont(timeFont);
     QString timestr;
-    QLocale locale;
-    timestr = m_ScheduleInfo->dtStart().time().toString("AP " + m_timeFormat);
+    timestr = m_ScheduleInfo->dtStart().time().toString(m_timeFormat);
 
     QFontMetrics metrics(timeFont);
     if (m_ScheduleInfo->allDay())

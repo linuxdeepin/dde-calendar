@@ -33,8 +33,8 @@ class DCalendarGeneralSettings
 {
 public:
     enum TimeShowType {
+        TwentyFour = 0, //24
         Twelve, //12
-        TwentyFour //24
     };
 
     typedef QSharedPointer<DCalendarGeneralSettings> Ptr;

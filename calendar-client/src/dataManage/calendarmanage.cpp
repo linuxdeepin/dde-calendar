@@ -150,13 +150,16 @@ int CalendarManager::getWeekNumOfYear(const QDate &date)
     return  _weekNum;
 }
 
-void CalendarManager::setTimeFormatChanged(int value)
+void CalendarManager::setTimeFormatChanged(int value, bool update)
 {
     m_timeFormatValue = value;
     if (value == 0) {
         m_timeFormat = "hh:mm";
     } else {
         m_timeFormat = "ap h:mm";
+    }
+    if (update) {
+        updateData();
     }
 }
 
@@ -285,10 +288,17 @@ Qt::DayOfWeek CalendarManager::getFirstDayOfWeek()
     return Qt::DayOfWeek(m_firstDayOfWeek);
 }
 
-void CalendarManager::setFirstDayOfWeek(int day)
+void CalendarManager::setFirstDayOfWeek(int day, bool update)
 {
     m_firstDayOfWeek = day;
     //更新显示界面
+    if (update) {
+        updateData();
+    }
+}
+
+void CalendarManager::updateData()
+{
     for (int i = 0; i < m_showWidget.size(); ++i) {
         m_showWidget.at(i)->updateData();
     }
@@ -317,14 +327,12 @@ void CalendarManager::initData()
 {
     //获取本地语言判断是否为中文
     m_showLunar = QLocale::system().language() == QLocale::Chinese;
-    //获取每周第一天
-    //获取时间日期格式
-    const int _timeFormat = m_timeDateDbus->shortTimeFormat();
+    //获取日期格式
     const int _dateFormat = m_timeDateDbus->shortDateFormat();
-    //设置时间日期格式
-    setTimeFormatChanged(_timeFormat);
-    setDateFormatChanged(_dateFormat);
     setYearBeginAndEndDate(m_selectDate.year());
+    //设置时间日期格式
+    setDateFormatChanged(_dateFormat);
+    slotGeneralSettingsUpdate();
 }
 
 /**
@@ -332,7 +340,7 @@ void CalendarManager::initData()
  */
 void CalendarManager::initConnection()
 {
-    connect(m_timeDateDbus, &DaemonTimeDate::ShortTimeFormatChanged, this, &CalendarManager::slotTimeFormatChanged);
+    connect(gAccountManager, &AccountManager::signalGeneralSettingsUpdate, this, &CalendarManager::slotGeneralSettingsUpdate);
     connect(m_timeDateDbus, &DaemonTimeDate::ShortTimeFormatChanged, this, &CalendarManager::signalTimeFormatChanged);
     connect(m_timeDateDbus, &DaemonTimeDate::ShortDateFormatChanged, this, &CalendarManager::slotDateFormatChanged);
     connect(m_timeDateDbus, &DaemonTimeDate::ShortDateFormatChanged, this, &CalendarManager::signalDateFormatChanged);
@@ -358,18 +366,14 @@ void CalendarManager::slotGetLunarSuccess()
     }
 }
 
-/**
- * @brief CalendarManager::slotTimeFormatChanged 更新时间显示格式
- * @param value
- */
-void CalendarManager::slotTimeFormatChanged(int value)
+void CalendarManager::slotGeneralSettingsUpdate()
 {
-    QString timeFormat;
-    setTimeFormatChanged(value);
-    //更新显示界面
-    for (int i = 0; i < m_showWidget.size(); ++i) {
-        m_showWidget.at(i)->updateData();
+    DCalendarGeneralSettings::Ptr setting = gAccountManager->getGeneralSettings();
+    if (!setting) {
+        return;
     }
+    setFirstDayOfWeek(setting->firstDayOfWeek());
+    setTimeFormatChanged(setting->timeShowType());
 }
 
 /**

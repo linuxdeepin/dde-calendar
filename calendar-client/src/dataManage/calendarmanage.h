@@ -68,7 +68,7 @@ public:
     //根据日期获取该日期处于该年第多少周
     static int getWeekNumOfYear(const QDate &date);
 
-    void setTimeFormatChanged(int value);
+    void setTimeFormatChanged(int value, bool update = true);
     void setDateFormatChanged(int value);
     QString getTimeFormat() const;
     int getTimeFormatValue() const;
@@ -87,7 +87,9 @@ public:
     //获取一周首日
     Qt::DayOfWeek getFirstDayOfWeek();
     //设置一周首日
-    void setFirstDayOfWeek(int);
+    void setFirstDayOfWeek(int, bool update = true);
+    void updateData();
+
 signals:
     void signalTimeFormatChanged(int value);
     void signalDateFormatChanged(int value);
@@ -98,7 +100,8 @@ public slots:
     //农历更新成功刷新界面
     void slotGetLunarSuccess();
 
-    void slotTimeFormatChanged(int value);
+    void slotGeneralSettingsUpdate();
+
     void slotDateFormatChanged(int value);
 
 private:
@@ -126,5 +129,5 @@ private:
     QString                     m_dateFormat = "yyyy-MM-dd";    //日期显示格式
     int                         m_timeFormatValue = 0;
 };
-
+#define gCalendarManager CalendarManager::getInstance()
 #endif // CSCHEDULEMANAGE_H
