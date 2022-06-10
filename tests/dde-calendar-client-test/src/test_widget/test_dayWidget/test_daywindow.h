@@ -21,24 +21,24 @@
 #ifndef TEST_DAYWINDOW_H
 #define TEST_DAYWINDOW_H
 
-#include "gtest/gtest.h"
-#include "dayWidget/daywindow.h"
+//#include "gtest/gtest.h"
+//#include "dayWidget/daywindow.h"
 
-#include <QObject>
+//#include <QObject>
 
-class test_dayWindow : public QObject
-    , public ::testing::Test
-{
-    Q_OBJECT
-public:
-    test_dayWindow();
-    void SetUp() override;
-    void TearDown() override;
-signals:
+//class test_dayWindow : public QObject
+//    , public ::testing::Test
+//{
+//    Q_OBJECT
+//public:
+//    test_dayWindow();
+//    void SetUp() override;
+//    void TearDown() override;
+//signals:
 
-public slots:
-public:
-    CDayWindow *m_dayWindow;
-};
+//public slots:
+//public:
+//    CDayWindow *m_dayWindow;
+//};
 
 #endif // TEST_DAYWINDOW_H

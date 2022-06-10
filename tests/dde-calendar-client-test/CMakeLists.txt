@@ -5,8 +5,10 @@ project(dde-calendar-client-test)
 ADD_COMPILE_OPTIONS(-fno-access-control)
 
 set(APP_CLIENT_DIR "${CMAKE_SOURCE_DIR}/calendar-client")
-set(APP_RES_DIR "${APP_CLIENT_DIR}/assets")
-set(APP_QRC "${APP_RES_DIR}/resources.qrc")
+set(APP_COMMON_DIR "${CMAKE_SOURCE_DIR}/calendar-common")
+set(APP_3PARTY_DIR "${CMAKE_SOURCE_DIR}/3rdparty/kcalendarcore")
+#set(APP_RES_DIR "${APP_CLIENT_DIR}/assets")
+#set(APP_QRC "${APP_RES_DIR}/resources.qrc")
 set(APP_BIN_NAME "dde-calendar-test")
 set(PROJECT_NAME_TEST ${APP_BIN_NAME})
 
@@ -30,17 +32,28 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,--as-needed -fPIE")
 set(CMAKE_EXE_LINKER_FLAGS "-pie")
 
 include_directories(${APP_CLIENT_DIR}/src)
-
 SUBDIRLIST(all_src ${APP_CLIENT_DIR}/src)
+
+include_directories(${APP_COMMON_DIR}/src)
+SUBDIRLIST(all_src ${APP_COMMON_DIR}/src)
+
+include_directories(${APP_3PARTY_DIR}/src)
+SUBDIRLIST(all_src ${APP_3PARTY_DIR}/src)
 
 #Include all app own subdirectorys
 foreach(subdir ${all_src})
     include_directories(${APP_CLIENT_DIR}/src/${subdir})
+    include_directories(${APP_COMMON_DIR}/src/${subdir})
+    include_directories(${APP_COMMON_DIR}/src/${subdir})
 endforeach()
 
-file(GLOB_RECURSE Calendar_SRC ${APP_CLIENT_DIR}/src/*.cpp)
+file(GLOB_RECURSE Calendar_CLIENTSRC ${APP_CLIENT_DIR}/src/*.cpp)
+file(GLOB_RECURSE Calendar_COMMONSRC ${APP_COMMON_DIR}/src/*.cpp)
+file(GLOB_RECURSE Calendar_3PARTYSRC ${APP_3PARTY_DIR}/src/*.cpp)
 include_directories(${Qt5Gui_PRIVATE_INCLUDE_DIRS})
-list(REMOVE_ITEM Calendar_SRC ${APP_CLIENT_DIR}/src/main.cpp)
+list(REMOVE_ITEM Calendar_CLIENTSRC ${APP_CLIENT_DIR}/src/main.cpp)
+list(REMOVE_ITEM Calendar_COMMONSRC ${APP_COMMON_DIR}/src/main.cpp)
+list(REMOVE_ITEM Calendar_3PARTYSRC ${APP_3PARTY_DIR}/src/main.cpp)
 
 #test SRC
 SUBDIRLIST(TEST_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -55,7 +68,7 @@ list(APPEND CMAKE_MODULE_PATH "${ASAN_CMAKE_DIR}")
 include(asan)
 
 # Tell CMake to create the executable
-add_executable(${APP_BIN_NAME} ${Calendar_TEST_SRC} ${Calendar_SRC} ${APP_QRC})
+add_executable(${APP_BIN_NAME} ${Calendar_TEST_SRC} ${Calendar_CLIENTSRC} ${Calendar_COMMONSRC} ${Calendar_3PARTYSRC} ${APP_QRC})
 
 target_include_directories(${APP_BIN_NAME} PUBLIC ${DtkWidget_INCLUDE_DIRS} ${OBJECT_BINARY_DIR})
 

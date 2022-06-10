@@ -22,21 +22,21 @@
 #define TEST_MONTHWINDOW_H
 
 #include "gtest/gtest.h"
-#include "monthWidget/monthwindow.h"
+//#include "monthWidget/monthwindow.h"
 
-#include <QObject>
+//#include <QObject>
 
-class test_monthWindow : public QObject
-    , public ::testing::Test
-{
-    Q_OBJECT
-public:
-    explicit test_monthWindow();
-    void SetUp() override;
-    void TearDown() override;
+//class test_monthWindow : public QObject
+//    , public ::testing::Test
+//{
+//    Q_OBJECT
+//public:
+//    explicit test_monthWindow();
+//    void SetUp() override;
+//    void TearDown() override;
 
-public:
-    CMonthWindow *m_monthWindow {nullptr};
-};
+//public:
+//    CMonthWindow *m_monthWindow {nullptr};
+//};
 
 #endif // TEST_MONTHWINDOW_H

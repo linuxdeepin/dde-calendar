@@ -22,23 +22,23 @@
 #define TEST_WEEKWINDOW_H
 
 #include "gtest/gtest.h"
-#include "weekWidget/weekwindow.h"
+//#include "weekWidget/weekwindow.h"
 
-#include <QObject>
+//#include <QObject>
 
-class test_weekWindow : public QObject
-    , public ::testing::Test
-{
-    Q_OBJECT
-public:
-    explicit test_weekWindow();
-    void SetUp() override;
-    void TearDown() override;
-signals:
+//class test_weekWindow : public QObject
+//    , public ::testing::Test
+//{
+//    Q_OBJECT
+//public:
+//    explicit test_weekWindow();
+//    void SetUp() override;
+//    void TearDown() override;
+//signals:
 
-public slots:
-public:
-    CWeekWindow *m_weekWindow {nullptr};
-};
+//public slots:
+//public:
+//    CWeekWindow *m_weekWindow {nullptr};
+//};
 
 #endif // TEST_WEEKWINDOW_H

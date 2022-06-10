@@ -21,19 +21,19 @@
 #ifndef TEST_SCHEDULEITEM_H
 #define TEST_SCHEDULEITEM_H
 
-#include <QObject>
-#include <gtest/gtest.h>
-#include "graphicsItem/scheduleitem.h"
+//#include <QObject>
+//#include <gtest/gtest.h>
+//#include "graphicsItem/scheduleitem.h"
 
-class test_scheduleitem : public ::QObject
-    , public ::testing::Test
-{
-public:
-    test_scheduleitem();
-    ~test_scheduleitem();
+//class test_scheduleitem : public ::QObject
+//    , public ::testing::Test
+//{
+//public:
+//    test_scheduleitem();
+//    ~test_scheduleitem();
 
-protected:
-    CScheduleItem *mScheduleItem = nullptr;
-};
+//protected:
+//    CScheduleItem *mScheduleItem = nullptr;
+//};
 
 #endif // TEST_SCHEDULEITEM_H

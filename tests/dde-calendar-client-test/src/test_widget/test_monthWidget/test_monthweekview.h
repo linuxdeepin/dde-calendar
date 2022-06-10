@@ -22,19 +22,19 @@
 #define TEST_MONTHWEEKVIEW_H
 
 #include <QObject>
-#include "monthWidget/monthweekview.h"
-#include "gtest/gtest.h"
+//#include "monthWidget/monthweekview.h"
+//#include "gtest/gtest.h"
 
-class test_monthweekview : public QObject
-    , public ::testing::Test
-{
-public:
-    test_monthweekview();
-    ~test_monthweekview();
+//class test_monthweekview : public QObject
+//    , public ::testing::Test
+//{
+//public:
+//    test_monthweekview();
+//    ~test_monthweekview();
 
-protected:
-    CMonthWeekView *mMonthWeekView = nullptr;
-    WeekRect *mWeekRect = nullptr;
-};
+//protected:
+//    CMonthWeekView *mMonthWeekView = nullptr;
+//    WeekRect *mWeekRect = nullptr;
+//};
 
 #endif // TEST_MONTHWEEKVIEW_H

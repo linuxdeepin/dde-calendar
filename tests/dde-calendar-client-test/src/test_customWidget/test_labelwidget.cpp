@@ -18,16 +18,16 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "test_labelwidget.h"
-#include "../third-party_stub/stub.h"
+//#include "test_labelwidget.h"
+//#include "../third-party_stub/stub.h"
 
-test_labelwidget::test_labelwidget()
-{
+//test_labelwidget::test_labelwidget()
+//{
 
-}
+//}
 
-TEST_F(test_labelwidget, paintEvent_001)
-{
-    QPaintEvent e(QRect(0, 0, 0, 0));
-    mWidget->paintEvent(&e);
-}
+//TEST_F(test_labelwidget, paintEvent_001)
+//{
+//    QPaintEvent e(QRect(0, 0, 0, 0));
+//    mWidget->paintEvent(&e);
+//}

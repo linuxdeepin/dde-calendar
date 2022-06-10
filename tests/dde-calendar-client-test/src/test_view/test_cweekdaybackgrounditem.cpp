@@ -18,51 +18,51 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "test_cweekdaybackgrounditem.h"
+//#include "test_cweekdaybackgrounditem.h"
 
-test_CWeekDayBackgroundItem::test_CWeekDayBackgroundItem()
-{
-}
+//test_CWeekDayBackgroundItem::test_CWeekDayBackgroundItem()
+//{
+//}
 
-void test_CWeekDayBackgroundItem::SetUp()
-{
-    m_weekItem = new CWeekDayBackgroundItem();
-}
+//void test_CWeekDayBackgroundItem::SetUp()
+//{
+//    m_weekItem = new CWeekDayBackgroundItem();
+//}
 
-void test_CWeekDayBackgroundItem::TearDown()
-{
-    delete m_weekItem;
-    m_weekItem = nullptr;
-}
+//void test_CWeekDayBackgroundItem::TearDown()
+//{
+//    delete m_weekItem;
+//    m_weekItem = nullptr;
+//}
 
-//showFocus
-TEST_F(test_CWeekDayBackgroundItem, showFocus)
-{
-    m_weekItem->setShowFocus(true);
-    ASSERT_TRUE(m_weekItem->showFocus());
-    m_weekItem->setShowFocus(false);
-    ASSERT_FALSE(m_weekItem->showFocus());
-}
+////showFocus
+//TEST_F(test_CWeekDayBackgroundItem, showFocus)
+//{
+//    m_weekItem->setShowFocus(true);
+//    ASSERT_TRUE(m_weekItem->showFocus());
+//    m_weekItem->setShowFocus(false);
+//    ASSERT_FALSE(m_weekItem->showFocus());
+//}
 
-//setItemFocus
-TEST_F(test_CWeekDayBackgroundItem, setItemFocus)
-{
-    m_weekItem->setItemFocus(true);
-}
+////setItemFocus
+//TEST_F(test_CWeekDayBackgroundItem, setItemFocus)
+//{
+//    m_weekItem->setItemFocus(true);
+//}
 
-//hasNextSubItem
-TEST_F(test_CWeekDayBackgroundItem, hasNextSubItem)
-{
-    bool hasNextSub;
-    hasNextSub = m_weekItem->hasNextSubItem();
-    ASSERT_FALSE(hasNextSub);
-}
+////hasNextSubItem
+//TEST_F(test_CWeekDayBackgroundItem, hasNextSubItem)
+//{
+//    bool hasNextSub;
+//    hasNextSub = m_weekItem->hasNextSubItem();
+//    ASSERT_FALSE(hasNextSub);
+//}
 
-//drawDividingLine
-TEST_F(test_CWeekDayBackgroundItem, drawDividingLine)
-{
-    m_weekItem->setDrawDividingLine(false);
-    ASSERT_FALSE(m_weekItem->drawDividingLine());
-    m_weekItem->setDrawDividingLine(true);
-    ASSERT_TRUE(m_weekItem->drawDividingLine());
-}
+////drawDividingLine
+//TEST_F(test_CWeekDayBackgroundItem, drawDividingLine)
+//{
+//    m_weekItem->setDrawDividingLine(false);
+//    ASSERT_FALSE(m_weekItem->drawDividingLine());
+//    m_weekItem->setDrawDividingLine(true);
+//    ASSERT_TRUE(m_weekItem->drawDividingLine());
+//}

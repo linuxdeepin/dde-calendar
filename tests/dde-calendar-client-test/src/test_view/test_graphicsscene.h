@@ -21,25 +21,25 @@
 #ifndef TEST_GRAPHICSSCENE_H
 #define TEST_GRAPHICSSCENE_H
 
-#include "gtest/gtest.h"
-#include "cgraphicsscene.h"
+//#include "gtest/gtest.h"
+//#include "cgraphicsscene.h"
 
-#include <QObject>
+//#include <QObject>
 
-class test_graphicsscene : public QObject
-    , public ::testing::Test
-{
-    Q_OBJECT
-public:
-    test_graphicsscene();
+//class test_graphicsscene : public QObject
+//    , public ::testing::Test
+//{
+//    Q_OBJECT
+//public:
+//    test_graphicsscene();
 
-    void SetUp() override;
-    void TearDown() override;
-signals:
+//    void SetUp() override;
+//    void TearDown() override;
+//signals:
 
-public slots:
-public:
-    CGraphicsScene *m_Scene = nullptr;
-};
+//public slots:
+//public:
+//    CGraphicsScene *m_Scene = nullptr;
+//};
 
 #endif // TEST_GRAPHICSSCENE_H

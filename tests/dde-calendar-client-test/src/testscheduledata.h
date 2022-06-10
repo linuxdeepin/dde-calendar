@@ -21,18 +21,18 @@
 #ifndef TESTSCHEDULEDATA_H
 #define TESTSCHEDULEDATA_H
 
-#include "src/scheduledatainfo.h"
+//#include "src/scheduledatainfo.h"
 
-#include <QVector>
+//#include <QVector>
 
-class TestScheduleData
-{
-public:
-    TestScheduleData();
-};
+//class TestScheduleData
+//{
+//public:
+//    TestScheduleData();
+//};
 
-namespace TestDataInfo {
-QVector<ScheduleDataInfo> getScheduleItemDInfo();
-}
+//namespace TestDataInfo {
+//QVector<ScheduleDataInfo> getScheduleItemDInfo();
+//}
 
 #endif // TESTSCHEDULEDATA_H

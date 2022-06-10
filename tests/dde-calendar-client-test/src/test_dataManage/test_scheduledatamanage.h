@@ -21,17 +21,17 @@
 #ifndef TEST_SCHEDULEDATAMANAGE_H
 #define TEST_SCHEDULEDATAMANAGE_H
 
-#include "scheduledatamanage.h"
-#include "gtest/gtest.h"
-#include <QObject>
+//#include "scheduledatamanage.h"
+//#include "gtest/gtest.h"
+//#include <QObject>
 
-class test_scheduledatamanage : public QObject, public::testing::Test
-{
-public:
-    test_scheduledatamanage();
-    ~test_scheduledatamanage();
-protected:
-    CScheduleDataManage *datamanage = nullptr;
-};
+//class test_scheduledatamanage : public QObject, public::testing::Test
+//{
+//public:
+//    test_scheduledatamanage();
+//    ~test_scheduledatamanage();
+//protected:
+//    CScheduleDataManage *datamanage = nullptr;
+//};
 
 #endif // TEST_SCHEDULEDATAMANAGE_H

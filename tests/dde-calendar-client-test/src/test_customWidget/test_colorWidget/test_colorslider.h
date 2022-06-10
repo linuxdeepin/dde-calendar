@@ -21,29 +21,29 @@
 #ifndef TEXT_COLORSLIDER_H
 #define TEXT_COLORSLIDER_H
 
-#include <colorWidget/colorslider.h>
-#include <QObject>
-#include <QTest>
-#include <gtest/gtest.h>
+//#include <colorWidget/colorslider.h>
+//#include <QObject>
+//#include <QTest>
+//#include <gtest/gtest.h>
 
-class test_colorslider : public QObject, public::testing::Test
-{
-    Q_OBJECT
-public:
-    explicit test_colorslider(QObject *parent = nullptr);
+//class test_colorslider : public QObject, public::testing::Test
+//{
+//    Q_OBJECT
+//public:
+//    explicit test_colorslider(QObject *parent = nullptr);
 
-    virtual void SetUp()
-    {
-        mWidget = new ColorSlider();
-    }
+//    virtual void SetUp()
+//    {
+//        mWidget = new ColorSlider();
+//    }
 
-    virtual void TearDown()
-    {
-        delete mWidget;
-        mWidget = nullptr;
-    }
-protected:
-    ColorSlider *mWidget = nullptr;
-};
+//    virtual void TearDown()
+//    {
+//        delete mWidget;
+//        mWidget = nullptr;
+//    }
+//protected:
+//    ColorSlider *mWidget = nullptr;
+//};
 
 #endif // TEXT_COLORSLIDER_H

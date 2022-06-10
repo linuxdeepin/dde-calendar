@@ -21,17 +21,17 @@
 #ifndef TEST_SCHEDULECOORMANAGE_H
 #define TEST_SCHEDULECOORMANAGE_H
 
-#include "schedulecoormanage.h"
-#include "gtest/gtest.h"
-#include <QObject>
+//#include "schedulecoormanage.h"
+//#include "gtest/gtest.h"
+//#include <QObject>
 
-class test_schedulecoormanage : public QObject, public::testing::Test
-{
-public:
-    test_schedulecoormanage();
-    ~test_schedulecoormanage();
-protected:
-    CScheduleCoorManage *cScheduleCoorManage = nullptr;
-};
+//class test_schedulecoormanage : public QObject, public::testing::Test
+//{
+//public:
+//    test_schedulecoormanage();
+//    ~test_schedulecoormanage();
+//protected:
+//    CScheduleCoorManage *cScheduleCoorManage = nullptr;
+//};
 
 #endif // TEST_SCHEDULECOORMANAGE_H

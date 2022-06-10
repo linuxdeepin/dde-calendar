@@ -21,25 +21,25 @@
 #ifndef TEST_CALLDAYSCHEDULEITEM_H
 #define TEST_CALLDAYSCHEDULEITEM_H
 
-#include "gtest/gtest.h"
-#include "graphicsItem/calldayscheduleitem.h"
+//#include "gtest/gtest.h"
+//#include "graphicsItem/calldayscheduleitem.h"
 
-#include <QObject>
+//#include <QObject>
 
-class test_CAlldayscheduleitem : public QObject
-    , public ::testing::Test
-{
-    Q_OBJECT
-public:
-    test_CAlldayscheduleitem();
-    void SetUp() override;
-    void TearDown() override;
-signals:
+//class test_CAlldayscheduleitem : public QObject
+//    , public ::testing::Test
+//{
+//    Q_OBJECT
+//public:
+//    test_CAlldayscheduleitem();
+//    void SetUp() override;
+//    void TearDown() override;
+//signals:
 
-public slots:
-public:
-    CAllDayScheduleItem *m_allItem;
-    QRectF m_rectF;
-};
+//public slots:
+//public:
+//    CAllDayScheduleItem *m_allItem;
+//    QRectF m_rectF;
+//};
 
 #endif // TEST_CALLDAYSCHEDULEITEM_H

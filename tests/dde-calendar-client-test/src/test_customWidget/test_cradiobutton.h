@@ -21,28 +21,28 @@
 #ifndef TEST_CRADIOBUTTON_H
 #define TEST_CRADIOBUTTON_H
 
-#include "cradiobutton.h"
-#include <QObject>
-#include <QTest>
-#include <gtest/gtest.h>
+//#include "cradiobutton.h"
+//#include <QObject>
+//#include <QTest>
+//#include <gtest/gtest.h>
 
-class test_cradiobutton: public::testing::Test
-{
-public:
-    test_cradiobutton();
+//class test_cradiobutton: public::testing::Test
+//{
+//public:
+//    test_cradiobutton();
 
-    virtual void SetUp()
-    {
-        mWidget = new CRadioButton();
-    }
+//    virtual void SetUp()
+//    {
+//        mWidget = new CRadioButton();
+//    }
 
-    virtual void TearDown()
-    {
-        delete mWidget;
-        mWidget = nullptr;
-    }
-protected:
-    CRadioButton *mWidget = nullptr;
-};
+//    virtual void TearDown()
+//    {
+//        delete mWidget;
+//        mWidget = nullptr;
+//    }
+//protected:
+//    CRadioButton *mWidget = nullptr;
+//};
 
 #endif // TEST_CRADIOBUTTON_H

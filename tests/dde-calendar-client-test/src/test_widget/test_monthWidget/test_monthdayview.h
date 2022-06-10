@@ -22,20 +22,20 @@
 #define TEST_MONTHDAYVIEW_H
 
 #include <QObject>
-#include "monthWidget/monthdayview.h"
-#include "gtest/gtest.h"
+//#include "monthWidget/monthdayview.h"
+//#include "gtest/gtest.h"
 
-class test_monthdayview : public QObject
-    , public ::testing::Test
-{
-public:
-    test_monthdayview();
-    ~test_monthdayview();
+//class test_monthdayview : public QObject
+//    , public ::testing::Test
+//{
+//public:
+//    test_monthdayview();
+//    ~test_monthdayview();
 
-protected:
-    CMonthDayView *mMonthDayView = nullptr;
-    CMonthWidget *mMonthWidget = nullptr;
-    CMonthRect *mMonthRect = nullptr;
-};
+//protected:
+//    CMonthDayView *mMonthDayView = nullptr;
+//    CMonthWidget *mMonthWidget = nullptr;
+//    CMonthRect *mMonthRect = nullptr;
+//};
 
 #endif // TEST_MONTHDAYVIEW_H

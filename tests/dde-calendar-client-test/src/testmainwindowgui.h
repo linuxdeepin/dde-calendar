@@ -21,23 +21,23 @@
 #ifndef TESTMAINWINDOWGUI_H
 #define TESTMAINWINDOWGUI_H
 
-#include "calendarmainwindow.h"
-#include "gtest/gtest.h"
-#include "../third-party_stub/stub.h"
+//#include "calendarmainwindow.h"
+//#include "gtest/gtest.h"
+//#include "../third-party_stub/stub.h"
 
-#include <QtTest/QTest>
-#include <QObject>
+//#include <QtTest/QTest>
+//#include <QObject>
 
-class testMainWindowGUI : public QObject
-    , public ::testing::Test
-{
-public:
-    testMainWindowGUI();
-    void SetUp() override;
-    void TearDown() override;
+//class testMainWindowGUI : public QObject
+//    , public ::testing::Test
+//{
+//public:
+//    testMainWindowGUI();
+//    void SetUp() override;
+//    void TearDown() override;
 
-public:
-    Stub stub;
-};
+//public:
+//    Stub stub;
+//};
 
 #endif // TESTMAINWINDOWGUI_H

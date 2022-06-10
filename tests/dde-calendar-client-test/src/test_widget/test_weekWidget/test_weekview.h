@@ -21,19 +21,19 @@
 #ifndef TEST_WEEKVIEW_H
 #define TEST_WEEKVIEW_H
 
-#include "weekWidget/weekview.h"
-#include "gtest/gtest.h"
-#include <QObject>
+//#include "weekWidget/weekview.h"
+//#include "gtest/gtest.h"
+//#include <QObject>
 
-class test_weekview : public QObject
-    , public ::testing::Test
-{
-public:
-    test_weekview();
-    ~test_weekview();
+//class test_weekview : public QObject
+//    , public ::testing::Test
+//{
+//public:
+//    test_weekview();
+//    ~test_weekview();
 
-protected:
-    CWeekView *mWeekView = nullptr;
-};
+//protected:
+//    CWeekView *mWeekView = nullptr;
+//};
 
 #endif // TEST_WEEKVIEW_H

@@ -21,29 +21,29 @@
 #ifndef TEST_CWEEKDAYBACKGROUNDITEM_H
 #define TEST_CWEEKDAYBACKGROUNDITEM_H
 
-#include "graphicsItem/cweekdaybackgrounditem.h"
-#include "gtest/gtest.h"
+//#include "graphicsItem/cweekdaybackgrounditem.h"
+//#include "gtest/gtest.h"
 
-#include <QObject>
+//#include <QObject>
 
-class test_CWeekDayBackgroundItem : public QObject
-    , public testing::Test
-{
-    Q_OBJECT
-public:
-    test_CWeekDayBackgroundItem();
-    // Sets up the test fixture.
-    void SetUp() override;
+//class test_CWeekDayBackgroundItem : public QObject
+//    , public testing::Test
+//{
+//    Q_OBJECT
+//public:
+//    test_CWeekDayBackgroundItem();
+//    // Sets up the test fixture.
+//    void SetUp() override;
 
-    // Tears down the test fixture.
-    void TearDown() override;
+//    // Tears down the test fixture.
+//    void TearDown() override;
 
-signals:
+//signals:
 
-public slots:
+//public slots:
 
-public:
-    CWeekDayBackgroundItem *m_weekItem;
-};
+//public:
+//    CWeekDayBackgroundItem *m_weekItem;
+//};
 
 #endif // TEST_CWEEKDAYBACKGROUNDITEM_H

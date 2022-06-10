@@ -21,19 +21,19 @@
 #ifndef TEST_CALENDARDATEDATAMANAGE_H
 #define TEST_CALENDARDATEDATAMANAGE_H
 
-#include "calendardatedatamanage.h"
-#include "gtest/gtest.h"
-#include <QObject>
+//#include "calendardatedatamanage.h"
+//#include "gtest/gtest.h"
+//#include <QObject>
 
-class test_calendardatedatamanage : public QObject, public::testing::Test
-{
-public:
-    test_calendardatedatamanage();
-    void SetUp() override;
-    void TearDown() override;
+//class test_calendardatedatamanage : public QObject, public::testing::Test
+//{
+//public:
+//    test_calendardatedatamanage();
+//    void SetUp() override;
+//    void TearDown() override;
 
-protected:
-    CalendarDateDataManager *calendarDateDataManager = nullptr;
-};
+//protected:
+//    CalendarDateDataManager *calendarDateDataManager = nullptr;
+//};
 
 #endif // TEST_CALENDARDATEDATAMANAGE_H

@@ -18,29 +18,29 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "test_ckeypressprxy.h"
-#include "ckeyleftdeal.h"
+//#include "test_ckeypressprxy.h"
+//#include "ckeyleftdeal.h"
 
-test_CKeyPressPrxy::test_CKeyPressPrxy()
-{
-    keyPressPrxy = QSharedPointer<CKeyPressPrxy>(new CKeyPressPrxy);
-}
+//test_CKeyPressPrxy::test_CKeyPressPrxy()
+//{
+//    keyPressPrxy = QSharedPointer<CKeyPressPrxy>(new CKeyPressPrxy);
+//}
 
-TEST_F(test_CKeyPressPrxy, keyPressDeal_NoEvent)
-{
-    ASSERT_FALSE(keyPressPrxy->keyPressDeal(Qt::Key_Tab));
-}
+//TEST_F(test_CKeyPressPrxy, keyPressDeal_NoEvent)
+//{
+//    ASSERT_FALSE(keyPressPrxy->keyPressDeal(Qt::Key_Tab));
+//}
 
-TEST_F(test_CKeyPressPrxy, keyPressDeal)
-{
-    keyPressPrxy->addkeyPressDeal(new CKeyLeftDeal());
-    ASSERT_FALSE(keyPressPrxy->keyPressDeal(Qt::Key_Left));
-}
+//TEST_F(test_CKeyPressPrxy, keyPressDeal)
+//{
+//    keyPressPrxy->addkeyPressDeal(new CKeyLeftDeal());
+//    ASSERT_FALSE(keyPressPrxy->keyPressDeal(Qt::Key_Left));
+//}
 
-TEST_F(test_CKeyPressPrxy, removeDeal)
-{
-    CKeyLeftDeal *leftDeal = new CKeyLeftDeal();
-    keyPressPrxy->addkeyPressDeal(leftDeal);
-    keyPressPrxy->removeDeal(leftDeal);
-    ASSERT_FALSE(keyPressPrxy->keyPressDeal(Qt::Key_Left));
-}
+//TEST_F(test_CKeyPressPrxy, removeDeal)
+//{
+//    CKeyLeftDeal *leftDeal = new CKeyLeftDeal();
+//    keyPressPrxy->addkeyPressDeal(leftDeal);
+//    keyPressPrxy->removeDeal(leftDeal);
+//    ASSERT_FALSE(keyPressPrxy->keyPressDeal(Qt::Key_Left));
+//}

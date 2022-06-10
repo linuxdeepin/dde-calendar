@@ -18,40 +18,40 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "test_scheduledatamanage.h"
+//#include "test_scheduledatamanage.h"
 
-test_scheduledatamanage::test_scheduledatamanage()
-{
-    datamanage = new CScheduleDataManage();
-}
+//test_scheduledatamanage::test_scheduledatamanage()
+//{
+//    datamanage = new CScheduleDataManage();
+//}
 
-test_scheduledatamanage::~test_scheduledatamanage()
-{
-    delete datamanage;
-}
+//test_scheduledatamanage::~test_scheduledatamanage()
+//{
+//    delete datamanage;
+//}
 
 
-//bool CScheduleDataManage::getSearchResult(QDate date)
-TEST_F(test_scheduledatamanage, getSearchResult)
-{
-    //QDate date(2020, 12, 01);
-    //datamanage->getSearchResult(date);
-}
+////bool CScheduleDataManage::getSearchResult(QDate date)
+//TEST_F(test_scheduledatamanage, getSearchResult)
+//{
+//    //QDate date(2020, 12, 01);
+//    //datamanage->getSearchResult(date);
+//}
 
-//CScheduleDataManage *CScheduleDataManage::getScheduleDataManage()
-TEST_F(test_scheduledatamanage, getScheduleDataManage)
-{
-    datamanage->getScheduleDataManage();
-}
+////CScheduleDataManage *CScheduleDataManage::getScheduleDataManage()
+//TEST_F(test_scheduledatamanage, getScheduleDataManage)
+//{
+//    datamanage->getScheduleDataManage();
+//}
 
-//QColor CScheduleDataManage::getSystemActiveColor()
-TEST_F(test_scheduledatamanage, getSystemActiveColor)
-{
-    datamanage->getSystemActiveColor();
-}
+////QColor CScheduleDataManage::getSystemActiveColor()
+//TEST_F(test_scheduledatamanage, getSystemActiveColor)
+//{
+//    datamanage->getSystemActiveColor();
+//}
 
-//int getTheme()
-TEST_F(test_scheduledatamanage, getTheme)
-{
-    datamanage->getTheme();
-}
+////int getTheme()
+//TEST_F(test_scheduledatamanage, getTheme)
+//{
+//    datamanage->getTheme();
+//}
