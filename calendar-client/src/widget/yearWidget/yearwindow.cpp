@@ -324,14 +324,13 @@ void CYearWindow::initUI()
     QHBoxLayout *yeartitleLayout = new QHBoxLayout;
     yeartitleLayout->setMargin(0);
     yeartitleLayout->setSpacing(0);
-    yeartitleLayout->setContentsMargins(11, 12, 8, 10);
+    yeartitleLayout->addSpacing(10);
     yeartitleLayout->addWidget(m_yearLabel);
     yeartitleLayout->addWidget(m_dialogIconButton);
 
     QHBoxLayout *yeartitleLayout1 = new QHBoxLayout;
     yeartitleLayout1->setMargin(0);
     yeartitleLayout1->setSpacing(0);
-    yeartitleLayout1->setContentsMargins(4, 9, 0, 7);
     yeartitleLayout1->addWidget(m_yearLunarLabel);
     yeartitleLayout1->addSpacing(390);
     yeartitleLayout1->addStretch();

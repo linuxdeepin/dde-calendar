@@ -115,7 +115,7 @@ static const int MWeekCellHeight = 54;
 static const int MDayCellWidth = 36;
 static const int MDayCellHeight = 36;
 
-static const int M_YTopHeight = 76;
+static const int M_YTopHeight = 66;
 static const int M_YLabelHeight = 36;
 static const int M_YLunaLabelWindth = 66;
 static const int M_YLunaLabelHeight = 20;

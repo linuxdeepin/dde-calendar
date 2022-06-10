@@ -121,14 +121,13 @@ void CWeekWindow::initUI()
     QHBoxLayout *yeartitleLayout = new QHBoxLayout;
     yeartitleLayout->setMargin(0);
     yeartitleLayout->setSpacing(0);
-    yeartitleLayout->setContentsMargins(21, 20, 8, 0);
+    yeartitleLayout->addSpacing(10);
     yeartitleLayout->addWidget(m_YearLabel);
     yeartitleLayout->addWidget(m_dialogIconButton);
 
     QHBoxLayout *yeartitleLayout1 = new QHBoxLayout;
     yeartitleLayout1->setMargin(0);
     yeartitleLayout1->setSpacing(0);
-    yeartitleLayout1->setContentsMargins(14, 9, 0, 7);
     yeartitleLayout1->addWidget(m_YearLunarLabel);
     yeartitleLayout->addLayout(yeartitleLayout1);
 
@@ -161,13 +160,16 @@ void CWeekWindow::initUI()
     m_mainHLayout = new QVBoxLayout;
     m_mainHLayout->setMargin(0);
     m_mainHLayout->setSpacing(0);
-    m_mainHLayout->setContentsMargins(8, 20, 0, 9);
-    m_mainHLayout->addWidget(m_weekHeadView);
-    m_mainHLayout->addWidget(m_scheduleView);
+    m_mainHLayout->addWidget(m_weekHeadView, 1);
+    m_mainHLayout->addWidget(m_scheduleView, 9);
     QVBoxLayout *hhLayout = new QVBoxLayout;
     hhLayout->setMargin(0);
     hhLayout->setSpacing(0);
-    hhLayout->addLayout(yeartitleLayout);
+    //头部控件统一高度为 M_YTopHeight
+    QWidget *top = new QWidget(this);
+    top->setFixedHeight(DDEMonthCalendar::M_YTopHeight);
+    top->setLayout(yeartitleLayout);
+    hhLayout->addWidget(top);
     hhLayout->addLayout(m_mainHLayout);
 
     m_tMainLayout = new QHBoxLayout;
@@ -500,10 +502,8 @@ void CWeekWindow::slotScheduleHide()
  */
 void CWeekWindow::resizeEvent(QResizeEvent *event)
 {
-    qreal headH = height() * 0.0924 + 0.5;
     qreal dw = width() * 0.4186 + 0.5;
     int dh = 36;
-    int winframe = 10;
 
     //添加1个按钮的宽度 36。原来m_weekview 不包含前后按钮(若加2个按钮的宽度，会导致窗口缩小的时候按钮显示不全)
     if (!m_searchFlag) {
@@ -511,7 +511,6 @@ void CWeekWindow::resizeEvent(QResizeEvent *event)
     } else {
         m_weekview->setFixedSize(qRound(dw - 100 + 36), dh);
     }
-    m_weekHeadView->setFixedSize(width() - winframe, qRound(headH));
     QWidget::resizeEvent(event);
 }
 

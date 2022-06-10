@@ -34,6 +34,7 @@
 #include <QMenu>
 #include <QPainterPath>
 #include <QMouseEvent>
+#include <QPushButton>
 
 DGUI_USE_NAMESPACE
 CWeekHeadView::CWeekHeadView(QWidget *parent)

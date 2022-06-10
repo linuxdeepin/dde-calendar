@@ -308,14 +308,14 @@ void CMonthWindow::initUI()
     QHBoxLayout *yeartitleLayout = new QHBoxLayout;
     yeartitleLayout->setMargin(0);
     yeartitleLayout->setSpacing(0);
-    yeartitleLayout->setContentsMargins(21, 20, 8, 10);
+    yeartitleLayout->addSpacing(10);
     yeartitleLayout->addWidget(m_YearLabel);
     yeartitleLayout->addWidget(m_dialogIconButton);
 
     QHBoxLayout *yeartitleLayout1 = new QHBoxLayout;
     yeartitleLayout1->setMargin(0);
     yeartitleLayout1->setSpacing(0);
-    yeartitleLayout1->setContentsMargins(14, 9, 0, 7);
+
     yeartitleLayout1->addWidget(m_YearLunarLabel);
     yeartitleLayout->addLayout(yeartitleLayout1);
 
@@ -337,7 +337,11 @@ void CMonthWindow::initUI()
     hhLayout->setSpacing(0);
     hhLayout->setMargin(0);
 
-    hhLayout->addLayout(yeartitleLayout);
+    //头部控件统一高度为 M_YTopHeight
+    QWidget *top = new QWidget(this);
+    top->setFixedHeight(DDEMonthCalendar::M_YTopHeight);
+    top->setLayout(yeartitleLayout);
+    hhLayout->addWidget(top);
     m_gridWidget = new DWidget();
     m_gridWidget->setContentsMargins(0, 0, 0, 0);
     m_gridWidget->setAutoFillBackground(true);
