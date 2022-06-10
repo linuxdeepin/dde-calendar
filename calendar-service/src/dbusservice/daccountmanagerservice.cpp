@@ -30,8 +30,8 @@ DAccountManagerService::DAccountManagerService(QObject *parent)
     : DServiceBase(serviceBasePath + "/AccountManager", serviceBaseName + ".AccountManager", parent)
     , m_accountManager(new DAccountManageModule(this))
 {
-    //TODO:为了便于调试先注释,待开发完成取消注释
-    //    DServiceExitControl exitControl;
+    //自动退出
+    DServiceExitControl exitControl;
     connect(m_accountManager.data(), &DAccountManageModule::signalLoginStatusChange, this, &DAccountManagerService::accountUpdate);
 
     connect(m_accountManager.data(), &DAccountManageModule::firstDayOfWeekChange, this, [&]() {

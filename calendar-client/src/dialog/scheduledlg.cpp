@@ -271,8 +271,7 @@ bool CScheduleDlg::createSchedule(const QString &scheduleTypeId)
     schedule->setAlarmType(alarmType);
 
     //设置重复规则
-    DSchedule::RRuleType rruleType = DSchedule::RRule_None;
-    rruleType = static_cast<DSchedule::RRuleType>(m_beginrepeatCombox->currentIndex());
+    DSchedule::RRuleType rruleType = static_cast<DSchedule::RRuleType>(m_beginrepeatCombox->currentIndex());
     schedule->setRRuleType(rruleType);
     if (m_endrepeatCombox->currentIndex() == 1) {
         //结束与次数
@@ -1279,15 +1278,16 @@ void CScheduleDlg::setTabFouseOrder()
 //    setTabOrder(m_endTimeEdit, m_rmindCombox);
     setTabOrder(m_rmindCombox, m_beginrepeatCombox);
     setTabOrder(m_beginrepeatCombox, m_endrepeatCombox);
-    //TODO:获取重复规则
-//        //结束于次数，设置tab顺序
-//        if (m_ScheduleDataInfo->getRRuleType() ==
-//                RepetitionRule::RRuleEndType::RRuleType_FREQ)
-//            setTabOrder(m_endrepeatCombox, m_endrepeattimes);
-//        //结束于日期，设置tab顺序
-//        if (m_ScheduleDataInfo.getRepetitionRule().getRuleType() ==
-//                RepetitionRule::RRuleEndType::RRuleType_DATE)
-//            setTabOrder(m_endrepeatCombox, m_endRepeatDate);
+    //结束于次数，设置tab顺序
+    //如果为重复日程
+    if (!m_ScheduleDataInfo.isNull() && m_ScheduleDataInfo->getRRuleType() != DSchedule::RRule_None) {
+        //如果为结束于次数
+        if (m_ScheduleDataInfo->recurrence()->duration() > 0) {
+            setTabOrder(m_endrepeatCombox, m_endrepeattimes);
+        } else if (m_ScheduleDataInfo->recurrence()->duration() == 0) {
+            setTabOrder(m_endrepeatCombox, m_endRepeatDate);
+        }
+    }
 }
 
 void CScheduleDlg::updateIsOneMoreDay(const QDateTime &begin, const QDateTime &end)

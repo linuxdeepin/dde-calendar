@@ -101,7 +101,6 @@ DAccountModule::DAccountModule(const DAccount::Ptr &account, QObject *parent)
 QString DAccountModule::getAccountInfo()
 {
     QString accountInfo;
-    //    m_account = m_accountDB->getAccountInfo();
     DAccount::toJsonString(m_account, accountInfo);
     return accountInfo;
 }
@@ -181,7 +180,8 @@ QString DAccountModule::createScheduleType(const QString &typeInfo)
         uploadTask->setTaskObject(DUploadTaskData::Task_ScheduleType);
         uploadTask->setObjectId(scheduleTypeID);
         m_accountDB->addUploadTask(uploadTask);
-        //TODO:开启上传任务
+        //开启上传任务
+        uploadNetWorkAccountData();
     }
     emit signalScheduleTypeUpdate();
     return scheduleTypeID;
@@ -205,7 +205,8 @@ bool DAccountModule::deleteScheduleTypeByID(const QString &typeID)
             uploadTask->setTaskObject(DUploadTaskData::Task_ScheduleType);
             uploadTask->setObjectId(typeID);
             m_accountDB->addUploadTask(uploadTask);
-            //TODO:开启上传任务
+            //开启上传任务
+            uploadNetWorkAccountData();
         }
         emit signalScheduleUpdate();
     }
@@ -265,7 +266,8 @@ bool DAccountModule::updateScheduleType(const QString &typeInfo)
             uploadTask->setTaskObject(DUploadTaskData::Task_ScheduleType);
             uploadTask->setObjectId(scheduleType->typeID());
             m_accountDB->addUploadTask(uploadTask);
-            //TODO:开启上传任务
+            //开启上传任务
+            uploadNetWorkAccountData();
         }
         emit signalScheduleTypeUpdate();
     }
@@ -286,7 +288,8 @@ QString DAccountModule::createSchedule(const QString &scheduleInfo)
         uploadTask->setTaskObject(DUploadTaskData::Task_Schedule);
         uploadTask->setObjectId(scheduleID);
         m_accountDB->addUploadTask(uploadTask);
-        //TODO:开启上传任务
+        //开启上传任务
+        uploadNetWorkAccountData();
     }
     //根据是否为提醒日程更新提醒任务
     if (schedule->alarms().size() > 0) {
@@ -363,7 +366,8 @@ bool DAccountModule::updateSchedule(const QString &scheduleInfo)
         uploadTask->setTaskObject(DUploadTaskData::Task_Schedule);
         uploadTask->setObjectId(schedule->uid());
         m_accountDB->addUploadTask(uploadTask);
-        //TODO:开启上传任务
+        //开启上传任务
+        uploadNetWorkAccountData();
     }
     return ok;
 }
@@ -779,6 +783,7 @@ void DAccountModule::accountDownload()
 
 void DAccountModule::uploadNetWorkAccountData()
 {
+    //TODO:
 }
 
 void DAccountModule::removeDB()

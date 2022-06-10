@@ -27,8 +27,8 @@ void CalendarProgramExitControl::addExc()
 void CalendarProgramExitControl::reduce()
 {
 #ifdef CALENDAR_SERVICE_AUTO_EXIT
-    //1秒后退出,防止程序频繁的开启关闭
-    QTimer::singleShot(1000, [=] {
+    //3秒后退出,防止程序频繁的开启关闭
+    QTimer::singleShot(3000, [=] {
         readWriteLock.lockForWrite();
         --m_excNum;
         if (m_excNum < 1 && !m_clientIsOpen) {

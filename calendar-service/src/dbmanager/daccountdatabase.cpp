@@ -239,7 +239,7 @@ DSchedule::List DAccountDataBase::querySchedulesByKey(const QString &key)
     if (psearch->CanQueryByPinyin(key)) {
         //可以按照拼音查询
         QString pinyin = psearch->CreatePinyinQuery(strKey.toLower());
-        strSql += QString(" and instr(UPPER(s.summary), UPPER(:key)) OR s.titlePinyin LIKE :pinyin");
+        strSql += QString("and ( instr(UPPER(s.summary), UPPER(:key)) OR s.titlePinyin LIKE :pinyin )");
         sqlBindValue[":key"] = key;
         sqlBindValue[":pinyin"] = pinyin;
     } else if (!key.isEmpty()) {

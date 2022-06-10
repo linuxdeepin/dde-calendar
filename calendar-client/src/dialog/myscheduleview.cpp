@@ -186,9 +186,23 @@ void CMyScheduleView::updateDateTimeFormat()
     if (CScheduleOperation::isFestival(m_scheduleInfo)) {
         m_timeLabel->setText(m_scheduleInfo->dtStart().toString(m_dateFormat));
     } else {
-        QString beginName = getDataByFormat(m_scheduleInfo->dtStart().date(), m_dateFormat) + " " + m_scheduleInfo->dtStart().time().toString(m_timeFormat);
-        QString endName = getDataByFormat(m_scheduleInfo->dtEnd().date(), m_dateFormat) + " " + m_scheduleInfo->dtEnd().time().toString(m_timeFormat);
-        m_timeLabel->setText(beginName + " ~ " + endName);
+        QString showTime;
+        QString beginName, endName;
+        if (m_scheduleInfo->allDay()) {
+            if (m_scheduleInfo->isMultiDay()) {
+                beginName = getDataByFormat(m_scheduleInfo->dtStart().date(), m_dateFormat);
+                endName = getDataByFormat(m_scheduleInfo->dtEnd().date(), m_dateFormat);
+                showTime = beginName + " ~ " + endName;
+            } else {
+                showTime = getDataByFormat(m_scheduleInfo->dtStart().date(), m_dateFormat);
+            }
+
+        } else {
+            beginName = getDataByFormat(m_scheduleInfo->dtStart().date(), m_dateFormat) + " " + m_scheduleInfo->dtStart().time().toString(m_timeFormat);
+            endName = getDataByFormat(m_scheduleInfo->dtEnd().date(), m_dateFormat) + " " + m_scheduleInfo->dtEnd().time().toString(m_timeFormat);
+            showTime = beginName + " ~ " + endName;
+        }
+        m_timeLabel->setText(showTime);
     }
     slotAutoFeed();
 }
