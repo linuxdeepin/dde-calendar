@@ -42,9 +42,6 @@ public:
 
     Syncoperation *getSyncoperation();
 
-public Q_SLOTS:
-    void onUserDatachanged(const QVariantMap  &value);
-
 private:
     /**
      * @brief SyncDbCreate   同步数据库文件创建

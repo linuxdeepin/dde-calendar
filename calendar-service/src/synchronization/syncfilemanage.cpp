@@ -6,7 +6,7 @@ SyncFileManage::SyncFileManage(QObject *parent)
     , m_syncoperation(new Syncoperation)
     , m_account(new DAccount(DAccount::Account_UnionID))
 {
-    connect(m_syncoperation, &Syncoperation::UserDatachanged, this, &SyncFileManage::onUserDatachanged);
+
 }
 
 SyncFileManage::~SyncFileManage()
@@ -132,15 +132,6 @@ DAccount::Ptr SyncFileManage::getuserInfo()
     return m_account;
 }
 
-void SyncFileManage::onUserDatachanged(const QVariantMap    &value)
-{
-    qInfo() << value.value("username").toString();
-    qInfo() << value.value("profile_image").toString();
-    qInfo() << value.value("nickname").toString();
-    qInfo() << value.value("uid").toString();
-    // m_userinfo = value; 这边是否直接更新？？？
-    //等待完善
-}
 
 Syncoperation *SyncFileManage::getSyncoperation()
 {

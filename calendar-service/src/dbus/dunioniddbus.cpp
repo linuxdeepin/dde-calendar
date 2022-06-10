@@ -30,11 +30,9 @@ DUnionIDDbus::DUnionIDDbus(const QString &service, const QString &path, const QD
     if (!this->isValid()) {
         qWarning() << "Error connecting remote object, service:" << this->service() << ",path:" << this->path() << ",interface" << this->interface();
     }
-
 }
 
 DUnionIDDbus::~DUnionIDDbus()
 {
 
 }
-

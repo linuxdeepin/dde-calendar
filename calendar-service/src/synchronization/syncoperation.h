@@ -23,7 +23,7 @@
 #define SYNC_Network_Request_Error      7506            /*网络请求出错错误*/
 #define SYNC_Oss_Operation_Error        7507            /*oss操作出错*/
 #define SYNC_Space_Not_Available        7508            /*空间不可用*/
-#define SYNC_File_Or_Path_Error 7509 /*文件或者路径出错*/
+#define SYNC_File_Or_Path_Error         7509            /*文件或者路径出错*/
 #define SYNC_Invalid_File_Size          7510            /*文件大小不合法*/
 #define SYNC_Metadata_Check_Error       7511            /*元数据校验出错*/
 
@@ -33,6 +33,7 @@ struct SyncoptResult {
     QString data = "";  //执行结果数据
     bool ret = false;   //执行云同步操作的结果
     int error_code = 0; //错误码
+    bool switch_state = false; //开关状态
 };
 
 class Syncoperation : public QObject
@@ -56,9 +57,14 @@ public:
 
     bool optUserData(QVariantMap &userInfoMap);
 
+    SyncoptResult optGetMainSwitcher();
+
+    SyncoptResult optGetcalendarSwitcher(const QString &path);
+
 Q_SIGNALS:
-    void UserDatachanged(const QVariantMap  &value) const;
     void signalLoginStatusChange(const bool staus);
+    void LoginStatus(const int data);
+    void SwitcherChange(const bool state);
 
 private Q_SLOTS:
     void slotDbusCall(const QDBusMessage &msg);

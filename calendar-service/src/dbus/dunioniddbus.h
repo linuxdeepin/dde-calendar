@@ -114,7 +114,31 @@ public slots:
         return asyncCallWithArgumentList(QStringLiteral("Metadata"), argumentList);
     }
 
-Q_SIGNALS: // SIGNALS
+    /**
+     * @brief SwitcherGet     获取总开关状态
+     * @param
+     * @return
+     *
+     */
+    inline QDBusPendingReply<QString> SwitcherDump()
+    {
+        QList<QVariant> argumentList;
+        return asyncCallWithArgumentList(QStringLiteral("SwitcherDump"), argumentList);
+    }
+
+    /**
+     * @brief SwitcherGet     获取指定应用的开关状态
+     * @param arg   指定应用云同步的绝对路径
+     * @return
+     *
+     */
+    inline QDBusPendingReply<bool> SwitcherGet(const QString &arg)
+    {
+        QList<QVariant> argumentList;
+        argumentList << QVariant::fromValue(arg);
+        return asyncCallWithArgumentList(QStringLiteral("SwitcherGet"), argumentList);
+    }
+
 
 };
 

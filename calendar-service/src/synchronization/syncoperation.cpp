@@ -1,27 +1,29 @@
 #include "syncoperation.h"
 
+static const QString utcloudcalendatpath = "/home/uos/build-dde-calendar-unknown-Debug/calendar-service/dde-calendar-service";
+
 Syncoperation::Syncoperation(QObject *parent)
     : QObject(parent)
     , m_syncInter(new SyncInter(SYNC_DBUS_PATH, SYNC_DBUS_INTERFACE, QDBusConnection::sessionBus(), this))
 {
-    QStringList argumentMatch;
-    argumentMatch << SYNC_DBUS_INTERFACE;
-    //关联dbus propertiesChanged 属性改变信号
-//    QDBusConnection::sessionBus().connect(SYNC_DBUS_PATH,
-//                                          SYNC_DBUS_INTERFACE,
-//                                          "org.freedesktop.DBus.Properties",
-//                                          "PropertiesChanged",
-//                                          argumentMatch, "",
-//                                          this, SLOT(onPropertiesChanged(QString, QVariantMap, QStringList)));
-//    if (!QDBusConnection::sessionBus().connect(m_syncInter->service(), m_syncInter->path(), m_syncInter->interface(),
-//                                               "", this, SLOT(slotDbusCall(QDBusMessage)))) {
-//        qWarning() << "the connection was fail!" << "path: " << m_syncInter->path() << "interface: " << m_syncInter->interface();
-//    };
-    //监听org.freedesktop.DBus.Properties接口的信号
-    if (!QDBusConnection::sessionBus().connect(m_syncInter->service(), m_syncInter->path(),
-                                               "org.freedesktop.DBus.Properties", "", this, SLOT(slotDbusCall(QDBusMessage)))) {
+
+    if (!QDBusConnection::sessionBus().connect(SYNC_DBUS_PATH,
+                                               SYNC_DBUS_INTERFACE,
+                                               "org.freedesktop.DBus.Properties",
+                                               QLatin1String("PropertiesChanged"), this,
+                                               SLOT(onPropertiesChanged(QString, QVariantMap, QStringList)))) {
+        qWarning() << "the PropertiesChanged was fail!";
+    }
+
+    if (!QDBusConnection::sessionBus().connect(m_syncInter->service(), m_syncInter->path(), m_syncInter->interface(),
+                                               "", this, SLOT(slotDbusCall(QDBusMessage)))) {
         qWarning() << "the connection was fail!" << "path: " << m_syncInter->path() << "interface: " << m_syncInter->interface();
     };
+//    //监听org.freedesktop.DBus.Properties接口的信号
+//    if (!QDBusConnection::sessionBus().connect(m_syncInter->service(), m_syncInter->path(),
+//                                               "org.freedesktop.DBus.Properties", "", this, SLOT(slotDbusCall(QDBusMessage)))) {
+//        qWarning() << "the connection was fail!" << "path: " << m_syncInter->path() << "interface: " << m_syncInter->interface();
+//    };
 }
 
 Syncoperation::~Syncoperation()
@@ -171,29 +173,78 @@ bool Syncoperation::optUserData(QVariantMap &userInfoMap)
     }
 }
 
+SyncoptResult Syncoperation::optGetMainSwitcher()
+{
+    SyncoptResult result;
+    QDBusPendingReply<QString> reply = m_syncInter->SwitcherDump();
+    reply.waitForFinished();
+    if (reply.error().message().isEmpty()) {
+        QJsonObject json;
+        json = QJsonDocument::fromJson(reply.value().toUtf8()).object();
+        if (json.contains(QString("enabled"))) {
+            bool state = json.value(QString("enabled")).toBool();
+            result.switch_state = state;
+        }
+        result.ret = true;
+    } else {
+        result.ret = false;
+    }
+    return  result;
+}
+
+SyncoptResult Syncoperation::optGetcalendarSwitcher(const QString &path)
+{
+    SyncoptResult result;
+    QDBusPendingReply<bool> reply = m_syncInter->SwitcherGet(path);
+    reply.waitForFinished();
+    if (reply.error().message().isEmpty()) {
+        result.switch_state = reply.value();
+        result.ret = true;
+    } else {
+        result.ret = false;
+    }
+    return  result;
+}
+
 void Syncoperation::slotDbusCall(const QDBusMessage &msg)
 {
-    if (msg.member() == "PropertiesChanged") {
-        QDBusPendingReply<QString, QVariantMap, QStringList> reply = msg;
-        onPropertiesChanged(reply.argumentAt<0>(), reply.argumentAt<1>(), reply.argumentAt<2>());
+    qInfo() << msg;
+    if (msg.member() == "SwitcherChange") {
+        SyncoptResult result;
+        //获取总开关状态
+        result = optGetMainSwitcher();
+        if (result.ret) {
+            if (result.switch_state) {
+                //总开关开启，获取日历开关状态
+                result = optGetcalendarSwitcher(utcloudcalendatpath);
+                if (result.ret) {
+                    Q_EMIT SwitcherChange(result.switch_state);
+                } else {
+                    qDebug() << "calendar switcher get state failed";
+                    return;
+                }
+            } else {
+                //总开关关闭
+                Q_EMIT SwitcherChange(false);
+            }
+        } else {
+            qDebug() << "main switcher get state failed";
+        }
     }
 }
 
 
 void Syncoperation::onPropertiesChanged(const QString &interfaceName, const QVariantMap &changedProperties, const QStringList &invalidatedProperties)
 {
-    if (interfaceName == "com.deepin.utcloud.Daemon") {
-        //获取到属性改变信号，提取出传输的用户信息数据
-        for (QVariantMap::const_iterator it = changedProperties.cbegin(), end = changedProperties.cend(); it != end; ++it) {
-            if (it.key() == "UserData") {
-                //用户信心更新的信号，后续处理 TO：
-                QDBusArgument argument = it.value().value<QDBusVariant>().variant().value<QDBusArgument>();
-                QVariantMap userInfoMap;
-                argument >> userInfoMap;
-                Q_EMIT UserDatachanged(userInfoMap);
-                //发送登录信号
-                emit signalLoginStatusChange(true);
-            }
-        }
-    }
+    Q_UNUSED(interfaceName);
+    Q_UNUSED(invalidatedProperties);
+    if (!changedProperties.contains("UserData"))
+        return;
+
+//    const QDBusArgument &argument = changedProperties.value("UserData").value<QDBusArgument>();
+//    QVariantMap userInfoMap;
+//    argument >> userInfoMap;
+    //发送登录信号
+    emit signalLoginStatusChange(true);
+
 }
