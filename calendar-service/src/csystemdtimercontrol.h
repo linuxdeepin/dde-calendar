@@ -67,11 +67,11 @@ public:
     void startCalendarServiceSystemdTimer();
 
     //开启定时下载任务
-    static void startDownLoadTask(const QString &accountID);
-    static void stopDownLoadTask(const QString &accountID);
+    void startDownloadTask(const QString &accountID, const int minute);
+    void stopDownloadTask(const QString &accountID);
     //开启定时上传任务
-    static void startUploadTask();
-    static void stopUploadTask();
+    void startUploadTask(const int minute);
+    void stopUploadTask();
 
 private:
     /**

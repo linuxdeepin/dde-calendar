@@ -54,7 +54,7 @@ void CMonthScheduleItem::paintBackground(QPainter *painter, const QRectF &rect, 
     QColor textcolor = CScheduleDataManage::getScheduleDataManage()->getTextColor();
 
     //判断是否为选中日程
-    if (m_vScheduleInfo == m_pressInfo) {
+    if (!m_vScheduleInfo.isNull() && m_vScheduleInfo == m_pressInfo) {
         //判断当前日程是否为拖拽移动日程
         if (m_vScheduleInfo->isMoved() == m_pressInfo->isMoved()) {
             m_vHighflag = true;

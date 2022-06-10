@@ -107,6 +107,8 @@ public:
     static QMap<QDate, DSchedule::List> fromMapString(const QString &json);
     static QString toMapString(const QMap<QDate, DSchedule::List> &scheduleMap);
 
+    friend bool operator==(const DSchedule::Ptr &s1, const DSchedule::Ptr &s2);
+
 private:
     QMap<int, AlarmType> getAlarmMap();
 

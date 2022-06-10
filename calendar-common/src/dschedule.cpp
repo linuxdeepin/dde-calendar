@@ -87,7 +87,7 @@ bool DSchedule::isValid() const
 
 bool DSchedule::operator==(const DSchedule &schedule) const
 {
-    return (this->summary() == schedule.summary() && this->uid() == schedule.uid() && this->instanceIdentifier() == schedule.instanceIdentifier() && this->dtStart() == schedule.dtStart() && this->dtEnd() == schedule.dtEnd() && this->alarms() == schedule.alarms() && this->recurrence() == schedule.recurrence());
+    return this->instanceIdentifier() == schedule.instanceIdentifier();
 }
 
 bool DSchedule::operator<(const DSchedule &schedule) const
@@ -334,6 +334,11 @@ QString DSchedule::toMapString(const QMap<QDate, DSchedule::List> &scheduleMap)
     QJsonDocument jsonDoc;
     jsonDoc.setArray(rootArray);
     return QString::fromUtf8(jsonDoc.toJson(QJsonDocument::Compact));
+}
+
+bool operator==(const DSchedule::Ptr &s1, const DSchedule::Ptr &s2)
+{
+    return s1.isNull() || s2.isNull() ? s1.isNull() && s2.isNull() : s1->instanceIdentifier() == s2->instanceIdentifier();
 }
 
 QMap<int, DSchedule::AlarmType> DSchedule::getAlarmMap()

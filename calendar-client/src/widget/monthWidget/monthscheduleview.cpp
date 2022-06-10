@@ -266,7 +266,7 @@ void CWeekScheduleView::setData(QMap<QDate, DSchedule::List> &data, const QDate 
             DSchedule::Ptr info = data[beginDate.addDays(i)].at(j);
             //过滤重复日程
             for (DSchedule::Ptr p : m_ScheduleInfo) {
-                if (p->instanceIdentifier() == info->instanceIdentifier()) {
+                if (p == info) {
                     have = true;
                     break;
                 }

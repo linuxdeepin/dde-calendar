@@ -94,20 +94,103 @@ void CSystemdTimerControl::startCalendarServiceSystemdTimer()
     }
 }
 
-void CSystemdTimerControl::startDownLoadTask(const QString &accountID)
+void CSystemdTimerControl::startDownloadTask(const QString &accountID, const int minute)
 {
+    {
+        //.service
+        QString fileName;
+        QString remindCMD = QString("dbus-send --session --print-reply --dest=com.deepin.dataserver.Calendar "
+                                    "/com/deepin/dataserver/Calendar/AccountManager "
+                                    "com.deepin.dataserver.Calendar.AccountManager.downloadByAccountID string:%1 ")
+                                .arg(accountID);
+        fileName = m_systemdPath + accountID + ".service";
+        QString content;
+        content += "[Unit]\n";
+        content += "Description = schedule download task.\n";
+        content += "[Service]\n";
+        content += QString("ExecStart = /bin/bash -c \"%1\"\n").arg(remindCMD);
+        createFile(fileName, content);
+    }
+
+    {
+        //timer
+        QString fileName;
+        fileName = m_systemdPath + accountID + ".timer";
+        QString content;
+        content += "[Unit]\n";
+        content += "Description = schedule download task.\n";
+        content += "[Timer]\n";
+        content += "OnActiveSec = 1s\n";
+        content += QString("OnUnitInactiveSec = %1m\n").arg(minute);
+        content += "AccuracySec = 1us\n";
+        content += "RandomizedDelaySec = 0\n";
+        createFile(fileName, content);
+
+        QString command("systemctl --user start ");
+        command += fileName;
+        execLinuxCommand(command);
+    }
 }
 
-void CSystemdTimerControl::stopDownLoadTask(const QString &accountID)
+void CSystemdTimerControl::stopDownloadTask(const QString &accountID)
 {
+    QString fileName;
+    fileName = m_systemdPath + accountID + ".timer";
+    QString command("systemctl --user stop ");
+    command += fileName;
+    execLinuxCommand(command);
+    QFile::remove(fileName);
+    QString fileServiceName = m_systemdPath + accountID + ".service";
+    QFile::remove(fileServiceName);
 }
 
-void CSystemdTimerControl::startUploadTask()
+void CSystemdTimerControl::startUploadTask(const int minute)
 {
+    {
+        //.service
+        QString fileName;
+        QString remindCMD = QString("dbus-send --session --print-reply --dest=com.deepin.dataserver.Calendar "
+                                    "/com/deepin/dataserver/Calendar/AccountManager "
+                                    "com.deepin.dataserver.Calendar.AccountManager.uploadNetWorkAccountData ");
+        fileName = m_systemdPath + "uploadNetWorkAccountData.service";
+        QString content;
+        content += "[Unit]\n";
+        content += "Description = schedule uploadNetWorkAccountData task.\n";
+        content += "[Service]\n";
+        content += QString("ExecStart = /bin/bash -c \"%1\"\n").arg(remindCMD);
+        createFile(fileName, content);
+    }
+
+    {
+        //timer
+        QString fileName;
+        fileName = m_systemdPath + "uploadNetWorkAccountData.timer";
+        QString content;
+        content += "[Unit]\n";
+        content += "Description = schedule uploadNetWorkAccountData task.\n";
+        content += "[Timer]\n";
+        content += "OnActiveSec = 1s\n";
+        content += QString("OnUnitInactiveSec = %1m\n").arg(minute);
+        content += "AccuracySec = 1us\n";
+        content += "RandomizedDelaySec = 0\n";
+        createFile(fileName, content);
+
+        QString command("systemctl --user start ");
+        command += fileName;
+        execLinuxCommand(command);
+    }
 }
 
 void CSystemdTimerControl::stopUploadTask()
 {
+    QString fileName;
+    fileName = m_systemdPath + "uploadNetWorkAccountData.timer";
+    QString command("systemctl --user stop ");
+    command += fileName;
+    execLinuxCommand(command);
+    QFile::remove(fileName);
+    QString fileServiceName = m_systemdPath + "uploadNetWorkAccountData.service";
+    QFile::remove(fileServiceName);
 }
 
 void CSystemdTimerControl::createPath()

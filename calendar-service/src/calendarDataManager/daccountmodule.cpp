@@ -875,7 +875,8 @@ DSchedule::List DAccountModule::getFestivalSchedule(const QDateTime &dtStart, co
                 schedule->setAllDay(true);
                 schedule->setDtStart(QDateTime(QDate(festivalDay.date.date()), QTime(0, 0)));
                 schedule->setDtEnd(QDateTime(QDate(festivalDay.date.date()), QTime(23, 59)));
-                schedule->setUid(DDataBase::createUuid());
+                //设置UID为开始时间+内容
+                schedule->setUid(dtToString(schedule->dtStart()) + schedule->summary());
                 schedule->setScheduleTypeID(m_accountDB->getFestivalTypeID());
                 scheduleList.append(schedule);
             }
