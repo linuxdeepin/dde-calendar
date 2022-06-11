@@ -134,6 +134,8 @@ signals:
     void signalSyncState();
 
     void signalDtLastUpdate();
+    //通用设置发生改变
+    void signalSettingChange();
 
 public slots:
     void slotOpenCalendar(const QString &alarmID);

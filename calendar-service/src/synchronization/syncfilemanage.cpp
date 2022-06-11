@@ -115,10 +115,13 @@ bool SyncFileManage::SyncDataUpload(const QString &filepath, int &errorcode)
 DAccount::Ptr SyncFileManage::getuserInfo()
 {
     QVariantMap userInfoMap;
-
     //如果为社区版本则返回空
-    if (Dtk::Core::DSysInfo::uosEditionType() == Dtk::Core::DSysInfo::UosCommunity && !m_syncoperation->optUserData(userInfoMap)) {
-        qDebug() << "can't get userinfo";
+    if (Dtk::Core::DSysInfo::uosEditionType() == Dtk::Core::DSysInfo::UosCommunity) {
+        return nullptr;
+    }
+
+    if (!m_syncoperation->optUserData(userInfoMap)) {
+        qInfo() << "can't get userinfo";
         return nullptr;
     }
 

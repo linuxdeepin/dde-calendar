@@ -692,7 +692,6 @@ void DAccountModule::accountDownload()
     //    DAccount::AccountSyncState syncState;
     //0:下载成功
     int errocde;
-    int syncCode = -1;
     /*
      * A为本地数据库
      * B为云端下载的临时数据库
@@ -794,6 +793,7 @@ void DAccountModule::accountDownload()
             if (this->getAccountState() & DAccount::Account_Setting) {
                 qInfo() << "更新通用设置";
                 replaceIntoTable("calendargeneralsettings", DDataBase::NameSync, DDataBase::NameAccountManager, true);
+                emit signalSettingChange();
             }
         }
         qInfo() << "上传B";

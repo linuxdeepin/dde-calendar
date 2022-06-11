@@ -96,6 +96,8 @@ public slots:
     void slotUidLoginStatueChange(const bool staus);
     //控制中心的同步开关
     void slotSwitcherChange(const bool state);
+    //通用设置发生改变
+    void slotSettingChange();
 
 private:
     SyncFileManage *m_syncFileManage = nullptr;

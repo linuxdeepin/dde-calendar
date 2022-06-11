@@ -182,7 +182,7 @@ bool DAccountDataBase::deleteScheduleByScheduleID(const QString &scheduleID, con
     if (isDeleted) {
         strSql = "DELETE FROM schedules WHERE scheduleID=?;";
     } else {
-        strSql = QString("UPDATE schedules SET dtDelete = %1 , isDeleted = 1  WHERE scheduleID=?").arg(dtToString(QDateTime::currentDateTime()));
+        strSql = QString("UPDATE schedules SET dtDelete = '%1' , isDeleted = 1  WHERE scheduleID=?").arg(dtToString(QDateTime::currentDateTime()));
     }
     QSqlQuery query(m_database);
     bool resBool = false;

@@ -42,6 +42,7 @@ DAccountManageModule::DAccountManageModule(QObject *parent)
     //根据获取到的帐户信息创建对应的帐户服务
     foreach (auto account, m_accountList) {
         DAccountModule::Ptr accountModule = DAccountModule::Ptr(new DAccountModule(account));
+        QObject::connect(accountModule.data(), &DAccountModule::signalSettingChange, this, &DAccountManageModule::slotSettingChange);
         m_accountModuleMap[account->accountID()] = accountModule;
         DAccountService::Ptr accountService = DAccountService::Ptr(new DAccountService(account->dbusPath(), account->dbusInterface(), accountModule, this));
         if (!sessionBus.registerObject(accountService->getPath(), accountService->getInterface(), accountService.data(), options)) {
@@ -49,7 +50,7 @@ DAccountManageModule::DAccountManageModule(QObject *parent)
         } else {
             m_AccountServiceMap[account->accountType()].insert(account->accountID(), accountService);
             //如果是网络帐户则开启定时下载任务
-            if (account->isNetWorkAccount()) {
+            if (account->isNetWorkAccount() && account->accountState().testFlag(DAccount::Account_Open)) {
                 accountModule->downloadTaskhanding(0);
             }
         }
@@ -205,7 +206,6 @@ void DAccountManageModule::unionIDDataMerging()
         }
     } else {
         //如果unionID登陆了
-        //设置DBus路径和数据库名
 
         //如果数据库中有unionid帐户
         if (std::any_of(m_accountList.begin(), m_accountList.end(), hasUnionid)) {
@@ -214,6 +214,13 @@ void DAccountManageModule::unionIDDataMerging()
                 if (unionidDB->avatar() != accountUnionid->avatar() || unionidDB->displayName() != accountUnionid->displayName()) {
                     unionidDB->avatar() = accountUnionid->avatar();
                     unionidDB->displayName() = accountUnionid->displayName();
+                    //设置DBus路径和数据库名
+                    SyncoptResult result = m_syncFileManage->getSyncoperation()->optGetMainSwitcher();
+                    if (result.switch_state) {
+                        unionidDB->setAccountState(accountUnionid->accountState() | DAccount::Account_Open);
+                    } else {
+                        unionidDB->setAccountState(accountUnionid->accountState() & ~DAccount::Account_Open);
+                    }
                     m_accountManagerDB->updateAccountInfo(unionidDB);
                 }
             } else {
@@ -281,9 +288,9 @@ void DAccountManageModule::slotUidLoginStatueChange(const bool staus)
     //登录或者数据改变
     DAccount::Ptr accountUnionid = m_syncFileManage->getuserInfo();
 
-    SyncoptResult result = m_syncFileManage->getSyncoperation()->optGetMainSwitcher();
     if (!accountUnionid.isNull() && !accountUnionid->accountName().isEmpty()) {
         //
+        SyncoptResult result = m_syncFileManage->getSyncoperation()->optGetMainSwitcher();
         if (result.switch_state) {
             accountUnionid->setAccountState(accountUnionid->accountState() | DAccount::Account_Open);
         } else {
@@ -310,7 +317,9 @@ void DAccountManageModule::slotUidLoginStatueChange(const bool staus)
                 qWarning() << "registerObject accountService failed:" << sessionBus.lastError();
             } else {
                 m_AccountServiceMap[accountUnionid->accountType()].insert(accountUnionid->accountID(), accountService);
-                accountModule->downloadTaskhanding(0);
+                if (accountUnionid->accountState().testFlag(DAccount::Account_Open)) {
+                    accountModule->downloadTaskhanding(0);
+                }
             }
         }
     } else {
@@ -340,11 +349,30 @@ void DAccountManageModule::slotSwitcherChange(const bool state)
         if (schedule->accountType() == DAccount::Account_UnionID) {
             if (state) {
                 schedule->setAccountState(schedule->accountState() | DAccount::Account_Open);
+                //开启
+                m_accountModuleMap[schedule->accountID()]->downloadTaskhanding(1);
             } else {
                 schedule->setAccountState(schedule->accountState() & ~DAccount::Account_Open);
+                //关闭
+                m_accountModuleMap[schedule->accountID()]->downloadTaskhanding(2);
+                m_accountModuleMap[schedule->accountID()]->uploadTaskHanding(0);
             }
             emit m_accountModuleMap[schedule->accountID()]->signalAccountState();
             return;
         }
+    }
+}
+
+void DAccountManageModule::slotSettingChange()
+{
+    DCalendarGeneralSettings::Ptr newSetting = m_accountManagerDB->getCalendarGeneralSettings();
+    if (newSetting->firstDayOfWeek() != m_generalSetting->firstDayOfWeek()) {
+        m_generalSetting->setFirstDayOfWeek(newSetting->firstDayOfWeek());
+        emit firstDayOfWeekChange();
+    }
+
+    if (newSetting->timeShowType() != m_generalSetting->timeShowType()) {
+        m_generalSetting->setTimeShowType(m_generalSetting->timeShowType());
+        emit timeFormatTypeChange();
     }
 }
