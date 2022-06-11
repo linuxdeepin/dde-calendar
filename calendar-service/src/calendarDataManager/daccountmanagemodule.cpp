@@ -256,6 +256,13 @@ void DAccountManageModule::initAccountDBusInfo(const DAccount::Ptr &account)
     QString sortID = DDataBase::createUuid().mid(0, 5);
     account->setAccountState(DAccount::AccountState::Account_Setting | DAccount::Account_Calendar);
     //TODO:获取总开关
+    //设置DBus路径和数据库名
+    SyncoptResult result = m_syncFileManage->getSyncoperation()->optGetMainSwitcher();
+    if (result.switch_state) {
+        account->setAccountState(account->accountState() | DAccount::Account_Open);
+    } else {
+        account->setAccountState(account->accountState() & ~DAccount::Account_Open);
+    }
     //account
     account->setAccountType(DAccount::Account_UnionID);
     account->setDtCreate(QDateTime::currentDateTime());
@@ -289,14 +296,6 @@ void DAccountManageModule::slotUidLoginStatueChange(const bool staus)
     DAccount::Ptr accountUnionid = m_syncFileManage->getuserInfo();
 
     if (!accountUnionid.isNull() && !accountUnionid->accountName().isEmpty()) {
-        //
-        SyncoptResult result = m_syncFileManage->getSyncoperation()->optGetMainSwitcher();
-        if (result.switch_state) {
-            accountUnionid->setAccountState(accountUnionid->accountState() | DAccount::Account_Open);
-        } else {
-            accountUnionid->setAccountState(accountUnionid->accountState() & ~DAccount::Account_Open);
-        }
-
         if (m_AccountServiceMap[DAccount::Type::Account_UnionID].size() > 0) {
             //数据改变
             DAccountModule::Ptr accountModule = m_accountModuleMap[accountUnionid->accountID()];

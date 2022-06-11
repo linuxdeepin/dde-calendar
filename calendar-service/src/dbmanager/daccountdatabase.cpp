@@ -207,7 +207,7 @@ bool DAccountDataBase::deleteSchedulesByScheduleTypeID(const QString &typeID, co
     if (isDeleted) {
         strSql = "DELETE FROM schedules WHERE scheduleTypeID=?;";
     } else {
-        strSql = QString("UPDATE schedules SET dtDelete = %1 , isDeleted = 1  WHERE scheduleTypeID=?").arg(dtToString(QDateTime::currentDateTime()));
+        strSql = QString("UPDATE schedules SET dtDelete = '%1' , isDeleted = 1  WHERE scheduleTypeID=?").arg(dtToString(QDateTime::currentDateTime()));
     }
     QSqlQuery query(m_database);
     bool resBool = false;
@@ -231,7 +231,7 @@ DSchedule::List DAccountDataBase::querySchedulesByKey(const QString &key)
     DSchedule::List scheduleList;
     QString strSql("SELECT s.scheduleID, s.scheduleTypeID, s.summary, s.description, s.allDay, s.dtStart, s.dtEnd,   \
              s.isAlarm,s.titlePinyin,s.isLunar, s.ics, s.fileName, s.dtCreate, s.dtUpdate, s.dtDelete, s.isDeleted      \
-               FROM  schedules s  inner join scheduleType st WHERE st.showState =1 and s.scheduleTypeID  = st.typeID ");
+               FROM  schedules s  inner join scheduleType st WHERE s.isDeleted = 0 and st.showState =1 and s.scheduleTypeID  = st.typeID ");
     //如果关键字不为空，添加查询条件
     pinyinsearch *psearch = pinyinsearch::getPinPinSearch();
     QMap<QString, QString> sqlBindValue;
@@ -539,7 +539,7 @@ bool DAccountDataBase::deleteScheduleTypeByID(const QString &typeID, const int i
     if (isDeleted == 0) {
         //弱删除
         QDateTime &&dtCurrent = QDateTime::currentDateTime();
-        strSql = QString("UPDATE scheduleType  SET  dtDelete=%1, isDeleted=1  WHERE typeID=?;")
+        strSql = QString("UPDATE scheduleType  SET  dtDelete='%1', isDeleted=1  WHERE typeID=?;")
                      .arg(dtToString(dtCurrent));
     } else {
         //真删除

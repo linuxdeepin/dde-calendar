@@ -122,6 +122,7 @@ int DAccountModule::getAccountState()
 
 void DAccountModule::setAccountState(const int accountState)
 {
+    qInfo() << accountState;
     if (int(m_account->accountState()) != accountState) {
         m_account->setAccountState(static_cast<DAccount::AccountState>(accountState));
         m_accountDB->updateAccountInfo();
@@ -395,6 +396,8 @@ bool DAccountModule::deleteScheduleByScheduleID(const QString &scheduleID)
         uploadTask->setTaskObject(DUploadTaskData::Task_Schedule);
         uploadTask->setObjectId(scheduleID);
         m_accountDB->addUploadTask(uploadTask);
+        //开启任务
+        uploadNetWorkAccountData();
     } else {
         isOK = m_accountDB->deleteScheduleByScheduleID(scheduleID, 1);
     }
@@ -713,6 +716,10 @@ void DAccountModule::accountDownload()
             }
         }
 
+        QSqlDatabase::database(DDataBase::NameSync).transaction();
+        QSqlDatabase::database(m_account->accountName()).transaction();
+        QSqlDatabase::database(DDataBase::NameAccountManager).transaction();
+
         {
             qInfo() << "初始化表结构";
             ThrowQuery query(DBSync);
@@ -796,6 +803,10 @@ void DAccountModule::accountDownload()
                 emit signalSettingChange();
             }
         }
+        QSqlDatabase::database(DDataBase::NameSync).commit();
+        QSqlDatabase::database(m_account->accountName()).commit();
+        QSqlDatabase::database(DDataBase::NameAccountManager).commit();
+
         qInfo() << "上传B";
         QSqlDatabase::removeDatabase(DDataBase::NameSync);
         if (!fileManger.SyncDataUpload(filepath, errocde)) {
@@ -804,7 +815,7 @@ void DAccountModule::accountDownload()
         m_account->setDtLastSync(QDateTime::currentDateTime());
         m_accountDB->updateAccountInfo();
         emit signalDtLastUpdate();
-        qInfo() << "SyncDataUpload SUCCESS";
+        qInfo() << "SyncDataUpload SUCCESS" << errocde;
 
     } catch (const QString &exception) {
         errocde = errocde == 0 ? -1 : errocde;
@@ -832,8 +843,10 @@ void DAccountModule::accountDownload()
         m_account->setSyncState(DAccount::Sync_ServerException);
         break;
     }
-    //错误处理
+
+    qInfo() << Q_FUNC_INFO << m_account->syncState();
     emit signalSyncState();
+    //错误处理
     //如果上传失败，需要启动定时上传
     if (m_account->syncState() != DAccount::Sync_Normal) {
         uploadTaskHanding(1);
@@ -845,6 +858,7 @@ void DAccountModule::accountDownload()
 
 void DAccountModule::uploadNetWorkAccountData()
 {
+    qInfo() << Q_FUNC_INFO;
     //uid上传下载一个流程
     accountDownload();
 }

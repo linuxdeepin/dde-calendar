@@ -140,8 +140,11 @@ DTypeColor::List AccountItem::getColorTypeList()
  */
 bool AccountItem::isCanSyncShedule()
 {
-    return true;
-    return (getAccount()->accountState() & DAccount::Account_Calendar);
+    if (getAccount()->accountType() != DAccount::Account_UnionID) {
+        return true;
+    }
+    return getAccount()->accountState().testFlag(DAccount::Account_Calendar)
+           && getAccount()->accountState().testFlag(DAccount::Account_Open);
 }
 
 /**
@@ -341,7 +344,7 @@ QString AccountItem::querySchedulesByExternal(const QString &key, const QDateTim
     return json;
 }
 
-bool AccountItem::querySchedulesByExternal(const QString &key, const QDateTime &start, const QDateTime &end, QMap<QDate, DSchedule::List>& out)
+bool AccountItem::querySchedulesByExternal(const QString &key, const QDateTime &start, const QDateTime &end, QMap<QDate, DSchedule::List> &out)
 {
     DScheduleQueryPar::Ptr ptr;
     ptr.reset(new DScheduleQueryPar);

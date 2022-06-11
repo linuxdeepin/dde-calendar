@@ -559,6 +559,7 @@ void CScheduleDlg::slotAccoutBoxActivated(const QString &text)
     getButtons()[1]->setEnabled(true);
     //将焦点转移到类型选择框上
     m_typeComBox->setFocus();
+    setShowState(m_lunarRadioBtn->isChecked());
 }
 
 void CScheduleDlg::signalLogout(DAccount::Type type)
@@ -1377,6 +1378,10 @@ bool CScheduleDlg::isShowLunar()
  */
 void CScheduleDlg::setShowState(bool jobIsLunar)
 {
+    m_solarRadioBtn->setEnabled(true);
+    m_lunarRadioBtn->setEnabled(true);
+    setWidgetEnabled(true);
+    getButton(1)->setEnabled(true);
     if (!m_accountItem || !m_accountItem->isCanSyncShedule()) {
         //不可同步日程，除帐户选择外其他的控件都置灰
         m_solarRadioBtn->setEnabled(false);
