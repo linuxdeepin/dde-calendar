@@ -39,7 +39,7 @@ DAccount::DAccount(DAccount::Type type)
     , m_syncTag(0)
     , m_accountState(Account_Close)
     , m_syncState(Sync_Normal)
-    , m_syncFreq(SyncFreq_Maunal)
+    , m_syncFreq(SyncFreq_15Mins)
     , m_intervalTime(0)
     , m_isExpandDisplay(true)
 {

@@ -69,7 +69,7 @@ DScheduleQueryPar::Ptr DScheduleQueryPar::fromJsonString(const QString &queryStr
     QJsonParseError jsonError;
     QJsonDocument jsonDoc(QJsonDocument::fromJson(queryStr.toLocal8Bit(), &jsonError));
     if (jsonError.error != QJsonParseError::NoError) {
-        qWarning() << "error:" << jsonError.errorString();
+        qWarning() << "error:" << jsonError.errorString() << " queryStr:" << queryStr;
         return nullptr;
     }
     DScheduleQueryPar::Ptr queryPar = DScheduleQueryPar::Ptr(new DScheduleQueryPar);

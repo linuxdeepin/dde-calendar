@@ -1,5 +1,6 @@
 #include "syncfilemanage.h"
 
+#include <DSysInfo>
 
 SyncFileManage::SyncFileManage(QObject *parent)
     : QObject(parent)
@@ -115,7 +116,8 @@ DAccount::Ptr SyncFileManage::getuserInfo()
 {
     QVariantMap userInfoMap;
 
-    if (!m_syncoperation->optUserData(userInfoMap)) {
+    //如果为社区版本则返回空
+    if (Dtk::Core::DSysInfo::uosEditionType() == Dtk::Core::DSysInfo::UosCommunity && !m_syncoperation->optUserData(userInfoMap)) {
         qDebug() << "can't get userinfo";
         return nullptr;
     }

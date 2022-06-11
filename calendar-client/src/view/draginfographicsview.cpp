@@ -92,7 +92,7 @@ DragInfoGraphicsView::DragInfoGraphicsView(DWidget *parent)
     connect(m_Scene, &CGraphicsScene::signalsetNextFocus, this, &DragInfoGraphicsView::slotsetNextFocus);
     setFocusPolicy(Qt::StrongFocus);
     //日程类型发生改变，刷新界面
-    connect(gAccountManager, &AccountManager::signalScheduleTypeUpdate, [&](){
+    connect(gAccountManager, &AccountManager::signalScheduleTypeUpdate, [&]() {
         this->viewport()->update();
     });
 }
@@ -821,6 +821,10 @@ bool DragInfoGraphicsView::isCanDragge(const DSchedule::Ptr &info)
         return false;
     if (info->lunnar() && !QLocale::system().name().startsWith("zh_"))
         return false;
+    //日程不可被修改
+    if (CScheduleOperation::scheduleIsInvariant(info)) {
+        return false;
+    }
     return true;
 }
 

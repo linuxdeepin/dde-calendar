@@ -281,10 +281,12 @@ bool changeScheduleTask::getNewInfo()
         if (m_ToTime.size() == 1) {
             //如果存在日期信息
             if (m_ToTime.at(0).hasDate) {
+                //获取日程的开始结束时间差
+                qint64 interval = m_NewInfo->dtStart().secsTo(m_NewInfo->dtEnd());
                 //设置修改的开始日期
-                m_NewInfo->setDtStart(QDateTime(m_ToTime.at(0).m_Date));
+                m_NewInfo->setDtStart(QDateTime(m_ToTime.at(0).m_Date, m_NewInfo->dtStart().time()));
                 //设置修改的结束日期
-                m_NewInfo->setDtEnd(QDateTime(m_ToTime.at(0).m_Date));
+                m_NewInfo->setDtEnd(m_NewInfo->dtStart().addSecs(interval));
             }
             //如果修改的DateTime带时间则设置该时间，否则保持原来的时间点
             if (m_ToTime.at(0).hasTime) {

@@ -80,7 +80,7 @@ DSchedule::Map DScheduleDataManager::querySchedulesWithParameter(const DSchedule
 {
     DSchedule::Map scheduleMap;
     AccountItem::Ptr account = gAccounManager->getLocalAccountItem();
-    return account->querySchedulesWithParameter(params);
+    return account.isNull() ? scheduleMap : account->querySchedulesWithParameter(params);
 }
 
 DSchedule::Map DScheduleDataManager::queryScheduleByRRule(const QDateTime &dtStart, const QDateTime &dtEnd, const DScheduleQueryPar::RRuleType &rrultTyep)

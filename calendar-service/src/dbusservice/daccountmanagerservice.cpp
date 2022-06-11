@@ -125,11 +125,19 @@ void DAccountManagerService::calendarIsShow(const bool &isShow)
 
 void DAccountManagerService::login()
 {
+    DServiceExitControl exitControl;
+    if (!clientWhite(0)) {
+        return;
+    }
     m_accountManager->login();
 }
 
 void DAccountManagerService::logout()
 {
+    DServiceExitControl exitControl;
+    if (!clientWhite(0)) {
+        return;
+    }
     m_accountManager->logout();
 }
 
@@ -140,7 +148,6 @@ int DAccountManagerService::getfirstDayOfWeek() const
 
 void DAccountManagerService::setFirstDayOfWeek(const int firstday)
 {
-    qInfo() << firstday;
     m_accountManager->setFirstDayOfWeek(firstday);
 }
 

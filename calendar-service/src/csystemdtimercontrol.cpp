@@ -128,7 +128,8 @@ void CSystemdTimerControl::startDownloadTask(const QString &accountID, const int
 
         QString command("systemctl --user start ");
         command += fileName;
-        execLinuxCommand(command);
+        execLinuxCommand("systemctl --user enable " + fileName);
+        execLinuxCommand("systemctl --user start " + fileName);
     }
 }
 
@@ -175,9 +176,8 @@ void CSystemdTimerControl::startUploadTask(const int minute)
         content += "RandomizedDelaySec = 0\n";
         createFile(fileName, content);
 
-        QString command("systemctl --user start ");
-        command += fileName;
-        execLinuxCommand(command);
+        execLinuxCommand("systemctl --user enable " + fileName);
+        execLinuxCommand("systemctl --user start " + fileName);
     }
 }
 

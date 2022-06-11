@@ -56,14 +56,15 @@ QString DServiceBase::getClientName()
 
 bool DServiceBase::clientWhite(const int index)
 {
+//    DeepinAIAssista
 #ifdef CALENDAR_SERVICE_AUTO_EXIT
     //根据编号,获取不同到白名单
     static QVector<QStringList> whiteList {{"dde-calendar", "DeepinAIAssistant"}, {"dde-calendar"}, {"dde-calendar"}};
     if (whiteList.size() < index) {
         return false;
     }
-    for (int i = 0; i < whiteList.at(1).size(); ++i) {
-        if (whiteList.at(1).at(i).contains(getClientName())) {
+    for (int i = 0; i < whiteList.at(index).size(); ++i) {
+        if (whiteList.at(index).at(i).contains(getClientName())) {
             return true;
         }
     }

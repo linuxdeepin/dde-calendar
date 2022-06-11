@@ -90,16 +90,29 @@ bool DSchedule::operator==(const DSchedule &schedule) const
     return this->instanceIdentifier() == schedule.instanceIdentifier();
 }
 
-bool DSchedule::operator<(const DSchedule &schedule) const
+bool operator<(const DSchedule::Ptr &s1, const DSchedule::Ptr &s2)
 {
-    return this->allDay() > schedule.allDay() || this->priority() < schedule.priority()
-           || this->dtStart() < schedule.dtStart() || this->created() < schedule.created() || this->summary() < schedule.summary();
+    if (s1.isNull() || s2.isNull()) {
+        return false;
+    }
+    return *s1.data() < *s2.data();
 }
 
-bool DSchedule::operator>(const DSchedule &schedule) const
+bool DSchedule::operator<(const DSchedule &schedule) const
 {
-    return this->allDay() < schedule.allDay() || this->priority() > schedule.priority()
-           || this->dtStart() > schedule.dtStart() || this->created() > schedule.created();
+    if (this->allDay() != schedule.allDay()) {
+        return this->allDay() > schedule.allDay();
+    }
+    if (this->dtStart() != schedule.dtStart()) {
+        return this->dtStart() < schedule.dtStart();
+    }
+    if (this->created() != schedule.created()) {
+        return this->created() < schedule.created();
+    }
+    if (this->summary() != schedule.summary()) {
+        return this->summary() < schedule.summary();
+    }
+    return true;
 }
 
 void DSchedule::setAlarmType(const DSchedule::AlarmType &alarmType)

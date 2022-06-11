@@ -85,8 +85,6 @@ public:
 
     bool operator<(const DSchedule &schedule) const;
 
-    bool operator>(const DSchedule &schedule) const;
-
     void setAlarmType(const AlarmType &alarmType);
     AlarmType getAlarmType();
 
@@ -107,14 +105,14 @@ public:
     static QMap<QDate, DSchedule::List> fromMapString(const QString &json);
     static QString toMapString(const QMap<QDate, DSchedule::List> &scheduleMap);
 
-    friend bool operator==(const DSchedule::Ptr &s1, const DSchedule::Ptr &s2);
-
 private:
     QMap<int, AlarmType> getAlarmMap();
 
 public:
     //日程信息调试打印
     friend QDebug operator<<(QDebug debug, const DSchedule &scheduleJsonData);
+    friend bool operator==(const DSchedule::Ptr &s1, const DSchedule::Ptr &s2);
+    friend bool operator<(const DSchedule::Ptr &s1, const DSchedule::Ptr &s2);
 
     QString fileName() const;
     void setFileName(const QString &fileName);

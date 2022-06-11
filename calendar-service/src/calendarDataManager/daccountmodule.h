@@ -99,6 +99,11 @@ public:
 
     //删除数据库
     void removeDB();
+    //index: 0:帐户登录 1：修改同步频率 2：帐户登出
+    void downloadTaskhanding(int index);
+
+    // 0:关闭 1：启动
+    void uploadTaskHanding(int open);
 
     //获取最后一次同步时间
     QString getDtLastUpdate();

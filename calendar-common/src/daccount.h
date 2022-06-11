@@ -50,7 +50,7 @@ public:
         Sync_StorageFull, //存储已满
     };
 
-    enum SyncFreqType{
+    enum SyncFreqType {
         SyncFreq_Maunal, //手动同步
         SyncFreq_15Mins,
         SyncFreq_30Mins,

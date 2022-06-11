@@ -34,11 +34,12 @@ DWIDGET_USE_NAMESPACE
 //配置界面账户登录部件
 class UserloginWidget: public QWidget
 {
+    Q_OBJECT
 public:
     explicit UserloginWidget(QWidget *parent = nullptr);
     virtual ~UserloginWidget();
 
-    static QPair<QWidget*, QWidget*> createloginButton(QObject *obj);
+    static QPair<QWidget *, QWidget *> createloginButton(QObject *obj);
 
 signals:
 
@@ -47,7 +48,7 @@ public slots:
     void slotLogoutBtnClicked();
     void slotAccountUpdate();
     //网络图片请求完成事件
-    void slotReplyPixmapLoad(QNetworkReply*);
+    void slotReplyPixmapLoad(QNetworkReply *);
 
 private:
     void initView();

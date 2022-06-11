@@ -28,6 +28,7 @@
 #include "dbus/dbusuiopenschedule.h"
 #include "dalarmmanager.h"
 #include "syncfilemanage.h"
+#include "csystemdtimercontrol.h"
 
 #include <QStringList>
 #include <QDBusConnection>
@@ -90,10 +91,6 @@ DAccountModule::DAccountModule(const DAccount::Ptr &account, QObject *parent)
     m_accountDB->initDBData();
     m_accountDB->getAccountInfo(m_account);
 
-    if (m_account->isNetWorkAccount()) {
-        accountDownload();
-    }
-
     //关联打开日历界面
     connect(m_alarm.data(), &DAlarmManager::signalCallOpenCalendarUI, this, &DAccountModule::slotOpenCalendar);
 }
@@ -143,8 +140,13 @@ QString DAccountModule::getSyncFreq()
 
 void DAccountModule::setSyncFreq(const QString &freq)
 {
+    DAccount::SyncFreqType syncType = m_account->syncFreq();
     DAccount::syncFreqFromJsonString(m_account, freq);
+    if (syncType == m_account->syncFreq()) {
+        return;
+    }
     m_accountDB->updateAccountInfo();
+    downloadTaskhanding(1);
 }
 
 QString DAccountModule::getScheduleTypeList()
@@ -623,6 +625,9 @@ void DAccountModule::remindJob(const QString &alarmID)
 
 void DAccountModule::accountDownload()
 {
+    if (m_account->accountType() != DAccount::Account_UnionID) {
+        return;
+    }
     //sql prepare
     auto prequest = [](int count)->QString {
         QString r;
@@ -657,7 +662,7 @@ void DAccountModule::accountDownload()
         prebinds(target, record);
         target.exec();
     };
-    auto selectValue = [=](const QString &value_name, const QString &table_name, const QString &key_name, const QVariant &key_value, const QString &connection_name)->QVariant{
+    auto selectValue = [=](const QString &value_name, const QString &table_name, const QString &key_name, const QVariant &key_value, const QString &connection_name) -> QVariant {
         ThrowQuery query(QSqlDatabase::database(connection_name));
         query.prepare("select " + value_name + " from " + table_name + " where " + key_name + " = ?");
         query.addBindValue(key_value);
@@ -665,7 +670,7 @@ void DAccountModule::accountDownload()
         query.next();
         return query.value(0);
     };
-    auto selectAll = [=](const QString &table_name, const QString &key_name, const QVariant &key_value, const QString &connection_name)->QSqlRecord{
+    auto selectAll = [=](const QString &table_name, const QString &key_name, const QVariant &key_value, const QString &connection_name) -> QSqlRecord {
         ThrowQuery query(QSqlDatabase::database(connection_name));
         query.prepare("select * from " + table_name + " where " + key_name + " = ?");
         query.addBindValue(key_value);
@@ -673,17 +678,21 @@ void DAccountModule::accountDownload()
         query.next();
         return query.record();
     };
-    auto deleteValue = [=](const QString &table_name, const QString &key_name, const QVariant &key_value, const QString &connection_name){
+    auto deleteValue = [=](const QString &table_name, const QString &key_name, const QVariant &key_value, const QString &connection_name) {
         ThrowQuery query(QSqlDatabase::database(connection_name));
         query.prepare("delete from " + table_name + " where " + key_name + " = ?");
         query.addBindValue(key_value);
         query.exec();
     };
-    auto deleteTable = [=](const QString &table_name, const QString &connection_name){
+    auto deleteTable = [=](const QString &table_name, const QString &connection_name) {
         ThrowQuery query(QSqlDatabase::database(connection_name));
         query.exec("delete from " + table_name);
     };
 
+    //    DAccount::AccountSyncState syncState;
+    //0:下载成功
+    int errocde;
+    int syncCode = -1;
     /*
      * A为本地数据库
      * B为云端下载的临时数据库
@@ -691,7 +700,7 @@ void DAccountModule::accountDownload()
     try {
         QString filepath;
         SyncFileManage fileManger;
-        int errocde;
+
         QString uid = m_account->accountID();
         if (!fileManger.SyncDataDownload(uid, filepath, errocde)) {
             throw "download error:code is " + QString::number(errocde);
@@ -728,8 +737,7 @@ void DAccountModule::accountDownload()
                 qInfo() << "默认颜色";
                 accountDb.defaultTypeColor();
 
-                if(this->getAccountState() & DAccount::Account_Setting)
-                {
+                if (this->getAccountState() & DAccount::Account_Setting) {
                     qInfo() << "默认通用设置";
                     replaceIntoTable("calendargeneralsettings", DDataBase::NameAccountManager, DDataBase::NameSync);
                 }
@@ -764,8 +772,7 @@ void DAccountModule::accountDownload()
                 deleteTable("uploadTask", m_account->accountName());
             }
 
-            if(this->getAccountState() & DAccount::Account_Setting)
-            {
+            if (this->getAccountState() & DAccount::Account_Setting) {
                 qInfo() << "同步通用设置";
                 QDateTime sourceDate = selectValue("vch_value", "calendargeneralsettings", "vch_key", "dt_update", DDataBase::NameAccountManager).toDateTime();
                 QDateTime targetDate = selectValue("vch_value", "calendargeneralsettings", "vch_key", "dt_update", DDataBase::NameSync).toDateTime();
@@ -784,8 +791,7 @@ void DAccountModule::accountDownload()
                 replaceIntoTable("typeColor",    DDataBase::NameSync, m_account->accountName(), true);
             }
 
-            if(this->getAccountState() & DAccount::Account_Setting)
-            {
+            if (this->getAccountState() & DAccount::Account_Setting) {
                 qInfo() << "更新通用设置";
                 replaceIntoTable("calendargeneralsettings", DDataBase::NameSync, DDataBase::NameAccountManager, true);
             }
@@ -799,16 +805,48 @@ void DAccountModule::accountDownload()
         m_accountDB->updateAccountInfo();
         emit signalDtLastUpdate();
         qInfo() << "SyncDataUpload SUCCESS";
+
     } catch (const QString &exception) {
+        errocde = errocde == 0 ? -1 : errocde;
         qInfo() << __LINE__ << exception;
     } catch (const char *exception) {
+        errocde = errocde == 0 ? -1 : errocde;
         qInfo() << __LINE__ << exception;
+    }
+
+    switch (errocde) {
+    case 0:
+        //执行正常
+        m_account->setSyncState(DAccount::Sync_Normal);
+        break;
+    case 7506:
+        //网络异常
+        m_account->setSyncState(DAccount::Sync_NetworkAnomaly);
+        break;
+    case 7508:
+        //存储已满
+        m_account->setSyncState(DAccount::Sync_StorageFull);
+        break;
+    default:
+        //默认服务器异常
+        m_account->setSyncState(DAccount::Sync_ServerException);
+        break;
+    }
+    //错误处理
+    emit signalSyncState();
+    //如果上传失败，需要启动定时上传
+    if (m_account->syncState() != DAccount::Sync_Normal) {
+        uploadTaskHanding(1);
+    } else {
+        //如果有定时上传则停止
+        uploadTaskHanding(0);
     }
 }
 
 void DAccountModule::uploadNetWorkAccountData()
 {
-    //TODO:
+    //uid上传下载一个流程
+    accountDownload();
 }
 
 QString DAccountModule::getDtLastUpdate()
@@ -972,6 +1010,56 @@ DSchedule::Ptr DAccountModule::getScheduleByRemind(const DRemindData::Ptr &remin
         schedule->setRecurrenceId(remindData->recurrenceId());
     }
     return schedule;
+}
+
+void DAccountModule::downloadTaskhanding(int index)
+{
+    //index: 0:帐户登录 1：修改同步频率 2：帐户登出
+    CSystemdTimerControl sysControl;
+    if (index > 0) {
+        //修改和停止都需要停止定时任务
+        sysControl.stopDownloadTask(m_account->accountID());
+    }
+    if (index != 2) {
+        //如果帐户刚刚登录开启定时任务
+        //设置同步频率
+        if (m_account->isNetWorkAccount()) {
+            int sync = -1;
+            switch (m_account->syncFreq()) {
+            case DAccount::SyncFreq_15Mins:
+                sync = 15;
+                break;
+            case DAccount::SyncFreq_30Mins:
+                sync = 30;
+                break;
+            case DAccount::SyncFreq_1hour:
+                sync = 60;
+                break;
+            case DAccount::SyncFreq_24hour:
+                sync = 24 * 60;
+                break;
+            default:
+                break;
+            }
+            if (sync > 0) {
+                sysControl.startDownloadTask(m_account->accountID(), sync);
+            }
+        }
+    }
+}
+
+void DAccountModule::uploadTaskHanding(int open)
+{
+    CSystemdTimerControl sysControl;
+    if (1 == open) {
+        sysControl.startUploadTask(15);
+        return;
+    }
+    if (0 == open) {
+        //TODO:需要考虑多个帐户情况
+        sysControl.stopUploadTask();
+        return;
+    }
 }
 
 void DAccountModule::slotOpenCalendar(const QString &alarmID)

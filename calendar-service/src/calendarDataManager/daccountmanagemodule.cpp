@@ -41,7 +41,6 @@ DAccountManageModule::DAccountManageModule(QObject *parent)
 
     //根据获取到的帐户信息创建对应的帐户服务
     foreach (auto account, m_accountList) {
-        qInfo() << "accountState:" << int(account->accountState());
         DAccountModule::Ptr accountModule = DAccountModule::Ptr(new DAccountModule(account));
         m_accountModuleMap[account->accountID()] = accountModule;
         DAccountService::Ptr accountService = DAccountService::Ptr(new DAccountService(account->dbusPath(), account->dbusInterface(), accountModule, this));
@@ -49,6 +48,10 @@ DAccountManageModule::DAccountManageModule(QObject *parent)
             qWarning() << "registerObject accountService failed:" << sessionBus.lastError();
         } else {
             m_AccountServiceMap[account->accountType()].insert(account->accountID(), accountService);
+            //如果是网络帐户则开启定时下载任务
+            if (account->isNetWorkAccount()) {
+                accountModule->downloadTaskhanding(0);
+            }
         }
     }
     m_generalSetting = m_accountManagerDB->getCalendarGeneralSettings();
@@ -195,6 +198,10 @@ void DAccountManageModule::unionIDDataMerging()
         if (std::any_of(m_accountList.begin(), m_accountList.end(), hasUnionid)) {
             m_accountManagerDB->deleteAccountInfo(unionidDB->accountID());
             m_accountList.removeOne(unionidDB);
+            //移除对应的数据库 ，停止对应的定时器
+            DAccountModule::Ptr accountModule(new DAccountModule(unionidDB));
+            accountModule->removeDB();
+            accountModule->downloadTaskhanding(2);
         }
     } else {
         //如果unionID登陆了
@@ -273,14 +280,16 @@ void DAccountManageModule::slotUidLoginStatueChange(const bool staus)
     QDBusConnection sessionBus = QDBusConnection::sessionBus();
     //登录或者数据改变
     DAccount::Ptr accountUnionid = m_syncFileManage->getuserInfo();
+
     SyncoptResult result = m_syncFileManage->getSyncoperation()->optGetMainSwitcher();
-    if (!accountUnionid->accountName().isEmpty()) {
+    if (!accountUnionid.isNull() && !accountUnionid->accountName().isEmpty()) {
         //
-        if(result.switch_state){
-            accountUnionid->setAccountState( accountUnionid->accountState() | DAccount::Account_Open);
-        }else {
-            accountUnionid->setAccountState( accountUnionid->accountState() & ~DAccount::Account_Open);
+        if (result.switch_state) {
+            accountUnionid->setAccountState(accountUnionid->accountState() | DAccount::Account_Open);
+        } else {
+            accountUnionid->setAccountState(accountUnionid->accountState() & ~DAccount::Account_Open);
         }
+
         if (m_AccountServiceMap[DAccount::Type::Account_UnionID].size() > 0) {
             //数据改变
             DAccountModule::Ptr accountModule = m_accountModuleMap[accountUnionid->accountID()];
@@ -301,6 +310,7 @@ void DAccountManageModule::slotUidLoginStatueChange(const bool staus)
                 qWarning() << "registerObject accountService failed:" << sessionBus.lastError();
             } else {
                 m_AccountServiceMap[accountUnionid->accountType()].insert(accountUnionid->accountID(), accountService);
+                accountModule->downloadTaskhanding(0);
             }
         }
     } else {
@@ -315,6 +325,7 @@ void DAccountManageModule::slotUidLoginStatueChange(const bool staus)
             //移除uid帐户信息
             //删除对应数据库
             m_accountModuleMap[accountID]->removeDB();
+            m_accountModuleMap[accountID]->downloadTaskhanding(2);
             m_accountList.removeOne(m_accountModuleMap[accountID]->account());
             m_accountModuleMap.remove(accountID);
             m_accountManagerDB->deleteAccountInfo(accountID);
@@ -326,11 +337,11 @@ void DAccountManageModule::slotUidLoginStatueChange(const bool staus)
 void DAccountManageModule::slotSwitcherChange(const bool state)
 {
     foreach (auto schedule, m_accountList) {
-        if(schedule->accountType() == DAccount::Account_UnionID){
-            if(state){
-                schedule->setAccountState( schedule->accountState() | DAccount::Account_Open);
-            }else {
-                schedule->setAccountState( schedule->accountState() & ~DAccount::Account_Open);
+        if (schedule->accountType() == DAccount::Account_UnionID) {
+            if (state) {
+                schedule->setAccountState(schedule->accountState() | DAccount::Account_Open);
+            } else {
+                schedule->setAccountState(schedule->accountState() & ~DAccount::Account_Open);
             }
             emit m_accountModuleMap[schedule->accountID()]->signalAccountState();
             return;

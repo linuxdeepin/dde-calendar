@@ -131,9 +131,6 @@ signals:
     void scheduleUpdate();
     void scheduleTypeUpdate();
 
-    void signalAccountState();
-    void signalSyncState();
-
 private:
     //帐户列表是否展开
     bool getExpand();
