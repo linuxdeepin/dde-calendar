@@ -80,7 +80,7 @@ CScheduleDlg::~CScheduleDlg()
 
 void CScheduleDlg::setData(const DSchedule::Ptr &info)
 {
-    m_ScheduleDataInfo = info;
+    m_scheduleDataInfo = info;
 
     if (m_type == 1) {
         //如果为新建则设置为提示信息
@@ -100,6 +100,10 @@ void CScheduleDlg::setData(const DSchedule::Ptr &info)
         m_typeComBox->updateJobType(m_accountItem);
     } else {
         m_accountItem = gAccountManager->getLocalAccountItem();
+    }
+
+    if (m_scheduleDataInfo) {
+        m_typeComBox->setCurrentJobTypeNo(m_scheduleDataInfo->scheduleTypeID());
     }
 
     m_beginDateEdit->setDate(info->dtStart().date());
@@ -188,13 +192,8 @@ bool CScheduleDlg::selectScheduleType()
         //创建日程类型，等待回调
         m_accountItem->createJobType(type, [&](CallMessge call) {
             if (call.code == 0) {
-                //日程已创建且数据刷新完毕
-                //根据返回的日程类型id去获取日程类型实例，再次确认是否创建成功
-                DScheduleType::Ptr type = m_accountItem->getScheduleTypeByID(call.msg.toString());
-                if (nullptr != type) {
-                    //创建日程
-                    createSchedule(type->typeID());
-                }
+                //返回值为日程类型id
+                createSchedule(call.msg.toString());
             }
             //关闭本弹窗
             this->close();
@@ -304,12 +303,12 @@ bool CScheduleDlg::createSchedule(const QString &scheduleTypeId)
         res = _scheduleOperation.createSchedule(schedule);
 
     } else if (m_type == 0) {
-        schedule->setUid(m_ScheduleDataInfo->uid());
+        schedule->setUid(m_scheduleDataInfo->uid());
         //如果有重复规则则将原来数据的忽略列表添加进来
-        if (schedule->recurs() && m_ScheduleDataInfo->recurs()) {
-            schedule->recurrence()->setExDateTimes(m_ScheduleDataInfo->recurrence()->exDateTimes());
+        if (schedule->recurs() && m_scheduleDataInfo->recurs()) {
+            schedule->recurrence()->setExDateTimes(m_scheduleDataInfo->recurrence()->exDateTimes());
         }
-        res = _scheduleOperation.changeSchedule(schedule, m_ScheduleDataInfo);
+        res = _scheduleOperation.changeSchedule(schedule, m_scheduleDataInfo);
     }
     return res;
 }
@@ -477,10 +476,10 @@ void CScheduleDlg::slotallDayStateChanged(int state)
         m_endTimeEdit->setVisible(true);
 
         if (m_type == 0) {
-            m_beginDateEdit->setDate(m_ScheduleDataInfo->dtStart().date());
-            m_beginTimeEdit->setTime(m_ScheduleDataInfo->dtStart().time());
-            m_endDateEdit->setDate(m_ScheduleDataInfo->dtEnd().date());
-            m_endTimeEdit->setTime(m_ScheduleDataInfo->dtEnd().time());
+            m_beginDateEdit->setDate(m_scheduleDataInfo->dtStart().date());
+            m_beginTimeEdit->setTime(m_scheduleDataInfo->dtStart().time());
+            m_endDateEdit->setDate(m_scheduleDataInfo->dtEnd().date());
+            m_endTimeEdit->setTime(m_scheduleDataInfo->dtEnd().time());
         } else {
             m_beginDateEdit->setDate(m_currentDate.date());
             m_beginTimeEdit->setTime(m_currentDate.time());
@@ -497,9 +496,9 @@ void CScheduleDlg::slotallDayStateChanged(int state)
         m_endTimeEdit->setVisible(false);
 
         if (m_type == 0) {
-            m_beginDateEdit->setDate(m_ScheduleDataInfo->dtStart().date());
+            m_beginDateEdit->setDate(m_scheduleDataInfo->dtStart().date());
             m_beginTimeEdit->setTime(QTime(0, 0));
-            m_endDateEdit->setDate(m_ScheduleDataInfo->dtEnd().date());
+            m_endDateEdit->setDate(m_scheduleDataInfo->dtEnd().date());
             m_endTimeEdit->setTime(QTime(23, 59));
         } else {
             m_beginDateEdit->setDate(m_currentDate.date());
@@ -796,7 +795,10 @@ void CScheduleDlg::initUI()
         m_accountComBox->setFixedSize(350, item_Fixed_Height);
         hlayout->addWidget(aLabel);
         hlayout->addWidget(m_accountComBox);
-        maintlayout->addLayout(hlayout);
+        QWidget *widget = new QWidget;
+        widget->setLayout(hlayout);
+        widget->setFixedHeight(item_Fixed_Height);
+        maintlayout->addWidget(widget);
     }
 
     //类型
@@ -829,8 +831,10 @@ void CScheduleDlg::initUI()
         typelayout->addWidget(m_typeComBox, 0, 1);
         typelayout->addWidget(m_colorSeletorWideget, 1, 1);
         //添加垂直间隔
-        typelayout->setVerticalSpacing(5);
-        maintlayout->addLayout(typelayout);
+        typelayout->setVerticalSpacing(10);
+        QWidget *widget = new QWidget;
+        widget->setLayout(typelayout);
+        maintlayout->addWidget(widget);
     }
 
     //内容
@@ -884,14 +888,18 @@ void CScheduleDlg::initUI()
         m_adllDayLabel->setText(str_allDayLabel);
         m_adllDayLabel->setFont(mlabelF);
         m_adllDayLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-        m_adllDayLabel->setFixedSize(label_Fixed_Width, item_Fixed_Height);
+        m_adllDayLabel->setFixedSize(label_Fixed_Width, 25);
         m_allDayCheckbox = new DCheckBox(this);
+        m_allDayCheckbox->setFixedHeight(25);
         //设置对象名称和辅助显示名称
         m_allDayCheckbox->setObjectName("AllDayCheckBox");
         m_allDayCheckbox->setAccessibleName("AllDayCheckBox");
         alldayLabellayout->addWidget(m_adllDayLabel);
         alldayLabellayout->addWidget(m_allDayCheckbox);
-        maintlayout->addLayout(alldayLabellayout);
+        QWidget *widget = new QWidget;
+        widget->setLayout(alldayLabellayout);
+        widget->setFixedHeight(25);
+        maintlayout->addWidget(widget);
     }
 
     //时间
@@ -902,12 +910,14 @@ void CScheduleDlg::initUI()
         tLabel->setElideMode(Qt::ElideRight);
         tLabel->setFont(mlabelF);
         tLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-        tLabel->setFixedSize(DDECalendar::NewScheduleLabelWidth, item_Fixed_Height);
+        tLabel->setFixedSize(DDECalendar::NewScheduleLabelWidth, 25);
 
         m_solarRadioBtn = new DRadioButton(tr("Solar"));
         m_lunarRadioBtn = new DRadioButton(tr("Lunar"));
         m_solarRadioBtn->setMinimumWidth(72);
         m_lunarRadioBtn->setMinimumWidth(72);
+        m_solarRadioBtn->setFixedHeight(25);
+        m_lunarRadioBtn->setFixedHeight(25);
 
         m_calendarCategoryRadioGroup = new QButtonGroup(this);
         m_calendarCategoryRadioGroup->setExclusive(true);
@@ -921,8 +931,13 @@ void CScheduleDlg::initUI()
         tLayout->addWidget(m_solarRadioBtn);
         tLayout->addWidget(m_lunarRadioBtn);
         tLayout->addStretch(1);
+        tLayout->setAlignment(m_solarRadioBtn, Qt::AlignVCenter);
+        tLayout->setAlignment(m_lunarRadioBtn, Qt::AlignVCenter);
 
-        maintlayout->addLayout(tLayout);
+        QWidget *widget = new QWidget;
+        widget->setLayout(tLayout);
+        widget->setFixedHeight(25);
+        maintlayout->addWidget(widget);
     }
 
     //开始时间
@@ -959,7 +974,11 @@ void CScheduleDlg::initUI()
         beginLabellayout->addSpacing(8);
         beginLabellayout->addWidget(m_beginTimeEdit);
         beginLabellayout->addStretch();
-        maintlayout->addLayout(beginLabellayout);
+
+        QWidget *widget = new QWidget;
+        widget->setLayout(beginLabellayout);
+        widget->setFixedHeight(item_Fixed_Height);
+        maintlayout->addWidget(widget);
     }
 
     //结束时间
@@ -997,7 +1016,10 @@ void CScheduleDlg::initUI()
 
         enQLabellayout->addWidget(m_endTimeEdit);
         enQLabellayout->addStretch();
-        maintlayout->addLayout(enQLabellayout);
+        QWidget *widget = new QWidget;
+        widget->setLayout(enQLabellayout);
+        widget->setFixedHeight(item_Fixed_Height);
+        maintlayout->addWidget(widget);
     }
 
     //提醒
@@ -1025,7 +1047,10 @@ void CScheduleDlg::initUI()
         rminQLabellayout->addWidget(m_remindSetLabel);
         rminQLabellayout->addWidget(m_rmindCombox);
         rminQLabellayout->addStretch();
-        maintlayout->addLayout(rminQLabellayout);
+        QWidget *widget = new QWidget;
+        widget->setLayout(rminQLabellayout);
+        widget->setFixedHeight(item_Fixed_Height);
+        maintlayout->addWidget(widget);
     }
 
     //重复
@@ -1057,7 +1082,10 @@ void CScheduleDlg::initUI()
         repeatLabellayout->addWidget(m_beginrepeatLabel);
         repeatLabellayout->addWidget(m_beginrepeatCombox);
         repeatLabellayout->addStretch();
-        maintlayout->addLayout(repeatLabellayout);
+        QWidget *widget = new QWidget;
+        widget->setLayout(repeatLabellayout);
+        widget->setFixedHeight(item_Fixed_Height);
+        maintlayout->addWidget(widget);
     }
 
     //结束重复
@@ -1137,6 +1165,7 @@ void CScheduleDlg::initUI()
         m_endrepeatWidget->setObjectName("EndRepeatDateWidget");
         m_endrepeatWidget->setAccessibleName("EndRepeatDateWidget");
         m_endrepeatWidget->setLayout(endrepeatLabellayout);
+        m_endrepeatWidget->setFixedHeight(item_Fixed_Height);
         maintlayout->addWidget(m_endrepeatWidget);
         m_endrepeatWidget->setVisible(false);
     }
@@ -1191,6 +1220,7 @@ void CScheduleDlg::initConnection()
     connect(m_typeComBox, &JobTypeComboBox::editingFinished, this, &CScheduleDlg::slotJobComboBoxEditingFinished);
     connect(gAccountManager, &AccountManager::signalLogout, this, &CScheduleDlg::signalLogout);
     connect(gAccountManager, &AccountManager::signalAccountUpdate, this, &CScheduleDlg::slotAccountUpdate);
+    connect(gAccountManager, &AccountManager::signalAccountStateChange, this, &CScheduleDlg::slotAccountStateChange);
 }
 
 void CScheduleDlg::slotAccountUpdate()
@@ -1201,6 +1231,15 @@ void CScheduleDlg::slotAccountUpdate()
         m_accountComBox->addItem(p->getAccount()->accountName());
     }
     initJobTypeComboBox();
+}
+
+/**
+ * @brief CScheduleDlg::slotAccountStateChange
+ * 帐户状态发生改变，刷新界面显示
+ */
+void CScheduleDlg::slotAccountStateChange()
+{
+    setShowState(m_lunarRadioBtn->isChecked());
 }
 
 void CScheduleDlg::initDateEdit()
@@ -1222,26 +1261,26 @@ void CScheduleDlg::initJobTypeComboBox()
 void CScheduleDlg::initRmindRpeatUI()
 {
     //提醒规则
-    if (m_ScheduleDataInfo->allDay()) {
-        m_rmindCombox->setCurrentIndex(m_ScheduleDataInfo->getAlarmType() - 8);
+    if (m_scheduleDataInfo->allDay()) {
+        m_rmindCombox->setCurrentIndex(m_scheduleDataInfo->getAlarmType() - 8);
     } else {
-        m_rmindCombox->setCurrentIndex(m_ScheduleDataInfo->getAlarmType());
+        m_rmindCombox->setCurrentIndex(m_scheduleDataInfo->getAlarmType());
     }
 
     //重复规则
-    m_beginrepeatCombox->setCurrentIndex(m_ScheduleDataInfo->getRRuleType());
+    m_beginrepeatCombox->setCurrentIndex(m_scheduleDataInfo->getRRuleType());
     slotbRpeatactivated(m_beginrepeatCombox->currentIndex());
-    if (m_ScheduleDataInfo->recurrence()->duration() < 0) {
+    if (m_scheduleDataInfo->recurrence()->duration() < 0) {
         //永不
         m_endrepeatCombox->setCurrentIndex(0);
-    } else if (m_ScheduleDataInfo->recurrence()->duration() == 0) {
+    } else if (m_scheduleDataInfo->recurrence()->duration() == 0) {
         //结束于日期
         m_endrepeatCombox->setCurrentIndex(2);
-        m_endRepeatDate->setDate(m_ScheduleDataInfo->recurrence()->endDateTime().date());
+        m_endRepeatDate->setDate(m_scheduleDataInfo->recurrence()->endDateTime().date());
     } else {
         //结束与次数
         m_endrepeatCombox->setCurrentIndex(1);
-        m_endrepeattimes->setText(QString::number(m_ScheduleDataInfo->recurrence()->duration()));
+        m_endrepeattimes->setText(QString::number(m_scheduleDataInfo->recurrence()->duration()));
     }
     sloteRpeatactivated(m_endrepeatCombox->currentIndex());
 }
@@ -1280,11 +1319,11 @@ void CScheduleDlg::setTabFouseOrder()
     setTabOrder(m_beginrepeatCombox, m_endrepeatCombox);
     //结束于次数，设置tab顺序
     //如果为重复日程
-    if (!m_ScheduleDataInfo.isNull() && m_ScheduleDataInfo->getRRuleType() != DSchedule::RRule_None) {
+    if (!m_scheduleDataInfo.isNull() && m_scheduleDataInfo->getRRuleType() != DSchedule::RRule_None) {
         //如果为结束于次数
-        if (m_ScheduleDataInfo->recurrence()->duration() > 0) {
+        if (m_scheduleDataInfo->recurrence()->duration() > 0) {
             setTabOrder(m_endrepeatCombox, m_endrepeattimes);
-        } else if (m_ScheduleDataInfo->recurrence()->duration() == 0) {
+        } else if (m_scheduleDataInfo->recurrence()->duration() == 0) {
             setTabOrder(m_endrepeatCombox, m_endRepeatDate);
         }
     }
@@ -1338,8 +1377,14 @@ bool CScheduleDlg::isShowLunar()
  */
 void CScheduleDlg::setShowState(bool jobIsLunar)
 {
-    //如果不显示农历
-    if (isShowLunar()) {
+    if (!m_accountItem || !m_accountItem->isCanSyncShedule()) {
+        //不可同步日程，除帐户选择外其他的控件都置灰
+        m_solarRadioBtn->setEnabled(false);
+        m_lunarRadioBtn->setEnabled(false);
+        setWidgetEnabled(false);
+        getButton(1)->setEnabled(false);
+    } else if (isShowLunar()) {
+        //如果不显示农历
         m_lunarRadioBtn->setEnabled(true);
         m_beginDateEdit->setLunarCalendarStatus(jobIsLunar);
         m_endDateEdit->setLunarCalendarStatus(jobIsLunar);
@@ -1411,10 +1456,10 @@ void CScheduleDlg::resize()
     }
 
     if (m_colorSeletorWideget->isVisible()) {
-        h += 18 + 5;
+        h += 18 + 10;
     }
-    //561: 默认界面高度, h: 新增控件高度
-    setFixedSize(dialog_width, 561 + h);
+    //573: 默认界面高度, h: 新增控件高度
+    setFixedSize(dialog_width, 573 + h);
 }
 
 void CScheduleDlg::setOkBtnEnabled()

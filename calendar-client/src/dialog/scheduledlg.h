@@ -122,8 +122,10 @@ public slots:
     void slotAccoutBoxActivated(const QString &text);
     //帐户登出信号
     void signalLogout(DAccount::Type);
-    //帐户信更新
+    //帐户信息更新
     void slotAccountUpdate();
+    //帐户状态
+    void slotAccountStateChange();
 
 protected:
     bool eventFilter(QObject *obj, QEvent *pEvent) override;
@@ -224,7 +226,7 @@ private:
     bool m_isMoreThenOneDay = false;
 private:
     //日程
-    DSchedule::Ptr m_ScheduleDataInfo;
+    DSchedule::Ptr m_scheduleDataInfo;
     AccountItem::Ptr m_accountItem;
     int m_type; // 1新建 0 编辑日程
     QDateTime m_currentDate;

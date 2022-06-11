@@ -343,7 +343,7 @@ void CWeekWindow::updateShowDate(const bool isUpdateBar)
     }
     //设置全天和非全天显示时间范围
     m_scheduleView->setRange(m_startDate, m_stopDate);
-    m_scheduleView->setTimeFormat(m_calendarManager->getTimeFormat());
+    m_scheduleView->setTimeFormat((m_calendarManager->getTimeShowType()?"AP ":"") + m_calendarManager->getTimeFormat());
     //是否更新显示周数窗口
     if (isUpdateBar) {
         m_weekview->setCurrent(getCurrendDateTime());

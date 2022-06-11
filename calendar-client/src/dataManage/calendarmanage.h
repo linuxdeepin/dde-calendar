@@ -68,10 +68,11 @@ public:
     //根据日期获取该日期处于该年第多少周
     static int getWeekNumOfYear(const QDate &date);
 
-    void setTimeFormatChanged(int value, bool update = true);
+    void setTimeFormatChanged(int value);
     void setDateFormatChanged(int value);
     QString getTimeFormat() const;
-    int getTimeFormatValue() const;
+    void setTimeShowType(int value, bool update = true);
+    int getTimeShowType() const;
     QString getDateFormat() const;
 
     //添加显示界面
@@ -127,7 +128,7 @@ private:
     ShowDateRange               m_showDateRange;        //时间范围
     QString                     m_timeFormat = "h:mm";  //时间显示格式
     QString                     m_dateFormat = "yyyy-MM-dd";    //日期显示格式
-    int                         m_timeFormatValue = 0;
+    int                         m_timeShowType = 0;
 };
 #define gCalendarManager CalendarManager::getInstance()
 #endif // CSCHEDULEMANAGE_H

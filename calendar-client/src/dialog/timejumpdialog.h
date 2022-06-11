@@ -63,6 +63,8 @@ private:
     void initData();
     //获取当月最大天数
     int getMaxDayNum();
+    //重置编辑器状态
+    void resetEdietStepEnable();
 
 private:
     QDate m_date;

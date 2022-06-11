@@ -19,6 +19,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "ctimelineedit.h"
+#include <QDebug>
 
 CTimeLineEdit::CTimeLineEdit(int id, QWidget *parent) : DSpinBox(parent)
   , m_id(id)
@@ -39,9 +40,19 @@ void CTimeLineEdit::initView()
  * @param min 最小大小
  * @param max 最大大小
  */
-void CTimeLineEdit::setNumberRange(int min, int max)
+void CTimeLineEdit::setRange(int min, int max)
 {
-    setRange(min, max);
+    DSpinBox::setRange(min, max);
+}
+
+/**
+ * @brief CTimeLineEdit::setStepEnabled
+ * 设置步状态
+ * @param enable 状态
+ */
+void CTimeLineEdit::setStepEnabled(CTimeLineEdit::StepEnabled enable)
+{
+    m_stepEnable = enable;
 }
 
 /**
@@ -95,7 +106,7 @@ void CTimeLineEdit::slotEditingFinished()
  */
 CTimeLineEdit::StepEnabled CTimeLineEdit::stepEnabled() const
 {
-    return CTimeLineEdit::StepUpEnabled|CTimeLineEdit::StepDownEnabled;
+    return m_stepEnable;
 }
 
 /**

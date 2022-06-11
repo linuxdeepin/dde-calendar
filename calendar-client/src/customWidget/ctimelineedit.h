@@ -37,7 +37,9 @@ public:
     //设置控件数字，如果canCaryy为true且超过临界值将进行自动跳转时间
     void setNum(int num, bool canCarry);
     //设置数字显示范围
-    void setNumberRange(int min, int max);
+    void setRange(int min, int max);
+    //设置步状态
+    void setStepEnabled(CTimeLineEdit::StepEnabled);
 
 signals:
     //数字改变信号
@@ -60,9 +62,8 @@ private:
 
 private:
     int m_num = 0;      //当前显示的数字
-
     const int m_id = 0; //控件id
-
+    CTimeLineEdit::StepEnabled m_stepEnable = CTimeLineEdit::StepUpEnabled|CTimeLineEdit::StepDownEnabled;
 };
 
 #endif // CTIMELINEEDIT_H

@@ -222,6 +222,7 @@ void SidebarAccountItemWidget::initView()
 void SidebarAccountItemWidget::initConnect()
 {
     connect(m_rearIconButton, &DIconButton::clicked, this, &SidebarAccountItemWidget::slotRearIconClicked);
+    connect(m_accountItem.data(), &AccountItem::signalSyncStateChange, this, &SidebarAccountItemWidget::slotSyncStatusChange);
 }
 
 void SidebarAccountItemWidget::resetRearIconButton()
@@ -275,8 +276,9 @@ void SidebarAccountItemWidget::slotRearIconClicked()
 }
 
 //同步状态改变事件
-void SidebarAccountItemWidget::slotSyncStatusChange()
+void SidebarAccountItemWidget::slotSyncStatusChange(DAccount::AccountSyncState state)
 {
+    m_accountItem->getAccount()->setSyncState(state);
     resetRearIconButton();
 }
 

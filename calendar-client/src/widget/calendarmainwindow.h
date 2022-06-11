@@ -175,7 +175,7 @@ class SyncTagRadioButton : public QWidget
 public:
     SyncTagRadioButton(DAccount::AccountState type, QWidget *parent = nullptr);
 
-    void updateAccountState(DAccount::AccountStates state);
+    void updateAccountState();
     void updateOnLineState(bool isOnline);
 
     bool isChecked();
@@ -295,19 +295,7 @@ private:
     QPoint m_startPos;
 
     //设置界面相关handler函数
-    QPair<QWidget*, QWidget*> createAccountCombobox(QObject *obj);
-    QWidget *createJobTypeListView(QObject *obj);
-    QPair<QWidget*, QWidget*> createSyncFreqCombobox(QObject *obj);
     QPair<QWidget*, QWidget*> createSyncTagRadioButton(QObject *obj);
-    QWidget *createManualSyncButton(QObject *obj);
-
-private slots:
-    void slotSetUosSyncFreq(int freq);
-    void slotUosManualSync();
-
-signals:
-    void signal_calendarAccountChanged(QString account_id);
-    void signal_addScheduleType();
 };
 
 #endif // CALENDARMAINWINDOW_H

@@ -83,6 +83,7 @@ void TimeJumpDialog::initData()
     m_yearEdit->setNum(m_date.year());
     m_monthEdit->setNum(m_date.month());
     m_dayEdit->setNum(m_date.day());
+    resetEdietStepEnable();
 }
 
 /**
@@ -130,6 +131,37 @@ int TimeJumpDialog::getMaxDayNum()
 }
 
 /**
+ * @brief TimeJumpDialog::resetEdietStepEnable
+ * 重置编辑器状态
+ */
+void TimeJumpDialog::resetEdietStepEnable()
+{
+    //将所有编辑器调整为可上下编辑状态
+    m_yearEdit->setStepEnabled(CTimeLineEdit::StepUpEnabled|CTimeLineEdit::StepDownEnabled);
+    m_monthEdit->setStepEnabled(CTimeLineEdit::StepUpEnabled|CTimeLineEdit::StepDownEnabled);
+    m_dayEdit->setStepEnabled(CTimeLineEdit::StepUpEnabled|CTimeLineEdit::StepDownEnabled);
+
+    //根据每一级当前值设置上下编辑状态
+    if(m_yearEdit->value() == m_yearEdit->minimum()) {
+        m_yearEdit->setStepEnabled(CTimeLineEdit::StepUpEnabled);
+        if (m_monthEdit->value() == m_monthEdit->minimum()) {
+            m_monthEdit->setStepEnabled(CTimeLineEdit::StepUpEnabled);
+            if (m_dayEdit->value() == m_dayEdit->minimum()) {
+                m_dayEdit->setStepEnabled(CTimeLineEdit::StepUpEnabled);
+            }
+        }
+    } else if(m_yearEdit->value() == m_yearEdit->maximum()) {
+        m_yearEdit->setStepEnabled(CTimeLineEdit::StepDownEnabled);
+        if (m_monthEdit->value() == m_monthEdit->maximum()) {
+            m_monthEdit->setStepEnabled(CTimeLineEdit::StepDownEnabled);
+            if (m_dayEdit->value() == m_dayEdit->maximum()) {
+                m_dayEdit->setStepEnabled(CTimeLineEdit::StepDownEnabled);
+            }
+        }
+    }
+}
+
+/**
  * @brief TimeJumpDialog::slotEditNumChange
  * 编辑器数字改变事件
  * @param id    编辑器id
@@ -167,6 +199,7 @@ void TimeJumpDialog::slotEditNumChange(int id, int num)
         m_date.setDate(m_date.year(), m_date.month(), num);
         break;
     }
+    resetEdietStepEnable();
 }
 
 /**

@@ -45,7 +45,7 @@ public:
     void setAccountState(DAccount::AccountStates state);
     void setSyncFreq(DAccount::SyncFreqType freq);
     DAccount::AccountStates getAccountState();
-    bool getSyncState();
+    DAccount::AccountSyncState getSyncState();
     DAccount::SyncFreqType getSyncFreq();
     /**
      * @brief getAccountInfo        获取帐户信息

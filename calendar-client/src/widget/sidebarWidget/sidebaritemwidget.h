@@ -110,7 +110,7 @@ public slots:
     //尾部图标控件点击事件
     void slotRearIconClicked();
     //同步状态改变事件
-    void slotSyncStatusChange();
+    void slotSyncStatusChange(DAccount::AccountSyncState);
 
 protected:
     void initView();

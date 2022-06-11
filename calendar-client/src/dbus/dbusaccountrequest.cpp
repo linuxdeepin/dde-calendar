@@ -68,10 +68,10 @@ DAccount::AccountStates DbusAccountRequest::getAccountState()
     return static_cast<DAccount::AccountStates>(interface.property("accountState").toInt());
 }
 
-bool DbusAccountRequest::getSyncState()
+DAccount::AccountSyncState DbusAccountRequest::getSyncState()
 {
     QDBusInterface interface(this->service(), this->path(), this->interface(), QDBusConnection::sessionBus(), this);
-    return interface.property("syncState").toBool();
+    return static_cast<DAccount::AccountSyncState>(interface.property("syncState").toInt()) ;
 }
 
 DAccount::SyncFreqType DbusAccountRequest::getSyncFreq()
@@ -267,6 +267,7 @@ void DbusAccountRequest::slotCallFinished(CDBusPendingCallWatcher *call)
 {
     int ret = 0;
     bool canCall = true;
+    QVariant msg;
 
     if (call->isError()) {
         qWarning() << call->reply().member() << call->error().message();
@@ -312,41 +313,17 @@ void DbusAccountRequest::slotCallFinished(CDBusPendingCallWatcher *call)
             //创建日程类型结束
             QDBusPendingReply<QString> reply = *call;
             QString scheduleTypeId = reply.argumentAt<0>();
-            canCall = false;
-            //在发起数据获取刷新数据，并将本回调函数和数据传到下一个事件中
-            CallbackFunc func = call->getCallbackFunc();
-            if(func) {
-                setCallbackFunc([=](CallMessge) {
-                    func({0, scheduleTypeId});
-                });
-            }
-            getScheduleTypeList();
-        } else if (call->getmember() == "createSchedule") {
-            //创建日程结束
-            canCall = false;
-            //重新读取日程数据
-            setCallbackFunc(call->getCallbackFunc());
-            querySchedulesWithParameter(m_priParams);
-        } else if (call->getmember() == "deleteScheduleByScheduleID" || call->getmember() ==  "updateSchedule") {
-            //删除或修改日程结束
-            canCall = false;
-            //重新读取日程数据
-            setCallbackFunc(call->getCallbackFunc());
-            querySchedulesWithParameter(m_priParams);
+            msg = scheduleTypeId;
         } else if (call->getmember() == "updateScheduleTypeShowState") {
             //更新日程类型显示状态结束
             canCall = false;
             //重新读取日程数据
             setCallbackFunc(call->getCallbackFunc());
             querySchedulesWithParameter(m_priParams);
-        } else if(call->getmember() == "updateScheduleType"
-                  || call->getmember() == "deleteScheduleTypeByID") {
-            getScheduleTypeList();
-        }
-
-        if (canCall && call->getCallbackFunc() != nullptr) {
-            call->getCallbackFunc()({ret, ""});
-        }
+        }   
+    }
+    if (canCall && call->getCallbackFunc() != nullptr) {
+        call->getCallbackFunc()({ret, msg});
     }
     call->deleteLater();
 }
@@ -356,15 +333,28 @@ void DbusAccountRequest::slotDbusCall(const QDBusMessage &msg)
     if (msg.member() == "PropertiesChanged") {
         QDBusPendingReply<QString, QVariantMap, QStringList> reply = msg;
         onPropertiesChanged(reply.argumentAt<0>(), reply.argumentAt<1>(), reply.argumentAt<2>());
+    } else if (msg.member() == "scheduleTypeUpdate") {
+        getScheduleTypeList();
+    } else if (msg.member() == "scheduleUpdate") {
+        querySchedulesWithParameter(m_priParams);
     }
 }
 
-void DbusAccountRequest::onPropertiesChanged(const QString &interfaceName, const QVariantMap &changedProperties, const QStringList &invalidatedProperties)
+void DbusAccountRequest::onPropertiesChanged(const QString &, const QVariantMap &changedProperties, const QStringList &)
 {
     for (QVariantMap::const_iterator it = changedProperties.cbegin(), end = changedProperties.cend(); it != end; ++it) {
         if (it.key() == "syncState") {
             int state = it.value().toInt();
             emit signalSyncStateChange(static_cast<DAccount::AccountSyncState>(state));
+        } else if (it.key() == "accountState") {
+            int state = it.value().toInt();
+            emit signalAccountStateChange(static_cast<DAccount::AccountStates>(state));
+        }
+        if(it.key() == "dtLastUpdate") {
+            emit signalDtLastUpdate(getDtLastUpdate());
+        }
+        if(it.key() == "accountState") {
+            emit signalAccountStateChange(getAccountState());
         }
         if(it.key() == "dtLastUpdate") {
             emit signalDtLastUpdate(getDtLastUpdate());

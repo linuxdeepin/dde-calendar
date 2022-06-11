@@ -480,7 +480,7 @@ void CYearWindow::setSearchWFlag(bool flag)
 void CYearWindow::updateShowDate(const bool isUpdateBar)
 {
     Q_UNUSED(isUpdateBar);
-    m_scheduleView->setTimeFormat(m_calendarManager->getTimeFormat());
+    m_scheduleView->setTimeFormat((m_calendarManager->getTimeShowType()?"AP ":"") + m_calendarManager->getTimeFormat());
     m_yearWidget->setShowDate(getSelectDate());
 }
 

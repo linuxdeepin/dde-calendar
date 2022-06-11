@@ -880,19 +880,19 @@ void Calendarmainwindow::slotapplicationStateChanged(Qt::ApplicationState state)
 
 void Calendarmainwindow::slotOpenSettingDialog()
 {
-    SettingWidgets::init();
+    SettingWidgets *settingWidgets = new SettingWidgets(this);
     if (nullptr == m_dsdSetting) {
         m_dsdSetting = new DSettingsDialog(this);
         m_dsdSetting->setIcon(CDynamicIcon::getInstance()->getPixmap());
         m_dsdSetting->setFixedSize(682, 506);
         m_dsdSetting->widgetFactory()->registerWidget("login", UserloginWidget::createloginButton);
-        m_dsdSetting->widgetFactory()->registerWidget("FirstDayofWeek",     SettingWidgets::createFirstDayofWeekWidget);
-        m_dsdSetting->widgetFactory()->registerWidget("Time",               SettingWidgets::createTimeTypeWidget);
-        m_dsdSetting->widgetFactory()->registerWidget("AccountCombobox",    std::bind(&Calendarmainwindow::createAccountCombobox,       this, std::placeholders::_1));
-        m_dsdSetting->widgetFactory()->registerWidget("JobTypeListView",    std::bind(&Calendarmainwindow::createJobTypeListView,       this, std::placeholders::_1));
+        m_dsdSetting->widgetFactory()->registerWidget("FirstDayofWeek",     std::bind(&SettingWidgets::createFirstDayofWeekWidget,       settingWidgets, std::placeholders::_1));
+        m_dsdSetting->widgetFactory()->registerWidget("Time",               std::bind(&SettingWidgets::createTimeTypeWidget,       settingWidgets, std::placeholders::_1));
+        m_dsdSetting->widgetFactory()->registerWidget("AccountCombobox",    std::bind(&SettingWidgets::createAccountCombobox,       settingWidgets, std::placeholders::_1));
+        m_dsdSetting->widgetFactory()->registerWidget("JobTypeListView",    std::bind(&SettingWidgets::createJobTypeListView,       settingWidgets, std::placeholders::_1));
         m_dsdSetting->widgetFactory()->registerWidget("SyncTagRadioButton", std::bind(&Calendarmainwindow::createSyncTagRadioButton,    this, std::placeholders::_1));
-        m_dsdSetting->widgetFactory()->registerWidget("SyncTimeCombobox",   std::bind(&Calendarmainwindow::createSyncFreqCombobox,      this, std::placeholders::_1));
-        m_dsdSetting->widgetFactory()->registerWidget("ManualSyncButton",   std::bind(&Calendarmainwindow::createManualSyncButton,      this, std::placeholders::_1));
+        m_dsdSetting->widgetFactory()->registerWidget("SyncTimeCombobox",   std::bind(&SettingWidgets::createSyncFreqCombobox,      settingWidgets, std::placeholders::_1));
+        m_dsdSetting->widgetFactory()->registerWidget("ManualSyncButton",   std::bind(&SettingWidgets::createManualSyncButton,      settingWidgets, std::placeholders::_1));
         QString strJson;
 
         CalendarSettingSettings calendarSettings;
@@ -928,20 +928,11 @@ void Calendarmainwindow::slotOpenSettingDialog()
                     JobTypeListView *view = m_dsdSetting->findChild<JobTypeListView *>("JobTypeListView");
                     if (!view)
                         return;
-                    DIconButton *addButton = new DIconButton(DStyle::SP_IncreaseElement, nullptr);
-                    //跟UI沟通size设置为20*20
-                    addButton->setFixedSize(20, 20);
+                    DIconButton *addButton = settingWidgets->createTypeAddButton();
                     wid->layout()->addWidget(addButton);
                     //使addButton的右边距等于view的右边距
                     int leftMargin = wid->layout()->contentsMargins().left();
                     wid->layout()->setContentsMargins(leftMargin, 0, leftMargin, 0);
-
-                    addButton->setEnabled(view->canAdd());
-
-                    //当日常类型超过上限时，更新button的状态
-                    connect(view, &JobTypeListView::signalAddStatusChanged, addButton, &DIconButton::setEnabled);
-                    //新增类型
-                    connect(addButton, &DIconButton::clicked, this, &Calendarmainwindow::signal_addScheduleType);
                 }
                 if (wid->accessibleName().contains("DefaultWidgetAtContentRow")) {
                     //DefaultWidgetAtContentRow是设置对话框右边每一个option条目对应widget的accessibleName的前缀，所以如果后续有更多条目，需要做修改
@@ -969,9 +960,11 @@ void Calendarmainwindow::slotOpenSettingDialog()
     //内容定位到顶端
     m_dsdSetting->exec();
     //使用完后释放
+    delete settingWidgets;
+    settingWidgets = nullptr;
     delete m_dsdSetting;
-    gCalendarManager->updateData();
     m_dsdSetting = nullptr;
+    gCalendarManager->updateData();
 }
 
 /**
@@ -981,87 +974,6 @@ void Calendarmainwindow::slotOpenSettingDialog()
 void Calendarmainwindow::dragEnterEvent(QDragEnterEvent *event)
 {
     event->acceptProposedAction();
-}
-
-/**
- * @brief Calendarmainwindow::createAccountCombobox 关联帐户的combobox
- */
-QPair<QWidget *, QWidget *> Calendarmainwindow::createAccountCombobox(QObject *obj)
-{
-    auto option = qobject_cast<DTK_CORE_NAMESPACE::DSettingsOption *>(obj);
-    DComboBox *widget = new DComboBox;
-    widget->setObjectName("AccountCombobox");
-    widget->setFixedSize(150, 36);
-    QPair<QWidget *, QWidget *> optionWidget = DSettingsWidgetFactory::createStandardItem(QByteArray(), option, widget);
-
-    //更新帐户列表
-    auto accountUpdate = [=]() {
-        //TODO:外部退出帐户时处于新建日程弹窗界面时会崩溃
-        QVariant oldAccountID = widget->currentData();
-        widget->blockSignals(true);
-        widget->clear();
-        for (auto account : gAccountManager->getAccountList()) {
-            widget->addItem(account->getAccount()->accountName(), account->getAccount()->accountID());
-        }
-        widget->setCurrentIndex(widget->findData(oldAccountID));
-        if (widget->currentIndex() < 0)
-            widget->setCurrentIndex(0);
-        widget->blockSignals(false);
-
-        emit signal_calendarAccountChanged(widget->currentData().toString());
-    };
-    //TODO:控制中心退出帐号时，更新帐户列表
-    connect(gAccountManager, &AccountManager::signalAccountUpdate, this, accountUpdate);
-
-    //TODO:切换帐号时，更新日程类型
-    connect(widget, QOverload<int>::of(&DComboBox::currentIndexChanged), this, [=](int index) {
-        emit signal_calendarAccountChanged(widget->itemData(index).toString());
-    });
-
-    accountUpdate();
-    return optionWidget;
-}
-
-/**
- * @brief Calendarmainwindow::createJobTypeListView 日程类型的listview
- */
-QWidget *Calendarmainwindow::createJobTypeListView(QObject *obj)
-{
-    Q_UNUSED(obj)
-    JobTypeListView *lv = new JobTypeListView;
-    lv->setObjectName("JobTypeListView");
-    connect(this, &Calendarmainwindow::signal_calendarAccountChanged, lv, &JobTypeListView::updateCalendarAccount);
-    connect(this, &Calendarmainwindow::signal_addScheduleType, lv, &JobTypeListView::slotAddScheduleType);
-
-    return lv;
-}
-
-/**
- * @brief Calendarmainwindow::createSyncFreqCombobox 同步频率的combobox
- */
-QPair<QWidget *, QWidget *> Calendarmainwindow::createSyncFreqCombobox(QObject *obj)
-{
-    auto option = qobject_cast<DTK_CORE_NAMESPACE::DSettingsOption *>(obj);
-
-    DComboBox *widget = new DComboBox;
-    widget->setMaximumWidth(150);
-    widget->addItem(tr("Manual"),   DAccount::SyncFreq_Maunal);
-    widget->addItem(tr("15 mins"),  DAccount::SyncFreq_15Mins);
-    widget->addItem(tr("30 mins"),  DAccount::SyncFreq_30Mins);
-    widget->addItem(tr("1 hour"),   DAccount::SyncFreq_1hour);
-    widget->addItem(tr("24 hours"), DAccount::SyncFreq_24hour);
-
-    QPair<QWidget *, QWidget *> optionWidget = DSettingsWidgetFactory::createStandardItem(QByteArray(), option, widget);
-
-    int index = -1;
-    if (gUosAccountItem)
-        index = widget->findData(gUosAccountItem->getAccount()->syncFreq());
-    widget->setCurrentIndex(index);
-
-    //TODO:更新union帐户的的同步频率
-    connect(widget, QOverload<int>::of(&DComboBox::currentIndexChanged), this, &Calendarmainwindow::slotSetUosSyncFreq);
-
-    return optionWidget;
 }
 
 /**
@@ -1101,60 +1013,6 @@ QPair<QWidget *, QWidget *> Calendarmainwindow::createSyncTagRadioButton(QObject
 }
 
 /**
- * @brief Calendarmainwindow::createManualSyncButton 立刻同步的button
- */
-QWidget *Calendarmainwindow::createManualSyncButton(QObject *obj)
-{
-    Q_UNUSED(obj)
-    QWidget *widget = new QWidget;
-    widget->setObjectName("ManualSyncWidget");
-    QPushButton *button = new QPushButton(widget);
-    button->setFixedSize(266, 36);
-    button->setText(tr("Sync Now"));
-
-    QLabel *label = new QLabel;
-    auto updateLastUpdateText = [=](const QString &datetime){
-        if(gUosAccountItem) {
-            label->setText(tr("Last sync") + ":" + dtFromString(datetime).toString("yyyy/MM/dd hh:mm"));
-        }
-    };
-
-    QVBoxLayout *layout = new QVBoxLayout;
-    layout->addWidget(button, 0, Qt::AlignCenter);
-    layout->addWidget(label, 0, Qt::AlignCenter);
-    widget->setLayout(layout);
-    connect(button, &QPushButton::clicked, this, &Calendarmainwindow::slotUosManualSync);
-    //TODO: 更新时间
-    if(gUosAccountItem) {
-        updateLastUpdateText(gUosAccountItem->getDtLastUpdate());
-        connect(gUosAccountItem.get(), &AccountItem::signalDtLastUpdate, this, updateLastUpdateText);
-    }
-    //TODO:立刻同步和最后一次同步时间
-    return widget;
-}
-
-/**
- * @brief Calendarmainwindow::slotSetUosSyncFreq 设置UOS帐户的同步频率
- * @param freq
- */
-void Calendarmainwindow::slotSetUosSyncFreq(int freq)
-{
-    QComboBox *com = qobject_cast<QComboBox *>(sender());
-    if (!com)
-        return;
-    if (!gUosAccountItem)
-        return;
-    gUosAccountItem->setSyncFreq(DAccount::SyncFreqType(com->itemData(freq).toInt()));
-}
-
-void Calendarmainwindow::slotUosManualSync()
-{
-    if (!gUosAccountItem)
-        return;
-    gAccountManager->downloadByAccountID(gUosAccountItem->getAccount()->accountID());
-}
-
-/**
  * @brief CDayWindow::dropEvent          拖拽释放事件
  * @param event
  */
@@ -1178,13 +1036,16 @@ CalendarSetting::SyncTagRadioButton::SyncTagRadioButton(DAccount::AccountState t
         m_state = DAccount::Account_Close;
         m_state = gUosAccountItem->getAccount()->accountState();
         connect(gUosAccountItem.get(), &AccountItem::signalAccountStateChange, this, &SyncTagRadioButton::updateAccountState);
-        updateAccountState(m_state);
+        updateAccountState();
     }
 }
 
-void CalendarSetting::SyncTagRadioButton::updateAccountState(DAccount::AccountStates state)
+void CalendarSetting::SyncTagRadioButton::updateAccountState()
 {
-    m_state = state;
+    if (!gUosAccountItem) {
+        return;
+    }
+    m_state = gUosAccountItem->getAccount()->accountState();
     setChecked(m_state & m_type);
     //TODO:是否联网
     //setEnabled((m_state & DAccount::Account_Open) && m_isOnline);
@@ -1193,7 +1054,8 @@ void CalendarSetting::SyncTagRadioButton::updateAccountState(DAccount::AccountSt
 void CalendarSetting::SyncTagRadioButton::updateOnLineState(bool isOnline)
 {
     m_isOnline = isOnline;
-    updateAccountState(m_state);
+
+    updateAccountState();
 }
 
 bool CalendarSetting::SyncTagRadioButton::isChecked()

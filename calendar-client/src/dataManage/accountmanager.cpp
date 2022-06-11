@@ -242,6 +242,7 @@ void AccountManager::slotGetAccountListFinish(DAccount::List accountList)
         connect(p.data(), &AccountItem::signalSearchScheduleUpdate, this, &AccountManager::signalSearchScheduleUpdate);
         connect(p.data(), &AccountItem::signalScheduleTypeUpdate, this, &AccountManager::signalScheduleTypeUpdate);
         connect(p.data(), &AccountItem::signalLogout, this, &AccountManager::signalLogout);
+        connect(p.data(), &AccountItem::signalAccountStateChange, this, &AccountManager::signalAccountStateChange);
     }
 
     emit signalAccountUpdate();

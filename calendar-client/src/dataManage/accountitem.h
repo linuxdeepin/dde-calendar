@@ -55,6 +55,9 @@ public:
     //获取颜色类型列表
     DTypeColor::List getColorTypeList();
 
+    //获取日程是否可以同步
+    bool isCanSyncShedule();
+
     //更新帐户列表展开状态
     void setAccountExpandStatus(bool expandStatus);
 
@@ -116,7 +119,8 @@ signals:
     void signalSearchScheduleUpdate();
     void signalLogout(DAccount::Type);
     void signalDtLastUpdate(QString);
-    void signalAccountStateChange(DAccount::AccountStates);
+    void signalAccountStateChange();
+    void signalSyncStateChange(DAccount::AccountSyncState);
 
 public slots:
     //获取帐户信息完成事件
@@ -129,6 +133,10 @@ public slots:
     void slotSearchScheduleListFinish(QMap<QDate, DSchedule::List>);
     //获取系统颜色完成
     void slotGetSysColorsFinish(DTypeColor::List);
+    //帐户状态改变事件
+    void slotAccountStateChange(DAccount::AccountStates);
+    //同步状态改变事件
+    void slotSyncStateChange(DAccount::AccountSyncState);
     //获取最后一次同步时间
     QString getDtLastUpdate();
 private:

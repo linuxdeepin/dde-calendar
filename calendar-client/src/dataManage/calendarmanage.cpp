@@ -150,17 +150,14 @@ int CalendarManager::getWeekNumOfYear(const QDate &date)
     return  _weekNum;
 }
 
-void CalendarManager::setTimeFormatChanged(int value, bool update)
+void CalendarManager::setTimeFormatChanged(int value)
 {
-    m_timeFormatValue = value;
     if (value == 0) {
         m_timeFormat = "hh:mm";
     } else {
-        m_timeFormat = "ap h:mm";
+        m_timeFormat = "h:mm";
     }
-    if (update) {
-        updateData();
-    }
+    updateData();
 }
 
 void CalendarManager::setDateFormatChanged(int value)
@@ -204,9 +201,17 @@ QString CalendarManager::getTimeFormat() const
     return m_timeFormat;
 }
 
-int CalendarManager::getTimeFormatValue() const
+void CalendarManager::setTimeShowType(int value, bool update)
 {
-    return m_timeFormatValue;
+    m_timeShowType = value;
+    if (update) {
+        updateData();
+    }
+}
+
+int CalendarManager::getTimeShowType() const
+{
+    return m_timeShowType;
 }
 
 QString CalendarManager::getDateFormat() const
@@ -327,10 +332,12 @@ void CalendarManager::initData()
 {
     //获取本地语言判断是否为中文
     m_showLunar = QLocale::system().language() == QLocale::Chinese;
-    //获取日期格式
+    //获取时间日期格式
+    const int _timeFormat = m_timeDateDbus->shortTimeFormat();
     const int _dateFormat = m_timeDateDbus->shortDateFormat();
     setYearBeginAndEndDate(m_selectDate.year());
     //设置时间日期格式
+    setTimeFormatChanged(_timeFormat);
     setDateFormatChanged(_dateFormat);
     slotGeneralSettingsUpdate();
 }
@@ -373,7 +380,7 @@ void CalendarManager::slotGeneralSettingsUpdate()
         return;
     }
     setFirstDayOfWeek(setting->firstDayOfWeek());
-    setTimeFormatChanged(setting->timeShowType());
+    setTimeShowType(setting->timeShowType());
 }
 
 /**

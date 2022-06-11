@@ -70,6 +70,7 @@ signals:
     void signalScheduleUpdate();
     void signalScheduleTypeUpdate();
     void signalSearchScheduleUpdate();
+    void signalAccountStateChange();
 
     //帐户登出信号
     void signalLogout(DAccount::Type);

@@ -21,42 +21,66 @@
 #ifndef SETTINGWIDGETS_H
 #define SETTINGWIDGETS_H
 
+#include "jobtypelistview.h"
+#include <DIconButton>
+#include <QPushButton>
+#include <QLabel>
 #include <QWidget>
 #include <QComboBox>
 #include <QHBoxLayout>
+
+DWIDGET_USE_NAMESPACE
 
 class SettingWidgets : public QObject
 {
     Q_OBJECT
 public:
 
-    static void init();
+    explicit SettingWidgets(QObject *parent = nullptr);
 
-    static QPair<QWidget*, QWidget*> createFirstDayofWeekWidget(QObject *obj);
-    static QPair<QWidget*, QWidget*> createTimeTypeWidget(QObject *obj);
+    void clear();
+
+    QPair<QWidget*, QWidget*> createFirstDayofWeekWidget(QObject *obj);
+    QPair<QWidget*, QWidget*> createTimeTypeWidget(QObject *obj);
+    QPair<QWidget *, QWidget *> createAccountCombobox(QObject *obj);
+    QPair<QWidget*, QWidget*> createSyncFreqCombobox(QObject *obj);
+    QPair<QWidget*, QWidget*> createSyncTagRadioButton(QObject *obj);
+    QWidget *createManualSyncButton(QObject *obj);
+    QWidget *createJobTypeListView(QObject *obj);
+    DIconButton *createTypeAddButton();
 
 signals:
 
 public slots:
     void slotGeneralSettingsUpdate();
+    void slotAccountUpdate();
 
-public slots:
     void slotFirstDayofWeekCurrentChanged(int index);
     void slotTimeTypeCurrentChanged(int index);
+    void slotAccountCurrentChanged(int index);
+    void slotTypeAddBtnClickded();
+    void slotSetUosSyncFreq(int freq);
+    void slotUosManualSync();
 
 protected:
-    static SettingWidgets* getInstance();
-    explicit SettingWidgets(QObject *parent = nullptr);
-    void initWidget();
 
-    QWidget* getFirstDayofWeekWidget();
+    void clearWidget();
+    void initFirstDayofWeekWidget();
+    void initTimeTypeWidget();
+    void initAccountComboBoxWidget();
+    void initTypeAddWidget();
+    void initScheduleTypeWidget();
+    void initSyncFreqWidget();
+    void initManualSyncButton();
+
     void setFirstDayofWeek(int value);
-
-    QWidget* getTimeTypeWidget();
     void setTimeType(int value);
+    void accountUpdate();
 
 private:
+    void initWidget();
     void initConnect();
+    void initData();
 
 private:
     //一周首日
@@ -66,6 +90,17 @@ private:
     //时间格式
     QWidget *m_timeTypeWidget = nullptr;
     QComboBox *m_timeTypeCombobox = nullptr;
+
+    //帐户选择
+    QComboBox *m_accountComboBox = nullptr;
+    //同步频率
+    QComboBox *m_syncFreqComboBox = nullptr;
+
+    DIconButton *m_typeAddBtn = nullptr;
+
+    JobTypeListView *m_scheduleTypeWidget = nullptr;
+
+    QWidget *m_manualSyncBtn = nullptr;
 
 };
 

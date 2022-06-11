@@ -37,6 +37,9 @@ void AccountItem::initConnect()
     connect(m_dbusRequest, &DbusAccountRequest::signalSearchScheduleListFinish, this, &AccountItem::slotSearchScheduleListFinish);
     connect(m_dbusRequest, &DbusAccountRequest::signalDtLastUpdate, this, &AccountItem::signalDtLastUpdate);
     connect(m_dbusRequest, &DbusAccountRequest::signalAccountStateChange, this, &AccountItem::signalAccountStateChange);
+    connect(m_dbusRequest, &DbusAccountRequest::signalSyncStateChange, this, &AccountItem::slotSyncStateChange);
+    connect(m_dbusRequest, &DbusAccountRequest::signalAccountStateChange, this, &AccountItem::slotAccountStateChange);
+    connect(m_dbusRequest, &DbusAccountRequest::signalDtLastUpdate, this, &AccountItem::signalDtLastUpdate);
 }
 
 /**
@@ -128,6 +131,17 @@ DScheduleType::Ptr AccountItem::getScheduleTypeByName(const QString &typeName)
 DTypeColor::List AccountItem::getColorTypeList()
 {
     return m_typeColorList;
+}
+
+/**
+ * @brief AccountItem::isCanSyncShedule
+ * 获取日程是否可以同步
+ * @return
+ */
+bool AccountItem::isCanSyncShedule()
+{
+    return true;
+    return (getAccount()->accountState() & DAccount::Account_Calendar);
 }
 
 /**
@@ -393,6 +407,18 @@ void AccountItem::slotSearchScheduleListFinish(QMap<QDate, DSchedule::List> map)
 void AccountItem::slotGetSysColorsFinish(DTypeColor::List typeColorList)
 {
     m_typeColorList = typeColorList;
+}
+
+void AccountItem::slotAccountStateChange(DAccount::AccountStates state)
+{
+    getAccount()->setAccountState(state);
+    emit signalAccountStateChange();
+}
+
+void AccountItem::slotSyncStateChange(DAccount::AccountSyncState state)
+{
+    getAccount()->setSyncState(state);
+    emit signalSyncStateChange(state);
 }
 
 QString AccountItem::getDtLastUpdate()
