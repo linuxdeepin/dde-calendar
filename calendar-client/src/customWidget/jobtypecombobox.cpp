@@ -121,6 +121,23 @@ void JobTypeComboBox::updateJobType(const AccountItem::Ptr& account)
     if (nullptr == account) {
         return;
     }
+
+    //将自定义控件内存是否并置空，保存初始展示时能够进入高度调整
+    if (m_customWidget) {
+        m_addBtn->deleteLater();
+        m_customWidget->deleteLater();
+        m_addBtn = nullptr;
+        m_customWidget = nullptr;
+    }
+
+    //切换账号重置选项后需重置view的高度限制和大小策略，使其在初次显示时能跟随列表项数量动态调整高度
+    QFrame *viewContainer = findChild<QFrame *>();
+    if (viewContainer) {
+        viewContainer->setMinimumHeight(0);
+        viewContainer->setMaximumHeight(16777215);
+        viewContainer->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    }
+
     //保存现场
     bool isEnit = isEditable();
     QString text = currentText();
@@ -234,6 +251,7 @@ void JobTypeComboBox::showPopup()
 
     //获取下拉视图容器
     QFrame *viewContainer = findChild<QFrame *>();
+
     if (nullptr == m_customWidget) {
         //添加自定义布局
         addCustomWidget(viewContainer);
