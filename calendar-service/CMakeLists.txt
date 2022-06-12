@@ -33,6 +33,7 @@ set(LINK_LIBS
     Qt5::Sql
     ${DtkCore_LIBRARIES}
     commondata
+    -lpthread
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)

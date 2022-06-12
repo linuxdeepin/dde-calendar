@@ -36,8 +36,20 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QSqlRecord>
+#include <QThread>
+#include <QMutex>
+
+static QMutex SyncMutex;
 
 #define UPDATEREMINDJOBTIMEINTERVAL 1000 * 60 * 10 //提醒任务更新时间间隔毫秒数（10分钟）
+
+struct SqlException{
+    QString excepion;
+};
+struct SyncException{
+    QString excepion;
+};
+
 
 /**
  * @brief The ThrowQuery class 会抛出相关exec的错误
@@ -46,38 +58,74 @@ class ThrowQuery : public QSqlQuery
 {
 public:
     explicit ThrowQuery(QSqlDatabase db) : QSqlQuery(db) {}
+    explicit ThrowQuery(QString connectionName) : QSqlQuery(QSqlDatabase::database(connectionName)) {}
 
     void exec()
     {
         if (!QSqlQuery::exec()) {
-            throw this->lastError().text();
+            throw SqlException{this->lastError().text()};
         }
     }
     void exec(const QString &sql)
     {
-        if (!QSqlQuery::exec(sql)) {
-            throw this->lastError().text();
-        }
+        if (!QSqlQuery::exec(sql))
+            throw SqlException{this->lastError().text()};
+    }
+    QVariant nextValue(int index = 0){
+        this->next();
+        return this->value(index);
+    }
+    QSqlRecord nextRecord(){
+        this->next();
+        return this->record();
     }
 };
 
 /**
- * @brief The AccountDB struct 用于初始化日程类型和类型颜色
+ * @brief The SqlTransactionLocker class 用于数据库事务相关
  */
-struct AccountDB : public DAccountDataBase {
-    explicit AccountDB(const DAccount::Ptr &account, QObject *parent = nullptr)
-        : DAccountDataBase(account, parent) {}
-
-    void defaultScheduleType()
+class SqlTransactionLocker
+{
+public:
+    explicit SqlTransactionLocker(const QStringList &connectionNames)
+        : _connectionNames(connectionNames)
     {
-        initScheduleType();
+        for(auto name : _connectionNames)
+            QSqlDatabase::database(name).transaction();
     }
-    void defaultTypeColor()
-    {
-        initTypeColor();
+    ~SqlTransactionLocker(){
+        if(hasCommited)
+            return;
+        for(auto name : _connectionNames)
+            QSqlDatabase::database(name).rollback();
+    }
+    void commit() {
+        hasCommited = true;
+        for(auto name : _connectionNames)
+            QSqlDatabase::database(name).commit();
     }
 
-    void initScheduleType();
+private:
+    bool hasCommited = false;
+    QStringList _connectionNames;
+};
+
+/**
+ * @brief The ThrowAccount struct 用于初始化日程类型和类型颜色
+ */
+struct ThrowAccount {
+    explicit ThrowAccount(QString connectionName, QString accountID)
+        : _connectionName(connectionName)
+        , _accountID(accountID){}
+
+    void defaultScheduleType();
+    void defaultTypeColor();
+
+    void insertToScheduleType(const DScheduleType::Ptr &scheduleType);
+    void insertToTypeColor(int typeColorNo, QString strColorHex, int privilege);
+
+    QString _connectionName;
+    QString _accountID;
 };
 
 DAccountModule::DAccountModule(const DAccount::Ptr &account, QObject *parent)
@@ -93,6 +141,7 @@ DAccountModule::DAccountModule(const DAccount::Ptr &account, QObject *parent)
 
     //关联打开日历界面
     connect(m_alarm.data(), &DAlarmManager::signalCallOpenCalendarUI, this, &DAccountModule::slotOpenCalendar);
+    connect(this, &DAccountModule::signalSyncFinished, this, &DAccountModule::slotSyncFinished);
 }
 
 QString DAccountModule::getAccountInfo()
@@ -645,12 +694,12 @@ void DAccountModule::accountDownload()
         for (int k = 0; k < source.count(); k++)
             query.addBindValue(source.value(k));
     };
-    //sql replace old table to new table
-    auto replaceIntoTable = [=](const QString &table_name, QString source_connection_name, QString target_connection_name, bool isClear = false) {
-        ThrowQuery target(QSqlDatabase::database(target_connection_name));
-        ThrowQuery source(QSqlDatabase::database(source_connection_name));
-        if (isClear)
-            target.exec(" delete from " + table_name);
+    //sql sync db1.table to  db2.table
+    auto syncIntoTable = [=](const QString &table_name, QString source_connection_name, QString target_connection_name) {
+        ThrowQuery target(target_connection_name);
+        ThrowQuery source(source_connection_name);
+
+        target.exec(" delete from " + table_name);
         source.exec(" select * from " + table_name);
         while (source.next()) {
             target.prepare("replace into " + table_name + " values(" + prequest(source.record().count()) + ")");
@@ -658,202 +707,178 @@ void DAccountModule::accountDownload()
             target.exec();
         }
     };
-    //sql replace old record to new table
+    //sql replace db1.record to  db2.table
     auto replaceIntoRecord = [=](const QString &table_name, QSqlRecord record, QString target_connection_name) {
-        ThrowQuery target(QSqlDatabase::database(target_connection_name));
+        ThrowQuery target(target_connection_name);
         target.prepare("replace into " + table_name + " values(" + prequest(record.count()) + ")");
         prebinds(target, record);
         target.exec();
     };
+    //sql select first value
     auto selectValue = [=](const QString &value_name, const QString &table_name, const QString &key_name, const QVariant &key_value, const QString &connection_name) -> QVariant {
-        ThrowQuery query(QSqlDatabase::database(connection_name));
+        ThrowQuery query(connection_name);
         query.prepare("select " + value_name + " from " + table_name + " where " + key_name + " = ?");
         query.addBindValue(key_value);
         query.exec();
-        query.next();
-        return query.value(0);
+        return query.nextValue(0);
     };
-    auto selectAll = [=](const QString &table_name, const QString &key_name, const QVariant &key_value, const QString &connection_name) -> QSqlRecord {
-        ThrowQuery query(QSqlDatabase::database(connection_name));
+    //sql select first record
+    auto selectRecord = [=](const QString &table_name, const QString &key_name, const QVariant &key_value, const QString &connection_name) -> QSqlRecord {
+        ThrowQuery query(connection_name);
         query.prepare("select * from " + table_name + " where " + key_name + " = ?");
         query.addBindValue(key_value);
         query.exec();
-        query.next();
-        return query.record();
+        return query.nextRecord();
     };
-    auto deleteValue = [=](const QString &table_name, const QString &key_name, const QVariant &key_value, const QString &connection_name) {
-        ThrowQuery query(QSqlDatabase::database(connection_name));
+    //sql delete table
+    auto deleteTableLine = [=](const QString &table_name, const QString &key_name, const QVariant &key_value, const QString &connection_name) {
+        ThrowQuery query(connection_name);
         query.prepare("delete from " + table_name + " where " + key_name + " = ?");
         query.addBindValue(key_value);
         query.exec();
     };
+    //sql delete table
     auto deleteTable = [=](const QString &table_name, const QString &connection_name) {
-        ThrowQuery query(QSqlDatabase::database(connection_name));
+        ThrowQuery query(connection_name);
         query.exec("delete from " + table_name);
     };
 
-    //    DAccount::AccountSyncState syncState;
-    //0:下载成功
-    int errocde;
     /*
      * A为本地数据库
      * B为云端下载的临时数据库
+     * 1.下载B
+     * 2.将A的uploadTask同步到B
+     * 3.将B的数据库完全复制到A
+     * 4.上传B
      */
-    try {
-        QString filepath;
-        SyncFileManage fileManger;
+    const QString accountId = m_account->accountID();
+    const QString dbname_account = m_account->accountName();
+    const QString dbname_manager = DDataBase::NameAccountManager;
+    const QString dbname_account_thread = DDataBase::createUuid();
+    const QString dbname_manager_thread = DDataBase::createUuid();
+    const QString dbname_sync_thread = DDataBase::createUuid();
+    const int  accountState = this->getAccountState();
+    QSqlDatabase db_account = QSqlDatabase::database(dbname_account);
+    QSqlDatabase db_manager = QSqlDatabase::database(dbname_manager);
+    //匿名函数，在线程里运行
+    auto syncFunc = [=](){
+        QMutexLocker syncLocker(&SyncMutex);
+        int errcode = 0;//上传下载的错误码
+        try {
+            //下载数据库sync
+            QString dbpath_sync;
+            SyncFileManage fileManger;
+            if (!fileManger.SyncDataDownload(accountId, dbpath_sync, errcode)) {
+                throw SyncException{"download error:code is " + QString::number(errcode)};
+            }
 
-        QString uid = m_account->accountID();
-        if (!fileManger.SyncDataDownload(uid, filepath, errocde)) {
-            throw "download error:code is " + QString::number(errocde);
-        }
-        QSqlDatabase::removeDatabase(DDataBase::NameSync);
-        {
-            QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", DDataBase::NameSync);
-            db.setDatabaseName(filepath);
+            QSqlDatabase::cloneDatabase(db_account, dbname_account_thread);
+            QSqlDatabase::cloneDatabase(db_manager, dbname_manager_thread);
+            QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", dbname_sync_thread);
+            db.setDatabaseName(dbpath_sync);
             if (!db.open()) {
-                throw db.lastError().text();
+                throw SqlException{db.lastError().text()};
             }
-        }
 
-        QSqlDatabase::database(DDataBase::NameSync).transaction();
-        QSqlDatabase::database(m_account->accountName()).transaction();
-        QSqlDatabase::database(DDataBase::NameAccountManager).transaction();
-
-        {
-            qInfo() << "初始化表结构";
-            ThrowQuery query(DBSync);
-            query.exec(DAccountDataBase::sql_create_schedules);
-            query.exec(DAccountDataBase::sql_create_scheduleType);
-            query.exec(DAccountDataBase::sql_create_typeColor);
-            query.exec(DAccountDataBase::sql_create_calendargeneralsettings);
-
-            query.exec("select count(0) from scheduleType");
-            query.next();
-
-            if (0 == query.value(0).toInt()) {
-                qInfo() << "没有数据则设置：默认日程类型、颜色、默认通用设置";
-                AccountDB accountDb(m_account);
-                accountDb.setConnectionName(DDataBase::NameSync);
-                accountDb.dbOpen();
-
-                qInfo() << "默认日程类型";
-                accountDb.defaultScheduleType();
-
-                qInfo() << "默认颜色";
-                accountDb.defaultTypeColor();
-
-                if (this->getAccountState() & DAccount::Account_Setting) {
-                    qInfo() << "默认通用设置";
-                    replaceIntoTable("calendargeneralsettings", DDataBase::NameAccountManager, DDataBase::NameSync);
-                }
-            }
-        }
-
-        {
-            qInfo() << "将本地A的uploadTask同步到刚刚下载的B里";
+            SqlTransactionLocker transactionLocker({dbname_account_thread, dbname_manager_thread, dbname_sync_thread});
             {
-                qInfo() << "同步三张表";
-                ThrowQuery query(QSqlDatabase::database(m_account->accountName()));
-                query.exec("select taskID,uploadType,uploadObject,objectID  from uploadTask");
-                while (query.next()) {
-                    int type = query.value("uploadType").toInt();
-                    int obj = query.value("uploadObject").toInt();
-                    QString key_value = query.value("objectID").toString();
-                    QString table_name = DUploadTaskData::sql_table_name(obj);
-                    QString key_name = DUploadTaskData::sql_table_primary_key(obj);
+                qInfo() << "初始化表结构";
+                ThrowQuery query(dbname_sync_thread);
+                query.exec(DAccountDataBase::sql_create_schedules);
+                query.exec(DAccountDataBase::sql_create_scheduleType);
+                query.exec(DAccountDataBase::sql_create_typeColor);
+                query.exec(DAccountDataBase::sql_create_calendargeneralsettings);
 
-                    switch (type) {
-                    case DUploadTaskData::Create:
-                    case DUploadTaskData::Modify:
-                        replaceIntoRecord(table_name, selectAll(table_name, key_name, key_value, m_account->accountName()), DDataBase::NameSync);
-                        break;
-                    case DUploadTaskData::Delete:
-                        deleteValue(table_name, key_name, key_value, DDataBase::NameSync);
-                        break;
+                query.exec("select count(0) from scheduleType");
+                if (0 == query.nextValue(0).toInt()) {
+                    qInfo() << "没有数据则设置：默认日程类型、颜色、默认通用设置";
+                    ThrowAccount accountDb(dbname_sync_thread, accountId);
+                    qInfo() << "默认日程类型";
+                    accountDb.defaultScheduleType();
+                    qInfo() << "默认颜色";
+                    accountDb.defaultTypeColor();
+                    if (accountState & DAccount::Account_Setting) {
+                        qInfo() << "默认通用设置";
+                        syncIntoTable("calendargeneralsettings", dbname_manager_thread, dbname_sync_thread);
                     }
                 }
-
-                qInfo() << "清空uploadTask";
-                deleteTable("uploadTask", m_account->accountName());
             }
 
-            if (this->getAccountState() & DAccount::Account_Setting) {
-                qInfo() << "同步通用设置";
-                QDateTime sourceDate = selectValue("vch_value", "calendargeneralsettings", "vch_key", "dt_update", DDataBase::NameAccountManager).toDateTime();
-                QDateTime targetDate = selectValue("vch_value", "calendargeneralsettings", "vch_key", "dt_update", DDataBase::NameSync).toDateTime();
-                if (sourceDate > targetDate)
-                    replaceIntoTable("calendargeneralsettings", DDataBase::NameAccountManager, DDataBase::NameSync, true);
-                if (sourceDate < targetDate)
-                    replaceIntoTable("calendargeneralsettings", DDataBase::NameSync, DDataBase::NameAccountManager, true);
-            }
-        }
-
-        {
-            qInfo() << "将B的数据替换A的数据";
             {
-                replaceIntoTable("schedules",    DDataBase::NameSync, m_account->accountName(), true);
-                replaceIntoTable("scheduleType", DDataBase::NameSync, m_account->accountName(), true);
-                replaceIntoTable("typeColor",    DDataBase::NameSync, m_account->accountName(), true);
+                qInfo() << "将本地A的uploadTask同步到刚刚下载的B里";
+                {
+                    qInfo() << "同步三张表";
+                    ThrowQuery query(dbname_account_thread);
+                    query.exec("select taskID,uploadType,uploadObject,objectID  from uploadTask");
+                    while (query.next()) {
+                        int type = query.value("uploadType").toInt();
+                        int obj = query.value("uploadObject").toInt();
+                        QString key_value = query.value("objectID").toString();
+                        QString key_name = DUploadTaskData::sql_table_primary_key(obj);
+                        QString table_name = DUploadTaskData::sql_table_name(obj);
+
+                        switch (type) {
+                        case DUploadTaskData::Create:
+                        case DUploadTaskData::Modify:
+                            replaceIntoRecord(table_name, selectRecord(table_name, key_name, key_value, dbname_account_thread), dbname_sync_thread);
+                            break;
+                        case DUploadTaskData::Delete:
+                            deleteTableLine(table_name, key_name, key_value, dbname_sync_thread);
+                            break;
+                        }
+                    }
+
+                    qInfo() << "清空uploadTask";
+                    deleteTable("uploadTask", dbname_account_thread);
+                }
+
+                if (accountState & DAccount::Account_Setting) {
+                    qInfo() << "同步通用设置";
+                    QDateTime managerDate = selectValue("vch_value", "calendargeneralsettings", "vch_key", "dt_update", dbname_manager_thread).toDateTime();
+                    QDateTime syncDate = selectValue("vch_value", "calendargeneralsettings", "vch_key", "dt_update", dbname_sync_thread).toDateTime();
+                    if (managerDate > syncDate)
+                        syncIntoTable("calendargeneralsettings", dbname_manager_thread, dbname_sync_thread);
+                    if (syncDate > managerDate)
+                        syncIntoTable("calendargeneralsettings", dbname_sync_thread, dbname_manager_thread);
+                }
             }
 
-            if (this->getAccountState() & DAccount::Account_Setting) {
-                qInfo() << "更新通用设置";
-                replaceIntoTable("calendargeneralsettings", DDataBase::NameSync, DDataBase::NameAccountManager, true);
-                emit signalSettingChange();
+            {
+                qInfo() << "更新schedules、schedules、typeColor";
+                {
+                    syncIntoTable("schedules",    dbname_sync_thread, dbname_account_thread);
+                    syncIntoTable("scheduleType", dbname_sync_thread, dbname_account_thread);
+                    syncIntoTable("typeColor",    dbname_sync_thread, dbname_account_thread);
+                }
+
+                if (accountState & DAccount::Account_Setting) {
+                    qInfo() << "更新通用设置";
+                    syncIntoTable("calendargeneralsettings", dbname_sync_thread, dbname_manager_thread);
+                    emit this->signalSettingChange();
+                }
             }
+            transactionLocker.commit();
+            //上传sync数据库
+            qInfo() << "上传sync数据库";
+            if (!fileManger.SyncDataUpload(dbpath_sync, errcode)) {
+                throw SyncException{"upload error:code is " + QString::number(errcode)};
+            }
+        } catch (const SqlException &exception) {
+            errcode = -1;
+            qInfo() << __LINE__ << exception.excepion;
+        } catch (const SyncException &exception) {
+            qInfo() << __LINE__ << exception.excepion;
         }
-        QSqlDatabase::database(DDataBase::NameSync).commit();
-        QSqlDatabase::database(m_account->accountName()).commit();
-        QSqlDatabase::database(DDataBase::NameAccountManager).commit();
 
-        qInfo() << "上传B";
-        QSqlDatabase::removeDatabase(DDataBase::NameSync);
-        if (!fileManger.SyncDataUpload(filepath, errocde)) {
-            throw "upload error:code is " + QString::number(errocde);
-        }
-        m_account->setDtLastSync(QDateTime::currentDateTime());
-        m_accountDB->updateAccountInfo();
-        emit signalDtLastUpdate();
-        qInfo() << "SyncDataUpload SUCCESS" << errocde;
+        QSqlDatabase::removeDatabase(dbname_account_thread);
+        QSqlDatabase::removeDatabase(dbname_manager_thread);
+        QSqlDatabase::removeDatabase(dbname_sync_thread);
+    };
 
-    } catch (const QString &exception) {
-        errocde = errocde == 0 ? -1 : errocde;
-        qInfo() << __LINE__ << exception;
-    } catch (const char *exception) {
-        errocde = errocde == 0 ? -1 : errocde;
-        qInfo() << __LINE__ << exception;
-    }
+    QThread *thread = QThread::create(syncFunc);
+    connect(thread, &QThread::finished, thread, &QThread::deleteLater);
+    thread->start();
 
-    switch (errocde) {
-    case 0:
-        //执行正常
-        m_account->setSyncState(DAccount::Sync_Normal);
-        break;
-    case 7506:
-        //网络异常
-        m_account->setSyncState(DAccount::Sync_NetworkAnomaly);
-        break;
-    case 7508:
-        //存储已满
-        m_account->setSyncState(DAccount::Sync_StorageFull);
-        break;
-    default:
-        //默认服务器异常
-        m_account->setSyncState(DAccount::Sync_ServerException);
-        break;
-    }
-
-    qInfo() << Q_FUNC_INFO << m_account->syncState();
-    emit signalSyncState();
-    //错误处理
-    //如果上传失败，需要启动定时上传
-    if (m_account->syncState() != DAccount::Sync_Normal) {
-        uploadTaskHanding(1);
-    } else {
-        //如果有定时上传则停止
-        uploadTaskHanding(0);
-    }
 }
 
 void DAccountModule::uploadNetWorkAccountData()
@@ -1095,12 +1120,46 @@ void DAccountModule::slotOpenCalendar(const QString &alarmID)
     m_accountDB->deleteRemindInfoByAlarmID(alarmID);
 }
 
-void AccountDB::initScheduleType()
+void DAccountModule::slotSyncFinished(int errcode)
 {
-    qInfo() << Q_FUNC_INFO;
+    qInfo() << errcode;
+    switch (errcode) {
+    case 0:
+        //执行正常
+        m_account->setSyncState(DAccount::Sync_Normal);
+
+        m_account->setDtLastSync(QDateTime::currentDateTime());
+        m_accountDB->updateAccountInfo();
+        emit signalDtLastUpdate();
+        break;
+    case 7506:
+        //网络异常
+        m_account->setSyncState(DAccount::Sync_NetworkAnomaly);
+        break;
+    case 7508:
+        //存储已满
+        m_account->setSyncState(DAccount::Sync_StorageFull);
+        break;
+    default:
+        //默认服务器异常
+        m_account->setSyncState(DAccount::Sync_ServerException);
+        break;
+    }
+    //错误处理
+    emit signalSyncState();
+    //如果上传失败，需要启动定时上传
+    if (m_account->syncState() != DAccount::Sync_Normal) {
+        uploadTaskHanding(1);
+    } else {
+        //如果有定时上传则停止
+        uploadTaskHanding(0);
+    }
+}
+void ThrowAccount::defaultScheduleType()
+{
     //工作类型
-    DScheduleType::Ptr workType(new DScheduleType(m_account->accountID()));
-    workType->setTypeID(createUuid());
+    DScheduleType::Ptr workType(new DScheduleType(_accountID));
+    workType->setTypeID(DDataBase::createUuid());
     workType->setDtCreate(QDateTime::currentDateTime());
     workType->setPrivilege(DScheduleType::Read);
     workType->setTypeName("Work");
@@ -1111,11 +1170,11 @@ void AccountDB::initScheduleType()
     workColor.setPrivilege(DTypeColor::PriSystem);
     workType->setTypeColor(workColor);
     workType->setShowState(DScheduleType::Show);
-    createScheduleType(workType);
+    insertToScheduleType(workType);
 
     //生活
-    DScheduleType::Ptr lifeType(new DScheduleType(m_account->accountID()));
-    lifeType->setTypeID(createUuid());
+    DScheduleType::Ptr lifeType(new DScheduleType(_accountID));
+    lifeType->setTypeID(DDataBase::createUuid());
     lifeType->setDtCreate(QDateTime::currentDateTime());
     lifeType->setPrivilege(DScheduleType::Read);
     lifeType->setTypeName("Life");
@@ -1126,11 +1185,11 @@ void AccountDB::initScheduleType()
     lifeColor.setPrivilege(DTypeColor::PriSystem);
     lifeType->setTypeColor(lifeColor);
     lifeType->setShowState(DScheduleType::Show);
-    createScheduleType(lifeType);
+    insertToScheduleType(lifeType);
 
     //其他
-    DScheduleType::Ptr otherType(new DScheduleType(m_account->accountID()));
-    otherType->setTypeID(createUuid());
+    DScheduleType::Ptr otherType(new DScheduleType(_accountID));
+    otherType->setTypeID(DDataBase::createUuid());
     otherType->setDtCreate(QDateTime::currentDateTime());
     otherType->setPrivilege(DScheduleType::Read);
     otherType->setTypeName("Other");
@@ -1141,5 +1200,56 @@ void AccountDB::initScheduleType()
     otherColor.setPrivilege(DTypeColor::PriSystem);
     otherType->setTypeColor(otherColor);
     otherType->setShowState(DScheduleType::Show);
-    createScheduleType(otherType);
+    insertToScheduleType(otherType);
+}
+
+void ThrowAccount::defaultTypeColor()
+{
+    insertToTypeColor(1, "#ff5e97", 1);
+    insertToTypeColor(2, "#ff9436", 1);
+    insertToTypeColor(3, "#ffdc00", 1);
+    insertToTypeColor(4, "#5bdd80", 1);
+    insertToTypeColor(5, "#00b99b", 1);
+    insertToTypeColor(6, "#4293ff", 1);
+    insertToTypeColor(7, "#5d51ff", 1);
+    insertToTypeColor(8, "#a950ff", 1);
+    insertToTypeColor(9, "#717171", 1);
+}
+
+void ThrowAccount::insertToScheduleType(const DScheduleType::Ptr &scheduleType)
+{
+    QString strSql("INSERT INTO scheduleType (                      \
+                   typeID, typeName, typeDisplayName, typePath,     \
+                   typeColorID, description, privilege, showState,  \
+                   syncTag,dtCreate,isDeleted)                      \
+            VALUES(?,?,?,?,?,?,?,?,?,?,?)");
+    ThrowQuery query(_connectionName);
+    query.prepare(strSql);
+    if (scheduleType->typeID().size() < 30) {
+        scheduleType->setTypeID(DDataBase::createUuid());
+    }
+
+    query.addBindValue(scheduleType->typeID());
+    query.addBindValue(scheduleType->typeName());
+    query.addBindValue(scheduleType->displayName());
+    query.addBindValue(scheduleType->typePath());
+    query.addBindValue(scheduleType->typeColor().colorID());
+    query.addBindValue(scheduleType->description());
+    query.addBindValue(int(scheduleType->privilege()));
+    query.addBindValue(scheduleType->showState());
+    query.addBindValue(scheduleType->syncTag());
+    query.addBindValue(dtToString(scheduleType->dtCreate()));
+    query.addBindValue(scheduleType->deleted());
+
+    query.exec();
+}
+
+void ThrowAccount::insertToTypeColor(int typeColorNo, QString strColorHex, int privilege)
+{
+    ThrowQuery query(_connectionName);
+    query.prepare("replace into TypeColor(ColorID, ColorHex, privilege) VALUES(?, ?, ?)");
+    query.addBindValue(typeColorNo);
+    query.addBindValue(strColorHex);
+    query.addBindValue(privilege);
+    query.exec();
 }

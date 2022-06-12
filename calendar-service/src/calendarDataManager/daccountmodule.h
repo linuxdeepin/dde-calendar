@@ -137,8 +137,13 @@ signals:
     //通用设置发生改变
     void signalSettingChange();
 
+    //数据同步完成
+    void signalSyncFinished(int);
+
 public slots:
     void slotOpenCalendar(const QString &alarmID);
+
+    void slotSyncFinished(int errcode);
 
 private:
     DAccount::Ptr m_account;
