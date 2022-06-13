@@ -1169,12 +1169,12 @@ void DAccountModule::slotSyncFinished(int errcode)
     //错误处理
     emit signalSyncState();
     //如果上传失败，需要启动定时上传
-    if (m_account->syncState() != DAccount::Sync_Normal) {
-        uploadTaskHanding(1);
-    } else {
-        //如果有定时上传则停止
-        uploadTaskHanding(0);
-    }
+//    if (m_account->syncState() != DAccount::Sync_Normal) {
+//        uploadTaskHanding(1);
+//    } else {
+//        //如果有定时上传则停止
+//        uploadTaskHanding(0);
+//    }
 }
 void ThrowAccount::defaultScheduleType()
 {

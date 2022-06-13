@@ -463,7 +463,13 @@ void CSettingDialog::slotUosManualSync()
 
 void CSettingDialog::slotLastSyncTimeUpdate(const QString &datetime)
 {
-    QString dtstr = dtFromString(datetime).toString("yyyy/MM/dd hh:mm");
+    QString dtstr;
+    if (gCalendarManager->getTimeShowType()) {
+        dtstr = dtFromString(datetime).toString("yyyy/MM/dd ap hh:mm");
+    } else {
+        dtstr = dtFromString(datetime).toString("yyyy/MM/dd hh:mm");
+    }
+
     if(m_syncTimeLabel && gUosAccountItem && !dtstr.isEmpty()) {
         m_syncTimeLabel->setText(tr("Last sync") + ":" + dtstr);
     }
@@ -471,14 +477,25 @@ void CSettingDialog::slotLastSyncTimeUpdate(const QString &datetime)
 
 void CSettingDialog::slotAccountStateChange()
 {
-    if (!m_syncBtn || !gUosAccountItem) {
+    if (!gUosAccountItem) {
         return;
     }
-    if (gUosAccountItem->isCanSyncSetting() || gUosAccountItem->isCanSyncShedule()) {
-        m_syncBtn->setEnabled(true);
-    } else {
-        m_syncBtn->setEnabled(false);
+    if (m_syncBtn) {
+        if (gUosAccountItem->isCanSyncSetting() || gUosAccountItem->isCanSyncShedule()) {
+            m_syncBtn->setEnabled(true);
+        } else {
+            m_syncBtn->setEnabled(false);
+        }
     }
+
+    if (m_syncFreqComboBox) {
+        if (gUosAccountItem->isCanSyncSetting() || gUosAccountItem->isCanSyncShedule()) {
+            m_syncFreqComboBox->setEnabled(true);
+        } else {
+            m_syncFreqComboBox->setEnabled(false);
+    }
+    }
+
 }
 
 void CSettingDialog::setFirstDayofWeek(int value)

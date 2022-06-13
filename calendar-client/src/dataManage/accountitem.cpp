@@ -19,6 +19,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "accountitem.h"
+#include "doanetworkdbus.h"
 
 AccountItem::AccountItem(const DAccount::Ptr &account, QObject *parent)
     : QObject(parent)
@@ -143,8 +144,9 @@ bool AccountItem::isCanSyncShedule()
     if (getAccount()->accountType() != DAccount::Account_UnionID) {
         return true;
     }
+    DOANetWorkDBus netManger;
     return getAccount()->accountState().testFlag(DAccount::Account_Calendar)
-           && getAccount()->accountState().testFlag(DAccount::Account_Open);
+           && getAccount()->accountState().testFlag(DAccount::Account_Open) && netManger.getNetWorkState() == DOANetWorkDBus::Active;
 }
 
 /**
@@ -157,8 +159,9 @@ bool AccountItem::isCanSyncSetting()
     if (getAccount()->accountType() != DAccount::Account_UnionID) {
         return true;
     }
+    DOANetWorkDBus netManger;
     return getAccount()->accountState().testFlag(DAccount::Account_Setting)
-           && getAccount()->accountState().testFlag(DAccount::Account_Open);
+           && getAccount()->accountState().testFlag(DAccount::Account_Open) && netManger.getNetWorkState() == DOANetWorkDBus::Active;
 }
 
 /**

@@ -26,8 +26,8 @@
 #include "cdynamicicon.h"
 #include "accountmanager.h"
 #include "lunarmanager.h"
+#include "doanetworkdbus.h"
 
-#include <QNetworkConfigurationManager>
 
 CScheduleOperation::CScheduleOperation(const AccountItem::Ptr &accountItem, QWidget *parent)
     : QObject(parent)
@@ -417,10 +417,10 @@ bool CScheduleOperation::scheduleIsInvariant(const DSchedule::Ptr &schedule)
     AccountItem::Ptr accountItem = gAccountManager->getAccountItemByScheduleTypeId(schedule->scheduleTypeID());
     DAccount::Ptr account = accountItem->getAccount();
     if (account->accountType() == DAccount::Account_UnionID) {
-        QNetworkConfigurationManager netManger;
+        DOANetWorkDBus netManger;
         //网络判断
         //如果uid日历同步关闭则日程不可修改
-        if (netManger.isOnline() || account->accountState().testFlag(DAccount::Account_Close)) {
+        if (netManger.getNetWorkState() != DOANetWorkDBus::Active || !account->accountState().testFlag(DAccount::Account_Open)) {
             return true;
         }
     }
