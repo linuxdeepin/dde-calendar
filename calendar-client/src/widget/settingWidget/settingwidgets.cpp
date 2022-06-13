@@ -76,7 +76,6 @@ void SettingWidgets::initData()
         int index = 0;
         if (gUosAccountItem) {
             index = m_syncFreqComboBox->findData(gUosAccountItem->getAccount()->syncFreq());
-            qInfo() << index;
         }
         m_syncFreqComboBox->setCurrentIndex(index);
     }

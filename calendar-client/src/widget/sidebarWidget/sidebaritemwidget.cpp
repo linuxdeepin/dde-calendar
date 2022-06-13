@@ -190,7 +190,7 @@ void SidebarAccountItemWidget::initView()
     m_titleLabel = new DLabel(this);
     m_titleLabel->setFixedHeight(30);
     DFontSizeManager::instance()->bind(m_titleLabel, DFontSizeManager::T6);
-    m_titleLabel->setElideMode(Qt::ElideRight);
+    m_titleLabel->setElideMode(Qt::ElideMiddle);
     //设置初始字体大小
     DFontSizeManager::instance()->setFontGenericPixelSize(static_cast<quint16>(DFontSizeManager::fontPixelSize(QFont())));
     QFont labelF = DFontSizeManager::instance()->t6();
@@ -207,7 +207,8 @@ void SidebarAccountItemWidget::initView()
     vLayout->addWidget(m_headIconButton);
     vLayout->addWidget(m_titleLabel, 1);
     vLayout->addWidget(m_rearIconButton);
-    vLayout->addSpacing(10);
+    //给控件右部留出足够的距离，防止被滚动条覆盖无法被点击事件
+    vLayout->addSpacing(18);
 
     this->setLayout(vLayout);
 

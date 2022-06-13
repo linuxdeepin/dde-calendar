@@ -154,10 +154,11 @@ void JobTypeListView::slotAddScheduleType()
 
     ScheduleTypeEditDlg dialog(this);
     dialog.setAccount(account);
-    if(QDialog::Rejected == dialog.exec())
-        return;
-    DScheduleType::Ptr type(new DScheduleType(dialog.newJsonType()));
-    account->createJobType(type);
+    //按保存键退出则触发保存数据
+    if(QDialog::Accepted == dialog.exec()) {
+        DScheduleType::Ptr type(new DScheduleType(dialog.newJsonType()));
+        account->createJobType(type);
+    }
 }
 
 bool JobTypeListView::canAdd()

@@ -42,7 +42,8 @@ UserloginWidget::~UserloginWidget()
 
 void UserloginWidget::initView()
 {
-    m_userNameLabel = new QLabel();
+    m_userNameLabel = new DLabel();
+    m_userNameLabel->setElideMode(Qt::ElideMiddle);
     m_buttonImg = new DIconButton(this);
     m_buttonLogin = new QPushButton(this);
     m_buttonLoginOut = new QPushButton(this);

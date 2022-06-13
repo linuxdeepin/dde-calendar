@@ -23,8 +23,7 @@
 
 #include "dsettingsdialog.h"
 
-#include <QDBusArgument>
-#include <QLabel>
+#include <DLabel>
 #include <DIconButton>
 #include <DPushButton>
 #include <QNetworkAccessManager>
@@ -57,7 +56,7 @@ private:
 private:
     bool m_loginStatus;
     bool m_isManualQuit = false;
-    QLabel *m_userNameLabel = nullptr;
+    DLabel *m_userNameLabel = nullptr;
     DIconButton *m_buttonImg = nullptr;
     QPushButton *m_buttonLogin = nullptr;
     QPushButton *m_buttonLoginOut = nullptr;

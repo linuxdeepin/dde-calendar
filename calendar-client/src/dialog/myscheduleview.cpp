@@ -227,7 +227,7 @@ void CMyScheduleView::slotBtClick(int buttonIndex, const QString &buttonName)
     Q_UNUSED(buttonName);
     if (buttonIndex == 0) {
         //删除日程
-        if (CScheduleOperation().deleteSchedule(m_scheduleInfo)) {
+        if (CScheduleOperation(m_scheduleInfo->scheduleTypeID(), this).deleteSchedule(m_scheduleInfo)) {
             accept();
         }
         return;
