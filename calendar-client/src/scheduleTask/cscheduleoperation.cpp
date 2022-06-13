@@ -27,6 +27,8 @@
 #include "accountmanager.h"
 #include "lunarmanager.h"
 
+#include <QNetworkConfigurationManager>
+
 CScheduleOperation::CScheduleOperation(const AccountItem::Ptr &accountItem, QWidget *parent)
     : QObject(parent)
     , m_accountItem(accountItem)
@@ -411,12 +413,14 @@ bool CScheduleOperation::isFestival(const DSchedule::Ptr &schedule)
 bool CScheduleOperation::scheduleIsInvariant(const DSchedule::Ptr &schedule)
 {
     //如果为网络帐户，且没有网络或者帐户开关关闭
-    //TODO:网络判断
+
     AccountItem::Ptr accountItem = gAccountManager->getAccountItemByScheduleTypeId(schedule->scheduleTypeID());
     DAccount::Ptr account = accountItem->getAccount();
     if (account->accountType() == DAccount::Account_UnionID) {
+        QNetworkConfigurationManager netManger;
+        //网络判断
         //如果uid日历同步关闭则日程不可修改
-        if (account->accountState().testFlag(DAccount::Account_Close)) {
+        if (netManger.isOnline() || account->accountState().testFlag(DAccount::Account_Close)) {
             return true;
         }
     }
