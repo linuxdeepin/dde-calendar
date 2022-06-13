@@ -24,6 +24,7 @@
 #include "units.h"
 #include <DSettingsWidgetFactory>
 #include <DSettingsOption>
+#include <DHiDPIHelper>
 #include <qglobal.h>
 
 DWIDGET_USE_NAMESPACE
@@ -33,24 +34,7 @@ SettingWidgets::SettingWidgets(QObject *parent) : QObject(parent)
     initWidget();
     initConnect();
     initData();
-}
-
-void SettingWidgets::clear()
-{
-    clearWidget();
-}
-
-void SettingWidgets::clearWidget()
-{
-    //一周首日
-    m_firstDayofWeekWidget = nullptr;
-    m_firstDayofWeekCombobox = nullptr;
-
-    //时间格式
-    m_timeTypeWidget = nullptr;
-    m_timeTypeCombobox = nullptr;
-
-    m_accountComboBox = nullptr;
+    initWidgetDisplayStatus();
 }
 
 void SettingWidgets::initWidget()
@@ -62,13 +46,13 @@ void SettingWidgets::initWidget()
     initTypeAddWidget();
     initSyncFreqWidget();
     initManualSyncButton();
-
 }
 
 void SettingWidgets::initConnect()
 {
     connect(gAccountManager, &AccountManager::signalGeneralSettingsUpdate, this, &SettingWidgets::slotGeneralSettingsUpdate);
     connect(gAccountManager, &AccountManager::signalAccountUpdate, this, &SettingWidgets::slotAccountUpdate);
+    connect(gAccountManager, &AccountManager::signalLogout, this, &SettingWidgets::slotLogout);
     connect(m_firstDayofWeekCombobox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &SettingWidgets::slotFirstDayofWeekCurrentChanged);
     connect(m_timeTypeCombobox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &SettingWidgets::slotTimeTypeCurrentChanged);
     connect(m_accountComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &SettingWidgets::slotAccountCurrentChanged);
@@ -81,9 +65,26 @@ void SettingWidgets::initConnect()
 
 void SettingWidgets::initData()
 {
+    //通用设置数据初始化
     slotGeneralSettingsUpdate();
-    accountUpdate();
+    //初始化账户信息
+    slotAccountUpdate();
+    //日程类型添加按钮初始化
     m_typeAddBtn->setEnabled(m_scheduleTypeWidget->canAdd());
+    //同步频率数据初始化
+    {
+        int index = 0;
+        if (gUosAccountItem) {
+            index = m_syncFreqComboBox->findData(gUosAccountItem->getAccount()->syncFreq());
+            qInfo() << index;
+        }
+        m_syncFreqComboBox->setCurrentIndex(index);
+    }
+}
+
+void SettingWidgets::initWidgetDisplayStatus()
+{
+
 }
 
 void SettingWidgets::initFirstDayofWeekWidget()
@@ -141,11 +142,6 @@ void SettingWidgets::initSyncFreqWidget()
     m_syncFreqComboBox->addItem(tr("30 mins"),  DAccount::SyncFreq_30Mins);
     m_syncFreqComboBox->addItem(tr("1 hour"),   DAccount::SyncFreq_1hour);
     m_syncFreqComboBox->addItem(tr("24 hours"), DAccount::SyncFreq_24hour);
-
-    int index = -1;
-    if (gUosAccountItem)
-        index = m_syncFreqComboBox->findData(gUosAccountItem->getAccount()->syncFreq());
-    m_syncFreqComboBox->setCurrentIndex(index);
 }
 
 void SettingWidgets::initManualSyncButton()
@@ -156,23 +152,13 @@ void SettingWidgets::initManualSyncButton()
     button->setFixedSize(266, 36);
     button->setText(tr("Sync Now"));
 
-    QLabel *label = new QLabel;
-    auto updateLastUpdateText = [=](const QString &datetime){
-        if(gUosAccountItem) {
-            label->setText(tr("Last sync") + ":" + dtFromString(datetime).toString("yyyy/MM/dd hh:mm"));
-        }
-    };
+    m_syncTimeLabel = new QLabel;
 
     QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(button, 0, Qt::AlignCenter);
-    layout->addWidget(label, 0, Qt::AlignCenter);
+    layout->addWidget(m_syncTimeLabel, 0, Qt::AlignCenter);
     m_manualSyncBtn->setLayout(layout);
     connect(button, &QPushButton::clicked, this, &SettingWidgets::slotUosManualSync);
-    //TODO: 更新时间
-    if(gUosAccountItem) {
-        updateLastUpdateText(gUosAccountItem->getDtLastUpdate());
-        connect(gUosAccountItem.get(), &AccountItem::signalDtLastUpdate, this, updateLastUpdateText);
-    }
 }
 
 void SettingWidgets::slotGeneralSettingsUpdate(){
@@ -187,6 +173,18 @@ void SettingWidgets::slotGeneralSettingsUpdate(){
 void SettingWidgets::slotAccountUpdate()
 {
     accountUpdate();
+    //判断账户是否为登录状态，并建立连接
+    if(gUosAccountItem) {
+        slotLastSyncTimeUpdate(gUosAccountItem->getDtLastUpdate());
+        connect(gUosAccountItem.get(), &AccountItem::signalDtLastUpdate, this, &SettingWidgets::slotLastSyncTimeUpdate);
+    }
+}
+
+void SettingWidgets::slotLogout(DAccount::Type type)
+{
+    if (DAccount::Account_UnionID == type) {
+
+    }
 }
 
 void SettingWidgets::slotFirstDayofWeekCurrentChanged(int index)
@@ -237,6 +235,13 @@ void SettingWidgets::slotUosManualSync()
     if (!gUosAccountItem)
         return;
     gAccountManager->downloadByAccountID(gUosAccountItem->getAccount()->accountID());
+}
+
+void SettingWidgets::slotLastSyncTimeUpdate(const QString &datetime)
+{
+    if(m_syncTimeLabel && gUosAccountItem) {
+        m_syncTimeLabel->setText(tr("Last sync") + ":" + dtFromString(datetime).toString("yyyy/MM/dd hh:mm"));
+    }
 }
 
 void SettingWidgets::setFirstDayofWeek(int value)
@@ -322,7 +327,35 @@ QPair<QWidget*, QWidget*> SettingWidgets::createSyncFreqCombobox(QObject *obj)
 
 QPair<QWidget*, QWidget*> SettingWidgets::createSyncTagRadioButton(QObject *obj)
 {
+    auto option = qobject_cast<DTK_CORE_NAMESPACE::DSettingsOption *>(obj);
+    DAccount::AccountState type = DAccount::Account_Calendar;
+    if (option->key().endsWith("Account_Calendar"))
+        type = DAccount::Account_Calendar;
+    if (option->key().endsWith("Account_Setting"))
+        type = DAccount::Account_Setting;
 
+    SyncTagRadioButton *widget = new SyncTagRadioButton(type);
+    widget->setFixedWidth(16);
+    QPair<QWidget *, QWidget *> optionWidget = DSettingsWidgetFactory::createStandardItem(QByteArray(), option, widget);
+
+    //iconLabel
+    QLabel *iconLabel = new QLabel;
+    iconLabel->setFixedHeight(16);
+    if (DAccount::Account_Calendar == type)
+        iconLabel->setPixmap(DHiDPIHelper::loadNxPixmap(":/resources/icon/sync_schedule.svg"));
+    if (DAccount::Account_Setting == type)
+        iconLabel->setPixmap(DHiDPIHelper::loadNxPixmap(":/resources/icon/sync_setting.svg"));
+
+    //iconWidget
+    QHBoxLayout *layout = new QHBoxLayout;
+    layout->addWidget(iconLabel);
+    layout->addWidget(optionWidget.first);
+    layout->setContentsMargins(0, 1, 0, 1);
+    QWidget *iconWidget = new QWidget;
+    iconWidget->setLayout(layout);
+    optionWidget.first = iconWidget;
+
+    return optionWidget;
 }
 
 QWidget *SettingWidgets::createManualSyncButton(QObject *obj)
@@ -338,4 +371,132 @@ QWidget *SettingWidgets::createJobTypeListView(QObject *)
 DIconButton *SettingWidgets::createTypeAddButton()
 {
     return m_typeAddBtn;
+}
+
+SettingWidget::SyncTagRadioButton::SyncTagRadioButton(DAccount::AccountState type, QWidget *parent)
+    : QWidget(parent)
+    , m_type(type)
+{
+
+    setObjectName("SyncTagRadioButton");
+    if (gUosAccountItem) {
+        m_state = DAccount::Account_Close;
+        m_state = gUosAccountItem->getAccount()->accountState();
+        connect(gUosAccountItem.get(), &AccountItem::signalAccountStateChange, this, &SyncTagRadioButton::updateAccountState);
+        updateAccountState();
+    }
+}
+
+void SettingWidget::SyncTagRadioButton::updateAccountState()
+{
+    if (!gUosAccountItem) {
+        return;
+    }
+    m_state = gUosAccountItem->getAccount()->accountState();
+    setChecked(m_state & m_type);
+    //TODO:是否联网
+    //setEnabled((m_state & DAccount::Account_Open) && m_isOnline);
+}
+
+void SettingWidget::SyncTagRadioButton::updateOnLineState(bool isOnline)
+{
+    m_isOnline = isOnline;
+
+    updateAccountState();
+}
+
+bool SettingWidget::SyncTagRadioButton::isChecked()
+{
+    return m_checked;
+}
+
+DAccount::AccountState SettingWidget::SyncTagRadioButton::type()
+{
+    return m_type;
+}
+
+void SettingWidget::SyncTagRadioButton::setChecked(bool checked)
+{
+    if (m_checked == checked)
+        return;
+    if (!gUosAccountItem)
+        return;
+
+    m_checked = checked;
+    update();
+
+    //实现遍历所有的radiobutton获取account state
+    DAccount::AccountStates states = gUosAccountItem->getAccount()->accountState();
+    QObject *parent = this->parent();
+    parent = parent == nullptr ? nullptr : parent->parent();
+    if (parent) {
+        for (auto obj : parent->findChildren<QWidget *>("SyncTagRadioButton")) {
+            SyncTagRadioButton *rb = static_cast<SyncTagRadioButton *>(obj);
+            if (rb->isChecked())
+                states |= rb->type();
+            else
+                states &= ~rb->type();
+        }
+    }
+    gUosAccountItem->setAccountState(states);
+
+}
+
+void SettingWidget::SyncTagRadioButton::paintEvent(QPaintEvent *event)
+{
+    Q_UNUSED(event)
+    QPainter painter(this);
+    QIcon icon = DStyle::standardIcon(this->style(), m_checked ? DStyle::SP_IndicatorChecked : DStyle::SP_IndicatorUnchecked);
+    int y = (this->height() - 16) / 2;
+    int x = (this->width() - 16) / 2;
+    icon.paint(&painter, QRect(x, y, 16, 16), Qt::AlignCenter, isEnabled() ? QIcon::Normal : QIcon::Disabled);
+}
+
+void SettingWidget::SyncTagRadioButton::mouseReleaseEvent(QMouseEvent *event)
+{
+    QWidget::mouseReleaseEvent(event);
+    setChecked(!m_checked);
+}
+
+void CalendarSettingSettings::removeGroup(const QString &groupName, const QString &groupName2)
+{
+    int index = this->indexOf(*this, groupName);
+    if (index < 0)
+        return;
+    CalendarSettingGroups &groups = this->operator[](index)._groups;
+    {
+        int index = indexOf(groups, groupName2);
+        if (index < 0)
+            return;
+        groups.removeAt(index);
+    }
+    if (groups.isEmpty()) {
+        this->removeAt(index);
+    }
+}
+
+void CalendarSettingSettings::removeGroup(const QString &groupName)
+{
+    int index = this->indexOf(*this, groupName);
+    if (index < 0)
+        return;
+    this->removeAt(index);
+}
+
+int CalendarSettingSettings::indexOf(const CalendarSettingGroups &groups, const QString groupName)
+{
+    for (int k = 0; k < groups.count(); k++) {
+        if (groups[k]._key == groupName)
+            return k;
+    }
+    return -1;
+}
+
+int CalendarSettingSettings::indexOf(const CalendarSettingSettings &groups, const QString groupName)
+{
+    for (int k = 0; k < groups.count(); k++) {
+        if (groups[k]._key == groupName)
+            return k;
+    }
+    return -1;
 }

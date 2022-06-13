@@ -86,26 +86,6 @@ const int Calendar_Default_Height = 634; //默认高度
 //静态的翻译不会真的翻译，但是会更新ts文件
 //像static QString a = QObject::tr("hello"), a实际等于hello，但是ts会有hello这个词条
 //调用DSetingDialog时会用到上述场景
-static CalendarSettingSetting setting_account = {
-    "setting_account",
-    QObject::tr("Account setting"),
-    {
-        {"account", QObject::tr("Account"), {{"login", "", "login", ""}}},
-        {"account_sync_items", QObject::tr("Select items to be synced"), {{"Account_Calendar", QObject::tr("Events"), "SyncTagRadioButton", ""}, {"Account_Setting", QObject::tr("General settings"), "SyncTagRadioButton", ""}}},
-        {"sync_interval", "", {{"Sync_interval", QObject::tr("Sync interval"), "SyncTimeCombobox", ""}}},
-        {"manual_sync", "", {{"manual_sync", "", "ManualSyncButton", ""}}},
-    }};
-static CalendarSettingSetting setting_base = {
-    "setting_base",               QObject::tr("Manage calendar"), {
-        {"acccount_items",        "",                                         {{"AccountCombobox",     QObject::tr("Calendar account"),      "AccountCombobox",      ""}}},
-        {"event_types",           QObject::tr("Event types"),                 {{"JobTypeListView",     "",                                   "JobTypeListView",      ""}}}
-    }
-};
-
-static CalendarSettingSetting setting_general = {
-    "setting_general",
-    QObject::tr("General settings"),
-    {{"general", QObject::tr("General"), {{"firstday", QObject::tr("First day of week"), "FirstDayofWeek", "", "Sunday"}, {"time", QObject::tr("Time"), "Time", ""}}}}};
 
 Calendarmainwindow::Calendarmainwindow(int index, QWidget *w)
     : DMainWindow(w)
@@ -880,88 +860,10 @@ void Calendarmainwindow::slotapplicationStateChanged(Qt::ApplicationState state)
 
 void Calendarmainwindow::slotOpenSettingDialog()
 {
-    SettingWidgets *settingWidgets = new SettingWidgets(this);
-    if (nullptr == m_dsdSetting) {
-        m_dsdSetting = new DSettingsDialog(this);
-        m_dsdSetting->setIcon(CDynamicIcon::getInstance()->getPixmap());
-        m_dsdSetting->setFixedSize(682, 506);
-        m_dsdSetting->widgetFactory()->registerWidget("login", UserloginWidget::createloginButton);
-        m_dsdSetting->widgetFactory()->registerWidget("FirstDayofWeek",     std::bind(&SettingWidgets::createFirstDayofWeekWidget,       settingWidgets, std::placeholders::_1));
-        m_dsdSetting->widgetFactory()->registerWidget("Time",               std::bind(&SettingWidgets::createTimeTypeWidget,       settingWidgets, std::placeholders::_1));
-        m_dsdSetting->widgetFactory()->registerWidget("AccountCombobox",    std::bind(&SettingWidgets::createAccountCombobox,       settingWidgets, std::placeholders::_1));
-        m_dsdSetting->widgetFactory()->registerWidget("JobTypeListView",    std::bind(&SettingWidgets::createJobTypeListView,       settingWidgets, std::placeholders::_1));
-        m_dsdSetting->widgetFactory()->registerWidget("SyncTagRadioButton", std::bind(&Calendarmainwindow::createSyncTagRadioButton,    this, std::placeholders::_1));
-        m_dsdSetting->widgetFactory()->registerWidget("SyncTimeCombobox",   std::bind(&SettingWidgets::createSyncFreqCombobox,      settingWidgets, std::placeholders::_1));
-        m_dsdSetting->widgetFactory()->registerWidget("ManualSyncButton",   std::bind(&SettingWidgets::createManualSyncButton,      settingWidgets, std::placeholders::_1));
-        QString strJson;
-
-        CalendarSettingSettings calendarSettings;
-        calendarSettings.append(setting_account);
-        calendarSettings.append(setting_base);
-        calendarSettings.append(setting_general);
-
-        //社区版不含云同步相关内容
-        if (DSysInfo::uosEditionType() == DSysInfo::UosCommunity) {
-            calendarSettings.removeGroup("setting_account");
-        }
-        //未登录uos帐号时，移除部分选项
-        if (!gUosAccountItem) {
-            calendarSettings.removeGroup("setting_account", "account_sync_items");
-            calendarSettings.removeGroup("setting_account", "sync_interval");
-            calendarSettings.removeGroup("setting_account", "manual_sync");
-        }
-
-        QJsonObject obj;
-        obj.insert("groups", calendarSettings.toJson());
-        strJson = QJsonDocument(obj).toJson(QJsonDocument::Compact);
-
-        auto settings = Dtk::Core::DSettings::fromJson(strJson.toLatin1());
-        m_dsdSetting->setObjectName("SettingDialog");
-        m_dsdSetting->updateSettings(settings);
-        //恢复默认设置按钮不显示
-        m_dsdSetting->setResetVisible(false);
-        //QList<Widget>
-        QList<QWidget *> lstwidget = m_dsdSetting->findChildren<QWidget *>();
-        if (lstwidget.size() > 0) { //accessibleName
-            for (QWidget *wid : lstwidget) {
-                if ("ContentWidgetForsetting_base.event_types" == wid->accessibleName()) {
-                    JobTypeListView *view = m_dsdSetting->findChild<JobTypeListView *>("JobTypeListView");
-                    if (!view)
-                        return;
-                    DIconButton *addButton = settingWidgets->createTypeAddButton();
-                    wid->layout()->addWidget(addButton);
-                    //使addButton的右边距等于view的右边距
-                    int leftMargin = wid->layout()->contentsMargins().left();
-                    wid->layout()->setContentsMargins(leftMargin, 0, leftMargin, 0);
-                }
-                if (wid->accessibleName().contains("DefaultWidgetAtContentRow")) {
-                    //DefaultWidgetAtContentRow是设置对话框右边每一个option条目对应widget的accessibleName的前缀，所以如果后续有更多条目，需要做修改
-                    wid->layout()->setMargin(0);
-                }
-            }
-        }
-    }
-
-    //移除立刻同步按钮的背景色
-    QWidget  *ManualSyncWidget = m_dsdSetting->findChild<QWidget *>("ManualSyncWidget");
-    ManualSyncWidget     = ManualSyncWidget == nullptr ? nullptr : ManualSyncWidget->parentWidget();
-    ManualSyncWidget     = ManualSyncWidget == nullptr ? nullptr : ManualSyncWidget->parentWidget();
-    DBackgroundGroup *bk = ManualSyncWidget == nullptr ? nullptr : qobject_cast<DBackgroundGroup *>(ManualSyncWidget);
-    if (bk) {
-        bk->setBackgroundRole(QPalette::Base);
-    }
-    //首次显示JobTypeListView时，更新日程类型
-    if (DComboBox *combobox = m_dsdSetting->findChild<DComboBox *>("AccountCombobox")) {
-        if (JobTypeListView *listview = m_dsdSetting->findChild<JobTypeListView *>("JobTypeListView")) {
-            listview->updateCalendarAccount(combobox->currentData().toString());
-        }
-    }
-
+    m_dsdSetting = new CSettingDialog(this);
     //内容定位到顶端
     m_dsdSetting->exec();
     //使用完后释放
-    delete settingWidgets;
-    settingWidgets = nullptr;
     delete m_dsdSetting;
     m_dsdSetting = nullptr;
     gCalendarManager->updateData();
@@ -977,42 +879,6 @@ void Calendarmainwindow::dragEnterEvent(QDragEnterEvent *event)
 }
 
 /**
- * @brief Calendarmainwindow::createSyncTagRadioButton 同步项的radiobutton
- */
-QPair<QWidget *, QWidget *> Calendarmainwindow::createSyncTagRadioButton(QObject *obj)
-{
-    auto option = qobject_cast<DTK_CORE_NAMESPACE::DSettingsOption *>(obj);
-    DAccount::AccountState type = DAccount::Account_Calendar;
-    if (option->key().endsWith("Account_Calendar"))
-        type = DAccount::Account_Calendar;
-    if (option->key().endsWith("Account_Setting"))
-        type = DAccount::Account_Setting;
-
-    SyncTagRadioButton *widget = new SyncTagRadioButton(type);
-    widget->setFixedWidth(16);
-    QPair<QWidget *, QWidget *> optionWidget = DSettingsWidgetFactory::createStandardItem(QByteArray(), option, widget);
-
-    //iconLabel
-    QLabel *iconLabel = new QLabel;
-    iconLabel->setFixedHeight(16);
-    if (DAccount::Account_Calendar == type)
-        iconLabel->setPixmap(DHiDPIHelper::loadNxPixmap(":/resources/icon/sync_schedule.svg"));
-    if (DAccount::Account_Setting == type)
-        iconLabel->setPixmap(DHiDPIHelper::loadNxPixmap(":/resources/icon/sync_setting.svg"));
-
-    //iconWidget
-    QHBoxLayout *layout = new QHBoxLayout;
-    layout->addWidget(iconLabel);
-    layout->addWidget(optionWidget.first);
-    layout->setContentsMargins(0, 1, 0, 1);
-    QWidget *iconWidget = new QWidget;
-    iconWidget->setLayout(layout);
-    optionWidget.first = iconWidget;
-
-    return optionWidget;
-}
-
-/**
  * @brief CDayWindow::dropEvent          拖拽释放事件
  * @param event
  */
@@ -1023,133 +889,4 @@ void Calendarmainwindow::dropEvent(QDropEvent *event)
     int diffPosy = pos.y() - m_startPos.y();
     if ((diffPosx >= 16 || diffPosx <= -16) || (diffPosy >= 16 || diffPosy <= -16))
         slotNewSchedule();
-}
-
-
-CalendarSetting::SyncTagRadioButton::SyncTagRadioButton(DAccount::AccountState type, QWidget *parent)
-    : QWidget(parent)
-    , m_type(type)
-{
-
-    setObjectName("SyncTagRadioButton");
-    if (gUosAccountItem) {
-        m_state = DAccount::Account_Close;
-        m_state = gUosAccountItem->getAccount()->accountState();
-        connect(gUosAccountItem.get(), &AccountItem::signalAccountStateChange, this, &SyncTagRadioButton::updateAccountState);
-        updateAccountState();
-    }
-}
-
-void CalendarSetting::SyncTagRadioButton::updateAccountState()
-{
-    if (!gUosAccountItem) {
-        return;
-    }
-    m_state = gUosAccountItem->getAccount()->accountState();
-    setChecked(m_state & m_type);
-    //TODO:是否联网
-    //setEnabled((m_state & DAccount::Account_Open) && m_isOnline);
-}
-
-void CalendarSetting::SyncTagRadioButton::updateOnLineState(bool isOnline)
-{
-    m_isOnline = isOnline;
-
-    updateAccountState();
-}
-
-bool CalendarSetting::SyncTagRadioButton::isChecked()
-{
-    return m_checked;
-}
-
-DAccount::AccountState CalendarSetting::SyncTagRadioButton::type()
-{
-    return m_type;
-}
-
-void CalendarSetting::SyncTagRadioButton::setChecked(bool checked)
-{
-    if (m_checked == checked)
-        return;
-    if (!gUosAccountItem)
-        return;
-
-    m_checked = checked;
-    update();
-
-    //实现遍历所有的radiobutton获取account state
-    DAccount::AccountStates states = gUosAccountItem->getAccount()->accountState();
-    QObject *parent = this->parent();
-    parent = parent == nullptr ? nullptr : parent->parent();
-    if (parent) {
-        for (auto obj : parent->findChildren<QWidget *>("SyncTagRadioButton")) {
-            SyncTagRadioButton *rb = static_cast<SyncTagRadioButton *>(obj);
-            if (rb->isChecked())
-                states |= rb->type();
-            else
-                states &= ~rb->type();
-        }
-    }
-    gUosAccountItem->setAccountState(states);
-
-}
-
-void CalendarSetting::SyncTagRadioButton::paintEvent(QPaintEvent *event)
-{
-    Q_UNUSED(event)
-    QPainter painter(this);
-    QIcon icon = DStyle::standardIcon(this->style(), m_checked ? DStyle::SP_IndicatorChecked : DStyle::SP_IndicatorUnchecked);
-    int y = (this->height() - 16) / 2;
-    int x = (this->width() - 16) / 2;
-    icon.paint(&painter, QRect(x, y, 16, 16), Qt::AlignCenter, isEnabled() ? QIcon::Normal : QIcon::Disabled);
-}
-
-void CalendarSetting::SyncTagRadioButton::mouseReleaseEvent(QMouseEvent *event)
-{
-    QWidget::mouseReleaseEvent(event);
-    setChecked(!m_checked);
-}
-
-void CalendarSettingSettings::removeGroup(const QString &groupName, const QString &groupName2)
-{
-    int index = this->indexOf(*this, groupName);
-    if (index < 0)
-        return;
-    CalendarSettingGroups &groups = this->operator[](index)._groups;
-    {
-        int index = indexOf(groups, groupName2);
-        if (index < 0)
-            return;
-        groups.removeAt(index);
-    }
-    if (groups.isEmpty()) {
-        this->removeAt(index);
-    }
-}
-
-void CalendarSettingSettings::removeGroup(const QString &groupName)
-{
-    int index = this->indexOf(*this, groupName);
-    if (index < 0)
-        return;
-    this->removeAt(index);
-}
-
-int CalendarSettingSettings::indexOf(const CalendarSettingGroups &groups, const QString groupName)
-{
-    for (int k = 0; k < groups.count(); k++) {
-        if (groups[k]._key == groupName)
-            return k;
-    }
-    return -1;
-}
-
-int CalendarSettingSettings::indexOf(const CalendarSettingSettings &groups, const QString groupName)
-{
-    for (int k = 0; k < groups.count(); k++) {
-        if (groups[k]._key == groupName)
-            return k;
-    }
-    return -1;
 }

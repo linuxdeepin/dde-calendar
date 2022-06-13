@@ -22,6 +22,7 @@
 
 #include "dschedule.h"
 #include "jobtypelistview.h"
+#include "settingdialog.h"
 
 #include <DLabel>
 #include <DButtonBox>
@@ -51,155 +52,6 @@ class CScheduleSearchView;
 class AnimationStackedWidget;
 class CScheduleDataManage;
 class CTitleWidget;
-
-namespace  CalendarSetting{
-struct CalendarSettingOption{
-    CalendarSettingOption(){}
-    CalendarSettingOption(const std::initializer_list<QString> &list){
-        int index = 0;
-        for(auto d : list) {
-            if(0 == index) _key     = d;
-            if(1 == index) _name    = d;
-            if(2 == index) _type    = d;
-            if(3 == index) _default = d;
-            if(4 == index) _text    = d;
-            index ++;
-        }
-    }
-
-    QJsonObject toJson(){
-        QJsonObject obj;
-        obj.insert("key",      _key);
-        obj.insert("type",     _type);
-        obj.insert("name",     _name);
-        obj.insert("default",  _default);
-        obj.insert("text",     _text);
-        return obj;
-    }
-
-    QString _key;
-    QString _type;
-    QString _name;
-    QString _default;
-    QString _text;
-};
-struct CalendarSettingOptions : public QList<CalendarSettingOption>{
-    CalendarSettingOptions(){}
-    CalendarSettingOptions(const std::initializer_list<CalendarSettingOption> &list){
-        for(auto d : list)
-            append(d);
-    }
-    QJsonArray tojson()
-    {
-        QJsonArray arr;
-        for(auto option: *this) {
-            arr.append(option.toJson());
-        }
-        return arr;
-    }
-};
-
-struct CalendarSettingGroup{
-    QString _key;
-    QString _name;
-    CalendarSettingOptions _options;
-    QJsonObject toJson(){
-        QJsonObject obj;
-        obj.insert("key",      _key);
-        obj.insert("name",     _name);
-        obj.insert("options",  _options.tojson());
-        return obj;
-    }
-};
-
-struct CalendarSettingGroups : public QList<CalendarSettingGroup>
-{
-    CalendarSettingGroups(){}
-    CalendarSettingGroups(const std::initializer_list<CalendarSettingGroup> &list){
-        for(auto d : list)
-            append(d);
-    }
-    QJsonArray toJson()
-    {
-        QJsonArray arr;
-        for(auto group: *this) {
-            arr.append(group.toJson());
-        }
-        return arr;
-    }
-};
-
-struct CalendarSettingSetting {
-    QString _key;
-    QString _name;
-    CalendarSettingGroups _groups;
-    QJsonObject toJson() {
-
-        QJsonObject obj;
-        obj.insert("key",      _key);
-        obj.insert("name",     _name);
-        obj.insert("groups",   _groups.toJson());
-        return obj;
-    }
-};
-
-struct CalendarSettingSettings : public QList<CalendarSettingSetting>
-{
-    CalendarSettingSettings(){}
-    CalendarSettingSettings(const std::initializer_list<CalendarSettingSetting> &list){
-        for(auto d : list)
-            append(d);
-    }
-    QJsonArray toJson()
-    {
-        QJsonArray arr;
-        for(auto setting: *this) {
-            arr.append(setting.toJson());
-        }
-        return arr;
-    }
-
-    void removeGroup(const QString &groupName, const QString &groupName2);
-    void removeGroup(const QString &groupName);
-    int indexOf(const CalendarSettingGroups &groups, const QString groupName);
-    int indexOf(const CalendarSettingSettings &groups, const QString groupName);
-};
-
-
-/**
- * @brief The SyncTagRadioButton class 实现model/checkstate效果的类
- */
-class SyncTagRadioButton : public QWidget
-{
-    Q_OBJECT
-public:
-    SyncTagRadioButton(DAccount::AccountState type, QWidget *parent = nullptr);
-
-    void updateAccountState();
-    void updateOnLineState(bool isOnline);
-
-    bool isChecked();
-    DAccount::AccountState type();
-
-private:
-    /**
-     * @brief setChecked 是否选中
-     */
-    void setChecked(bool checked);
-
-protected:
-    void paintEvent(QPaintEvent *event) override;
-    void mouseReleaseEvent(QMouseEvent *event) override;
-
-private:
-    bool m_checked = true;
-    DAccount::AccountStates m_state;
-    bool m_isOnline = true;
-    const DAccount::AccountState m_type;
-};
-}//~CalendarSetting
-
-using namespace CalendarSetting;
 
 class Calendarmainwindow : public DMainWindow
 {
@@ -286,7 +138,7 @@ private:
     QPropertyAnimation *m_animation = nullptr;
     QTimer *m_currentDateUpdateTimer = nullptr;
     DIconButton *m_newScheduleBtn {nullptr}; //全局的新建日程按钮
-    DSettingsDialog *m_dsdSetting {nullptr};
+    CSettingDialog *m_dsdSetting {nullptr};
     JobTypeListView *m_jobTypeListView {nullptr};
     //日历打开默认显示视图
     int m_defaultIndex;
@@ -294,8 +146,6 @@ private:
     bool m_isNormalStateShow {true}; //是否为正常状态显示
     QPoint m_startPos;
 
-    //设置界面相关handler函数
-    QPair<QWidget*, QWidget*> createSyncTagRadioButton(QObject *obj);
 };
 
 #endif // CALENDARMAINWINDOW_H
