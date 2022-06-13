@@ -56,7 +56,7 @@ void DbusAccountRequest::setAccountState(DAccount::AccountStates state)
     interface.setProperty("accountState", QVariant(state));
 }
 
-void DbusAccountRequest::setSyncFreq(DAccount::SyncFreqType freq)
+void DbusAccountRequest::setSyncFreq(const QString &freq)
 {
     QDBusInterface interface(this->service(), this->path(), this->interface(), QDBusConnection::sessionBus(), this);
     interface.setProperty("syncFreq", QVariant(freq));
@@ -74,10 +74,10 @@ DAccount::AccountSyncState DbusAccountRequest::getSyncState()
     return static_cast<DAccount::AccountSyncState>(interface.property("syncState").toInt()) ;
 }
 
-DAccount::SyncFreqType DbusAccountRequest::getSyncFreq()
+QString DbusAccountRequest::getSyncFreq()
 {
     QDBusInterface interface(this->service(), this->path(), this->interface(), QDBusConnection::sessionBus(), this);
-    return static_cast<DAccount::SyncFreqType>(interface.property("syncFreq").toInt());
+    return interface.property("syncFreq").toString();
 }
 
 /**
@@ -320,7 +320,7 @@ void DbusAccountRequest::slotCallFinished(CDBusPendingCallWatcher *call)
             //重新读取日程数据
             setCallbackFunc(call->getCallbackFunc());
             querySchedulesWithParameter(m_priParams);
-        }   
+        }
     }
     if (canCall && call->getCallbackFunc() != nullptr) {
         call->getCallbackFunc()({ret, msg});
@@ -350,16 +350,16 @@ void DbusAccountRequest::onPropertiesChanged(const QString &, const QVariantMap 
             int state = it.value().toInt();
             emit signalAccountStateChange(static_cast<DAccount::AccountStates>(state));
         }
-        if(it.key() == "dtLastUpdate") {
+        if (it.key() == "dtLastUpdate") {
             emit signalDtLastUpdate(getDtLastUpdate());
         }
-        if(it.key() == "accountState") {
+        if (it.key() == "accountState") {
             emit signalAccountStateChange(getAccountState());
         }
-        if(it.key() == "dtLastUpdate") {
+        if (it.key() == "dtLastUpdate") {
             emit signalDtLastUpdate(getDtLastUpdate());
         }
-        if(it.key() == "accountState") {
+        if (it.key() == "accountState") {
             emit signalAccountStateChange(getAccountState());
         }
     }

@@ -167,7 +167,8 @@ void AccountItem::setAccountState(DAccount::AccountStates state)
 void AccountItem::setSyncFreq(DAccount::SyncFreqType freq)
 {
     m_account->setSyncFreq(freq);
-    m_dbusRequest->setSyncFreq(freq);
+    QString syncFreq = DAccount::syncFreqToJsonString(m_account);
+    m_dbusRequest->setSyncFreq(syncFreq);
 }
 
 DAccount::AccountStates AccountItem::getAccountState()
@@ -182,7 +183,9 @@ bool AccountItem::getSyncState()
 
 DAccount::SyncFreqType AccountItem::getSyncFreq()
 {
-    return m_dbusRequest->getSyncFreq();
+    QString syncFreq = m_dbusRequest->getSyncFreq();
+    DAccount::syncFreqFromJsonString(m_account, syncFreq);
+    return m_account->syncFreq();
 }
 
 /**

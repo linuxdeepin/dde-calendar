@@ -43,10 +43,10 @@ public:
     void setAccountExpandStatus(bool expandStatus);
 
     void setAccountState(DAccount::AccountStates state);
-    void setSyncFreq(DAccount::SyncFreqType freq);
+    void setSyncFreq(const QString &freq);
     DAccount::AccountStates getAccountState();
     DAccount::AccountSyncState getSyncState();
-    DAccount::SyncFreqType getSyncFreq();
+    QString getSyncFreq();
     /**
      * @brief getAccountInfo        获取帐户信息
      * @return

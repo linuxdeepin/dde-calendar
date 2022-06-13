@@ -43,13 +43,12 @@ static QMutex SyncMutex;
 
 #define UPDATEREMINDJOBTIMEINTERVAL 1000 * 60 * 10 //提醒任务更新时间间隔毫秒数（10分钟）
 
-struct SqlException{
+struct SqlException {
     QString excepion;
 };
-struct SyncException{
+struct SyncException {
     QString excepion;
 };
-
 
 /**
  * @brief The ThrowQuery class 会抛出相关exec的错误
@@ -71,11 +70,13 @@ public:
         if (!QSqlQuery::exec(sql))
             throw SqlException{this->lastError().text()};
     }
-    QVariant nextValue(int index = 0){
+    QVariant nextValue(int index = 0)
+    {
         this->next();
         return this->value(index);
     }
-    QSqlRecord nextRecord(){
+    QSqlRecord nextRecord()
+    {
         this->next();
         return this->record();
     }
@@ -90,18 +91,20 @@ public:
     explicit SqlTransactionLocker(const QStringList &connectionNames)
         : _connectionNames(connectionNames)
     {
-        for(auto name : _connectionNames)
+        for (auto name : _connectionNames)
             QSqlDatabase::database(name).transaction();
     }
-    ~SqlTransactionLocker(){
-        if(hasCommited)
+    ~SqlTransactionLocker()
+    {
+        if (hasCommited)
             return;
-        for(auto name : _connectionNames)
+        for (auto name : _connectionNames)
             QSqlDatabase::database(name).rollback();
     }
-    void commit() {
+    void commit()
+    {
         hasCommited = true;
-        for(auto name : _connectionNames)
+        for (auto name : _connectionNames)
             QSqlDatabase::database(name).commit();
     }
 
@@ -116,7 +119,9 @@ private:
 struct ThrowAccount {
     explicit ThrowAccount(QString connectionName, QString accountID)
         : _connectionName(connectionName)
-        , _accountID(accountID){}
+        , _accountID(accountID)
+    {
+    }
 
     void defaultScheduleType();
     void defaultTypeColor();
@@ -761,7 +766,7 @@ void DAccountModule::accountDownload()
     QSqlDatabase db_account = QSqlDatabase::database(dbname_account);
     QSqlDatabase db_manager = QSqlDatabase::database(dbname_manager);
     //匿名函数，在线程里运行
-    auto syncFunc = [=](){
+    auto syncFunc = [=]() {
         QMutexLocker syncLocker(&SyncMutex);
         int errcode = 0;//上传下载的错误码
         try {

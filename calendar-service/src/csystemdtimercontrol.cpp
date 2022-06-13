@@ -5,6 +5,9 @@
 #include <QProcess>
 #include <QFile>
 
+const QString UPLOADTASK_SERVICE = "uploadNetWorkAccountData_calendar.service";
+const QString UPLOADTASK_TIMER = "uploadNetWorkAccountData_calendar.timer";
+
 CSystemdTimerControl::CSystemdTimerControl(QObject *parent)
     : QObject(parent)
 {
@@ -103,19 +106,21 @@ void CSystemdTimerControl::startDownloadTask(const QString &accountID, const int
                                     "/com/deepin/dataserver/Calendar/AccountManager "
                                     "com.deepin.dataserver.Calendar.AccountManager.downloadByAccountID string:%1 ")
                                 .arg(accountID);
-        fileName = m_systemdPath + accountID + ".service";
+        fileName = m_systemdPath + accountID + "_calendar.service";
         QString content;
         content += "[Unit]\n";
         content += "Description = schedule download task.\n";
         content += "[Service]\n";
         content += QString("ExecStart = /bin/bash -c \"%1\"\n").arg(remindCMD);
+        content += "[Install]\n";
+        content += "WantedBy=user-session.target\n";
         createFile(fileName, content);
     }
 
     {
         //timer
         QString fileName;
-        fileName = m_systemdPath + accountID + ".timer";
+        fileName = m_systemdPath + accountID + "_calendar.timer";
         QString content;
         content += "[Unit]\n";
         content += "Description = schedule download task.\n";
@@ -124,36 +129,45 @@ void CSystemdTimerControl::startDownloadTask(const QString &accountID, const int
         content += QString("OnUnitInactiveSec = %1m\n").arg(minute);
         content += "AccuracySec = 1us\n";
         content += "RandomizedDelaySec = 0\n";
+        content += "[Install]\n";
+        content += "WantedBy = timers.target\n";
         createFile(fileName, content);
 
-        QString command("systemctl --user start ");
-        command += fileName;
-        execLinuxCommand("systemctl --user enable " + fileName);
-        execLinuxCommand("systemctl --user start " + fileName);
+        const QString accountTimer = accountID + "_calendar.timer";
+        execLinuxCommand("systemctl --user enable " + accountTimer);
+        execLinuxCommand("systemctl --user start " + accountTimer);
     }
 }
 
 void CSystemdTimerControl::stopDownloadTask(const QString &accountID)
 {
     QString fileName;
-    fileName = m_systemdPath + accountID + ".timer";
+    fileName = m_systemdPath + accountID + "_calendar.timer";
     QString command("systemctl --user stop ");
-    command += fileName;
+    command += accountID + "_calendar.timer";
     execLinuxCommand(command);
     QFile::remove(fileName);
-    QString fileServiceName = m_systemdPath + accountID + ".service";
+    QString fileServiceName = m_systemdPath + accountID + "_calendar.service";
     QFile::remove(fileServiceName);
 }
 
 void CSystemdTimerControl::startUploadTask(const int minute)
 {
     {
+        //如果定时器为激活状态则退出
+        QString cmd = "systemctl --user is-active " + UPLOADTASK_SERVICE;
+        QString isActive = execLinuxCommand(cmd);
+        if (isActive == "active") {
+            return;
+        }
+    }
+    {
         //.service
         QString fileName;
         QString remindCMD = QString("dbus-send --session --print-reply --dest=com.deepin.dataserver.Calendar "
                                     "/com/deepin/dataserver/Calendar/AccountManager "
                                     "com.deepin.dataserver.Calendar.AccountManager.uploadNetWorkAccountData ");
-        fileName = m_systemdPath + "uploadNetWorkAccountData.service";
+        fileName = m_systemdPath + UPLOADTASK_SERVICE;
         QString content;
         content += "[Unit]\n";
         content += "Description = schedule uploadNetWorkAccountData task.\n";
@@ -165,7 +179,7 @@ void CSystemdTimerControl::startUploadTask(const int minute)
     {
         //timer
         QString fileName;
-        fileName = m_systemdPath + "uploadNetWorkAccountData.timer";
+        fileName = m_systemdPath + UPLOADTASK_TIMER;
         QString content;
         content += "[Unit]\n";
         content += "Description = schedule uploadNetWorkAccountData task.\n";
@@ -176,20 +190,20 @@ void CSystemdTimerControl::startUploadTask(const int minute)
         content += "RandomizedDelaySec = 0\n";
         createFile(fileName, content);
 
-        execLinuxCommand("systemctl --user enable " + fileName);
-        execLinuxCommand("systemctl --user start " + fileName);
+        execLinuxCommand("systemctl --user enable " + UPLOADTASK_TIMER);
+        execLinuxCommand("systemctl --user start " + UPLOADTASK_TIMER);
     }
 }
 
 void CSystemdTimerControl::stopUploadTask()
 {
     QString fileName;
-    fileName = m_systemdPath + "uploadNetWorkAccountData.timer";
+    fileName = m_systemdPath + UPLOADTASK_TIMER;
     QString command("systemctl --user stop ");
-    command += fileName;
+    command += UPLOADTASK_TIMER;
     execLinuxCommand(command);
     QFile::remove(fileName);
-    QString fileServiceName = m_systemdPath + "uploadNetWorkAccountData.service";
+    QString fileServiceName = m_systemdPath + UPLOADTASK_SERVICE;
     QFile::remove(fileServiceName);
 }
 
