@@ -224,6 +224,7 @@ void SidebarAccountItemWidget::initConnect()
 {
     connect(m_rearIconButton, &DIconButton::clicked, this, &SidebarAccountItemWidget::slotRearIconClicked);
     connect(m_accountItem.data(), &AccountItem::signalSyncStateChange, this, &SidebarAccountItemWidget::slotSyncStatusChange);
+    connect(gAccountManager, &AccountManager::signalAccountStateChange, this, &SidebarAccountItemWidget::slotAccountStateChange);
 }
 
 void SidebarAccountItemWidget::resetRearIconButton()
@@ -238,6 +239,11 @@ void SidebarAccountItemWidget::resetRearIconButton()
             m_rearIconButton->setEnabled(true);
             m_rearIconButton->setIcon(QIcon(":/resources/icon/icon_refresh.svg"));
             m_rearIconButton->setToolTip("");
+            if (m_accountItem->isCanSyncSetting() || m_accountItem->isCanSyncShedule()) {
+               m_rearIconButton->setEnabled(true);
+            } else {
+                m_rearIconButton->setEnabled(false);
+            }
         } else {
             m_rearIconButton->setEnabled(false);
             m_rearIconButton->setIcon(QIcon(":/resources/icon/icon_warning_light.svg"));
@@ -280,6 +286,11 @@ void SidebarAccountItemWidget::slotRearIconClicked()
 void SidebarAccountItemWidget::slotSyncStatusChange(DAccount::AccountSyncState state)
 {
     m_accountItem->getAccount()->setSyncState(state);
+    resetRearIconButton();
+}
+
+void SidebarAccountItemWidget::slotAccountStateChange()
+{
     resetRearIconButton();
 }
 

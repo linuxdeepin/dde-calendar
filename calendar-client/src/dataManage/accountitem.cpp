@@ -148,6 +148,20 @@ bool AccountItem::isCanSyncShedule()
 }
 
 /**
+ * @brief AccountItem::isCanSyncSetting
+ * 获取通用设置是否可以同步
+ * @return
+ */
+bool AccountItem::isCanSyncSetting()
+{
+    if (getAccount()->accountType() != DAccount::Account_UnionID) {
+        return true;
+    }
+    return getAccount()->accountState().testFlag(DAccount::Account_Setting)
+           && getAccount()->accountState().testFlag(DAccount::Account_Open);
+}
+
+/**
  * @brief AccountItem::setAccountExpandStatus
  * 更新帐户列表展开状态
  * @param expandStatus 展开状态
@@ -162,6 +176,7 @@ void AccountItem::setAccountState(DAccount::AccountStates state)
 {
     m_account->setAccountState(state);
     m_dbusRequest->setAccountState(state);
+    emit signalAccountStateChange();
 }
 
 void AccountItem::setSyncFreq(DAccount::SyncFreqType freq)

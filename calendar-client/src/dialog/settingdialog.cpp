@@ -267,6 +267,7 @@ void CSettingDialog::initConnect()
     connect(gAccountManager, &AccountManager::signalGeneralSettingsUpdate, this, &CSettingDialog::slotGeneralSettingsUpdate);
     connect(gAccountManager, &AccountManager::signalAccountUpdate, this, &CSettingDialog::slotAccountUpdate);
     connect(gAccountManager, &AccountManager::signalLogout, this, &CSettingDialog::slotLogout);
+    connect(gAccountManager, &AccountManager::signalAccountStateChange, this, &CSettingDialog::slotAccountStateChange);
     connect(m_firstDayofWeekCombobox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &CSettingDialog::slotFirstDayofWeekCurrentChanged);
     connect(m_timeTypeCombobox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &CSettingDialog::slotTimeTypeCurrentChanged);
     connect(m_accountComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &CSettingDialog::slotAccountCurrentChanged);
@@ -275,6 +276,7 @@ void CSettingDialog::initConnect()
     connect(m_scheduleTypeWidget, &JobTypeListView::signalAddStatusChanged, m_typeAddBtn, &DIconButton::setEnabled);
     //TODO:更新union帐户的的同步频率
     connect(m_syncFreqComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &CSettingDialog::slotSetUosSyncFreq);
+    connect(m_syncBtn, &QPushButton::clicked, this, &CSettingDialog::slotUosManualSync);
 }
 
 void CSettingDialog::initData()
@@ -293,6 +295,7 @@ void CSettingDialog::initData()
         }
         m_syncFreqComboBox->setCurrentIndex(index);
     }
+    slotAccountStateChange();
 }
 
 void CSettingDialog::initWidgetDisplayStatus()
@@ -359,19 +362,19 @@ void CSettingDialog::initSyncFreqWidget()
 
 void CSettingDialog::initManualSyncButton()
 {
-    m_manualSyncBtn = new QWidget;
-    m_manualSyncBtn->setObjectName("ManualSyncWidget");
-    QPushButton *button = new QPushButton(m_manualSyncBtn);
-    button->setFixedSize(266, 36);
-    button->setText(tr("Sync Now"));
+    m_manualSyncWidget = new QWidget;
+    m_manualSyncWidget->setObjectName("ManualSyncWidget");
+    m_syncBtn = new QPushButton(m_manualSyncWidget);
+    m_syncBtn->setFixedSize(266, 36);
+    m_syncBtn->setText(tr("Sync Now"));
 
     m_syncTimeLabel = new QLabel;
 
     QVBoxLayout *layout = new QVBoxLayout;
-    layout->addWidget(button, 0, Qt::AlignCenter);
+    layout->addWidget(m_syncBtn, 0, Qt::AlignCenter);
     layout->addWidget(m_syncTimeLabel, 0, Qt::AlignCenter);
-    m_manualSyncBtn->setLayout(layout);
-    connect(button, &QPushButton::clicked, this, &CSettingDialog::slotUosManualSync);
+    m_manualSyncWidget->setLayout(layout);
+
 }
 
 void CSettingDialog::slotGeneralSettingsUpdate(){
@@ -463,6 +466,18 @@ void CSettingDialog::slotLastSyncTimeUpdate(const QString &datetime)
     QString dtstr = dtFromString(datetime).toString("yyyy/MM/dd hh:mm");
     if(m_syncTimeLabel && gUosAccountItem && !dtstr.isEmpty()) {
         m_syncTimeLabel->setText(tr("Last sync") + ":" + dtstr);
+    }
+}
+
+void CSettingDialog::slotAccountStateChange()
+{
+    if (!m_syncBtn || !gUosAccountItem) {
+        return;
+    }
+    if (gUosAccountItem->isCanSyncSetting() || gUosAccountItem->isCanSyncShedule()) {
+        m_syncBtn->setEnabled(true);
+    } else {
+        m_syncBtn->setEnabled(false);
     }
 }
 
@@ -582,7 +597,7 @@ QPair<QWidget*, QWidget*> CSettingDialog::createSyncTagRadioButton(QObject *obj)
 
 QWidget *CSettingDialog::createManualSyncButton(QObject *obj)
 {
-    return m_manualSyncBtn;
+    return m_manualSyncWidget;
 }
 
 QWidget *CSettingDialog::createJobTypeListView(QObject *)

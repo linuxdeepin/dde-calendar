@@ -49,6 +49,8 @@ public slots:
     void slotAccountUpdate();
     void slotLogout(DAccount::Type);
     void slotLastSyncTimeUpdate(const QString &datetime);
+    //帐户状态发送改变
+    void slotAccountStateChange();
 
     void slotFirstDayofWeekCurrentChanged(int index);
     void slotTimeTypeCurrentChanged(int index);
@@ -98,7 +100,8 @@ private:
 
     //手动同步按钮和同步时间显示
     QLabel *m_syncTimeLabel = nullptr;
-    QWidget *m_manualSyncBtn = nullptr;
+    QPushButton *m_syncBtn = nullptr;
+    QWidget *m_manualSyncWidget = nullptr;
 };
 
 #endif // SETTINGDIALOG_H

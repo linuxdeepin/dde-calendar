@@ -111,6 +111,8 @@ public slots:
     void slotRearIconClicked();
     //同步状态改变事件
     void slotSyncStatusChange(DAccount::AccountSyncState);
+    //帐户同步状态发生改变
+    void slotAccountStateChange();
 
 protected:
     void initView();

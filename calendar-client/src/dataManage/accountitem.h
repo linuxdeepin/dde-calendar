@@ -57,6 +57,8 @@ public:
 
     //获取日程是否可以同步
     bool isCanSyncShedule();
+    //获取通用设置是否可以同步
+    bool isCanSyncSetting();
 
     //更新帐户列表展开状态
     void setAccountExpandStatus(bool expandStatus);
