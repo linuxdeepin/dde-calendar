@@ -22,7 +22,9 @@
 #define SETTINGDIALOG_H
 
 #include "settingWidget/settingwidgets.h"
+
 #include <DSettingsDialog>
+#include <DIconButton>
 
 DWIDGET_USE_NAMESPACE
 
@@ -32,17 +34,71 @@ class CSettingDialog : public DSettingsDialog
 public:
     explicit CSettingDialog(QWidget *parent = nullptr);
 
-signals:
+private:
+    QPair<QWidget*, QWidget*> createFirstDayofWeekWidget(QObject *obj);
+    QPair<QWidget*, QWidget*> createTimeTypeWidget(QObject *obj);
+    QPair<QWidget*, QWidget*> createAccountCombobox(QObject *obj);
+    QPair<QWidget*, QWidget*> createSyncFreqCombobox(QObject *obj);
+    QPair<QWidget*, QWidget*> createSyncTagRadioButton(QObject *obj);
+    QWidget *createManualSyncButton(QObject *obj);
+    QWidget *createJobTypeListView(QObject *obj);
+    DIconButton *createTypeAddButton();
 
 public slots:
+    void slotGeneralSettingsUpdate();
+    void slotAccountUpdate();
+    void slotLogout(DAccount::Type);
+    void slotLastSyncTimeUpdate(const QString &datetime);
+
+    void slotFirstDayofWeekCurrentChanged(int index);
+    void slotTimeTypeCurrentChanged(int index);
+    void slotAccountCurrentChanged(int index);
+    void slotTypeAddBtnClickded();
+    void slotSetUosSyncFreq(int freq);
+    void slotUosManualSync();
 
 private:
+    void initFirstDayofWeekWidget();
+    void initTimeTypeWidget();
+    void initAccountComboBoxWidget();
+    void initTypeAddWidget();
+    void initScheduleTypeWidget();
+    void initSyncFreqWidget();
+    void initManualSyncButton();
+
+    void setFirstDayofWeek(int value);
+    void setTimeType(int value);
+    void accountUpdate();
+
+private:
+    void initWidget();
+    void initConnect();
+    void initData();
+
+    void initWidgetDisplayStatus();
     void initView();
 
 private:
+    //一周首日
+    QWidget *m_firstDayofWeekWidget = nullptr;
+    QComboBox *m_firstDayofWeekCombobox = nullptr;
 
-    SettingWidgets *m_settingWidgets = nullptr;
+    //时间格式
+    QWidget *m_timeTypeWidget = nullptr;
+    QComboBox *m_timeTypeCombobox = nullptr;
 
+    //帐户选择
+    QComboBox *m_accountComboBox = nullptr;
+    //同步频率
+    QComboBox *m_syncFreqComboBox = nullptr;
+
+    DIconButton *m_typeAddBtn = nullptr;
+
+    JobTypeListView *m_scheduleTypeWidget = nullptr;
+
+    //手动同步按钮和同步时间显示
+    QLabel *m_syncTimeLabel = nullptr;
+    QWidget *m_manualSyncBtn = nullptr;
 };
 
 #endif // SETTINGDIALOG_H
