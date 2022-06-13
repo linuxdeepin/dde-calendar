@@ -1,6 +1,5 @@
 #include "syncoperation.h"
 
-static const QString utcloudcalendatpath = "/home/uos/build-dde-calendar-unknown-Debug/calendar-service/dde-calendar-service";
 
 Syncoperation::Syncoperation(QObject *parent)
     : QObject(parent)
@@ -194,15 +193,29 @@ SyncoptResult Syncoperation::optGetMainSwitcher()
 
 SyncoptResult Syncoperation::optGetcalendarSwitcher(const QString &path)
 {
+    SyncoptResult mainswitcher = optGetMainSwitcher();
     SyncoptResult result;
-    QDBusPendingReply<bool> reply = m_syncInter->SwitcherGet(path);
-    reply.waitForFinished();
-    if (reply.error().message().isEmpty()) {
-        result.switch_state = reply.value();
-        result.ret = true;
+    result.switch_state = false; //默认关闭
+    if (mainswitcher.ret) {
+        if (mainswitcher.switch_state) {
+            //总开关开启,获取日历按钮状态
+            QDBusPendingReply<bool> reply = m_syncInter->SwitcherGet(path);
+            reply.waitForFinished();
+            if (reply.error().message().isEmpty()) {
+                result.switch_state = reply.value();
+                result.ret = true;
+            } else {
+                qDebug() << "get calendar switcher failed";
+                result.ret = false;
+            }
+        } else {
+            result.ret = false;
+        }
     } else {
+        qDebug() << "get main switcher failed";
         result.ret = false;
     }
+
     return  result;
 }
 
@@ -212,23 +225,11 @@ void Syncoperation::slotDbusCall(const QDBusMessage &msg)
     if (msg.member() == "SwitcherChange") {
         SyncoptResult result;
         //获取总开关状态
-        result = optGetMainSwitcher();
+        result = optGetcalendarSwitcher(utcloudcalendatpath);
         if (result.ret) {
-            if (result.switch_state) {
-                //总开关开启，获取日历开关状态
-                result = optGetcalendarSwitcher(utcloudcalendatpath);
-                if (result.ret) {
-                    Q_EMIT SwitcherChange(result.switch_state);
-                } else {
-                    qDebug() << "calendar switcher get state failed";
-                    return;
-                }
-            } else {
-                //总开关关闭
-                Q_EMIT SwitcherChange(false);
-            }
+            Q_EMIT SwitcherChange(result.switch_state);
         } else {
-            qDebug() << "main switcher get state failed";
+            Q_EMIT SwitcherChange(false);
         }
     }
 }

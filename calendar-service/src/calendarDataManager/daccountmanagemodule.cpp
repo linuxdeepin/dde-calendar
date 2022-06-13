@@ -215,7 +215,7 @@ void DAccountManageModule::unionIDDataMerging()
                     unionidDB->avatar() = accountUnionid->avatar();
                     unionidDB->displayName() = accountUnionid->displayName();
                     //设置DBus路径和数据库名
-                    SyncoptResult result = m_syncFileManage->getSyncoperation()->optGetMainSwitcher();
+                    SyncoptResult result = m_syncFileManage->getSyncoperation()->optGetcalendarSwitcher(utcloudcalendatpath);
                     if (result.switch_state) {
                         unionidDB->setAccountState(accountUnionid->accountState() | DAccount::Account_Open);
                     } else {
@@ -257,7 +257,7 @@ void DAccountManageModule::initAccountDBusInfo(const DAccount::Ptr &account)
     account->setAccountState(DAccount::AccountState::Account_Setting | DAccount::Account_Calendar);
     //TODO:获取总开关
     //设置DBus路径和数据库名
-    SyncoptResult result = m_syncFileManage->getSyncoperation()->optGetMainSwitcher();
+    SyncoptResult result = m_syncFileManage->getSyncoperation()->optGetcalendarSwitcher(utcloudcalendatpath);
     if (result.switch_state) {
         account->setAccountState(account->accountState() | DAccount::Account_Open);
     } else {
