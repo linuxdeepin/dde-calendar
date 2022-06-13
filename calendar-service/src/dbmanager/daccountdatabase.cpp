@@ -665,7 +665,7 @@ void DAccountDataBase::updateAccountInfo()
         query.addBindValue(m_account->intervalTime());
         query.addBindValue(m_account->syncTag());
         query.addBindValue(m_account->isExpandDisplay());
-        query.addBindValue(m_account->dtLastSync());
+        query.addBindValue(dtToString(m_account->dtLastSync()));
         if (!query.exec()) {
             qWarning() << query.lastError();
         }

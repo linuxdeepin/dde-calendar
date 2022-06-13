@@ -326,7 +326,10 @@ bool DAccountModule::updateScheduleType(const QString &typeInfo)
             //开启上传任务
             uploadNetWorkAccountData();
         }
-        emit signalScheduleTypeUpdate();
+        //如果不是修改显示状态则发送日程类型改变信号
+        if (oldScheduleType->showState() == scheduleType->showState()) {
+            emit signalScheduleTypeUpdate();
+        }
     }
     return isSucc;
 }
@@ -878,6 +881,7 @@ void DAccountModule::accountDownload()
         QSqlDatabase::removeDatabase(dbname_account_thread);
         QSqlDatabase::removeDatabase(dbname_manager_thread);
         QSqlDatabase::removeDatabase(dbname_sync_thread);
+        emit this->signalSyncFinished(errcode);
     };
 
     QThread *thread = QThread::create(syncFunc);
@@ -888,7 +892,6 @@ void DAccountModule::accountDownload()
 
 void DAccountModule::uploadNetWorkAccountData()
 {
-    qInfo() << Q_FUNC_INFO;
     //uid上传下载一个流程
     accountDownload();
 }

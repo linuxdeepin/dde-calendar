@@ -125,8 +125,8 @@ QString DAccountManagerDataBase::addAccountInfo(const DAccount::Ptr &accountInfo
         query.addBindValue(accountInfo->dbName());
         query.addBindValue(accountInfo->dbusPath());
         query.addBindValue(accountInfo->dbusInterface());
-        query.addBindValue(accountInfo->isExpandDisplay());
         query.addBindValue(dtToString(accountInfo->dtCreate()));
+        query.addBindValue(accountInfo->isExpandDisplay());
         query.addBindValue(0);
         if (!query.exec()) {
             qWarning() << "addAccountInfo error:" << query.lastError();

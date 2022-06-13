@@ -202,6 +202,7 @@ bool DAccount::toJsonString(const DAccount::Ptr &account, QString &jsonStr)
     rootObj.insert("dbName", account->dbName());
     rootObj.insert("isExpandDisplay", account->isExpandDisplay());
     rootObj.insert("dtLastSync", dtToString(account->dtLastSync()));
+    rootObj.insert("syncFreq", syncFreqToJsonString(account));
     QJsonDocument jsonDoc;
     jsonDoc.setObject(rootObj);
     jsonStr = QString::fromUtf8(jsonDoc.toJson(QJsonDocument::Compact));
@@ -267,6 +268,11 @@ bool DAccount::fromJsonString(Ptr &account, const QString &jsonStr)
     if (rootObj.contains("dtLastSync")) {
         account->setDtLastSync(dtFromString(rootObj.value("dtLastSync").toString()));
     }
+
+    if (rootObj.contains("syncFreq")) {
+        syncFreqFromJsonString(account, rootObj.value("syncFreq").toString());
+    }
+
     return true;
 }
 
