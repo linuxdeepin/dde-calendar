@@ -66,6 +66,11 @@ public slots:
     void slotCallFinished(CDBusPendingCallWatcher *) override;
     //后端发送信号事件
     void slotDbusCall(const QDBusMessage &msg) override;
+
+private:
+    void onPropertiesChanged(const QString &interfaceName,
+                             const QVariantMap &changedProperties,
+                             const QStringList &invalidatedProperties);
 };
 
 #endif // DBUSACCOUNTMANAGERREQUEST_H

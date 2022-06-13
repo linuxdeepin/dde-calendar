@@ -290,7 +290,6 @@ void CSettingDialog::initData()
         int index = 0;
         if (gUosAccountItem) {
             index = m_syncFreqComboBox->findData(gUosAccountItem->getAccount()->syncFreq());
-            qInfo() << index;
         }
         m_syncFreqComboBox->setCurrentIndex(index);
     }
@@ -403,6 +402,10 @@ void CSettingDialog::slotLogout(DAccount::Type type)
 
 void CSettingDialog::slotFirstDayofWeekCurrentChanged(int index)
 {
+    DCalendarGeneralSettings::Ptr setting = gAccountManager->getGeneralSettings();
+    if (index == setting->firstDayOfWeek()%7) {
+        return;
+    }
     //此次只设置一周首日，不刷新界面
     if (index == 0) {
         gAccountManager->setFirstDayofWeek(7);
@@ -415,6 +418,10 @@ void CSettingDialog::slotFirstDayofWeekCurrentChanged(int index)
 
 void CSettingDialog::slotTimeTypeCurrentChanged(int index)
 {
+    DCalendarGeneralSettings::Ptr setting = gAccountManager->getGeneralSettings();
+    if (index == setting->timeShowType()) {
+        return;
+    }
     gAccountManager->setTimeFormatType(index);
     //设置时间显示格式不刷新界面
     gCalendarManager->setTimeShowType(index, false);

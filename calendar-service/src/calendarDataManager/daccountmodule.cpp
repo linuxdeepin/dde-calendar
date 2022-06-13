@@ -688,6 +688,17 @@ void DAccountModule::accountDownload()
     if (m_account->accountType() != DAccount::Account_UnionID) {
         return;
     }
+
+    //如果uid控制中心开关关闭则退出同步
+    if(!m_account->accountState().testFlag(DAccount::Account_Open)){
+        return;
+    }
+
+    //如果日程和通用设置按钮都关闭则不同步数据
+    if(!m_account->accountState().testFlag(DAccount::Account_Calendar) || !m_account->accountState().testFlag(DAccount::Account_Setting)){
+        return;
+    }
+
     //sql prepare
     auto prequest = [](int count)->QString {
         QString r;
@@ -814,7 +825,7 @@ void DAccountModule::accountDownload()
 
             {
                 qInfo() << "将本地A的uploadTask同步到刚刚下载的B里";
-                {
+                if (accountState & DAccount::Account_Calendar){
                     qInfo() << "同步三张表";
                     ThrowQuery query(dbname_account_thread);
                     query.exec("select taskID,uploadType,uploadObject,objectID  from uploadTask");
@@ -853,7 +864,7 @@ void DAccountModule::accountDownload()
 
             {
                 qInfo() << "更新schedules、schedules、typeColor";
-                {
+                if (accountState & DAccount::Account_Calendar) {
                     syncIntoTable("schedules",    dbname_sync_thread, dbname_account_thread);
                     syncIntoTable("scheduleType", dbname_sync_thread, dbname_account_thread);
                     syncIntoTable("typeColor",    dbname_sync_thread, dbname_account_thread);

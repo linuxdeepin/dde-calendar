@@ -96,7 +96,8 @@ void DAccountManageModule::setCalendarGeneralSettings(const QString &cgSet)
 
 int DAccountManageModule::getfirstDayOfWeek()
 {
-    return static_cast<int>(m_generalSetting->firstDayOfWeek());
+    DCalendarGeneralSettings::Ptr cgSetPtr = DCalendarGeneralSettings::Ptr(new DCalendarGeneralSettings);
+    return static_cast<int>(cgSetPtr->firstDayOfWeek());
 }
 
 void DAccountManageModule::setFirstDayOfWeek(const int firstday)
@@ -104,12 +105,18 @@ void DAccountManageModule::setFirstDayOfWeek(const int firstday)
     if (m_generalSetting->firstDayOfWeek() != firstday) {
         m_generalSetting->setFirstDayOfWeek(static_cast<Qt::DayOfWeek>(firstday));
         m_accountManagerDB->setCalendarGeneralSettings(m_generalSetting);
+        foreach (auto account, m_accountList) {
+            if(account->accountType() == DAccount::Account_UnionID){
+                m_accountModuleMap[account->accountID()]->accountDownload();
+            }
+        }
     }
 }
 
 int DAccountManageModule::getTimeFormatType()
 {
-    return static_cast<int>(m_generalSetting->timeShowType());
+    DCalendarGeneralSettings::Ptr cgSetPtr = DCalendarGeneralSettings::Ptr(new DCalendarGeneralSettings);
+    return static_cast<int>(cgSetPtr->timeShowType());
 }
 
 void DAccountManageModule::setTimeFormatType(const int timeType)
@@ -117,6 +124,11 @@ void DAccountManageModule::setTimeFormatType(const int timeType)
     if (m_generalSetting->timeShowType() != timeType) {
         m_generalSetting->setTimeShowType(static_cast<DCalendarGeneralSettings::TimeShowType>(timeType));
         m_accountManagerDB->setCalendarGeneralSettings(m_generalSetting);
+        foreach (auto account, m_accountList) {
+            if(account->accountType() == DAccount::Account_UnionID){
+                m_accountModuleMap[account->accountID()]->accountDownload();
+            }
+        }
     }
 }
 

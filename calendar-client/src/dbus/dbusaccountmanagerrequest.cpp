@@ -179,5 +179,19 @@ void DbusAccountManagerRequest::slotDbusCall(const QDBusMessage &msg)
 {
     if (msg.member() == "accountUpdate") {
         getAccountList();
+    }else if (msg.member() == "PropertiesChanged") {
+        QDBusPendingReply<QString, QVariantMap, QStringList> reply = msg;
+        onPropertiesChanged(reply.argumentAt<0>(), reply.argumentAt<1>(), reply.argumentAt<2>());
+    }
+}
+
+void DbusAccountManagerRequest::onPropertiesChanged(const QString &, const QVariantMap &changedProperties, const QStringList &)
+{
+    for (QVariantMap::const_iterator it = changedProperties.cbegin(), end = changedProperties.cend(); it != end; ++it) {
+        if (it.key() == "firstDayOfWeek") {
+            getCalendarGeneralSettings();
+        } else if (it.key() == "timeFormatType") {
+            getCalendarGeneralSettings();
+        }
     }
 }
