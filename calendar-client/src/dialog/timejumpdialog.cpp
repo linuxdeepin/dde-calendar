@@ -41,7 +41,7 @@ void TimeJumpDialog::initView()
     m_yearEdit = new CTimeLineEdit(EditYear, this);
     m_monthEdit = new CTimeLineEdit(EditMonth, this);
     m_dayEdit = new CTimeLineEdit(EditDay, this);
-    m_jumpButton = new DSuggestButton(tr("Go"), this);
+    m_jumpButton = new DSuggestButton(tr("Go", "button"), this);
 
     m_yearEdit->setFixedSize(98, 36);
     m_monthEdit->setFixedSize(70, 36);
@@ -92,7 +92,7 @@ void TimeJumpDialog::initData()
  * @param date 初始显示的日期
  * @param pos 显示位置
  */
-void TimeJumpDialog::showPopup(const QDate& date, const QPoint& pos)
+void TimeJumpDialog::showPopup(const QDate &date, const QPoint &pos)
 {
     showPopup(date, pos.x(), pos.y());
 }
@@ -104,7 +104,7 @@ void TimeJumpDialog::showPopup(const QDate& date, const QPoint& pos)
  * @param x 显示位置x坐标
  * @param y 显示位置y坐标
  */
-void TimeJumpDialog::showPopup(const QDate& date, int x, int y)
+void TimeJumpDialog::showPopup(const QDate &date, int x, int y)
 {
     //保存时间
     m_date = date;
@@ -123,7 +123,7 @@ void TimeJumpDialog::showPopup(const QDate& date, int x, int y)
 int TimeJumpDialog::getMaxDayNum()
 {
     static int dayNum[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-    int maxDay = dayNum[m_date.month()-1];
+    int maxDay = dayNum[m_date.month() - 1];
     if (m_date.month() == 2  && QDate::isLeapYear(m_date.year())) {
         maxDay = 29;
     }
@@ -137,12 +137,12 @@ int TimeJumpDialog::getMaxDayNum()
 void TimeJumpDialog::resetEdietStepEnable()
 {
     //将所有编辑器调整为可上下编辑状态
-    m_yearEdit->setStepEnabled(CTimeLineEdit::StepUpEnabled|CTimeLineEdit::StepDownEnabled);
-    m_monthEdit->setStepEnabled(CTimeLineEdit::StepUpEnabled|CTimeLineEdit::StepDownEnabled);
-    m_dayEdit->setStepEnabled(CTimeLineEdit::StepUpEnabled|CTimeLineEdit::StepDownEnabled);
+    m_yearEdit->setStepEnabled(CTimeLineEdit::StepUpEnabled | CTimeLineEdit::StepDownEnabled);
+    m_monthEdit->setStepEnabled(CTimeLineEdit::StepUpEnabled | CTimeLineEdit::StepDownEnabled);
+    m_dayEdit->setStepEnabled(CTimeLineEdit::StepUpEnabled | CTimeLineEdit::StepDownEnabled);
 
     //根据每一级当前值设置上下编辑状态
-    if(m_yearEdit->value() == m_yearEdit->minimum()) {
+    if (m_yearEdit->value() == m_yearEdit->minimum()) {
         m_yearEdit->setStepEnabled(CTimeLineEdit::StepUpEnabled);
         if (m_monthEdit->value() == m_monthEdit->minimum()) {
             m_monthEdit->setStepEnabled(CTimeLineEdit::StepUpEnabled);
@@ -150,7 +150,7 @@ void TimeJumpDialog::resetEdietStepEnable()
                 m_dayEdit->setStepEnabled(CTimeLineEdit::StepUpEnabled);
             }
         }
-    } else if(m_yearEdit->value() == m_yearEdit->maximum()) {
+    } else if (m_yearEdit->value() == m_yearEdit->maximum()) {
         m_yearEdit->setStepEnabled(CTimeLineEdit::StepDownEnabled);
         if (m_monthEdit->value() == m_monthEdit->maximum()) {
             m_monthEdit->setStepEnabled(CTimeLineEdit::StepDownEnabled);
@@ -182,7 +182,7 @@ void TimeJumpDialog::slotEditNumChange(int id, int num)
         m_date.setDate(m_date.year(), m_date.month(), day);
         m_dayEdit->setRange(1, maxDay);
     }
-        break;
+    break;
     case EditMonth:
         //更改月
     {
@@ -193,7 +193,7 @@ void TimeJumpDialog::slotEditNumChange(int id, int num)
         m_date.setDate(m_date.year(), m_date.month(), day);
         m_dayEdit->setRange(1, maxDay);
     }
-        break;
+    break;
     case EditDay:
         //更改日
         m_date.setDate(m_date.year(), m_date.month(), num);

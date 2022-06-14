@@ -42,64 +42,45 @@ using namespace SettingWidget;
 //调用DSetingDialog时会用到上述场景
 static CalendarSettingSetting setting_account = {
     "setting_account",
-    QObject::tr("Account setting"),
+    QObject::tr("Account settings"),
     {
-        {
-            "account",
-            QObject::tr("Account"),
-            {
-                {
-                    "login",    //key
-                    "",         //name
-                    "login",    //type
-                    ""          //default
-                }
-            }
-        },
-        {
-            "account_sync_items",
-            QObject::tr("Select items to be synced"),
-            {
-                {
-                    "Account_Calendar",     //key
-                    QObject::tr("Events"),  //name
-                    "SyncTagRadioButton",   //type
-                    ""                      //default
-                },
+        {"account",
+         QObject::tr("Account"),
+         {{
+             "login", //key
+             "", //name
+             "login", //type
+             "" //default
+         }}},
+        {"account_sync_items",
+         QObject::tr("Select items to be synced"),
+         {{
+              "Account_Calendar", //key
+              QObject::tr("Events"), //name
+              "SyncTagRadioButton", //type
+              "" //default
+          },
 
-                {
-                    "Account_Setting",                //key
-                    QObject::tr("General settings"),  //name
-                    "SyncTagRadioButton", ""          //type
-                }
-            }
-        },
-        {
-            "sync_interval",
-            "",
-            {
-                {
-                    "Sync_interval",                //key
-                    QObject::tr("Sync interval"),   //name
-                    "SyncTimeCombobox",             //type
-                    ""
-                }
-            }
-        },
-        {
-            "manual_sync",
-            "",
-            {
-                {
-                    "manual_sync",         //key
-                    "",                    //name
-                    "ManualSyncButton",    //type
-                    ""                     //default
-                }
-            }
-        },
-    }
-};
+          {
+              "Account_Setting", //key
+              QObject::tr("General settings"), //name
+              "SyncTagRadioButton", "" //type
+          }}},
+        {"sync_interval",
+         "",
+         {{"Sync_interval", //key
+           QObject::tr("Sync interval"), //name
+           "SyncTimeCombobox", //type
+           ""}}},
+        {"manual_sync",
+         "",
+         {{
+             "manual_sync", //key
+             "", //name
+             "ManualSyncButton", //type
+             "" //default
+         }}},
+    }};
 
 static CalendarSettingSetting setting_base = {
     "setting_base",
@@ -240,8 +221,8 @@ void CSettingDialog::initView()
 
 
     //账户登出登入时，隐藏显示相关界面
-    connect(gAccountManager, &AccountManager::signalAccountUpdate, this, [=](){
-        if(!this->groupIsVisible("setting_account"))
+    connect(gAccountManager, &AccountManager::signalAccountUpdate, this, [=]() {
+        if (!this->groupIsVisible("setting_account"))
             return;
         setGroupVisible("setting_account.account_sync_items",   gUosAccountItem != nullptr);
         setGroupVisible("setting_account.sync_interval",        gUosAccountItem != nullptr);
@@ -307,11 +288,11 @@ void CSettingDialog::initFirstDayofWeekWidget()
 {
     m_firstDayofWeekWidget = new QWidget();
     m_firstDayofWeekCombobox = new QComboBox(m_firstDayofWeekWidget);
-    QHBoxLayout* layout = new QHBoxLayout(m_firstDayofWeekWidget);
+    QHBoxLayout *layout = new QHBoxLayout(m_firstDayofWeekWidget);
     m_firstDayofWeekCombobox->addItem(tr("Sunday"));
     m_firstDayofWeekCombobox->addItem(tr("Monday"));
 
-    m_firstDayofWeekCombobox->setFixedSize(150,36);
+    m_firstDayofWeekCombobox->setFixedSize(150, 36);
     layout->setAlignment(Qt::AlignRight);
     layout->addWidget(m_firstDayofWeekCombobox);
     m_firstDayofWeekWidget->setLayout(layout);
@@ -321,11 +302,11 @@ void CSettingDialog::initTimeTypeWidget()
 {
     m_timeTypeWidget = new QWidget();
     m_timeTypeCombobox = new QComboBox(m_timeTypeWidget);
-    QHBoxLayout* layout = new QHBoxLayout(m_timeTypeWidget);
+    QHBoxLayout *layout = new QHBoxLayout(m_timeTypeWidget);
     m_timeTypeCombobox->addItem(tr("24-hour clock"));
     m_timeTypeCombobox->addItem(tr("12-hour clock"));
 
-    m_timeTypeCombobox->setFixedSize(150,36);
+    m_timeTypeCombobox->setFixedSize(150, 36);
     layout->setAlignment(Qt::AlignRight);
     layout->addWidget(m_timeTypeCombobox);
     m_timeTypeWidget->setLayout(layout);
@@ -377,7 +358,8 @@ void CSettingDialog::initManualSyncButton()
 
 }
 
-void CSettingDialog::slotGeneralSettingsUpdate(){
+void CSettingDialog::slotGeneralSettingsUpdate()
+{
     DCalendarGeneralSettings::Ptr setting = gAccountManager->getGeneralSettings();
     if (!setting) {
         return;
@@ -390,7 +372,7 @@ void CSettingDialog::slotAccountUpdate()
 {
     accountUpdate();
     //判断账户是否为登录状态，并建立连接
-    if(gUosAccountItem) {
+    if (gUosAccountItem) {
         slotLastSyncTimeUpdate(gUosAccountItem->getDtLastUpdate());
         connect(gUosAccountItem.get(), &AccountItem::signalDtLastUpdate, this, &CSettingDialog::slotLastSyncTimeUpdate);
     }
@@ -406,7 +388,7 @@ void CSettingDialog::slotLogout(DAccount::Type type)
 void CSettingDialog::slotFirstDayofWeekCurrentChanged(int index)
 {
     DCalendarGeneralSettings::Ptr setting = gAccountManager->getGeneralSettings();
-    if (index == setting->firstDayOfWeek()%7) {
+    if (index == setting->firstDayOfWeek() % 7) {
         return;
     }
     //此次只设置一周首日，不刷新界面
@@ -470,7 +452,7 @@ void CSettingDialog::slotLastSyncTimeUpdate(const QString &datetime)
         dtstr = dtFromString(datetime).toString("yyyy/MM/dd hh:mm");
     }
 
-    if(m_syncTimeLabel && gUosAccountItem && !dtstr.isEmpty()) {
+    if (m_syncTimeLabel && gUosAccountItem && !dtstr.isEmpty()) {
         m_syncTimeLabel->setText(tr("Last sync") + ":" + dtstr);
     }
 }
@@ -493,15 +475,14 @@ void CSettingDialog::slotAccountStateChange()
             m_syncFreqComboBox->setEnabled(true);
         } else {
             m_syncFreqComboBox->setEnabled(false);
-    }
+        }
     }
 
 }
 
 void CSettingDialog::setFirstDayofWeek(int value)
 {
-    if (!m_firstDayofWeekCombobox)
-    {
+    if (!m_firstDayofWeekCombobox) {
         return;
     }
     //设置一周首日并刷新界面
@@ -546,7 +527,7 @@ void CSettingDialog::accountUpdate()
     slotAccountCurrentChanged(m_accountComboBox->currentIndex());
 }
 
-QPair<QWidget*, QWidget*> CSettingDialog::createFirstDayofWeekWidget(QObject *obj)
+QPair<QWidget *, QWidget *> CSettingDialog::createFirstDayofWeekWidget(QObject *obj)
 {
     auto option = qobject_cast<DTK_CORE_NAMESPACE::DSettingsOption *>(obj);
 
@@ -556,7 +537,7 @@ QPair<QWidget*, QWidget*> CSettingDialog::createFirstDayofWeekWidget(QObject *ob
     return optionWidget;
 }
 
-QPair<QWidget*, QWidget*> CSettingDialog::createTimeTypeWidget(QObject *obj)
+QPair<QWidget *, QWidget *> CSettingDialog::createTimeTypeWidget(QObject *obj)
 {
     auto option = qobject_cast<DTK_CORE_NAMESPACE::DSettingsOption *>(obj);
     QPair<QWidget *, QWidget *> optionWidget = DSettingsWidgetFactory::createStandardItem(QByteArray(), option, m_timeTypeWidget);
@@ -572,14 +553,14 @@ QPair<QWidget *, QWidget *> CSettingDialog::createAccountCombobox(QObject *obj)
     return optionWidget;
 }
 
-QPair<QWidget*, QWidget*> CSettingDialog::createSyncFreqCombobox(QObject *obj)
+QPair<QWidget *, QWidget *> CSettingDialog::createSyncFreqCombobox(QObject *obj)
 {
     auto option = qobject_cast<DTK_CORE_NAMESPACE::DSettingsOption *>(obj);
     QPair<QWidget *, QWidget *> optionWidget = DSettingsWidgetFactory::createStandardItem(QByteArray(), option, m_syncFreqComboBox);
     return optionWidget;
 }
 
-QPair<QWidget*, QWidget*> CSettingDialog::createSyncTagRadioButton(QObject *obj)
+QPair<QWidget *, QWidget *> CSettingDialog::createSyncTagRadioButton(QObject *obj)
 {
     auto option = qobject_cast<DTK_CORE_NAMESPACE::DSettingsOption *>(obj);
     DAccount::AccountState type = DAccount::Account_Calendar;
