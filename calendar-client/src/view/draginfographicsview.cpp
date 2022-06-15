@@ -835,6 +835,10 @@ void DragInfoGraphicsView::slotDeleteItem()
 {
     //获取选中日程
     DSchedule::Ptr _pressSchedule = DragInfoItem::getPressSchedule();
+    //如果不存在选中日程则退出
+    if (_pressSchedule.isNull()) {
+        return;
+    }
     //根据焦点状态获取当前焦点的item
     CSceneBackgroundItem *backgroundItem = dynamic_cast<CSceneBackgroundItem *>(m_Scene->getCurrentFocusItem());
     if (backgroundItem != nullptr) {
