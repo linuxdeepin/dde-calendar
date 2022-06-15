@@ -105,7 +105,7 @@ CTitleWidget::CTitleWidget(QWidget *parent)
     m_searchEdit->setFixedHeight(36);
     m_searchEdit->setFont(viewfont);
     m_searchEdit->lineEdit()->installEventFilter(this);
-    m_searchEdit->setPlaceholderText(tr("Search events and festivals"));
+    m_searchEdit->setText(tr("Search events and festivals"));
     connect(m_searchEdit, &DSearchEdit::searchAborted, [&] {
         //搜索框关闭按钮，清空数据
         slotSearchEditFocusChanged(false);
