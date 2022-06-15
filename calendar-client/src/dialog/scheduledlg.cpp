@@ -270,7 +270,20 @@ bool CScheduleDlg::createSchedule(const QString &scheduleTypeId)
     schedule->setAlarmType(alarmType);
 
     //设置重复规则
-    DSchedule::RRuleType rruleType = static_cast<DSchedule::RRuleType>(m_beginrepeatCombox->currentIndex());
+    DSchedule::RRuleType rruleType;
+    if (schedule->lunnar()) {
+        //0:从不 1:每月 2:每年
+        if (m_beginrepeatCombox->currentIndex() == 1) {
+            rruleType = DSchedule::RRule_Month;
+        } else if (m_beginrepeatCombox->currentIndex() == 2) {
+            rruleType = DSchedule::RRule_Year;
+        } else {
+            rruleType = DSchedule::RRule_None;
+        }
+    } else {
+        //0:从不 1:每天 2:每个工作日 3:每周 4:每月 5:每年
+        rruleType = static_cast<DSchedule::RRuleType>(m_beginrepeatCombox->currentIndex());
+    }
     schedule->setRRuleType(rruleType);
     if (m_endrepeatCombox->currentIndex() == 1) {
         //结束与次数
