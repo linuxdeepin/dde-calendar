@@ -263,10 +263,9 @@ int SyncStack::downloadUidData(bool &isInitSyncData, SyncFileManage &fileManger)
     int errCode = 0;
     isInitSyncData = false;
     //下载数据库sync
-    dbpath_sync = "/home/chz/Desktop/xx.db";
-//    if (!fileManger.SyncDataDownload(accountId, dbpath_sync, errCode)) {
-//        return errCode;
-//    }
+    if (!fileManger.SyncDataDownload(accountId, dbpath_sync, errCode)) {
+        return errCode;
+    }
 
     QSqlDatabase db_sync = QSqlDatabase::addDatabase("QSQLITE", dbname_sync_thread);
     db_sync.setDatabaseName(dbpath_sync);
