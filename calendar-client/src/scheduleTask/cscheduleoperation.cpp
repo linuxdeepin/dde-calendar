@@ -112,7 +112,7 @@ bool CScheduleOperation::changeSchedule(const DSchedule::Ptr &newInfo, const DSc
                 //更新日程
                 showLunarMessageDialog(newInfo, oldInfo);
                 m_accountItem->updateSchedule(newInfo);
-                //                _result = m_DBusManager->UpdateJob(newInfo);
+                _result = true;
             }
         } else {
             _result = changeRecurInfo(newInfo, oldInfo);
