@@ -224,10 +224,10 @@ void CGraphicsView::upDateInfoShow(const CGraphicsView::DragStatus &status, cons
                             qWarning() << "week view create error,tNum -2 :" << index;
                             index = 1;
                         }
-                        DSchedule::Ptr tdetaliinfo = info.at(m).vData.at(index);
-                        tdetaliinfo->setSummary("...");
-                        //TODO:设置类型
-                        tdetaliinfo->setScheduleTypeID("3");
+                        DSchedule::Ptr tdetaliinfo(info.at(m).vData.at(index)->clone());
+                        tdetaliinfo->setSummary("1");
+                        //如果为"..."则设置类型为other，在获取颜色时会对其进行判断
+                        tdetaliinfo->setScheduleTypeID("other");
                         addScheduleItem(tdetaliinfo, currentDate, tNum, tNum, 1,
                                         m_viewType, m_sMaxNum);
                     } else {

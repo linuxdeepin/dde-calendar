@@ -30,11 +30,13 @@ CScheduleDataManage *CScheduleDataManage::m_vscheduleDataManage = nullptr;
 CSchedulesColor CScheduleDataManage::getScheduleColorByType(const QString &typeId)
 {
     CSchedulesColor color;
-    DTypeColor colorinfo;
     DScheduleType::Ptr type = gAccountManager->getScheduleTypeByScheduleTypeId(typeId);
     QColor typeColor;
     if (nullptr != type) {
         typeColor = type->typeColor().colorCode();
+    } else if (typeId =="other"){
+            //如果类型不存在则设置一个默认颜色
+            typeColor = QColor("#BA60FA");
     }
 
     color.orginalColor = typeColor;
