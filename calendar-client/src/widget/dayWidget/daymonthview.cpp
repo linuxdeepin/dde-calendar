@@ -618,21 +618,23 @@ void CDayMonthWidget::paintCell(QWidget *cell)
 
     if (m_vlineflag.count() == DDEDayCalendar::PainterCellNum) {
         if (m_vlineflag[pos]) {
-            painter.save();
-            QPen pen;
-            pen.setWidth(2);
-            pen.setColor(m_ceventColor);
-            painter.setPen(pen);
-            painter.setBrush(QBrush(m_ceventColor));
-            painter.setPen(Qt::NoPen);
-            int r = int(cell->width() * 0.1);
-            if (r < 4) {
-                r = 4;
-            } else if (r > 7) {
-                r = 7;
+            if(m_selectDate.month() == getCellDate(pos).month()) {
+                painter.save();
+                QPen pen;
+                pen.setWidth(2);
+                pen.setColor(m_ceventColor);
+                painter.setPen(pen);
+                painter.setBrush(QBrush(m_ceventColor));
+                painter.setPen(Qt::NoPen);
+                int r = int(cell->width() * 0.1);
+                if (r < 4) {
+                    r = 4;
+                } else if (r > 7) {
+                    r = 7;
+                }
+                painter.drawEllipse(cell->width() - r - 6, 4, r, r);
+                painter.restore();
             }
-            painter.drawEllipse(cell->width() - r - 6, 4, r, r);
-            painter.restore();
         }
     }
 }
