@@ -104,9 +104,13 @@ bool SyncFileManage::SyncDataUpload(const QString &filepath, int &errorcode)
         qDebug() << "upload failed";
         return false;
     }
+    return true;
+}
 
+bool SyncFileManage::syncDataDelete(const QString &filepath)
+{
     if (!SyncDbDelete(filepath)) {
-        errorcode = -1;
+        qWarning() << "delete file error:" << filepath;
         return false;
     }
     return true;

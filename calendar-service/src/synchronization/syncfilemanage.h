@@ -33,6 +33,13 @@ public:
      * @return
      */
     bool SyncDataUpload(const QString &filepath, int &errorcode);
+
+    /**
+     * @brief syncDataDelete    删除临时数据
+     * @param filepath
+     * @return
+     */
+    bool syncDataDelete(const QString &filepath);
     /**
      * @brief getuserInfo   获取用户信息
      * @param

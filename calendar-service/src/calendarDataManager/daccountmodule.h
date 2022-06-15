@@ -25,6 +25,7 @@
 #include "daccountdatabase.h"
 #include "dschedule.h"
 #include "dalarmmanager.h"
+#include "ddatasyncbase.h"
 
 #include <QObject>
 #include <QSharedPointer>
@@ -39,7 +40,7 @@ public:
     typedef QList<Ptr> List;
 
     explicit DAccountModule(const DAccount::Ptr &account, QObject *parent = nullptr);
-
+    ~DAccountModule();
     //获取帐户信息
     QString getAccountInfo();
     //设置获取帐户是否展开
@@ -143,12 +144,14 @@ signals:
 public slots:
     void slotOpenCalendar(const QString &alarmID);
 
-    void slotSyncFinished(int errcode);
+    void slotSyncState(const int syncState);
+    void slotDateUpdate(const DDataSyncBase::UpdateTypes updateType);
 
 private:
     DAccount::Ptr m_account;
     DAccountDataBase::Ptr m_accountDB;
     DAlarmManager::Ptr m_alarm;
+    DDataSyncBase *m_dataSync;
 };
 
 #endif // DACCOUNTMODULE_H
