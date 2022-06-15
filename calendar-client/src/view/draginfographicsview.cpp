@@ -504,7 +504,7 @@ void DragInfoGraphicsView::updateScheduleInfo(const DSchedule::Ptr &info)
     QObject *parent = static_cast<QObject *>(variant.value<void *>());
     //设置父类为主窗口
     CScheduleOperation _scheduleOperation(info->scheduleTypeID(), qobject_cast<QWidget *>(parent));
-    if (_scheduleOperation.changeSchedule(info, m_PressScheduleInfo)) {
+    if (_scheduleOperation.changeSchedule(info, m_DragScheduleInfo)) {
         //如果日程修改成功则更新更新标志
         m_hasUpdateMark = true;
     } else {
