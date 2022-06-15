@@ -114,7 +114,7 @@ bool SyncAccount::insertToScheduleType(const DScheduleType::Ptr &scheduleType)
                    typeColorID, description, privilege, showState,  \
                    syncTag,dtCreate,isDeleted)                      \
             VALUES(?,?,?,?,?,?,?,?,?,?,?)");
-    QSqlQuery query(QSqlDatabase::database(_connectionName));
+   SqliteQuery query(QSqlDatabase::database(_connectionName));
     query.prepare(strSql);
     if (scheduleType->typeID().size() < 30) {
         scheduleType->setTypeID(DDataBase::createUuid());
@@ -137,7 +137,7 @@ bool SyncAccount::insertToScheduleType(const DScheduleType::Ptr &scheduleType)
 
 bool SyncAccount::insertToTypeColor(int typeColorNo, QString strColorHex, int privilege)
 {
-    QSqlQuery query(QSqlDatabase::database(_connectionName));
+   SqliteQuery query(QSqlDatabase::database(_connectionName));
     query.prepare("replace into TypeColor(ColorID, ColorHex, privilege) VALUES(?, ?, ?)");
     query.addBindValue(typeColorNo);
     query.addBindValue(strColorHex);
@@ -152,17 +152,14 @@ void DUIDSynDataWorker::syncData(SyncStack syncType)
         mSyncTimer->setSingleShot(true);
         connect(mSyncTimer, &QTimer::timeout, this, &DUIDSynDataWorker::slotSync);
     }
-    mSyncTimer->start(100);
+    mSyncTimer->start(200);
 
-    mSyncMutex.lock();
     mSyncList.append(syncType);
-    mSyncMutex.unlock();
 }
 
 void DUIDSynDataWorker::slotSync()
 {
     bool next = false;
-    mSyncMutex.lock();
     for(int k = mSyncList.count() - 1; k >= 0; k --) {
         if(k == mSyncList.count() - 1) {
             mSync = mSyncList[k];
@@ -176,7 +173,6 @@ void DUIDSynDataWorker::slotSync()
     }
 
     mSyncList.clear();
-    mSyncMutex.unlock();
 
     if(next)
         startUpdate();
@@ -193,7 +189,6 @@ void DUIDSynDataWorker::startUpdate()
      * 3.将B的数据库完全复制到A
      * 4.上传B
      */
-    QMutexLocker locker(&mSyncMutex);
     SyncFileManage fileManger;
     int errCode = 0;
     DUnionIDDav::UpdateTypes updateType = DUnionIDDav::Update_None;
@@ -226,7 +221,7 @@ void DUIDSynDataWorker::startUpdate()
         errCode = mSync.uploadTmpData(fileManger);
     }
     //删除临时文件
-     mSync.deleteTmpData(fileManger);
+    mSync.deleteTmpData(fileManger);
 
     qInfo() << "同步完成";
     if(errCode == 0) {
@@ -273,7 +268,7 @@ int SyncStack::downloadUidData(bool &isInitSyncData, SyncFileManage &fileManger)
         return -1;
     }
     qInfo() << "初始化表结构";
-    QSqlQuery query(QSqlDatabase::database(dbname_sync_thread));
+   SqliteQuery query(QSqlDatabase::database(dbname_sync_thread));
 
     if(!query.exec(DAccountDataBase::sql_create_schedules))
         return -1;
@@ -312,7 +307,7 @@ int SyncStack::downloadUidData(bool &isInitSyncData, SyncFileManage &fileManger)
 int SyncStack::loadToTmp()
 {
     qInfo() << "将本地A的uploadTask同步到刚刚下载的B里";
-    QSqlQuery query(QSqlDatabase::database(dbname_account_thread));
+   SqliteQuery query(QSqlDatabase::database(dbname_account_thread));
     query.exec("select taskID,uploadType,uploadObject,objectID  from uploadTask");
     while (query.next()) {
         int type = query.value("uploadType").toInt();
@@ -404,8 +399,8 @@ void SyncStack::prepareBinds(QSqlQuery &query, QSqlRecord source)
 
 bool SyncStack::syncIntoTable(const QString &table_name, const QString &connection_name_source, const QString &connection_name_target)
 {
-    QSqlQuery source(QSqlDatabase::database(connection_name_source));
-    QSqlQuery target(QSqlDatabase::database(connection_name_target));
+   SqliteQuery source(QSqlDatabase::database(connection_name_source));
+   SqliteQuery target(QSqlDatabase::database(connection_name_target));
     if(!target.exec(" delete from " + table_name))
         return false;
     source.exec(" select * from " + table_name);
@@ -422,7 +417,7 @@ bool SyncStack::syncIntoTable(const QString &table_name, const QString &connecti
 
 QSqlRecord SyncStack::selectRecord(const QString &table_name, const QString &key_name, const QVariant &key_value, const QString &connection_name)
 {
-    QSqlQuery query(QSqlDatabase::database(connection_name));
+   SqliteQuery query(QSqlDatabase::database(connection_name));
     query.prepare("select * from " + table_name + " where " + key_name + " = ?");
     query.addBindValue(key_value);
     query.exec();
@@ -435,7 +430,7 @@ bool SyncStack::replaceIntoRecord(const QString &table_name, QSqlRecord record, 
 {
     if (record.isEmpty())
         return true;
-    QSqlQuery query(QSqlDatabase::database(connection_name));
+   SqliteQuery query(QSqlDatabase::database(connection_name));
     query.prepare("replace into " + table_name + " values(" + prepareQuest(record.count()) + ")");
     prepareBinds(query, record);
     return query.exec();
@@ -443,7 +438,7 @@ bool SyncStack::replaceIntoRecord(const QString &table_name, QSqlRecord record, 
 
 QVariant SyncStack::selectValue(const QString &value_name, const QString &table_name, const QString &key_name, const QVariant &key_value, const QString &connection_name)
 {
-    QSqlQuery query(QSqlDatabase::database(connection_name));
+   SqliteQuery query(QSqlDatabase::database(connection_name));
     query.prepare("select " + value_name + " from " + table_name + " where " + key_name + " = ?");
     query.addBindValue(key_value);
     query.exec();
@@ -453,7 +448,7 @@ QVariant SyncStack::selectValue(const QString &value_name, const QString &table_
 
 bool SyncStack::deleteTableLine(const QString &table_name, const QString &key_name, const QVariant &key_value, const QString &connection_name)
 {
-    QSqlQuery query(QSqlDatabase::database(connection_name));
+   SqliteQuery query(QSqlDatabase::database(connection_name));
     query.prepare("delete from " + table_name + " where " + key_name + " = ?");
     query.addBindValue(key_value);
     return query.exec();
@@ -461,7 +456,7 @@ bool SyncStack::deleteTableLine(const QString &table_name, const QString &key_na
 
 bool SyncStack::deleteTable(const QString &table_name, const QString &connection_name)
 {
-    QSqlQuery query(QSqlDatabase::database(connection_name));
+   SqliteQuery query(QSqlDatabase::database(connection_name));
     if(!query.exec("delete from " + table_name)) {
         qInfo() << query.lastError();
         return false;

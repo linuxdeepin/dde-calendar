@@ -23,6 +23,7 @@
 
 #include "ddatabase.h"
 #include "ddatasyncbase.h"
+#include "units.h"
 
 #include <QObject>
 #include <QSqlQuery>
@@ -121,7 +122,7 @@ public:
         : _connectionNames(connectionNames)
     {
         for (auto name : _connectionNames) {
-            QSqlDatabase::database(name).transaction();
+            SqliteQuery(name).transaction();
         }
     }
     ~SqlTransactionLocker()
@@ -130,13 +131,13 @@ public:
             return;
 
         for (auto name : _connectionNames)
-            QSqlDatabase::database(name).rollback();
+            SqliteQuery(name).rollback();
     }
     void commit()
     {
         hasCommited = true;
         for (auto name : _connectionNames)
-            QSqlDatabase::database(name).commit();
+            SqliteQuery(name).commit();
     }
 
 private:
@@ -175,7 +176,6 @@ private:
     //sync
     QString dbpath_sync;
     QTimer *mSyncTimer = nullptr;
-    QMutex mSyncMutex;
     //thread
     SyncStack mSync;
     QVector<SyncStack> mSyncList;

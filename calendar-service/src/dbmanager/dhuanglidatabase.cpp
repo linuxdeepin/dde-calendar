@@ -19,6 +19,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "dhuanglidatabase.h"
+#include "units.h"
 
 #include <QSqlQuery>
 #include <QDebug>
@@ -36,7 +37,7 @@ QString DHuangLiDataBase::queryFestivalList(quint32 year, quint8 month)
 {
     QString strtable = QString("festival_%1").arg(year);
     QString strsql = QString("SELECT id,month,name,description,rest,list FROM %1 WHERE month = %2").arg(strtable).arg(month);
-    QSqlQuery query(strsql, m_database);
+    SqliteQuery query(strsql, m_database);
     QString strjson;
     if (query.exec()) {
         QJsonDocument doc;
@@ -74,7 +75,7 @@ QString DHuangLiDataBase::queryFestivalList(quint32 year, quint8 month)
 QList<stHuangLi> DHuangLiDataBase::queryHuangLiByDays(const QList<stDay> &days)
 {
     QList<stHuangLi> infos;
-    QSqlQuery query(m_database);
+   SqliteQuery query(m_database);
     foreach (stDay d, days) {
         //查询的id
         qint64 id = QString().sprintf("%d%02d%02d", d.Year, d.Month, d.Day).toInt();

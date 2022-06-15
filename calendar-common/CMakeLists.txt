@@ -6,6 +6,7 @@ find_package(PkgConfig REQUIRED)
 find_package(Qt5 COMPONENTS
     Core
     DBus
+    Sql
 REQUIRED)
 
 set(CMAKE_CXX_STANDARD 11)
@@ -26,6 +27,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC ../3rdparty/kcalendarcore/src)
 target_link_libraries(${PROJECT_NAME}
     Qt5::Core
     Qt5::DBus
+    Qt5::Sql
     kcalendarcore
     )
 

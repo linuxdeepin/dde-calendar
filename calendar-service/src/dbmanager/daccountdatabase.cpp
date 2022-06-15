@@ -40,7 +40,7 @@ DAccountDataBase::DAccountDataBase(const DAccount::Ptr &account, QObject *parent
 QString DAccountDataBase::createSchedule(const DSchedule::Ptr &schedule)
 {
     if (!schedule.isNull()) {
-        QSqlQuery query(m_database);
+       SqliteQuery query(m_database);
         schedule->setUid(DDataBase::createUuid());
 
         QString strSql("INSERT INTO schedules                                                   \
@@ -86,7 +86,7 @@ bool DAccountDataBase::updateSchedule(const DSchedule::Ptr &schedule)
 {
     bool resbool = false;
     if (!schedule.isNull()) {
-        QSqlQuery query(m_database);
+       SqliteQuery query(m_database);
         QString strSql("UPDATE schedules                                                  \
                        SET scheduleTypeID=?, summary=?, description=?, allDay=?           \
                 , dtStart=?, dtEnd=?, isAlarm=?,titlePinyin=?, isLunar=?, ics=?, fileName=?             \
@@ -126,7 +126,7 @@ DSchedule::Ptr DAccountDataBase::getScheduleByScheduleID(const QString &schedule
     QString strSql("SELECT  scheduleID, scheduleTypeID, summary, description, allDay, dtStart, dtEnd,   \
                    isAlarm,titlePinyin,isLunar, ics, fileName, dtCreate, dtUpdate, dtDelete, isDeleted  \
                    FROM schedules WHERE  scheduleID  = ? ;");
-    QSqlQuery query(m_database);
+   SqliteQuery query(m_database);
     DSchedule::Ptr schedule;
     if (query.prepare(strSql)) {
         query.addBindValue(scheduleID);
@@ -156,7 +156,7 @@ QStringList DAccountDataBase::getScheduleIDListByTypeID(const QString &typeID)
 {
     QStringList scheduleIDList;
     QString strSql("SELECT scheduleID FROM schedules WHERE  scheduleTypeID  = ?;");
-    QSqlQuery query(m_database);
+   SqliteQuery query(m_database);
     if (query.prepare(strSql)) {
         query.addBindValue(typeID);
         if (query.exec()) {
@@ -184,7 +184,7 @@ bool DAccountDataBase::deleteScheduleByScheduleID(const QString &scheduleID, con
     } else {
         strSql = QString("UPDATE schedules SET dtDelete = '%1' , isDeleted = 1  WHERE scheduleID=?").arg(dtToString(QDateTime::currentDateTime()));
     }
-    QSqlQuery query(m_database);
+   SqliteQuery query(m_database);
     bool resBool = false;
     if (query.prepare(strSql)) {
         query.addBindValue(scheduleID);
@@ -209,7 +209,7 @@ bool DAccountDataBase::deleteSchedulesByScheduleTypeID(const QString &typeID, co
     } else {
         strSql = QString("UPDATE schedules SET dtDelete = '%1' , isDeleted = 1  WHERE scheduleTypeID=?").arg(dtToString(QDateTime::currentDateTime()));
     }
-    QSqlQuery query(m_database);
+   SqliteQuery query(m_database);
     bool resBool = false;
     if (query.prepare(strSql)) {
         query.addBindValue(typeID);
@@ -251,7 +251,7 @@ DSchedule::List DAccountDataBase::querySchedulesByKey(const QString &key)
     strSql.append(QString(" order by :strsort "));
     sqlBindValue[":strsort"] = "s.dtStart asc";
 
-    QSqlQuery query(m_database);
+   SqliteQuery query(m_database);
     if (query.prepare(strSql)) {
         for (auto iter = sqlBindValue.constBegin(); iter != sqlBindValue.constEnd(); iter++) {
             query.bindValue(iter.key(), iter.value());
@@ -284,7 +284,7 @@ DSchedule::List DAccountDataBase::querySchedulesByRRule(const QString &key, cons
     QString strSql("SELECT  scheduleID, scheduleTypeID, summary, description, allDay, dtStart, dtEnd,   \
                    isAlarm,titlePinyin,isLunar, ics, fileName, dtCreate, dtUpdate, dtDelete, isDeleted  \
                    FROM schedules ");
-    QSqlQuery query(m_database);
+   SqliteQuery query(m_database);
     if (!key.isEmpty()) {
         strSql += " WHERE  summary  = ? ";
     }
@@ -326,7 +326,7 @@ DSchedule::List DAccountDataBase::getRemindSchedule()
     QString strSql("SELECT  scheduleID, scheduleTypeID, summary, description, allDay, dtStart, dtEnd, isAlarm,  \
                    titlePinyin, isLunar, ics, fileName, dtCreate, dtUpdate, dtDelete, isDeleted                 \
                    FROM schedules WHERE  isAlarm =1;");
-    QSqlQuery query(m_database);
+   SqliteQuery query(m_database);
     DSchedule::List scheduleList;
     if (query.prepare(strSql)) {
         if (query.exec()) {
@@ -371,7 +371,7 @@ QString DAccountDataBase::createScheduleType(const DScheduleType::Ptr &scheduleT
                    typeColorID, description, privilege, showState,  \
                    syncTag,dtCreate,isDeleted)                      \
                VALUES(?,?,?,?,?,?,?,?,?,?,?)");
-    QSqlQuery query(m_database);
+   SqliteQuery query(m_database);
     if (query.prepare(strSql)) {
         if (scheduleType->typeID().size() < 30) {
             scheduleType->setTypeID(DDataBase::createUuid());
@@ -419,7 +419,7 @@ DScheduleType::Ptr DAccountDataBase::getScheduleTypeByID(const QString &typeID, 
                    st.typeColorID = tc.ColorID                          \
                WHERE                                                    \
                    st.typeID = ? AND st.isDeleteD = ?");
-    QSqlQuery query(m_database);
+   SqliteQuery query(m_database);
     if (query.prepare(strSql)) {
         query.addBindValue(typeID);
         query.addBindValue(isDeleted);
@@ -471,7 +471,7 @@ DScheduleType::List DAccountDataBase::getScheduleTypeList(const int isDeleted)
                WHERE                                                    \
                    st.isDeleted = ?");
     DScheduleType::List typeList;
-    QSqlQuery query(m_database);
+   SqliteQuery query(m_database);
     if (query.prepare(strSql)) {
         query.addBindValue(isDeleted);
         if (query.exec()) {
@@ -513,7 +513,7 @@ DScheduleType::List DAccountDataBase::getScheduleTypeList(const int isDeleted)
 bool DAccountDataBase::scheduleTypeByUsed(const QString &typeID, const int isDeleted)
 {
     QString strSql("SELECT COUNT(scheduleTypeID) FROM schedules WHERE scheduleTypeID = ? AND isDeleted = ?;");
-    QSqlQuery query(m_database);
+   SqliteQuery query(m_database);
     int typeCount = 0;
     if (query.prepare(strSql)) {
         query.addBindValue(typeID);
@@ -534,7 +534,7 @@ bool DAccountDataBase::scheduleTypeByUsed(const QString &typeID, const int isDel
 
 bool DAccountDataBase::deleteScheduleTypeByID(const QString &typeID, const int isDeleted)
 {
-    QSqlQuery query(m_database);
+   SqliteQuery query(m_database);
     QString strSql;
     if (isDeleted == 0) {
         //弱删除
@@ -565,7 +565,7 @@ bool DAccountDataBase::deleteScheduleTypeByID(const QString &typeID, const int i
 bool DAccountDataBase::updateScheduleType(const DScheduleType::Ptr &scheduleType)
 {
     bool res = false;
-    QSqlQuery query(m_database);
+   SqliteQuery query(m_database);
     QString strSql("UPDATE scheduleType                     \
                        SET typeName=?, typeDisplayName=?, typePath=?, typeColorID=?, description=?,     \
                        privilege=?, showState=?, dtUpdate=?, dtDelete=?, isDeleted=?        \
@@ -600,7 +600,7 @@ bool DAccountDataBase::updateScheduleType(const DScheduleType::Ptr &scheduleType
 QString DAccountDataBase::getFestivalTypeID()
 {
     QString strSql("SELECT typeID FROM scheduleType WHERE  privilege = 0;");
-    QSqlQuery query(m_database);
+   SqliteQuery query(m_database);
     QString typeID("");
     if (query.prepare(strSql)) {
         if (query.exec()) {
@@ -626,7 +626,7 @@ void DAccountDataBase::getAccountInfo(const DAccount::Ptr &account)
     QString strSql("SELECT syncState,accountState, accountName, displayName, cloudPath,      \
                    accountType, syncFreq, intervalTime, syncTag, expandStatus, dtLastUpdate         \
                    FROM account WHERE id = 1;");
-    QSqlQuery query(m_database);
+   SqliteQuery query(m_database);
     if (query.prepare(strSql) && query.exec() && query.next()) {
         account->setSyncState(static_cast<DAccount::AccountSyncState>(query.value("syncState").toInt()));
         account->setAccountState(static_cast<DAccount::AccountState>(query.value("accountState").toInt()));
@@ -653,7 +653,7 @@ void DAccountDataBase::updateAccountInfo()
                    SET syncState=?, accountState = ?,accountName=?, displayName=?,                               \
                   cloudPath=?, accountType=?, syncFreq=?, intervalTime=?, syncTag=?             \
                   , expandStatus = ?, dtLastUpdate = ? WHERE id=1;");
-    QSqlQuery query(m_database);
+   SqliteQuery query(m_database);
     if (query.prepare(strSql)) {
         query.addBindValue(m_account->syncState());
         query.addBindValue(int(m_account->accountState()));
@@ -684,7 +684,7 @@ bool DAccountDataBase::addTypeColor(const int typeColorNo, const QString &strCol
                    (ColorID, ColorHex, privilege)           \
                    VALUES(:ColorID, :ColorHex, :privilege)");
 
-    QSqlQuery query(m_database);
+   SqliteQuery query(m_database);
     bool res = false;
     if (query.prepare(strSql)) {
         query.bindValue(":ColorID", typeColorNo);
@@ -709,7 +709,7 @@ bool DAccountDataBase::addTypeColor(const int typeColorNo, const QString &strCol
 void DAccountDataBase::deleteTypeColor(const int colorNo)
 {
     QString strSql("DELETE FROM typeColor WHERE ColorID = ?;");
-    QSqlQuery query(m_database);
+   SqliteQuery query(m_database);
     if (query.prepare(strSql)) {
         query.addBindValue(colorNo);
         if (!query.exec()) {
@@ -727,7 +727,7 @@ void DAccountDataBase::deleteTypeColor(const int colorNo)
 DTypeColor::List DAccountDataBase::getSysColor()
 {
     QString strSql("SELECT ColorID, ColorHex, privilege FROM typeColor WHERE  privilege =1;");
-    QSqlQuery query(m_database);
+   SqliteQuery query(m_database);
     DTypeColor::List typeColorList;
 
     if (query.prepare(strSql) && query.exec()) {
@@ -753,7 +753,7 @@ void DAccountDataBase::createRemindInfo(const DRemindData::Ptr &remind)
                    (alarmID, scheduleID, recurID,remindCount,notifyID        \
                     , dtRemind, dtStart, dtEnd)                         \
                    VALUES(?,?,?,?,?,?,?,?);");
-    QSqlQuery query(m_database);
+   SqliteQuery query(m_database);
     if (query.prepare(strSql)) {
         remind->setAlarmID(createUuid());
         query.addBindValue(remind->alarmID());
@@ -778,7 +778,7 @@ void DAccountDataBase::updateRemindInfo(const DRemindData::Ptr &remind)
                    SET scheduleID=?, recurID=?, remindCount=?,         \
                    notifyID=?, dtRemind=?, dtStart=?, dtEnd=? WHERE alarmID = ?");
 
-    QSqlQuery query(m_database);
+   SqliteQuery query(m_database);
     if (query.prepare(strSql)) {
         query.addBindValue(remind->scheduleID());
         query.addBindValue(dtToString(remind->recurrenceId()));
@@ -799,7 +799,7 @@ void DAccountDataBase::updateRemindInfo(const DRemindData::Ptr &remind)
 void DAccountDataBase::deleteRemindInfoByAlarmID(const QString &alarmID)
 {
     QString strSql("DELETE FROM remindTask  WHERE alarmID=?;");
-    QSqlQuery query(m_database);
+   SqliteQuery query(m_database);
     if (query.prepare(strSql)) {
         query.addBindValue(alarmID);
         if (!query.exec()) {
@@ -818,7 +818,7 @@ DRemindData::Ptr DAccountDataBase::getRemindData(const QString &alarmID)
 {
     QString strSql("SELECT alarmID, scheduleID, recurID, remindCount, notifyID, dtRemind, dtStart, dtEnd \
                    FROM remindTask WHERE  alarmID = ? ;");
-    QSqlQuery query(m_database);
+   SqliteQuery query(m_database);
     DRemindData::Ptr remindData;
     if (query.prepare(strSql)) {
         query.addBindValue(alarmID);
@@ -852,7 +852,7 @@ DRemindData::List DAccountDataBase::getValidRemindJob()
 {
     QString strSql("SELECT alarmID,scheduleID, recurID, remindCount, notifyID, dtRemind, dtStart, dtEnd \
                    FROM remindTask WHERE  dtRemind > ? ;");
-    QSqlQuery query(m_database);
+   SqliteQuery query(m_database);
     DRemindData::List remindList;
     if (query.prepare(strSql)) {
         query.addBindValue(dtToString(QDateTime::currentDateTime()));
@@ -886,7 +886,7 @@ DRemindData::List DAccountDataBase::getValidRemindJob()
 
 void DAccountDataBase::clearRemindJobDatabase()
 {
-    QSqlQuery query(m_database);
+   SqliteQuery query(m_database);
     QString sql("delete from remindTask");
     if (query.exec(sql)) {
         if (query.isActive()) {
@@ -901,7 +901,7 @@ DRemindData::List DAccountDataBase::getRemindByScheduleID(const QString &schedul
 {
     QString strSql("SELECT alarmID, scheduleID, recurID, remindCount, notifyID, dtRemind, dtStart, dtEnd \
                    FROM remindTask WHERE  scheduleID = ? ;");
-    QSqlQuery query(m_database);
+   SqliteQuery query(m_database);
     DRemindData::List remindList;
     if (query.prepare(strSql)) {
         query.addBindValue(scheduleID);
@@ -937,7 +937,7 @@ void DAccountDataBase::addUploadTask(const DUploadTaskData::Ptr &uploadTask)
     QString strSql("INSERT INTO uploadTask                                      \
                    (taskID, uploadType, uploadObject, objectID, dtCreate)      \
                    VALUES(?, ?, ?, ?, ?);");
-    QSqlQuery query(m_database);
+   SqliteQuery query(m_database);
     if (query.prepare(strSql)) {
         uploadTask->setTaskID(createUuid());
         query.addBindValue(uploadTask->taskID());
@@ -962,7 +962,7 @@ DUploadTaskData::List DAccountDataBase::getUploadTask()
     DUploadTaskData::List uploadList;
     QString strSql("SELECT taskID, uploadType, uploadObject, objectID, dtCreate     \
                   FROM uploadTask;");
-    QSqlQuery query(m_database);
+   SqliteQuery query(m_database);
     if (query.prepare(strSql) && query.exec()) {
         while (query.next()) {
             DUploadTaskData::Ptr upload = DUploadTaskData::Ptr(new DUploadTaskData);
@@ -985,7 +985,7 @@ DUploadTaskData::List DAccountDataBase::getUploadTask()
 void DAccountDataBase::deleteUploadTask(const QString &taskID)
 {
     QString strSql("DELETE FROM uploadTask   WHERE taskID = ?;");
-    QSqlQuery query(m_database);
+   SqliteQuery query(m_database);
     if (query.prepare(strSql)) {
         query.addBindValue(taskID);
         if (!query.exec()) {
@@ -1015,7 +1015,7 @@ void DAccountDataBase::createDB()
         qWarning() << "permissions cannot be modified，error:" << file.errorString();
     }
     if (m_database.open()) {
-        QSqlQuery query(m_database);
+       SqliteQuery query(m_database);
         bool res = true;
         //帐户信息表
         res = query.exec(sql_create_account);
@@ -1168,7 +1168,7 @@ void DAccountDataBase::initAccountDB()
                    displayName,cloudPath,accountType,       \
                    syncFreq,intervalTime,syncTag, expandStatus)           \
                VALUES(?,?,?,?,?,?,?,?,?,?);");
-    QSqlQuery query(m_database);
+   SqliteQuery query(m_database);
     if (query.prepare(strSql)) {
         query.addBindValue(m_account->syncState());
         query.addBindValue(int(m_account->accountState()));

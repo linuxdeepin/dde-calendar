@@ -152,7 +152,7 @@ bool DDataBaseManagement::databaseExists(const QString &databasePath, bool creat
 
 bool DDataBaseManagement::hasLunnarField(QSqlDatabase &db)
 {
-    QSqlQuery query(db);
+   SqliteQuery query(db);
     bool haslunnar = false;
     QString hasIsLunarField = "select count(1) from sqlite_master where type='table' and "
                               "tbl_name = 'jobs' and sql like '%is_Lunar%'";
@@ -168,7 +168,7 @@ bool DDataBaseManagement::hasLunnarField(QSqlDatabase &db)
 
 bool DDataBaseManagement::hasTypeDB(QSqlDatabase &db)
 {
-    QSqlQuery query(db);
+   SqliteQuery query(db);
     bool hasType = false;
     QString strSql = "select count(1) from sqlite_master where type='table' and "
                      "tbl_name = 'JobType'";
@@ -184,7 +184,7 @@ bool DDataBaseManagement::hasTypeDB(QSqlDatabase &db)
 
 bool DDataBaseManagement::hasRemindDB(QSqlDatabase &db)
 {
-    QSqlQuery query(db);
+   SqliteQuery query(db);
     bool hasRemind = false;
     QString strSql = "select count(1) from sqlite_master where type='table' and "
                      "tbl_name = 'jobsReminder'";
@@ -200,7 +200,7 @@ bool DDataBaseManagement::hasRemindDB(QSqlDatabase &db)
 
 DScheduleType::List DDataBaseManagement::queryOldJobTypeData(QSqlDatabase &db)
 {
-    QSqlQuery query(db);
+   SqliteQuery query(db);
     QString strSql("SELECT TypeNo, TypeName, ColorTypeNo, CreateTime, Authority                 \
                    FROM JobType where Authority >0;");
     DScheduleType::List typeList;
@@ -222,7 +222,7 @@ DScheduleType::List DDataBaseManagement::queryOldJobTypeData(QSqlDatabase &db)
 
 DSchedule::List DDataBaseManagement::queryOldJobData(QSqlDatabase &db, const bool haslunar)
 {
-    QSqlQuery query(db);
+   SqliteQuery query(db);
     QString strSql;
     if (haslunar) {
         strSql = "SELECT id, created_at, \"type\", title, description, all_day,                     \
@@ -312,7 +312,7 @@ DSchedule::List DDataBaseManagement::queryOldJobData(QSqlDatabase &db, const boo
 
 QVector<DTypeColor> DDataBaseManagement::queryOldTypeColorData(QSqlDatabase &db)
 {
-    QSqlQuery query(db);
+   SqliteQuery query(db);
     QVector<DTypeColor> colorVector;
     //获取用户创建颜色
     QString strSql("SELECT TypeNo, ColorHex, Authority              \
@@ -335,7 +335,7 @@ QVector<DTypeColor> DDataBaseManagement::queryOldTypeColorData(QSqlDatabase &db)
 
 DRemindData::List DDataBaseManagement::querOldRemindData(QSqlDatabase &db)
 {
-    QSqlQuery query(db);
+   SqliteQuery query(db);
     DRemindData::List remindList;
     QString strSql("SELECT jobid, recurid, remindCount, notifyid, remindTime, jobStartTime, jobEndTime FROM jobsReminder;");
     query.prepare(strSql);

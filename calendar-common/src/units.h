@@ -23,6 +23,12 @@
 
 #include <QString>
 #include <QDateTime>
+#include <QSqlDatabase>
+#include <QSqlQuery>
+#include <QThread>
+#include <QVector>
+#include <QMutex>
+#include <QMap>
 
 const QString serviceBaseName = "com.deepin.dataserver.Calendar";
 const QString serviceBasePath = "/com/deepin/dataserver/Calendar";
@@ -44,5 +50,118 @@ bool isChineseEnv();
 QDateTime dtConvert(const QDateTime &datetime);
 
 //TODO:获取系统版本(专业版，社区版等)
+
+
+
+struct SQILIT_MUTEX{
+    SQILIT_MUTEX(){}
+    SQILIT_MUTEX(const SQILIT_MUTEX &) {}
+    SQILIT_MUTEX &operator=(const SQILIT_MUTEX &) {return *this;}
+    void lock() {
+        m.lock();
+    }
+    void unlock(){
+        m.unlock();
+    }
+
+
+    QMutex m;
+};
+
+struct DbPathMutex {
+    SQILIT_MUTEX m;
+    bool locked = false;
+
+    bool transactionLocked = false;
+    Qt::HANDLE transactionThreadId = nullptr;
+    void lock(){
+        if(transactionLocked && transactionThreadId == QThread::currentThreadId()) {
+        } else {
+            m.lock();
+            locked = true;
+        }
+    }
+    void unlock(){
+        if(transactionLocked && transactionThreadId == QThread::currentThreadId()) {
+        } else {
+            m.unlock();
+            locked = true;
+        }
+    }
+
+    void transactionLock()
+    {
+        m.lock();
+        transactionLocked = true;
+        transactionThreadId = QThread::currentThreadId();
+    }
+
+    void transactionUnlock()
+    {
+        transactionLocked = false;
+        transactionThreadId = nullptr;
+        m.unlock();
+    }
+};
+
+static QMap<QString, DbPathMutex> dbpathMutexMap;
+static DbPathMutex &getDbMutex(QString dbpath){
+    if(!dbpathMutexMap.contains(dbpath)) {
+        dbpathMutexMap.insert(dbpath, DbPathMutex());
+        }
+    return dbpathMutexMap[dbpath];
+}
+
+class SqliteQuery : public QSqlQuery {
+public:
+    explicit SqliteQuery(QSqlDatabase db)
+        : QSqlQuery(db)
+        , db(db){
+    }
+    explicit SqliteQuery(QString connectionName)
+        : QSqlQuery(QSqlDatabase::database(connectionName))
+        , db(QSqlDatabase::database(connectionName)) {
+
+    }
+    SqliteQuery(const QString &query, QSqlDatabase db)
+        : QSqlQuery(query, db)
+        , db(db){
+
+    }
+
+    bool exec(QString sql) {
+        getDbMutex(db.databaseName()).lock();
+        bool f = QSqlQuery::exec(sql);
+        getDbMutex(db.databaseName()).unlock();
+        return f;
+    }
+    bool exec() {
+        getDbMutex(db.databaseName()).lock();
+        bool f = QSqlQuery::exec();
+        getDbMutex(db.databaseName()).unlock();
+        return f;
+    }
+    void transaction()
+    {
+        getDbMutex(db.databaseName()).transactionLock();
+        db.transaction();
+    }
+
+    void commit()
+    {
+        db.commit();
+        getDbMutex(db.databaseName()).transactionUnlock();
+
+    }
+    void rollback()
+    {
+        db.rollback();
+        getDbMutex(db.databaseName()).transactionUnlock();
+
+    }
+
+
+    QSqlDatabase db;
+};
 
 #endif // UNITS_H

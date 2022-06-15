@@ -45,7 +45,7 @@ DAccount::List DAccountManagerDataBase::getAccountList()
     QString strSql("SELECT accountID,accountName, displayName, accountState, accountAvatar,               \
                    accountDescription, accountType, dbName,dBusPath,dBusInterface, dtCreate, expandStatus, dtDelete, dtUpdate, isDeleted         \
                    FROM accountManager");
-    QSqlQuery query(m_database);
+   SqliteQuery query(m_database);
     if (query.prepare(strSql) && query.exec()) {
         while (query.next()) {
             DAccount::Type type = static_cast<DAccount::Type>(query.value("accountType").toInt());
@@ -74,7 +74,7 @@ DAccount::Ptr DAccountManagerDataBase::getAccountByID(const QString &accountID)
     QString strSql("SELECT accountName, displayName, accountState, accountAvatar,               \
                    accountDescription, accountType, dbName,dBusPath,dBusInterface, dtCreate, dtDelete, dtUpdate, expandStatus, isDeleted         \
                    FROM accountManager WHERE accountID = ?");
-    QSqlQuery query(m_database);
+   SqliteQuery query(m_database);
     if (query.prepare(strSql)) {
         query.addBindValue(accountID);
         if (query.exec() && query.next()) {
@@ -104,7 +104,7 @@ DAccount::Ptr DAccountManagerDataBase::getAccountByID(const QString &accountID)
 
 QString DAccountManagerDataBase::addAccountInfo(const DAccount::Ptr &accountInfo)
 {
-    QSqlQuery query(m_database);
+   SqliteQuery query(m_database);
     //生成唯一标识
     if (accountInfo->accountID().isEmpty()) {
         accountInfo->setAccountID(DDataBase::createUuid());
@@ -146,7 +146,7 @@ bool DAccountManagerDataBase::updateAccountInfo(const DAccount::Ptr &accountInfo
                    SET accountName=?, displayName=?, accountState= ?,                   \
                    accountAvatar=?, accountDescription=?, accountType=?, dbName=?,               \
                    dBusPath = ? ,dBusInterface = ?, expandStatus = ? WHERE accountID=?");
-    QSqlQuery query(m_database);
+   SqliteQuery query(m_database);
     bool res = false;
     if (query.prepare(strSql)) {
         query.addBindValue(accountInfo->accountName());
@@ -173,7 +173,7 @@ bool DAccountManagerDataBase::deleteAccountInfo(const QString &accountID)
 {
     QString strSql("DELETE FROM accountManager      \
                    WHERE accountID=?");
-    QSqlQuery query(m_database);
+   SqliteQuery query(m_database);
     bool res = false;
     if (query.prepare(strSql)) {
         query.addBindValue(accountID);
@@ -191,7 +191,7 @@ bool DAccountManagerDataBase::deleteAccountInfo(const QString &accountID)
 DCalendarGeneralSettings::Ptr DAccountManagerDataBase::getCalendarGeneralSettings()
 {
     DCalendarGeneralSettings::Ptr cgSet(new DCalendarGeneralSettings);
-    QSqlQuery query(m_database);
+   SqliteQuery query(m_database);
     query.exec("select vch_value from calendargeneralsettings where vch_key = 'firstDayOfWeek' ");
     if (query.next())
         cgSet->setFirstDayOfWeek(static_cast<Qt::DayOfWeek>(query.value(0).toInt()));
@@ -205,7 +205,7 @@ DCalendarGeneralSettings::Ptr DAccountManagerDataBase::getCalendarGeneralSetting
 
 void DAccountManagerDataBase::setCalendarGeneralSettings(const DCalendarGeneralSettings::Ptr &cgSet)
 {
-    QSqlQuery query(m_database);
+   SqliteQuery query(m_database);
     query.prepare("update calendargeneralsettings set vch_value = ? where vch_key = 'firstDayOfWeek' ");
     query.addBindValue(cgSet->firstDayOfWeek());
     if (!query.exec()) {
@@ -236,7 +236,7 @@ void DAccountManagerDataBase::createDB()
     }
 
     if (m_database.open()) {
-        QSqlQuery query(m_database);
+       SqliteQuery query(m_database);
         bool res = true;
         //创建帐户管理表
         res = query.exec(sql_create_accountManager);
@@ -291,7 +291,7 @@ void DAccountManagerDataBase::initAccountManagerDB()
     m_database.setDatabaseName(getDBPath());
     //帐户管理表
     {
-        QSqlQuery query(m_database);
+       SqliteQuery query(m_database);
         QString strsql("INSERT INTO accountManager                              \
                        (accountID, accountName, displayName,                    \
                        accountState, accountAvatar, accountDescription,            \
@@ -329,7 +329,7 @@ void DAccountManagerDataBase::initAccountManagerDB()
 
     //通用设置
     {
-        QSqlQuery query(m_database);
+       SqliteQuery query(m_database);
         if (query.exec("insert into calendargeneralsettings values"
                        "('firstDayOfWeek',  '7'),"
                        "('timeShowType',    '0')")) {
