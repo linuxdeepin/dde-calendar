@@ -81,6 +81,9 @@ public:
 
     bool isValid() const;
 
+    //是否是跨天的
+    bool isMultiDay() const;
+
     bool operator==(const DSchedule &schedule) const;
 
     bool operator<(const DSchedule &schedule) const;

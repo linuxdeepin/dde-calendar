@@ -35,6 +35,7 @@ DSchedule::DSchedule()
     : KCalendarCore::Event()
     , m_fileName("")
     , m_scheduleTypeID("")
+    , m_compatibleID(0)
 {
 }
 
@@ -42,6 +43,7 @@ DSchedule::DSchedule(const DSchedule &schedule)
     : KCalendarCore::Event(schedule)
     , m_fileName("")
     , m_scheduleTypeID("")
+    , m_compatibleID(0)
 {
     this->setScheduleTypeID(schedule.scheduleTypeID());
 }
@@ -50,7 +52,7 @@ DSchedule::DSchedule(const KCalendarCore::Event &event)
     : KCalendarCore::Event(event)
     , m_fileName("")
     , m_scheduleTypeID("")
-
+    , m_compatibleID(0)
 {
 }
 
@@ -83,6 +85,12 @@ bool DSchedule::isValid() const
 {
     //TODO:添加判断日程是否有效
     return true;
+}
+
+bool DSchedule::isMultiDay() const
+{
+    //如果日期不一致则为跨天日程
+    return dtStart().date() != dtEnd().date();
 }
 
 bool DSchedule::operator==(const DSchedule &schedule) const
