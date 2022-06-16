@@ -199,14 +199,20 @@ void SidebarAccountItemWidget::initView()
     m_titleLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     m_titleLabel->setText(m_accountItem->getAccount()->accountName());
 
-    m_rearIconButton = new DIconButton(this);
-    m_rearIconButton->setFixedSize(QSize(20, 20));
-    m_rearIconButton->setIconSize(QSize(10, 10));
+    m_syncIconButton = new DIconButton(this);
+    m_syncIconButton->setIcon(QIcon(":/resources/icon/icon_refresh.svg"));
+    m_syncIconButton->setFixedSize(QSize(20, 20));
+    m_syncIconButton->setIconSize(QSize(10, 10));
+    m_syncIconButton->setFocusPolicy(Qt::NoFocus);
 
-    m_rearIconButton->setFocusPolicy(Qt::NoFocus);
+    m_warningLabel = new DLabel();
+    m_warningLabel->setFixedSize(QSize(18, 18));
+    m_warningLabel->setPixmap(QIcon(":/resources/icon/icon_warning_light.svg").pixmap(18, 18));
+
     vLayout->addWidget(m_headIconButton);
     vLayout->addWidget(m_titleLabel, 1);
-    vLayout->addWidget(m_rearIconButton);
+    vLayout->addWidget(m_syncIconButton);
+    vLayout->addWidget(m_warningLabel);
     //给控件右部留出足够的距离，防止被滚动条覆盖无法被点击事件
     vLayout->addSpacing(18);
 
@@ -215,14 +221,16 @@ void SidebarAccountItemWidget::initView()
     if (m_accountItem->getAccount()->accountType() == DAccount::Account_UnionID) {
         resetRearIconButton();
     } else {
-        m_rearIconButton->hide();   //尾部控件隐藏
+        //尾部控件隐藏
+        m_syncIconButton->hide();
+        m_warningLabel->hide();
     }
     setFixedHeight(36);
 }
 
 void SidebarAccountItemWidget::initConnect()
 {
-    connect(m_rearIconButton, &DIconButton::clicked, this, &SidebarAccountItemWidget::slotRearIconClicked);
+    connect(m_syncIconButton, &DIconButton::clicked, this, &SidebarAccountItemWidget::slotRearIconClicked);
     connect(m_accountItem.data(), &AccountItem::signalSyncStateChange, this, &SidebarAccountItemWidget::slotSyncStatusChange);
     connect(gAccountManager, &AccountManager::signalAccountStateChange, this, &SidebarAccountItemWidget::slotAccountStateChange);
 }
@@ -236,27 +244,17 @@ void SidebarAccountItemWidget::resetRearIconButton()
 
     if (m_accountItem) {
         if (m_accountItem->getAccount()->syncState() == 0) {
-            m_rearIconButton->setEnabled(true);
-            m_rearIconButton->setIcon(QIcon(":/resources/icon/icon_refresh.svg"));
-            m_rearIconButton->setToolTip("");
+            m_warningLabel->hide();
             if (m_accountItem->isCanSyncSetting() || m_accountItem->isCanSyncShedule()) {
-               m_rearIconButton->setEnabled(true);
+                m_syncIconButton->show();
             } else {
-                m_rearIconButton->setEnabled(false);
+                m_syncIconButton->hide();
             }
         } else {
-            m_rearIconButton->setEnabled(false);
-            m_rearIconButton->setIcon(QIcon(":/resources/icon/icon_warning_light.svg"));
-
-            QString msg = "";
-            switch (m_accountItem->getAccount()->syncState()) {
-            case DAccount::Sync_Normal: msg = tr("Sync successful"); break;
-            case DAccount::Sync_NetworkAnomaly: msg = tr("Network error"); break;
-            case DAccount::Sync_ServerException: msg = tr("Server exception"); break;
-            case DAccount::Sync_StorageFull: msg = tr("Storage full"); break;
-            }
-            m_accountItem->getSyncMsg(m_accountItem->getAccount()->syncState());
-            m_rearIconButton->setToolTip(msg);
+            m_syncIconButton->hide();
+            m_warningLabel->show();
+            QString msg = m_accountItem->getSyncMsg(m_accountItem->getAccount()->syncState());
+            m_warningLabel->setToolTip(msg);
         }
     }
 }

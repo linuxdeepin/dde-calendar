@@ -579,12 +579,16 @@ void CScheduleDlg::slotAccoutBoxActivated(const QString &text)
 
 void CScheduleDlg::signalLogout(DAccount::Type type)
 {
-    if (DAccount::Account_UnionID == type) {
-        if (gUosAccountItem == m_accountItem) {
+    if (DAccount::Account_UnionID == type && gUosAccountItem == m_accountItem) {
+        if (m_type) {
             //TODO：弹窗提示？
             qInfo() << m_accountComBox->currentText() << "帐户已退出";
             getButtons()[1]->setEnabled(false);
             m_accountItem.reset(nullptr);
+        } else {
+            m_accountComBox->setEnabled(true);
+            m_type = 1;
+            m_titleLabel->setText(tr("New Event"));
         }
     }
 }

@@ -123,8 +123,9 @@ protected:
 private:
     AccountItem::Ptr m_accountItem;
 
-    DIconButton *m_rearIconButton = nullptr;    //尾部icon控件
-    DIconButton *m_headIconButton = nullptr;    //头部icon控件
+    DIconButton *m_syncIconButton = nullptr;    //尾部同步控件
+    DLabel *m_warningLabel = nullptr;           //尾部异常警告控件
+    DIconButton *m_headIconButton = nullptr;    //头部展开控件
     DLabel *m_titleLabel = nullptr; //标题显示区域
 };
 
