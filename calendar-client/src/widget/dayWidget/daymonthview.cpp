@@ -225,7 +225,7 @@ void CDayMonthView::initUI()
 {
     m_today = new CTodayButton;
     m_today->setText(QCoreApplication::translate("today", "Today", "Today"));
-    m_today->setFixedSize(100, DDEDayCalendar::D_MLabelHeight);
+    m_today->setFixedSize(80, DDEDayCalendar::D_MLabelHeight);
     DPalette todayPa = m_today->palette();
     QColor todayColor = CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
     todayPa.setColor(DPalette::ButtonText, todayColor);

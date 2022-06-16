@@ -415,7 +415,7 @@ void Calendarmainwindow::initUI()
     ssLayout->setSpacing(0);
     ssLayout->addWidget(m_scheduleSearchView);
     m_contentBackground->setLayout(ssLayout);
-    tMainLayout->addWidget(m_contentBackground);
+    tMainLayout->addWidget(m_contentBackground, 1);
     m_contentBackground->setVisible(false);
 
     DWidget *maincentralWidget = new DWidget(this);
@@ -511,6 +511,36 @@ void Calendarmainwindow::createview()
     }
 }
 
+void Calendarmainwindow::resizeView()
+{
+    m_transparentFrame->resize(width(), height() - 50);
+
+    if (width() < CalendarSwitchWidth) {
+        m_titleWidget->setShowState(CTitleWidget::Title_State_Mini);
+    } else {
+        m_titleWidget->setShowState(CTitleWidget::Title_State_Normal);
+    }
+
+    int sidWidth = 0;
+    if (m_sidebarView->isVisible()) {
+        sidWidth = m_sidebarView->width();
+    }
+
+    if (width() < CalendarViewSwitchWidth + sidWidth) {
+        m_isNormalStateShow = false;
+        m_stackWidget->setVisible(!m_contentBackground->isVisible());
+        m_scheduleSearchViewMaxWidth = this->width();
+    } else {
+        m_scheduleSearchViewMaxWidth = qRound(0.2325 * (width() - sidWidth) + 0.5);
+        m_isNormalStateShow = true;
+        m_stackWidget->setVisible(true);
+        m_contentBackground->setVisible(m_opensearchflag);
+    }
+    m_scheduleSearchView->setMaxWidth(m_scheduleSearchViewMaxWidth);
+    setSearchWidth(m_scheduleSearchViewMaxWidth);
+    setScheduleHide();
+}
+
 /**
  * @brief Calendarmainwindow::setScheduleHide       隐藏提示框
  */
@@ -525,27 +555,6 @@ void Calendarmainwindow::setScheduleHide()
 void Calendarmainwindow::resizeEvent(QResizeEvent *event)
 {
     DMainWindow::resizeEvent(event);
-    m_transparentFrame->resize(width(), height() - 50);
-
-    if (width() < CalendarSwitchWidth) {
-        m_titleWidget->setShowState(CTitleWidget::Title_State_Mini);
-    } else {
-        m_titleWidget->setShowState(CTitleWidget::Title_State_Normal);
-    }
-
-    if (width() < CalendarViewSwitchWidth) {
-        m_isNormalStateShow = false;
-        m_stackWidget->setVisible(!m_contentBackground->isVisible());
-        m_scheduleSearchViewMaxWidth = this->width();
-    } else {
-        m_scheduleSearchViewMaxWidth = qRound(0.2325 * width() + 0.5);
-        m_isNormalStateShow = true;
-        m_stackWidget->setVisible(true);
-        m_contentBackground->setVisible(m_opensearchflag);
-    }
-    m_scheduleSearchView->setMaxWidth(m_scheduleSearchViewMaxWidth);
-    setSearchWidth(m_scheduleSearchViewMaxWidth);
-    setScheduleHide();
 
     static int preWidth = 0;    //上一次界面宽度
     //根据界面大小改变趋势设置侧边栏可显示状态
@@ -556,6 +565,8 @@ void Calendarmainwindow::resizeEvent(QResizeEvent *event)
     }
 
     preWidth = width();
+
+    resizeView();
 
     //保存窗口大小
     CConfigSettings::getInstance()->setOption("base.windowWidth", event->size().width());
@@ -796,6 +807,8 @@ void Calendarmainwindow::slotSidebarStatusChange(bool status)
     //展开侧边栏后最小宽度为826
     if (status && width() < 826) {
         resize(826, height());
+    } else {
+        resizeView(); //刷新界面
     }
 }
 

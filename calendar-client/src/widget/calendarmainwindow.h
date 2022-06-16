@@ -75,6 +75,8 @@ private:
     void initData();
     //创建视图
     void createview();
+    //重置界面大小
+    void resizeView();
 protected:
     void resizeEvent(QResizeEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
