@@ -45,7 +45,7 @@ DAccountManagerService::DAccountManagerService(QObject *parent)
 QString DAccountManagerService::getAccountList()
 {
     DServiceExitControl exitControl;
-    if (!clientWhite(1)) {
+    if (!clientWhite(0)) {
         return QString();
     }
     return m_accountManager->getAccountList();
@@ -53,28 +53,33 @@ QString DAccountManagerService::getAccountList()
 
 void DAccountManagerService::remindJob(const QString &accountID, const QString &alarmID)
 {
+    DServiceExitControl exitControl;
     m_accountManager->remindJob(accountID, alarmID);
 }
 
 void DAccountManagerService::updateRemindJob(bool isClear)
 {
+    DServiceExitControl exitControl;
     m_accountManager->updateRemindSchedules(isClear);
 }
 
 void DAccountManagerService::notifyMsgHanding(const QString &accountID, const QString &alarmID, const qint32 operationNum)
 {
+    DServiceExitControl exitControl;
     m_accountManager->notifyMsgHanding(accountID, alarmID, operationNum);
 }
 
 void DAccountManagerService::downloadByAccountID(const QString &accountID)
 {
     //TODO:云同步获取数据
+    DServiceExitControl exitControl;
     m_accountManager->downloadByAccountID(accountID);
 }
 
 void DAccountManagerService::uploadNetWorkAccountData()
 {
     //TODO:云同步上传数据
+    DServiceExitControl exitControl;
     m_accountManager->uploadNetWorkAccountData();
 }
 
@@ -143,20 +148,24 @@ void DAccountManagerService::logout()
 
 int DAccountManagerService::getfirstDayOfWeek() const
 {
+    DServiceExitControl exitControl;
     return m_accountManager->getfirstDayOfWeek();
 }
 
 void DAccountManagerService::setFirstDayOfWeek(const int firstday)
 {
+    DServiceExitControl exitControl;
     m_accountManager->setFirstDayOfWeek(firstday);
 }
 
 int DAccountManagerService::getTimeFormatType() const
 {
+    DServiceExitControl exitControl;
     return m_accountManager->getTimeFormatType();
 }
 
 void DAccountManagerService::setTimeFormatType(const int timeType)
 {
+    DServiceExitControl exitControl;
     m_accountManager->setTimeFormatType(timeType);
 }
