@@ -34,7 +34,7 @@
      * @brief The SyncStack struct 记录单次上传的信息和相关操作
      */
 struct SyncStack {
-    SyncStack(){}
+    SyncStack() {}
     SyncStack(QString _accountId, QString _accountName, int _accountState, DDataSyncBase::SyncTypes _syncType)
         : accountId(_accountId)
         , dbname_account(_accountName)
@@ -106,7 +106,7 @@ struct SyncAccount {
     bool defaultTypeColor();
 
     bool insertToScheduleType(const DScheduleType::Ptr &scheduleType);
-    bool insertToTypeColor(int typeColorNo, QString strColorHex, int privilege);
+    bool insertToTypeColor(const DTypeColor &typeColor);
 
     QString _accountID;
     QString _connectionName;

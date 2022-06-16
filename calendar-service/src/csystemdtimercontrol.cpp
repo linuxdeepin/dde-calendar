@@ -1,5 +1,7 @@
 #include "csystemdtimercontrol.h"
 
+#include "units.h"
+
 #include <QDir>
 #include <QStandardPaths>
 #include <QProcess>
@@ -209,7 +211,7 @@ void CSystemdTimerControl::stopUploadTask()
 
 void CSystemdTimerControl::createPath()
 {
-    m_systemdPath = QStandardPaths::writableLocation(QStandardPaths::HomeLocation).append("/.config/systemd/user/");
+    m_systemdPath = getHomeConfigPath().append("/systemd/user/");
     QDir dir;
     //如果该路径不存在，则创建该文件夹
     if (!dir.exists(m_systemdPath)) {

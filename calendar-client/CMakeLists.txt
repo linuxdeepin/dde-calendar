@@ -88,12 +88,23 @@ target_link_libraries(${PROJECT_NAME}
     commondata
 )
 
-set(CMAKE_INSTALL_PREFIX /usr)
+#根据环境修改dbus服务文件
+if(DEFINED ENV{PREFIX})
+    set(APP_DBUS_SERVICE "[D-BUS Service]
+Name=com.deepin.Calendar
+Exec=/usr/bin/ll-cli run org.dde.calendar --exec dde-calendar")
+   file(WRITE ${APP_SERVICE} "${APP_DBUS_SERVICE}")
+
+   set(CMAKE_INSTALL_PREFIX $ENV{PREFIX})
+else()
+   set(CMAKE_INSTALL_PREFIX /usr)
+endif()
+
 
 # Install files
 install(TARGETS dde-calendar DESTINATION bin)
 
 install(DIRECTORY ${APP_RES_DIR}/dde-calendar
-        DESTINATION /usr/share/deepin-manual/manual-assets/application/)
+        DESTINATION  share/deepin-manual/manual-assets/application/)
 install(FILES ${APP_DESKTOP} DESTINATION share/applications)
 install(FILES ${APP_SERVICE} DESTINATION share/dbus-1/services)

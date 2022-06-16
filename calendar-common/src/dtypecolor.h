@@ -24,6 +24,7 @@
 #include <QString>
 #include <QSharedPointer>
 #include <QVector>
+#include <QDateTime>
 
 /**
  * @brief The DTypeColor class
@@ -43,12 +44,13 @@ public:
     typedef QVector<Ptr> List;
 
     DTypeColor();
+    DTypeColor(const DTypeColor &typeColor);
 
     QString colorCode() const;
     void setColorCode(const QString &colorCode);
 
-    int colorID() const;
-    void setColorID(int colorID);
+    QString colorID() const;
+    void setColorID(const QString &colorID);
 
     Privilege privilege() const;
     void setPrivilege(const Privilege &privilege);
@@ -60,10 +62,16 @@ public:
     static List fromJsonString(const QString &colorJson);
     static QString toJsonString(const List &colorList);
 
+    QDateTime dtCreate() const;
+    void setDtCreate(const QDateTime &dtCreate);
+
+    friend bool operator<(const DTypeColor::Ptr &tc1, const DTypeColor::Ptr &tc2);
+
 private:
-    int m_colorID;
+    QString m_colorID;
     QString m_colorCode; //颜色码
     Privilege m_privilege;
+    QDateTime m_dtCreate;
 };
 
 #endif // DTYPECOLOR_H

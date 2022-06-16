@@ -430,7 +430,7 @@ DScheduleType::Ptr DAccountDataBase::getScheduleTypeByID(const QString &typeID, 
             type->setDisplayName(query.value("typeDisplayName").toString());
             type->setTypePath(query.value("typePath").toString());
             DTypeColor color;
-            color.setColorID(query.value("typeColorID").toInt());
+            color.setColorID(query.value("typeColorID").toString());
             color.setColorCode(query.value("ColorHex").toString());
             color.setPrivilege(static_cast<DTypeColor::Privilege>(query.value("colorPri").toInt()));
             type->setTypeColor(color);
@@ -482,7 +482,7 @@ DScheduleType::List DAccountDataBase::getScheduleTypeList(const int isDeleted)
                 type->setDisplayName(query.value("typeDisplayName").toString());
                 type->setTypePath(query.value("typePath").toString());
                 DTypeColor color;
-                color.setColorID(query.value("typeColorID").toInt());
+                color.setColorID(query.value("typeColorID").toString());
                 color.setColorCode(query.value("ColorHex").toString());
                 color.setPrivilege(static_cast<DTypeColor::Privilege>(query.value("colorPri").toInt()));
                 type->setTypeColor(color);
@@ -678,18 +678,33 @@ void DAccountDataBase::updateAccountInfo()
     }
 }
 
-bool DAccountDataBase::addTypeColor(const int typeColorNo, const QString &strColorHex, const int privilege)
+bool DAccountDataBase::addTypeColor(const DTypeColor::Ptr &typeColor)
+{
+    if (typeColor.isNull())
+        return false;
+    return addTypeColor(*typeColor.data());
+}
+
+bool DAccountDataBase::addTypeColor(DTypeColor &typeColor)
 {
     QString strSql("INSERT INTO TypeColor                   \
-                   (ColorID, ColorHex, privilege)           \
-                   VALUES(:ColorID, :ColorHex, :privilege)");
+                   (ColorID, ColorHex, privilege,dtCreate)           \
+                   VALUES(:ColorID, :ColorHex, :privilege,:dtCreate)");
 
+    //如果为空则创建颜色id
+    if (typeColor.colorID().isEmpty()) {
+        typeColor.setColorID(createUuid());
+    }
+    if (typeColor.dtCreate().isNull()) {
+        typeColor.setDtCreate(QDateTime::currentDateTime());
+    }
     SqliteQuery query(m_database);
     bool res = false;
     if (query.prepare(strSql)) {
-        query.bindValue(":ColorID", typeColorNo);
-        query.bindValue(":ColorHex", strColorHex);
-        query.bindValue(":privilege", privilege);
+        query.bindValue(":ColorID", typeColor.colorID());
+        query.bindValue(":ColorHex", typeColor.colorCode());
+        query.bindValue(":privilege", typeColor.privilege());
+        query.bindValue(":dtCreate", dtToString(typeColor.dtCreate()));
 
         if (query.exec()) {
             res = true;
@@ -706,7 +721,7 @@ bool DAccountDataBase::addTypeColor(const int typeColorNo, const QString &strCol
     return res;
 }
 
-void DAccountDataBase::deleteTypeColor(const int colorNo)
+void DAccountDataBase::deleteTypeColor(const QString &colorNo)
 {
     QString strSql("DELETE FROM typeColor WHERE ColorID = ?;");
     SqliteQuery query(m_database);
@@ -726,16 +741,17 @@ void DAccountDataBase::deleteTypeColor(const int colorNo)
 
 DTypeColor::List DAccountDataBase::getSysColor()
 {
-    QString strSql("SELECT ColorID, ColorHex, privilege FROM typeColor WHERE  privilege =1;");
+    QString strSql("SELECT ColorID, ColorHex, privilege,dtCreate FROM typeColor WHERE  privilege =1;");
     SqliteQuery query(m_database);
     DTypeColor::List typeColorList;
 
     if (query.prepare(strSql) && query.exec()) {
         while (query.next()) {
             DTypeColor::Ptr color = DTypeColor::Ptr(new DTypeColor);
-            color->setColorID(query.value("ColorID").toInt());
+            color->setColorID(query.value("ColorID").toString());
             color->setColorCode(query.value("ColorHex").toString());
             color->setPrivilege(static_cast<DTypeColor::Privilege>(query.value("privilege").toInt()));
+            color->setDtCreate(dtFromString(query.value("dtCreate").toString()));
             typeColorList.append(color);
         }
     } else {
@@ -1082,7 +1098,8 @@ void DAccountDataBase::initSysType()
         scheduleType->setPrivilege(DScheduleType::None);
         scheduleType->setTypeName("festival");
         scheduleType->setDisplayName("Holiday schedule type");
-        scheduleType->setColorID(2);
+        scheduleType->setColorID(GFestivalColorID);
+        scheduleType->setColorCode("#FF9436");
         scheduleType->setShowState(DScheduleType::Show);
         createScheduleType(scheduleType);
 
@@ -1094,7 +1111,7 @@ void DAccountDataBase::initSysType()
         workType->setTypeName("Work");
         workType->setDisplayName("Work");
         DTypeColor workColor;
-        workColor.setColorID(1);
+        workColor.setColorID(GWorkColorID);
         workColor.setColorCode("#ff5e97");
         workColor.setPrivilege(DTypeColor::PriSystem);
         workType->setTypeColor(workColor);
@@ -1109,7 +1126,7 @@ void DAccountDataBase::initSysType()
         lifeType->setTypeName("Life");
         lifeType->setDisplayName("Life");
         DTypeColor lifeColor;
-        lifeColor.setColorID(7);
+        lifeColor.setColorID(GLifeColorID);
         lifeColor.setColorCode("#5d51ff");
         lifeColor.setPrivilege(DTypeColor::PriSystem);
         lifeType->setTypeColor(lifeColor);
@@ -1124,7 +1141,7 @@ void DAccountDataBase::initSysType()
         otherType->setTypeName("Other");
         otherType->setDisplayName("Other");
         DTypeColor otherColor;
-        otherColor.setColorID(4);
+        otherColor.setColorID(GOtherColorID);
         otherColor.setColorCode("#5bdd80");
         otherColor.setPrivilege(DTypeColor::PriSystem);
         otherType->setTypeColor(otherColor);
@@ -1149,15 +1166,18 @@ void DAccountDataBase::systemTypeTran(const DScheduleType::Ptr &type)
 
 void DAccountDataBase::initTypeColor()
 {
-    addTypeColor(1, "#ff5e97", 1);
-    addTypeColor(2, "#ff9436", 1);
-    addTypeColor(3, "#ffdc00", 1);
-    addTypeColor(4, "#5bdd80", 1);
-    addTypeColor(5, "#00b99b", 1);
-    addTypeColor(6, "#4293ff", 1);
-    addTypeColor(7, "#5d51ff", 1);
-    addTypeColor(8, "#a950ff", 1);
-    addTypeColor(9, "#717171", 1);
+    QDateTime currentTime = QDateTime::currentDateTime();
+    int index = -10;
+
+    QMap<QString, QString>::const_iterator iter = GTypeColor.constBegin();
+    for (; iter != GTypeColor.constEnd(); ++iter) {
+        DTypeColor::Ptr typeColor(new DTypeColor);
+        typeColor->setDtCreate(currentTime.addDays(++index));
+        typeColor->setPrivilege(DTypeColor::PriSystem);
+        typeColor->setColorCode(iter.value());
+        typeColor->setColorID(iter.key());
+        addTypeColor(typeColor);
+    }
 }
 
 void DAccountDataBase::initAccountDB()

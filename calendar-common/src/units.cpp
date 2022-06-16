@@ -44,7 +44,7 @@ QDateTime dtFromString(const QString &st)
 
 QString getDBPath()
 {
-    return QStandardPaths::writableLocation(QStandardPaths::HomeLocation).append("/.config/deepin/dde-calendar-service");
+    return getHomeConfigPath().append("/deepin/dde-calendar-service");
 }
 
 QDate dateFromString(const QString &date)
@@ -60,4 +60,10 @@ QString dateToString(const QDate &date)
 bool isChineseEnv()
 {
     return QLocale::system().name().startsWith("zh_");
+}
+
+QString getHomeConfigPath()
+{
+    //根据环境变量获取config目录
+    return QString(qgetenv("XDG_CONFIG_HOME"));
 }

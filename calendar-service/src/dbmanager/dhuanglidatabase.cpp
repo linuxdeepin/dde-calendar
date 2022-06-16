@@ -25,10 +25,14 @@
 #include <QDebug>
 #include <QSqlError>
 
+#ifndef LINGLONG_PREFIX
+#define LINGLONG_PREFIX "/usr/"
+#endif
+
 DHuangLiDataBase::DHuangLiDataBase(QObject *parent)
     : DDataBase(parent)
 {
-    setDBPath("/usr/share/dde-calendar/data/huangli.db");
+    setDBPath(QString("%1share/dde-calendar/data/huangli.db").arg(LINGLONG_PREFIX));
     setConnectionName("HuangLi");
     dbOpen();
 }
@@ -75,7 +79,7 @@ QString DHuangLiDataBase::queryFestivalList(quint32 year, quint8 month)
 QList<stHuangLi> DHuangLiDataBase::queryHuangLiByDays(const QList<stDay> &days)
 {
     QList<stHuangLi> infos;
-   SqliteQuery query(m_database);
+    SqliteQuery query(m_database);
     foreach (stDay d, days) {
         //查询的id
         qint64 id = QString().sprintf("%d%02d%02d", d.Year, d.Month, d.Day).toInt();

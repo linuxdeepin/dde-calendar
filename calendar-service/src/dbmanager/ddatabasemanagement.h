@@ -71,6 +71,7 @@ private:
 
     QMap<int, QString> m_typeMap;
     QMap<int, QString> m_schedule;
+    QMap<int, QString> m_typeColorID; //日程类型颜色新旧id对应map
 };
 
 #endif // DDATABASEMANAGEMENT_H

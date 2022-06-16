@@ -141,9 +141,19 @@ QString DAccountModule::createScheduleType(const QString &typeInfo)
     DScheduleType::Ptr scheduleType;
     DScheduleType::fromJsonString(scheduleType, typeInfo);
     //如果颜色为用户自定义则需要在数据库中记录
-    if (scheduleType->typeColor().colorID() == 0) {
-        scheduleType->setColorID(DDataBase::createColorId());
-        m_accountDB->addTypeColor(scheduleType->typeColor().colorID(), scheduleType->typeColor().colorCode(), 7);
+    if (scheduleType->typeColor().colorID() == "") {
+        scheduleType->setColorID(DDataBase::createUuid());
+        DTypeColor::Ptr typeColor(new DTypeColor(scheduleType->typeColor()));
+        typeColor->setPrivilege(DTypeColor::PriUser);
+        m_accountDB->addTypeColor(typeColor);
+        //添加创建颜色任务
+        if (m_account->isNetWorkAccount()) {
+            DUploadTaskData::Ptr uploadTask(new DUploadTaskData);
+            uploadTask->setTaskType(DUploadTaskData::TaskType::Create);
+            uploadTask->setTaskObject(DUploadTaskData::Task_Color);
+            uploadTask->setObjectId(typeColor->colorID());
+            m_accountDB->addUploadTask(uploadTask);
+        }
     }
     //设置创建时间
     scheduleType->setDtCreate(QDateTime::currentDateTime());
@@ -169,6 +179,14 @@ bool DAccountModule::deleteScheduleTypeByID(const QString &typeID)
         QStringList scheduleIDList = m_accountDB->getScheduleIDListByTypeID(typeID);
         foreach (auto scheduleID, scheduleIDList) {
             closeNotification(scheduleID);
+            //添加删除日程任务
+            if (m_account->isNetWorkAccount()) {
+                DUploadTaskData::Ptr uploadTask(new DUploadTaskData);
+                uploadTask->setTaskType(DUploadTaskData::TaskType::Delete);
+                uploadTask->setTaskObject(DUploadTaskData::Task_Schedule);
+                uploadTask->setObjectId(scheduleID);
+                m_accountDB->addUploadTask(uploadTask);
+            }
         }
         //更新提醒任务
         updateRemindSchedules(false);
@@ -191,7 +209,10 @@ bool DAccountModule::deleteScheduleTypeByID(const QString &typeID)
         QStringList scheduleIDList = m_accountDB->getScheduleIDListByTypeID(typeID);
         //弱删除
         m_accountDB->deleteScheduleTypeByID(typeID);
-        //发送操作内容给任务列表
+        //TODO:发送操作内容给任务列表
+
+        //TODO:如果颜色不为系统类型则删除
+
     } else {
         m_accountDB->deleteScheduleTypeByID(typeID, 1);
     }
@@ -225,9 +246,27 @@ bool DAccountModule::updateScheduleType(const QString &typeInfo)
         if (oldScheduleType->typeColor() != scheduleType->typeColor()) {
             if (!oldScheduleType->typeColor().isSysColorInfo()) {
                 m_accountDB->deleteTypeColor(oldScheduleType->typeColor().colorID());
+                //添加删除颜色任务
+                if (m_account->isNetWorkAccount()) {
+                    DUploadTaskData::Ptr uploadTask(new DUploadTaskData);
+                    uploadTask->setTaskType(DUploadTaskData::TaskType::Delete);
+                    uploadTask->setTaskObject(DUploadTaskData::Task_Color);
+                    uploadTask->setObjectId(oldScheduleType->typeColor().colorID());
+                    m_accountDB->addUploadTask(uploadTask);
+                }
             }
             if (!scheduleType->typeColor().isSysColorInfo()) {
-                m_accountDB->addTypeColor(scheduleType->typeColor().colorID(), scheduleType->typeColor().colorCode(), scheduleType->typeColor().privilege());
+                DTypeColor::Ptr typeColor(new DTypeColor(scheduleType->typeColor()));
+                typeColor->setPrivilege(DTypeColor::PriUser);
+                m_accountDB->addTypeColor(typeColor);
+                //添加创建颜色任务
+                if (m_account->isNetWorkAccount()) {
+                    DUploadTaskData::Ptr uploadTask(new DUploadTaskData);
+                    uploadTask->setTaskType(DUploadTaskData::TaskType::Delete);
+                    uploadTask->setTaskObject(DUploadTaskData::Task_Color);
+                    uploadTask->setObjectId(typeColor->colorID());
+                    m_accountDB->addUploadTask(uploadTask);
+                }
             }
         }
     }
@@ -472,6 +511,7 @@ DSchedule::List DAccountModule::getRemindScheduleList(const QDateTime &dtStart, 
 QString DAccountModule::getSysColors()
 {
     DTypeColor::List colorList = m_accountDB->getSysColor();
+    std::sort(colorList.begin(), colorList.end());
     return DTypeColor::toJsonString(colorList);
 }
 

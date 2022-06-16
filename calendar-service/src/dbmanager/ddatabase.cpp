@@ -71,7 +71,7 @@ const QString DDataBase::sql_create_scheduleType =
     " typeName TEXT not null,                 "
     " typeDisplayName TEXT,                   "
     " typePath TEXT,                          "
-    " typeColorID INTEGER not null,           "
+    " typeColorID TEXT not null,           "
     " description TEXT ,                      "
     " privilege INTEGER not null,             "
     " showState INTEGER not null,             "
@@ -83,9 +83,10 @@ const QString DDataBase::sql_create_scheduleType =
 //颜色表
 const QString DDataBase::sql_create_typeColor =
     " CREATE TABLE if not exists typeColor (              "
-    " ColorID INTEGER not null PRIMARY KEY,              "
+    " ColorID TEXT not null PRIMARY KEY,              "
     " ColorHex TEXT not null,                "
-    " privilege INTEGER not null)";
+    " privilege INTEGER not null,"
+    " dtCreate DATETIME not null)";
 
 //创建上传任务表
 const QString DDataBase::sql_create_uploadTask =
@@ -134,6 +135,11 @@ const QString DDataBase::sql_create_calendargeneralsettings =
     " vch_value TEXT NOT NULL           "
     " )";
 
+const QString DDataBase::GWorkColorID = "0cecca8a-291b-46e2-bb92-63a527b77d46";
+const QString DDataBase::GLifeColorID = "6cfd1459-1085-47e9-8ca6-379d47ec319a";
+const QString DDataBase::GOtherColorID = "35e70047-98bb-49b9-8ad8-02d1c942f5d0";
+const QString DDataBase::GFestivalColorID = "10af78a1-3c25-4744-91db-6fbe5e88083b";
+
 DDataBase::DDataBase(QObject *parent)
     : QObject(parent)
     , m_DBPath("")
@@ -158,11 +164,6 @@ void DDataBase::setDBPath(const QString &DBPath)
 QString DDataBase::createUuid()
 {
     return QUuid::createUuid().toString(QUuid::WithoutBraces);
-}
-
-int DDataBase::createColorId()
-{
-    return (int(QDateTime().currentDateTime().toTime_t()) % (60 * 60 * 24 * 365 * 10));
 }
 
 QString DDataBase::getConnectionName() const

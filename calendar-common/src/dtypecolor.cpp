@@ -20,15 +20,25 @@
 */
 #include "dtypecolor.h"
 
+#include "units.h"
+
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QDebug>
 
 DTypeColor::DTypeColor()
-    : m_colorID(0)
+    : m_colorID("")
     , m_colorCode("")
     , m_privilege(PriUser)
+{
+}
+
+DTypeColor::DTypeColor(const DTypeColor &typeColor)
+    : m_colorID(typeColor.colorID())
+    , m_colorCode(typeColor.colorCode())
+    , m_privilege(typeColor.privilege())
+    , m_dtCreate(typeColor.dtCreate())
 {
 }
 
@@ -42,12 +52,12 @@ void DTypeColor::setColorCode(const QString &colorCode)
     m_colorCode = colorCode;
 }
 
-int DTypeColor::colorID() const
+QString DTypeColor::colorID() const
 {
     return m_colorID;
 }
 
-void DTypeColor::setColorID(int colorID)
+void DTypeColor::setColorID(const QString &colorID)
 {
     m_colorID = colorID;
 }
@@ -86,13 +96,16 @@ DTypeColor::List DTypeColor::fromJsonString(const QString &colorJson)
         QJsonObject colorObj = json.toObject();
         DTypeColor::Ptr typeColor = DTypeColor::Ptr(new DTypeColor);
         if (colorObj.contains("colorID")) {
-            typeColor->setColorID(colorObj.value("colorID").toInt());
+            typeColor->setColorID(colorObj.value("colorID").toString());
         }
         if (colorObj.contains("colorCode")) {
             typeColor->setColorCode(colorObj.value("colorCode").toString());
         }
         if (colorObj.contains("privilege")) {
             typeColor->setPrivilege(static_cast<Privilege>(colorObj.value("privilege").toInt()));
+        }
+        if (colorObj.contains("dtCreate")) {
+            typeColor->setDtCreate(dtFromString(colorObj.value("dtCreate").toString()));
         }
         colorList.append(typeColor);
     }
@@ -107,9 +120,32 @@ QString DTypeColor::toJsonString(const DTypeColor::List &colorList)
         colorObj.insert("colorID", color->colorID());
         colorObj.insert("colorCode", color->colorCode());
         colorObj.insert("privilege", color->privilege());
+        colorObj.insert("dtCreate", dtToString(color->dtCreate()));
         rootArr.append(colorObj);
     }
     QJsonDocument jsonDoc;
     jsonDoc.setArray(rootArr);
     return QString::fromUtf8(jsonDoc.toJson(QJsonDocument::Compact));
+}
+
+QDateTime DTypeColor::dtCreate() const
+{
+    return m_dtCreate;
+}
+
+void DTypeColor::setDtCreate(const QDateTime &dtCreate)
+{
+    m_dtCreate = dtCreate;
+}
+
+bool operator<(const DTypeColor::Ptr &tc1, const DTypeColor::Ptr &tc2)
+{
+    if (tc1->privilege() != tc2->privilege()) {
+        return tc1->privilege() < tc2->privilege();
+    }
+
+    if (tc1->dtCreate() != tc2->dtCreate()) {
+        return tc1->dtCreate() < tc2->dtCreate();
+    }
+    return true;
 }

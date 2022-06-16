@@ -78,12 +78,12 @@ void DScheduleType::setTypeColor(const DTypeColor &typeColor)
     m_typeColor = typeColor;
 }
 
-void DScheduleType::setColorID(const int colorID)
+void DScheduleType::setColorID(const QString &colorID)
 {
     m_typeColor.setColorID(colorID);
 }
 
-int DScheduleType::getColorID() const
+QString DScheduleType::getColorID() const
 {
     return m_typeColor.colorID();
 }
@@ -235,7 +235,7 @@ bool DScheduleType::fromJsonString(DScheduleType::Ptr &scheduleType, const QStri
         QJsonObject colorObject = rootObj.value("TypeColor").toObject();
         DTypeColor typeColor;
         if (colorObject.contains("colorID")) {
-            typeColor.setColorID(colorObject.value("colorID").toInt());
+            typeColor.setColorID(colorObject.value("colorID").toString());
         }
         if (colorObject.contains("colorCode")) {
             typeColor.setColorCode(colorObject.value("colorCode").toString());
@@ -348,7 +348,7 @@ bool DScheduleType::fromJsonListString(DScheduleType::List &stList, const QStrin
                 QJsonObject colorObject = typeObject.value("TypeColor").toObject();
                 DTypeColor typeColor;
                 if (colorObject.contains("colorID")) {
-                    typeColor.setColorID(colorObject.value("colorID").toInt());
+                    typeColor.setColorID(colorObject.value("colorID").toString());
                 }
                 if (colorObject.contains("colorCode")) {
                     typeColor.setColorCode(colorObject.value("colorCode").toString());

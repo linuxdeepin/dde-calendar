@@ -63,8 +63,8 @@ public:
     DTypeColor typeColor() const;
     void setTypeColor(const DTypeColor &typeColor);
 
-    void setColorID(const int colorID);
-    int getColorID() const;
+    void setColorID(const QString &colorID);
+    QString getColorID() const;
     void setColorCode(const QString &colorCode);
     QString getColorCode() const;
 

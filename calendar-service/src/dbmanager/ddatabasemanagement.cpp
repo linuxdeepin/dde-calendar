@@ -45,7 +45,7 @@ DDataBaseManagement::DDataBaseManagement()
     , m_oldDatabaseName("scheduler.db")
 {
     //旧文件路径
-    QString oldDbPatch = QStandardPaths::writableLocation(QStandardPaths::HomeLocation).append("/.config/deepin/dde-daemon/calendar");
+    QString oldDbPatch = getHomeConfigPath().append("/deepin/dde-daemon/calendar");
     setOldDatabasePath(oldDbPatch);
     //新文件路径
     QString newDbPatch = getDBPath();
@@ -92,8 +92,8 @@ DDataBaseManagement::DDataBaseManagement()
 
                 //获取颜色
                 QVector<DTypeColor> colorList = queryOldTypeColorData(oldDB);
-                foreach (auto &color, colorList) {
-                    localDB.addTypeColor(color.colorID(), color.colorCode(), color.privilege());
+                foreach (auto color, colorList) {
+                    localDB.addTypeColor(color);
                 }
             }
 
@@ -152,7 +152,7 @@ bool DDataBaseManagement::databaseExists(const QString &databasePath, bool creat
 
 bool DDataBaseManagement::hasLunnarField(QSqlDatabase &db)
 {
-   SqliteQuery query(db);
+    SqliteQuery query(db);
     bool haslunnar = false;
     QString hasIsLunarField = "select count(1) from sqlite_master where type='table' and "
                               "tbl_name = 'jobs' and sql like '%is_Lunar%'";
@@ -168,7 +168,7 @@ bool DDataBaseManagement::hasLunnarField(QSqlDatabase &db)
 
 bool DDataBaseManagement::hasTypeDB(QSqlDatabase &db)
 {
-   SqliteQuery query(db);
+    SqliteQuery query(db);
     bool hasType = false;
     QString strSql = "select count(1) from sqlite_master where type='table' and "
                      "tbl_name = 'JobType'";
@@ -184,7 +184,7 @@ bool DDataBaseManagement::hasTypeDB(QSqlDatabase &db)
 
 bool DDataBaseManagement::hasRemindDB(QSqlDatabase &db)
 {
-   SqliteQuery query(db);
+    SqliteQuery query(db);
     bool hasRemind = false;
     QString strSql = "select count(1) from sqlite_master where type='table' and "
                      "tbl_name = 'jobsReminder'";
@@ -200,7 +200,8 @@ bool DDataBaseManagement::hasRemindDB(QSqlDatabase &db)
 
 DScheduleType::List DDataBaseManagement::queryOldJobTypeData(QSqlDatabase &db)
 {
-   SqliteQuery query(db);
+    SqliteQuery query(db);
+    //旧数据日程默认包含一个节假日日程类型,其他的都为用户创建的类型
     QString strSql("SELECT TypeNo, TypeName, ColorTypeNo, CreateTime, Authority                 \
                    FROM JobType where Authority >0;");
     DScheduleType::List typeList;
@@ -213,7 +214,11 @@ DScheduleType::List DDataBaseManagement::queryOldJobTypeData(QSqlDatabase &db)
             type->setDisplayName(query.value("TypeName").toString());
             type->setDtCreate(query.value("CreateTime").toDateTime());
             type->setPrivilege(static_cast<DScheduleType::Privilege>(query.value("Authority").toInt()));
-            type->setColorID(query.value("ColorTypeNo").toInt());
+            int oldColorTypeID = query.value("ColorTypeNo").toInt();
+            if (!m_typeColorID.contains(oldColorTypeID)) {
+                m_typeColorID[oldColorTypeID] = DDataBase::createUuid();
+            }
+            type->setColorID(m_typeColorID[oldColorTypeID]);
             typeList.append(type);
         }
     }
@@ -222,7 +227,7 @@ DScheduleType::List DDataBaseManagement::queryOldJobTypeData(QSqlDatabase &db)
 
 DSchedule::List DDataBaseManagement::queryOldJobData(QSqlDatabase &db, const bool haslunar)
 {
-   SqliteQuery query(db);
+    SqliteQuery query(db);
     QString strSql;
     if (haslunar) {
         strSql = "SELECT id, created_at, \"type\", title, description, all_day,                     \
@@ -312,7 +317,7 @@ DSchedule::List DDataBaseManagement::queryOldJobData(QSqlDatabase &db, const boo
 
 QVector<DTypeColor> DDataBaseManagement::queryOldTypeColorData(QSqlDatabase &db)
 {
-   SqliteQuery query(db);
+    SqliteQuery query(db);
     QVector<DTypeColor> colorVector;
     //获取用户创建颜色
     QString strSql("SELECT TypeNo, ColorHex, Authority              \
@@ -321,10 +326,14 @@ QVector<DTypeColor> DDataBaseManagement::queryOldTypeColorData(QSqlDatabase &db)
     if (query.exec()) {
         while (query.next()) {
             DTypeColor color;
-            color.setColorID(query.value("TypeNo").toInt());
-            color.setColorCode(query.value("ColorHex").toString());
-            color.setPrivilege(DTypeColor::PriUser);
-            colorVector.append(color);
+            int oldTpyeID = query.value("TypeNo").toInt();
+            //如果包含则添加,没有则丢弃
+            if (m_typeColorID.contains(oldTpyeID)) {
+                color.setColorID(m_typeColorID[oldTpyeID]);
+                color.setColorCode(query.value("ColorHex").toString());
+                color.setPrivilege(DTypeColor::PriUser);
+                colorVector.append(color);
+            }
         }
     }
     if (query.isActive()) {
@@ -335,7 +344,7 @@ QVector<DTypeColor> DDataBaseManagement::queryOldTypeColorData(QSqlDatabase &db)
 
 DRemindData::List DDataBaseManagement::querOldRemindData(QSqlDatabase &db)
 {
-   SqliteQuery query(db);
+    SqliteQuery query(db);
     DRemindData::List remindList;
     QString strSql("SELECT jobid, recurid, remindCount, notifyid, remindTime, jobStartTime, jobEndTime FROM jobsReminder;");
     query.prepare(strSql);

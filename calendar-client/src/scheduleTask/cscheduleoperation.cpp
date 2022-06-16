@@ -415,6 +415,8 @@ bool CScheduleOperation::scheduleIsInvariant(const DSchedule::Ptr &schedule)
     //如果为网络帐户，且没有网络或者帐户开关关闭
 
     AccountItem::Ptr accountItem = gAccountManager->getAccountItemByScheduleTypeId(schedule->scheduleTypeID());
+    if (accountItem.isNull())
+        return false;
     DAccount::Ptr account = accountItem->getAccount();
     if (account->accountType() == DAccount::Account_UnionID) {
         DOANetWorkDBus netManger;

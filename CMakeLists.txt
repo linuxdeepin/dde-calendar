@@ -76,6 +76,11 @@ qt5_create_translation(DTNG_QM_FILES
      ${DTNG_QM_FILES}
      )
      
- set(CMAKE_INSTALL_PREFIX /usr)
+if(DEFINED ENV{PREFIX})
+   set(CMAKE_INSTALL_PREFIX $ENV{PREFIX})
+else()
+   set(CMAKE_INSTALL_PREFIX /usr)
+endif()
+  
  file(GLOB APP_QM_FILES "translations/*.qm")
  install(FILES ${APP_QM_FILES} DESTINATION share/dde-calendar/translations)

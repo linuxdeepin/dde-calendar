@@ -29,7 +29,11 @@
 #include <QTranslator>
 #include <QCoreApplication>
 
-const static QString CalendarServiceTranslationsDir = "/usr/share/dde-calendar/translations";
+#ifndef LINGLONG_PREFIX
+#define LINGLONG_PREFIX "/usr/"
+#endif
+
+const static QString CalendarServiceTranslationsDir = QString("%1share/dde-calendar/translations").arg(LINGLONG_PREFIX);
 
 bool loadTranslator(QCoreApplication *app, QList<QLocale> localeFallback = QList<QLocale>() << QLocale::system())
 {

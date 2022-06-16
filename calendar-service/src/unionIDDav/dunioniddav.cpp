@@ -51,7 +51,7 @@ bool SyncAccount::defaultScheduleType()
     workType->setTypeName("Work");
     workType->setDisplayName("Work");
     DTypeColor workColor;
-    workColor.setColorID(1);
+    workColor.setColorID(DDataBase::GWorkColorID);
     workColor.setColorCode("#ff5e97");
     workColor.setPrivilege(DTypeColor::PriSystem);
     workType->setTypeColor(workColor);
@@ -67,7 +67,7 @@ bool SyncAccount::defaultScheduleType()
     lifeType->setTypeName("Life");
     lifeType->setDisplayName("Life");
     DTypeColor lifeColor;
-    lifeColor.setColorID(7);
+    lifeColor.setColorID(DDataBase::GLifeColorID);
     lifeColor.setColorCode("#5d51ff");
     lifeColor.setPrivilege(DTypeColor::PriSystem);
     lifeType->setTypeColor(lifeColor);
@@ -83,7 +83,7 @@ bool SyncAccount::defaultScheduleType()
     otherType->setTypeName("Other");
     otherType->setDisplayName("Other");
     DTypeColor otherColor;
-    otherColor.setColorID(4);
+    otherColor.setColorID(DDataBase::GOtherColorID);
     otherColor.setColorCode("#5bdd80");
     otherColor.setPrivilege(DTypeColor::PriSystem);
     otherType->setTypeColor(otherColor);
@@ -96,24 +96,20 @@ bool SyncAccount::defaultScheduleType()
 
 bool SyncAccount::defaultTypeColor()
 {
-    if (!insertToTypeColor(1, "#ff5e97", 1))
-        return false;
-    if (!insertToTypeColor(2, "#ff9436", 1))
-        return false;
-    if (!insertToTypeColor(3, "#ffdc00", 1))
-        return false;
-    if (!insertToTypeColor(4, "#5bdd80", 1))
-        return false;
-    if (!insertToTypeColor(5, "#00b99b", 1))
-        return false;
-    if (!insertToTypeColor(6, "#4293ff", 1))
-        return false;
-    if (!insertToTypeColor(7, "#5d51ff", 1))
-        return false;
-    if (!insertToTypeColor(8, "#a950ff", 1))
-        return false;
-    if (!insertToTypeColor(9, "#717171", 1))
-        return false;
+    QDateTime currentTime = QDateTime::currentDateTime();
+    int index = -10;
+    //使用与本地一致的颜色id
+    QMap<QString, QString>::const_iterator iter = GTypeColor.constBegin();
+    for (; iter != GTypeColor.constEnd(); ++iter) {
+        DTypeColor typeColor;
+        typeColor.setDtCreate(currentTime.addDays(++index));
+        typeColor.setPrivilege(DTypeColor::PriSystem);
+        typeColor.setColorCode(iter.value());
+        typeColor.setColorID(iter.key());
+        if (!insertToTypeColor(typeColor)) {
+            return false;
+        };
+    }
     return true;
 }
 
@@ -145,13 +141,19 @@ bool SyncAccount::insertToScheduleType(const DScheduleType::Ptr &scheduleType)
     return query.exec();
 }
 
-bool SyncAccount::insertToTypeColor(int typeColorNo, QString strColorHex, int privilege)
+bool SyncAccount::insertToTypeColor(const DTypeColor &typeColor)
 {
     SqliteQuery query(QSqlDatabase::database(_connectionName));
-    query.prepare("replace into TypeColor(ColorID, ColorHex, privilege) VALUES(?, ?, ?)");
-    query.addBindValue(typeColorNo);
-    query.addBindValue(strColorHex);
-    query.addBindValue(privilege);
+    QString strSql("INSERT INTO TypeColor                   \
+                   (ColorID, ColorHex, privilege,dtCreate)           \
+                   VALUES(:ColorID, :ColorHex, :privilege,:dtCreate)");
+
+    query.prepare("replace into TypeColor (ColorID, ColorHex, privilege,dtCreate)           \
+                  VALUES(:ColorID, :ColorHex, :privilege,:dtCreate)");
+    query.bindValue(":ColorID", typeColor.colorID());
+    query.bindValue(":ColorHex", typeColor.colorCode());
+    query.bindValue(":privilege", typeColor.privilege());
+    query.bindValue(":dtCreate", dtToString(typeColor.dtCreate()));
     return query.exec();
 }
 

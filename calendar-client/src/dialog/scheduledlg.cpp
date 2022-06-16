@@ -25,6 +25,7 @@
 #include "cdynamicicon.h"
 #include "configsettings.h"
 #include "accountmanager.h"
+#include "units.h"
 
 #include <DHiDPIHelper>
 #include <DFontSizeManager>
@@ -1460,16 +1461,20 @@ void CScheduleDlg::resetColor(const AccountItem::Ptr &account)
         //设置颜色
         DTypeColor::Ptr typeColor;
         typeColor.reset(new DTypeColor);
-        typeColor->setColorID(0);
         typeColor->setColorCode(colorName);
         typeColor->setPrivilege(DTypeColor::PriUser);
         m_colorSeletorWideget->setUserColor(typeColor);
     }
     //选中上一次选中的颜色
-    int colorId = CConfigSettings::getInstance()->value("LastSysColorTypeNo", -1).toInt();
-    if (colorId >= 0) {
-        m_colorSeletorWideget->setSelectedColorById(colorId);
+    QVariant colorId = CConfigSettings::getInstance()->value("LastSysColorTypeNo", -1);
+    int colorNum = 0;
+    if (colorId.type() == QVariant::Int) {
+        //如果是int型表示为旧颜色编号
+        colorNum = colorId.toInt();
+    } else {
+        colorNum = GTypeColor.keys().indexOf(colorId.toString());
     }
+    m_colorSeletorWideget->setSelectedColorById(colorNum);
 }
 
 void CScheduleDlg::resize()

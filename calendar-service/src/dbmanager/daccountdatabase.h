@@ -27,6 +27,7 @@
 #include "dscheduletype.h"
 #include "dreminddata.h"
 #include "duploadtaskdata.h"
+#include "dtypecolor.h"
 
 #include <QSharedPointer>
 
@@ -77,8 +78,9 @@ public:
     void updateAccountInfo();
 
     ///////////////////类型颜色
-    bool addTypeColor(const int typeColorNo, const QString &strColorHex, const int privilege);
-    void deleteTypeColor(const int colorNo);
+    bool addTypeColor(const DTypeColor::Ptr &typeColor);
+    bool addTypeColor(DTypeColor &typeColor);
+    void deleteTypeColor(const QString &colorNo);
     //获取内置类型颜色
     DTypeColor::List getSysColor();
 

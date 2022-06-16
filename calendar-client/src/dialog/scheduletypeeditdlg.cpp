@@ -22,6 +22,7 @@
 #include "scheduledatamanage.h"
 #include "cscheduleoperation.h"
 #include "configsettings.h"
+#include "units.h"
 
 #include <DFrame>
 #include <DTitlebar>
@@ -78,10 +79,16 @@ void ScheduleTypeEditDlg::setAccount(AccountItem::Ptr account)
     } break;
     default: {
         //默认新建日程，选中上一次选中的颜色
-        int colorId = CConfigSettings::getInstance()->value("LastSysColorTypeNo", -1).toInt();
-        if (colorId >= 0) {
-            m_colorSeletor->setSelectedColorById(colorId);
+        //选中上一次选中的颜色
+        QVariant colorId = CConfigSettings::getInstance()->value("LastSysColorTypeNo", -1);
+        int colorNum = 0;
+        if (colorId.type() == QVariant::Int) {
+            //如果是int型表示为旧颜色编号
+            colorNum = colorId.toInt();
+        } else {
+            colorNum = GTypeColor.keys().indexOf(colorId.toString());
         }
+        m_colorSeletor->setSelectedColorById(colorNum);
     } break;
     }
 }

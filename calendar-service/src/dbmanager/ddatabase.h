@@ -54,6 +54,15 @@ public:
     //日历通用设置
     static const QString sql_create_calendargeneralsettings;
 
+    //工作颜色id
+    static const QString GWorkColorID;
+    //生活颜色id
+    static const QString GLifeColorID;
+    //其他颜色id
+    static const QString GOtherColorID;
+    //节假日颜色id
+    static const QString GFestivalColorID;
+
 public:
     explicit DDataBase(QObject *parent = nullptr);
     virtual ~DDataBase();
@@ -61,8 +70,6 @@ public:
     QString getDBPath() const;
     void setDBPath(const QString &DBPath);
     static QString createUuid();
-    //创建日程颜色随机id
-    static int createColorId();
 
     QString getConnectionName() const;
     void setConnectionName(const QString &connectionName);
