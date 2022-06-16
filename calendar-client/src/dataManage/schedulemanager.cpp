@@ -117,6 +117,9 @@ void ScheduleManager::updateSearchSchedule()
 void ScheduleManager::slotScheduleUpdate()
 {
     updateSchedule();
+    if (m_searchQuery) {
+        searchSchedule(m_searchQuery->key(), m_searchQuery->dtStart(), m_searchQuery->dtEnd());
+    }
 }
 
 /**
@@ -249,9 +252,14 @@ void ScheduleManager::searchSchedule(const QString &key, const QDateTime &startT
     m_searchScheduleMap.clear();
     static int count = 0;
     count = 0;
+
+    m_searchQuery.reset(new DScheduleQueryPar);
+    m_searchQuery->setKey(key);
+    m_searchQuery->setDtStart(startTime);
+    m_searchQuery->setDtEnd(endTime);
     for (AccountItem::Ptr p : gAccountManager->getAccountList()) {
         count ++;
-        p->querySchedulesWithParameter(key, startTime, endTime, [&](CallMessge) {
+        p->querySchedulesWithParameter(m_searchQuery, [&](CallMessge) {
             count--;
             if (count == 0) {
                 this->updateSearchSchedule();
@@ -267,5 +275,6 @@ void ScheduleManager::searchSchedule(const QString &key, const QDateTime &startT
 void ScheduleManager::clearSearchSchedule()
 {
     m_searchScheduleMap.clear();
+    m_searchQuery.reset(nullptr);
     emit signalSearchScheduleUpdate();
 }

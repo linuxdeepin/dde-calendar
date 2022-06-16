@@ -83,6 +83,8 @@ private:
 private:
     QMap<QDate, DSchedule::List> m_scheduleMap;     //一年的日程数据
     QMap<QDate, DSchedule::List> m_searchScheduleMap;   //被搜索的日程数据
+    DScheduleQueryPar::Ptr m_searchQuery;   //上一次搜索的条件
+
 
     LunarManager m_lunarManager;
 };
