@@ -121,7 +121,8 @@ void DAccountModule::setSyncFreq(const QString &freq)
 QString DAccountModule::getScheduleTypeList()
 {
     DScheduleType::List typeList = m_accountDB->getScheduleTypeList();
-    //TODO:排序
+    //排序
+    std::sort(typeList.begin(), typeList.end());
     QString typeListStr;
     DScheduleType::toJsonListString(typeList, typeListStr);
     return typeListStr;
@@ -144,6 +145,8 @@ QString DAccountModule::createScheduleType(const QString &typeInfo)
         scheduleType->setColorID(DDataBase::createColorId());
         m_accountDB->addTypeColor(scheduleType->typeColor().colorID(), scheduleType->typeColor().colorCode(), 7);
     }
+    //设置创建时间
+    scheduleType->setDtCreate(QDateTime::currentDateTime());
     QString scheduleTypeID = m_accountDB->createScheduleType(scheduleType);
     //如果为网络日程则需要上传任务
     if (m_account->isNetWorkAccount()) {

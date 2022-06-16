@@ -106,6 +106,8 @@ public:
     int syncTag() const;
     void setSyncTag(int syncTag);
 
+    friend bool operator<(const DScheduleType::Ptr &st1, const DScheduleType::Ptr &st2);
+
 private:
     QString m_accountID;
     QString m_typeID;

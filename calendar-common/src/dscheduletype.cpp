@@ -437,3 +437,16 @@ void DScheduleType::setSyncTag(int syncTag)
 {
     m_syncTag = syncTag;
 }
+
+bool operator<(const DScheduleType::Ptr &st1, const DScheduleType::Ptr &st2)
+{
+    //权限不一致权限小的排在前面
+    if (st1->privilege() != st2->privilege()) {
+        return st1->privilege() < st2->privilege();
+    }
+    //权限一一致的创建时间早的排在前面
+    if (st1->dtCreate() != st2->dtCreate()) {
+        return st1->dtCreate() < st2->dtCreate();
+    }
+    return true;
+}

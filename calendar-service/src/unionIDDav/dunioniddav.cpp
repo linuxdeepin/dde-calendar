@@ -43,9 +43,10 @@
 bool SyncAccount::defaultScheduleType()
 {
     //工作类型
+    QDateTime currentTime = QDateTime::currentDateTime();
     DScheduleType::Ptr workType(new DScheduleType(_accountID));
     workType->setTypeID(DDataBase::createUuid());
-    workType->setDtCreate(QDateTime::currentDateTime());
+    workType->setDtCreate(currentTime.addDays(-3));
     workType->setPrivilege(DScheduleType::Read);
     workType->setTypeName("Work");
     workType->setDisplayName("Work");
@@ -55,13 +56,13 @@ bool SyncAccount::defaultScheduleType()
     workColor.setPrivilege(DTypeColor::PriSystem);
     workType->setTypeColor(workColor);
     workType->setShowState(DScheduleType::Show);
-    if(!insertToScheduleType(workType))
+    if (!insertToScheduleType(workType))
         return false;
 
     //生活
     DScheduleType::Ptr lifeType(new DScheduleType(_accountID));
     lifeType->setTypeID(DDataBase::createUuid());
-    lifeType->setDtCreate(QDateTime::currentDateTime());
+    lifeType->setDtCreate(currentTime.addDays(-2));
     lifeType->setPrivilege(DScheduleType::Read);
     lifeType->setTypeName("Life");
     lifeType->setDisplayName("Life");
@@ -71,13 +72,13 @@ bool SyncAccount::defaultScheduleType()
     lifeColor.setPrivilege(DTypeColor::PriSystem);
     lifeType->setTypeColor(lifeColor);
     lifeType->setShowState(DScheduleType::Show);
-    if(!insertToScheduleType(lifeType))
+    if (!insertToScheduleType(lifeType))
         return false;
 
     //其他
     DScheduleType::Ptr otherType(new DScheduleType(_accountID));
     otherType->setTypeID(DDataBase::createUuid());
-    otherType->setDtCreate(QDateTime::currentDateTime());
+    otherType->setDtCreate(currentTime);
     otherType->setPrivilege(DScheduleType::Read);
     otherType->setTypeName("Other");
     otherType->setDisplayName("Other");
@@ -87,7 +88,7 @@ bool SyncAccount::defaultScheduleType()
     otherColor.setPrivilege(DTypeColor::PriSystem);
     otherType->setTypeColor(otherColor);
     otherType->setShowState(DScheduleType::Show);
-    if(!insertToScheduleType(otherType))
+    if (!insertToScheduleType(otherType))
         return false;
 
     return true;
@@ -95,15 +96,24 @@ bool SyncAccount::defaultScheduleType()
 
 bool SyncAccount::defaultTypeColor()
 {
-    if(!insertToTypeColor(1, "#ff5e97", 1)) return false;
-    if(!insertToTypeColor(2, "#ff9436", 1)) return false;
-    if(!insertToTypeColor(3, "#ffdc00", 1)) return false;
-    if(!insertToTypeColor(4, "#5bdd80", 1)) return false;
-    if(!insertToTypeColor(5, "#00b99b", 1)) return false;
-    if(!insertToTypeColor(6, "#4293ff", 1)) return false;
-    if(!insertToTypeColor(7, "#5d51ff", 1)) return false;
-    if(!insertToTypeColor(8, "#a950ff", 1)) return false;
-    if(!insertToTypeColor(9, "#717171", 1)) return false;
+    if (!insertToTypeColor(1, "#ff5e97", 1))
+        return false;
+    if (!insertToTypeColor(2, "#ff9436", 1))
+        return false;
+    if (!insertToTypeColor(3, "#ffdc00", 1))
+        return false;
+    if (!insertToTypeColor(4, "#5bdd80", 1))
+        return false;
+    if (!insertToTypeColor(5, "#00b99b", 1))
+        return false;
+    if (!insertToTypeColor(6, "#4293ff", 1))
+        return false;
+    if (!insertToTypeColor(7, "#5d51ff", 1))
+        return false;
+    if (!insertToTypeColor(8, "#a950ff", 1))
+        return false;
+    if (!insertToTypeColor(9, "#717171", 1))
+        return false;
     return true;
 }
 
@@ -114,7 +124,7 @@ bool SyncAccount::insertToScheduleType(const DScheduleType::Ptr &scheduleType)
                    typeColorID, description, privilege, showState,  \
                    syncTag,dtCreate,isDeleted)                      \
             VALUES(?,?,?,?,?,?,?,?,?,?,?)");
-   SqliteQuery query(QSqlDatabase::database(_connectionName));
+    SqliteQuery query(QSqlDatabase::database(_connectionName));
     query.prepare(strSql);
     if (scheduleType->typeID().size() < 30) {
         scheduleType->setTypeID(DDataBase::createUuid());
@@ -137,7 +147,7 @@ bool SyncAccount::insertToScheduleType(const DScheduleType::Ptr &scheduleType)
 
 bool SyncAccount::insertToTypeColor(int typeColorNo, QString strColorHex, int privilege)
 {
-   SqliteQuery query(QSqlDatabase::database(_connectionName));
+    SqliteQuery query(QSqlDatabase::database(_connectionName));
     query.prepare("replace into TypeColor(ColorID, ColorHex, privilege) VALUES(?, ?, ?)");
     query.addBindValue(typeColorNo);
     query.addBindValue(strColorHex);
@@ -147,7 +157,7 @@ bool SyncAccount::insertToTypeColor(int typeColorNo, QString strColorHex, int pr
 
 void DUIDSynDataWorker::syncData(SyncStack syncType)
 {
-    if(nullptr == mSyncTimer) {
+    if (nullptr == mSyncTimer) {
         mSyncTimer = new QTimer(this);
         mSyncTimer->setSingleShot(true);
         connect(mSyncTimer, &QTimer::timeout, this, &DUIDSynDataWorker::slotSync);
@@ -160,21 +170,21 @@ void DUIDSynDataWorker::syncData(SyncStack syncType)
 void DUIDSynDataWorker::slotSync()
 {
     bool next = false;
-    for(int k = mSyncList.count() - 1; k >= 0; k --) {
-        if(k == mSyncList.count() - 1) {
+    for (int k = mSyncList.count() - 1; k >= 0; k--) {
+        if (k == mSyncList.count() - 1) {
             mSync = mSyncList[k];
             next = true;
         } else {
             mSync.syncType |= mSyncList[k].syncType;
         }
-        if(mSync.syncType.testFlag(DDataSyncBase::Sync_Upload)
-                && mSync.syncType.testFlag(DDataSyncBase::Sync_Download))
+        if (mSync.syncType.testFlag(DDataSyncBase::Sync_Upload)
+            && mSync.syncType.testFlag(DDataSyncBase::Sync_Download))
             break;
     }
 
     mSyncList.clear();
 
-    if(next)
+    if (next)
         startUpdate();
 
 }
@@ -209,7 +219,7 @@ void DUIDSynDataWorker::startUpdate()
     if (errCode == 0 && mSync.syncType.testFlag(DDataSyncBase::SyncType::Sync_Download)) {
         errCode =  mSync.tmpToLoad(updateType);
     }
-    if(errCode == 0) {
+    if (errCode == 0) {
         transactionLocker.commit();
     }
     QSqlDatabase::removeDatabase(mSync.dbname_account_thread);
@@ -224,7 +234,7 @@ void DUIDSynDataWorker::startUpdate()
     mSync.deleteTmpData(fileManger);
 
     qInfo() << "同步完成";
-    if(errCode == 0) {
+    if (errCode == 0) {
         //发送数据更新消息
         emit signalUpdate(updateType);
     }
@@ -268,15 +278,15 @@ int SyncStack::downloadUidData(bool &isInitSyncData, SyncFileManage &fileManger)
         return -1;
     }
     qInfo() << "初始化表结构";
-   SqliteQuery query(QSqlDatabase::database(dbname_sync_thread));
+    SqliteQuery query(QSqlDatabase::database(dbname_sync_thread));
 
-    if(!query.exec(DAccountDataBase::sql_create_schedules))
+    if (!query.exec(DAccountDataBase::sql_create_schedules))
         return -1;
-    if(!query.exec(DAccountDataBase::sql_create_scheduleType))
+    if (!query.exec(DAccountDataBase::sql_create_scheduleType))
         return -1;
-    if(!query.exec(DAccountDataBase::sql_create_typeColor))
+    if (!query.exec(DAccountDataBase::sql_create_typeColor))
         return -1;
-    if(!query.exec(DAccountDataBase::sql_create_calendargeneralsettings))
+    if (!query.exec(DAccountDataBase::sql_create_calendargeneralsettings))
         return -1;
 
     query.exec("select count(0) from scheduleType");
@@ -285,16 +295,16 @@ int SyncStack::downloadUidData(bool &isInitSyncData, SyncFileManage &fileManger)
         SyncAccount accountDb(dbname_sync_thread, accountId);
 
         qInfo() << "默认日程类型";
-        if(!accountDb.defaultScheduleType())
+        if (!accountDb.defaultScheduleType())
             return -1;
 
         qInfo() << "默认颜色";
-        if(!accountDb.defaultTypeColor())
+        if (!accountDb.defaultTypeColor())
             return -1;
 
         if (accountState & DAccount::Account_Setting) {
             qInfo() << "默认通用设置";
-            if(!syncIntoTable("calendargeneralsettings", dbname_manager_thread, dbname_sync_thread))
+            if (!syncIntoTable("calendargeneralsettings", dbname_manager_thread, dbname_sync_thread))
                 return -1;
         }
         //云端没有对应数据需要初始化，返回初始化状态
@@ -307,7 +317,7 @@ int SyncStack::downloadUidData(bool &isInitSyncData, SyncFileManage &fileManger)
 int SyncStack::loadToTmp()
 {
     qInfo() << "将本地A的uploadTask同步到刚刚下载的B里";
-   SqliteQuery query(QSqlDatabase::database(dbname_account_thread));
+    SqliteQuery query(QSqlDatabase::database(dbname_account_thread));
     query.exec("select taskID,uploadType,uploadObject,objectID  from uploadTask");
     while (query.next()) {
         int type = query.value("uploadType").toInt();
@@ -319,18 +329,18 @@ int SyncStack::loadToTmp()
         switch (type) {
         case DUploadTaskData::Create:
         case DUploadTaskData::Modify:
-            if(!replaceIntoRecord(table_name, selectRecord(table_name, key_name, key_value, dbname_account_thread), dbname_sync_thread))
+            if (!replaceIntoRecord(table_name, selectRecord(table_name, key_name, key_value, dbname_account_thread), dbname_sync_thread))
                 return -1;
             break;
         case DUploadTaskData::Delete:
-            if(!deleteTableLine(table_name, key_name, key_value, dbname_sync_thread))
+            if (!deleteTableLine(table_name, key_name, key_value, dbname_sync_thread))
                 return -1;
             break;
         }
     }
 
     qInfo() << "清空uploadTask";
-    if(!deleteTable("uploadTask", dbname_account_thread))
+    if (!deleteTable("uploadTask", dbname_account_thread))
         return -1;
 
     if (accountState & DAccount::Account_Setting) {
@@ -338,10 +348,10 @@ int SyncStack::loadToTmp()
         QDateTime managerDate = selectValue("vch_value", "calendargeneralsettings", "vch_key", "dt_update", dbname_manager_thread).toDateTime();
         QDateTime syncDate = selectValue("vch_value", "calendargeneralsettings", "vch_key", "dt_update", dbname_sync_thread).toDateTime();
         if (managerDate > syncDate)
-            if(!syncIntoTable("calendargeneralsettings", dbname_manager_thread, dbname_sync_thread))
+            if (!syncIntoTable("calendargeneralsettings", dbname_manager_thread, dbname_sync_thread))
                 return -1;
         if (syncDate > managerDate)
-            if(!syncIntoTable("calendargeneralsettings", dbname_sync_thread, dbname_manager_thread))
+            if (!syncIntoTable("calendargeneralsettings", dbname_sync_thread, dbname_manager_thread))
                 return -1;
     }
 
@@ -351,17 +361,17 @@ int SyncStack::loadToTmp()
 int SyncStack::tmpToLoad(DDataSyncBase::UpdateTypes updateType)
 {
     qInfo() << "更新schedules、schedules、typeColor";
-    if(!syncIntoTable("schedules", dbname_sync_thread, dbname_account_thread))
+    if (!syncIntoTable("schedules", dbname_sync_thread, dbname_account_thread))
         return -1;
-    if(!syncIntoTable("scheduleType", dbname_sync_thread, dbname_account_thread))
+    if (!syncIntoTable("scheduleType", dbname_sync_thread, dbname_account_thread))
         return -1;
-    if(!syncIntoTable("typeColor", dbname_sync_thread, dbname_account_thread))
+    if (!syncIntoTable("typeColor", dbname_sync_thread, dbname_account_thread))
         return -1;
     updateType = DUnionIDDav::Update_Schedule | DUnionIDDav::Update_ScheduleType;
 
     if (accountState & DAccount::Account_Setting) {
         qInfo() << "更新通用设置";
-        if(!syncIntoTable("calendargeneralsettings", dbname_sync_thread, dbname_manager_thread))
+        if (!syncIntoTable("calendargeneralsettings", dbname_sync_thread, dbname_manager_thread))
             return -1;
         updateType = updateType | DUnionIDDav::Update_Setting;
     }
@@ -399,15 +409,15 @@ void SyncStack::prepareBinds(QSqlQuery &query, QSqlRecord source)
 
 bool SyncStack::syncIntoTable(const QString &table_name, const QString &connection_name_source, const QString &connection_name_target)
 {
-   SqliteQuery source(QSqlDatabase::database(connection_name_source));
-   SqliteQuery target(QSqlDatabase::database(connection_name_target));
-    if(!target.exec(" delete from " + table_name))
+    SqliteQuery source(QSqlDatabase::database(connection_name_source));
+    SqliteQuery target(QSqlDatabase::database(connection_name_target));
+    if (!target.exec(" delete from " + table_name))
         return false;
     source.exec(" select * from " + table_name);
     while (source.next()) {
         target.prepare("replace into " + table_name + " values(" + prepareQuest(source.record().count()) + ")");
         prepareBinds(target, source.record());
-        if(!target.exec()) {
+        if (!target.exec()) {
             qInfo() << target.lastError();
             return false;
         }
@@ -417,11 +427,11 @@ bool SyncStack::syncIntoTable(const QString &table_name, const QString &connecti
 
 QSqlRecord SyncStack::selectRecord(const QString &table_name, const QString &key_name, const QVariant &key_value, const QString &connection_name)
 {
-   SqliteQuery query(QSqlDatabase::database(connection_name));
+    SqliteQuery query(QSqlDatabase::database(connection_name));
     query.prepare("select * from " + table_name + " where " + key_name + " = ?");
     query.addBindValue(key_value);
     query.exec();
-    if(query.next())
+    if (query.next())
         return query.record();
     return QSqlRecord();
 }
@@ -430,7 +440,7 @@ bool SyncStack::replaceIntoRecord(const QString &table_name, QSqlRecord record, 
 {
     if (record.isEmpty())
         return true;
-   SqliteQuery query(QSqlDatabase::database(connection_name));
+    SqliteQuery query(QSqlDatabase::database(connection_name));
     query.prepare("replace into " + table_name + " values(" + prepareQuest(record.count()) + ")");
     prepareBinds(query, record);
     return query.exec();
@@ -438,7 +448,7 @@ bool SyncStack::replaceIntoRecord(const QString &table_name, QSqlRecord record, 
 
 QVariant SyncStack::selectValue(const QString &value_name, const QString &table_name, const QString &key_name, const QVariant &key_value, const QString &connection_name)
 {
-   SqliteQuery query(QSqlDatabase::database(connection_name));
+    SqliteQuery query(QSqlDatabase::database(connection_name));
     query.prepare("select " + value_name + " from " + table_name + " where " + key_name + " = ?");
     query.addBindValue(key_value);
     query.exec();
@@ -448,7 +458,7 @@ QVariant SyncStack::selectValue(const QString &value_name, const QString &table_
 
 bool SyncStack::deleteTableLine(const QString &table_name, const QString &key_name, const QVariant &key_value, const QString &connection_name)
 {
-   SqliteQuery query(QSqlDatabase::database(connection_name));
+    SqliteQuery query(QSqlDatabase::database(connection_name));
     query.prepare("delete from " + table_name + " where " + key_name + " = ?");
     query.addBindValue(key_value);
     return query.exec();
@@ -456,8 +466,8 @@ bool SyncStack::deleteTableLine(const QString &table_name, const QString &key_na
 
 bool SyncStack::deleteTable(const QString &table_name, const QString &connection_name)
 {
-   SqliteQuery query(QSqlDatabase::database(connection_name));
-    if(!query.exec("delete from " + table_name)) {
+    SqliteQuery query(QSqlDatabase::database(connection_name));
+    if (!query.exec("delete from " + table_name)) {
         qInfo() << query.lastError();
         return false;
     }
@@ -489,6 +499,7 @@ DUnionIDDav::DUIDSynDataPrivate::~DUIDSynDataPrivate()
     }
 }
 
-void DUnionIDDav::DUIDSynDataPrivate::syncData(QString accountId, QString accountName, int accountState, DDataSyncBase::SyncTypes syncType)    {
+void DUnionIDDav::DUIDSynDataPrivate::syncData(QString accountId, QString accountName, int accountState, DDataSyncBase::SyncTypes syncType)
+{
     emit signalSyncData(SyncStack{accountId, accountName, accountState, syncType});
 }
