@@ -21,6 +21,7 @@
 #include "ctitlewidget.h"
 
 #include "constants.h"
+#include "configsettings.h"
 
 #include <DFontSizeManager>
 
@@ -158,7 +159,15 @@ void CTitleWidget::setSidebarStatus(bool status)
 {
     m_sidebarstatus = status;
     updateSidebarIconStatus();
-    emit signalSidebarStatusChange(m_sidebarstatus);
+    emit signalSidebarStatusChange(m_sidebarstatus&m_sidebarCanDisplay);
+    //将状态保存在配置文件中
+    gSetting->setUserSidebarStatus(status);
+}
+
+void CTitleWidget::setSidebarCanDisplay(bool can)
+{
+    m_sidebarCanDisplay = can;
+    emit signalSidebarStatusChange(m_sidebarstatus&m_sidebarCanDisplay);
 }
 
 bool CTitleWidget::getSidevarStatus()
@@ -293,5 +302,9 @@ void CTitleWidget::slotSearchEditFocusChanged(bool onFocus)
 
 void CTitleWidget::slotSidebarIconClicked()
 {
-    setSidebarStatus(!m_sidebarstatus);
+    //获取当前侧边栏显示状态
+    bool display = m_sidebarCanDisplay&m_sidebarstatus;
+    //点击按钮后侧边栏状态重新恢复为可显示状态
+    m_sidebarCanDisplay = true;
+    setSidebarStatus(!display); //切换显示状态
 }

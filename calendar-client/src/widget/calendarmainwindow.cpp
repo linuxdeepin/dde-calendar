@@ -547,10 +547,15 @@ void Calendarmainwindow::resizeEvent(QResizeEvent *event)
     setSearchWidth(m_scheduleSearchViewMaxWidth);
     setScheduleHide();
 
-    //窗口宽度小于826时隐藏侧边栏
-    if (this->width() < 826) {
-        m_titleWidget->setSidebarStatus(false);
+    static int preWidth = 0;    //上一次界面宽度
+    //根据界面大小改变趋势设置侧边栏可显示状态
+    if ((preWidth >= 826 || preWidth == 0) && width() < 826) {
+        m_titleWidget->setSidebarCanDisplay(false);
+    } else if ((preWidth <= 826) && width() > 826) {
+        m_titleWidget->setSidebarCanDisplay(true);
     }
+
+    preWidth = width();
 
     //保存窗口大小
     CConfigSettings::getInstance()->setOption("base.windowWidth", event->size().width());
@@ -792,8 +797,6 @@ void Calendarmainwindow::slotSidebarStatusChange(bool status)
     if (status && width() < 826) {
         resize(826, height());
     }
-    //将状态保存在配置文件中
-    gSetting->setUserSidebarStatus(status);
 }
 
 void Calendarmainwindow::mouseMoveEvent(QMouseEvent *event)

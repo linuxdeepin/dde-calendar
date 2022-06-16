@@ -44,8 +44,9 @@ public:
      * @param state
      */
     void setShowState(Title_State state);
-
-    void setSidebarStatus(bool);
+    //设置侧边栏状态，status:显示状态
+    void setSidebarStatus(bool status);
+    void setSidebarCanDisplay(bool can);
 
     bool getSidevarStatus();
 
@@ -100,6 +101,7 @@ public slots:
 
 private:
     bool m_sidebarstatus = true; //侧边栏状态
+    bool m_sidebarCanDisplay = true; //侧边栏状态
 
     DIconButton *m_sidebarIcon {nullptr};   //侧边栏状态控制按钮
     CButtonBox *m_buttonBox {nullptr};

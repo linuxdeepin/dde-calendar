@@ -92,6 +92,8 @@ void CScheduleDlg::setData(const DSchedule::Ptr &info)
         //光标移动到文末
         m_textEdit->moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
         m_accountItem = gAccountManager->getAccountItemByScheduleTypeId(info->scheduleTypeID());
+        //编辑状态下帐户不可切换，因此将帐户选择框置灰
+        m_accountComBox->setEnabled(false);
     }
 
     if (nullptr != m_accountItem) {
