@@ -88,7 +88,6 @@ private:
     QColor              m_bnormalColor = "#FFFFFF";
     const int           m_radius = 8;
     const int           m_borderframew = 0;
-    QVector<bool>       m_vlineflag; //节假日和日程标识
     MonthBrefWidget     *m_monthView = nullptr;
     CWeekWidget         *m_weekWidget = nullptr; //周显示区域
 };

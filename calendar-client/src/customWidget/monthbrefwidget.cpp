@@ -169,6 +169,26 @@ CMonthDayRectWidget::CMonthDayRectWidget(MonthBrefWidget::GlobalData* globalData
     setMinimumSize(10, 10);
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     setFocusPolicy(Qt::NoFocus);
+    setTheMe(DGuiApplicationHelper::instance()->themeType());
+    //系统主题切换信号
+    QObject::connect(DGuiApplicationHelper::instance(), &DGuiApplicationHelper::themeTypeChanged,
+                     this,&CMonthDayRectWidget::setTheMe);
+}
+
+/**
+ * @brief CMonthDayRectWidget::setTheMe
+ * 系统主题变化
+ * @param type
+ */
+void CMonthDayRectWidget::setTheMe(int type)
+{
+    CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
+    if (type == 0 || type == 1) {
+        m_ceventColor = QColor(255, 93, 0);
+    } else if (type == 2) {
+        m_ceventColor = QColor(204, 77, 3);
+    }
+    update();
 }
 
 /**
@@ -303,7 +323,7 @@ void CMonthDayRectWidget::paintEvent(QPaintEvent *event)
 
     if (m_globaldata->isHasScheduleByDate(m_date)) {
         //有日程，绘制日程圆点
-        painter.setBrush(DPaletteHelper::instance()->palette(this).linkVisited());
+        painter.setBrush(QBrush(m_ceventColor));
         painter.setPen(Qt::NoPen);
         painter.setOpacity(1);
         qreal ellipse_r = r * (4.0 / 25);

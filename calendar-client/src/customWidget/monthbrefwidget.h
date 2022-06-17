@@ -136,6 +136,8 @@ public:
     void setDate(const QDate &date);
     //获取当天的时间
     QDate getDate()const;
+    //系统主题变化
+    void setTheMe(int type = 0);
 
 signals:
     /**
@@ -167,6 +169,7 @@ private:
     QDate m_date;       //当前位置显示的日期
     bool m_pressed = false;     //按下状态
     bool m_hovered = false;     //悬浮状态
+    QColor m_ceventColor = "#FF5D00";   //日程圆点颜色
 
     MonthBrefWidget::GlobalData* m_globaldata = nullptr;
 };
