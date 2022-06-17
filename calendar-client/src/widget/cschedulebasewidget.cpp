@@ -56,8 +56,8 @@ void CScheduleBaseWidget::initConnect()
  */
 bool CScheduleBaseWidget::setSelectDate(const QDate &selectDate, const bool isSwitchYear, const QWidget *widget)
 {
-    bool _result = false;    //选择时间必须大于等于1900年
-    if (selectDate.year() >= 1900) {
+    bool _result = false;    //选择时间必须大于等于1900年小于2100年
+    if (selectDate.year() >= 1900 && selectDate.year() <=2100) {
         m_calendarManager->setSelectDate(selectDate, isSwitchYear);
         _result = true;
         //更新其它视图界面显示

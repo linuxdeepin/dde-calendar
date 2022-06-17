@@ -332,6 +332,7 @@ void CYearWindow::initUI()
     yeartitleLayout1->setMargin(0);
     yeartitleLayout1->setSpacing(0);
     yeartitleLayout1->addWidget(m_yearLunarLabel);
+    yeartitleLayout1->addSpacing(390);
     yeartitleLayout1->addStretch();
     yeartitleLayout1->addWidget(m_yearLunarDayLabel, 0, Qt::AlignVCenter);
 
@@ -538,7 +539,11 @@ void CYearWindow::slotSetScheduleHide()
  */
 void CYearWindow::slotprev()
 {
-    switchYear(-1);
+    QDate minYear = getSelectDate();
+    if (minYear.year() > 1900)
+    {
+        switchYear(-1);
+    }
 }
 
 /**
@@ -546,7 +551,11 @@ void CYearWindow::slotprev()
  */
 void CYearWindow::slotnext()
 {
-    switchYear(1);
+    QDate maxYear = getSelectDate();
+    if (maxYear.year() < 2100)
+    {
+        switchYear(1);
+    }
 }
 
 /**
@@ -933,6 +942,7 @@ void YearFrame::setYearShow()
         m_YearLunarLabel->setText(m_LunarYear);
     } else {
         m_YearLabel->setText(QString::number(m_selectDate.year()));
+        qInfo()<<"123"<<m_selectDate.year();
         m_YearLunarLabel->setText("");
     }
 }
