@@ -628,19 +628,26 @@ void DragInfoGraphicsView::mousePress(const QPoint &point)
     pressScheduleInit();
     QGraphicsItem *listItem = itemAt(point);
     DragInfoItem *infoitem = dynamic_cast<DragInfoItem *>(listItem);
-
     //不满足拖拽条件的日程不进行拖拽事件
-    if (infoitem && !isCanDragge(infoitem->getData())) {
-        return;
-    }
-    if (infoitem != nullptr) {
+    if (infoitem) {
         setPressSelectInfo(infoitem->getData());
         m_press = true;
-        DragInfoItem::setPressFlag(true);
+        if (isCanDragge(infoitem->getData())) {
+            //满足拖拽条件
+            DragInfoItem::setPressFlag(true);
+            DragPressEvent(point, infoitem);
+        } else {
+            //不满足拖拽条件，只展示信息弹窗
+            m_PressPos = point;
+            m_PressDate = getPosDate(point);
+            CalendarGlobalEnv::getGlobalEnv()->reviseValue(DDECalendar::CursorPointKey, mapToGlobal(point));
+            ShowSchedule(infoitem);
+        }
     } else {
+        //没有日程信息，可滑动
         emit signalScheduleShow(false);
+        DragPressEvent(point, infoitem);
     }
-    DragPressEvent(point, infoitem);
     this->scene()->update();
     update();
 }
