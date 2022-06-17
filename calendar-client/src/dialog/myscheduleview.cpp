@@ -48,6 +48,7 @@ CMyScheduleView::CMyScheduleView(const DSchedule::Ptr &schduleInfo, QWidget *par
     //设置初始化弹窗内容
     updateDateTimeFormat();
     focusNextPrevChild(false);
+    slotAccountStateChange();
 }
 
 /**
@@ -127,6 +128,16 @@ void CMyScheduleView::slotAutoFeed(const QFont &font)
 
     //更新界面高度
     setFixedHeight(m_defaultH + m_timeLabelH + m_scheduleLabelH);
+}
+
+void CMyScheduleView::slotAccountStateChange()
+{
+    AccountItem::Ptr item = gAccountManager->getAccountItemByScheduleTypeId(m_scheduleInfo->scheduleTypeID());
+    if (!item) {
+        return;
+    }
+    //根据可同步状态设置删除按钮是否可用
+    getButtons()[0]->setEnabled(item->isCanSyncShedule());
 }
 
 /**
@@ -349,4 +360,5 @@ void CMyScheduleView::initConnection()
     QShortcut *shortcut = new QShortcut(this);
     shortcut->setKey(QKeySequence(QLatin1String("ESC")));
     connect(shortcut, SIGNAL(activated()), this, SLOT(close()));
+    connect(gAccountManager, &AccountManager::signalAccountStateChange, this, &CMyScheduleView::slotAccountStateChange);
 }

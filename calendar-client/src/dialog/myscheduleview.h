@@ -52,6 +52,9 @@ public slots:
     void slotBtClick(int buttonIndex, const QString &buttonName);
 
     void slotAutoFeed(const QFont &font = QFont());
+
+    //帐户状态更新
+    void slotAccountStateChange();
 private:
     //界面初始化
     void initUI();
