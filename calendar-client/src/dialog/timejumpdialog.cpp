@@ -112,6 +112,7 @@ void TimeJumpDialog::showPopup(const QDate &date, int x, int y)
     initData();
     //将焦点转移到年编辑器
     m_yearEdit->setFocus();
+    m_yearEdit->selectAll();
     //显示
     show(x, y);
 }

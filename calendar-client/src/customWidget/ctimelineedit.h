@@ -50,6 +50,8 @@ signals:
 public slots:
     //编辑完成事件
     void slotEditingFinished();
+    //编辑框编辑事件
+    void slotTextEdited(const QString &value);
 
 protected:
     //重写步状态

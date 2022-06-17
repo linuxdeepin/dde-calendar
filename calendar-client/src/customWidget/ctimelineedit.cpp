@@ -19,6 +19,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "ctimelineedit.h"
+#include <QLineEdit>
 #include <QDebug>
 
 CTimeLineEdit::CTimeLineEdit(int id, QWidget *parent) : DSpinBox(parent)
@@ -26,6 +27,7 @@ CTimeLineEdit::CTimeLineEdit(int id, QWidget *parent) : DSpinBox(parent)
 {
     initView();
     connect(this, &CTimeLineEdit::editingFinished, this, &CTimeLineEdit::slotEditingFinished);
+    connect(this->lineEdit(), &QLineEdit::textEdited, this, &CTimeLineEdit::slotTextEdited);
 }
 
 void CTimeLineEdit::initView()
@@ -97,6 +99,25 @@ void CTimeLineEdit::setNum(int num, bool canCarry)
 void CTimeLineEdit::slotEditingFinished()
 {
     setNum(value());
+}
+
+void CTimeLineEdit::slotTextEdited(const QString &text)
+{
+    //过滤掉非数字字符
+    QString value = "";
+    for (QChar c : text) {
+        if ('0' <= c && c <= '9') {
+            value.append(c);
+        }
+    }
+    //借用字符串转整数策略使其剩余字符都符合数字规范，包括无前置0等
+    int v = value.toInt();
+
+    //保存光标位置，因为存在删减字符，且被删减的字符只能是在首位，因此不直接记录光标绝对位置，而是保存当前光标位置与最后位置的相对位置
+    int len = text.length() - lineEdit()->cursorPosition();
+    lineEdit()->setText(v == 0?"":QString::number(v));
+    //恢复光标位置
+    lineEdit()->setCursorPosition(lineEdit()->text().length() - len);
 }
 
 /**

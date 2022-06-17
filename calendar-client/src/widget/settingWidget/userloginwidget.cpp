@@ -97,7 +97,6 @@ void UserloginWidget::slotAccountUpdate()
         m_userNameLabel->setText(account->accountName());
         // 这里的url一定要带上http://头的， 跟在浏览器里输入其它链接不太一样，浏览器里面会自动转的，这里需要手动加上。
         m_networkManager->get(QNetworkRequest(account->avatar()));
-
     } else {
         //账户为未登录状态
         m_buttonLoginOut->hide();
@@ -110,8 +109,17 @@ void UserloginWidget::slotAccountUpdate()
 void UserloginWidget::slotReplyPixmapLoad(QNetworkReply* reply)
 {
     QPixmap pixmap;
-    pixmap.loadFromData(reply->readAll());
-    m_buttonImg->setIcon(pixmap);
+    //因自定义头像路径拿到的不是真实路径，需要从请求头中拿取到真实路径再次发起请求
+    QUrl url = reply->header(QNetworkRequest::LocationHeader).toUrl();
+    if (url.url().isEmpty()) {
+        pixmap.loadFromData(reply->readAll());
+    } else {
+        m_networkManager->get(QNetworkRequest(url.url()));
+    }
+
+    if (!pixmap.isNull()) {
+        m_buttonImg->setIcon(pixmap);
+    }
 }
 
 QPair<QWidget*, QWidget*> UserloginWidget::createloginButton(QObject *obj)
