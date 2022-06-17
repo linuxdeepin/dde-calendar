@@ -25,6 +25,23 @@
 #include <QFile>
 #include <QDebug>
 
+static QMap<QString, SqliteMutex> DbpathMutexMap;//记录所有用到的数据库文件锁
+static QMutex DbpathMutexMapMutex;               //DbpathMutexMap的锁
+
+/**
+ * @brief getDbMutexRef 根据dbpath获取数据库文件锁的引用
+ */
+SqliteMutex &getDbMutexRef(const QString &dbpath)
+{
+    QMutexLocker locker(&DbpathMutexMapMutex);
+
+    if(!DbpathMutexMap.contains(dbpath)) {
+        DbpathMutexMap.insert(dbpath, SqliteMutex());
+    }
+    return DbpathMutexMap[dbpath];
+}
+
+
 const QString DDataBase::NameAccountManager = "AccountManager";
 const QString DDataBase::NameSync = "SyncManager";
 
@@ -203,4 +220,95 @@ bool DDataBase::dbFileExists()
 void DDataBase::removeDB()
 {
     QFile::remove(getDBPath());
+}
+
+void SqliteMutex::lock()
+{
+    if(transactionLocked && transactionThreadId == qint64(QThread::currentThreadId())) {
+        return;
+    }
+    m.lock();
+}
+
+void SqliteMutex::unlock()
+{
+    if(transactionLocked && transactionThreadId == qint64(QThread::currentThreadId())) {
+        return;
+    }
+    m.unlock();
+}
+
+void SqliteMutex::transactionLock()
+{
+    m.lock();
+    transactionLocked = true;
+    transactionThreadId = qint64(QThread::currentThreadId());
+}
+
+void SqliteMutex::transactionUnlock()
+{
+    transactionLocked = false;
+    transactionThreadId = 0;
+    m.unlock();
+}
+
+SqliteQuery::SqliteQuery(QSqlDatabase db)
+    : QSqlQuery(db)
+    , _db(db)
+{
+}
+
+SqliteQuery::SqliteQuery(const QString &connectionName)
+    : SqliteQuery(QSqlDatabase::database(connectionName))
+{
+}
+
+SqliteQuery::SqliteQuery(const QString &query, QSqlDatabase db)
+    : QSqlQuery(query, db)
+    , _db(db){
+}
+
+bool SqliteQuery::exec(QString sql)
+{
+    getDbMutexRef(_db.databaseName()).lock();
+    bool f = QSqlQuery::exec(sql);
+    getDbMutexRef(_db.databaseName()).unlock();
+    return f;
+}
+
+bool SqliteQuery::exec()
+{
+    getDbMutexRef(_db.databaseName()).lock();
+    bool f = QSqlQuery::exec();
+    getDbMutexRef(_db.databaseName()).unlock();
+    return f;
+}
+
+void SqliteQuery::transaction()
+{
+    getDbMutexRef(_db.databaseName()).transactionLock();
+    _db.transaction();
+}
+
+void SqliteQuery::commit()
+{
+    _db.commit();
+    getDbMutexRef(_db.databaseName()).transactionUnlock();
+}
+
+void SqliteQuery::rollback()
+{
+    _db.rollback();
+    getDbMutexRef(_db.databaseName()).transactionUnlock();
+}
+
+
+void SqliteMutex::UnCopyMutex::lock()
+{
+    m.lock();
+}
+
+void SqliteMutex::UnCopyMutex::unlock()
+{
+    m.unlock();
 }

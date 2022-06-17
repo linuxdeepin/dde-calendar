@@ -23,6 +23,11 @@
 
 #include <QObject>
 #include <QSqlDatabase>
+#include <QSqlQuery>
+#include <QThread>
+#include <QVector>
+#include <QMutex>
+#include <QMap>
 
 //账户数据库的实例
 #define DBAccountManager QSqlDatabase::database(DDataBase::NameAccountManager)
@@ -92,6 +97,69 @@ protected:
     QSqlDatabase m_database;
     QString m_DBPath;
     QString m_connectionName;
+};
+
+/**
+ * @brief The DbPathMutex struct 整理了sqlite数据库文件锁的相关操作
+ */
+struct SqliteMutex {
+private:
+    /**
+     * @brief The SqliteMutex struct 用于跳过QMutex的拷贝构造函数和operator=函数的调用
+     */
+    struct UnCopyMutex {
+        UnCopyMutex(){}
+        UnCopyMutex(const UnCopyMutex &) {}
+        UnCopyMutex &operator=(const UnCopyMutex &) {return *this;}
+        void lock();
+        void unlock();
+
+    private:
+        QMutex m;
+    } m;                                //数据库文件锁
+    bool transactionLocked = false;     //是否开启事务 及 数据库文件是否被锁定
+    qint64 transactionThreadId = 0;     //开启事务的线程id
+
+public:
+    /**
+     * @brief lock 数据库文件被锁定，用于非事务场景
+     */
+    void lock();
+
+    /**
+     * @brief unlock 数据库文件被解锁，用于非事务场景
+     */
+    void unlock();
+
+    /**
+     * @brief transactionLock 数据库文件被锁定，用非事务场景
+     */
+    void transactionLock();
+
+    /**
+     * @brief transactionUnlock 数据库文件被解锁，用非事务场景
+     */
+    void transactionUnlock();
+};
+
+/**
+ * @brief The SqliteQuery class 根据数据库文件锁来执行sql语句的类
+ */
+class SqliteQuery : public QSqlQuery {
+public:
+    explicit SqliteQuery(QSqlDatabase db);
+    explicit SqliteQuery(const QString &connectionName);
+    SqliteQuery(const QString &query, QSqlDatabase db);
+
+    bool exec(QString sql);
+    bool exec();
+
+    void transaction();
+    void commit();
+    void rollback();
+
+private:
+    QSqlDatabase _db;
 };
 
 #endif // DDATABASE_H
