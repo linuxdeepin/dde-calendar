@@ -44,7 +44,6 @@ SyncTagRadioButton::SyncTagRadioButton(DAccount::AccountState type, QWidget *par
 
     setObjectName("SyncTagRadioButton");
     if (gUosAccountItem) {
-        m_state = DAccount::Account_Close;
         m_state = gUosAccountItem->getAccount()->accountState();
         connect(gUosAccountItem.get(), &AccountItem::signalAccountStateChange, this, &SyncTagRadioButton::updateAccountState);
         updateAccountState();

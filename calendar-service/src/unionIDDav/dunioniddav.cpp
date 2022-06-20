@@ -360,7 +360,7 @@ int SyncStack::loadToTmp()
     return 0;
 }
 
-int SyncStack::tmpToLoad(DDataSyncBase::UpdateTypes updateType)
+int SyncStack::tmpToLoad(DDataSyncBase::UpdateTypes &updateType)
 {
     qInfo() << "更新schedules、schedules、typeColor";
     if (!syncIntoTable("schedules", dbname_sync_thread, dbname_account_thread))

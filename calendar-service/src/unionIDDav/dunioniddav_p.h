@@ -68,7 +68,7 @@ struct SyncStack {
     //将本地修改数据移动到下载的临时文件中
     int loadToTmp();
     //将临时文件中的数据移动到本地数据库中
-    int tmpToLoad(DDataSyncBase::UpdateTypes updateType);
+    int tmpToLoad(DDataSyncBase::UpdateTypes &updateType);
     //上传修改过的临时数据
     int uploadTmpData(SyncFileManage &fileManger);
     void deleteTmpData(SyncFileManage &fileManger);

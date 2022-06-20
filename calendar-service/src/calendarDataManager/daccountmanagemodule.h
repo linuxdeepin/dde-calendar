@@ -84,6 +84,15 @@ public:
 private:
     void unionIDDataMerging();
     void initAccountDBusInfo(const DAccount::Ptr &account);
+    //移除uid帐户
+    void removeUIdAccount(const DAccount::Ptr &uidAccount);
+    //添加uid帐户
+    void addUIdAccount(const DAccount::Ptr &uidAccount);
+    //更新uid帐户
+    void updateUIdAccount(const DAccount::Ptr &oldAccount, const DAccount::Ptr &uidAccount);
+    //获取设置开关状态
+    void setUidSwitchStatus(const DAccount::Ptr &account);
+
 signals:
     void firstDayOfWeekChange();
     void timeFormatTypeChange();
@@ -93,7 +102,7 @@ public slots:
     void slotFirstDayOfWeek(const int firstDay);
     void slotTimeFormatType(const int timeType);
     //TODO：监听网络帐户管理信号和Union ID登陆退出状态
-    void slotUidLoginStatueChange(const bool staus);
+    void slotUidLoginStatueChange(const int status);
     //控制中心的同步开关
     void slotSwitcherChange(const bool state);
     //通用设置发生改变

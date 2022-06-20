@@ -27,8 +27,7 @@
 #define SYNC_Invalid_File_Size          7510            /*文件大小不合法*/
 #define SYNC_Metadata_Check_Error       7511            /*元数据校验出错*/
 
-const QString utcloudcalendatpath = "/home/uos/build-dde-calendar-unknown-Debug/calendar-service/dde-calendar-service";
-
+const QString utcloudcalendatpath = "/usr/lib/deepin-daemon/dde-calendar-service";
 
 using SyncInter = com::deepin::sync::cloudopt;
 
@@ -60,12 +59,13 @@ public:
 
     bool optUserData(QVariantMap &userInfoMap);
 
+    //获取总开关状态
     SyncoptResult optGetMainSwitcher();
-
-    SyncoptResult optGetcalendarSwitcher(const QString &path);
+    //获取日历开关状态
+    SyncoptResult optGetCalendarSwitcher();
 
 Q_SIGNALS:
-    void signalLoginStatusChange(const bool staus);
+    void signalLoginStatusChange(const int staus);
     void LoginStatus(const int data);
     void SwitcherChange(const bool state);
 

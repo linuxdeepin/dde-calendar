@@ -35,7 +35,7 @@ SqliteMutex &getDbMutexRef(const QString &dbpath)
 {
     QMutexLocker locker(&DbpathMutexMapMutex);
 
-    if(!DbpathMutexMap.contains(dbpath)) {
+    if (!DbpathMutexMap.contains(dbpath)) {
         DbpathMutexMap.insert(dbpath, SqliteMutex());
     }
     return DbpathMutexMap[dbpath];
@@ -203,6 +203,10 @@ void DDataBase::dbOpen()
     QStringList cntNames = QSqlDatabase::connectionNames();
     if (cntNames.contains(getConnectionName())) {
         m_database = QSqlDatabase::database(getConnectionName());
+        //如果数据库不一致则设置新的数据库
+        if (m_database.databaseName() != getDBPath()) {
+            m_database.setDatabaseName(getDBPath());
+        }
     } else {
         m_database = QSqlDatabase::addDatabase("QSQLITE", getConnectionName());
         m_database.setDatabaseName(getDBPath());
@@ -224,7 +228,7 @@ void DDataBase::removeDB()
 
 void SqliteMutex::lock()
 {
-    if(transactionLocked && transactionThreadId == qint64(QThread::currentThreadId())) {
+    if (transactionLocked && transactionThreadId == qint64(QThread::currentThreadId())) {
         return;
     }
     m.lock();
@@ -232,7 +236,7 @@ void SqliteMutex::lock()
 
 void SqliteMutex::unlock()
 {
-    if(transactionLocked && transactionThreadId == qint64(QThread::currentThreadId())) {
+    if (transactionLocked && transactionThreadId == qint64(QThread::currentThreadId())) {
         return;
     }
     m.unlock();
@@ -265,7 +269,8 @@ SqliteQuery::SqliteQuery(const QString &connectionName)
 
 SqliteQuery::SqliteQuery(const QString &query, QSqlDatabase db)
     : QSqlQuery(query, db)
-    , _db(db){
+    , _db(db)
+{
 }
 
 bool SqliteQuery::exec(QString sql)

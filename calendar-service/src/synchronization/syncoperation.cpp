@@ -18,11 +18,6 @@ Syncoperation::Syncoperation(QObject *parent)
                                                "", this, SLOT(slotDbusCall(QDBusMessage)))) {
         qWarning() << "the connection was fail!" << "path: " << m_syncInter->path() << "interface: " << m_syncInter->interface();
     };
-//    //监听org.freedesktop.DBus.Properties接口的信号
-//    if (!QDBusConnection::sessionBus().connect(m_syncInter->service(), m_syncInter->path(),
-//                                               "org.freedesktop.DBus.Properties", "", this, SLOT(slotDbusCall(QDBusMessage)))) {
-//        qWarning() << "the connection was fail!" << "path: " << m_syncInter->path() << "interface: " << m_syncInter->interface();
-//    };
 }
 
 Syncoperation::~Syncoperation()
@@ -191,18 +186,21 @@ SyncoptResult Syncoperation::optGetMainSwitcher()
     return  result;
 }
 
-SyncoptResult Syncoperation::optGetcalendarSwitcher(const QString &path)
+SyncoptResult Syncoperation::optGetCalendarSwitcher()
 {
+    //登录后立即获取开关状态有问题，需要延迟获取
+    QThread::msleep(300);
     SyncoptResult mainswitcher = optGetMainSwitcher();
     SyncoptResult result;
     result.switch_state = false; //默认关闭
     if (mainswitcher.ret) {
         if (mainswitcher.switch_state) {
             //总开关开启,获取日历按钮状态
-            QDBusPendingReply<bool> reply = m_syncInter->SwitcherGet(path);
+            QDBusPendingReply<bool> reply = m_syncInter->SwitcherGet(utcloudcalendatpath);
             reply.waitForFinished();
             if (reply.error().message().isEmpty()) {
                 result.switch_state = reply.value();
+                qInfo() << "calendar:" << result.switch_state;
                 result.ret = true;
             } else {
                 qDebug() << "get calendar switcher failed";
@@ -225,11 +223,27 @@ void Syncoperation::slotDbusCall(const QDBusMessage &msg)
     if (msg.member() == "SwitcherChange") {
         SyncoptResult result;
         //获取总开关状态
-        result = optGetcalendarSwitcher(utcloudcalendatpath);
+        result = optGetCalendarSwitcher();
         if (result.ret) {
             Q_EMIT SwitcherChange(result.switch_state);
         } else {
             Q_EMIT SwitcherChange(false);
+        }
+    } else if (msg.member() == "LoginStatus") {
+        //帐户登陆登出信号监测
+        QVariant variant = msg.arguments().first();
+        const QDBusArgument &tmp = variant.value<QDBusArgument>();
+
+        QVector<int> loginStatus;
+        tmp.beginArray();
+        while (!tmp.atEnd()) {
+            tmp >> loginStatus;
+        }
+        tmp.endArray();
+        if (loginStatus.size() > 0) {
+            emit signalLoginStatusChange(loginStatus.first());
+        } else {
+            qWarning() << "get loginStatus error";
         }
     }
 }
@@ -241,11 +255,4 @@ void Syncoperation::onPropertiesChanged(const QString &interfaceName, const QVar
     Q_UNUSED(invalidatedProperties);
     if (!changedProperties.contains("UserData"))
         return;
-
-//    const QDBusArgument &argument = changedProperties.value("UserData").value<QDBusArgument>();
-//    QVariantMap userInfoMap;
-//    argument >> userInfoMap;
-    //发送登录信号
-    emit signalLoginStatusChange(true);
-
 }

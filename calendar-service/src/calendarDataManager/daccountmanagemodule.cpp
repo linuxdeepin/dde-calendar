@@ -106,7 +106,7 @@ void DAccountManageModule::setFirstDayOfWeek(const int firstday)
         m_generalSetting->setFirstDayOfWeek(static_cast<Qt::DayOfWeek>(firstday));
         m_accountManagerDB->setCalendarGeneralSettings(m_generalSetting);
         foreach (auto account, m_accountList) {
-            if(account->accountType() == DAccount::Account_UnionID){
+            if (account->accountType() == DAccount::Account_UnionID) {
                 m_accountModuleMap[account->accountID()]->accountDownload();
             }
         }
@@ -125,7 +125,7 @@ void DAccountManageModule::setTimeFormatType(const int timeType)
         m_generalSetting->setTimeShowType(static_cast<DCalendarGeneralSettings::TimeShowType>(timeType));
         m_accountManagerDB->setCalendarGeneralSettings(m_generalSetting);
         foreach (auto account, m_accountList) {
-            if(account->accountType() == DAccount::Account_UnionID){
+            if (account->accountType() == DAccount::Account_UnionID) {
                 m_accountModuleMap[account->accountID()]->accountDownload();
             }
         }
@@ -209,12 +209,7 @@ void DAccountManageModule::unionIDDataMerging()
     if (accountUnionid.isNull() || accountUnionid->accountID().isEmpty()) {
         //如果数据库中有unionid帐户
         if (std::any_of(m_accountList.begin(), m_accountList.end(), hasUnionid)) {
-            m_accountManagerDB->deleteAccountInfo(unionidDB->accountID());
-            m_accountList.removeOne(unionidDB);
-            //移除对应的数据库 ，停止对应的定时器
-            DAccountModule::Ptr accountModule(new DAccountModule(unionidDB));
-            accountModule->removeDB();
-            accountModule->downloadTaskhanding(2);
+            removeUIdAccount(unionidDB);
         }
     } else {
         //如果unionID登陆了
@@ -223,30 +218,13 @@ void DAccountManageModule::unionIDDataMerging()
         if (std::any_of(m_accountList.begin(), m_accountList.end(), hasUnionid)) {
             //如果是一个帐户则判断信息是否一致，不一致需更新
             if (unionidDB->accountName() == accountUnionid->accountName()) {
-                if (unionidDB->avatar() != accountUnionid->avatar() || unionidDB->displayName() != accountUnionid->displayName()) {
-                    unionidDB->avatar() = accountUnionid->avatar();
-                    unionidDB->displayName() = accountUnionid->displayName();
-                    //设置DBus路径和数据库名
-                    SyncoptResult result = m_syncFileManage->getSyncoperation()->optGetcalendarSwitcher(utcloudcalendatpath);
-                    if (result.switch_state) {
-                        unionidDB->setAccountState(accountUnionid->accountState() | DAccount::Account_Open);
-                    } else {
-                        unionidDB->setAccountState(accountUnionid->accountState() & ~DAccount::Account_Open);
-                    }
-                    m_accountManagerDB->updateAccountInfo(unionidDB);
-                }
+                updateUIdAccount(unionidDB, accountUnionid);
             } else {
-                m_accountList.removeOne(unionidDB);
-                m_accountManagerDB->deleteAccountInfo(unionidDB->accountID());
-                //如果不是一个帐户则移除再设置
-                initAccountDBusInfo(accountUnionid);
-                m_accountManagerDB->addAccountInfo(accountUnionid);
-                m_accountList.append(accountUnionid);
+                removeUIdAccount(unionidDB);
+                addUIdAccount(accountUnionid);
             }
         } else {
-            initAccountDBusInfo(accountUnionid);
-            m_accountManagerDB->addAccountInfo(accountUnionid);
-            m_accountList.append(accountUnionid);
+            addUIdAccount(accountUnionid);
         }
     }
 }
@@ -267,20 +245,52 @@ void DAccountManageModule::initAccountDBusInfo(const DAccount::Ptr &account)
     }
     QString sortID = DDataBase::createUuid().mid(0, 5);
     account->setAccountState(DAccount::AccountState::Account_Setting | DAccount::Account_Calendar);
-    //TODO:获取总开关
+    setUidSwitchStatus(account);
     //设置DBus路径和数据库名
-    SyncoptResult result = m_syncFileManage->getSyncoperation()->optGetcalendarSwitcher(utcloudcalendatpath);
-    if (result.switch_state) {
-        account->setAccountState(account->accountState() | DAccount::Account_Open);
-    } else {
-        account->setAccountState(account->accountState() & ~DAccount::Account_Open);
-    }
     //account
     account->setAccountType(DAccount::Account_UnionID);
     account->setDtCreate(QDateTime::currentDateTime());
     account->setDbName(QString("account_%1_%2.db").arg(typeStr).arg(sortID));
     account->setDbusPath(QString("%1/account_%2_%3").arg(serviceBasePath).arg(typeStr).arg(sortID));
     account->setDbusInterface(accountServiceInterface);
+}
+
+void DAccountManageModule::removeUIdAccount(const DAccount::Ptr &uidAccount)
+{
+    //帐户列表移除uid帐户
+    m_accountList.removeOne(uidAccount);
+    //移除对应的数据库 ，停止对应的定时器
+    DAccountModule::Ptr accountModule(new DAccountModule(uidAccount));
+    accountModule->removeDB();
+    accountModule->downloadTaskhanding(2);
+    //帐户管理数据库中删除相关数据
+    m_accountManagerDB->deleteAccountInfo(uidAccount->accountID());
+}
+
+void DAccountManageModule::addUIdAccount(const DAccount::Ptr &uidAccount)
+{
+    //帐户管理数据库中添加uid帐户
+    initAccountDBusInfo(uidAccount);
+    m_accountManagerDB->addAccountInfo(uidAccount);
+    m_accountList.append(uidAccount);
+}
+
+void DAccountManageModule::updateUIdAccount(const DAccount::Ptr &oldAccount, const DAccount::Ptr &uidAccount)
+{
+    oldAccount->avatar() = uidAccount->avatar();
+    oldAccount->displayName() = uidAccount->displayName();
+    setUidSwitchStatus(oldAccount);
+    m_accountManagerDB->updateAccountInfo(oldAccount);
+}
+
+void DAccountManageModule::setUidSwitchStatus(const DAccount::Ptr &account)
+{
+    //获取控制中心开关状态
+    bool calendarSwitch = m_syncFileManage->getSyncoperation()->optGetCalendarSwitcher().switch_state;
+    //获取帐户信息状态
+    DAccount::AccountStates accountState = account->accountState();
+    accountState.setFlag(DAccount::Account_Open, calendarSwitch);
+    account->setAccountState(accountState);
 }
 
 void DAccountManageModule::slotFirstDayOfWeek(const int firstDay)
@@ -299,41 +309,43 @@ void DAccountManageModule::slotTimeFormatType(const int timeType)
     }
 }
 
-void DAccountManageModule::slotUidLoginStatueChange(const bool staus)
+void DAccountManageModule::slotUidLoginStatueChange(const int status)
 {
-    Q_UNUSED(staus)
+    //因为有时登录成功会触发2次
+    static int oldStatus = 0;
+    if (oldStatus != status) {
+        oldStatus = status;
+    } else {
+        //如果当期状态和上次状态一直，则退出
+        return;
+    }
+    //1：登陆成功 2：登陆取消 3：登出 4：获取服务端配置的应用数据成功
     QDBusConnection::RegisterOptions options = QDBusConnection::ExportAllSlots | QDBusConnection::ExportAllSignals | QDBusConnection::ExportAllProperties;
     QDBusConnection sessionBus = QDBusConnection::sessionBus();
-    //登录或者数据改变
-    DAccount::Ptr accountUnionid = m_syncFileManage->getuserInfo();
 
-    if (!accountUnionid.isNull() && !accountUnionid->accountName().isEmpty()) {
-        if (m_AccountServiceMap[DAccount::Type::Account_UnionID].size() > 0) {
-            //数据改变
-            DAccountModule::Ptr accountModule = m_accountModuleMap[accountUnionid->accountID()];
-            if (!accountModule.isNull()) {
-                accountModule->account()->setAvatar(accountUnionid->avatar());
-                accountModule->account()->setDisplayName(accountUnionid->displayName());
-            }
-            m_accountManagerDB->updateAccountInfo(accountModule->account());
+    switch (status) {
+    case 1: {
+        //登陆成功
+        DAccount::Ptr accountUnionid = m_syncFileManage->getuserInfo();
+        if (accountUnionid.isNull() || accountUnionid->accountName().isEmpty()) {
+            qWarning() << "Error getting account information";
+            return;
+        }
+        addUIdAccount(accountUnionid);
+
+        DAccountModule::Ptr accountModule = DAccountModule::Ptr(new DAccountModule(accountUnionid));
+        m_accountModuleMap[accountUnionid->accountID()] = accountModule;
+        DAccountService::Ptr accountService = DAccountService::Ptr(new DAccountService(accountUnionid->dbusPath(), accountUnionid->dbusInterface(), accountModule, this));
+        if (!sessionBus.registerObject(accountService->getPath(), accountService->getInterface(), accountService.data(), options)) {
+            qWarning() << "registerObject accountService failed:" << sessionBus.lastError();
         } else {
-            initAccountDBusInfo(accountUnionid);
-            m_accountManagerDB->addAccountInfo(accountUnionid);
-            m_accountList.append(accountUnionid);
-
-            DAccountModule::Ptr accountModule = DAccountModule::Ptr(new DAccountModule(accountUnionid));
-            m_accountModuleMap[accountUnionid->accountID()] = accountModule;
-            DAccountService::Ptr accountService = DAccountService::Ptr(new DAccountService(accountUnionid->dbusPath(), accountUnionid->dbusInterface(), accountModule, this));
-            if (!sessionBus.registerObject(accountService->getPath(), accountService->getInterface(), accountService.data(), options)) {
-                qWarning() << "registerObject accountService failed:" << sessionBus.lastError();
-            } else {
-                m_AccountServiceMap[accountUnionid->accountType()].insert(accountUnionid->accountID(), accountService);
-                if (accountUnionid->accountState().testFlag(DAccount::Account_Open)) {
-                    accountModule->downloadTaskhanding(0);
-                }
+            m_AccountServiceMap[accountUnionid->accountType()].insert(accountUnionid->accountID(), accountService);
+            if (accountUnionid->accountState().testFlag(DAccount::Account_Open)) {
+                accountModule->downloadTaskhanding(0);
             }
         }
-    } else {
+    } break;
+    case 3: {
         //登出
         if (m_AccountServiceMap[DAccount::Type::Account_UnionID].size() > 0) {
             //如果存在UID帐户则移除相关信息
@@ -350,6 +362,10 @@ void DAccountManageModule::slotUidLoginStatueChange(const bool staus)
             m_accountModuleMap.remove(accountID);
             m_accountManagerDB->deleteAccountInfo(accountID);
         }
+    } break;
+    default:
+        //其它状态当前不做处理
+        return;
     }
     emit signalLoginStatusChange();
 }
