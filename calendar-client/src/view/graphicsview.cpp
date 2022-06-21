@@ -143,20 +143,6 @@ void CGraphicsView::setInfo(const DSchedule::List &info)
     m_scheduleInfo = info;
 }
 
-bool MScheduleTimeThan(const DSchedule::Ptr &s1, const DSchedule::Ptr &s2)
-{
-    //日程排序
-    if (s1->dtStart().date().daysTo(s1->dtEnd().date()) == s2->dtStart().date().daysTo(s2->dtEnd().date())) {
-            if (s1->dtStart() == s2->dtStart()) {
-                return s1->dtStart().secsTo(s1->dtEnd()) > s2->dtStart().secsTo(s2->dtEnd());
-            } else {
-                return s1->dtStart() < s2->dtEnd();
-            }
-        } else {
-            return s1->dtStart().date().daysTo(s1->dtEnd().date()) > s2->dtStart().date().daysTo(s2->dtEnd().date());
-        }
-}
-
 void CGraphicsView::upDateInfoShow(const CGraphicsView::DragStatus &status, const DSchedule::Ptr &info)
 {
     clearSchedule();
@@ -202,7 +188,7 @@ void CGraphicsView::upDateInfoShow(const CGraphicsView::DragStatus &status, cons
             }
             currentInfo.append(vListData.at(j));
         }
-        std::sort(currentInfo.begin(), currentInfo.end(), MScheduleTimeThan);
+        std::sort(currentInfo.begin(), currentInfo.end());
         if (currentInfo.size() > 0) {
             m_InfoMap[currentDate] = currentInfo;
             QList<ScheduleclassificationInfo> info;
@@ -333,7 +319,7 @@ void CGraphicsView::scheduleClassificationType(DSchedule::List &scheduleInfolist
         return;
 
     info.clear();
-    std::sort(schedulelist.begin(), schedulelist.end(), MScheduleTimeThan);
+    std::sort(schedulelist.begin(), schedulelist.end());
     QVector<int> containIndex;
 
     for (int k = 0; k < schedulelist.count(); k++) {
