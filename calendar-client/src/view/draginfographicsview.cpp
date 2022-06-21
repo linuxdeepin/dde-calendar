@@ -257,15 +257,19 @@ void DragInfoGraphicsView::mouseMoveEvent(QMouseEvent *event)
         QDateTime gDate = getPosDate(event->pos());
         switch (m_DragStatus) {
         case IsCreate:
-            m_isCreate = JudgeIsCreate(event->pos());
-            if (m_isCreate) {
-                if (!IsEqualtime(m_MoveDate, gDate)) {
-                    m_MoveDate = gDate;
-                    m_DragScheduleInfo = getScheduleInfo(m_PressDate, m_MoveDate);
-                    upDateInfoShow(IsCreate, m_DragScheduleInfo);
-                    //更新背景上显示的item
-                    updateBackgroundShowItem();
-                    setPressSelectInfo(m_DragScheduleInfo);
+            if (gDate.date().year() >= DDECalendar::QueryEarliestYear && gDate.date().year() <= DDECalendar::QueryLatestYear) {
+                if (m_PressDate.date().year() >= DDECalendar::QueryEarliestYear && m_PressDate.date().year() <= DDECalendar::QueryLatestYear) {
+                    m_isCreate = JudgeIsCreate(event->pos());
+                    if (m_isCreate) {
+                        if (!IsEqualtime(m_MoveDate, gDate)) {
+                            m_MoveDate = gDate;
+                            m_DragScheduleInfo = getScheduleInfo(m_PressDate, m_MoveDate);
+                            upDateInfoShow(IsCreate, m_DragScheduleInfo);
+                            //更新背景上显示的item
+                            updateBackgroundShowItem();
+                            setPressSelectInfo(m_DragScheduleInfo);
+                        }
+                    }
                 }
             }
             break;

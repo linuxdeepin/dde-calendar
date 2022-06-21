@@ -403,7 +403,11 @@ void CMonthGraphicsview::mouseDoubleClickEvent(QMouseEvent *event)
             }
         } else {
             //双击新建日程
-            slotCreate(QDateTime(Dayitem->getDate(), QTime(0, 0, 0)));
+            if (Dayitem->getDate().year() >= DDECalendar::QueryEarliestYear) {
+                if (Dayitem->getDate().year() <= DDECalendar::QueryLatestYear) {
+                    slotCreate(QDateTime(Dayitem->getDate(), QTime(0, 0, 0)));
+                }
+            }
         }
     }
 }
