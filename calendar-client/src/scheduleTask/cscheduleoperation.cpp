@@ -292,14 +292,20 @@ bool CScheduleOperation::changeRecurInfo(const DSchedule::Ptr &newinfo, const DS
 
             //创建日程
             DSchedule::Ptr newschedule(newinfo->clone());
-            int newDuration = primevalDuration - num + 1;
-            //如果重复次数大于1
-            if (newDuration > 1) {
-                newschedule->recurrence()->setDuration(newDuration);
-            } else {
-                newschedule->setRRuleType(DSchedule::RRule_None);
+
+            if (primevalDuration > 0) {
+                //如果结束与次数
+                int newDuration = primevalDuration - num + 1;
+                //如果重复次数大于1
+                if (newDuration > 1) {
+                    newschedule->recurrence()->setDuration(newDuration);
+                } else {
+                    newschedule->setRRuleType(DSchedule::RRule_None);
+                }
+                newschedule->setRecurrenceId(QDateTime());
             }
-            newschedule->setRecurrenceId(QDateTime());
+            //如果结束为永不和时间则不需要修改
+
             //创建新日程
             //如果为农历且重复类型为每年
             if (newschedule->lunnar() && DSchedule::RRule_Year == newschedule->getRRuleType()) {

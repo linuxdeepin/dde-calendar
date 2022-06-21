@@ -411,9 +411,3 @@ QDebug operator<<(QDebug debug, const DSchedule &scheduleJsonData)
                     << " ,rrule:" << scheduleJsonData.recurrence()->defaultRRule()->rrule();
     return debug;
 }
-
-bool DSchedules::scheduleThan(const DSchedule::Ptr &s1, const DSchedule::Ptr &s2)
-{
-    return s1->allDay() > s2->allDay() || s1->priority() < s2->priority()
-           || s1->dtStart() < s2->dtStart() || s1->created() < s2->created() || s1->summary() < s2->summary();
-}

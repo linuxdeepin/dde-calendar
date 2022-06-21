@@ -132,8 +132,4 @@ private:
     int m_compatibleID; //为了与旧数据兼容处理（与联系人交互中使用的是自增ID作为日程的ID）
 };
 
-namespace DSchedules {
-bool scheduleThan(const DSchedule::Ptr &s1, const DSchedule::Ptr &s2);
-}
-
 #endif // DSCHEDULE_H

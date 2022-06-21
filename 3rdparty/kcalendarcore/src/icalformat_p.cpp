@@ -2046,7 +2046,8 @@ void ICalFormatImpl::readRecurrence(const struct icalrecurrencetype &r, Recurren
     // Duration & End Date
     if (!icaltime_is_null_time(r.until)) {
         icaltimetype t = r.until;
-        recur->setEndDt(readICalUtcDateTime(nullptr, t));
+        //结束时间不切换零时区
+        recur->setEndDt(readICalDateTime(nullptr, t, nullptr, false));
     } else {
         if (r.count == 0) {
             recur->setDuration(-1);
