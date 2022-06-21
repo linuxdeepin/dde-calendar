@@ -153,25 +153,23 @@ namespace  SettingWidget{
 
 
     /**
- * @brief The SyncTagRadioButton class 实现model/checkstate效果的类
+ * @brief The SyncTagRadioButton class 实现checkstate效果的类
  */
     class SyncTagRadioButton : public QWidget
     {
         Q_OBJECT
     public:
-        SyncTagRadioButton(DAccount::AccountState type, QWidget *parent = nullptr);
-
-        void updateAccountState();
-        void updateOnLineState(bool isOnline);
+        SyncTagRadioButton(QWidget *parent = nullptr);
 
         bool isChecked();
-        DAccount::AccountState type();
 
-    private:
         /**
      * @brief setChecked 是否选中
      */
         void setChecked(bool checked);
+
+    signals:
+        void clicked(bool checked);
 
     protected:
         void paintEvent(QPaintEvent *event) override;
@@ -179,9 +177,6 @@ namespace  SettingWidget{
 
     private:
         bool m_checked = true;
-        DAccount::AccountStates m_state;
-        bool m_isOnline = true;
-        const DAccount::AccountState m_type;
     };
 }//~CalendarSetting
 

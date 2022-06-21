@@ -64,7 +64,8 @@ static CalendarSettingSetting setting_account = {
           {
               "Account_Setting", //key
               QObject::tr("General settings"), //name
-              "SyncTagRadioButton", "" //type
+              "SyncTagRadioButton", //type
+              "" //default
           }}},
         {"sync_interval",
          "",
@@ -228,9 +229,20 @@ void CSettingDialog::initView()
         setGroupVisible("setting_account.sync_interval",        gUosAccountItem != nullptr);
         setGroupVisible("setting_account.manual_sync",          gUosAccountItem != nullptr);
     });
+
+    //同步项
+    m_radiobuttonAccountCalendar = qobject_cast<SyncTagRadioButton *>(this->findChild<QWidget *>("Account_Calendar"));
+    m_radiobuttonAccountSetting = qobject_cast<SyncTagRadioButton *>(this->findChild<QWidget *>("Account_Setting"));
+
+    Q_ASSERT(m_radiobuttonAccountCalendar);
+    Q_ASSERT(m_radiobuttonAccountSetting);
+
+    connect(gAccountManager, &AccountManager::signalAccountStateChange, this, &CSettingDialog::slotSyncTagButtonUpdate);
+    connect(m_radiobuttonAccountCalendar, &SyncTagRadioButton::clicked, this, &CSettingDialog::slotSyncAccountStateUpdate);
+    connect(m_radiobuttonAccountSetting, &SyncTagRadioButton::clicked, this, &CSettingDialog::slotSyncAccountStateUpdate);
+
+    slotSyncTagButtonUpdate();
 }
-
-
 
 void CSettingDialog::initWidget()
 {
@@ -443,6 +455,40 @@ void CSettingDialog::slotUosManualSync()
     gAccountManager->downloadByAccountID(gUosAccountItem->getAccount()->accountID());
 }
 
+void CSettingDialog::slotSyncTagButtonUpdate()
+{
+    if (!gUosAccountItem)
+        return;
+
+    auto state = gUosAccountItem->getAccount()->accountState();
+
+    m_radiobuttonAccountCalendar->setChecked(state & DAccount::Account_Calendar);
+    m_radiobuttonAccountSetting->setChecked(state & DAccount::Account_Setting);
+
+    m_radiobuttonAccountCalendar->setEnabled(gUosAccountItem->isEnableForUosAccount());
+    m_radiobuttonAccountSetting->setEnabled(gUosAccountItem->isEnableForUosAccount());
+}
+
+void CSettingDialog::slotSyncAccountStateUpdate(bool)
+{
+    if (!gUosAccountItem)
+        return;
+
+    auto state = gUosAccountItem->getAccountState();
+
+    if(m_radiobuttonAccountSetting->isChecked())
+        state = state | DAccount::Account_Setting;
+    else
+        state = state & ~DAccount::Account_Setting;
+
+    if(m_radiobuttonAccountCalendar->isChecked())
+        state = state | DAccount::Account_Calendar;
+    else
+        state = state & ~DAccount::Account_Calendar;
+
+    gUosAccountItem->setAccountState(state);
+}
+
 void CSettingDialog::slotLastSyncTimeUpdate(const QString &datetime)
 {
     QString dtstr;
@@ -569,7 +615,8 @@ QPair<QWidget *, QWidget *> CSettingDialog::createSyncTagRadioButton(QObject *ob
     if (option->key().endsWith("Account_Setting"))
         type = DAccount::Account_Setting;
 
-    SyncTagRadioButton *widget = new SyncTagRadioButton(type);
+    SyncTagRadioButton *widget = new SyncTagRadioButton;
+    widget->setObjectName(option->key().section('.', -1));//设置objectname为Account_Calendar 或 Account_Setting
     widget->setFixedWidth(16);
     QPair<QWidget *, QWidget *> optionWidget = DSettingsWidgetFactory::createStandardItem(QByteArray(), option, widget);
 

@@ -85,10 +85,14 @@ struct SyncStack {
     bool replaceIntoRecord(const QString &table_name, QSqlRecord record, const QString &connection_name);
     //sql select first value
     QVariant selectValue(const QString &value_name, const QString &table_name, const QString &key_name, const QVariant &key_value, const QString &connection_name);
+    //sql select first value
+    QVariant selectValue(const QString &sql, const QString &connection_name);
     //sql delete table
     bool deleteTableLine(const QString &table_name, const QString &key_name, const QVariant &key_value, const QString &connection_name);
     //sql delete table
     bool deleteTable(const QString &table_name, const QString &connection_name);
+    //sql add column to server
+    bool repairTable(const QString &table_name, const QString &connection_name_local, const QString &connection_name_server);
 };
 
 
@@ -138,6 +142,12 @@ public:
         hasCommited = true;
         for (auto name : _connectionNames)
             SqliteQuery(name).commit();
+    }
+    void rollback()
+    {
+        hasCommited = true;
+        for (auto name : _connectionNames)
+            SqliteQuery(name).rollback();
     }
 
 private:

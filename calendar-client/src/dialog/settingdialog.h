@@ -59,6 +59,11 @@ public slots:
     void slotSetUosSyncFreq(int freq);
     void slotUosManualSync();
 
+    //更新同步项按钮状态
+    void slotSyncTagButtonUpdate();
+    //点击同步项时，更新uos账户状态
+    void slotSyncAccountStateUpdate(bool);
+
 private:
     void initFirstDayofWeekWidget();
     void initTimeTypeWidget();
@@ -102,6 +107,9 @@ private:
     QLabel *m_syncTimeLabel = nullptr;
     QPushButton *m_syncBtn = nullptr;
     QWidget *m_manualSyncWidget = nullptr;
+
+    SettingWidget::SyncTagRadioButton *m_radiobuttonAccountCalendar = nullptr;
+    SettingWidget::SyncTagRadioButton *m_radiobuttonAccountSetting = nullptr;
 };
 
 #endif // SETTINGDIALOG_H

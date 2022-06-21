@@ -120,7 +120,7 @@ bool SyncAccount::insertToScheduleType(const DScheduleType::Ptr &scheduleType)
                    typeColorID, description, privilege, showState,  \
                    syncTag,dtCreate,isDeleted)                      \
             VALUES(?,?,?,?,?,?,?,?,?,?,?)");
-    SqliteQuery query(QSqlDatabase::database(_connectionName));
+    SqliteQuery query(_connectionName);
     query.prepare(strSql);
     if (scheduleType->typeID().size() < 30) {
         scheduleType->setTypeID(DDataBase::createUuid());
@@ -143,7 +143,7 @@ bool SyncAccount::insertToScheduleType(const DScheduleType::Ptr &scheduleType)
 
 bool SyncAccount::insertToTypeColor(const DTypeColor &typeColor)
 {
-    SqliteQuery query(QSqlDatabase::database(_connectionName));
+    SqliteQuery query(_connectionName);
     QString strSql("INSERT INTO TypeColor                   \
                    (ColorID, ColorHex, privilege,dtCreate)           \
                    VALUES(:ColorID, :ColorHex, :privilege,:dtCreate)");
@@ -223,6 +223,8 @@ void DUIDSynDataWorker::startUpdate()
     }
     if (errCode == 0) {
         transactionLocker.commit();
+    } else {
+        transactionLocker.rollback();
     }
     QSqlDatabase::removeDatabase(mSync.dbname_account_thread);
     QSqlDatabase::removeDatabase(mSync.dbname_manager_thread);
@@ -280,7 +282,7 @@ int SyncStack::downloadUidData(bool &isInitSyncData, SyncFileManage &fileManger)
         return -1;
     }
     qInfo() << "初始化表结构";
-    SqliteQuery query(QSqlDatabase::database(dbname_sync_thread));
+    SqliteQuery query(dbname_sync_thread);
 
     if (!query.exec(DAccountDataBase::sql_create_schedules))
         return -1;
@@ -290,6 +292,16 @@ int SyncStack::downloadUidData(bool &isInitSyncData, SyncFileManage &fileManger)
         return -1;
     if (!query.exec(DAccountDataBase::sql_create_calendargeneralsettings))
         return -1;
+
+//    if(!repairTable("schedules", dbname_account_thread, dbname_sync_thread)) {
+//        return -1;
+//    }
+//    if(!repairTable("scheduleType", dbname_account_thread, dbname_sync_thread)) {
+//        return -1;
+//    }
+//    if(!repairTable("typeColor", dbname_account_thread, dbname_sync_thread)) {
+//        return -1;
+//    }
 
     query.exec("select count(0) from scheduleType");
     if (query.next() && query.value(0).toInt() == 0) {
@@ -319,7 +331,7 @@ int SyncStack::downloadUidData(bool &isInitSyncData, SyncFileManage &fileManger)
 int SyncStack::loadToTmp()
 {
     qInfo() << "将本地A的uploadTask同步到刚刚下载的B里";
-    SqliteQuery query(QSqlDatabase::database(dbname_account_thread));
+    SqliteQuery query(dbname_account_thread);
     query.exec("select taskID,uploadType,uploadObject,objectID  from uploadTask");
     while (query.next()) {
         int type = query.value("uploadType").toInt();
@@ -429,7 +441,7 @@ bool SyncStack::syncIntoTable(const QString &table_name, const QString &connecti
 
 QSqlRecord SyncStack::selectRecord(const QString &table_name, const QString &key_name, const QVariant &key_value, const QString &connection_name)
 {
-    SqliteQuery query(QSqlDatabase::database(connection_name));
+    SqliteQuery query(connection_name);
     query.prepare("select * from " + table_name + " where " + key_name + " = ?");
     query.addBindValue(key_value);
     query.exec();
@@ -442,7 +454,7 @@ bool SyncStack::replaceIntoRecord(const QString &table_name, QSqlRecord record, 
 {
     if (record.isEmpty())
         return true;
-    SqliteQuery query(QSqlDatabase::database(connection_name));
+    SqliteQuery query(connection_name);
     query.prepare("replace into " + table_name + " values(" + prepareQuest(record.count()) + ")");
     prepareBinds(query, record);
     return query.exec();
@@ -450,7 +462,7 @@ bool SyncStack::replaceIntoRecord(const QString &table_name, QSqlRecord record, 
 
 QVariant SyncStack::selectValue(const QString &value_name, const QString &table_name, const QString &key_name, const QVariant &key_value, const QString &connection_name)
 {
-    SqliteQuery query(QSqlDatabase::database(connection_name));
+    SqliteQuery query(connection_name);
     query.prepare("select " + value_name + " from " + table_name + " where " + key_name + " = ?");
     query.addBindValue(key_value);
     query.exec();
@@ -458,9 +470,17 @@ QVariant SyncStack::selectValue(const QString &value_name, const QString &table_
     return query.value(0);
 }
 
+QVariant SyncStack::selectValue(const QString &sql, const QString &connection_name)
+{
+    SqliteQuery query(connection_name);
+    query.exec(sql);
+    query.next();
+    return query.value(0);
+}
+
 bool SyncStack::deleteTableLine(const QString &table_name, const QString &key_name, const QVariant &key_value, const QString &connection_name)
 {
-    SqliteQuery query(QSqlDatabase::database(connection_name));
+    SqliteQuery query(connection_name);
     query.prepare("delete from " + table_name + " where " + key_name + " = ?");
     query.addBindValue(key_value);
     return query.exec();
@@ -468,11 +488,66 @@ bool SyncStack::deleteTableLine(const QString &table_name, const QString &key_na
 
 bool SyncStack::deleteTable(const QString &table_name, const QString &connection_name)
 {
-    SqliteQuery query(QSqlDatabase::database(connection_name));
+    SqliteQuery query(connection_name);
     if (!query.exec("delete from " + table_name)) {
         qInfo() << query.lastError();
         return false;
     }
+    return true;
+}
+
+bool SyncStack::repairTable(const QString &table_name, const QString &connection_name_local, const QString &connection_name_server)
+{
+    QMap<QString, QString> local_header_info;
+    QMap<QString, QString> server_header_info;
+    SqliteQuery query_local(connection_name_local);
+    SqliteQuery query_server(connection_name_server);
+    QString select_sql = QString("SELECT name, type FROM pragma_table_info('%1')").arg(table_name);
+    QMap<QString, QString> default_map = {
+        {"TEXT",    ""},
+        {"INTEGER", "0"},
+        {"BOOL",    "false"},
+        {"DATETIME", QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss")}
+    };
+
+    query_local.exec(select_sql);
+    while(query_local.next()) {
+        local_header_info.insert(query_local.value("name").toString(), query_local.value("type").toString());
+    }
+
+    query_server.exec(select_sql);
+    while(query_server.next()) {
+        server_header_info.insert(query_server.value("name").toString(), query_server.value("type").toString());
+    }
+
+    auto exceptFunc = [](QSet<QString> local, QSet<QString> server)->QSet<QString>{
+        QSet<QString> ret = local;
+        local.intersect(server);
+        ret.subtract(local);
+        return ret;
+    };
+
+    //本地数据的字段 都需要 在服务端数据库里
+    QSet<QString> header_ready = exceptFunc(local_header_info.keys().toSet(), server_header_info.keys().toSet());
+    if(header_ready.isEmpty())
+        return true;
+
+    //将本地数据库不在服务器数据库的字段 插入 服务器数据库
+    for(auto header : header_ready) {
+        QString sql_type = local_header_info.value(header);
+        QString default_value = default_map.value(sql_type);
+        QString alter_sql = QString("ALTER TABLE %1 ADD COLUMN %2 %3 DEFAULT '%4';")
+                .arg(table_name)
+                .arg(header)
+                .arg(sql_type)
+                .arg(default_value)
+                ;
+        if(!query_server.exec(alter_sql)) {
+            qInfo() << query_server.lastError();
+            return false;
+        }
+    }
+
     return true;
 }
 

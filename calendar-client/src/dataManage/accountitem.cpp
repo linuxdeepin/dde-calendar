@@ -161,7 +161,17 @@ bool AccountItem::isCanSyncSetting()
     }
     DOANetWorkDBus netManger;
     return getAccount()->accountState().testFlag(DAccount::Account_Setting)
-           && getAccount()->accountState().testFlag(DAccount::Account_Open) && netManger.getNetWorkState() == DOANetWorkDBus::Active;
+            && getAccount()->accountState().testFlag(DAccount::Account_Open) && netManger.getNetWorkState() == DOANetWorkDBus::Active;
+}
+
+bool AccountItem::isEnableForUosAccount()
+{
+    if (getAccount()->accountType() != DAccount::Account_UnionID) {
+        return false;
+    }
+
+    DOANetWorkDBus netManger;
+    return getAccount()->accountState().testFlag(DAccount::Account_Open) && netManger.getNetWorkState() == DOANetWorkDBus::Active;
 }
 
 /**

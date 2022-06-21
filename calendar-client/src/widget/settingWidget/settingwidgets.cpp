@@ -37,35 +37,9 @@ SettingWidgets::SettingWidgets(QWidget *parent) : QObject(parent)
 }
 
 
-SyncTagRadioButton::SyncTagRadioButton(DAccount::AccountState type, QWidget *parent)
+SyncTagRadioButton::SyncTagRadioButton(QWidget *parent)
     : QWidget(parent)
-    , m_type(type)
 {
-
-    setObjectName("SyncTagRadioButton");
-    if (gUosAccountItem) {
-        m_state = gUosAccountItem->getAccount()->accountState();
-        connect(gUosAccountItem.get(), &AccountItem::signalAccountStateChange, this, &SyncTagRadioButton::updateAccountState);
-        updateAccountState();
-    }
-}
-
-void SyncTagRadioButton::updateAccountState()
-{
-    if (!gUosAccountItem) {
-        return;
-    }
-    m_state = gUosAccountItem->getAccount()->accountState();
-    setChecked(m_state & m_type);
-    //TODO:是否联网
-    //setEnabled((m_state & DAccount::Account_Open) && m_isOnline);
-}
-
-void SyncTagRadioButton::updateOnLineState(bool isOnline)
-{
-    m_isOnline = isOnline;
-
-    updateAccountState();
 }
 
 bool SyncTagRadioButton::isChecked()
@@ -73,36 +47,13 @@ bool SyncTagRadioButton::isChecked()
     return m_checked;
 }
 
-DAccount::AccountState SyncTagRadioButton::type()
-{
-    return m_type;
-}
-
 void SyncTagRadioButton::setChecked(bool checked)
 {
     if (m_checked == checked)
         return;
-    if (!gUosAccountItem)
-        return;
 
     m_checked = checked;
     update();
-
-    //实现遍历所有的radiobutton获取account state
-    DAccount::AccountStates states = gUosAccountItem->getAccount()->accountState();
-    QObject *parent = this->parent();
-    parent = parent == nullptr ? nullptr : parent->parent();
-    if (parent) {
-        for (auto obj : parent->findChildren<QWidget *>("SyncTagRadioButton")) {
-            SyncTagRadioButton *rb = static_cast<SyncTagRadioButton *>(obj);
-            if (rb->isChecked())
-                states |= rb->type();
-            else
-                states &= ~rb->type();
-        }
-    }
-    gUosAccountItem->setAccountState(states);
-
 }
 
 void SyncTagRadioButton::paintEvent(QPaintEvent *event)
@@ -119,6 +70,7 @@ void SyncTagRadioButton::mouseReleaseEvent(QMouseEvent *event)
 {
     QWidget::mouseReleaseEvent(event);
     setChecked(!m_checked);
+    emit clicked(isChecked());
 }
 
 void CalendarSettingSettings::removeGroup(const QString &groupName, const QString &groupName2)
