@@ -363,7 +363,7 @@ void CScheduleOperation::changeRepetitionRule(DSchedule::Ptr &newinfo, const DSc
     } else {
         //如果该日程结束类型为永不和结束于日期则修改结束日期
         newinfo->recurrence()->setDuration(0);
-        QDateTime dtEnd(QDate(oldinfo->dtStart().date().addDays(-1)), QTime());
+        QDateTime dtEnd(oldinfo->dtStart().addDays(-1));
         newinfo->recurrence()->setEndDateTime(dtEnd);
     }
 }
