@@ -75,7 +75,7 @@ else()
     set(CMAKE_INSTALL_PREFIX /usr)
 endif()
 
-add_definitions(-DLINGLONG_PREFIX=\"${CMAKE_INSTALL_PREFIX}\")
+add_definitions(-DLINGLONG_PREFIX=\"${CMAKE_INSTALL_PREFIX}/\")
  
 
 # Install files

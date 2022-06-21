@@ -1796,7 +1796,7 @@ QList<QDateTime> RecurrenceRule::timesInInterval(const QDateTime &dtStart, const
         std::copy(it, itEnd, std::back_inserter(result));
         // Increase the interval.
         interval.increase(recurrenceType(), frequency());
-    } while (++loop < LOOP_LIMIT && interval.intervalDateTime(recurrenceType()) < end);
+    } while (++loop < LOOP_LIMIT && interval.intervalDateTime(recurrenceType()) <= end);
     return result;
 }
 
