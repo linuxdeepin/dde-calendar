@@ -25,7 +25,7 @@ ScheduleManager::ScheduleManager(QObject *parent) : QObject(parent)
     initconnect();
 }
 
-ScheduleManager* ScheduleManager::getInstace()
+ScheduleManager *ScheduleManager::getInstace()
 {
     static ScheduleManager manager;
     return &manager;
@@ -48,7 +48,7 @@ void ScheduleManager::resetSchedule(int year)
     }
 }
 
-void ScheduleManager::resetSchedule(const QDateTime& start, const QDateTime& end)
+void ScheduleManager::resetSchedule(const QDateTime &start, const QDateTime &end)
 {
     for (AccountItem::Ptr p : gAccountManager->getAccountList()) {
         p->querySchedulesWithParameter(start, end);
@@ -72,7 +72,7 @@ void ScheduleManager::updateSchedule()
             m_scheduleMap = scheduleMap;
         } else {
             auto iterator = scheduleMap.begin();
-            while(iterator != scheduleMap.end()) {
+            while (iterator != scheduleMap.end()) {
                 DSchedule::List list = m_scheduleMap[iterator.key()];
                 list.append(iterator.value());
                 m_scheduleMap[iterator.key()] = list;
@@ -99,7 +99,7 @@ void ScheduleManager::updateSearchSchedule()
             m_searchScheduleMap = scheduleMap;
         } else {
             auto iterator = scheduleMap.begin();
-            while(iterator != scheduleMap.end()) {
+            while (iterator != scheduleMap.end()) {
                 DSchedule::List list = m_searchScheduleMap[iterator.key()];
                 list.append(iterator.value());
                 m_searchScheduleMap[iterator.key()] = list;
@@ -143,7 +143,7 @@ QMap<QDate, DSchedule::List> ScheduleManager::getScheduleMap(const QDate &startD
 {
     QMap<QDate, DSchedule::List> map;
     QDate date = startDate;
-    while(date != stopDate) {
+    while (date != stopDate) {
         if (m_scheduleMap.contains(date)) {
             map[date] = m_scheduleMap[date];
         }
@@ -174,7 +174,7 @@ QMap<QDate, DSchedule::List> ScheduleManager::getAllSearchedScheduleMap()
 DSchedule::List ScheduleManager::getAllSearchedScheduleList()
 {
     DSchedule::List list;
-    for (DSchedule::List l : m_scheduleMap.values()) {
+    for (DSchedule::List l : m_searchScheduleMap.values()) {
         list.append(l);
     }
     return list;
@@ -228,7 +228,7 @@ DSchedule::List ScheduleManager::getScheduleByDay(QDate date)
  * @param id
  * @return
  */
-DScheduleType::Ptr ScheduleManager::getScheduleTypeByScheduleId(const QString& id)
+DScheduleType::Ptr ScheduleManager::getScheduleTypeByScheduleId(const QString &id)
 {
     DScheduleType::Ptr type = nullptr;
     for (AccountItem::Ptr p : gAccountManager->getAccountList()) {
