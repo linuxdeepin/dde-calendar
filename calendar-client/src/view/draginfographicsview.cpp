@@ -421,12 +421,14 @@ void DragInfoGraphicsView::dropEvent(QDropEvent *event)
 {
     if (event->mimeData()->hasFormat("Info")) {
         if (event->source() != this || m_MoveDate != m_PressDate) {
-            updateScheduleInfo(m_DragScheduleInfo);
-        } else {
-            emit signalsUpdateSchedule();
+            if (m_MoveDate.date().year() >= DDECalendar::QueryEarliestYear && m_MoveDate.date().year() <= DDECalendar::QueryLatestYear) {
+                updateScheduleInfo(m_DragScheduleInfo);
+            } else {
+                emit signalsUpdateSchedule();
+            }
+            m_DragStatus = NONE;
+            m_MoveDate = m_MoveDate.addMonths(-2);
         }
-        m_DragStatus = NONE;
-        m_MoveDate = m_MoveDate.addMonths(-2);
     }
 }
 
