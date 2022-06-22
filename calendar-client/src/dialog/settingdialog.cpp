@@ -238,6 +238,7 @@ void CSettingDialog::initView()
     Q_ASSERT(m_radiobuttonAccountSetting);
 
     connect(gAccountManager, &AccountManager::signalAccountStateChange, this, &CSettingDialog::slotSyncTagButtonUpdate);
+    connect(gAccountManager, &AccountManager::signalAccountUpdate, this, &CSettingDialog::slotSyncTagButtonUpdate);
     connect(m_radiobuttonAccountCalendar, &SyncTagRadioButton::clicked, this, &CSettingDialog::slotSyncAccountStateUpdate);
     connect(m_radiobuttonAccountSetting, &SyncTagRadioButton::clicked, this, &CSettingDialog::slotSyncAccountStateUpdate);
 
@@ -461,7 +462,6 @@ void CSettingDialog::slotSyncTagButtonUpdate()
         return;
 
     auto state = gUosAccountItem->getAccount()->accountState();
-
     m_radiobuttonAccountCalendar->setChecked(state & DAccount::Account_Calendar);
     m_radiobuttonAccountSetting->setChecked(state & DAccount::Account_Setting);
 
@@ -476,12 +476,12 @@ void CSettingDialog::slotSyncAccountStateUpdate(bool)
 
     auto state = gUosAccountItem->getAccountState();
 
-    if(m_radiobuttonAccountSetting->isChecked())
+    if (m_radiobuttonAccountSetting->isChecked())
         state = state | DAccount::Account_Setting;
     else
         state = state & ~DAccount::Account_Setting;
 
-    if(m_radiobuttonAccountCalendar->isChecked())
+    if (m_radiobuttonAccountCalendar->isChecked())
         state = state | DAccount::Account_Calendar;
     else
         state = state & ~DAccount::Account_Calendar;

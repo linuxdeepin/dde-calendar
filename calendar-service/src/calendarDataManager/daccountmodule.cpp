@@ -897,14 +897,12 @@ void DAccountModule::slotOpenCalendar(const QString &alarmID)
 
 void DAccountModule::slotSyncState(const int syncState)
 {
+    m_account->setDtLastSync(QDateTime::currentDateTime());
     switch (syncState) {
     case 0:
         //执行正常
         m_account->setSyncState(DAccount::Sync_Normal);
-
-        m_account->setDtLastSync(QDateTime::currentDateTime());
         m_accountDB->updateAccountInfo();
-        emit signalDtLastUpdate();
         break;
     case 7506:
         //网络异常
@@ -919,6 +917,8 @@ void DAccountModule::slotSyncState(const int syncState)
         m_account->setSyncState(DAccount::Sync_ServerException);
         break;
     }
+
+    emit signalDtLastUpdate();
     //错误处理
     emit signalSyncState();
     //如果上传失败，需要启动定时上传
