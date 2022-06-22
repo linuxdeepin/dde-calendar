@@ -54,6 +54,7 @@ public:
 
     int remindJob(const DRemindData::Ptr &remindData, const DSchedule::Ptr &schedule);
 
+    DBusNotify *getdbusnotify();
 private:
     int getRemindLaterDuration(int count, qint64 &duration);
 

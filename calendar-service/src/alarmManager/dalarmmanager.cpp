@@ -153,9 +153,9 @@ int DAlarmManager::remindJob(const DRemindData::Ptr &remindData, const DSchedule
     QString cmd = QString("dbus-send --session --print-reply --dest=com.deepin.dataserver.Calendar "
                           "/com/deepin/dataserver/Calendar/AccountManager "
                           "com.deepin.dataserver.Calendar.AccountManager.notifyMsgHanding string:%1 string:%2")
-                      .arg(remindData->accountID())
-                      .arg(remindData->alarmID());
-    auto argMake = [&](int operationNum, const QString &text, const QString &transText) {
+                  .arg(remindData->accountID())
+                  .arg(remindData->alarmID());
+    auto argMake = [&](int operationNum, const QString & text, const QString & transText) {
         actionlist << text << transText;
         hints.insert("x-deepin-action-" + text, QString("/bin/bash,-c,%1 int32:%2").arg(cmd).arg(operationNum));
     };
@@ -201,11 +201,16 @@ int DAlarmManager::remindJob(const DRemindData::Ptr &remindData, const DSchedule
     argumentList << appname << replaces_id << appicon << title << body << actionlist << hints << timeout;
     qDebug() << __FUNCTION__ << QString("remind now: %1, title:"
                                         " %2, body: %3")
-                                    .arg(QDateTime::currentDateTime().toString())
-                                    .arg(title)
-                                    .arg(body);
+             .arg(QDateTime::currentDateTime().toString())
+             .arg(title)
+             .arg(body);
     int notifyid = m_dbusnotify->Notify(argumentList);
     return notifyid;
+}
+
+DBusNotify *DAlarmManager::getdbusnotify()
+{
+    return  m_dbusnotify;
 }
 
 QString DAlarmManager::getRemindBody(const DSchedule::Ptr &schedule)

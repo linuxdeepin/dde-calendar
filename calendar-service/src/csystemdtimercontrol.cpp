@@ -52,6 +52,12 @@ void CSystemdTimerControl::stopSystemdTimerByJobInfo(const SystemDInfo &info)
 
 void CSystemdTimerControl::startSystemdTimer(const QStringList &timerName)
 {
+    QString command_stop("systemctl --user stop ");
+    foreach (auto str, timerName) {
+        command_stop += QString(" %1.timer").arg(str);
+    }
+    execLinuxCommand(command_stop);
+
     QString command("systemctl --user start ");
     foreach (auto str, timerName) {
         command += QString(" %1.timer").arg(str);
@@ -107,7 +113,7 @@ void CSystemdTimerControl::startDownloadTask(const QString &accountID, const int
         QString remindCMD = QString("dbus-send --session --print-reply --dest=com.deepin.dataserver.Calendar "
                                     "/com/deepin/dataserver/Calendar/AccountManager "
                                     "com.deepin.dataserver.Calendar.AccountManager.downloadByAccountID string:%1 ")
-                                .arg(accountID);
+                            .arg(accountID);
         fileName = m_systemdPath + accountID + "_calendar.service";
         QString content;
         content += "[Unit]\n";
@@ -234,8 +240,8 @@ void CSystemdTimerControl::createService(const QString &name, const SystemDInfo 
     QString remindCMD = QString("dbus-send --session --print-reply --dest=com.deepin.dataserver.Calendar "
                                 "/com/deepin/dataserver/Calendar/AccountManager "
                                 "com.deepin.dataserver.Calendar.AccountManager.remindJob string:%1 string:%2")
-                            .arg(info.accountID)
-                            .arg(info.alarmID);
+                        .arg(info.accountID)
+                        .arg(info.alarmID);
     fileName = m_systemdPath + name + ".service";
     QString content;
     content += "[Unit]\n";

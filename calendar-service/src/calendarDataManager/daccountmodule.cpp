@@ -32,6 +32,7 @@
 #include "dsyncdatafactory.h"
 #include "unionIDDav/dunioniddav.h"
 #include "ddatasyncbase.h"
+#include "dbusnotify.h"
 
 #define UPDATEREMINDJOBTIMEINTERVAL 1000 * 60 * 10 //提醒任务更新时间间隔毫秒数（10分钟）
 
@@ -53,6 +54,8 @@ DAccountModule::DAccountModule(const DAccount::Ptr &account, QObject *parent)
         connect(m_dataSync, &DDataSyncBase::signalSyncState, this, &DAccountModule::slotSyncState);
         connect(m_dataSync, &DDataSyncBase::signalUpdate, this, &DAccountModule::slotDateUpdate);
     }
+    //关联关闭提醒弹窗
+    connect(this, &DAccountModule::signalCloseNotification, m_alarm->getdbusnotify(), &DBusNotify::closeNotification);
 }
 
 DAccountModule::~DAccountModule()
@@ -500,7 +503,7 @@ DSchedule::List DAccountModule::getRemindScheduleList(const QDateTime &dtStart, 
     for (; iter != scheduleMap.constEnd(); ++iter) {
         foreach (auto schedule, iter.value()) {
             if (schedule->alarms().size() > 0
-                && schedule->alarms()[0]->time() >= dtStart && schedule->alarms()[0]->time() <= dtEnd) {
+                    && schedule->alarms()[0]->time() >= dtStart && schedule->alarms()[0]->time() <= dtEnd) {
                 scheduleList.append(schedule);
             }
         }
@@ -551,8 +554,8 @@ void DAccountModule::updateRemindSchedules(bool isClear)
     for (int i = 0; i < noRemindList.size(); i++) {
         for (int j = accountRemind.size() - 1; j >= 0; j--) {
             if (accountRemind.at(j)->scheduleID() == noRemindList.at(i)->scheduleID()
-                && accountRemind.at(j)->recurrenceId() == noRemindList.at(i)->recurrenceId()
-                && accountRemind.at(j)->dtRemind() == noRemindList.at(i)->dtRemind())
+                    && accountRemind.at(j)->recurrenceId() == noRemindList.at(i)->recurrenceId()
+                    && accountRemind.at(j)->dtRemind() == noRemindList.at(i)->dtRemind())
                 //如果该日程没有被触发提醒过(创建后没有被提醒，而不是提醒后点了15分钟后等不改变提醒次数的日程)
                 //则移除
                 accountRemind.removeAt(j);
