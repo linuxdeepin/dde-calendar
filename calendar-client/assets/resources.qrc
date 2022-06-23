@@ -111,5 +111,8 @@
         <file>resources/icon/account_light.svg</file>
         <file>resources/icon/sync_setting.svg</file>
         <file>resources/icon/sync_schedule.svg</file>
+        <file>resources/icon/fail_200px.png</file>
+        <file>resources/icon/success_200px.png</file>
+        <file>resources/icon/spinner_32.svg</file>
     </qresource>
 </RCC>

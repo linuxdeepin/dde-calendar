@@ -101,7 +101,7 @@ bool SyncFileManage::SyncDataUpload(const QString &filepath, int &errorcode)
     result = m_syncoperation->optUpload(filepath);
     errorcode = result.error_code;
     if (result.error_code != SYNC_No_Error) {
-        qDebug() << "upload failed";
+        qWarning() << "upload failed";
         return false;
     }
     return true;

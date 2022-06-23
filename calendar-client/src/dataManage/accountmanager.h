@@ -72,6 +72,9 @@ signals:
     void signalSearchScheduleUpdate();
     void signalAccountStateChange();
 
+    //正在同步
+    void signalSyncNum(const int num = -1);
+
     //帐户登出信号
     void signalLogout(DAccount::Type);
 

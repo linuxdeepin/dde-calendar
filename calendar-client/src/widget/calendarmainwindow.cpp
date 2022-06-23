@@ -53,7 +53,7 @@
 #include <DSettingsOption>
 #include <DSettingsWidgetFactory>
 #include <DBackgroundGroup>
-
+#include <DMessageManager>
 
 #include <QDesktopWidget>
 #include <QJsonDocument>
@@ -466,6 +466,9 @@ void Calendarmainwindow::initConnection()
 
     connect(qApp, &QGuiApplication::applicationStateChanged, this, &Calendarmainwindow::slotapplicationStateChanged);
     connect(m_titleWidget, &CTitleWidget::signalSidebarStatusChange, this, &Calendarmainwindow::slotSidebarStatusChange);
+    //signalAccountUpdate
+    connect(gAccountManager, &AccountManager::signalSyncNum, this, &Calendarmainwindow::slotShowSyncToast);
+    connect(gAccountManager, &AccountManager::signalAccountUpdate, this, &Calendarmainwindow::slotAccountUpdate);
 }
 
 void Calendarmainwindow::initData()
@@ -892,6 +895,41 @@ void Calendarmainwindow::slotOpenSettingDialog()
 void Calendarmainwindow::dragEnterEvent(QDragEnterEvent *event)
 {
     event->acceptProposedAction();
+}
+
+void Calendarmainwindow::slotShowSyncToast(int syncNum)
+{
+    //-1:正在刷新 0:正常 1:网络异常 2:服务器异常 3：存储已经满
+    static int preSyncNum = -2;
+    if (preSyncNum != syncNum && syncNum == -1) {
+        preSyncNum = -1;
+        DMessageManager::instance()->sendMessage(this->window(), QIcon::fromTheme(":/resources/icon/spinner_32.svg"), tr("Synchronizing..."));
+        return;
+    }
+    //
+    if (preSyncNum == -1 && syncNum != -1) {
+        preSyncNum = -2;
+        switch (syncNum) {
+        case 0:
+            DMessageManager::instance()->sendMessage(this->window(), QIcon::fromTheme(":/resources/icon/success_200px.png"), tr("Sync succeeded"));
+            break;
+        case 1:
+        case 2:
+        case 3:
+            DMessageManager::instance()->sendMessage(this->window(), QIcon::fromTheme(":/resources/icon/fail_200px.png"), tr("Sync failed. Please try again later"));
+            break;
+        default:
+            break;
+        }
+    }
+}
+
+void Calendarmainwindow::slotAccountUpdate()
+{
+    AccountItem::Ptr uidAccount = gUosAccountItem;
+    if (!uidAccount.isNull()) {
+        connect(uidAccount.get(), &AccountItem::signalSyncStateChange, this, &Calendarmainwindow::slotShowSyncToast);
+    }
 }
 
 /**

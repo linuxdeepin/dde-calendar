@@ -154,6 +154,7 @@ void AccountManager::resetAccount()
  */
 void AccountManager::downloadByAccountID(const QString &accountID, CallbackFunc callback)
 {
+    emit signalSyncNum();
     m_dbusRequest->setCallbackFunc(callback);
     m_dbusRequest->downloadByAccountID(accountID);
 }

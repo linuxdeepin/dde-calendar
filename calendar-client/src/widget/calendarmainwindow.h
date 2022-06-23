@@ -119,6 +119,11 @@ private slots:
     //拖拽进入事件
     void dragEnterEvent(QDragEnterEvent *event) override;
 
+    //显示同步提示
+    void slotShowSyncToast(int syncNum);
+
+    void slotAccountUpdate();
+
 private:
     DLabel *m_icon = nullptr;
     AnimationStackedWidget *m_stackWidget = nullptr;

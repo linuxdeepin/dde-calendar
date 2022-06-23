@@ -88,11 +88,16 @@ void CSystemdTimerControl::stopAllRemindSystemdTimer()
 
 void CSystemdTimerControl::removeRemindFile()
 {
-    //
-    QString cmd("rm ");
-    cmd += m_systemdPath;
-    cmd += "calendar-remind*";
-    execLinuxCommand(cmd);
+    QDir dir(m_systemdPath);
+    if (dir.exists()) {
+        QStringList filters;
+        filters << "calendar-remind";
+        dir.setFilter(QDir::Files | QDir::NoSymLinks);
+        dir.setNameFilters(filters);
+        for (uint i = 0; i < dir.count(); ++i) {
+            QFile::remove(m_systemdPath + dir[i]);
+        }
+    }
 }
 
 void CSystemdTimerControl::startCalendarServiceSystemdTimer()
