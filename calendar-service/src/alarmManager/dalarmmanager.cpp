@@ -144,7 +144,7 @@ int DAlarmManager::remindJob(const DRemindData::Ptr &remindData, const DSchedule
 
     KCalendarCore::Alarm::Ptr alarm = schedule->alarms().at(0);
 
-    int nDays = alarm->duration().value() / Hour * 24;
+    int nDays = -(alarm->startOffset().asDays());
 
     qint64 duration = 0;
     bool bmax = getRemindLaterDuration(remindData->remindCount(), duration);
