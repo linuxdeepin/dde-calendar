@@ -78,7 +78,7 @@ SyncoptResult Syncoperation::optDownload(const QString &key, const QString &path
     QDBusPendingReply<QString> reply = m_syncInter->Download(key, path);
     reply.waitForFinished();
     if (reply.error().message().isEmpty()) {
-        qDebug() << "Download success!";
+        qInfo() << "Download success!";
         result.data = reply.value();
         qInfo() << result.data;
         result.ret = true;
@@ -90,7 +90,7 @@ SyncoptResult Syncoperation::optDownload(const QString &key, const QString &path
         QJsonObject obj = jsonDocument.object();
         if (obj.contains(QString("code"))) {
             result.error_code = obj.value(QString("code")).toInt();
-            qDebug() << result.error_code;
+            qWarning() << result.error_code;
         }
     }
 
@@ -103,7 +103,7 @@ SyncoptResult Syncoperation::optDelete(const QString &key)
     QDBusPendingReply<QString> reply = m_syncInter->Delete(key);
     reply.waitForFinished();
     if (reply.error().message().isEmpty()) {
-        qDebug() << "Delete success!";
+        qInfo() << "Delete success!";
         result.data = reply.value();
         result.ret = true;
         result.error_code = SYNC_No_Error;
@@ -114,7 +114,7 @@ SyncoptResult Syncoperation::optDelete(const QString &key)
         QJsonObject obj = jsonDocument.object();
         if (obj.contains(QString("code"))) {
             result.error_code = obj.value(QString("code")).toInt();
-            qDebug() << result.error_code;
+            qWarning() << result.error_code;
         }
     }
 
@@ -127,7 +127,7 @@ SyncoptResult Syncoperation::optMetadata(const QString &key)
     QDBusPendingReply<QString> reply = m_syncInter->Metadata(key);
     reply.waitForFinished();
     if (reply.error().message().isEmpty()) {
-        qDebug() << "Metadata success!";
+        qInfo() << "Metadata success!";
         //元数据获取接口，暂时好像用不到
         result.data = reply.value();
         qInfo() << result.data;
@@ -140,7 +140,7 @@ SyncoptResult Syncoperation::optMetadata(const QString &key)
         QJsonObject obj = jsonDocument.object();
         if (obj.contains(QString("code"))) {
             result.error_code = obj.value(QString("code")).toInt();
-            qDebug() << result.error_code;
+            qWarning() << result.error_code;
         }
     }
 

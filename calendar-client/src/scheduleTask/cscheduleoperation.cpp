@@ -181,9 +181,11 @@ bool CScheduleOperation::deleteSchedule(const DSchedule::Ptr &scheduleInfo)
             } else if (msgBox.clickButton() == 1) {
                 //删除选中日程及之后的日程
                 //修改重复规则
+                QList<QDateTime> &&exDt = primevalSchedule->recurrence()->exDateTimes();
                 changeRepetitionRule(primevalSchedule, scheduleInfo);
                 //如果修改后的日程为普通日程且忽略列表内包含日程开始时间则删除该日程
-                if (primevalSchedule->getRRuleType() == DSchedule::RRule_None) {
+                if (primevalSchedule->getRRuleType() == DSchedule::RRule_None
+                        && exDt.contains(primevalSchedule->dtStart())) {
                     //删除日程
                     m_accountItem->deleteScheduleByID(primevalSchedule->uid());
                 } else {
@@ -280,9 +282,12 @@ bool CScheduleOperation::changeRecurInfo(const DSchedule::Ptr &newinfo, const DS
         } else if (msgBox.clickButton() == 1) {
             // 根据id获取日程并修改
             //修改重复规则
+
+            QList<QDateTime> &&exDt = primevalScheduleData->recurrence()->exDateTimes();
             changeRepetitionRule(primevalScheduleData, newinfo);
             //如果修改后的日程为普通日程且忽略列表内包含日程开始时间则删除该日程
-            if (primevalScheduleData->getRRuleType() == DSchedule::RRule_None) {
+            if (primevalScheduleData->getRRuleType() == DSchedule::RRule_None
+                    &&exDt.contains(primevalScheduleData->dtStart())) {
                 //删除日程
                 m_accountItem->deleteScheduleByID(primevalScheduleData->uid());
             } else {

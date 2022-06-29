@@ -35,7 +35,7 @@ bool SyncFileManage::SyncDataDownload(const QString &uid, QString &filepath, int
             //文件下载路径不正确
             //将文件移动到正确路径
             if (!QFile::rename(result.data, syncDB)) {
-                qDebug() << "down path error!";
+                qWarning() << "down path error!";
                 errorcode = -1;
                 return false;
             }
@@ -62,7 +62,7 @@ bool SyncFileManage::SyncDbCreate(const QString &DBpath)
     if (!file.exists()) {
         bool bRet = file.open(QIODevice::ReadWrite | QIODevice::Text | QIODevice::Append);
         if (!bRet) {
-            qDebug() << "file creat failed";
+            qWarning() << "file creat failed";
             return false;
         }
         file.close();
@@ -73,7 +73,7 @@ bool SyncFileManage::SyncDbCreate(const QString &DBpath)
     m_db.setPassword(syncDBpassword);
     m_db.setDatabaseName(DBpath);
     if (!m_db.open()) {
-        qInfo() << "db open failed";
+        qWarning() << "db open failed";
         return false;
     }
     qInfo() << "db open successed";

@@ -1289,7 +1289,24 @@ void CScheduleDlg::initRmindRpeatUI()
     }
 
     //重复规则
-    m_beginrepeatCombox->setCurrentIndex(m_scheduleDataInfo->getRRuleType());
+    if(m_scheduleDataInfo->lunnar()){
+        //如果为农历
+        switch (m_scheduleDataInfo->getRRuleType()) {
+        case DSchedule::RRule_Month:
+            m_beginrepeatCombox->setCurrentIndex(1);
+            break;
+        case DSchedule::RRule_Year:
+            m_beginrepeatCombox->setCurrentIndex(2);
+            break;
+        default:
+            m_beginrepeatCombox->setCurrentIndex(0);
+            break;
+        }
+
+    }else {
+        //如果为公历
+        m_beginrepeatCombox->setCurrentIndex(m_scheduleDataInfo->getRRuleType());
+    }
     slotbRpeatactivated(m_beginrepeatCombox->currentIndex());
     if (m_scheduleDataInfo->recurrence()->duration() < 0) {
         //永不
