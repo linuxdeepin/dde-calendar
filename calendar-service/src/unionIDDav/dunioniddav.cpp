@@ -211,6 +211,13 @@ void DUIDSynDataWorker::startUpdate()
     bool isInitSyncData = false;
     errCode = mSync.downloadUidData(isInitSyncData, fileManger);
 
+    //如果下载失败
+    if(errCode != 0){
+        //发送同步状态
+        emit signalSyncState(errCode);
+        return;
+    }
+
     SqlTransactionLocker transactionLocker({mSync.dbname_account_thread, mSync.dbname_manager_thread, mSync.dbname_sync_thread});
     //本地数据迁移到临时文件中
     if (errCode == 0) {

@@ -83,6 +83,10 @@ bool SyncFileManage::SyncDbCreate(const QString &DBpath)
 
 bool SyncFileManage::SyncDbDelete(const QString &DBpath)
 {
+    if(DBpath.isEmpty()){
+        qWarning()<<"DBpath isEmpty";
+        return false;
+    }
     QFileInfo fileinfo(DBpath);
     QDir dir = fileinfo.dir();
 
