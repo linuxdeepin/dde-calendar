@@ -189,7 +189,7 @@ SyncoptResult Syncoperation::optGetMainSwitcher()
 SyncoptResult Syncoperation::optGetCalendarSwitcher()
 {
     //登录后立即获取开关状态有问题，需要延迟获取
-    QThread::msleep(300);
+    QThread::msleep(500);
     SyncoptResult mainswitcher = optGetMainSwitcher();
     SyncoptResult result;
     result.switch_state = false; //默认关闭

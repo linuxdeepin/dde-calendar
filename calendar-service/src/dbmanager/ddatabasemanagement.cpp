@@ -45,11 +45,11 @@ DDataBaseManagement::DDataBaseManagement()
     , m_oldDatabaseName("scheduler.db")
 {
     //旧文件路径
-    QString oldDbPatch = getHomeConfigPath().append("/deepin/dde-daemon/calendar");
-    setOldDatabasePath(oldDbPatch);
+    QString oldDbPath = getHomeConfigPath().append("/deepin/dde-daemon/calendar");
+    setOldDatabasePath(oldDbPath);
     //新文件路径
-    QString newDbPatch = getDBPath();
-    setNewDatabasePath(newDbPatch);
+    QString newDbPath = getDBPath();
+    setNewDatabasePath(newDbPath);
     QString newDB(newDatabasePath() + "/" + m_newDatabaseName);
     //如果新数据库不存在
     if (!databaseExists(newDatabasePath())) {

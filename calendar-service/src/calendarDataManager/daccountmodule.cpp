@@ -43,8 +43,8 @@ DAccountModule::DAccountModule(const DAccount::Ptr &account, QObject *parent)
     , m_alarm(new DAlarmManager)
     , m_dataSync(DSyncDataFactory::createDataSync(m_account))
 {
-    QString newDbPatch = getDBPath();
-    m_accountDB->setDBPath(newDbPatch + "/" + account->dbName());
+    QString newDbPath = getDBPath();
+    m_accountDB->setDBPath(newDbPath + "/" + account->dbName());
     m_accountDB->initDBData();
     m_accountDB->getAccountInfo(m_account);
 

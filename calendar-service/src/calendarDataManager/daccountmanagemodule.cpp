@@ -28,8 +28,8 @@ DAccountManageModule::DAccountManageModule(QObject *parent)
     , m_accountManagerDB(new DAccountManagerDataBase)
 {
     //新文件路径
-    QString newDbPatch = getDBPath();
-    QString newDB(newDbPatch + "/" + "accountmanager.db");
+    QString newDbPath = getDBPath();
+    QString newDB(newDbPath + "/" + "accountmanager.db");
     m_accountManagerDB->setDBPath(newDB);
     m_accountManagerDB->dbOpen();
 

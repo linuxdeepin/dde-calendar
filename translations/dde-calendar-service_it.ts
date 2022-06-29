@@ -1,52 +1,101 @@
 <?xml version="1.0" ?><!DOCTYPE TS><TS version="2.1" language="it">
 <context>
-    <name>JobRemindManager</name>
+    <name>DAccountDataBase</name>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="94"/>
-        <source>One day before start</source>
-        <translation>Un giorno prima dell&apos;inizio</translation>
+        <source>Work</source>
+        <translation>Lavoro</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="94"/>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="98"/>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="105"/>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="109"/>
+        <source>Life</source>
+        <translation>Personale</translation>
+    </message>
+    <message>
+        <source>Other</source>
+        <translation>Altro</translation>
+    </message>
+</context>
+<context>
+    <name>DAlarmManager</name>
+    <message>
         <source>Close</source>
         <comment>button</comment>
         <translation>Chiudi</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="98"/>
+        <source>One day before start</source>
+        <translation>Un giorno prima di iniziare</translation>
+    </message>
+    <message>
         <source>Remind me tomorrow</source>
         <translation>Ricordamelo domani</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="105"/>
         <source>Remind me later</source>
-        <translation>Ricordamelo più tardi</translation>
+        <translation>Ricordamelo piu tardi</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="116"/>
+        <source>15 mins later</source>
+        <translation>Dopo 15 minuti</translation>
+    </message>
+    <message>
+        <source>1 hour later</source>
+        <translation>Dopo 1 ora</translation>
+    </message>
+    <message>
+        <source>4 hours later</source>
+        <translation>Dopo 4 ore</translation>
+    </message>
+    <message>
+        <source>Tomorrow</source>
+        <translation>Domani</translation>
+    </message>
+    <message>
         <source>Schedule Reminder</source>
         <translation>Pianifica promemoria</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="236"/>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="245"/>
         <source>%1 to %2</source>
-        <translation>dalle %1 alle %2</translation>
+        <translation>%1 a %2</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="317"/>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="328"/>
         <source>Today</source>
         <translation>Oggi</translation>
     </message>
+</context>
+<context>
+    <name>JobRemindManager</name>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="320"/>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="331"/>
+        <source>One day before start</source>
+        <translation type="vanished">Un giorno prima dell&apos;inizio</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <comment>button</comment>
+        <translation type="vanished">Chiudi</translation>
+    </message>
+    <message>
+        <source>Remind me tomorrow</source>
+        <translation type="vanished">Ricordamelo domani</translation>
+    </message>
+    <message>
+        <source>Remind me later</source>
+        <translation type="vanished">Ricordamelo più tardi</translation>
+    </message>
+    <message>
+        <source>Schedule Reminder</source>
+        <translation type="vanished">Pianifica promemoria</translation>
+    </message>
+    <message>
+        <source>%1 to %2</source>
+        <translation type="vanished">dalle %1 alle %2</translation>
+    </message>
+    <message>
+        <source>Today</source>
+        <translation type="vanished">Oggi</translation>
+    </message>
+    <message>
         <source>Tomorrow</source>
-        <translation>Domani</translation>
+        <translation type="vanished">Domani</translation>
     </message>
 </context>
 </TS>

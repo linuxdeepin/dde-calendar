@@ -106,7 +106,7 @@
 <context>
     <name>CGraphicsView</name>
     <message>
-        <location filename="../calendar-client/src/view/graphicsview.cpp" line="615"/>
+        <location filename="../calendar-client/src/view/graphicsview.cpp" line="601"/>
         <source>New Event</source>
         <translation>新建日程</translation>
     </message>
@@ -143,24 +143,24 @@
 <context>
     <name>CMyScheduleView</name>
     <message>
-        <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="268"/>
+        <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="280"/>
         <source>My Event</source>
         <translation>我的日程</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="309"/>
+        <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="321"/>
         <source>OK</source>
         <comment>button</comment>
         <translation>確 定</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="313"/>
+        <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="325"/>
         <source>Delete</source>
         <comment>button</comment>
         <translation>刪 除</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="314"/>
+        <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="326"/>
         <source>Edit</source>
         <comment>button</comment>
         <translation>更 改</translation>
@@ -177,266 +177,267 @@
 <context>
     <name>CScheduleDlg</name>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="57"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="865"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="58"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="592"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="885"/>
         <source>New Event</source>
         <translation>新建日程</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="70"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="71"/>
         <source>Edit Event</source>
         <translation>更改日程</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="256"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="259"/>
         <source>End time must be greater than start time</source>
         <translation>結束時間需晚於開始時間</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="257"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="260"/>
         <source>OK</source>
         <comment>button</comment>
         <translation>確 定</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="466"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="490"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1077"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1112"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1347"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1351"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="482"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="506"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1097"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1132"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1367"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1371"/>
         <source>Never</source>
         <translation>永不</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="467"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="483"/>
         <source>At time of event</source>
         <translation>日程開始時</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="468"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="484"/>
         <source>15 minutes before</source>
         <translation>15分鐘前</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="469"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="485"/>
         <source>30 minutes before</source>
         <translation>30分鐘前</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="470"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="486"/>
         <source>1 hour before</source>
         <translation>1小時前</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="471"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="492"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="487"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="508"/>
         <source>1 day before</source>
         <translation>1天前</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="472"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="493"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="488"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="509"/>
         <source>2 days before</source>
         <translation>2天前</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="473"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="494"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="489"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="510"/>
         <source>1 week before</source>
         <translation>1週前</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="491"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="507"/>
         <source>On start day (9:00 AM)</source>
         <translation>日程發生當天（上午9點）</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="535"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="738"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1133"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1134"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="551"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="758"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1153"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1154"/>
         <source>time(s)</source>
         <translation>次後</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="549"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="565"/>
         <source>Enter a name please</source>
         <translation>名稱不能為空</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="640"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="660"/>
         <source>The name can not only contain whitespaces</source>
         <translation>名稱不能設置為全空格，請修改</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="696"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="815"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="716"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="835"/>
         <source>Type:</source>
         <translation>類型：</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="701"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="850"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="721"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="870"/>
         <source>Description:</source>
         <translation>描述：</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="706"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="887"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="726"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="907"/>
         <source>All Day:</source>
         <translation>全天：</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="711"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="953"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="731"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="973"/>
         <source>Starts:</source>
         <translation>開始時間：</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="716"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="994"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="736"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1014"/>
         <source>Ends:</source>
         <translation>結束時間：</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="721"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1034"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="741"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1054"/>
         <source>Remind Me:</source>
         <translation>提醒：</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="726"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1066"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="746"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1086"/>
         <source>Repeat:</source>
         <translation>重複：</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="731"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1100"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="751"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1120"/>
         <source>End Repeat:</source>
         <translation>結束重複：</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="787"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="807"/>
         <source>Calendar account:</source>
         <translation>日曆帳戶：</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="788"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="808"/>
         <source>Calendar account</source>
         <translation>日曆帳戶</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="812"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="832"/>
         <source>Type</source>
         <translation>類型</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="854"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="874"/>
         <source>Description</source>
         <translation>描述</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="884"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="904"/>
         <source>All Day</source>
         <translation>全天</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="908"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="928"/>
         <source>Time:</source>
         <translation>時間：</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="909"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="929"/>
         <source>Time</source>
         <translation>時間</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="916"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="936"/>
         <source>Solar</source>
         <translation>公曆</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="917"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="937"/>
         <source>Lunar</source>
         <translation>農曆</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="950"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="970"/>
         <source>Starts</source>
         <translation>開始時間</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="991"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1011"/>
         <source>Ends</source>
         <translation>結束時間</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1036"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1056"/>
         <source>Remind Me</source>
         <translation>提醒</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1063"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1083"/>
         <source>Repeat</source>
         <translation>重複</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1078"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1352"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1098"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1372"/>
         <source>Daily</source>
         <translation>每天</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1079"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1353"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1099"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1373"/>
         <source>Weekdays</source>
         <translation>工作日</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1080"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1354"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1100"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1374"/>
         <source>Weekly</source>
         <translation>每週</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1081"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1348"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1355"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1101"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1368"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1375"/>
         <source>Monthly</source>
         <translation>每月</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1082"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1349"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1356"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1102"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1369"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1376"/>
         <source>Yearly</source>
         <translation>每年</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1102"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1122"/>
         <source>End Repeat</source>
         <translation>結束重複</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1113"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1133"/>
         <source>After</source>
         <translation>於</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1114"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1134"/>
         <source>On</source>
         <translation>於日期</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1182"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1202"/>
         <source>Cancel</source>
         <comment>button</comment>
         <translation>取 消</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1183"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1203"/>
         <source>Save</source>
         <comment>button</comment>
         <translation>保 存</translation>
@@ -555,12 +556,12 @@
         <translation>所有將來日程</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="373"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="379"/>
         <source>You have selected a leap month, and will be reminded according to the rules of the lunar calendar.</source>
         <translation>您選擇的是閏月，將按照農曆規則提醒</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="374"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="380"/>
         <source>OK</source>
         <comment>button</comment>
         <translation>確 定</translation>
@@ -621,57 +622,57 @@
 <context>
     <name>CSettingDialog</name>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="311"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="305"/>
         <source>Sunday</source>
         <translation>週日</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="312"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="306"/>
         <source>Monday</source>
         <translation>週一</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="325"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="319"/>
         <source>24-hour clock</source>
         <translation>24小時制</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="326"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="320"/>
         <source>12-hour clock</source>
         <translation>12小時制</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="356"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="350"/>
         <source>Manual</source>
         <translation>手動</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="357"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="351"/>
         <source>15 mins</source>
         <translation>每15分鐘</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="358"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="352"/>
         <source>30 mins</source>
         <translation>每30分鐘</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="359"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="353"/>
         <source>1 hour</source>
         <translation>每1小時</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="360"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="354"/>
         <source>24 hours</source>
         <translation>每24小時</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="369"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="363"/>
         <source>Sync Now</source>
         <translation>立即同步</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="475"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="502"/>
         <source>Last sync</source>
         <translation>最近同步時間</translation>
     </message>
@@ -718,6 +719,7 @@
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="108"/>
+        <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="109"/>
         <source>Search events and festivals</source>
         <translation>搜索日程/節日</translation>
     </message>
@@ -790,7 +792,7 @@
 <context>
     <name>CYearWindow</name>
     <message>
-        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="624"/>
+        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="632"/>
         <source>Y</source>
         <translation>年</translation>
     </message>
@@ -798,12 +800,12 @@
 <context>
     <name>CalendarWindow</name>
     <message>
-        <location filename="../calendar-client/src/main.cpp" line="65"/>
+        <location filename="../calendar-client/src/main.cpp" line="68"/>
         <source>Calendar</source>
         <translation>日曆</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/main.cpp" line="68"/>
+        <location filename="../calendar-client/src/main.cpp" line="71"/>
         <source>Calendar is a tool to view dates, and also a smart daily planner to schedule all things in life. </source>
         <translation>日曆是一款查看日期、管理日程的小工具。</translation>
     </message>
@@ -819,6 +821,21 @@
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="365"/>
         <source>Manage</source>
         <translation>管理</translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="907"/>
+        <source>Syncing...</source>
+        <translation>正在同步...</translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="916"/>
+        <source>Sync successful</source>
+        <translation>同步成功</translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="922"/>
+        <source>Sync failed, please try later</source>
+        <translation>同步失敗，請稍後再試</translation>
     </message>
 </context>
 <context>
@@ -847,7 +864,7 @@
         <translation>新建日程</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/view/draginfographicsview.cpp" line="725"/>
+        <location filename="../calendar-client/src/view/draginfographicsview.cpp" line="738"/>
         <source>New Event</source>
         <translation>新建日程</translation>
     </message>
@@ -880,12 +897,12 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="106"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="88"/>
         <source>Manage calendar</source>
         <translation>日曆管理</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="122"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="104"/>
         <source>Event types</source>
         <translation>日程類型</translation>
     </message>
@@ -895,48 +912,48 @@
         <translation>帳戶設置</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="49"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="48"/>
         <source>Account</source>
         <translation>帳戶</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="61"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="56"/>
         <source>Select items to be synced</source>
         <translation>設置您的同步項</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="65"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="59"/>
         <source>Events</source>
         <translation>日程</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="72"/>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="137"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="66"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="119"/>
         <source>General settings</source>
         <translation>通用設置</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="83"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="73"/>
         <source>Sync interval</source>
         <translation>同步頻率</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="114"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="96"/>
         <source>Calendar account</source>
         <translation>日曆帳戶</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="141"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="123"/>
         <source>General</source>
         <translation>通用</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="145"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="127"/>
         <source>First day of week</source>
         <translation>每星期開始於</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="153"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="135"/>
         <source>Time</source>
         <translation>時間</translation>
     </message>
@@ -944,7 +961,7 @@
 <context>
     <name>Return</name>
     <message>
-        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="620"/>
+        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="628"/>
         <source>Today</source>
         <comment>Return</comment>
         <translation>今天</translation>
@@ -964,44 +981,44 @@
 <context>
     <name>ScheduleTypeEditDlg</name>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="35"/>
+        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="36"/>
         <source>New event type</source>
         <translation>新增日程類型</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="45"/>
+        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="46"/>
         <source>Edit event type</source>
         <translation>編輯日程類型</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="119"/>
+        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="126"/>
         <source>Name:</source>
         <translation>名稱：</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="128"/>
+        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="135"/>
         <source>Color:</source>
         <translation>顏色：</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="153"/>
+        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="160"/>
         <source>Cancel</source>
         <comment>button</comment>
         <translation>取 消</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="154"/>
+        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="161"/>
         <source>Save</source>
         <comment>button</comment>
         <translation>保 存</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="203"/>
+        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="210"/>
         <source>The name can not only contain whitespaces</source>
         <translation>名稱不能設置為全空格，請修改</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="240"/>
+        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="247"/>
         <source>Enter a name please</source>
         <translation>名稱不能為空</translation>
     </message>
@@ -1045,29 +1062,6 @@
     </message>
 </context>
 <context>
-    <name>SidebarAccountItemWidget</name>
-    <message>
-        <location filename="../calendar-client/src/widget/sidebarWidget/sidebaritemwidget.cpp" line="253"/>
-        <source>Sync successful</source>
-        <translation>同步成功</translation>
-    </message>
-    <message>
-        <location filename="../calendar-client/src/widget/sidebarWidget/sidebaritemwidget.cpp" line="254"/>
-        <source>Network error</source>
-        <translation>網絡異常</translation>
-    </message>
-    <message>
-        <location filename="../calendar-client/src/widget/sidebarWidget/sidebaritemwidget.cpp" line="255"/>
-        <source>Server exception</source>
-        <translation>伺服器異常</translation>
-    </message>
-    <message>
-        <location filename="../calendar-client/src/widget/sidebarWidget/sidebaritemwidget.cpp" line="256"/>
-        <source>Storage full</source>
-        <translation>存儲已滿</translation>
-    </message>
-</context>
-<context>
     <name>SidebarCalendarWidget</name>
     <message>
         <location filename="../calendar-client/src/widget/sidebarWidget/sidebarcalendarwidget.cpp" line="130"/>
@@ -1107,7 +1101,7 @@
 <context>
     <name>YearFrame</name>
     <message>
-        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="933"/>
+        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="941"/>
         <source>Y</source>
         <translation>年</translation>
     </message>
@@ -1122,7 +1116,7 @@
         <location filename="../calendar-client/src/widget/weekWidget/weekwindow.cpp" line="69"/>
         <location filename="../calendar-client/src/widget/weekWidget/weekwindow.cpp" line="317"/>
         <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="278"/>
-        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="618"/>
+        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="626"/>
         <source>Today</source>
         <comment>Today</comment>
         <translation>今天</translation>

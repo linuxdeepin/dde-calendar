@@ -432,7 +432,7 @@ bool SyncStack::syncIntoTable(const QString &table_name, const QString &connecti
         target.prepare("replace into " + table_name + " values(" + prepareQuest(source.record().count()) + ")");
         prepareBinds(target, source.record());
         if (!target.exec()) {
-            qInfo() << target.lastError();
+            qWarning() << target.lastError();
             return false;
         }
     }
@@ -511,16 +511,16 @@ bool SyncStack::repairTable(const QString &table_name, const QString &connection
     };
 
     query_local.exec(select_sql);
-    while(query_local.next()) {
+    while (query_local.next()) {
         local_header_info.insert(query_local.value("name").toString(), query_local.value("type").toString());
     }
 
     query_server.exec(select_sql);
-    while(query_server.next()) {
+    while (query_server.next()) {
         server_header_info.insert(query_server.value("name").toString(), query_server.value("type").toString());
     }
 
-    auto exceptFunc = [](QSet<QString> local, QSet<QString> server)->QSet<QString>{
+    auto exceptFunc = [](QSet<QString> local, QSet<QString> server) -> QSet<QString> {
         QSet<QString> ret = local;
         local.intersect(server);
         ret.subtract(local);
@@ -529,20 +529,19 @@ bool SyncStack::repairTable(const QString &table_name, const QString &connection
 
     //本地数据的字段 都需要 在服务端数据库里
     QSet<QString> header_ready = exceptFunc(local_header_info.keys().toSet(), server_header_info.keys().toSet());
-    if(header_ready.isEmpty())
+    if (header_ready.isEmpty())
         return true;
 
     //将本地数据库不在服务器数据库的字段 插入 服务器数据库
-    for(auto header : header_ready) {
+    for (auto header : header_ready) {
         QString sql_type = local_header_info.value(header);
         QString default_value = default_map.value(sql_type);
         QString alter_sql = QString("ALTER TABLE %1 ADD COLUMN %2 %3 DEFAULT '%4';")
-                .arg(table_name)
-                .arg(header)
-                .arg(sql_type)
-                .arg(default_value)
-                ;
-        if(!query_server.exec(alter_sql)) {
+                                .arg(table_name)
+                                .arg(header)
+                                .arg(sql_type)
+                                .arg(default_value);
+        if (!query_server.exec(alter_sql)) {
             qInfo() << query_server.lastError();
             return false;
         }
