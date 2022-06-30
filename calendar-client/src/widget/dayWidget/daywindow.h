@@ -59,6 +59,8 @@ public:
     void updateShowSchedule() override;
     //更新显示农历信息
     void updateShowLunar() override;
+    //更新界面搜索日程显示
+    void updateSearchScheduleInfo() override;
     //设置选中搜索日程
     void setSelectSearchScheduleInfo(const DSchedule::Ptr &info) override;
     //删除选中日程

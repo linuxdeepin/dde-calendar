@@ -185,6 +185,11 @@ void CDayWindow::updateShowLunar()
     m_daymonthView->setHuangLiInfo(_huangLiInfo);
 }
 
+void CDayWindow::updateSearchScheduleInfo()
+{
+    m_scheduleView->slotUpdateScene();
+}
+
 /**
  * @brief CDayWindow::setSelectSearchScheduleInfo       设置选中日程
  * @param info

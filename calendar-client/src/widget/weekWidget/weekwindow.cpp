@@ -374,6 +374,11 @@ void CWeekWindow::updateShowLunar()
     m_weekHeadView->setHunagLiInfo(weekHuangLiInfo);
 }
 
+void CWeekWindow::updateSearchScheduleInfo()
+{
+    m_scheduleView->slotUpdateScene();
+}
+
 /**
  * @brief CWeekWindow::setSelectSearchScheduleInfo      设置选中搜索日程
  * @param info
