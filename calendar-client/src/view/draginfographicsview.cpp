@@ -421,7 +421,9 @@ void DragInfoGraphicsView::dropEvent(QDropEvent *event)
 {
     if (event->mimeData()->hasFormat("Info")) {
         if (event->source() != this || m_MoveDate != m_PressDate) {
-            if (m_MoveDate.date().year() >= DDECalendar::QueryEarliestYear && m_MoveDate.date().year() <= DDECalendar::QueryLatestYear) {
+            auto startDate = m_DragScheduleInfo->dtStart();
+            auto endDate = m_DragScheduleInfo->dtEnd();
+            if ( startDate.date().year() >= DDECalendar::QueryEarliestYear && endDate.date().year() <= DDECalendar::QueryLatestYear) {
                 updateScheduleInfo(m_DragScheduleInfo);
             } else {
                 emit signalsUpdateSchedule();
