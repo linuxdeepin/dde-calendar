@@ -254,10 +254,6 @@ bool CScheduleOperation::changeRecurInfo(const DSchedule::Ptr &newinfo, const DS
             //修改所有日程
             //如果此重复日程只有它一个则将修改为普通日程
             DSchedule::Ptr _scheduleDataInfo(newinfo->clone());
-            if ((_scheduleDataInfo->recurrence()->duration() == 1)
-                || _scheduleDataInfo->dtStart().daysTo(_scheduleDataInfo->recurrence()->endDateTime())) {
-                _scheduleDataInfo->setRRuleType(DSchedule::RRule_None);
-            }
             //更新日程
             showLunarMessageDialog(_scheduleDataInfo, oldinfo);
             m_accountItem->updateSchedule(_scheduleDataInfo);
