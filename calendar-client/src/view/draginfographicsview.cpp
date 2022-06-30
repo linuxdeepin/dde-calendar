@@ -259,7 +259,8 @@ void DragInfoGraphicsView::mouseMoveEvent(QMouseEvent *event)
         case IsCreate:
             if (gDate.date().year() >= DDECalendar::QueryEarliestYear && gDate.date().year() <= DDECalendar::QueryLatestYear) {
                 if (m_PressDate.date().year() >= DDECalendar::QueryEarliestYear && m_PressDate.date().year() <= DDECalendar::QueryLatestYear) {
-                    m_isCreate = JudgeIsCreate(event->pos());
+                    //如果拖拽创建为false则判断是否可被创建。如果为true则不需要判断
+                    m_isCreate = m_isCreate ? m_isCreate : JudgeIsCreate(event->pos());
                     if (m_isCreate) {
                         if (!IsEqualtime(m_MoveDate, gDate)) {
                             m_MoveDate = gDate;
