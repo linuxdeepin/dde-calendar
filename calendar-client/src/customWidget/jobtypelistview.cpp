@@ -7,7 +7,7 @@
 #include <DHiDPIHelper>
 #include <DStyle>
 #include <DIconButton>
-
+#include <QToolTip>
 #include <QPainter>
 #include <QHeaderView>
 
@@ -36,7 +36,7 @@ void JobTypeListView::initUI()
     setFocusPolicy(Qt::NoFocus);
     setItemDelegate(new JobTypeListViewStyle(this));
     setShowGrid(false);
-
+    setMouseTracking(true);
     verticalHeader()->setMinimumSectionSize(0);
     horizontalHeader()->setStretchLastSection(true);
     horizontalHeader()->hide();
@@ -45,6 +45,14 @@ void JobTypeListView::initUI()
     updateJobType();
 
     connect(gAccountManager, &AccountManager::signalScheduleTypeUpdate, this, &JobTypeListView::updateJobType);
+    connect(this,&QTableView::entered,this,[&](const QModelIndex& index){
+      if(!index.isValid()) return;
+      DScheduleType info = index.data(RoleJobTypeInfo).value<DScheduleType>();
+      QString displayName = info.displayName();
+      if(!displayName.isEmpty()) {
+          QToolTip::showText(QCursor::pos(),info.displayName());
+      }
+    });
 }
 
 bool JobTypeListView::viewportEvent(QEvent *event)
