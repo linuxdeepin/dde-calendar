@@ -100,7 +100,7 @@ void ColorSeletorWidget::addColor(const DTypeColor::Ptr &cInfo)
 
 DTypeColor::Ptr ColorSeletorWidget::getSelectedColorInfo()
 {
-    if (m_colorInfo->colorCode().isEmpty()) {
+    if (!m_colorInfo->colorCode().isEmpty()) {
         CConfigSettings::getInstance()->setOption("LastUserColor", m_colorInfo->colorCode());
     }
     if (m_colorInfo->privilege() == DTypeColor::PriSystem)
@@ -204,7 +204,6 @@ void ColorSeletorWidget::slotAddColorButClicked()
     if (colorPicker.exec()) {
         DTypeColor::Ptr typeColor;
         typeColor.reset(new DTypeColor());
-        typeColor->setColorCode("0");
         typeColor->setColorCode(colorPicker.getSelectedColor().name());
         typeColor->setPrivilege(DTypeColor::PriUser);
         setUserColor(typeColor);

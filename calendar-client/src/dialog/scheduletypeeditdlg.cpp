@@ -224,7 +224,8 @@ void ScheduleTypeEditDlg::slotFocusChanged(bool onFocus)
 {
     //如果焦点移出,且输入内容为空
     if (!onFocus && m_lineEdit->text().isEmpty()) {
-        emit m_lineEdit->textChanged("");
+//        emit m_lineEdit->textChanged("");
+        emit m_lineEdit->editingFinished();
     }
 }
 
