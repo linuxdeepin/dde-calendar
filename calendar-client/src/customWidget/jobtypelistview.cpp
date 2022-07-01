@@ -282,6 +282,7 @@ void JobTypeListViewStyle::paint(QPainter *painter, const QStyleOptionViewItem &
     painter->drawEllipse(QRect(opt.rect.x() + 12, opt.rect.y() + 10, 16, 16));
 
     //draw text
+
     painter->setPen(qApp->palette().color(QPalette::Text));
     QFontMetrics fontMetr(painter->font());
 
@@ -291,12 +292,20 @@ void JobTypeListViewStyle::paint(QPainter *painter, const QStyleOptionViewItem &
 
     JobTypeListView *view = qobject_cast<JobTypeListView *>(parent());
     //如果当前的index为hover状态则空出图标位置
+    QString displayName = info.displayName();
+    // 获取当前字体的信息
+    QFontMetrics fontMetrics(opt.font);
+    // 当前文字长度是否大于显示框长度
+    if(fontMetrics.width(displayName) > (opt.rect.width() - 90)) {
+        displayName = fontMetrics.elidedText(displayName,Qt::ElideRight,opt.rect.width() - 90); // 截取字符串长度用...代替
+    }
     if (view && view->m_iIndexCurrentHover == index.row()) {
-        painter->drawText(opt.rect.adjusted(38, 0, -60, 0), Qt::AlignVCenter | Qt::AlignLeft, info.displayName());
+        painter->drawText(opt.rect.adjusted(38, 0, -10, 0), Qt::AlignVCenter | Qt::AlignLeft, displayName);
     } else {
-        painter->drawText(opt.rect.adjusted(38, 0, -10, 0), Qt::AlignVCenter | Qt::AlignLeft, info.displayName());
+        painter->drawText(opt.rect.adjusted(38, 0, -10, 0), Qt::AlignVCenter | Qt::AlignLeft, displayName);
     }
 
     painter->restore();
 }
+
 
