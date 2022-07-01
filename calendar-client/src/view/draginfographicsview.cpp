@@ -27,6 +27,7 @@
 #include "graphicsItem/cscenebackgrounditem.h"
 #include "calendarglobalenv.h"
 #include "scheduledatamanage.h"
+#include "graphicsItem/scheduleitem.h"
 
 #include <DMenu>
 
@@ -337,6 +338,10 @@ void DragInfoGraphicsView::contextMenuEvent(QContextMenuEvent *event)
     QGraphicsItem *listItem = itemAt(event->pos());
     DragInfoItem *infoitem = dynamic_cast<DragInfoItem *>(listItem);
 
+    CScheduleItem *tt = dynamic_cast<CScheduleItem *>(listItem);
+    if(tt != nullptr && tt->getType() != 0){
+        return;
+    }
     if (infoitem != nullptr) {
         //是否为节假日日程判断
         if (!CScheduleOperation::isFestival(infoitem->getData())) {

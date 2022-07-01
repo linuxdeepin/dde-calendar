@@ -141,9 +141,10 @@ void SidebarView::initUnionAccountItem()
 
     QTreeWidgetItem *unionItem = new QTreeWidgetItem();
     m_treeWidget->addTopLevelItem(unionItem);
-    QString localName = unionAccount->getAccount()->accountName();
+    QString unionName = unionAccount->getAccount()->accountName();
     m_unionItemWidget = new SidebarAccountItemWidget(unionAccount);
     m_treeWidget->setItemWidget(unionItem, 0, m_unionItemWidget);
+    unionItem->setToolTip(0,unionName);
     m_unionItemWidget->setItem(unionItem);
 }
 
