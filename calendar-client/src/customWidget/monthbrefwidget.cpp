@@ -315,7 +315,7 @@ void CMonthDayRectWidget::paintEvent(QPaintEvent *event)
         //有被搜索日程，绘制圆圈
         QPainterPath path;
         path.addEllipse(rectf);
-        path.addEllipse(rectf.x()+2, rectf.y()+2, rectf.width()-4, rectf.height()-4);
+        path.addEllipse(rectf.x()+1, rectf.y()+1, rectf.width()-2, rectf.height()-2);
         painter.setBrush(highColor);
         painter.setPen(Qt::NoPen);
         painter.drawPath(path);
