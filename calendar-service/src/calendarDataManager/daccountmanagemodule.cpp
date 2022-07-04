@@ -41,6 +41,9 @@ DAccountManageModule::DAccountManageModule(QObject *parent)
 
     //根据获取到的帐户信息创建对应的帐户服务
     foreach (auto account, m_accountList) {
+        if(account->accountType() != DAccount::Account_Local){
+            continue;
+        }
         DAccountModule::Ptr accountModule = DAccountModule::Ptr(new DAccountModule(account));
         QObject::connect(accountModule.data(), &DAccountModule::signalSettingChange, this, &DAccountManageModule::slotSettingChange);
         m_accountModuleMap[account->accountID()] = accountModule;
@@ -57,8 +60,11 @@ DAccountManageModule::DAccountManageModule(QObject *parent)
     }
     m_generalSetting = m_accountManagerDB->getCalendarGeneralSettings();
 
-    QObject::connect(m_syncFileManage->getSyncoperation(), &Syncoperation::signalLoginStatusChange, this, &DAccountManageModule::slotUidLoginStatueChange);
-    QObject::connect(m_syncFileManage->getSyncoperation(), &Syncoperation::SwitcherChange, this, &DAccountManageModule::slotSwitcherChange);
+    //暂时屏蔽云同步部分
+//    QObject::connect(m_syncFileManage->getSyncoperation(), &Syncoperation::signalLoginStatusChange, this, &DAccountManageModule::slotUidLoginStatueChange);
+//    QObject::connect(m_syncFileManage->getSyncoperation(), &Syncoperation::SwitcherChange, this, &DAccountManageModule::slotSwitcherChange);
+    //第一次启动加载完成后发送帐户改变信号
+    // emit signalLoginStatusChange();
 }
 
 QString DAccountManageModule::getAccountList()
@@ -194,6 +200,26 @@ void DAccountManageModule::calendarOpen(bool isOpen)
 void DAccountManageModule::unionIDDataMerging()
 {
     m_accountList = m_accountManagerDB->getAccountList();
+
+    //暂时屏蔽云同步部分
+    {
+        DAccount::Ptr unionidDB;
+        auto hasUnionid = [ =, &unionidDB](const DAccount::Ptr & account) {
+            if (account->accountType() == DAccount::Account_UnionID) {
+                unionidDB = account;
+                return true;
+            }
+            return false;
+        };
+        //如果数据库中有unionid帐户
+        if (std::any_of(m_accountList.begin(), m_accountList.end(), hasUnionid)) {
+            //如果包含则移除
+            removeUIdAccount(unionidDB);
+        }
+        return;
+    }
+
+
     DAccount::Ptr accountUnionid = m_syncFileManage->getuserInfo();
 
     DAccount::Ptr unionidDB;
@@ -316,7 +342,7 @@ void DAccountManageModule::slotUidLoginStatueChange(const int status)
     if (oldStatus != status) {
         oldStatus = status;
     } else {
-        //如果当期状态和上次状态一直，则退出
+        //如果当前状态和上次状态一直，则退出
         return;
     }
     //1：登陆成功 2：登陆取消 3：登出 4：获取服务端配置的应用数据成功
@@ -329,6 +355,7 @@ void DAccountManageModule::slotUidLoginStatueChange(const int status)
         DAccount::Ptr accountUnionid = m_syncFileManage->getuserInfo();
         if (accountUnionid.isNull() || accountUnionid->accountName().isEmpty()) {
             qWarning() << "Error getting account information";
+            oldStatus = 0;
             return;
         }
         addUIdAccount(accountUnionid);

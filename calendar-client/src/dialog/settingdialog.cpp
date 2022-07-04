@@ -198,10 +198,10 @@ void CSettingDialog::initView()
         }
     }
 
-    //社区版不含云同步相关内容
-    if (DSysInfo::uosEditionType() == DSysInfo::UosCommunity) {
+    //暂时屏蔽云同步部分
+//    if (DSysInfo::uosEditionType() == DSysInfo::UosCommunity) {
         setGroupVisible("setting_account", false);
-    }
+//    }
     //未登录uos帐号时，移除部分选项
     if (!gUosAccountItem) {
         setGroupVisible("setting_account.account_sync_items", false);
