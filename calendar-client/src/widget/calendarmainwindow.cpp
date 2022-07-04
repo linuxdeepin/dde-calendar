@@ -525,7 +525,7 @@ void Calendarmainwindow::resizeView()
     }
 
     int sidWidth = 0;
-    if (m_sidebarView->isVisible()) {
+    if (!m_sidebarView->isHidden()) {
         sidWidth = m_sidebarView->width();
     }
 

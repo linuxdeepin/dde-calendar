@@ -317,6 +317,7 @@ void CMonthWindow::initUI()
     yeartitleLayout1->setSpacing(0);
 
     yeartitleLayout1->addWidget(m_YearLunarLabel);
+    yeartitleLayout->addSpacing(6);
     yeartitleLayout->addLayout(yeartitleLayout1);
 
     yeartitleLayout->addStretch();

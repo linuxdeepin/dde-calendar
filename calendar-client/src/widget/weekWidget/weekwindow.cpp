@@ -129,6 +129,7 @@ void CWeekWindow::initUI()
     yeartitleLayout1->setMargin(0);
     yeartitleLayout1->setSpacing(0);
     yeartitleLayout1->addWidget(m_YearLunarLabel);
+    yeartitleLayout->addSpacing(6);
     yeartitleLayout->addLayout(yeartitleLayout1);
 
     yeartitleLayout->addStretch();

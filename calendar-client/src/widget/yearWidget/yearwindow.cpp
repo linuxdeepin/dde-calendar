@@ -354,6 +354,7 @@ void CYearWindow::initUI()
     m_todayFrame->setLayout(todaylayout);
     yeartitleLayout1->addSpacing(10);
     yeartitleLayout1->addWidget(m_todayFrame);
+    yeartitleLayout->addSpacing(6);
     yeartitleLayout->addLayout(yeartitleLayout1);
 
     m_firstYearWidget = new YearFrame();
