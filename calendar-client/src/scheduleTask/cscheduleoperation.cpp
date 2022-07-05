@@ -79,7 +79,6 @@ bool CScheduleOperation::changeSchedule(const DSchedule::Ptr &newInfo, const DSc
         //如果为普通日程且没有修改重复类型则更新日程
         m_accountItem->updateSchedule(newInfo);
         _result = true;
-        //        _result = m_DBusManager->UpdateJob(newInfo);
     } else {
         //如果切换了全天状态则提醒是否修改全部
         if (newInfo->allDay() != oldInfo->allDay()) {
@@ -148,7 +147,8 @@ bool CScheduleOperation::deleteSchedule(const DSchedule::Ptr &scheduleInfo)
         //获取原始日程
         DSchedule::Ptr primevalSchedule = m_accountItem->getScheduleByScheduleID(scheduleInfo->uid());
         //如果为重复日程的第一个
-        if (DSchedule::numberOfRepetitions(primevalSchedule, scheduleInfo->dtStart()) == 1) {
+        int num = DSchedule::numberOfRepetitions(primevalSchedule, scheduleInfo->dtStart()) ;
+        if (num == 1) {
             CScheduleCtrlDlg msgBox(m_widget);
             msgBox.setText(tr("You are deleting an event."));
             msgBox.setInformativeText(tr("Do you want to delete all occurrences of this event, or only the selected occurrence?"));
@@ -237,7 +237,7 @@ bool CScheduleOperation::changeRecurInfo(const DSchedule::Ptr &newinfo, const DS
     // 获取原始数据
     DSchedule::Ptr primevalScheduleData = m_accountItem->getScheduleByScheduleID(oldinfo->uid());
     int primevalDuration = primevalScheduleData->recurrence()->duration();
-    int num = DSchedule::numberOfRepetitions(primevalScheduleData, newinfo->dtStart());
+    int num = DSchedule::numberOfRepetitions(primevalScheduleData, oldinfo->dtStart());
     if (num == 1) {
         CScheduleCtrlDlg msgBox(m_widget);
         msgBox.setText(tr("You are changing a repeating event."));
@@ -257,6 +257,11 @@ bool CScheduleOperation::changeRecurInfo(const DSchedule::Ptr &newinfo, const DS
             DSchedule::Ptr _scheduleDataInfo(newinfo->clone());
             //更新日程
             showLunarMessageDialog(_scheduleDataInfo, oldinfo);
+            //如果为非全天且结束于日期则更新结束时间
+            if(!_scheduleDataInfo->allDay() && _scheduleDataInfo->recurrence()->duration() ==0){
+                QDateTime dtEnd(_scheduleDataInfo->recurrence()->endDateTime().date(),_scheduleDataInfo->dtStart().time());
+                _scheduleDataInfo->recurrence()->setEndDateTime(dtEnd);
+            }
             m_accountItem->updateSchedule(_scheduleDataInfo);
             _result = true;
         } else if (msgBox.clickButton() == 2) {
@@ -281,7 +286,7 @@ bool CScheduleOperation::changeRecurInfo(const DSchedule::Ptr &newinfo, const DS
             //修改重复规则
 
             QList<QDateTime> &&exDt = primevalScheduleData->recurrence()->exDateTimes();
-            changeRepetitionRule(primevalScheduleData, newinfo);
+            changeRepetitionRule(primevalScheduleData, oldinfo);
             //如果修改后的日程为普通日程且忽略列表内包含日程开始时间则删除该日程
             if (primevalScheduleData->getRRuleType() == DSchedule::RRule_None
                     &&exDt.contains(primevalScheduleData->dtStart())) {
@@ -305,6 +310,10 @@ bool CScheduleOperation::changeRecurInfo(const DSchedule::Ptr &newinfo, const DS
                     newschedule->setRRuleType(DSchedule::RRule_None);
                 }
                 newschedule->setRecurrenceId(QDateTime());
+            } else if (primevalDuration ==0) {
+                //结束于日期
+                QDateTime dtEnd(newschedule->recurrence()->endDateTime().date(),newschedule->dtStart().time());
+                newschedule->recurrence()->setEndDateTime(dtEnd);
             }
             //如果结束为永不和时间则不需要修改
 

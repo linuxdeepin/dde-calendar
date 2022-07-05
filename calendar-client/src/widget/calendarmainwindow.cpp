@@ -99,8 +99,6 @@ Calendarmainwindow::Calendarmainwindow(int index, QWidget *w)
     setWindowTitle(tr("Calendar"));
     new CalendarAdaptor(this);
     resize(CalendarMWidth, CalendarMHeight);
-    //接受释放
-    this->setAcceptDrops(true);
     //接收点击焦点
     setFocusPolicy(Qt::ClickFocus);
     QShortcut *shortcut = new QShortcut(this);
@@ -893,15 +891,6 @@ void Calendarmainwindow::slotOpenSettingDialog()
     gCalendarManager->updateData();
 }
 
-/**
- * @brief CDayWindow::dragEnterEvent      拖拽进入事件
- * @param event
- */
-void Calendarmainwindow::dragEnterEvent(QDragEnterEvent *event)
-{
-    event->acceptProposedAction();
-}
-
 void Calendarmainwindow::slotShowSyncToast(int syncNum)
 {
     //-1:正在刷新 0:正常 1:网络异常 2:服务器异常 3：存储已经满
@@ -938,17 +927,4 @@ void Calendarmainwindow::slotAccountUpdate()
     if (!uidAccount.isNull()) {
         connect(uidAccount.get(), &AccountItem::signalSyncStateChange, this, &Calendarmainwindow::slotShowSyncToast);
     }
-}
-
-/**
- * @brief CDayWindow::dropEvent          拖拽释放事件
- * @param event
- */
-void Calendarmainwindow::dropEvent(QDropEvent *event)
-{
-    QPoint pos = event->pos();
-    int diffPosx = pos.x() - m_startPos.x();
-    int diffPosy = pos.y() - m_startPos.y();
-    if ((diffPosx >= 16 || diffPosx <= -16) || (diffPosy >= 16 || diffPosy <= -16))
-        slotNewSchedule();
 }

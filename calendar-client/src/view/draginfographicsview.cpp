@@ -118,7 +118,7 @@ void DragInfoGraphicsView::mousePressEvent(QMouseEvent *event)
     }
     mousePress(event->pos());
     m_Scene->currentItemInit();
-    //更新其它view中item状态显示
+     //更新其它view中item状态显示
     emit signalSceneUpdate();
 }
 
@@ -383,7 +383,8 @@ void DragInfoGraphicsView::dragEnterEvent(QDragEnterEvent *event)
         }
 
         //如果该日程是不能被拖拽的则忽略不接受
-        if ((event->source() != this && info->recurrenceId().isValid()) || !isCanDragge(info)) {
+        //重复日程不能被切换全天和非全天
+        if ((event->source() != this && info->recurs()) || !isCanDragge(info)) {
             event->ignore();
         } else {
             event->accept();
@@ -518,7 +519,7 @@ void DragInfoGraphicsView::updateScheduleInfo(const DSchedule::Ptr &info)
     QObject *parent = static_cast<QObject *>(variant.value<void *>());
     //设置父类为主窗口
     CScheduleOperation _scheduleOperation(info->scheduleTypeID(), qobject_cast<QWidget *>(parent));
-    if (_scheduleOperation.changeSchedule(info, m_DragScheduleInfo)) {
+    if (_scheduleOperation.changeSchedule(info, m_PressScheduleInfo)) {
         //如果日程修改成功则更新更新标志
         m_hasUpdateMark = true;
     } else {
@@ -540,7 +541,8 @@ void DragInfoGraphicsView::DragPressEvent(const QPoint &pos, DragInfoItem *item)
         if (mpressstatus != MIDDLE && !isCanDragge(item->getData())) {
             return;
         }
-        m_DragScheduleInfo = item->getData();
+        //拖拽使用副本，不更改原始日程
+        m_DragScheduleInfo.reset(item->getData()->clone());
         m_PressScheduleInfo = item->getData();
         m_InfoBeginTime = m_DragScheduleInfo->dtStart();
         m_InfoEndTime = m_DragScheduleInfo->dtEnd();
@@ -645,6 +647,7 @@ void DragInfoGraphicsView::mousePress(const QPoint &point)
     //不满足拖拽条件的日程不进行拖拽事件
     if (infoitem) {
         setPressSelectInfo(infoitem->getData());
+        m_PressScheduleInfo = infoitem->getData();
         m_press = true;
         if (isCanDragge(infoitem->getData())) {
             //满足拖拽条件

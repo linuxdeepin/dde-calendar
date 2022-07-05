@@ -114,10 +114,6 @@ private slots:
     void slotSearchFocusSwitch();
     //帐户侧边栏状态发生改变事件
     void slotSidebarStatusChange(bool);
-    //拖拽释放事件
-    void dropEvent(QDropEvent *event) override;
-    //拖拽进入事件
-    void dragEnterEvent(QDragEnterEvent *event) override;
 
     //显示同步提示
     void slotShowSyncToast(int syncNum);

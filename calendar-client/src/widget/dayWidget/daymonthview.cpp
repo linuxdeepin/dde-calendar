@@ -23,24 +23,23 @@
 #include "constants.h"
 #include "dayhuangliview.h"
 #include "configsettings.h"
+#include "calendarglobalenv.h"
+#include "scheduledlg.h"
 
 #include <DPalette>
 #include <DHorizontalLine>
 #include <DHiDPIHelper>
 
 #include <QGridLayout>
-#include <QLabel>
 #include <QPainter>
 #include <QEvent>
 #include <QDebug>
 #include <QMessageBox>
 #include <QTime>
-#include <QQueue>
-#include <QSpacerItem>
 #include <QPainterPath>
 #include <QMouseEvent>
-#include <QtGlobal>
-#include <QDrag>
+#include <QApplication>
+
 
 DGUI_USE_NAMESPACE
 CDayMonthView::CDayMonthView(QWidget *parent)
@@ -653,10 +652,66 @@ bool CDayMonthWidget::eventFilter(QObject *o, QEvent *e)
         if (e->type() == QEvent::Paint) {
             paintCell(cell);
         } else if (e->type() == QEvent::MouseButtonPress) {
-            QMouseEvent *mouseEvent = dynamic_cast<QMouseEvent *>(e);
-            if (mouseEvent->button() == Qt::LeftButton) {
-                cellClicked(cell);
+            m_dayMouseState = 1;
+        } else if (e->type() == QEvent::MouseMove) {
+            if(m_dayMouseState == 1){
+                m_dayMouseState = 2;
             }
+
+            if ( 2 ==m_dayMouseState ) {
+                QMouseEvent *mouseEvent = dynamic_cast<QMouseEvent *>(e);
+
+                //如果m_dayCreateState为0需要判断是否离开了选择区域，否则不需要判断
+                if ( m_dayCreateState == 0 && !cell->rect().contains(mouseEvent->pos() ) ) {
+                    //如果离开选择日期区域则修改鼠标显示
+                    setCursor(Qt::ClosedHandCursor);
+                    m_dayCreateState = 1;
+                }
+
+                if( m_dayCreateState != 0 ) {
+                    //根据是否在日历界面内设置鼠标形状和创建状态
+                    QPoint globalPoint =  QCursor::pos();
+                    QWidget *widget =QApplication::activeWindow();
+                    //
+                    if(widget != nullptr){
+                        QRect rect = widget->geometry();
+
+                        if ( rect.contains(globalPoint) ) {
+                            setCursor(Qt::ClosedHandCursor);
+                            m_dayCreateState =1;
+                        } else {
+                            setCursor(Qt::ForbiddenCursor);
+                            m_dayCreateState =2;
+                        }
+                    }
+                }
+            }
+        } else if(e->type() == QEvent::MouseButtonRelease) {
+            QMouseEvent *mouseEvent = dynamic_cast<QMouseEvent *>(e);
+            //
+            if ( m_dayCreateState == 1 ) {
+                //新建日程
+                const int pos = m_cellList.indexOf(cell);
+                QDate date = m_showDays.at(pos);
+                //设置日程开始时间
+                    QDateTime _beginTime(date, QTime::currentTime());
+                    //新建日程对话框
+                    CScheduleDlg _scheduleDig(1, this, false);
+                    //设置开始时间
+                    _scheduleDig.setDate(_beginTime);
+                    _scheduleDig.exec();
+
+            } else {
+                //如果不在点击区域内则不跳转日期
+                //跳转日期
+                if ( mouseEvent->button() == Qt::LeftButton && cell->rect().contains(mouseEvent->pos())) {
+                    cellClicked(cell);
+                }
+            }
+
+            setCursor(Qt::ArrowCursor);
+            m_dayMouseState = 0;
+            m_dayCreateState = 0;
         }
     }
     return false;
@@ -725,19 +780,6 @@ void CDayMonthWidget::mousePressEvent(QMouseEvent *event)
     m_isFocus = false;
     if (event->button() & Qt::LeftButton)
         m_startPos = event->pos();
-}
-
-void CDayMonthWidget::mouseMoveEvent(QMouseEvent *event)
-{
-    QDrag* drag = new QDrag(this);
-    QMimeData *data = new QMimeData;
-    drag->setMimeData(data);
-    data->setImageData(m_selectedCell);
-    if (event->buttons() & Qt::LeftButton) {
-        int distance = (event->pos() - m_startPos).manhattanLength();
-        if (distance > 20)
-              drag->exec(Qt::MoveAction);
-    }
 }
 
 void CDayMonthWidget::cellClicked(QWidget *cell)

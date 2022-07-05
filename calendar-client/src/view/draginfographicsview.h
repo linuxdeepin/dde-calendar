@@ -233,7 +233,7 @@ protected:
      * 1 拖拽确认，移动的时候触发点击事件
      * 2 拖拽移动
      */
-    int m_touchDragMoveState;
+    int m_touchDragMoveState = 0;
     /**
      * @brief m_touchState          触摸滑动位置
      */

@@ -135,7 +135,6 @@ protected:
     void focusOutEvent(QFocusEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
-    void mouseMoveEvent(QMouseEvent *event) override;
 signals:
     //选择时间改变信号
     void signalChangeSelectDate(const QDate &date);
@@ -162,5 +161,12 @@ private:
     QFont m_dayNumFont;
     bool m_isFocus;
     QPoint m_startPos;
+
+
+    //拖拽新建日程相关处理流程
+    int m_dayMouseState = 0;    //鼠标状态 0:原始状态，1:点击状态  2:移动状态
+    int m_dayCreateState = 0;   //创建日程状态 0:不创建  1：创建   2: 超出界面范围
+
+
 };
 #endif // YEARVIEW_H
