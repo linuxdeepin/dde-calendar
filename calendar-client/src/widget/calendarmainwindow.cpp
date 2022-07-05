@@ -401,11 +401,10 @@ void Calendarmainwindow::initUI()
     m_contentBackground->setAccessibleName("ScheduleSearchWidgetBackgroundFrame");
     m_contentBackground->setObjectName("ScheduleSearchWidgetBackgroundFrame");
     m_contentBackground->setContentsMargins(0, 0, 0, 0);
-    m_contentBackground->setStyleSheet("background-color:red");
-//    DPalette anipa = m_contentBackground->palette();
-//    anipa.setColor(DPalette::Background, "#F8F8F8");
-//    m_contentBackground->setAutoFillBackground(true);
-//    m_contentBackground->setPalette(anipa);
+    DPalette anipa = m_contentBackground->palette();
+    anipa.setColor(DPalette::Background, "#F8F8F8");
+    m_contentBackground->setAutoFillBackground(true);
+    m_contentBackground->setPalette(anipa);
 
     m_scheduleSearchView = new CScheduleSearchView(this);
     m_scheduleSearchView->setObjectName("ScheduleSearchWidget");
@@ -417,7 +416,6 @@ void Calendarmainwindow::initUI()
     ssLayout->setSpacing(0);
     ssLayout->addWidget(m_scheduleSearchView, 1);
     m_contentBackground->setLayout(ssLayout);
-    qInfo() << m_contentBackground->width();
     m_contentBackground->setVisible(false);
 
     tMainLayout->addWidget(m_contentBackground);

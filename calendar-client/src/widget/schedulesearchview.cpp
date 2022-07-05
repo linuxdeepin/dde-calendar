@@ -963,8 +963,7 @@ void CScheduleListWidget::paintEvent(QPaintEvent *e)
     QColor _backgroundColor = _backgroundP.color(QPalette::Active, QPalette::Base);
     painter.save();
     painter.setPen(Qt::NoPen);
-//    painter.setBrush(_backgroundColor);
-    painter.setBrush(QColor(Qt::black));
+    painter.setBrush(_backgroundColor);
     painter.drawRect(this->rect());
     painter.restore();
     //绘制搜索右侧圆角效果
