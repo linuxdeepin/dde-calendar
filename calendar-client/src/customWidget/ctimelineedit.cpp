@@ -34,6 +34,11 @@ void CTimeLineEdit::initView()
 {
     //启用嵌入式的样式
     setEnabledEmbedStyle(true);
+   // QString str = this->styleSheet();
+   // this->setStyleSheet("QSpinBox:{background:transpaarent} QSpinBox::up-button{width:35px;}QSpinBox::down-button{width:35px;}");
+   // this->setAlignment(Qt::AlignLeft);
+   // this->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+    // this->lineEdit()->setStyleSheet("border:none;border-style:outset");
 }
 
 /**
@@ -115,7 +120,7 @@ void CTimeLineEdit::slotTextEdited(const QString &text)
 
     //保存光标位置，因为存在删减字符，且被删减的字符只能是在首位，因此不直接记录光标绝对位置，而是保存当前光标位置与最后位置的相对位置
     int len = text.length() - lineEdit()->cursorPosition();
-    lineEdit()->setText(v == 0?"":QString::number(v));
+    lineEdit()->setText(v == 0 ? "" : QString::number(v));
     //恢复光标位置
     lineEdit()->setCursorPosition(lineEdit()->text().length() - len);
 }

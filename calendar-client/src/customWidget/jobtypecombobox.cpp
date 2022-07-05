@@ -39,6 +39,7 @@ JobTypeComboBox::JobTypeComboBox(QWidget *parent) : DComboBox(parent)
     setAutoCompletion(false);
     //设置不接受回车键插入
     setInsertPolicy(QComboBox::NoInsert);
+    this->view()->setTextElideMode(Qt::ElideRight);
     connect(this, QOverload<int>::of(&QComboBox::highlighted), [this](int index) {
         view()->setFocus();
         m_hoverSelectedIndex = index;
@@ -294,6 +295,7 @@ bool JobTypeComboBox::eventFilter(QObject *obj, QEvent *event)
                 //列表框到达最后一项时的下方向按键按下事件
                 //将焦点转移到“添加按键”控件上
                 m_addBtn->setFocus();
+
             }
         } else if (m_addBtn == obj && kEvent->key() == Qt::Key_Up) {
             //焦点在m_addBtn时的上方向按键按下事件

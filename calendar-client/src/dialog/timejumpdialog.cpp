@@ -21,6 +21,7 @@
 #include "timejumpdialog.h"
 #include "cschedulebasewidget.h"
 #include <QHBoxLayout>
+#include <QLineEdit>
 
 TimeJumpDialog::TimeJumpDialog(ArrowDirection direction, QWidget *parent) : DArrowRectangle(direction, DArrowRectangle::FloatWindow, parent)
 {
@@ -44,8 +45,8 @@ void TimeJumpDialog::initView()
     m_jumpButton = new DSuggestButton(tr("Go", "button"), this);
 
     m_yearEdit->setFixedSize(98, 36);
-    m_monthEdit->setFixedSize(70, 36);
-    m_dayEdit->setFixedSize(70, 36);
+    m_monthEdit->setFixedSize(88, 36);
+    m_dayEdit->setFixedSize(88, 36);
     m_jumpButton->setFixedSize(82, 36);
 
     QHBoxLayout *hLayout = new QHBoxLayout(this);
@@ -111,8 +112,10 @@ void TimeJumpDialog::showPopup(const QDate &date, int x, int y)
     //初始化数据
     initData();
     //将焦点转移到年编辑器
-    m_yearEdit->setFocus();
-    m_yearEdit->selectAll();
+    m_yearEdit->clearFocus();
+    m_monthEdit->clearFocus();
+    m_dayEdit->clearFocus();
+    //m_yearEdit->selectAll();
     //显示
     show(x, y);
 }

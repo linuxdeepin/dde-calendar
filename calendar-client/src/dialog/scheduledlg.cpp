@@ -496,6 +496,11 @@ void CScheduleDlg::slotallDayStateChanged(int state)
             m_beginTimeEdit->setTime(m_scheduleDataInfo->dtStart().time());
             m_endDateEdit->setDate(m_scheduleDataInfo->dtEnd().date());
             m_endTimeEdit->setTime(m_scheduleDataInfo->dtEnd().time());
+            if(m_scheduleDataInfo->dtStart().time() == m_scheduleDataInfo->dtEnd().time()
+                    && m_scheduleDataInfo->dtEnd().time().toString() == "00:00:00" ) {
+                 m_endTimeEdit->setTime(QTime(23,59,59));
+            }
+
         } else {
             m_beginDateEdit->setDate(m_currentDate.date());
             m_beginTimeEdit->setTime(m_currentDate.time());

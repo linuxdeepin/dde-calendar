@@ -88,7 +88,7 @@ void CDayHuangLiLabel::paintEvent(QPaintEvent *e)
 
     painter.setFont(m_font);
     painter.setPen(m_textcolor);
-    int bw = m_leftMagin + 34;
+    int bw = m_leftMagin + 50;
     int bh = m_topMagin;
     int ss = 14;
     for (int i = 0; i < m_vHuangli.count(); i++) {
