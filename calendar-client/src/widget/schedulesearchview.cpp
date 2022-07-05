@@ -458,7 +458,6 @@ CScheduleSearchView::CScheduleSearchView(QWidget *parent)
     : DWidget(parent)
 {
     QVBoxLayout *layout = new QVBoxLayout;
-    layout->setMargin(0);
     layout->setSpacing(0);
     m_gradientItemList = new CScheduleListWidget(parent);
     m_gradientItemList->setAlternatingRowColors(true);
@@ -693,7 +692,7 @@ void CScheduleSearchView::createItemWidget(DSchedule::Ptr info, QDate date, int 
     font.setPixelSize(DDECalendar::FontSizeTwelve);
 
     gwi->setTimeC(m_btimecolor, font);
-    gwi->setFixedSize(m_maxWidth - 25, 35);
+    gwi->setFixedSize(m_maxWidth - 15, 35);
     gwi->setData(gd, date);
     gwi->setRoundtype(rtype);
     //将搜索到的日程添加到容器
@@ -702,7 +701,7 @@ void CScheduleSearchView::createItemWidget(DSchedule::Ptr info, QDate date, int 
     connect(gwi, &CScheduleSearchItem::signalSelectCurrentItem, this, &CScheduleSearchView::slotSelectCurrentItem);
 
     QListWidgetItem *listItem = new QListWidgetItem;
-    listItem->setSizeHint(QSize(m_maxWidth - 25, 36)); //每次改变Item的高度
+    listItem->setSizeHint(QSize(m_maxWidth - 15, 36)); //每次改变Item的高度
     listItem->setFlags(Qt::ItemIsTristate);
     m_gradientItemList->addItem(listItem);
     m_gradientItemList->setItemWidget(listItem, gwi);
@@ -721,14 +720,14 @@ QListWidgetItem *CScheduleSearchView::createItemWidget(QDate date)
     if (date == QDate::currentDate()) {
         gwi->setText(CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor(), font);
     }
-    gwi->setFixedSize(m_maxWidth - 25, 35);
+    gwi->setFixedSize(m_maxWidth - 15, 35);
     gwi->setDate(date);
     connect(gwi,
             &CScheduleSearchDateItem::signalLabelScheduleHide,
             this,
             &CScheduleSearchView::signalScheduleHide);
     QListWidgetItem *listItem = new QListWidgetItem;
-    listItem->setSizeHint(QSize(m_maxWidth - 25, 36)); //每次改变Item的高度
+    listItem->setSizeHint(QSize(m_maxWidth - 15, 36)); //每次改变Item的高度
     listItem->setFlags(Qt::ItemIsTristate);
     m_gradientItemList->addItem(listItem);
     m_gradientItemList->setItemWidget(listItem, gwi);
@@ -964,7 +963,8 @@ void CScheduleListWidget::paintEvent(QPaintEvent *e)
     QColor _backgroundColor = _backgroundP.color(QPalette::Active, QPalette::Base);
     painter.save();
     painter.setPen(Qt::NoPen);
-    painter.setBrush(_backgroundColor);
+//    painter.setBrush(_backgroundColor);
+    painter.setBrush(QColor(Qt::black));
     painter.drawRect(this->rect());
     painter.restore();
     //绘制搜索右侧圆角效果
@@ -973,7 +973,8 @@ void CScheduleListWidget::paintEvent(QPaintEvent *e)
     painter.setPen(Qt::NoPen);
     painter.setBrush(_outBorderColor);
 
-    const qreal _outWidth = 10;
+//    const qreal _outWidth = 10;
+    const qreal _outWidth = 0;
     const qreal _rectX = this->width() - _outWidth;
     QPainterPath _showPath;
     _showPath.moveTo(_rectX - _radios, 0);

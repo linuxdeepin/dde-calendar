@@ -382,7 +382,7 @@ void Calendarmainwindow::initUI()
 
     QHBoxLayout *tMainLayout = new QHBoxLayout;
     tMainLayout->setContentsMargins(10, 10, 10, 10);
-    tMainLayout->setSpacing(1);
+    tMainLayout->setSpacing(10);
 
     m_sidebarView = new SidebarView(this);
     tMainLayout->addWidget(m_sidebarView, 1);
@@ -396,14 +396,16 @@ void Calendarmainwindow::initUI()
     createview();
 
     tMainLayout->addWidget(m_stackWidget, 4);
+
     m_contentBackground = new DFrame;
     m_contentBackground->setAccessibleName("ScheduleSearchWidgetBackgroundFrame");
     m_contentBackground->setObjectName("ScheduleSearchWidgetBackgroundFrame");
     m_contentBackground->setContentsMargins(0, 0, 0, 0);
-    DPalette anipa = m_contentBackground->palette();
-    anipa.setColor(DPalette::Background, "#F8F8F8");
-    m_contentBackground->setAutoFillBackground(true);
-    m_contentBackground->setPalette(anipa);
+    m_contentBackground->setStyleSheet("background-color:red");
+//    DPalette anipa = m_contentBackground->palette();
+//    anipa.setColor(DPalette::Background, "#F8F8F8");
+//    m_contentBackground->setAutoFillBackground(true);
+//    m_contentBackground->setPalette(anipa);
 
     m_scheduleSearchView = new CScheduleSearchView(this);
     m_scheduleSearchView->setObjectName("ScheduleSearchWidget");
@@ -413,10 +415,12 @@ void Calendarmainwindow::initUI()
     QVBoxLayout *ssLayout = new QVBoxLayout;
     ssLayout->setMargin(0);
     ssLayout->setSpacing(0);
-    ssLayout->addWidget(m_scheduleSearchView);
+    ssLayout->addWidget(m_scheduleSearchView, 1);
     m_contentBackground->setLayout(ssLayout);
-    tMainLayout->addWidget(m_contentBackground, 1);
+    qInfo() << m_contentBackground->width();
     m_contentBackground->setVisible(false);
+
+    tMainLayout->addWidget(m_contentBackground);
 
     DWidget *maincentralWidget = new DWidget(this);
     maincentralWidget->setAccessibleName("mainCentralWidget");
@@ -532,15 +536,18 @@ void Calendarmainwindow::resizeView()
     if (width() < CalendarViewSwitchWidth + sidWidth) {
         m_isNormalStateShow = false;
         m_stackWidget->setVisible(!m_contentBackground->isVisible());
-        m_scheduleSearchViewMaxWidth = this->width();
+        // 如果是隐藏的状态，不需要多减去sidewidth
+        sidWidth = sidWidth == 0 ? 0 : sidWidth + 10;
+        m_scheduleSearchViewMaxWidth = this->width() - sidWidth;
     } else {
-        m_scheduleSearchViewMaxWidth = qRound(0.2325 * (width() - sidWidth) + 0.5);
+        m_scheduleSearchViewMaxWidth = qRound(0.2325 * (width()) + 0.5);
         m_isNormalStateShow = true;
         m_stackWidget->setVisible(true);
         m_contentBackground->setVisible(m_opensearchflag);
     }
-    m_scheduleSearchView->setMaxWidth(m_scheduleSearchViewMaxWidth);
-    setSearchWidth(m_scheduleSearchViewMaxWidth);
+    // 额外减去20 是因为ui走查控件之间的space=10，两个间隔
+    m_scheduleSearchView->setMaxWidth(m_scheduleSearchViewMaxWidth - 20);
+    setSearchWidth(m_scheduleSearchViewMaxWidth - 20);
     setScheduleHide();
 }
 
