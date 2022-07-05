@@ -973,6 +973,7 @@ void CScheduleListWidget::paintEvent(QPaintEvent *e)
     painter.setBrush(_outBorderColor);
 
 //    const qreal _outWidth = 10;
+    //不需要outwidth
     const qreal _outWidth = 0;
     const qreal _rectX = this->width() - _outWidth;
     QPainterPath _showPath;
