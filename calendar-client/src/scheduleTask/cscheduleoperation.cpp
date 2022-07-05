@@ -97,6 +97,7 @@ bool CScheduleOperation::changeSchedule(const DSchedule::Ptr &newInfo, const DSc
                 //更新日程
                 showLunarMessageDialog(newInfo, oldInfo);
                 m_accountItem->updateSchedule(newInfo);
+                _result = true;
             }
         } else if (newInfo->getRRuleType() != oldInfo->getRRuleType()) {
             //修改重复规则
