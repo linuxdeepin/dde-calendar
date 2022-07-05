@@ -993,7 +993,7 @@ icalrecurrencetype ICalFormatImpl::writeRecurrenceRule(RecurrenceRule *recur)
         if (recur->allDay()) {
             r.until = writeICalDate(recur->endDt().date());
         } else {
-            r.until = writeICalUtcDateTime(recur->endDt());
+            r.until = writeICalDateTime(recur->endDt());
         }
     }
 
