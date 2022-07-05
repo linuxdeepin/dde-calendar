@@ -74,9 +74,9 @@ void CDayHuangLiLabel::paintEvent(QPaintEvent *e)
     painter.drawRoundedRect(fillRect, 12, 12);
     QPixmap pixmap;
     if (m_type == 0)
-        pixmap = DHiDPIHelper::loadNxPixmap(":/resources/icon/dde-yi.svg");
+        pixmap = DHiDPIHelper::loadNxPixmap(":/icons/deepin/builtin/icons/dde_calendar_yi_32px.svg");
     else {
-        pixmap = DHiDPIHelper::loadNxPixmap(":/resources/icon/dde-ji.svg");
+        pixmap = DHiDPIHelper::loadNxPixmap(":/icons/deepin/builtin/icons/dde_calendar_ji_32px.svg");
     }
     pixmap.setDevicePixelRatio(devicePixelRatioF());
     painter.save();

@@ -624,9 +624,9 @@ QPair<QWidget *, QWidget *> CSettingDialog::createSyncTagRadioButton(QObject *ob
     QLabel *iconLabel = new QLabel;
     iconLabel->setFixedSize(24, 24);
     if (DAccount::Account_Calendar == type)
-        iconLabel->setPixmap(DHiDPIHelper::loadNxPixmap(":/resources/icon/sync_schedule.svg"));
+        iconLabel->setPixmap(DHiDPIHelper::loadNxPixmap(":/icons/deepin/builtin/icons/dde_calendar_sync_schedule_32px.svg"));
     if (DAccount::Account_Setting == type)
-        iconLabel->setPixmap(DHiDPIHelper::loadNxPixmap(":/resources/icon/sync_setting.svg"));
+        iconLabel->setPixmap(DHiDPIHelper::loadNxPixmap(":/icons/deepin/builtin/icons/dde_calendar_sync_setting_32px.svg"));
 
     //iconWidget
     QHBoxLayout *layout = new QHBoxLayout;

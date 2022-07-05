@@ -113,12 +113,12 @@ bool JobTypeListView::viewportEvent(QEvent *event)
                     if (!itemJobType->data(RoleJobTypeEditable).toBool())
                         return true;
                     auto actionEdit = new DViewItemAction(Qt::AlignVCenter, QSize(20, 20), QSize(20, 20), true);
-                    actionEdit->setIcon(DHiDPIHelper::loadNxPixmap(":/resources/icon/edit.svg"));
+                    actionEdit->setIcon(DHiDPIHelper::loadNxPixmap(":/icons/deepin/builtin/icons/dde_calendar_edit_32px.svg"));
                     actionEdit->setParent(this);
                     connect(actionEdit, &QAction::triggered, this, &JobTypeListView::slotUpdateJobType);
 
                     auto actionDelete = new DViewItemAction(Qt::AlignVCenter, QSize(20, 20), QSize(20, 20), true);
-                    actionDelete->setIcon(DHiDPIHelper::loadNxPixmap(":/resources/icon/delete.svg"));
+                    actionDelete->setIcon(DHiDPIHelper::loadNxPixmap(":/icons/deepin/builtin/icons/dde_calendar_delete_32px.svg"));
                     actionDelete->setParent(this);
                     connect(actionDelete, &QAction::triggered, this, &JobTypeListView::slotDeleteJobType);
 

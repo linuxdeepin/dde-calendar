@@ -67,7 +67,7 @@ CGraphicsView::CGraphicsView(QWidget *parent, ViewPosition Type)
     connect(this->verticalScrollBar(), &QScrollBar::sliderPressed, this, &CGraphicsView::slotScrollBar);
 
     //如果为周视图
-    if (m_viewType == 0) {
+    if (m_viewPos == WeekPos) {
         //设置显示右下角圆角
         setShowRadius(false, true);
     }

@@ -100,22 +100,16 @@ void CPushButton::paintEvent(QPaintEvent *event)
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setPen(Qt::NoPen);
 
+    m_iconButton->setIcon(QIcon::fromTheme("dde_calendar_create"));
     if (m_Highlighted) {
         //背景设置为高亮色
         painter.setBrush(palette.highlight());
-        m_textLabel->setBackgroundRole(QPalette::Highlight);
-        //高亮状态显示白色图片
-        m_iconButton->setIcon(QIcon(DHiDPIHelper::loadNxPixmap(":/resources/icon/create_white.svg")));
+        m_textLabel->setBackgroundRole(QPalette::Highlight);       
     } else {
         //背景透明
         painter.setBrush(QBrush("#00000000"));
         m_textLabel->setBackgroundRole(QPalette::Window);
-        //深色主题下只能是白色图片，浅色主题下显示黑色图片
-        if (DGuiApplicationHelper::instance()->themeType() == DGuiApplicationHelper::DarkType) {
-            m_iconButton->setIcon(QIcon(DHiDPIHelper::loadNxPixmap(":/resources/icon/create_white.svg")));
-        } else {
-            m_iconButton->setIcon(QIcon(DHiDPIHelper::loadNxPixmap(":/resources/icon/create_black.svg")));
-        }
+
     }
     //绘制背景
     painter.drawRect(this->rect());

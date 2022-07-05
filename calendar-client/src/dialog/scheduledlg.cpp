@@ -255,7 +255,7 @@ bool CScheduleDlg::createSchedule(const QString &scheduleTypeId)
 
     if (beginDateTime > endDateTime) {
         DCalendarDDialog *prompt = new DCalendarDDialog(this);
-        prompt->setIcon(QIcon(":/resources/icon/warning.svg"));
+        prompt->setIcon(QIcon(":/icons/deepin/builtin/icons/dde_calendar_warning.svg"));
         prompt->setMessage(tr("End time must be greater than start time"));
         prompt->addButton(tr("OK", "button"), true, DDialog::ButtonNormal);
         prompt->exec();

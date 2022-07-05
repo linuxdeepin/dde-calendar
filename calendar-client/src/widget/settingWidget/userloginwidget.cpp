@@ -50,7 +50,7 @@ void UserloginWidget::initView()
     m_buttonLogin->setFixedSize(98, 36);
     m_buttonLoginOut->setFixedSize(98, 36);
     QHBoxLayout* layout = new QHBoxLayout(this);
-    const QIcon &icon = QIcon::fromTheme(":/resources/icon/account_light.svg");
+    const QIcon &icon = QIcon::fromTheme("dde_calendar_account");
     m_buttonImg->setIcon(icon);
     m_buttonImg->setIconSize(QSize(36,36));
     m_buttonImg->setStyleSheet("border:0px solid;");
@@ -102,7 +102,7 @@ void UserloginWidget::slotAccountUpdate()
         m_buttonLoginOut->hide();
         m_buttonLogin->show();
         m_userNameLabel->setText("");
-        m_buttonImg->setIcon(QIcon::fromTheme(":/resources/icon/account_light.svg"));
+        m_buttonImg->setIcon(QIcon::fromTheme("dde_calendar_account"));
     }
 }
 

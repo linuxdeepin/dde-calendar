@@ -189,11 +189,11 @@ void CMonthDayItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
             painter->setRenderHint(QPainter::Antialiasing);
             switch (m_DayStatus) {
             case H_WORK: {
-                QPixmap pixmap = DHiDPIHelper::loadNxPixmap(":/resources/icon/ban.svg");
+                QPixmap pixmap = DHiDPIHelper::loadNxPixmap(":/icons/deepin/builtin/icons/dde_calendar_ban_32px.svg");
                 painter->drawPixmap(fillRectT.toRect(), pixmap);
             } break;
             case H_REST: {
-                QPixmap pixmap = DHiDPIHelper::loadNxPixmap(":/resources/icon/xiu.svg");
+                QPixmap pixmap = DHiDPIHelper::loadNxPixmap(":/icons/deepin/builtin/icons/dde_calendar_xiu.svg");
                 painter->drawPixmap(fillRectT.toRect(), pixmap);
             } break;
             default:

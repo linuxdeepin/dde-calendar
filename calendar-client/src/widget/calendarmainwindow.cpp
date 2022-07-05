@@ -909,7 +909,7 @@ void Calendarmainwindow::slotShowSyncToast(int syncNum)
     if (preSyncNum != syncNum && syncNum == -1) {
         preSyncNum = -1;
         //同步中
-        DMessageManager::instance()->sendMessage(this->window(), QIcon::fromTheme(":/resources/icon/spinner_32.svg"), tr("Syncing..."));
+        DMessageManager::instance()->sendMessage(this->window(), QIcon::fromTheme(":/icons/deepin/builtin/icons/dde_calendar_spinner_32px.svg"), tr("Syncing..."));
         return;
     }
     //
@@ -918,13 +918,13 @@ void Calendarmainwindow::slotShowSyncToast(int syncNum)
         switch (syncNum) {
         case 0:
             //同步成功
-            DMessageManager::instance()->sendMessage(this->window(), QIcon::fromTheme(":/resources/icon/success_200px.png"), tr("Sync successful"));
+            DMessageManager::instance()->sendMessage(this->window(), QIcon::fromTheme(":/icons/deepin/builtin/icons/dde_calendar_success_200px.png"), tr("Sync successful"));
             break;
         case 1:
         case 2:
         case 3:
             //同步失败
-            DMessageManager::instance()->sendMessage(this->window(), QIcon::fromTheme(":/resources/icon/fail_200px.png"), tr("Sync failed, please try later"));
+            DMessageManager::instance()->sendMessage(this->window(), QIcon::fromTheme(":/icons/deepin/builtin/icons/dde_calendar_fail_200px.png"), tr("Sync failed, please try later"));
             break;
         default:
             break;

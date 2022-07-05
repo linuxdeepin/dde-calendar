@@ -241,7 +241,7 @@ void CTitleWidget::normalStateUpdateSearchEditWidth()
 
 void CTitleWidget::updateSidebarIconStatus()
 {
-    m_sidebarIcon->setIcon(QIcon(":/resources/icon/calaendar_sidebar.svg"));
+    m_sidebarIcon->setIcon(QIcon::fromTheme("dde_calendar_sidebar"));
 }
 
 void CTitleWidget::resizeEvent(QResizeEvent *event)

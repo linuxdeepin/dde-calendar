@@ -200,14 +200,14 @@ void SidebarAccountItemWidget::initView()
     m_titleLabel->setText(m_accountItem->getAccount()->accountName());
 
     m_syncIconButton = new DIconButton(this);
-    m_syncIconButton->setIcon(QIcon(":/resources/icon/icon_refresh.svg"));
+    m_syncIconButton->setIcon(QIcon(":/icons/deepin/builtin/icons/icon_refresh.svg"));
     m_syncIconButton->setFixedSize(QSize(20, 20));
     m_syncIconButton->setIconSize(QSize(10, 10));
     m_syncIconButton->setFocusPolicy(Qt::NoFocus);
 
     m_warningLabel = new DLabel();
     m_warningLabel->setFixedSize(QSize(18, 18));
-    m_warningLabel->setPixmap(QIcon(":/resources/icon/icon_warning_light.svg").pixmap(18, 18));
+    m_warningLabel->setPixmap(QIcon(":/icons/deepin/builtin/icons/dde_calendar_warning_light_32px.svg").pixmap(18, 18));
 
     vLayout->addWidget(m_headIconButton);
     vLayout->addWidget(m_titleLabel, 1);
