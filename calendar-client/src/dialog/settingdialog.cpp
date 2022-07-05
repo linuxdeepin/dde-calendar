@@ -300,28 +300,36 @@ void CSettingDialog::initWidgetDisplayStatus()
 void CSettingDialog::initFirstDayofWeekWidget()
 {
     m_firstDayofWeekWidget = new QWidget();
+
     m_firstDayofWeekCombobox = new QComboBox(m_firstDayofWeekWidget);
-    QHBoxLayout *layout = new QHBoxLayout(m_firstDayofWeekWidget);
+    m_firstDayofWeekCombobox->setFixedSize(150, 36);
     m_firstDayofWeekCombobox->addItem(tr("Sunday"));
     m_firstDayofWeekCombobox->addItem(tr("Monday"));
 
-    m_firstDayofWeekCombobox->setFixedSize(150, 36);
-    layout->setAlignment(Qt::AlignRight);
-    layout->addWidget(m_firstDayofWeekCombobox);
+    QHBoxLayout *layout = new QHBoxLayout(m_firstDayofWeekWidget);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
+    layout->addStretch(10);
+    layout->addWidget(m_firstDayofWeekCombobox, 1);
+
     m_firstDayofWeekWidget->setLayout(layout);
 }
 
 void CSettingDialog::initTimeTypeWidget()
 {
     m_timeTypeWidget = new QWidget();
+
     m_timeTypeCombobox = new QComboBox(m_timeTypeWidget);
-    QHBoxLayout *layout = new QHBoxLayout(m_timeTypeWidget);
+    m_timeTypeCombobox->setFixedSize(150, 36);
     m_timeTypeCombobox->addItem(tr("24-hour clock"));
     m_timeTypeCombobox->addItem(tr("12-hour clock"));
 
-    m_timeTypeCombobox->setFixedSize(150, 36);
-    layout->setAlignment(Qt::AlignRight);
-    layout->addWidget(m_timeTypeCombobox);
+    QHBoxLayout *layout = new QHBoxLayout(m_timeTypeWidget);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
+    layout->addStretch(10);
+    layout->addWidget(m_timeTypeCombobox, 1);
+
     m_timeTypeWidget->setLayout(layout);
 }
 
