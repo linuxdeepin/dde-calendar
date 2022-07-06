@@ -30,7 +30,7 @@ DSyncDataFactory::DSyncDataFactory()
 
 DDataSyncBase *DSyncDataFactory::createDataSync(const DAccount::Ptr &account)
 {
-    DDataSyncBase *syncBase;
+    DDataSyncBase *syncBase = nullptr;
     switch (account->accountType()) {
     case DAccount::Account_UnionID:
         syncBase = new DUnionIDDav();

@@ -120,7 +120,10 @@ void CScheduleBaseWidget::updateData()
 {
     updateShowDate();
     updateShowSchedule();
-    updateShowLunar();
+    //如果为中午环境则更新农历信息
+    if ( getShowLunar() ) {
+        updateShowLunar();
+    }
     updateSearchScheduleInfo();
 }
 

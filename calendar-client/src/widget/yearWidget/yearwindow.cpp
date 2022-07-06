@@ -943,7 +943,6 @@ void YearFrame::setYearShow()
         m_YearLunarLabel->setText(m_LunarYear);
     } else {
         m_YearLabel->setText(QString::number(m_selectDate.year()));
-        qInfo()<<"123"<<m_selectDate.year();
         m_YearLunarLabel->setText("");
     }
 }
