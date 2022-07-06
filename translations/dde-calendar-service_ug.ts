@@ -1,52 +1,101 @@
 <?xml version="1.0" ?><!DOCTYPE TS><TS version="2.1" language="ug">
 <context>
-    <name>JobRemindManager</name>
+    <name>DAccountDataBase</name>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="94"/>
-        <source>One day before start</source>
-        <translation>1 كۈن بۇرۇن ئەسكەرتىش</translation>
+        <source>Work</source>
+        <translation>Work</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="94"/>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="98"/>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="105"/>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="109"/>
+        <source>Life</source>
+        <translation>Life</translation>
+    </message>
+    <message>
+        <source>Other</source>
+        <translation>Other</translation>
+    </message>
+</context>
+<context>
+    <name>DAlarmManager</name>
+    <message>
         <source>Close</source>
         <comment>button</comment>
         <translation>تاقاش</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="98"/>
+        <source>One day before start</source>
+        <translation>1 كۈن بۇرۇن ئەسكەرتىش</translation>
+    </message>
+    <message>
         <source>Remind me tomorrow</source>
         <translation>ئەتە ئەسكەرتسۇن</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="105"/>
         <source>Remind me later</source>
-        <translation>ھېلىغىچە ئەسكەرتسۇن</translation>
+        <translation>بىر ئازدىن كېيىن ئەسكەرتىش </translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="116"/>
+        <source>15 mins later</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>1 hour later</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>4 hours later</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Tomorrow</source>
+        <translation>ئەتە</translation>
+    </message>
+    <message>
         <source>Schedule Reminder</source>
         <translation>كۈنتەرتىپ ئەسكەرتىشى</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="236"/>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="245"/>
         <source>%1 to %2</source>
         <translation>%1 دىن %2 گىچە</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="317"/>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="328"/>
         <source>Today</source>
-        <translation>بۈگۈن</translation>
+        <translation>Today</translation>
+    </message>
+</context>
+<context>
+    <name>JobRemindManager</name>
+    <message>
+        <source>One day before start</source>
+        <translation type="vanished">1 كۈن بۇرۇن ئەسكەرتىش</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="320"/>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="331"/>
+        <source>Close</source>
+        <comment>button</comment>
+        <translation type="vanished">تاقاش</translation>
+    </message>
+    <message>
+        <source>Remind me tomorrow</source>
+        <translation type="vanished">ئەتە ئەسكەرتسۇن</translation>
+    </message>
+    <message>
+        <source>Remind me later</source>
+        <translation type="vanished">ھېلىغىچە ئەسكەرتسۇن</translation>
+    </message>
+    <message>
+        <source>Schedule Reminder</source>
+        <translation type="vanished">كۈنتەرتىپ ئەسكەرتىشى</translation>
+    </message>
+    <message>
+        <source>%1 to %2</source>
+        <translation type="vanished">%1 دىن %2 گىچە</translation>
+    </message>
+    <message>
+        <source>Today</source>
+        <translation type="vanished">بۈگۈن</translation>
+    </message>
+    <message>
         <source>Tomorrow</source>
-        <translation>ئەتە</translation>
+        <translation type="vanished">ئەتە</translation>
     </message>
 </context>
 </TS>

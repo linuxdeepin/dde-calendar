@@ -1,52 +1,101 @@
 <?xml version="1.0" ?><!DOCTYPE TS><TS version="2.1" language="es">
 <context>
-    <name>JobRemindManager</name>
+    <name>DAccountDataBase</name>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="94"/>
-        <source>One day before start</source>
-        <translation>El día anterior al evento</translation>
+        <source>Work</source>
+        <translation>Trabajo</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="94"/>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="98"/>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="105"/>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="109"/>
+        <source>Life</source>
+        <translation>Vida</translation>
+    </message>
+    <message>
+        <source>Other</source>
+        <translation>Otro</translation>
+    </message>
+</context>
+<context>
+    <name>DAlarmManager</name>
+    <message>
         <source>Close</source>
         <comment>button</comment>
         <translation>Cerrar</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="98"/>
+        <source>One day before start</source>
+        <translation>El día anterior al evento</translation>
+    </message>
+    <message>
         <source>Remind me tomorrow</source>
-        <translation>Recuérdeme mañana</translation>
+        <translation>Recuérdame mañana</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="105"/>
         <source>Remind me later</source>
-        <translation>Recuérdeme más tarde</translation>
+        <translation>Recuérdame luego</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="116"/>
+        <source>15 mins later</source>
+        <translation>15 minutos después</translation>
+    </message>
+    <message>
+        <source>1 hour later</source>
+        <translation>1 hora después</translation>
+    </message>
+    <message>
+        <source>4 hours later</source>
+        <translation>4 horas después</translation>
+    </message>
+    <message>
+        <source>Tomorrow</source>
+        <translation>Mañana</translation>
+    </message>
+    <message>
         <source>Schedule Reminder</source>
-        <translation>Programar recordatorio</translation>
+        <translation>Programar Recordatorio</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="236"/>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="245"/>
         <source>%1 to %2</source>
         <translation>%1 a %2</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="317"/>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="328"/>
         <source>Today</source>
         <translation>Hoy</translation>
     </message>
+</context>
+<context>
+    <name>JobRemindManager</name>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="320"/>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="331"/>
+        <source>One day before start</source>
+        <translation type="vanished">El día anterior al evento</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <comment>button</comment>
+        <translation type="vanished">Cerrar</translation>
+    </message>
+    <message>
+        <source>Remind me tomorrow</source>
+        <translation type="vanished">Recuérdeme mañana</translation>
+    </message>
+    <message>
+        <source>Remind me later</source>
+        <translation type="vanished">Recuérdeme más tarde</translation>
+    </message>
+    <message>
+        <source>Schedule Reminder</source>
+        <translation type="vanished">Programar recordatorio</translation>
+    </message>
+    <message>
+        <source>%1 to %2</source>
+        <translation type="vanished">%1 a %2</translation>
+    </message>
+    <message>
+        <source>Today</source>
+        <translation type="vanished">Hoy</translation>
+    </message>
+    <message>
         <source>Tomorrow</source>
-        <translation>Mañana</translation>
+        <translation type="vanished">Mañana</translation>
     </message>
 </context>
 </TS>

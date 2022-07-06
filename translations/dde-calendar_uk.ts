@@ -23,6 +23,14 @@
     </message>
 </context>
 <context>
+    <name>AccountManager</name>
+    <message>
+        <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="219"/>
+        <source>Local account</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
     <name>CColorPickerWidget</name>
     <message>
         <location filename="../calendar-client/src/customWidget/colorWidget/colorpickerWidget.cpp" line="91"/>
@@ -45,37 +53,37 @@
 <context>
     <name>CDayMonthView</name>
     <message>
-        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="49"/>
+        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="48"/>
         <source>Monday</source>
         <translation>Понеділок</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="50"/>
+        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="49"/>
         <source>Tuesday</source>
         <translation>Вівторок</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="51"/>
+        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="50"/>
         <source>Wednesday</source>
         <translation>Середа</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="52"/>
+        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="51"/>
         <source>Thursday</source>
         <translation>Четвер</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="53"/>
+        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="52"/>
         <source>Friday</source>
         <translation>П&apos;ятниця</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="54"/>
+        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="53"/>
         <source>Saturday</source>
         <translation>Субота</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="55"/>
+        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="54"/>
         <source>Sunday</source>
         <translation>Неділя</translation>
     </message>
@@ -106,7 +114,7 @@
 <context>
     <name>CGraphicsView</name>
     <message>
-        <location filename="../calendar-client/src/view/graphicsview.cpp" line="601"/>
+        <location filename="../calendar-client/src/view/graphicsview.cpp" line="600"/>
         <source>New Event</source>
         <translation>Нова подія</translation>
     </message>
@@ -178,8 +186,8 @@
     <name>CScheduleDlg</name>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="58"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="592"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="885"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="597"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="890"/>
         <source>New Event</source>
         <translation>Нова подія</translation>
     </message>
@@ -201,11 +209,11 @@
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="482"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="506"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1097"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1132"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1367"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1371"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="511"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1102"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1137"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1389"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1393"/>
         <source>Never</source>
         <translation>Ніколи</translation>
     </message>
@@ -231,213 +239,213 @@
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="487"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="508"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="513"/>
         <source>1 day before</source>
         <translation>За день до події</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="488"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="509"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="514"/>
         <source>2 days before</source>
         <translation>За 2 дні до події</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="489"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="510"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="515"/>
         <source>1 week before</source>
         <translation>За тиждень до події</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="507"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="512"/>
         <source>On start day (9:00 AM)</source>
         <translation>У день початку (9:00)</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="551"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="758"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1153"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1154"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="556"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="763"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1158"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1159"/>
         <source>time(s)</source>
         <translation>раз(ів)</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="565"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="570"/>
         <source>Enter a name please</source>
         <translation>Будь ласка, введіть назву</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="660"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="665"/>
         <source>The name can not only contain whitespaces</source>
         <translation>Назва не може складатися лише з пробілів</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="716"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="835"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="721"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="840"/>
         <source>Type:</source>
         <translation>Тип:</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="721"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="870"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="726"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="875"/>
         <source>Description:</source>
         <translation>Опис:</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="726"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="907"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="731"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="912"/>
         <source>All Day:</source>
         <translation>Весь день:</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="731"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="973"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="736"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="978"/>
         <source>Starts:</source>
         <translation>Починається:</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="736"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1014"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="741"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1019"/>
         <source>Ends:</source>
         <translation>Завершується:</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="741"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1054"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="746"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1059"/>
         <source>Remind Me:</source>
         <translation>Нагадати мені:</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="746"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1086"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="751"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1091"/>
         <source>Repeat:</source>
         <translation>Повторення:</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="751"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1120"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="756"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1125"/>
         <source>End Repeat:</source>
         <translation>Завершити повтори:</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="807"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="812"/>
         <source>Calendar account:</source>
         <translation>Обліковий запис календаря:</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="808"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="813"/>
         <source>Calendar account</source>
         <translation>Обліковий запис календаря</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="832"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="837"/>
         <source>Type</source>
         <translation>Тип</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="874"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="879"/>
         <source>Description</source>
         <translation>Опис</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="904"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="909"/>
         <source>All Day</source>
         <translation>Весь день</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="928"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="933"/>
         <source>Time:</source>
         <translation>Час:</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="929"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="934"/>
         <source>Time</source>
         <translation>Час</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="936"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="941"/>
         <source>Solar</source>
         <translation>Сонячний</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="937"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="942"/>
         <source>Lunar</source>
         <translation>Місячний</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="970"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="975"/>
         <source>Starts</source>
         <translation>Починається</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1011"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1016"/>
         <source>Ends</source>
         <translation>Кінці</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1056"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1061"/>
         <source>Remind Me</source>
         <translation>Нагадати мені</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1083"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1088"/>
         <source>Repeat</source>
         <translation>Повторення</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1098"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1372"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1103"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1394"/>
         <source>Daily</source>
         <translation>Щодня</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1099"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1373"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1104"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1395"/>
         <source>Weekdays</source>
         <translation>Дні тижня</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1100"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1374"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1105"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1396"/>
         <source>Weekly</source>
         <translation>Щотижня</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1101"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1368"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1375"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1106"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1390"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1397"/>
         <source>Monthly</source>
         <translation>Щомісяця</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1102"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1369"/>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1376"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1107"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1391"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1398"/>
         <source>Yearly</source>
         <translation>Щорічно</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1122"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1127"/>
         <source>End Repeat</source>
         <translation>Завершити повтори</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1133"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1138"/>
         <source>After</source>
         <translation>Після</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1134"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1139"/>
         <source>On</source>
         <translation>У</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1202"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1207"/>
         <source>Cancel</source>
         <comment>button</comment>
         <translation>Скасувати</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1203"/>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1208"/>
         <source>Save</source>
         <comment>button</comment>
         <translation>Зберегти</translation>
@@ -446,30 +454,30 @@
 <context>
     <name>CScheduleOperation</name>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="88"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="87"/>
         <source>All occurrences of a repeating event must have the same all-day status.</source>
         <translation>В усіх повторень події має бути однаковий стан щодо заповнення подією усього дня.</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="89"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="88"/>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="105"/>
         <source>Do you want to change all occurrences?</source>
         <translation>Хочете змінити усі повторення?</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="90"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="89"/>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="106"/>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="136"/>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="154"/>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="174"/>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="244"/>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="273"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="155"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="175"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="247"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="277"/>
         <source>Cancel</source>
         <comment>button</comment>
         <translation>Скасувати</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="91"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="90"/>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="107"/>
         <source>Change All</source>
         <translation>Змінити усі</translation>
@@ -481,8 +489,8 @@
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="134"/>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="152"/>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="172"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="153"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="173"/>
         <source>You are deleting an event.</source>
         <translation>Ви вилучаєте запис події.</translation>
     </message>
@@ -498,70 +506,70 @@
         <translation>Вилучити</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="153"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="154"/>
         <source>Do you want to delete all occurrences of this event, or only the selected occurrence?</source>
         <translation>Ви хочете вилучити усі повторення цієї події чи лише позначений запис?</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="155"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="156"/>
         <source>Delete All</source>
         <translation>Вилучити всі</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="156"/>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="176"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="157"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="177"/>
         <source>Delete Only This Event</source>
         <translation>Вилучити лише цей запис</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="173"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="174"/>
         <source>Do you want to delete this and all future occurrences of this event, or only the selected occurrence?</source>
         <translation>Ви хочете вилучити усі майбутні повторення цієї події чи лише позначені записи?</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="175"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="176"/>
         <source>Delete All Future Events</source>
         <translation>Вилучити усі майбутні повторення</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="240"/>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="269"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="243"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="273"/>
         <source>You are changing a repeating event.</source>
         <translation>Ви вносите зміни до повторюваної події.</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="242"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="245"/>
         <source>Do you want to change only this occurrence of the event, or all occurrences?</source>
         <translation>Хочете змінити лише це повторення події чи усі повторення?</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="245"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="248"/>
         <source>All</source>
         <translation>Усі</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="246"/>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="275"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="249"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="279"/>
         <source>Only This Event</source>
         <translation>Лише цей запис</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="271"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="275"/>
         <source>Do you want to change only this occurrence of the event, or this and all future occurrences?</source>
         <translation>Хочете змінити лише це повторення події чи усі майбутні повторення?</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="274"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="278"/>
         <source>All Future Events</source>
         <translation>Усі майбутні повторення</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="379"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="390"/>
         <source>You have selected a leap month, and will be reminded according to the rules of the lunar calendar.</source>
         <translation>Вами вибрано високосний місяць. Вас буде попереджено відповідно до правил місячного календаря.</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="380"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="391"/>
         <source>OK</source>
         <comment>button</comment>
         <translation>Гаразд</translation>
@@ -570,17 +578,17 @@
 <context>
     <name>CScheduleSearchDateItem</name>
     <message>
-        <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="914"/>
+        <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="913"/>
         <source>Y</source>
         <translation>Р</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="914"/>
+        <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="913"/>
         <source>M</source>
         <translation>М</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="914"/>
+        <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="913"/>
         <source>D</source>
         <translation>Д</translation>
     </message>
@@ -606,7 +614,7 @@
 <context>
     <name>CScheduleSearchView</name>
     <message>
-        <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="657"/>
+        <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="656"/>
         <source>No search results</source>
         <translation>Нічого не знайдено</translation>
     </message>
@@ -622,57 +630,57 @@
 <context>
     <name>CSettingDialog</name>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="305"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="306"/>
         <source>Sunday</source>
         <translation>Неділя</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="306"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="307"/>
         <source>Monday</source>
         <translation>Понеділок</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="319"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="324"/>
         <source>24-hour clock</source>
         <translation>24-годинний формат часу</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="320"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="325"/>
         <source>12-hour clock</source>
         <translation>12-годинний формат часу</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="350"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="358"/>
         <source>Manual</source>
         <translation>Вручну</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="351"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="359"/>
         <source>15 mins</source>
         <translation>15 хвилин</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="352"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="360"/>
         <source>30 mins</source>
         <translation>30 хвилин</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="353"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="361"/>
         <source>1 hour</source>
         <translation>1 година</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="354"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="362"/>
         <source>24 hours</source>
         <translation>24 години</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="363"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="371"/>
         <source>Sync Now</source>
         <translation>Синхронізувати зараз</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="502"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="510"/>
         <source>Last sync</source>
         <translation>Остання синхронізація</translation>
     </message>
@@ -770,7 +778,7 @@
         <translation>Тиждень</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/weekWidget/weekwindow.cpp" line="322"/>
+        <location filename="../calendar-client/src/widget/weekWidget/weekwindow.cpp" line="323"/>
         <source>Y</source>
         <translation>Р</translation>
     </message>
@@ -792,7 +800,7 @@
 <context>
     <name>CYearWindow</name>
     <message>
-        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="632"/>
+        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="633"/>
         <source>Y</source>
         <translation>Р</translation>
     </message>
@@ -818,24 +826,24 @@
         <translation>Календар</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="365"/>
+        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="363"/>
         <source>Manage</source>
         <translation>Керувати</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="907"/>
+        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="901"/>
         <source>Syncing...</source>
-        <translation type="unfinished"/>
+        <translation>Синхронізація...</translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="910"/>
+        <source>Sync successful</source>
+        <translation>Успішна синхронізація</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="916"/>
-        <source>Sync successful</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="922"/>
         <source>Sync failed, please try later</source>
-        <translation type="unfinished"/>
+        <translation>Помилка синхронізації. Будь ласка, повторіть спробу пізніше</translation>
     </message>
 </context>
 <context>
@@ -849,22 +857,22 @@
 <context>
     <name>DragInfoGraphicsView</name>
     <message>
-        <location filename="../calendar-client/src/view/draginfographicsview.cpp" line="62"/>
+        <location filename="../calendar-client/src/view/draginfographicsview.cpp" line="63"/>
         <source>Edit</source>
         <translation>Редагувати</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/view/draginfographicsview.cpp" line="63"/>
+        <location filename="../calendar-client/src/view/draginfographicsview.cpp" line="64"/>
         <source>Delete</source>
         <translation>Видалити</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/view/draginfographicsview.cpp" line="64"/>
+        <location filename="../calendar-client/src/view/draginfographicsview.cpp" line="65"/>
         <source>New event</source>
         <translation>Нова подія</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/view/draginfographicsview.cpp" line="738"/>
+        <location filename="../calendar-client/src/view/draginfographicsview.cpp" line="749"/>
         <source>New Event</source>
         <translation>Нова подія</translation>
     </message>
@@ -872,23 +880,23 @@
 <context>
     <name>JobTypeListView</name>
     <message>
-        <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="244"/>
+        <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="252"/>
         <source>You are deleting an event type.</source>
         <translation>Ви вилучаєте тип події.</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="245"/>
+        <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="253"/>
         <source>All events under this type will be deleted and cannot be recovered.</source>
         <translation>Усі події цього типу буде вилучено, їх не можна буде відновити.</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="246"/>
+        <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="254"/>
         <source>Cancel</source>
         <comment>button</comment>
         <translation>Скасувати</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="247"/>
+        <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="255"/>
         <source>Delete</source>
         <comment>button</comment>
         <translation>Вилучити</translation>
@@ -961,7 +969,7 @@
 <context>
     <name>Return</name>
     <message>
-        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="628"/>
+        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="629"/>
         <source>Today</source>
         <comment>Return</comment>
         <translation>Сьогодні</translation>
@@ -970,9 +978,9 @@
 <context>
     <name>Return Today</name>
     <message>
-        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="389"/>
+        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="388"/>
         <location filename="../calendar-client/src/widget/monthWidget/monthwindow.cpp" line="136"/>
-        <location filename="../calendar-client/src/widget/weekWidget/weekwindow.cpp" line="319"/>
+        <location filename="../calendar-client/src/widget/weekWidget/weekwindow.cpp" line="320"/>
         <source>Today</source>
         <comment>Return Today</comment>
         <translation>Сьогодні</translation>
@@ -1018,7 +1026,7 @@
         <translation>Назва не може складатися лише з пробілів</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="247"/>
+        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="248"/>
         <source>Enter a name please</source>
         <translation>Будь ласка, введіть назву</translation>
     </message>
@@ -1077,7 +1085,7 @@
 <context>
     <name>TimeJumpDialog</name>
     <message>
-        <location filename="../calendar-client/src/dialog/timejumpdialog.cpp" line="44"/>
+        <location filename="../calendar-client/src/dialog/timejumpdialog.cpp" line="45"/>
         <source>Go</source>
         <comment>button</comment>
         <translation>Перейти</translation>
@@ -1101,7 +1109,7 @@
 <context>
     <name>YearFrame</name>
     <message>
-        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="941"/>
+        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="942"/>
         <source>Y</source>
         <translation>Р</translation>
     </message>
@@ -1109,14 +1117,14 @@
 <context>
     <name>today</name>
     <message>
-        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="227"/>
-        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="387"/>
+        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="226"/>
+        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="386"/>
         <location filename="../calendar-client/src/widget/monthWidget/monthwindow.cpp" line="134"/>
         <location filename="../calendar-client/src/widget/monthWidget/monthwindow.cpp" line="271"/>
         <location filename="../calendar-client/src/widget/weekWidget/weekwindow.cpp" line="69"/>
-        <location filename="../calendar-client/src/widget/weekWidget/weekwindow.cpp" line="317"/>
+        <location filename="../calendar-client/src/widget/weekWidget/weekwindow.cpp" line="318"/>
         <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="278"/>
-        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="626"/>
+        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="627"/>
         <source>Today</source>
         <comment>Today</comment>
         <translation>Сьогодні</translation>

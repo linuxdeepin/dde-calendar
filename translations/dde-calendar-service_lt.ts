@@ -1,52 +1,101 @@
 <?xml version="1.0" ?><!DOCTYPE TS><TS version="2.1" language="lt">
 <context>
-    <name>JobRemindManager</name>
+    <name>DAccountDataBase</name>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="94"/>
-        <source>One day before start</source>
-        <translation>Vieną dieną prieš pradžią</translation>
+        <source>Work</source>
+        <translation>Darbas</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="94"/>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="98"/>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="105"/>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="109"/>
+        <source>Life</source>
+        <translation>Gyvenimas</translation>
+    </message>
+    <message>
+        <source>Other</source>
+        <translation>Kita</translation>
+    </message>
+</context>
+<context>
+    <name>DAlarmManager</name>
+    <message>
         <source>Close</source>
         <comment>button</comment>
         <translation>Užverti</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="98"/>
+        <source>One day before start</source>
+        <translation>Vieną dieną prieš įvykį</translation>
+    </message>
+    <message>
         <source>Remind me tomorrow</source>
         <translation>Priminti rytoj</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="105"/>
         <source>Remind me later</source>
         <translation>Priminti vėliau</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="116"/>
+        <source>15 mins later</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>1 hour later</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>4 hours later</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Tomorrow</source>
+        <translation>Rytojus</translation>
+    </message>
+    <message>
         <source>Schedule Reminder</source>
         <translation>Planuoti priminimą</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="236"/>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="245"/>
         <source>%1 to %2</source>
         <translation>%1 iki %2</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="317"/>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="328"/>
         <source>Today</source>
         <translation>Šiandien</translation>
     </message>
+</context>
+<context>
+    <name>JobRemindManager</name>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="320"/>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="331"/>
+        <source>One day before start</source>
+        <translation type="vanished">Vieną dieną prieš pradžią</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <comment>button</comment>
+        <translation type="vanished">Užverti</translation>
+    </message>
+    <message>
+        <source>Remind me tomorrow</source>
+        <translation type="vanished">Priminti rytoj</translation>
+    </message>
+    <message>
+        <source>Remind me later</source>
+        <translation type="vanished">Priminti vėliau</translation>
+    </message>
+    <message>
+        <source>Schedule Reminder</source>
+        <translation type="vanished">Planuoti priminimą</translation>
+    </message>
+    <message>
+        <source>%1 to %2</source>
+        <translation type="vanished">%1 iki %2</translation>
+    </message>
+    <message>
+        <source>Today</source>
+        <translation type="vanished">Šiandien</translation>
+    </message>
+    <message>
         <source>Tomorrow</source>
-        <translation>Rytoj</translation>
+        <translation type="vanished">Rytoj</translation>
     </message>
 </context>
 </TS>
