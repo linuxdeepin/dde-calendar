@@ -525,8 +525,10 @@ DAccount::Ptr DAccountModule::account() const
 
 void DAccountModule::updateRemindSchedules(bool isClear)
 {
-    QDateTime dtStart = QDateTime::currentDateTime();
-    QDateTime dtEnd = dtStart.addMSecs(UPDATEREMINDJOBTIMEINTERVAL);
+    //因为全天的当前提醒日程会在开始时间延后9小时提醒
+    QDateTime dtCurrent = QDateTime::currentDateTime();
+    QDateTime dtStart = dtCurrent.addSecs(-9*60*60);
+    QDateTime dtEnd = dtCurrent.addMSecs(UPDATEREMINDJOBTIMEINTERVAL);
 
     //获取未提醒的日程相关信息
     DRemindData::List noRemindList = m_accountDB->getValidRemindJob();
