@@ -634,6 +634,7 @@ void CScheduleSearchView::updateDateShow()
         hasScheduleShow = false;
         QListWidgetItem *listItem = new QListWidgetItem(m_gradientItemList);
         DLabel *gwi = new DLabel();
+        gwi->setWordWrap(true);
         QFont font;
         font.setPixelSize(DDECalendar::FontSizeTwenty);
         gwi->setAlignment(Qt::AlignCenter);
@@ -821,8 +822,8 @@ void CScheduleSearchView::resizeEvent(QResizeEvent *event)
     }
     if (m_gradientItemList->count() == 1) {
         QListWidgetItem *item11 = m_gradientItemList->item(0);
-        item11->setSizeHint(QSize(m_maxWidth, qRound(height() * 0.7978))); //每次改变Item的高度
-        m_labellist.at(0)->setFixedSize(m_maxWidth, qRound(height() * 0.7978));
+        item11->setSizeHint(QSize(m_maxWidth - 20, qRound(height() * 0.7978))); //每次改变Item的高度
+        m_labellist.at(0)->setFixedSize(m_maxWidth - 20, qRound(height() * 0.7978));
         m_labellist.at(0)->update();
     }
     if (m_gradientItemList->count() > 1) {
