@@ -538,6 +538,9 @@ void CScheduleDlg::slotbRpeatactivated(int index)
     } else {
         m_endrepeatWidget->setVisible(false);
     }
+    //不论重复日程选哪种模式，结束重复都是从不
+    m_endrepeatCombox->setCurrentIndex(0);
+    sloteRpeatactivated(0);
     setOkBtnEnabled();
     resize();
 }
