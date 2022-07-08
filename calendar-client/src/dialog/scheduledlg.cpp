@@ -513,6 +513,7 @@ void CScheduleDlg::slotallDayStateChanged(int state)
         m_rmindCombox->addItem(tr("1 day before"));
         m_rmindCombox->addItem(tr("2 days before"));
         m_rmindCombox->addItem(tr("1 week before"));
+        m_rmindCombox->setCurrentIndex(2);
         m_beginTimeEdit->setVisible(false);
         m_endTimeEdit->setVisible(false);
 
@@ -525,8 +526,7 @@ void CScheduleDlg::slotallDayStateChanged(int state)
             m_beginDateEdit->setDate(m_currentDate.date());
             m_endDateEdit->setDate(m_EndDate.date());
             m_beginTimeEdit->setTime(QTime(0, 0));
-            m_endTimeEdit->setTime(QTime(23, 59));
-            m_rmindCombox->setCurrentIndex(2);
+            m_endTimeEdit->setTime(QTime(23, 59));            
         }
     }
 }
