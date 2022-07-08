@@ -76,8 +76,13 @@ bool JobTypeListView::viewportEvent(QEvent *event)
             a->setVisible(false);
         }
         m_iIndexCurrentHover = -1;
-    } else if (QEvent::HoverMove == event->type()) {
+    } else if (QEvent::HoverEnter == event->type() || QEvent::HoverMove == event->type()) {
+        QStandardItemModel *itemModel = qobject_cast<QStandardItemModel *>(model());
+        if (nullptr == itemModel) {
+            return true;
+        }
         indexCurrentHover = indexAt(static_cast<QHoverEvent *>(event)->pos()).row();
+
         if (indexCurrentHover != m_iIndexCurrentHover) {
             DStandardItem *itemJobType;
 
