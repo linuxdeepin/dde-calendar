@@ -100,11 +100,11 @@ void ColorSeletorWidget::addColor(const DTypeColor::Ptr &cInfo)
 
 DTypeColor::Ptr ColorSeletorWidget::getSelectedColorInfo()
 {
-    if (!m_colorInfo->colorCode().isEmpty()) {
+    if ( m_colorInfo->privilege() == DTypeColor::PriSystem) {
+        CConfigSettings::getInstance()->setOption("LastSysColorTypeNo", m_colorInfo->colorID());
+    } else if (!m_colorInfo->colorCode().isEmpty() ){
         CConfigSettings::getInstance()->setOption("LastUserColor", m_colorInfo->colorCode());
     }
-    if (m_colorInfo->privilege() == DTypeColor::PriSystem)
-        CConfigSettings::getInstance()->setOption("LastSysColorTypeNo", m_colorInfo->colorID());
     return m_colorInfo;
 }
 
