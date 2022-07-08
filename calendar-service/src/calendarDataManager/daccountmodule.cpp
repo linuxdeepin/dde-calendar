@@ -262,6 +262,7 @@ bool DAccountModule::updateScheduleType(const QString &typeInfo)
                 DTypeColor::Ptr typeColor(new DTypeColor(scheduleType->typeColor()));
                 typeColor->setPrivilege(DTypeColor::PriUser);
                 m_accountDB->addTypeColor(typeColor);
+                scheduleType->setColorID(typeColor->colorID());
                 //添加创建颜色任务
                 if (m_account->isNetWorkAccount()) {
                     DUploadTaskData::Ptr uploadTask(new DUploadTaskData);
