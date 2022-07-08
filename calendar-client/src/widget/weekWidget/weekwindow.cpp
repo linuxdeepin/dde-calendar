@@ -68,19 +68,11 @@ void CWeekWindow::initUI()
 {
     m_today->setText(QCoreApplication::translate("today", "Today", "Today"));
     m_today->setFixedSize(DDEWeekCalendar::WTodayWindth, DDEWeekCalendar::WTodayHeight);
-    DPalette todayPa = m_today->palette();
-    QColor todayColor = CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
-    todayPa.setColor(DPalette::ButtonText, todayColor);
-    todayPa.setColor(DPalette::Dark, Qt::white);
-    todayPa.setColor(DPalette::Light, Qt::white);
-    QColor sbColor("#002A57");
-    sbColor.setAlphaF(0.05);
-    todayPa.setColor(DPalette::Shadow, sbColor);
+
     QFont todayfont;
     todayfont.setWeight(QFont::Medium);
     todayfont.setPixelSize(DDECalendar::FontSizeFourteen);
     m_today->setFont(todayfont);
-    m_today->setPalette(todayPa);
     //新建年份label
     m_YearLabel = new QLabel();
     m_YearLabel->setFixedHeight(DDEWeekCalendar::W_YLabelHeight);
@@ -215,22 +207,7 @@ void CWeekWindow::initConnection()
 void CWeekWindow::setTheMe(int type)
 {
     if (type == 0 || type == 1) {
-        DPalette todayPa = m_today->palette();
-        QColor todayColor = CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
-        todayPa.setColor(DPalette::ButtonText, todayColor);
-        todayPa.setColor(DPalette::Dark, Qt::white);
-        todayPa.setColor(DPalette::Light, Qt::white);
-        QColor sbColor("#002A57");
-        sbColor.setAlphaF(0.05);
-        todayPa.setColor(DPalette::Shadow, sbColor);
-        m_today->setPalette(todayPa);
-        QColor todayhover = "#000000";
-        todayhover.setAlphaF(0.1);
-        QColor todaypress = "#000000";
-        todaypress.setAlphaF(0.2);
-        m_today->setBColor("#FFFFFF", todayhover, todaypress, "#FFFFFF", todayhover, todaypress);
-        m_today->setTColor(todayColor, "#001A2E", "#0081FF");
-        m_today->setshadowColor(sbColor);
+
         //返回今天按钮的背景色
         m_todayframe->setBColor(Qt::white);
         DPalette pa = m_YearLabel->palette();
@@ -247,18 +224,7 @@ void CWeekWindow::setTheMe(int type)
         m_weekLabel->setPalette(wpa);
         m_weekLabel->setForegroundRole(DPalette::WindowText);
     } else if (type == 2) {
-        DPalette todayPa = m_today->palette();
-        QColor todayColor = CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
-        todayPa.setColor(DPalette::ButtonText, todayColor);
-        todayPa.setColor(DPalette::Dark, "#414141");
-        todayPa.setColor(DPalette::Light, "#484848");
-        QColor sbColor("#000000");
-        sbColor.setAlphaF(0.05);
-        todayPa.setColor(DPalette::Shadow, sbColor);
-        m_today->setPalette(todayPa);
-        m_today->setBColor("#484848", "#727272", "#242424", "#414141", "#535353", "#282828");
-        m_today->setTColor(todayColor, "#FFFFFF", "#0081FF");
-        m_today->setshadowColor(sbColor);
+
         //设置返回今天按钮的背景色
         QColor bColor = "#FFFFFF";
         bColor.setAlphaF(0.05);

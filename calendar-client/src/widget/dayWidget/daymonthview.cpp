@@ -81,6 +81,7 @@ void CDayMonthView::setLunarVisible(bool visible)
 
 void CDayMonthView::setTheMe(int type)
 {
+    QColor todayColor = CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
     m_dayMonthWidget->setTheMe(type);
     if (type == 0 || type == 1) {
         DPalette aniPa = this->palette();
@@ -90,22 +91,10 @@ void CDayMonthView::setTheMe(int type)
         setBackgroundRole(DPalette::Background);
         setBColor(tbColor);
 
-        DPalette todayPa = m_today->palette();
-        QColor todayColor = CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
-        todayPa.setColor(DPalette::ButtonText, todayColor);
-        todayPa.setColor(DPalette::Dark, Qt::white);
-        todayPa.setColor(DPalette::Light, Qt::white);
-        QColor sbColor("#002A57");
-        sbColor.setAlphaF(0.05);
-        todayPa.setColor(DPalette::Shadow, sbColor);
-        m_today->setPalette(todayPa);
         QColor todayhover = "#000000";
         todayhover.setAlphaF(0.1);
         QColor todaypress = "#000000";
         todaypress.setAlphaF(0.2);
-        m_today->setBColor("#FFFFFF", todayhover, todaypress, "#FFFFFF", todayhover, todaypress);
-        m_today->setTColor(todayColor, "#001A2E", "#0081FF");
-        m_today->setshadowColor(sbColor);
         DPalette prevPalette = m_prevButton->palette();
         prevPalette.setColor(DPalette::Dark, QColor("#E6E6E6"));
         prevPalette.setColor(DPalette::Light, QColor("#E3E3E3"));
@@ -150,18 +139,6 @@ void CDayMonthView::setTheMe(int type)
         setBackgroundRole(DPalette::Background);
         setBColor(tbColor);
 
-        DPalette todayPa = m_today->palette();
-        QColor todayColor = CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
-        todayPa.setColor(DPalette::ButtonText, todayColor);
-        todayPa.setColor(DPalette::Light, "#484848");
-        todayPa.setColor(DPalette::Dark, "#414141");
-        QColor sbColor("#000000");
-        sbColor.setAlphaF(0.05);
-        todayPa.setColor(DPalette::Shadow, sbColor);
-        m_today->setPalette(todayPa);
-        m_today->setBColor("#484848", "#727272", "#242424", "#414141", "#535353", "#282828");
-        m_today->setTColor(todayColor, "#FFFFFF", "#0081FF");
-        m_today->setshadowColor(sbColor);
         DPalette prevPalette = m_prevButton->palette();
         prevPalette.setColor(DPalette::Dark, QColor("#484848"));
         prevPalette.setColor(DPalette::Light, QColor("#414141"));
@@ -224,19 +201,10 @@ void CDayMonthView::initUI()
 {
     m_today = new CTodayButton;
     m_today->setText(QCoreApplication::translate("today", "Today", "Today"));
-    m_today->setFixedSize(80, DDEDayCalendar::D_MLabelHeight);
-    DPalette todayPa = m_today->palette();
-    QColor todayColor = CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
-    todayPa.setColor(DPalette::ButtonText, todayColor);
-    todayPa.setColor(DPalette::Dark, Qt::white);
-    todayPa.setColor(DPalette::Light, Qt::white);
-    QColor sbColor("#002A57");
-    sbColor.setAlphaF(0.05);
-    todayPa.setColor(DPalette::Shadow, sbColor);
+    m_today->setFixedSize(80, DDEDayCalendar::D_MLabelHeight);   
     QFont todayfont;
     todayfont.setPixelSize(DDECalendar::FontSizeFourteen);
     m_today->setFont(todayfont);
-    m_today->setPalette(todayPa);
     m_prevButton = new DIconButton(DStyle::SP_ArrowLeft, this);
     m_prevButton->setFixedSize(36, 36);
 
