@@ -859,10 +859,7 @@ void DragInfoGraphicsView::slotDeleteItem()
 {
     //获取选中日程
     DSchedule::Ptr _pressSchedule = DragInfoItem::getPressSchedule();
-    //如果不存在选中日程则退出
-    if (_pressSchedule.isNull()) {
-        return;
-    }
+
     //根据焦点状态获取当前焦点的item
     CSceneBackgroundItem *backgroundItem = dynamic_cast<CSceneBackgroundItem *>(m_Scene->getCurrentFocusItem());
     if (backgroundItem != nullptr) {
@@ -875,7 +872,8 @@ void DragInfoGraphicsView::slotDeleteItem()
     }
 
     //判断是否有效,如果为有效日程且日程类型不为节日或纪念日或不可更改日程则删除
-    if (_pressSchedule->isValid()
+    //判断日程信息
+    if (!_pressSchedule.isNull() && _pressSchedule->isValid()
         && !CScheduleOperation::isFestival(_pressSchedule)
         && !CScheduleOperation::scheduleIsInvariant(_pressSchedule)) {
         CScheduleOperation _scheduleOperation(_pressSchedule->scheduleTypeID(), this);
