@@ -20,6 +20,7 @@
 #include "weekview.h"
 #include "scheduledatamanage.h"
 #include "constants.h"
+#include "units.h"
 
 #include <DWidget>
 #include <DHiDPIHelper>
@@ -324,7 +325,7 @@ bool CWeekNumWidget::eventFilter(QObject *o, QEvent *e)
     if (cell && m_cellList.contains(cell)) {
         const int pos = m_cellList.indexOf(cell);
         //获取每个cell的时间,如果小于1900年则过滤显示和点击操作
-        if (m_days[pos].year() < DDECalendar::QueryEarliestYear)
+        if (!withinTimeFrame( m_days[pos]))
             return false;
         if (e->type() == QEvent::Paint) {
             paintCell(cell);

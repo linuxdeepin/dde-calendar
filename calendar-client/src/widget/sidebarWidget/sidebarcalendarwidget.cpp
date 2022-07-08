@@ -21,11 +21,14 @@
 #include "sidebarcalendarwidget.h"
 #include "cschedulebasewidget.h"
 #include "constants.h"
+#include "units.h"
+
 #include <DPaletteHelper>
 #include <QMouseEvent>
 
 QDate SidebarCalendarKeyButton::m_selectedData = QDate();
 QDate SidebarCalendarKeyButton::m_displayedMonth = QDate();
+
 
 SidebarCalendarWidget::SidebarCalendarWidget(QWidget *parent) : QWidget(parent)
 {
@@ -126,6 +129,9 @@ void SidebarCalendarWidget::setDate(QDate& date)
  */
 void SidebarCalendarWidget::setKeyDate(QDate date)
 {
+    if(!withinTimeFrame(date)){
+        return;
+    }
     QString fd = "";
     fd.append("yyyy").append(tr("Y")).append("MM").append(tr("M"));
     m_dateLabel->setText(date.toString(fd));
@@ -152,6 +158,9 @@ void SidebarCalendarWidget::setKeyDate(QDate date)
 void SidebarCalendarWidget::slotKeyButtonClicked(SidebarCalendarKeyButton* keyButton)
 {
     QDate date = keyButton->getSelectedDate();
+    if(!withinTimeFrame(date)){
+        return;
+    }
     if (date.year() ==keyButton->getDisplayedMonth().year() && date.month() == keyButton->getDisplayedMonth().month()) {
         //未切换月份，只刷新界面显示
         update();
@@ -257,6 +266,9 @@ QDate SidebarCalendarKeyButton::getDate()
  */
 void SidebarCalendarKeyButton::click()
 {
+    if(!withinTimeFrame(m_displayedDate)){
+        return;
+    }
     m_selectedData = m_displayedDate;
     emit signaClicked(this);
 }
@@ -308,7 +320,7 @@ void SidebarCalendarKeyButton::paintEvent(QPaintEvent *event)
     font.setPixelSize(DDECalendar::FontSizeTwelve);
     painter.setFont(font);
 
-    if (m_displayedDate == m_selectedData) {
+    if (m_displayedDate == m_selectedData && withinTimeFrame(m_displayedDate)) {
         painter.setPen(Qt::NoPen);
         painter.setBrush(DPaletteHelper::instance()->palette(this).highlight());
         //绘制高亮背景

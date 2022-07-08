@@ -20,6 +20,7 @@
 #include "monthdayview.h"
 #include "scheduledatamanage.h"
 #include "constants.h"
+#include "units.h"
 
 #include <DPalette>
 #include <DHiDPIHelper>
@@ -276,7 +277,7 @@ void CMonthWidget::mousePress(const QPoint &point)
 {
     int itemindex = getMousePosItem(point);
     if (!(itemindex < 0)) {
-        if (m_MonthItem.at(itemindex)->getDate().year() < DDECalendar::QueryEarliestYear) {
+        if (!withinTimeFrame(m_MonthItem.at(itemindex)->getDate())) {
             return;
         }
         CMonthRect::setSelectRect(m_MonthItem.at(itemindex));
@@ -401,7 +402,7 @@ void CMonthRect::paintItem(QPainter *painter, const QRectF &rect, bool drawFocus
 {
     m_selectColor = CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
 
-    if (m_Date.year() < DDECalendar::QueryEarliestYear)
+    if ( !withinTimeFrame(m_Date))
         return;
     const bool isCurrentDay = (m_Date.month() == QDate::currentDate().month()
                                && m_Date.year() == QDate::currentDate().year());

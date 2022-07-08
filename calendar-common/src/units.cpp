@@ -67,3 +67,9 @@ QString getHomeConfigPath()
     //根据环境变量获取config目录
     return QString(qgetenv("XDG_CONFIG_HOME"));
 }
+
+bool withinTimeFrame(const QDate &date)
+{
+    return date.isValid() && (date.year() >= 1900 && date.year() <=2100);
+}
+

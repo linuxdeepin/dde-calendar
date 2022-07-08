@@ -58,6 +58,9 @@ QString getHomeConfigPath();
 //时间转换
 QDateTime dtConvert(const QDateTime &datetime);
 
+//是否在显示时间范围内1900-2100
+bool withinTimeFrame(const QDate &date);
+
 //TODO:获取系统版本(专业版，社区版等)
 
 
