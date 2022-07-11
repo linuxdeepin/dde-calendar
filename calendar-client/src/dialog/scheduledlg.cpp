@@ -1189,6 +1189,8 @@ void CScheduleDlg::initUI()
         endrepeatLabellayout->addWidget(m_endRepeatDate);
         endrepeatLabellayout->addStretch();
         m_endRepeatDate->setVisible(false);
+        //设置最大日期
+        m_endRepeatDate->setMaximumDate(QDate(2100,12,31));
         m_endrepeatWidget = new DWidget;
         //设置对象名称和辅助显示名称
         m_endrepeatWidget->setObjectName("EndRepeatDateWidget");
