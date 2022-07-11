@@ -152,10 +152,11 @@ int CalendarManager::getWeekNumOfYear(const QDate &date)
 
 void CalendarManager::setTimeFormatChanged(int value)
 {
+    // value = 0/1,对应的时间格式不对
     if (value == 0) {
-        m_timeFormat = "hh:mm";
-    } else {
         m_timeFormat = "h:mm";
+    } else {
+        m_timeFormat = "hh:mm";
     }
     updateData();
 }
@@ -349,6 +350,7 @@ void CalendarManager::initConnection()
 {
     connect(gAccountManager, &AccountManager::signalGeneralSettingsUpdate, this, &CalendarManager::slotGeneralSettingsUpdate);
     connect(m_timeDateDbus, &DaemonTimeDate::ShortTimeFormatChanged, this, &CalendarManager::signalTimeFormatChanged);
+    connect(m_timeDateDbus, &DaemonTimeDate::ShortTimeFormatChanged, this, &CalendarManager::slotTimeFormatChanged);  // add time format slot.
     connect(m_timeDateDbus, &DaemonTimeDate::ShortDateFormatChanged, this, &CalendarManager::slotDateFormatChanged);
     connect(m_timeDateDbus, &DaemonTimeDate::ShortDateFormatChanged, this, &CalendarManager::signalDateFormatChanged);
 }
@@ -390,4 +392,9 @@ void CalendarManager::slotGeneralSettingsUpdate()
 void CalendarManager::slotDateFormatChanged(int value)
 {
     setDateFormatChanged(value);
+}
+
+void CalendarManager::slotTimeFormatChanged(int value)
+{
+    setTimeFormatChanged(value);
 }

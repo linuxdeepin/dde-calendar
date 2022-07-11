@@ -105,6 +105,8 @@ public slots:
 
     void slotDateFormatChanged(int value);
 
+    void slotTimeFormatChanged(int value);
+
 private:
     explicit CalendarManager(QObject *parent = nullptr);
     ~CalendarManager();
