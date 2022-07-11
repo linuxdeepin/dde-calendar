@@ -35,7 +35,7 @@ public:
     explicit SidebarView(QWidget *parent = nullptr);
 
 signals:
-
+    void signalScheduleHide();
 public slots:
     //账户更新事件
     void slotAccountUpdate();

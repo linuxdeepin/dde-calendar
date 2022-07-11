@@ -93,7 +93,7 @@ void CDayHuangLiLabel::paintEvent(QPaintEvent *e)
     int ss = 14;
     for (int i = 0; i < m_vHuangli.count(); i++) {
         int currentsw = m_vHuangli.at(i).count() * ss;
-        if (bw + currentsw + 6 > labelwidth) {
+        if (bw + currentsw + 15 >= labelwidth) {
             painter.drawText(QRect(bw, bh, labelwidth - bw, 21), Qt::AlignLeft, "...");
             break;
         } else {

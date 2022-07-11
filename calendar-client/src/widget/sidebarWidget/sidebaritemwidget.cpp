@@ -144,6 +144,7 @@ void SidebarTypeItemWidget::initView()
     m_titleLabel->setFont(labelF);
     m_titleLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     m_titleLabel->setText(m_scheduleType->displayName());
+    m_titleLabel->setToolTip(m_scheduleType->displayName());
 
     vLayout->addSpacing(2);
     vLayout->addWidget(m_checkBox);

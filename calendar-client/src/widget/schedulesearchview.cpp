@@ -319,7 +319,7 @@ void CScheduleSearchItem::paintEvent(QPaintEvent *e)
     if (tStr != str) {
         tStr = tStr + "...";
     }
-
+    this->setToolTip(str);
     painter.drawText(QRect(m_durationSize + 17 + 9, 6, tilenameW, labelBottomY), Qt::AlignLeft, tStr);
 
     //存在焦点时绘制边框

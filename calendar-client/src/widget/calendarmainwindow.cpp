@@ -452,6 +452,7 @@ void Calendarmainwindow::initConnection()
             &Calendarmainwindow::slotSearchSelectSchedule);
     connect(m_scheduleSearchView, &CScheduleSearchView::signalScheduleHide, this,
             &Calendarmainwindow::setScheduleHide);
+    connect(m_sidebarView,&SidebarView::signalScheduleHide,this,&Calendarmainwindow::setScheduleHide);
     connect(m_scheduleSearchView, &CScheduleSearchView::signalSelectCurrentItem, this,
             &Calendarmainwindow::slotSetSearchFocus);
     //更新当前时间

@@ -178,6 +178,11 @@ void SidebarView::resetJobTypeChildItem(SidebarAccountItemWidget *parentItemWidg
             parentItem->addChild(item);
             SidebarItemWidget *widget = new SidebarTypeItemWidget(p, this);
             m_treeWidget->setItemWidget(item, 0, widget);
+            connect(widget,&SidebarItemWidget::signalStatusChange,this,[&](bool status, QString id){
+                Q_UNUSED(id)
+                Q_UNUSED(status)
+                emit signalScheduleHide();
+            });
         }
     }
     //刷新列表项位置，主要用于解决初始添加时最后一项显示位置和其他项位置不一致问题
