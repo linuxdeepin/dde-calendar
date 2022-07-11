@@ -79,5 +79,11 @@ int main(int argc, char *argv[])
     DDataBaseManagement dbManagement;
 
     DServiceManager serviceManager;
+
+    //如果存在迁移，则更新提醒
+    if(dbManagement.hasTransfer()){
+        serviceManager.updateRemindJob();
+    }
+
     return a.exec();
 }

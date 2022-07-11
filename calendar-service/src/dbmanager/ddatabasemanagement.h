@@ -38,6 +38,8 @@ class DDataBaseManagement
 public:
     DDataBaseManagement();
 
+    bool hasTransfer() const;
+
 private:
     QString newDatabasePath() const;
     void setNewDatabasePath(const QString &newDatabasePath);
@@ -68,6 +70,8 @@ private:
     QString m_oldDatabasePath;
     QString m_newDatabaseName;
     QString m_oldDatabaseName;
+
+    bool  m_hasTransfer = false;
 
     QMap<int, QString> m_typeMap;
     QMap<int, QString> m_schedule;

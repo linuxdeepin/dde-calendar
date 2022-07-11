@@ -48,22 +48,23 @@ DServiceManager::DServiceManager(QObject *parent)
     }
 
     //创建帐户管理服务
-    DServiceBase *accountManagerService = new class DAccountManagerService(this);
-    if (!sessionBus.registerObject(accountManagerService->getPath(), accountManagerService->getInterface(), accountManagerService, options)) {
+    m_accountManagerService = new class DAccountManagerService(this);
+    if (!sessionBus.registerObject(m_accountManagerService->getPath(), m_accountManagerService->getInterface(), m_accountManagerService, options)) {
         qCritical() << "registerObject  accountManagerService failed:" << sessionBus.lastError();
         exit(0x0003);
     }
-    //测试
-    //    //创建帐户
-    //    DServiceBase *accountService = new DAccountService(serviceBasePath + "/Account_Loalend", serviceBaseName + "./Account_Loalend", this);
-    //    if (!sessionBus.registerObject(accountService->getPath(), accountService, options)) {
-    //        qCritical() << "registerObject failed:" << sessionBus.lastError();
-    //        exit(0x0002);
-    //    }
+
     //创建云同步回调服务
     DServiceBase *cloudsyncService = new class Dbuscloudsync(this);
     if (!sessionBus.registerObject(cloudsyncService->getPath(), cloudsyncService->getInterface(), cloudsyncService, options)) {
         qCritical() << "registerObject  cloudsyncService failed:" << sessionBus.lastError();
         exit(0x0004);
+    }
+}
+
+void DServiceManager::updateRemindJob()
+{
+    if(nullptr != m_accountManagerService){
+        m_accountManagerService->updateRemindJob(false);
     }
 }

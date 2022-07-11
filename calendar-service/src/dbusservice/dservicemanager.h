@@ -21,7 +21,7 @@
 #ifndef SERVICEMANAGER_H
 #define SERVICEMANAGER_H
 
-#include "dservicebase.h"
+#include "daccountmanagerservice.h"
 
 /**
  * @brief The DServiceManager class  服务管理类
@@ -32,11 +32,13 @@ class DServiceManager : public QObject
 public:
     explicit DServiceManager(QObject *parent = nullptr);
 
+    void updateRemindJob();
+
 signals:
 
 public slots:
 private:
-    QList<DServiceBase *> m_service;
+    DAccountManagerService *m_accountManagerService = nullptr;
 };
 
 #endif // SERVICEMANAGER_H

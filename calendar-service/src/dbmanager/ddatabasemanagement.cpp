@@ -112,6 +112,8 @@ DDataBaseManagement::DDataBaseManagement()
                     localDB.createRemindInfo(remind);
                 }
             }
+
+            m_hasTransfer = true;
         }
     }
 }
@@ -377,4 +379,9 @@ DRemindData::List DDataBaseManagement::querOldRemindData(QSqlDatabase &db)
         query.finish();
     }
     return remindList;
+}
+
+bool DDataBaseManagement::hasTransfer() const
+{
+    return m_hasTransfer;
 }
