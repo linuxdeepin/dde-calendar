@@ -249,6 +249,10 @@ DSchedule::List DDataBaseManagement::queryOldJobData(QSqlDatabase &db, const boo
             schedule->setSummary(query.value("title").toString());
             schedule->setAllDay(query.value("all_day").toBool());
             schedule->setDtEnd(query.value("end").toDateTime());
+            //如果有农历信息则设置相关信息
+            if(haslunar){
+                schedule->setLunnar(query.value("is_Lunar").toBool());
+            }
             QString rrule = query.value("r_rule").toString();
             if (!rrule.isEmpty()) {
                 //重复规则
