@@ -52,6 +52,7 @@ class CScheduleSearchView;
 class AnimationStackedWidget;
 class CScheduleDataManage;
 class CTitleWidget;
+class CMyScheduleView;
 
 class Calendarmainwindow : public DMainWindow
 {
@@ -148,6 +149,8 @@ private:
     bool m_setButtonFocus {false};
     bool m_isNormalStateShow {true}; //是否为正常状态显示
     QPoint m_startPos;
+
+    CMyScheduleView *m_dlg = Q_NULLPTR;
 
 };
 

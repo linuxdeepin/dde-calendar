@@ -45,6 +45,10 @@ public:
     {
         return  m_scheduleInfo;
     }
+
+    void setSchedules(const DSchedule::Ptr &schduleInfo);
+    void updateFormat();
+
 signals:
     void signalsEditorDelete(int type = 0);
 public slots:

@@ -51,6 +51,15 @@ CMyScheduleView::CMyScheduleView(const DSchedule::Ptr &schduleInfo, QWidget *par
     slotAccountStateChange();
 }
 
+void CMyScheduleView::setSchedules(const DSchedule::Ptr &schduleInfo) {
+      m_scheduleInfo = schduleInfo;
+}
+
+void CMyScheduleView::updateFormat() {
+    updateDateTimeFormat();
+    slotAccountStateChange();
+}
+
 /**
  * @brief CMyScheduleView::AutoFeed     字体改变更改界面显示
  * @param text

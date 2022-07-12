@@ -332,8 +332,14 @@ void Calendarmainwindow::slotOpenSchedule(QString job)
     //设置非全天时间定位位置
     m_DayWindow->setTime(out->dtStart().time());
     //弹出编辑对话框
-    CMyScheduleView dlg(out, this);
-    dlg.exec();
+    if(m_dlg == Q_NULLPTR) {
+        m_dlg = new CMyScheduleView(out,this);
+    } else {
+        m_dlg->setSchedules(out);
+        m_dlg->updateFormat();
+    }
+    if(m_dlg->isHidden())
+        m_dlg->exec();
     slotWUpdateSchedule();
 }
 void Calendarmainwindow::initUI()
