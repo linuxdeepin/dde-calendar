@@ -74,6 +74,7 @@ private:
     bool  m_hasTransfer = false;
 
     QMap<int, QString> m_typeMap;
+    QMap<int, QString> m_sysColorID;    //日程类型内置颜色新旧id对应map
     QMap<int, QString> m_schedule;
     QMap<int, QString> m_typeColorID; //日程类型颜色新旧id对应map
 };

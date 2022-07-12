@@ -71,6 +71,26 @@ DDataBaseManagement::DDataBaseManagement()
         localDB.setDBPath(localAccountDB);
         localDB.initDBData();
 
+        DTypeColor::List  sysColorList = localDB.getSysColor();
+
+        QMap<QString,int > oldSysColor={
+            {"#FF5E97",1}
+            ,{"#FF9436",2}
+            ,{"#FFDC00",3}
+            ,{"#5BDD80",4}
+            ,{"#00B99B",5}
+            ,{"#4293FF",6}
+            ,{"#5D51FF",7}
+            ,{"#A950FF",8}
+            ,{"#717171",9}
+        };
+
+        foreach (const auto &sysColor, sysColorList) {
+            if(oldSysColor.contains(sysColor->colorCode())){
+                m_sysColorID.insert(oldSysColor[sysColor->colorCode()],sysColor->colorID());
+            }
+        }
+
         //判断是否存在旧的数据库
         QString oldDBFile(oldDatabasePath() + "/" + m_oldDatabaseName);
         if (databaseExists(oldDBFile)) {
@@ -217,10 +237,16 @@ DScheduleType::List DDataBaseManagement::queryOldJobTypeData(QSqlDatabase &db)
             type->setDtCreate(query.value("CreateTime").toDateTime());
             type->setPrivilege(static_cast<DScheduleType::Privilege>(query.value("Authority").toInt()));
             int oldColorTypeID = query.value("ColorTypeNo").toInt();
-            if (!m_typeColorID.contains(oldColorTypeID)) {
-                m_typeColorID[oldColorTypeID] = DDataBase::createUuid();
+            //如果为系统色
+            if(oldColorTypeID <10){
+                type->setColorID(m_sysColorID[oldColorTypeID]);
+            }else {
+                //如果为用户自定义颜色
+                if (!m_typeColorID.contains(oldColorTypeID)) {
+                    m_typeColorID[oldColorTypeID] = DDataBase::createUuid();
+                }
+                type->setColorID(m_typeColorID[oldColorTypeID]);
             }
-            type->setColorID(m_typeColorID[oldColorTypeID]);
             typeList.append(type);
         }
     }
