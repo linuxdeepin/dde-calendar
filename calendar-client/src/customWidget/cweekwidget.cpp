@@ -35,7 +35,7 @@ CWeekWidget::CWeekWidget(QWidget *parent) : QPushButton(parent)
 void CWeekWidget::setFirstDay(Qt::DayOfWeek first)
 {
     m_firstDay = first;
-    setAutoFirstDay(false);
+    setAutoFirstDay(true);
 }
 
 void CWeekWidget::setAutoFirstDay(bool is)

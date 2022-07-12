@@ -94,6 +94,7 @@ public:
 signals:
     void signalTimeFormatChanged(int value);
     void signalDateFormatChanged(int value);
+    void sigNotifySidebarFirstDayChanged(int value);
 
 public slots:
     //关联dbus信号，每周首日改变事触发

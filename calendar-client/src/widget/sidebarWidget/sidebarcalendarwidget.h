@@ -50,6 +50,8 @@ public slots:
     void slotNextPageClicked();
     //上一页按钮点击事件
     void slotPreviousPageClicked();
+    //一周首日更新
+    void slotFirstDayChanged(int value);
 
 private:
     void initView();
@@ -71,6 +73,8 @@ private:
     DPushButton* m_previousPage = nullptr;  //上一页切换按键
 
     QList<SidebarCalendarKeyButton*> m_keyButtonList;   //所有的日期按钮控件
+
+    int m_firstday = Qt::Sunday;
 };
 
 

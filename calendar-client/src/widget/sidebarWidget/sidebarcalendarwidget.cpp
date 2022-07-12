@@ -99,6 +99,7 @@ void SidebarCalendarWidget::initConnection()
 {
     connect(m_nextPage, &QPushButton::clicked, this, &SidebarCalendarWidget::slotNextPageClicked);
     connect(m_previousPage, &QPushButton::clicked, this, &SidebarCalendarWidget::slotPreviousPageClicked);
+    connect(CalendarManager::getInstance(), &CalendarManager::sigNotifySidebarFirstDayChanged, this, &SidebarCalendarWidget::slotFirstDayChanged);
 }
 
 /**
@@ -107,6 +108,7 @@ void SidebarCalendarWidget::initConnection()
  */
 void SidebarCalendarWidget::initData()
 {
+    m_firstday = CalendarManager::getInstance()->getFirstDayOfWeek();
     QDate date = QDate::currentDate();
     setDate(date);
 }
@@ -139,10 +141,10 @@ void SidebarCalendarWidget::setKeyDate(QDate date)
 
     //获取当月第一天
     date = QDate(date.year(), date.month(), 1);
-    int firstday = Qt::Sunday;
+//    int firstday = CalendarManager::getInstance()->getFirstDayOfWeek();
     int day = date.dayOfWeek();
     //计算当前月日历第一天该显示的时间
-    date = date.addDays(-(day-firstday+7)%7);
+    date = date.addDays(-(day - m_firstday + 7) % 7);
     for (SidebarCalendarKeyButton* btn : m_keyButtonList) {
         btn->setDate(date);
         date = date.addDays(1);
@@ -193,6 +195,12 @@ void SidebarCalendarWidget::slotPreviousPageClicked()
     QDate date = SidebarCalendarKeyButton::getDisplayedMonth().addMonths(-1);
     //设置显示的日期范围
     setKeyDate(date);
+}
+
+void SidebarCalendarWidget::slotFirstDayChanged(int value)
+{
+    m_firstday = value;
+    setKeyDate(SidebarCalendarKeyButton::getSelectedDate());
 }
 
 SidebarCalendarKeyButton::SidebarCalendarKeyButton(QWidget *parent)

@@ -305,6 +305,8 @@ void CalendarManager::setFirstDayOfWeek(int day, bool update)
 
 void CalendarManager::updateData()
 {
+    // 为了跟之前的代码一致，在这里发送信号出来；
+    emit sigNotifySidebarFirstDayChanged(getFirstDayOfWeek());
     for (int i = 0; i < m_showWidget.size(); ++i) {
         m_showWidget.at(i)->updateData();
     }
