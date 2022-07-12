@@ -25,7 +25,6 @@
 #include "daccountmanagemodule.h"
 
 #include <QString>
-#include <QTimer>
 
 /**
  * @brief The DAccountManagerService class      帐户管理服务
@@ -67,7 +66,6 @@ public slots:
     Q_SCRIPTABLE QString getCalendarGeneralSettings();
     //设置通用设置
     Q_SCRIPTABLE void setCalendarGeneralSettings(const QString &cgSet);
-
     //日历打开关闭
     Q_SCRIPTABLE void calendarIsShow(const bool &isShow);
     //账户登录
@@ -85,7 +83,6 @@ private:
 
 private:
     DAccountManageModule::Ptr m_accountManager;
-    QTimer m_timer;
 };
 
 #endif // ACCOUNTMANAGERSERVICE_H

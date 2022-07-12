@@ -109,23 +109,6 @@ void DAccountManagerService::calendarIsShow(const bool &isShow)
     }
     exitControl.setClientIsOpen(isShow);
     m_accountManager->calendarOpen(isShow);
-    //如果前端界面被kill掉则不会触发关闭信号，导致一直开启，需要定时判断日历界面开启状态
-    //开启定时器判断日程是否打开
-    if (!m_timer.isActive()) {
-        connect(&m_timer, &QTimer::timeout, this, [] {
-            //如果日历界面不存在则退出
-            QProcess process;
-            process.start("/bin/bash", QStringList() << "-c"
-                                                     << "pidof dde-calendar");
-            process.waitForFinished();
-            QString strResult = process.readAllStandardOutput();
-            if (strResult.isEmpty()) {
-                DServiceExitControl exitCont;
-                exitCont.setClientIsOpen(false);
-            }
-        });
-        m_timer.start(2000);
-    }
 }
 
 void DAccountManagerService::login()

@@ -21,6 +21,7 @@
 #include "daccountmanagemodule.h"
 
 #include "units.h"
+#include "calendarprogramexitcontrol.h"
 
 DAccountManageModule::DAccountManageModule(QObject *parent)
     : QObject(parent)
@@ -59,6 +60,9 @@ DAccountManageModule::DAccountManageModule(QObject *parent)
         }
     }
     m_generalSetting = m_accountManagerDB->getCalendarGeneralSettings();
+
+    connect(&m_timer,&QTimer::timeout,this,&DAccountManageModule::slotClientIsOpen);
+    m_timer.start(2000);
 
     //暂时屏蔽云同步部分
 //    QObject::connect(m_syncFileManage->getSyncoperation(), &Syncoperation::signalLoginStatusChange, this, &DAccountManageModule::slotUidLoginStatueChange);
@@ -428,5 +432,25 @@ void DAccountManageModule::slotSettingChange()
     if (newSetting->timeShowType() != m_generalSetting->timeShowType()) {
         m_generalSetting->setTimeShowType(m_generalSetting->timeShowType());
         emit timeFormatTypeChange();
+    }
+}
+
+void DAccountManageModule::slotClientIsOpen()
+{
+    //如果日历界面不存在则退出
+    QProcess process;
+    process.start("/bin/bash", QStringList() << "-c"
+                                             << "pidof dde-calendar");
+    process.waitForFinished();
+    QString strResult = process.readAllStandardOutput();
+
+    static QString preResult = "";
+
+    if ( preResult == strResult ) {
+        return;
+    } else {
+        preResult = strResult;
+        DServiceExitControl exitControl;
+        exitControl.setClientIsOpen(!strResult.isEmpty());
     }
 }

@@ -29,6 +29,7 @@
 
 #include <QObject>
 #include <QSharedPointer>
+#include <QTimer>
 
 //帐户类型总数，若支持的类型增加则需要修改
 const int accountTypeCount = 3;
@@ -108,6 +109,9 @@ public slots:
     //通用设置发生改变
     void slotSettingChange();
 
+    //定时判断日历界面是否打开
+    void slotClientIsOpen();
+
 private:
     SyncFileManage *m_syncFileManage = nullptr;
     DAccountManagerDataBase::Ptr m_accountManagerDB;
@@ -115,6 +119,7 @@ private:
     QMap<QString, DAccountModule::Ptr> m_accountModuleMap;
     QMap<QString, DAccountService::Ptr> m_AccountServiceMap[accountTypeCount];
     DCalendarGeneralSettings::Ptr m_generalSetting;
+    QTimer m_timer;
 };
 
 #endif // DACCOUNTMANAGEMODULE_H

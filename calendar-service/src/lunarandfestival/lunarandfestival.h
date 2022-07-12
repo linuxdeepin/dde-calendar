@@ -29,7 +29,7 @@
 typedef struct _lunarInfo {
     int LunarMonthName = 0; // 农历月名
     int LunarMonthDays = 0; // 本月天数
-    double ShuoJD; // 本月朔日时间 北京时间 儒略日
+    double ShuoJD = 0; // 本月朔日时间 北京时间 儒略日
     QDateTime ShuoTime; // 本月朔日时间 北京时间
     bool IsLeap = false; // 是否为闰月
     int LunarYear = 0; // 农历年
@@ -42,7 +42,7 @@ typedef struct _lunarInfo {
                && this->LunarYear == info.LunarYear
                && this->LunarDay == info.LunarDay
                && this->IsLeap == info.IsLeap;
-    };
+    }
 } lunarInfo;
 
 typedef struct _day {
@@ -61,7 +61,7 @@ typedef struct _LunarDayInfo {
     QString GanZhiDay {}; // 农历日的干支
     QString LunarMonthName {}; // 农历月名
     QString LunarDayName {}; // 农历日名
-    int32_t LunarLeapMonth; // 未使用
+    int32_t LunarLeapMonth = 0; // 未使用
     QString Zodiac {}; // 农历年的生肖
     QString Term {}; // 农历节气
     QString SolarFestival {}; // 公历节日
