@@ -39,7 +39,9 @@ QDateTime dtConvert(const QDateTime &datetime)
 
 QDateTime dtFromString(const QString &st)
 {
-    return QDateTime::fromString(st, Qt::ISODate);
+    QDateTime &&dtSt = QDateTime::fromString(st, Qt::ISODate);
+    //转换为本地时区
+    return QDateTime(dtSt.date(),dtSt.time());
 }
 
 QString getDBPath()

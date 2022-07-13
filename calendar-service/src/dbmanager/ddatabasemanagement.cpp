@@ -274,11 +274,11 @@ DSchedule::List DDataBaseManagement::queryOldJobData(QSqlDatabase &db, const boo
         while (query.next()) {
             DSchedule::Ptr schedule = DSchedule::Ptr(new DSchedule);
             schedule->setUid(QString::number(query.value("id").toInt()));
-            schedule->setDtStart(query.value("start").toDateTime());
-            schedule->setCreated(query.value("created_at").toDateTime());
+            schedule->setDtStart(dtFromString(query.value("start").toString()));
+            schedule->setCreated(dtFromString(query.value("created_at").toString()));
             schedule->setSummary(query.value("title").toString());
             schedule->setAllDay(query.value("all_day").toBool());
-            schedule->setDtEnd(query.value("end").toDateTime());
+            schedule->setDtEnd(dtFromString(query.value("end").toString()));
             //如果有农历信息则设置相关信息
             if(haslunar){
                 schedule->setLunnar(query.value("is_Lunar").toBool());
@@ -390,9 +390,9 @@ DRemindData::List DDataBaseManagement::querOldRemindData(QSqlDatabase &db)
                 remind->setScheduleID(m_schedule[jobid]);
                 remind->setRemindCount(query.value("remindCount").toInt());
                 remind->setNotifyid(query.value("notifyid").toInt());
-                remind->setDtRemind(query.value("remindTime").toDateTime());
-                remind->setDtStart(query.value("jobStartTime").toDateTime());
-                remind->setDtEnd(query.value("jobEndTime").toDateTime());
+                remind->setDtRemind(dtFromString(query.value("remindTime").toString()));
+                remind->setDtStart(dtFromString(query.value("jobStartTime").toString()));
+                remind->setDtEnd(dtFromString(query.value("jobEndTime").toString()));
 
                 int recurid = query.value("recurid").toInt();
                 //如果重复id大于0，则表示为重复日程的提醒，设置提醒id为日程开始时间
