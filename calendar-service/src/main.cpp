@@ -82,7 +82,10 @@ int main(int argc, char *argv[])
 
     //如果存在迁移，则更新提醒
     if(dbManagement.hasTransfer()){
-        serviceManager.updateRemindJob();
+        //延迟处理
+        QTimer::singleShot(0,[&](){
+          serviceManager.updateRemindJob();
+        });
     }
 
     return a.exec();
