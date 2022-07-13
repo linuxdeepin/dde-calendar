@@ -107,6 +107,8 @@ CTitleWidget::CTitleWidget(QWidget *parent)
     m_searchEdit->lineEdit()->installEventFilter(this);
     m_searchEdit->setPlaceHolder(tr("Search events and festivals"));
     m_searchEdit->setPlaceholderText(tr("Search events and festivals"));
+
+    m_strPlaceHolder = m_searchEdit->placeholderText();
     connect(m_searchEdit, &DSearchEdit::searchAborted, [&] {
         //搜索框关闭按钮，清空数据
         slotSearchEditFocusChanged(false);
@@ -249,6 +251,33 @@ void CTitleWidget::resizeEvent(QResizeEvent *event)
     QWidget::resizeEvent(event);
     if (m_showState == Title_State_Normal) {
         normalStateUpdateSearchEditWidth();
+    }
+    QString str  = m_strPlaceHolder;
+    QFontMetrics fontMetrice(m_searchEdit->font());
+    if(fontMetrice.width(str) > (m_searchEdit->width()-30)) {
+        str = fontMetrice.elidedText(str,Qt::ElideRight,m_searchEdit->width()-30);
+        m_searchEdit->setPlaceHolder(str);
+        m_searchEdit->setPlaceholderText(str);
+    } else {
+        m_searchEdit->setPlaceHolder(m_strPlaceHolder);
+        m_searchEdit->setPlaceholderText(m_strPlaceHolder);
+    }
+}
+
+
+void CTitleWidget::changeEvent(QEvent *e) {
+    QWidget::changeEvent(e);
+    if(e->type() == QEvent::FontChange) {
+        QString str  = m_strPlaceHolder;
+        QFontMetrics fontMetrice(m_searchEdit->font());
+        if(fontMetrice.width(str) > (m_searchEdit->width()-30)) {
+            str = fontMetrice.elidedText(str,Qt::ElideRight,m_searchEdit->width()-30);
+            m_searchEdit->setPlaceHolder(str);
+            m_searchEdit->setPlaceholderText(str);
+        } else {
+            m_searchEdit->setPlaceHolder(m_strPlaceHolder);
+            m_searchEdit->setPlaceholderText(m_strPlaceHolder);
+        }
     }
 }
 

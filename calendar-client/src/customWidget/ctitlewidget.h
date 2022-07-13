@@ -81,6 +81,7 @@ private:
 protected:
     void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
     bool eventFilter(QObject *o, QEvent *e) override;
+    void changeEvent(QEvent *e) override;
 signals:
     void signalSetButtonFocus();
     void signalSearchFocusSwitch();
@@ -108,6 +109,7 @@ private:
     DSearchEdit *m_searchEdit {nullptr};
     DIconButton *m_newScheduleBtn {nullptr}; //全局的新建日程按钮
     DIconButton *m_searchPush {nullptr};
+    QString     m_strPlaceHolder;
     Title_State m_showState {Title_State_Normal};
 };
 

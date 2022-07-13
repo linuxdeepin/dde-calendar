@@ -123,20 +123,24 @@ void ScheduleTypeEditDlg::initView()
     maintlayout->setSpacing(10);
 
     QHBoxLayout *eLayout = new QHBoxLayout;
-    QLabel *eName = new QLabel(tr("Name:"));
-    eName->setFixedWidth(42);
+    m_eName = new QLabel(tr("Name:"));
+    m_eName->setToolTip(m_eName->text());
+    m_eName->setFixedWidth(42);
 
     m_lineEdit = new DLineEdit();
     m_lineEdit->setClearButtonEnabled(false); //不显示按钮
-    eLayout->addWidget(eName);
+    eLayout->addWidget(m_eName);
     eLayout->addWidget(m_lineEdit, 1);
 
     QHBoxLayout *cLayout = new QHBoxLayout;
-    QLabel *cName = new QLabel(tr("Color:"));
-    cName->setFixedWidth(42);
+    m_cName = new QLabel(tr("Color:"));
+    m_cName->setToolTip(m_cName->text());
+    m_strLabelName = m_eName->text();
+    m_strLabelColor = m_cName->text();
+    m_cName->setFixedWidth(42);
     m_colorSeletor = new ColorSeletorWidget();
 
-    cLayout->addWidget(cName);
+    cLayout->addWidget(m_cName);
     cLayout->addWidget(m_colorSeletor);
     cLayout->addStretch(1);
 
@@ -219,7 +223,23 @@ void ScheduleTypeEditDlg::slotEditTextChanged(const QString &strName)
     this->getButton(1)->setEnabled(true);
     return;
 }
+void ScheduleTypeEditDlg::changeEvent(QEvent *e)  {
+    DDialog::changeEvent(e);
+    if(e->type() == QEvent::FontChange) {
+       QString str  = m_strLabelName.trimmed();
+       QFontMetrics fontMetrice(m_eName->font());
+       if(fontMetrice.width(str) > (m_eName->width())) {
+            str = fontMetrice.elidedText(str,Qt::ElideRight,m_eName->width());
+       }
+       m_eName->setText(str);
+       str = m_strLabelColor.trimmed();
+       if(fontMetrice.width(str) > (m_eName->width()+15)) {
+         str = fontMetrice.elidedText(str,Qt::ElideRight,m_cName->width());
+       }
+       m_cName->setText(str);
+   }
 
+}
 void ScheduleTypeEditDlg::slotFocusChanged(bool onFocus)
 {
     //如果焦点移出,且输入内容为空

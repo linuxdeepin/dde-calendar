@@ -83,7 +83,8 @@ private:
     void init();
     void initView();
     void initData();
-
+protected:
+    void changeEvent(QEvent *) override;
 private:
     DScheduleType m_jobTypeOld; //被修改的日程类型
     DScheduleType m_jobTypeNew; //修改后的日程类型
@@ -93,6 +94,13 @@ private:
     ColorSeletorWidget *m_colorSeletor = nullptr; //颜色选择器
     DialogType m_dialogType;
     QString m_typeText; //输入框上一次输入后的文本
+
+    QLabel * m_eName = Q_NULLPTR;
+    QLabel * m_cName = Q_NULLPTR;
+
+
+    QString m_strLabelName;
+    QString m_strLabelColor;
 };
 
 #endif // SCHEDULETYPEEDITDLG_H

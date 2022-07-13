@@ -42,6 +42,7 @@ CDateEdit::CDateEdit(QWidget *parent) : QDateEdit(parent)
 void CDateEdit::setDate(QDate date)
 {
     QDateEdit::setDate(date);
+    m_strCurrrentDate = date.toString(m_format+getLunarName(date));
 }
 
 void CDateEdit::setDisplayFormat(QString format)
@@ -88,7 +89,11 @@ void CDateEdit::slotDateEidtInfo(const QDate &date)
 {
     QString format = m_format;
 
+
     if (m_showLunarCalendar) {
+        if(!showGongli()) {
+            format = "yyyy/";
+        }
         m_lunarName = getLunarName(date);
         format += m_lunarName;
     }
@@ -219,6 +224,22 @@ void CDateEdit::setLineEditTextFormat(QLineEdit *lineEdit, const QList<QTextLayo
     QInputMethodEvent event(QString(), attributes);
 
     QCoreApplication::sendEvent(lineEdit, &event);
+}
+
+void CDateEdit::changeEvent(QEvent *e) {
+    QDateEdit::changeEvent(e);
+    if(e->type() == QEvent::FontChange && m_showLunarCalendar) {
+       slotDateEidtInfo(date());
+    }
+}
+
+bool CDateEdit::showGongli() {
+    QString str = m_strCurrrentDate;
+    QFontMetrics fontMetrice(lineEdit()->font());
+    if(fontMetrice.width(str) > lineEdit()->width()-20) {
+       return false;
+    }
+    return true;
 }
 
 void CDateEdit::updateCalendarWidget()

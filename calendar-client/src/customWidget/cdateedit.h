@@ -72,6 +72,9 @@ public:
     void setCalendarPopup(bool enable);
 
 signals:
+protected:
+
+void changeEvent(QEvent *e) override;
 
 private slots:
 
@@ -91,11 +94,13 @@ private:
     void setLineEditTextFormat(QLineEdit* lineEdit, const QList<QTextLayout::FormatRange>& formats);
     //更新日历显示类型
     void updateCalendarWidget();
+    bool showGongli();
 private:
     QString m_format = "";      //时间格式化格式
     bool m_showLunarCalendar = false;    //农历显示状态 true：显示 false：不显示
     QString m_lunarName = "";   //农历字符串
     QTextCharFormat m_lunarTextFormat;  //农历文本样式
+    QString m_strCurrrentDate = "";
 };
 
 #endif // CDATEEDIT_H
