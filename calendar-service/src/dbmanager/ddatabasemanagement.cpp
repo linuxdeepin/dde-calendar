@@ -107,7 +107,9 @@ DDataBaseManagement::DDataBaseManagement()
             if (hasTypeDB(oldDB)) {
                 DScheduleType::List typeList = queryOldJobTypeData(oldDB);
                 foreach (auto &type, typeList) {
-                    m_typeMap.insert(type->typeID().toInt(), localDB.createScheduleType(type));
+                    int &&typeid_int = type->typeID().toInt();
+                    QString &&type_ID = localDB.createScheduleType(type);
+                    m_typeMap.insert(typeid_int, type_ID);
                 }
 
                 //获取颜色
