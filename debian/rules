@@ -15,6 +15,3 @@ override_dh_auto_configure:
 	  -DCMAKE_BUILD_TYPE=Release \
 	  -DCMAKE_SAFETYTEST_ARG="CMAKE_SAFETYTEST_ARG_OFF" \
 	  -DAPP_VERSION=$(DEB_VERSION_UPSTREAM) -DVERSION=$(DEB_VERSION_UPSTREAM) LIB_INSTALL_DIR=/usr/lib/$(DEB_HOST_MULTIARCH)
-
-override_dh_auto_test:
-	echo "skip test"
