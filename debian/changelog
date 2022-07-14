@@ -1,11 +1,5 @@
-dde-calendar (1.0.0-1) stable; urgency=low
+dde-calendar (5.9.1) unstable; urgency=medium
 
-  * Autobuild Tag 1.0.0 
+  * Init.
 
- -- TagBuilder <tagbuilder@deepin.com>  Fri, 12 Aug 2016 17:34:34 +0000
-
-dde-calendar (1.0-1) unstable; urgency=medium
-
-  * Initial release
-
- -- Deepin Packages Builder <packages@linuxdeepin.com>  Fri, 18 Mar 2016 17:01:43 +0800
+ -- Clay Stan <claystan97@gmail.com>  Thu, 14 Jul 2022 14:13:00 +0800

@@ -3,28 +3,30 @@ Section: utils
 Priority: optional
 Maintainer: Deepin Packages Builder <packages@deepin.com>
 Build-Depends:
- debhelper (>=9),
+ debhelper-compat (= 13),
  cmake,
+ deepin-gettext-tools,
+ libdframeworkdbus-dev (>= 5.4.20~),
+ libdtkgui-dev (>= 5.5.17~),
+ libdtkwidget-dev (>= 5.5.17~),
+ libgtest-dev,
+ libqt5svg5-dev,
  pkg-config,
  qtbase5-dev,
- libdtkgui-dev,
- libdtkwidget-dev,
+ qttools5-dev,
  qttools5-dev-tools,
- deepin-gettext-tools,
- libdframeworkdbus-dev,
- libgtest-dev,
- qttools5-dev
-Standards-Version: 4.3.0
-Homepage: http://www.deepin.org
-Vcs-Git: https://github.com/linuxdeepin/dde-calendar
+Rules-Requires-Root: no
+Standards-Version: 4.6.1.0
+Homepage: https://github.com/linuxdeepin/dde-calendar
 
 Package: dde-calendar
-Architecture: any
+Architecture: linux-any
 Depends:
- ${shlibs:Depends},
- ${misc:Depends},
+ dde-qt5integration,
+ libdframeworkdbus2,
  dde-api,
- libdframeworkdbus2 (>= 5.3.0.34)
+ ${misc:Depends},
+ ${shlibs:Depends},
 Description: Calendar is a smart daily planner to schedule all things in life.
  Calendar is a small management tool for personal life that combines time 
  and events and integrates the function of memorizing and scheduling.
