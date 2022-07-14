@@ -169,7 +169,6 @@ void CTitleWidget::setSidebarStatus(bool status)
 void CTitleWidget::setSidebarCanDisplay(bool can)
 {
     m_sidebarCanDisplay = can;
-    emit signalSidebarStatusChange(m_sidebarstatus&m_sidebarCanDisplay);
 }
 
 bool CTitleWidget::getSidevarStatus()

@@ -47,6 +47,9 @@ QString DHuangliService::getFestivalMonth(quint32 year, quint32 month)
 //获取指定公历日的黄历信息
 QString DHuangliService::getHuangLiDay(quint32 year, quint32 month, quint32 day)
 {
+
+    if( 0 >= year || 0 >= month || 0 >= day)
+        return "";
     DServiceExitControl exitControl;
     if (!clientWhite(0)) {
         return QString();

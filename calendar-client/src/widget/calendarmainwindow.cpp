@@ -523,6 +523,28 @@ void Calendarmainwindow::createview()
 
 void Calendarmainwindow::resizeView()
 {
+
+    //帐户列表窗口（A），视图窗口(B),搜索结果窗口(C)
+    //窗口由大变小先隐藏A，在隐藏B
+    //窗口由小变大先显示B，在显示A
+    //不能出现只显示A和C的情况
+
+
+    //根据界面大小改变趋势设置侧边栏可显示状态
+    //如果帐户列表窗口为显示状态
+    if( m_titleWidget->getSidevarStatus()){
+        //如果显示搜索窗口，若需要显示帐户列表则界面的最小尺寸需要983，否则为826
+        int minWidth = m_opensearchflag ? 983 : 826 ;
+
+        if ( width() < minWidth) {
+            m_titleWidget->setSidebarCanDisplay(false);
+            m_sidebarView->setVisible(false);
+        } else if (width() > minWidth) {
+            m_titleWidget->setSidebarCanDisplay(true);
+            m_sidebarView->setVisible(true);
+        }
+    }
+
     m_transparentFrame->resize(width(), height() - 50);
 
     if (width() < CalendarSwitchWidth) {
@@ -569,16 +591,6 @@ void Calendarmainwindow::resizeEvent(QResizeEvent *event)
 {
     DMainWindow::resizeEvent(event);
 
-    static int preWidth = 0;    //上一次界面宽度
-    //根据界面大小改变趋势设置侧边栏可显示状态
-    if ((preWidth >= 826 || preWidth == 0) && width() < 826) {
-        m_titleWidget->setSidebarCanDisplay(false);
-    } else if ((preWidth <= 826) && width() > 826) {
-        m_titleWidget->setSidebarCanDisplay(true);
-    }
-
-    preWidth = width();
-
     resizeView();
 
     //保存窗口大小
@@ -612,15 +624,11 @@ void Calendarmainwindow::slotSreturnPressed()
         m_opensearchflag = true;
     }
     //如果为搜索状态
-    if (m_opensearchflag) {
-        //根据显示显示状态，是否显示左侧视图窗口
-        if (!m_isNormalStateShow) {
-            m_stackWidget->setVisible(false);
-        }
-        m_contentBackground->setVisible(true);
-    }
+    m_contentBackground->setVisible(m_opensearchflag);
+
     m_scheduleSearchView->slotsetSearch(m_searchEdit->text());
     updateHeight();
+    resizeView();
 }
 
 void Calendarmainwindow::slotStextChanged()
@@ -639,6 +647,7 @@ void Calendarmainwindow::slotStextChanged()
         m_contentBackground->setVisible(false);
         m_stackWidget->setVisible(true);
         m_opensearchflag = false;
+        resizeView();
     }
     updateHeight();
 }
@@ -815,14 +824,14 @@ void Calendarmainwindow::slotSearchFocusSwitch()
 
 void Calendarmainwindow::slotSidebarStatusChange(bool status)
 {
-    //设置帐户侧边栏显示状态
-    m_sidebarView->setVisible(status);
-    //展开侧边栏后最小宽度为826
-    if (status && width() < 826) {
-        resize(826, height());
-    } else {
-        resizeView(); //刷新界面
+    if(status){
+        //如果显示搜索窗口，若需要显示帐户列表则界面的最小尺寸需要983，否则为826
+        int minWidth = m_opensearchflag ? 983 : 826 ;
+        if (width() < minWidth){
+            resize(minWidth,height());
+        }
     }
+    m_sidebarView->setVisible(status);
 }
 
 void Calendarmainwindow::mouseMoveEvent(QMouseEvent *event)

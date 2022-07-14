@@ -42,7 +42,9 @@ CDateEdit::CDateEdit(QWidget *parent) : QDateEdit(parent)
 void CDateEdit::setDate(QDate date)
 {
     QDateEdit::setDate(date);
-    m_strCurrrentDate = date.toString(m_format+getLunarName(date));
+    //只有在农历日程时，才需要获取农历信息
+    QString dtFormat = m_showLunarCalendar ? m_format+getLunarName(date) : m_format;
+    m_strCurrrentDate = date.toString(dtFormat);
 }
 
 void CDateEdit::setDisplayFormat(QString format)
