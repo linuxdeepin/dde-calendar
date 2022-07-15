@@ -161,6 +161,7 @@ void CTitleWidget::setSidebarStatus(bool status)
 {
     m_sidebarstatus = status;
     updateSidebarIconStatus();
+    m_clickShowLeft = status;
     emit signalSidebarStatusChange(m_sidebarstatus&m_sidebarCanDisplay);
     //将状态保存在配置文件中
     gSetting->setUserSidebarStatus(status);
@@ -253,16 +254,16 @@ void CTitleWidget::resizeEvent(QResizeEvent *event)
     }
     QString str  = m_strPlaceHolder;
     QFontMetrics fontMetrice(m_searchEdit->font());
-    if(fontMetrice.width(str) > (m_searchEdit->width()-30)) {
+    if(fontMetrice.width(str) > (m_searchEdit->width()-30) && m_clickShowLeft == false) {
         str = fontMetrice.elidedText(str,Qt::ElideRight,m_searchEdit->width()-30);
         m_searchEdit->setPlaceHolder(str);
         m_searchEdit->setPlaceholderText(str);
     } else {
         m_searchEdit->setPlaceHolder(m_strPlaceHolder);
         m_searchEdit->setPlaceholderText(m_strPlaceHolder);
+        m_clickShowLeft = false;
     }
 }
-
 
 void CTitleWidget::changeEvent(QEvent *e) {
     QWidget::changeEvent(e);

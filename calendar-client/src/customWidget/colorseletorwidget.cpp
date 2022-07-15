@@ -104,6 +104,7 @@ DTypeColor::Ptr ColorSeletorWidget::getSelectedColorInfo()
         CConfigSettings::getInstance()->setOption("LastSysColorTypeNo", m_colorInfo->colorID());
     } else if (!m_colorInfo->colorCode().isEmpty() ){
         CConfigSettings::getInstance()->setOption("LastUserColor", m_colorInfo->colorCode());
+        CConfigSettings::getInstance()->setOption("LastSysColorTypeNo", "");
     }
     return m_colorInfo;
 }
@@ -125,17 +126,16 @@ void ColorSeletorWidget::setSelectedColorById(int colorId)
         if (m_colorGroup->buttons().size() > 0) {
             m_colorGroup->buttons().at(0)->click();
         }
+        m_userColorBtn->click();
         return;
     }
 
     //系统颜色则向后移一位
-    if (colorId == 8) {
+    if (colorId > 8) {
         colorId = 0;
-    } else {
-        ++colorId;
     }
     if (m_colorGroup->buttons().size() > 0) {
-        m_colorGroup->buttons().at(colorId)->click();
+         m_colorGroup->buttons().at(colorId)->click();
     }
 }
 
