@@ -102,7 +102,7 @@ DSchedule::Map queryScheduleProxy::querySchedule()
         if (queryDatetime.suggestDatetime.size() == 1) {
             //查询的日期
             QDate beginD = queryDatetime.suggestDatetime.at(0).datetime.date();
-            QDate endD = beginD;
+            QDate endD = endTime.date();
             //过滤包含查询日期的日程
             scheduleInfo = scheduleFileterByDate(scheduleInfo, beginD, endD);
         }
@@ -289,8 +289,8 @@ DSchedule::Map queryScheduleProxy::WeeklyScheduleFileter(DSchedule::Map &out, QS
             DSchedule::List scheduleList;
             for (int i = 0; i < iter->size(); ++i) {
                 DSchedule::Ptr schedule = iter.value().at(i);
-                if (!(scheduleList.contains(schedule)
-                      || weeklyIsIntersections(schedule->dtStart(), schedule->dtEnd(), weeklySet))) {
+                if (!scheduleList.contains(schedule)
+                      && weeklyIsIntersections(schedule->dtStart(), schedule->dtEnd(), weeklySet)) {
                     scheduleList.append(iter.value().at(i));
                 }
             }
@@ -314,8 +314,8 @@ DSchedule::Map queryScheduleProxy::MonthlyScheduleFileter(DSchedule::Map &out, i
         DSchedule::List scheduleList;
         for (int i = 0; i < iter->size(); ++i) {
             DSchedule::Ptr schedule = iter.value().at(i);
-            if (!(scheduleList.contains(schedule)
-                  || monthlyIsIntersections(schedule->dtStart(), schedule->dtEnd(), beginM, endM))) {
+            if (!scheduleList.contains(schedule)
+                  && monthlyIsIntersections(schedule->dtStart(), schedule->dtEnd(), beginM, endM)) {
                 scheduleList.append(iter.value().at(i));
             }
         }
@@ -410,7 +410,7 @@ DSchedule::Map queryScheduleProxy::scheduleFileterByDate(DSchedule::Map &schedul
             QDate endD = iter.value().at(i)->dtEnd().date();
             //过滤添加包含查询日期的日程
             if ((fileterBeginDate <= beginD && fileterEndDate >= beginD)
-                || (fileterBeginDate >= beginD && fileterBeginDate <= endD)) {
+                || (fileterBeginDate >= endD && fileterBeginDate <= endD)) {
                 scheduleList.append(iter.value().at(i));
             }
         }
