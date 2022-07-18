@@ -911,6 +911,8 @@ void DAccountModule::slotSyncState(const int syncState)
         //执行正常
         m_account->setSyncState(DAccount::Sync_Normal);
         m_accountDB->updateAccountInfo();
+        //同步成功后更新提醒任务
+        updateRemindSchedules(false);
         break;
     case 7506:
         //网络异常
