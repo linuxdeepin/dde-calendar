@@ -739,7 +739,12 @@ QMap<QDate, DSchedule::List> DAccountModule::getScheduleTimesOn(const QDateTime 
                     //需要扩展的天数
                     int extenddays = static_cast<int>(schedule->dtStart().daysTo(schedule->dtEnd()));
                     for (int i = 0; i <= extenddays; ++i) {
-                        m_scheduleMap[schedule->dtStart().date().addDays(i)].append(schedule);
+                        //如果扩展的日期在查询范围内则添加，否则退出
+                        if(m_scheduleMap.contains(schedule->dtStart().date().addDays(i))){
+                            m_scheduleMap[schedule->dtStart().date().addDays(i)].append(schedule);
+                        } else {
+                            break;
+                        }
                     }
                 } else {
                     m_scheduleMap[schedule->dtStart().date()].append(schedule);
