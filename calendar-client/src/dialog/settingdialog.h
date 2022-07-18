@@ -22,7 +22,7 @@
 #define SETTINGDIALOG_H
 
 #include "settingWidget/settingwidgets.h"
-
+#include "doanetworkdbus.h"
 #include <DSettingsDialog>
 #include <DIconButton>
 
@@ -58,7 +58,7 @@ public slots:
     void slotTypeAddBtnClickded();
     void slotSetUosSyncFreq(int freq);
     void slotUosManualSync();
-
+    void slotNetworkStateChange(DOANetWorkDBus::NetWorkState state);
     //更新同步项按钮状态
     void slotSyncTagButtonUpdate();
     //点击同步项时，更新uos账户状态
@@ -107,7 +107,7 @@ private:
     QLabel *m_syncTimeLabel = nullptr;
     QPushButton *m_syncBtn = nullptr;
     QWidget *m_manualSyncWidget = nullptr;
-
+    DOANetWorkDBus *m_ptrNetworkState;
     SettingWidget::SyncTagRadioButton *m_radiobuttonAccountCalendar = nullptr;
     SettingWidget::SyncTagRadioButton *m_radiobuttonAccountSetting = nullptr;
 };

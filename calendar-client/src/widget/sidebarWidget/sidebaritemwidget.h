@@ -32,6 +32,7 @@
 #include <QLabel>
 #include <QHBoxLayout>
 #include <QTreeWidgetItem>
+#include "doanetworkdbus.h"
 
 DWIDGET_USE_NAMESPACE
 
@@ -113,6 +114,8 @@ public slots:
     void slotSyncStatusChange(DAccount::AccountSyncState);
     //帐户同步状态发生改变
     void slotAccountStateChange();
+    // 网络状态发生改变
+    void slotNetworkStateChange(DOANetWorkDBus::NetWorkState state);
 
 protected:
     void initView();
@@ -127,6 +130,7 @@ private:
     DLabel *m_warningLabel = nullptr;           //尾部异常警告控件
     DIconButton *m_headIconButton = nullptr;    //头部展开控件
     DLabel *m_titleLabel = nullptr; //标题显示区域
+    DOANetWorkDBus   * m_ptrDoaNetwork;
 };
 
 #endif // ITEMWIDGET_H

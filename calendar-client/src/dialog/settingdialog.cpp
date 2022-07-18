@@ -267,6 +267,17 @@ void CSettingDialog::initConnect()
     //TODO:更新union帐户的的同步频率
     connect(m_syncFreqComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &CSettingDialog::slotSetUosSyncFreq);
     connect(m_syncBtn, &QPushButton::clicked, this, &CSettingDialog::slotUosManualSync);
+    connect(m_ptrNetworkState,&DOANetWorkDBus::sign_NetWorkChange,this,&CSettingDialog::slotNetworkStateChange);
+}
+
+void CSettingDialog::slotNetworkStateChange(DOANetWorkDBus::NetWorkState state) {
+    if(DOANetWorkDBus::NetWorkState::Active == state) {
+        if (gUosAccountItem->isCanSyncSetting() || gUosAccountItem->isCanSyncShedule()) {
+            m_syncBtn->setEnabled(true);
+        }
+    } else if(DOANetWorkDBus::NetWorkState::Disconnect == state) {
+        m_syncBtn->setEnabled(false);
+    }
 }
 
 void CSettingDialog::initData()
@@ -361,6 +372,7 @@ void CSettingDialog::initSyncFreqWidget()
 void CSettingDialog::initManualSyncButton()
 {
     m_manualSyncWidget = new QWidget;
+    m_ptrNetworkState = new DOANetWorkDBus(this);
     m_manualSyncWidget->setObjectName("ManualSyncWidget");
     m_syncBtn = new QPushButton(m_manualSyncWidget);
     m_syncBtn->setFixedSize(266, 36);

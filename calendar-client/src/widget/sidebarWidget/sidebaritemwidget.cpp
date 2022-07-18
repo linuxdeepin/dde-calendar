@@ -22,6 +22,7 @@
 #include "accountmanager.h"
 #include <DFontSizeManager>
 #include <QVBoxLayout>
+#include <QTimer>
 
 SidebarItemWidget::SidebarItemWidget(QWidget *parent)
     : QWidget(parent)
@@ -187,7 +188,7 @@ void SidebarAccountItemWidget::initView()
     connect(m_headIconButton, &DIconButton::clicked, this, [this](){
         setSelectStatus(!m_selectStatus);
     });
-
+    m_ptrDoaNetwork = new DOANetWorkDBus(this);
     m_titleLabel = new DLabel(this);
     m_titleLabel->setFixedHeight(30);
     DFontSizeManager::instance()->bind(m_titleLabel, DFontSizeManager::T6);
@@ -218,7 +219,6 @@ void SidebarAccountItemWidget::initView()
     vLayout->addSpacing(18);
 
     this->setLayout(vLayout);
-
     if (m_accountItem->getAccount()->accountType() == DAccount::Account_UnionID) {
         resetRearIconButton();
     } else {
@@ -234,7 +234,28 @@ void SidebarAccountItemWidget::initConnect()
     connect(m_syncIconButton, &DIconButton::clicked, this, &SidebarAccountItemWidget::slotRearIconClicked);
     connect(m_accountItem.data(), &AccountItem::signalSyncStateChange, this, &SidebarAccountItemWidget::slotSyncStatusChange);
     connect(gAccountManager, &AccountManager::signalAccountStateChange, this, &SidebarAccountItemWidget::slotAccountStateChange);
+    connect(m_ptrDoaNetwork,&DOANetWorkDBus::sign_NetWorkChange,this,&SidebarAccountItemWidget::slotNetworkStateChange);
 }
+
+ void SidebarAccountItemWidget::slotNetworkStateChange(DOANetWorkDBus::NetWorkState state) {
+     //控件不显示则不处理
+     if ( !m_accountItem || m_accountItem->getAccount()->accountType() != DAccount::Account_UnionID) {
+         return;
+     }
+     if(DOANetWorkDBus::NetWorkState::Disconnect == state) {
+         m_syncIconButton->hide();
+         m_warningLabel->show();
+         QString msg = m_accountItem->getSyncMsg(m_accountItem->getAccount()->syncState());
+         m_warningLabel->setToolTip(msg);
+     } else if(DOANetWorkDBus::NetWorkState::Active == state) {
+         m_warningLabel->hide();
+         if (m_accountItem->isCanSyncSetting() || m_accountItem->isCanSyncShedule()) {
+             m_syncIconButton->show();
+         } else {
+             m_syncIconButton->hide();
+         }
+     }
+ }
 
 void SidebarAccountItemWidget::resetRearIconButton()
 {
