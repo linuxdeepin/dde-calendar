@@ -194,16 +194,6 @@ bool DAccountModule::deleteScheduleTypeByID(const QString &typeID)
         //更新提醒任务
         updateRemindSchedules(false);
         m_accountDB->deleteSchedulesByScheduleTypeID(typeID, !m_account->isNetWorkAccount());
-        //操作内容给任务列表
-        if (m_account->isNetWorkAccount()) {
-            DUploadTaskData::Ptr uploadTask(new DUploadTaskData);
-            uploadTask->setTaskType(DUploadTaskData::TaskType::Delete);
-            uploadTask->setTaskObject(DUploadTaskData::Task_ScheduleType);
-            uploadTask->setObjectId(typeID);
-            m_accountDB->addUploadTask(uploadTask);
-            //开启上传任务
-            uploadNetWorkAccountData();
-        }
         emit signalScheduleUpdate();
     }
     DScheduleType::Ptr scheduleType = m_accountDB->getScheduleTypeByID(typeID);
@@ -212,12 +202,31 @@ bool DAccountModule::deleteScheduleTypeByID(const QString &typeID)
         QStringList scheduleIDList = m_accountDB->getScheduleIDListByTypeID(typeID);
         //弱删除
         m_accountDB->deleteScheduleTypeByID(typeID);
-        //TODO:发送操作内容给任务列表
 
-        //TODO:如果颜色不为系统类型则删除
+        //发送操作内容给任务列表
+        DUploadTaskData::Ptr uploadTask(new DUploadTaskData);
+        uploadTask->setTaskType(DUploadTaskData::TaskType::Delete);
+        uploadTask->setTaskObject(DUploadTaskData::Task_ScheduleType);
+        uploadTask->setObjectId(typeID);
+        m_accountDB->addUploadTask(uploadTask);
 
+        //如果颜色不为系统类型则删除
+        if(scheduleType->typeColor().privilege() != DTypeColor::PriSystem){
+            m_accountDB->deleteTypeColor(scheduleType->typeColor().colorID());
+            DUploadTaskData::Ptr uploadTask(new DUploadTaskData);
+            uploadTask->setTaskType(DUploadTaskData::TaskType::Delete);
+            uploadTask->setTaskObject(DUploadTaskData::Task_Color);
+            uploadTask->setObjectId(scheduleType->typeColor().colorID());
+            m_accountDB->addUploadTask(uploadTask);
+        }
+
+        //开启上传任务
+        uploadNetWorkAccountData();
     } else {
         m_accountDB->deleteScheduleTypeByID(typeID, 1);
+        if(scheduleType->typeColor().privilege() != DTypeColor::PriSystem){
+            m_accountDB->deleteTypeColor(scheduleType->typeColor().colorID());
+        }
     }
     if (scheduleType.isNull()) {
         qWarning() << "scheduleType isNull, typeID:" << typeID;
