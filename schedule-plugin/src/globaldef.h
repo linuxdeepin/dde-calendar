@@ -124,7 +124,7 @@
 //没有日程提醒回复语
 #define NO_SCHEDULE_TTS "您还没有日程提醒。"
 //删除重复日程询问回复语
-#define REPEST_SCHEDULE_CANCEL_TTS "该日程是循环的日程，请问是删除当前日程还是所有日程？"
+#define REPEST_SCHEDULE_CANCEL_TTS "该日程是循环的日程，请问是仅删除此日程还是删除全部？"
 //删除普通日程询问回复语
 #define CONFIRM_SCHEDULE_CANCEL_TTS "我要帮您取消这个日程吗？操作后将在日历中同步删除。"
 //删除选择日程回复语
