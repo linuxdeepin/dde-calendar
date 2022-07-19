@@ -22,12 +22,11 @@
 #define USERLOGIN_H
 
 #include "dsettingsdialog.h"
-
+#include "doanetworkdbus.h"
 #include <DLabel>
 #include <DIconButton>
 #include <DPushButton>
 #include <QNetworkAccessManager>
-
 DWIDGET_USE_NAMESPACE
 
 //配置界面账户登录部件
@@ -48,6 +47,9 @@ public slots:
     void slotAccountUpdate();
     //网络图片请求完成事件
     void slotReplyPixmapLoad(QNetworkReply *);
+    // 网络状态发生改变
+    void slotNetworkStateChange(DOANetWorkDBus::NetWorkState state);
+
 
 private:
     void initView();
@@ -61,6 +63,7 @@ private:
     QPushButton *m_buttonLogin = nullptr;
     QPushButton *m_buttonLoginOut = nullptr;
     QNetworkAccessManager *m_networkManager;
+    DOANetWorkDBus   * m_ptrDoaNetwork;
 };
 
 #endif // USERLOGIN_H

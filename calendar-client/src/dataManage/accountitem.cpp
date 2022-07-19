@@ -156,7 +156,7 @@ bool AccountItem::isCanSyncShedule()
  */
 bool AccountItem::isCanSyncSetting()
 {
-    if (getAccount()->accountType() != DAccount::Account_UnionID) {
+    if (!getAccount().isNull() && getAccount()->accountType() != DAccount::Account_UnionID) {
         return true;
     }
     DOANetWorkDBus netManger;

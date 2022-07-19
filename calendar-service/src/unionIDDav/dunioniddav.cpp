@@ -289,6 +289,7 @@ int SyncStack::downloadUidData(bool &isInitSyncData, SyncFileManage &fileManger)
         return -1;
     }
     qInfo() << "初始化表结构";
+
     SqliteQuery query(dbname_sync_thread);
 
     if (!query.exec(DAccountDataBase::sql_create_schedules))
@@ -338,31 +339,33 @@ int SyncStack::downloadUidData(bool &isInitSyncData, SyncFileManage &fileManger)
 int SyncStack::loadToTmp()
 {
     qInfo() << "将本地A的uploadTask同步到刚刚下载的B里";
-    SqliteQuery query(dbname_account_thread);
-    query.exec("select taskID,uploadType,uploadObject,objectID  from uploadTask");
-    while (query.next()) {
-        int type = query.value("uploadType").toInt();
-        int obj = query.value("uploadObject").toInt();
-        QString key_value = query.value("objectID").toString();
-        QString key_name = DUploadTaskData::sql_table_primary_key(obj);
-        QString table_name = DUploadTaskData::sql_table_name(obj);
+    if(accountState & DAccount::Account_Calendar) {
+        SqliteQuery query(dbname_account_thread);
+        query.exec("select taskID,uploadType,uploadObject,objectID  from uploadTask");
+        while (query.next()) {
+            int type = query.value("uploadType").toInt();
+            int obj = query.value("uploadObject").toInt();
+            QString key_value = query.value("objectID").toString();
+            QString key_name = DUploadTaskData::sql_table_primary_key(obj);
+            QString table_name = DUploadTaskData::sql_table_name(obj);
 
-        switch (type) {
-        case DUploadTaskData::Create:
-        case DUploadTaskData::Modify:
-            if (!replaceIntoRecord(table_name, selectRecord(table_name, key_name, key_value, dbname_account_thread), dbname_sync_thread))
-                return -1;
-            break;
-        case DUploadTaskData::Delete:
-            if (!deleteTableLine(table_name, key_name, key_value, dbname_sync_thread))
-                return -1;
-            break;
+            switch (type) {
+            case DUploadTaskData::Create:
+            case DUploadTaskData::Modify:
+                if (!replaceIntoRecord(table_name, selectRecord(table_name, key_name, key_value, dbname_account_thread), dbname_sync_thread))
+                    return -1;
+                break;
+            case DUploadTaskData::Delete:
+                if (!deleteTableLine(table_name, key_name, key_value, dbname_sync_thread))
+                    return -1;
+                break;
+            }
         }
-    }
 
-    qInfo() << "清空uploadTask";
-    if (!deleteTable("uploadTask", dbname_account_thread))
-        return -1;
+        qInfo() << "清空uploadTask";
+        if (!deleteTable("uploadTask", dbname_account_thread))
+            return -1;
+    }
 
     if (accountState & DAccount::Account_Setting) {
         qInfo() << "同步通用设置";
@@ -376,19 +379,22 @@ int SyncStack::loadToTmp()
                 return -1;
     }
 
+
     return 0;
 }
 
 int SyncStack::tmpToLoad(DDataSyncBase::UpdateTypes &updateType)
 {
-    qInfo() << "更新schedules、schedules、typeColor";
-    if (!syncIntoTable("schedules", dbname_sync_thread, dbname_account_thread))
-        return -1;
-    if (!syncIntoTable("scheduleType", dbname_sync_thread, dbname_account_thread))
-        return -1;
-    if (!syncIntoTable("typeColor", dbname_sync_thread, dbname_account_thread))
-        return -1;
-    updateType = DUnionIDDav::Update_Schedule | DUnionIDDav::Update_ScheduleType;
+    if (accountState & DAccount::Account_Calendar) {
+        qInfo() << "更新schedules、schedules、typeColor";
+        if (!syncIntoTable(" ", dbname_sync_thread, dbname_account_thread))
+            return -1;
+        if (!syncIntoTable("scheduleType", dbname_sync_thread, dbname_account_thread))
+            return -1;
+        if (!syncIntoTable("typeColor", dbname_sync_thread, dbname_account_thread))
+            return -1;
+        updateType = DUnionIDDav::Update_Schedule | DUnionIDDav::Update_ScheduleType;
+    }
 
     if (accountState & DAccount::Account_Setting) {
         qInfo() << "更新通用设置";

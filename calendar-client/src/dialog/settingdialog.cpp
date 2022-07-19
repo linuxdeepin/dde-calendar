@@ -272,7 +272,7 @@ void CSettingDialog::initConnect()
 
 void CSettingDialog::slotNetworkStateChange(DOANetWorkDBus::NetWorkState state) {
     if(DOANetWorkDBus::NetWorkState::Active == state) {
-        if (gUosAccountItem->isCanSyncSetting() || gUosAccountItem->isCanSyncShedule()) {
+        if (!gUosAccountItem.isNull() && (gUosAccountItem->isCanSyncSetting() || gUosAccountItem->isCanSyncShedule())) {
             m_syncBtn->setEnabled(true);
         }
     } else if(DOANetWorkDBus::NetWorkState::Disconnect == state) {

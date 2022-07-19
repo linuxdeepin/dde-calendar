@@ -20,7 +20,7 @@
 */
 #include "userloginwidget.h"
 #include "accountmanager.h"
-
+#include "doanetworkdbus.h"
 #include <DSettingsOption>
 #include <DSettingsWidgetFactory>
 #include <QHBoxLayout>
@@ -65,6 +65,14 @@ void UserloginWidget::initView()
     layout->addWidget(m_buttonLogin);
     layout->addWidget(m_buttonLoginOut);
     this->layout()->setAlignment(Qt::AlignLeft);
+    m_ptrDoaNetwork = new DOANetWorkDBus(this);
+    if(m_ptrDoaNetwork->getNetWorkState() == DOANetWorkDBus::NetWorkState::Active){
+        m_buttonLoginOut->setEnabled(true);
+        m_buttonLogin->setEnabled(true);
+    } else {
+        m_buttonLogin->setEnabled(false);
+        m_buttonLoginOut->setEnabled(false);
+    }
 
     m_networkManager = new QNetworkAccessManager(this);
 }
@@ -75,7 +83,18 @@ void UserloginWidget::initConnect()
     connect(m_buttonLoginOut, &QPushButton::clicked, this, &UserloginWidget::slotLogoutBtnClicked);
     connect(gAccountManager, &AccountManager::signalAccountUpdate, this, &UserloginWidget::slotAccountUpdate);
     connect(m_networkManager, &QNetworkAccessManager::finished, this, &UserloginWidget::slotReplyPixmapLoad);
+    connect(m_ptrDoaNetwork,&DOANetWorkDBus::sign_NetWorkChange,this,&UserloginWidget::slotNetworkStateChange);
 }
+
+ void UserloginWidget::slotNetworkStateChange(DOANetWorkDBus::NetWorkState state) {
+    if(DOANetWorkDBus::NetWorkState::Disconnect == state)  {
+        m_buttonLogin->setEnabled(false);
+        m_buttonLoginOut->setEnabled(false);
+    } else if(DOANetWorkDBus::NetWorkState::Active == state) {
+        m_buttonLoginOut->setEnabled(true);
+        m_buttonLogin->setEnabled(true);
+    }
+ }
 
 void UserloginWidget::slotLoginBtnClicked()
 {
