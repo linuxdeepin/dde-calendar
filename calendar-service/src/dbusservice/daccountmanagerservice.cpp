@@ -129,6 +129,15 @@ void DAccountManagerService::logout()
     m_accountManager->logout();
 }
 
+bool DAccountManagerService::isSupportUid()
+{
+    DServiceExitControl exitControl;
+    if (!clientWhite(0)) {
+        return false;
+    }
+    return m_accountManager->isSupportUid();
+}
+
 int DAccountManagerService::getfirstDayOfWeek() const
 {
     DServiceExitControl exitControl;

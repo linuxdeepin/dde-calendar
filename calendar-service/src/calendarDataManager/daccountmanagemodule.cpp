@@ -28,6 +28,7 @@ DAccountManageModule::DAccountManageModule(QObject *parent)
     , m_syncFileManage(new SyncFileManage())
     , m_accountManagerDB(new DAccountManagerDataBase)
 {
+    m_isSupportUid = m_syncFileManage->getSyncoperation()->hasAvailable();
     //新文件路径
     QString newDbPath = getDBPath();
     QString newDB(newDbPath + "/" + "accountmanager.db");
@@ -42,6 +43,10 @@ DAccountManageModule::DAccountManageModule(QObject *parent)
 
     //根据获取到的帐户信息创建对应的帐户服务
     foreach (auto account, m_accountList) {
+        //如果不支持云同步且帐户类型为UID则过滤
+        if(!m_isSupportUid && account->accountType() == DAccount::Account_UnionID){
+            continue;
+        }
         DAccountModule::Ptr accountModule = DAccountModule::Ptr(new DAccountModule(account));
         QObject::connect(accountModule.data(), &DAccountModule::signalSettingChange, this, &DAccountManageModule::slotSettingChange);
         m_accountModuleMap[account->accountID()] = accountModule;
@@ -61,8 +66,11 @@ DAccountManageModule::DAccountManageModule(QObject *parent)
     connect(&m_timer,&QTimer::timeout,this,&DAccountManageModule::slotClientIsOpen);
     m_timer.start(2000);
 
-    QObject::connect(m_syncFileManage->getSyncoperation(), &Syncoperation::signalLoginStatusChange, this, &DAccountManageModule::slotUidLoginStatueChange);
-    QObject::connect(m_syncFileManage->getSyncoperation(), &Syncoperation::SwitcherChange, this, &DAccountManageModule::slotSwitcherChange);
+    if(m_isSupportUid) {
+        QObject::connect(m_syncFileManage->getSyncoperation(), &Syncoperation::signalLoginStatusChange, this, &DAccountManageModule::slotUidLoginStatueChange);
+        QObject::connect(m_syncFileManage->getSyncoperation(), &Syncoperation::SwitcherChange, this, &DAccountManageModule::slotSwitcherChange);
+    }
+
     //第一次启动加载完成后发送帐户改变信号
     // emit signalLoginStatusChange();
 }
@@ -186,6 +194,11 @@ void DAccountManageModule::logout()
     m_syncFileManage->getSyncoperation()->optlogout();
 }
 
+bool DAccountManageModule::isSupportUid()
+{
+    return m_isSupportUid;
+}
+
 void DAccountManageModule::calendarOpen(bool isOpen)
 {
     //每次开启日历时需要同步数据
@@ -200,6 +213,24 @@ void DAccountManageModule::calendarOpen(bool isOpen)
 void DAccountManageModule::unionIDDataMerging()
 {
     m_accountList = m_accountManagerDB->getAccountList();
+
+    //如果不支持云同步
+    if(!m_isSupportUid) {
+        DAccount::Ptr unionidDB;
+        auto hasUnionid = [ =, &unionidDB](const DAccount::Ptr & account) {
+            if (account->accountType() == DAccount::Account_UnionID) {
+                unionidDB = account;
+                return true;
+            }
+            return false;
+        };
+        //如果数据库中有unionid帐户
+        if (std::any_of(m_accountList.begin(), m_accountList.end(), hasUnionid)) {
+            //如果包含则移除
+            removeUIdAccount(unionidDB);
+        }
+        return;
+    }
 
     DAccount::Ptr accountUnionid = m_syncFileManage->getuserInfo();
 

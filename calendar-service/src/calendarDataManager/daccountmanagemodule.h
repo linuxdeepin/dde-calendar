@@ -79,6 +79,8 @@ public:
     void login();
     //账户登出
     void logout();
+    //是否支持UID云同步
+    bool isSupportUid();
 
     void calendarOpen(bool isOpen);
 
@@ -120,6 +122,7 @@ private:
     QMap<QString, DAccountService::Ptr> m_AccountServiceMap[accountTypeCount];
     DCalendarGeneralSettings::Ptr m_generalSetting;
     QTimer m_timer;
+    bool m_isSupportUid = false;
 };
 
 #endif // DACCOUNTMANAGEMODULE_H

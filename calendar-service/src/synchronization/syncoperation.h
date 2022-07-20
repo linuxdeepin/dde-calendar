@@ -59,6 +59,12 @@ public:
 
     bool optUserData(QVariantMap &userInfoMap);
 
+    /**
+     * @brief hasAvailable      判断云同步是否提供Available方法
+     * @return
+     */
+    bool hasAvailable();
+
     //获取总开关状态
     SyncoptResult optGetMainSwitcher();
     //获取日历开关状态

@@ -932,6 +932,7 @@ void DAccountModule::slotSyncState(const int syncState)
         m_account->setSyncState(DAccount::Sync_StorageFull);
         break;
     default:
+        qWarning()<<"syncState:"<<syncState<<"fun:"<<__FUNCTION__<<" line:"<<__LINE__;
         //默认服务器异常
         m_account->setSyncState(DAccount::Sync_ServerException);
         break;

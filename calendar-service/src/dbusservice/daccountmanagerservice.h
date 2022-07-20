@@ -72,6 +72,8 @@ public slots:
     Q_SCRIPTABLE void login();
     //账户登出
     Q_SCRIPTABLE void logout();
+    //是否支持云同步
+    Q_SCRIPTABLE bool isSupportUid();
 
 signals:
     Q_SCRIPTABLE void accountUpdate();

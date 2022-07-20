@@ -27,12 +27,18 @@ AccountManager::AccountManager(QObject *parent)
 {
     initConnect();
     m_dbusRequest->clientIsShow(true);
+    m_isSupportUid  = m_dbusRequest->getIsSupportUid();
 }
 
 void AccountManager::initConnect()
 {
     connect(m_dbusRequest, &DbusAccountManagerRequest::signalGetAccountListFinish, this, &AccountManager::slotGetAccountListFinish);
     connect(m_dbusRequest, &DbusAccountManagerRequest::signalGetGeneralSettingsFinish, this, &AccountManager::slotGetGeneralSettingsFinish);
+}
+
+bool AccountManager::getIsSupportUid() const
+{
+    return m_isSupportUid;
 }
 
 AccountManager::~AccountManager()

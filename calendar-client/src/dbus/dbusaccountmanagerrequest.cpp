@@ -123,6 +123,19 @@ void DbusAccountManagerRequest::clientIsShow(bool isShow)
     callWithArgumentList(QDBus::NoBlock, QStringLiteral("calendarIsShow"), argumentList);
 }
 
+bool DbusAccountManagerRequest::getIsSupportUid()
+{
+    QList<QVariant> argumentList;
+    //
+    QDBusMessage  msg = callWithArgumentList(QDBus::Block, QStringLiteral("isSupportUid"), argumentList);
+    if (msg.type() == QDBusMessage::ReplyMessage) {
+        QVariant variant = msg.arguments().first();
+        return variant.toBool();
+    } else {
+        return false;
+    }
+}
+
 /**
  * @brief DbusAccountManagerRequest::slotCallFinished
  * dbus调用完成事件

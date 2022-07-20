@@ -61,6 +61,8 @@ public:
     //帐户登出
     void loginout();
 
+    bool getIsSupportUid() const;
+
 signals:
     void signalDataInitFinished();
     void signalAccountUpdate();
@@ -97,6 +99,7 @@ private:
     DCalendarGeneralSettings::Ptr m_settings;
 
     DbusAccountManagerRequest *m_dbusRequest;
+    bool m_isSupportUid = false;
 };
 
 #define gAccountManager AccountManager::getInstance()

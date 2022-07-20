@@ -228,6 +228,7 @@ void DUIDSynDataWorker::startUpdate()
     if (errCode == 0 && mSync.syncType.testFlag(DDataSyncBase::SyncType::Sync_Download)) {
         errCode =  mSync.tmpToLoad(updateType);
     }
+
     if (errCode == 0) {
         transactionLocker.commit();
     } else {
@@ -352,19 +353,25 @@ int SyncStack::loadToTmp()
             switch (type) {
             case DUploadTaskData::Create:
             case DUploadTaskData::Modify:
-                if (!replaceIntoRecord(table_name, selectRecord(table_name, key_name, key_value, dbname_account_thread), dbname_sync_thread))
+                if (!replaceIntoRecord(table_name, selectRecord(table_name, key_name, key_value, dbname_account_thread), dbname_sync_thread)){
+                    qWarning()<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
                     return -1;
+                }
                 break;
             case DUploadTaskData::Delete:
-                if (!deleteTableLine(table_name, key_name, key_value, dbname_sync_thread))
+                if (!deleteTableLine(table_name, key_name, key_value, dbname_sync_thread)){
+                    qWarning()<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
                     return -1;
+                }
                 break;
             }
         }
 
         qInfo() << "清空uploadTask";
-        if (!deleteTable("uploadTask", dbname_account_thread))
+        if (!deleteTable("uploadTask", dbname_account_thread)){
+            qWarning()<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
             return -1;
+        }
     }
 
     if (accountState & DAccount::Account_Setting) {
@@ -372,11 +379,15 @@ int SyncStack::loadToTmp()
         QDateTime managerDate = selectValue("vch_value", "calendargeneralsettings", "vch_key", "dt_update", dbname_manager_thread).toDateTime();
         QDateTime syncDate = selectValue("vch_value", "calendargeneralsettings", "vch_key", "dt_update", dbname_sync_thread).toDateTime();
         if (managerDate > syncDate)
-            if (!syncIntoTable("calendargeneralsettings", dbname_manager_thread, dbname_sync_thread))
+            if (!syncIntoTable("calendargeneralsettings", dbname_manager_thread, dbname_sync_thread)){
+                qWarning()<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
                 return -1;
+            }
         if (syncDate > managerDate)
-            if (!syncIntoTable("calendargeneralsettings", dbname_sync_thread, dbname_manager_thread))
+            if (!syncIntoTable("calendargeneralsettings", dbname_sync_thread, dbname_manager_thread)){
+                qWarning()<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
                 return -1;
+            }
     }
 
 
@@ -387,19 +398,27 @@ int SyncStack::tmpToLoad(DDataSyncBase::UpdateTypes &updateType)
 {
     if (accountState & DAccount::Account_Calendar) {
         qInfo() << "更新schedules、schedules、typeColor";
-        if (!syncIntoTable(" ", dbname_sync_thread, dbname_account_thread))
+        if (!syncIntoTable("schedules", dbname_sync_thread, dbname_account_thread)){
+            qWarning()<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
             return -1;
-        if (!syncIntoTable("scheduleType", dbname_sync_thread, dbname_account_thread))
+        }
+        if (!syncIntoTable("scheduleType", dbname_sync_thread, dbname_account_thread)){
+            qWarning()<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
             return -1;
-        if (!syncIntoTable("typeColor", dbname_sync_thread, dbname_account_thread))
+        }
+        if (!syncIntoTable("typeColor", dbname_sync_thread, dbname_account_thread)){
+            qWarning()<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
             return -1;
+        }
         updateType = DUnionIDDav::Update_Schedule | DUnionIDDav::Update_ScheduleType;
     }
 
     if (accountState & DAccount::Account_Setting) {
         qInfo() << "更新通用设置";
-        if (!syncIntoTable("calendargeneralsettings", dbname_sync_thread, dbname_manager_thread))
+        if (!syncIntoTable("calendargeneralsettings", dbname_sync_thread, dbname_manager_thread)){
+            qWarning()<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
             return -1;
+        }
         updateType = updateType | DUnionIDDav::Update_Setting;
     }
 
@@ -438,8 +457,10 @@ bool SyncStack::syncIntoTable(const QString &table_name, const QString &connecti
 {
     SqliteQuery source(QSqlDatabase::database(connection_name_source));
     SqliteQuery target(QSqlDatabase::database(connection_name_target));
-    if (!target.exec(" delete from " + table_name))
+    if (!target.exec(" delete from " + table_name)){
+        qWarning() << target.lastError() <<"table_name:"<<table_name;
         return false;
+    }
     source.exec(" select * from " + table_name);
     while (source.next()) {
         target.prepare("replace into " + table_name + " values(" + prepareQuest(source.record().count()) + ")");

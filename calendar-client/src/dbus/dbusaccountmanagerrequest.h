@@ -49,6 +49,8 @@ public:
     void setCalendarGeneralSettings(DCalendarGeneralSettings::Ptr ptr);
     //
     void clientIsShow(bool isShow);
+    //获取是否支持云同步
+    bool getIsSupportUid();
 
     //帐户登录
     void login();

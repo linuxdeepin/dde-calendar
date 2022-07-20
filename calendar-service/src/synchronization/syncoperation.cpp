@@ -167,6 +167,23 @@ bool Syncoperation::optUserData(QVariantMap &userInfoMap)
     }
 }
 
+bool Syncoperation::hasAvailable()
+{
+    QDBusMessage msg = QDBusMessage::createMethodCall(SYNC_DBUS_PATH,
+                                                      SYNC_DBUS_INTERFACE,
+                                                      "org.freedesktop.DBus.Introspectable",
+                                                      QStringLiteral("Introspect"));
+
+    QDBusMessage reply =  QDBusConnection::sessionBus().call(msg);
+
+    if (reply.type() == QDBusMessage::ReplyMessage) {
+        QVariant variant = reply.arguments().first();
+        return variant.toString().contains("\"Available\"");
+    } else {
+        return false;
+    }
+}
+
 SyncoptResult Syncoperation::optGetMainSwitcher()
 {
     SyncoptResult result;
