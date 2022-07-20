@@ -1154,11 +1154,11 @@ void DAccountDataBase::systemTypeTran(const DScheduleType::Ptr &type)
 {
     //如果为本地帐户且类型为默认类型
     if (m_account->accountType() == DAccount::Account_Local && type->privilege() == DScheduleType::Privilege::Read) {
-        if (type->displayName() == "Work") {
+        if (type->typeName() == "Work") {
             type->setDisplayName(tr("Work"));
-        } else if (type->displayName() == "Life") {
+        } else if (type->typeName() == "Life") {
             type->setDisplayName(tr("Life"));
-        } else if (type->displayName() == "Other") {
+        } else if (type->typeName() == "Other") {
             type->setDisplayName(tr("Other"));
         }
     }
