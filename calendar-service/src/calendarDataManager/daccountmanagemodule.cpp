@@ -110,8 +110,7 @@ void DAccountManageModule::setCalendarGeneralSettings(const QString &cgSet)
 
 int DAccountManageModule::getfirstDayOfWeek()
 {
-    DCalendarGeneralSettings::Ptr cgSetPtr = DCalendarGeneralSettings::Ptr(new DCalendarGeneralSettings);
-    return static_cast<int>(cgSetPtr->firstDayOfWeek());
+    return static_cast<int>(m_generalSetting->firstDayOfWeek());
 }
 
 void DAccountManageModule::setFirstDayOfWeek(const int firstday)
@@ -129,8 +128,7 @@ void DAccountManageModule::setFirstDayOfWeek(const int firstday)
 
 int DAccountManageModule::getTimeFormatType()
 {
-    DCalendarGeneralSettings::Ptr cgSetPtr = DCalendarGeneralSettings::Ptr(new DCalendarGeneralSettings);
-    return static_cast<int>(cgSetPtr->timeShowType());
+    return static_cast<int>(m_generalSetting->timeShowType());
 }
 
 void DAccountManageModule::setTimeFormatType(const int timeType)
