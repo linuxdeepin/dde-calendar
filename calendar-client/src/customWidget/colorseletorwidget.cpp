@@ -131,9 +131,12 @@ void ColorSeletorWidget::setSelectedColorById(int colorId)
     }
 
     //系统颜色则向后移一位
-    if (colorId > 8) {
-        colorId = 0;
-    }
+    //系统颜色则向后移一位
+       if (colorId == 8) {
+           colorId = 0;
+       } else {
+           ++colorId;
+       }
     if (m_colorGroup->buttons().size() > 0) {
          m_colorGroup->buttons().at(colorId)->click();
     }
