@@ -293,7 +293,7 @@ bool CScheduleDlg::createSchedule(const QString &scheduleTypeId)
         if (m_endrepeattimes->text().isEmpty()) {
             return false;
         }
-        schedule->recurrence()->setDuration(m_endrepeattimes->text().toInt());
+        schedule->recurrence()->setDuration(m_endrepeattimes->text().toInt() + 1 );
 
     } else if (m_endrepeatCombox->currentIndex() == 2) {
         //结束与日期
@@ -1328,7 +1328,7 @@ void CScheduleDlg::initRmindRpeatUI()
     } else {
         //结束与次数
         m_endrepeatCombox->setCurrentIndex(1);
-        m_endrepeattimes->setText(QString::number(m_scheduleDataInfo->recurrence()->duration()));
+        m_endrepeattimes->setText(QString::number(m_scheduleDataInfo->recurrence()->duration()-1));
     }
     sloteRpeatactivated(m_endrepeatCombox->currentIndex());
 }
