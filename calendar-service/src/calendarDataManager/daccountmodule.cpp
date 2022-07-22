@@ -743,7 +743,12 @@ QMap<QDate, DSchedule::List> DAccountModule::getScheduleTimesOn(const QDateTime 
         } else {
             //普通日程
             //如果在查询时间范围内
-            if (!(schedule->dtEnd() < dtStart || schedule->dtStart() > dtEnd)) {
+            QDateTime queryDtStart = dtStart;
+            //如果日程为全天日程，则查询的开始时间设置为0点，因为全天日程的开始和结束时间都是0点
+            if(schedule->allDay()){
+                queryDtStart.setTime(QTime(0,0,0));
+            }
+            if (!(schedule->dtEnd() < queryDtStart || schedule->dtStart() > dtEnd)) {
                 if (extend && schedule->isMultiDay()) {
                     //需要扩展的天数
                     int extenddays = static_cast<int>(schedule->dtStart().daysTo(schedule->dtEnd()));
@@ -791,10 +796,15 @@ DSchedule::List DAccountModule::getFestivalSchedule(const QDateTime &dtStart, co
 
 void DAccountModule::extendRecurrence(DSchedule::Map &scheduleMap, const DSchedule::Ptr &schedule, const QDateTime &dtStart, const QDateTime &dtEnd, bool extend)
 {
+    QDateTime queryDtStart = dtStart;
+    //如果日程为全天日程，则查询的开始时间设置为0点，因为全天日程的开始和结束时间都是0点
+    if(schedule->allDay()){
+        queryDtStart.setTime(QTime(0,0,0));
+    }
     if (schedule->recurs()) {
         //获取日程的开始结束时间差
         qint64 interval = schedule->dtStart().secsTo(schedule->dtEnd());
-        QList<QDateTime> dtList = schedule->recurrence()->timesInInterval(dtStart, dtEnd);
+        QList<QDateTime> dtList = schedule->recurrence()->timesInInterval(queryDtStart, dtEnd);
         foreach (auto &dt, dtList) {
             QDateTime scheduleDtEnd = dt.addSecs(interval);
             DSchedule::Ptr newSchedule = DSchedule::Ptr(schedule->clone());
@@ -816,7 +826,7 @@ void DAccountModule::extendRecurrence(DSchedule::Map &scheduleMap, const DSchedu
             }
         }
     } else {
-        if (!(schedule->dtStart() > dtEnd || schedule->dtEnd() < dtStart)) {
+        if (!(schedule->dtStart() > dtEnd || schedule->dtEnd() < queryDtStart)) {
             scheduleMap[schedule->dtStart().date()].append(schedule);
         }
     }
