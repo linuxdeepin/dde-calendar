@@ -1499,7 +1499,16 @@ void CScheduleDlg::resetColor(const AccountItem::Ptr &account)
         //如果是int型表示为旧颜色编号
         colorNum = colorId.toInt();
     } else {
-        colorNum = GTypeColor.keys().indexOf(colorId.toString());
+        QString &&colorIdStr = colorId.toString();
+        //如果都为空表示为初始状态，则选中第一个
+        if(colorName.isEmpty() && colorIdStr.isEmpty()){
+            colorNum = -1;
+        } else if (!colorIdStr.isEmpty()) {
+            //如果颜色id不为空则表示颜色为内置颜色
+            colorNum = GTypeColor.keys().indexOf(colorIdStr);
+        } else {
+            colorNum = 9;
+        }
     }
     m_colorSeletorWideget->setSelectedColorById(colorNum);
 }

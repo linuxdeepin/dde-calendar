@@ -86,7 +86,14 @@ void ScheduleTypeEditDlg::setAccount(AccountItem::Ptr account)
             //如果是int型表示为旧颜色编号
             colorNum = colorId.toInt();
         } else {
-            colorNum = GTypeColor.keys().indexOf(colorId.toString());
+            QString &&colorIdStr = colorId.toString();
+            if(colorName.isEmpty() && colorIdStr.isEmpty()){
+                colorNum = -1;
+            } else if (!colorIdStr.isEmpty()) {
+                colorNum = GTypeColor.keys().indexOf(colorIdStr);
+            } else {
+                colorNum = 9;
+            }
         }
         m_colorSeletor->setSelectedColorById(colorNum);
     } break;

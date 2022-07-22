@@ -121,22 +121,23 @@ void ColorSeletorWidget::setSelectedColorByIndex(int index)
 
 void ColorSeletorWidget::setSelectedColorById(int colorId)
 {
-    //如果是用户自定义颜色则直接选第一个
-    if ((colorId > 8 || colorId < 0) && m_userColorBtn) {
+    //默认选择第一个
+    if( colorId < 0 ) {
         if (m_colorGroup->buttons().size() > 0) {
             m_colorGroup->buttons().at(0)->click();
         }
+        return;
+    } else if ( colorId == 9 ) {
         m_userColorBtn->click();
         return;
     }
 
     //系统颜色则向后移一位
-    //系统颜色则向后移一位
-       if (colorId == 8) {
-           colorId = 0;
-       } else {
-           ++colorId;
-       }
+    if (colorId == 8) {
+        colorId = 0;
+    } else {
+        ++colorId;
+    }
     if (m_colorGroup->buttons().size() > 0) {
          m_colorGroup->buttons().at(colorId)->click();
     }
