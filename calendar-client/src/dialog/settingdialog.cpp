@@ -372,6 +372,7 @@ void CSettingDialog::initSyncFreqWidget()
     m_syncFreqComboBox->addItem(tr("30 mins"),  DAccount::SyncFreq_30Mins);
     m_syncFreqComboBox->addItem(tr("1 hour"),   DAccount::SyncFreq_1hour);
     m_syncFreqComboBox->addItem(tr("24 hours"), DAccount::SyncFreq_24hour);
+    m_syncFreqComboBox->setCurrentIndex(1); // 默认15分钟
 }
 
 void CSettingDialog::initManualSyncButton()
