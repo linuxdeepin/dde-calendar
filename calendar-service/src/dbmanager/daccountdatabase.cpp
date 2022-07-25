@@ -1153,7 +1153,7 @@ void DAccountDataBase::initSysType()
 void DAccountDataBase::systemTypeTran(const DScheduleType::Ptr &type)
 {
     //如果为本地帐户且类型为默认类型
-    if (m_account->accountType() == DAccount::Account_Local && type->privilege() == DScheduleType::Privilege::Read) {
+    if ((m_account->accountType() == DAccount::Account_Local || m_account->accountType() == DAccount::Account_UnionID) && type->privilege() == DScheduleType::Privilege::Read) {
         if (type->typeName() == "Work") {
             type->setDisplayName(tr("Work"));
         } else if (type->typeName() == "Life") {
