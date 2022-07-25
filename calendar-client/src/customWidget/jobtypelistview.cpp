@@ -184,6 +184,16 @@ bool JobTypeListView::canAdd()
     return account->getScheduleTypeList().count() < 20;
 }
 
+void JobTypeListView::setItemEnabled(bool b)
+{
+    if (!m_modelJobType) return;
+
+    for (int i = 0; i < m_modelJobType->rowCount(); ++i) {
+        QStandardItem *item = m_modelJobType->item(i);
+        item->setEnabled(b);
+    }
+}
+
 int JobTypeListView::addJobTypeItem(const DScheduleType &info)
 {
     int itemHeight = 0;

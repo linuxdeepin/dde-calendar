@@ -77,6 +77,7 @@ private:
     void setTimeType(int value);
     void accountUpdate();
 
+    void setTypeEnable(int index);
 private:
     void initWidget();
     void initConnect();

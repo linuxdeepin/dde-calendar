@@ -451,6 +451,7 @@ void CSettingDialog::slotAccountCurrentChanged(int index)
 {
     if (m_scheduleTypeWidget) {
         m_scheduleTypeWidget->updateCalendarAccount(m_accountComboBox->itemData(index).toString());
+        setTypeEnable(index);
     }
 }
 
@@ -545,7 +546,10 @@ void CSettingDialog::slotAccountStateChange()
             m_syncFreqComboBox->setEnabled(false);
         }
     }
-
+    if (m_accountComboBox && m_typeAddBtn)
+    {
+        setTypeEnable(m_accountComboBox->currentIndex());
+    }
 }
 
 void CSettingDialog::setFirstDayofWeek(int value)
@@ -593,6 +597,23 @@ void CSettingDialog::accountUpdate()
         m_accountComboBox->setCurrentIndex(0);
     m_accountComboBox->blockSignals(false);
     slotAccountCurrentChanged(m_accountComboBox->currentIndex());
+}
+
+void CSettingDialog::setTypeEnable(int index)
+{
+    if (!gUosAccountItem) return;
+
+    QString accountId = m_accountComboBox->itemData(index).toString();
+
+    AccountItem::Ptr account = gAccountManager->getAccountItemByAccountId(accountId);
+
+    if (account->getAccount()->accountType() == DAccount::Account_Local || gUosAccountItem->isCanSyncShedule()) {
+        m_typeAddBtn->setEnabled(true);
+        m_scheduleTypeWidget->setItemEnabled(true);
+    } else {
+        m_typeAddBtn->setEnabled(false);
+        m_scheduleTypeWidget->setItemEnabled(false);
+    }
 }
 
 QPair<QWidget *, QWidget *> CSettingDialog::createFirstDayofWeekWidget(QObject *obj)

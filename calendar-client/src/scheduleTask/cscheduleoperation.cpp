@@ -439,7 +439,9 @@ bool CScheduleOperation::scheduleIsInvariant(const DSchedule::Ptr &schedule)
         DOANetWorkDBus netManger;
         //网络判断
         //如果uid日历同步关闭则日程不可修改
-        if (netManger.getNetWorkState() != DOANetWorkDBus::Active || !account->accountState().testFlag(DAccount::Account_Open)) {
+        if (netManger.getNetWorkState() != DOANetWorkDBus::Active
+                || !account->accountState().testFlag(DAccount::Account_Open)
+                || !account->accountState().testFlag(DAccount::Account_Calendar)) {
             return true;
         }
     }

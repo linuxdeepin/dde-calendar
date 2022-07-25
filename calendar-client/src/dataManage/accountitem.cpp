@@ -40,7 +40,6 @@ void AccountItem::initConnect()
     connect(m_dbusRequest, &DbusAccountRequest::signalAccountStateChange, this, &AccountItem::signalAccountStateChange);
     connect(m_dbusRequest, &DbusAccountRequest::signalSyncStateChange, this, &AccountItem::slotSyncStateChange);
     connect(m_dbusRequest, &DbusAccountRequest::signalAccountStateChange, this, &AccountItem::slotAccountStateChange);
-    connect(m_dbusRequest, &DbusAccountRequest::signalDtLastUpdate, this, &AccountItem::signalDtLastUpdate);
 }
 
 /**
