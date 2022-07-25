@@ -348,9 +348,10 @@ void DAccountManageModule::slotTimeFormatType(const int timeType)
 void DAccountManageModule::slotUidLoginStatueChange(const int status)
 {
     //因为有时登录成功会触发2次
-    static int oldStatus = 0;
-    if (oldStatus != status) {
-        oldStatus = status;
+    static QList<int> oldStatus{};
+    //登录成功后会触发多次，状态也不一致。比如登录后会连续触发 1 -- 4 -- 1 信号
+    if (!oldStatus.contains(status)) {
+        oldStatus.append(status);
     } else {
         //如果当前状态和上次状态一直，则退出
         return;
@@ -361,11 +362,16 @@ void DAccountManageModule::slotUidLoginStatueChange(const int status)
 
     switch (status) {
     case 1: {
+        //移除登出状态
+        if(oldStatus.contains(3)){
+            oldStatus.removeAt(oldStatus.indexOf(3));
+        }
+
         //登陆成功
         DAccount::Ptr accountUnionid = m_syncFileManage->getuserInfo();
         if (accountUnionid.isNull() || accountUnionid->accountName().isEmpty()) {
             qWarning() << "Error getting account information";
-            oldStatus = 0;
+            oldStatus.removeAt(oldStatus.indexOf(1));
             return;
         }
         addUIdAccount(accountUnionid);
@@ -383,6 +389,10 @@ void DAccountManageModule::slotUidLoginStatueChange(const int status)
         }
     } break;
     case 3: {
+        //移除登录状态
+        if(oldStatus.contains(1)){
+            oldStatus.removeAt(oldStatus.indexOf(1));
+        }
         //登出
         if (m_AccountServiceMap[DAccount::Type::Account_UnionID].size() > 0) {
             //如果存在UID帐户则移除相关信息
