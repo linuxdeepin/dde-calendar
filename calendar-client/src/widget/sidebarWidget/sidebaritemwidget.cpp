@@ -245,7 +245,7 @@ void SidebarAccountItemWidget::initConnect()
      if(DOANetWorkDBus::NetWorkState::Disconnect == state) {
          m_syncIconButton->hide();
          m_warningLabel->show();
-         QString msg = m_accountItem->getSyncMsg(m_accountItem->getAccount()->syncState());
+         QString msg = m_accountItem->getSyncMsg(DAccount::AccountSyncState::Sync_NetworkAnomaly);
          m_warningLabel->setToolTip(msg);
      } else if(DOANetWorkDBus::NetWorkState::Active == state) {
          m_warningLabel->hide();
