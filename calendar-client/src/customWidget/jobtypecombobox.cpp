@@ -21,7 +21,6 @@
 #include "jobtypecombobox.h"
 
 #include <DPushButton>
-#include <DPaletteHelper>
 
 #include <QLayout>
 #include <QPainter>

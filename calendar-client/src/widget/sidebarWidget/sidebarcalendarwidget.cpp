@@ -23,7 +23,7 @@
 #include "constants.h"
 #include "units.h"
 
-#include <DPaletteHelper>
+#include <DApplicationHelper>
 #include <QMouseEvent>
 
 QDate SidebarCalendarKeyButton::m_selectedData = QDate();
@@ -330,11 +330,11 @@ void SidebarCalendarKeyButton::paintEvent(QPaintEvent *event)
 
     if (m_displayedDate == m_selectedData && withinTimeFrame(m_displayedDate)) {
         painter.setPen(Qt::NoPen);
-        painter.setBrush(DPaletteHelper::instance()->palette(this).highlight());
+        painter.setBrush(DApplicationHelper::instance()->palette(this).highlight());
         //绘制高亮背景
         painter.drawEllipse(rectf);
         //设置高亮下的字体颜色
-        painter.setPen(DPaletteHelper::instance()->palette(this).highlightedText().color());
+        painter.setPen(DApplicationHelper::instance()->palette(this).highlightedText().color());
     } else if (!(m_displayedDate.year() == m_displayedMonth.year() && m_displayedDate.month() == m_displayedMonth.month())){
         //设置正常显示状态下的字体颜色
         painter.setOpacity(0.3);

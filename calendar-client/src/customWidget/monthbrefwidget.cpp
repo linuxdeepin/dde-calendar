@@ -23,7 +23,7 @@
 #include "scheduledatamanage.h"
 #include "calendarglobalenv.h"
 
-#include <DPaletteHelper>
+#include <DApplicationHelper>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QGridLayout>
@@ -279,14 +279,14 @@ void CMonthDayRectWidget::paintEvent(QPaintEvent *event)
     font.setPixelSize(int(r/20.0*12));
     painter.setFont(font);
 
-    QColor highColor = DPaletteHelper::instance()->palette(this).highlight().color();
+    QColor highColor = DApplicationHelper::instance()->palette(this).highlight().color();
 
     if (m_date == QDate::currentDate() && m_globaldata->isBelongMonth(m_date)) {
         //当天日期
         painter.setBrush(highColor);
         painter.setPen(Qt::NoPen);
         painter.drawEllipse(rectf);
-        painter.setPen(DPaletteHelper::instance()->palette(this).highlightedText().color());
+        painter.setPen(DApplicationHelper::instance()->palette(this).highlightedText().color());
         painter.drawText(rectf, Qt::AlignCenter, text);
     } else if (m_globaldata->isSelectedDate(m_date)) {
         //被选中的日期
@@ -337,13 +337,13 @@ void CMonthDayRectWidget::paintEvent(QPaintEvent *event)
 
     if (m_pressed) {
         //按下状态，绘制点击效果
-        painter.setBrush(DPaletteHelper::instance()->palette(this).text());
+        painter.setBrush(DApplicationHelper::instance()->palette(this).text());
         painter.setPen(Qt::NoPen);
         painter.setOpacity(0.3);
         painter.drawEllipse(rectf);
     } else if (m_hovered) {
         //悬浮状态，绘制悬浮效果
-        painter.setBrush(DPaletteHelper::instance()->palette(this).text());
+        painter.setBrush(DApplicationHelper::instance()->palette(this).text());
         painter.setOpacity(0.2);
         painter.setPen(Qt::NoPen);
         painter.drawEllipse(rectf);

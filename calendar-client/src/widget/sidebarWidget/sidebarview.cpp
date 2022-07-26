@@ -22,7 +22,6 @@
 #include "calendarmanage.h"
 #include "widget/monthWidget/monthdayview.h"
 #include "widget/dayWidget/daymonthview.h"
-#include "DPaletteHelper"
 #include <QVBoxLayout>
 #include <QPixmap>
 

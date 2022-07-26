@@ -19,7 +19,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "cpushbutton.h"
-#include <DPaletteHelper>
+#include <DApplicationHelper>
 #include <DHiDPIHelper>
 #include <DGuiApplicationHelper>
 #include <QMouseEvent>
@@ -44,7 +44,7 @@ CPushButton::CPushButton(QWidget *parent) : QWidget(parent)
     m_iconButton->setFixedSize(16, 16);
     m_iconButton->setFlat(true);
 
-    DPalette palette = DPaletteHelper::instance()->palette(this);
+    DPalette palette = DApplicationHelper::instance()->palette(this);
     QPalette pa = m_textLabel->palette();
 
     //设置深浅色主题下正常状态时的文本颜色，与下拉框颜色对其
@@ -94,7 +94,7 @@ void CPushButton::mouseReleaseEvent(QMouseEvent *event)
 void CPushButton::paintEvent(QPaintEvent *event)
 {
     QWidget::paintEvent(event);
-    DPalette palette = DPaletteHelper::instance()->palette(this);
+    DPalette palette = DApplicationHelper::instance()->palette(this);
     QPainter painter(this);
     // 反走样
     painter.setRenderHint(QPainter::Antialiasing);
