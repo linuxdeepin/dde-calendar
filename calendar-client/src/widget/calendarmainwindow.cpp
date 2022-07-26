@@ -68,6 +68,7 @@
 #include <QColorDialog>
 #include <QApplication>
 #include <QWidgetAction>
+#include <QDesktopServices>
 
 #include <stdlib.h>
 #include <functional>
@@ -370,8 +371,13 @@ void Calendarmainwindow::initUI()
     //menuTitleBar->addAction(pSetting);
     menuTitleBar->insertSeparator(menuTitleBar->actions()[0]);
     menuTitleBar->insertAction(menuTitleBar->actions()[0], pSetting);
-
     connect(pSetting, &QAction::triggered, this, &Calendarmainwindow::slotOpenSettingDialog);
+
+    //添加隐私政策
+    QAction *pPrivacy = new QAction(tr("Privacy Policy"), menuTitleBar);
+    menuTitleBar->insertSeparator(menuTitleBar->actions()[1]);
+    menuTitleBar->insertAction(menuTitleBar->actions()[1], pPrivacy);
+    connect(pPrivacy, &QAction::triggered, this, &Calendarmainwindow::slotShowPrivacy);
 
     //接收设置按键焦点
     connect(m_titleWidget, &CTitleWidget::signalSetButtonFocus, [=] {
@@ -905,6 +911,28 @@ void Calendarmainwindow::slotOpenSettingDialog()
     delete m_dsdSetting;
     m_dsdSetting = nullptr;
     gCalendarManager->updateData();
+}
+
+void Calendarmainwindow::slotShowPrivacy()
+{
+    QString url = "";
+    QLocale locale;
+    QLocale::Country country = locale.country();
+    bool isCommunityEdition = DSysInfo::isCommunityEdition();
+    if (country == QLocale::China) {
+        if (isCommunityEdition) {
+            url = "https://www.deepin.org/zh/agreement/privacy/";
+        } else {
+            url = "https://www.uniontech.com/agreement/privacy-cn";
+        }
+    } else {
+        if (isCommunityEdition) {
+            url = "https://www.deepin.org/en/agreement/privacy/";
+        } else {
+            url = "https://www.uniontech.com/agreement/privacy-en";
+        }
+    }
+    QDesktopServices::openUrl(url);
 }
 
 void Calendarmainwindow::slotShowSyncToast(int syncNum)
