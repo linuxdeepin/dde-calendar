@@ -216,7 +216,7 @@ void CScheduleView::paintEvent(QPaintEvent *event)
                 painter.drawText(
                     QRect((m_leftMargin - hourTextWidth) / 2 - 5, m_topMargin - 8 + m_vPos[i],
                           hourTextWidth, hourTextHeight),
-                    Qt::AlignCenter, QTime(m_vHours[i], 0).toString("AP h 时"));
+                    Qt::AlignCenter, QTime(m_vHours[i], 0).toString(m_timeFormat.contains("AP") ? "AP h 时" : m_timeFormat));
             }
             painter.restore();
         } else {
@@ -239,7 +239,7 @@ void CScheduleView::paintEvent(QPaintEvent *event)
                 painter.drawText(
                     QRect((m_leftMargin - hourTextWidth) / 2 - 5, m_topMargin - 8 + m_vPos[i],
                           hourTextWidth, hourTextHeight),
-                    Qt::AlignCenter, QTime(m_vHours[i], 0).toString("AP h 时"));
+                    Qt::AlignCenter, QTime(m_vHours[i], 0).toString(m_timeFormat.contains("AP") ? "AP h 时" : m_timeFormat));
             }
             painter.restore();
 
