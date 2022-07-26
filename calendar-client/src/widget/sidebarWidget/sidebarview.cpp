@@ -44,6 +44,8 @@ void SidebarView::initView()
     hLayout->setSpacing(0);
 
     m_treeWidget = new QTreeWidget();
+    delegate = new SideBarTreeWidgetItemDelegate;
+    m_treeWidget->setItemDelegate(delegate);
     m_treeWidget->setHeaderHidden(true);
     m_treeWidget->setColumnCount(1);
     m_treeWidget->setExpandsOnDoubleClick(false);
@@ -52,7 +54,8 @@ void SidebarView::initView()
     m_treeWidget->setIndentation(0);    //设置item前间距为0
     m_treeWidget->setFocusPolicy(Qt::TabFocus);
     m_calendarWidget = new SidebarCalendarWidget(this);
-    m_calendarWidget->setFixedSize(180, 220);
+    m_calendarWidget->setFixedHeight(220);
+//    m_calendarWidget->setFixedSize(180, 220);
 
     DPushButton *btn = new DPushButton;
     btn->setFocusPolicy(Qt::NoFocus);

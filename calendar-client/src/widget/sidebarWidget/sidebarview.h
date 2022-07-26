@@ -27,6 +27,7 @@
 #include <DTreeWidget>
 #include <QWidget>
 #include <QTreeWidgetItem>
+#include "sidebartreewidgetitemdelegate.h"
 
 class SidebarView : public QWidget
 {
@@ -70,6 +71,8 @@ private:
     SidebarAccountItemWidget* m_unionItemWidget = nullptr;
 
     SidebarCalendarWidget *m_calendarWidget = nullptr;  //小日历
+
+    SideBarTreeWidgetItemDelegate *delegate = nullptr;
 };
 
 #endif // SIDEBARVIEW_H

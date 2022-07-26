@@ -27,7 +27,7 @@
 SidebarItemWidget::SidebarItemWidget(QWidget *parent)
     : QWidget(parent)
 {
-    setFixedWidth(178);
+//    setFixedWidth(178);
 }
 
 SidebarItemWidget *SidebarItemWidget::getAccountItemWidget(AccountItem::Ptr ptr)
