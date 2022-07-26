@@ -377,6 +377,7 @@ void DAccountManageModule::slotUidLoginStatueChange(const int status)
         addUIdAccount(accountUnionid);
 
         DAccountModule::Ptr accountModule = DAccountModule::Ptr(new DAccountModule(accountUnionid));
+        QObject::connect(accountModule.data(), &DAccountModule::signalSettingChange, this, &DAccountManageModule::slotSettingChange);
         m_accountModuleMap[accountUnionid->accountID()] = accountModule;
         DAccountService::Ptr accountService = DAccountService::Ptr(new DAccountService(accountUnionid->dbusPath(), accountUnionid->dbusInterface(), accountModule, this));
         if (!sessionBus.registerObject(accountService->getPath(), accountService->getInterface(), accountService.data(), options)) {

@@ -492,7 +492,7 @@ void CSettingDialog::slotSyncTagButtonUpdate()
     m_radiobuttonAccountSetting->setEnabled(gUosAccountItem->isEnableForUosAccount());
 }
 
-void CSettingDialog::slotSyncAccountStateUpdate(bool)
+void CSettingDialog::slotSyncAccountStateUpdate(bool status)
 {
     if (!gUosAccountItem)
         return;
@@ -510,6 +510,9 @@ void CSettingDialog::slotSyncAccountStateUpdate(bool)
         state = state & ~DAccount::Account_Calendar;
 
     gUosAccountItem->setAccountState(state);
+    if(status) {
+        slotUosManualSync();
+    }
 }
 
 void CSettingDialog::slotLastSyncTimeUpdate(const QString &datetime)
