@@ -123,7 +123,7 @@ SidebarTypeItemWidget::SidebarTypeItemWidget(DScheduleType::Ptr ptr, QWidget *pa
 void SidebarTypeItemWidget::initView()
 {
     QHBoxLayout *vLayout = new QHBoxLayout(this);
-    vLayout->setMargin(0);
+    vLayout->setContentsMargins(5, 0, 0, 0);
     vLayout->setSpacing(0);
     m_checkBox = new QCheckBox(this);
     QPalette palette = m_checkBox->palette();

@@ -15,7 +15,6 @@ void SideBarTreeWidgetItemDelegate::paint(QPainter *painter, const QStyleOptionV
         return;
     }
 
-    painter->save();
     painter->setRenderHint(QPainter::Antialiasing);
 
     QStyleOptionViewItem opt = option;
@@ -30,7 +29,6 @@ void SideBarTreeWidgetItemDelegate::paint(QPainter *painter, const QStyleOptionV
         rect.setWidth(rect.width() - 8);
     } break;
     default: {
-        painter->restore();
         QStyledItemDelegate::paint(painter, option, index);
         return;
     }
