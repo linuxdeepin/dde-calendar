@@ -133,6 +133,7 @@ void UserloginWidget::slotAccountUpdate()
         m_buttonLoginOut->show();
         DAccount::Ptr account = gUosAccountItem->getAccount();
         m_userNameLabel->setText(account->accountName());
+        m_userNameLabel->setToolTip(account->accountName());
         // 这里的url一定要带上http://头的， 跟在浏览器里输入其它链接不太一样，浏览器里面会自动转的，这里需要手动加上。
         m_networkManager->get(QNetworkRequest(account->avatar()));
     } else {
@@ -140,6 +141,7 @@ void UserloginWidget::slotAccountUpdate()
         m_buttonLoginOut->hide();
         m_buttonLogin->show();
         m_userNameLabel->setText("");
+        m_userNameLabel->setToolTip("");
         m_buttonImg->setIcon(QIcon::fromTheme("dde_calendar_account"));
     }
 }
