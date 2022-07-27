@@ -39,8 +39,7 @@ void SideBarTreeWidgetItemDelegate::paint(QPainter *painter, const QStyleOptionV
     clipPath.addRoundedRect(rect, radius, radius);
     painter->setClipPath(clipPath);
 
-    if (option.state & QStyle::State_MouseOver)
-    {
+    if (option.state & QStyle::State_MouseOver) {
         painter->fillRect(painter->clipBoundingRect(), option.palette.midlight());
     }
 }

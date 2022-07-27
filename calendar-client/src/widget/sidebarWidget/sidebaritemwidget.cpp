@@ -177,9 +177,9 @@ SidebarAccountItemWidget::SidebarAccountItemWidget(AccountItem::Ptr ptr, QWidget
 
 void SidebarAccountItemWidget::initView()
 {
-    QHBoxLayout *vLayout = new QHBoxLayout(this);
-    vLayout->setMargin(0);
-    vLayout->setSpacing(0);
+    QHBoxLayout *hLayout = new QHBoxLayout(this);
+    hLayout->setMargin(0);
+    hLayout->setSpacing(0);
     m_headIconButton = new DIconButton(this);
     m_headIconButton->setFlat(true);
     m_headIconButton->setFixedSize(16, 16);
@@ -211,14 +211,14 @@ void SidebarAccountItemWidget::initView()
     m_warningLabel->setFixedSize(QSize(18, 18));
     m_warningLabel->setPixmap(QIcon(":/icons/deepin/builtin/icons/dde_calendar_warning_light_32px.svg").pixmap(18, 18));
 
-    vLayout->addWidget(m_headIconButton);
-    vLayout->addWidget(m_titleLabel, 1);
-    vLayout->addWidget(m_syncIconButton);
-    vLayout->addWidget(m_warningLabel);
+    hLayout->addWidget(m_headIconButton);
+    hLayout->addWidget(m_titleLabel, 1);
+    hLayout->addWidget(m_syncIconButton);
+    hLayout->addWidget(m_warningLabel);
     //给控件右部留出足够的距离，防止被滚动条覆盖无法被点击事件
-    vLayout->addSpacing(18);
+    hLayout->addSpacing(10);
 
-    this->setLayout(vLayout);
+    this->setLayout(hLayout);
     if (m_accountItem->getAccount()->accountType() == DAccount::Account_UnionID) {
         resetRearIconButton();
     } else {

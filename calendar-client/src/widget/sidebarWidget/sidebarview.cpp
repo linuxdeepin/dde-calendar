@@ -45,6 +45,12 @@ void SidebarView::initView()
 
     m_treeWidget = new QTreeWidget();
     delegate = new SideBarTreeWidgetItemDelegate;
+
+    // 设置底色透明，否则展开/收起出现背景色
+    QPalette pal = m_treeWidget->palette();
+    pal.setBrush(QPalette::Background, QBrush(QColor(255, 255, 255, 0)));
+    m_treeWidget->setPalette(pal);
+
     m_treeWidget->setItemDelegate(delegate);
     m_treeWidget->setHeaderHidden(true);
     m_treeWidget->setColumnCount(1);
@@ -116,7 +122,9 @@ void SidebarView::initExpandStatus()
 void SidebarView::initLocalAccountItem()
 {
     if (nullptr != m_localItemWidget) {
-        m_localItemWidget->deleteLater();
+//        m_localItemWidget->deleteLater();
+        delete m_localItemWidget;
+        m_localItemWidget = nullptr;
     }
     QSharedPointer<AccountItem> localAccount = gAccountManager->getLocalAccountItem();
     if (nullptr == localAccount) {
