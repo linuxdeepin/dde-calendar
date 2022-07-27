@@ -22,8 +22,8 @@
 #define CSCHEDULEMANAGE_H
 
 #include "lunarmanager.h"
+#include "dbustimedate.h"
 
-#include <com_deepin_daemon_timedate.h>
 #include <QObject>
 
 struct ShowDateRange {
@@ -32,7 +32,7 @@ struct ShowDateRange {
     QDate stopDate;
 };
 
-typedef  com::deepin::daemon::Timedate DaemonTimeDate;
+typedef  DBusTimedate DaemonTimeDate;
 class CScheduleBaseWidget;
 /**
  * @brief The CalendarManage class

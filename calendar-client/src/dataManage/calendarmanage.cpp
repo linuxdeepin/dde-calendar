@@ -314,7 +314,7 @@ void CalendarManager::updateData()
 
 CalendarManager::CalendarManager(QObject *parent)
     : QObject(parent)
-    , m_timeDateDbus(new DaemonTimeDate(DBus_TimeDate_Name, DBus_TimeDate_Path, QDBusConnection::sessionBus(), this))
+    , m_timeDateDbus(new DaemonTimeDate(this))
     , m_currentDateTime(QDateTime::currentDateTime())
     , m_selectDate(m_currentDateTime.date())
     , m_weekDayFormat("ddd")
