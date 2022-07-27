@@ -55,6 +55,7 @@ private:
     void initView();
     void initConnect();
 
+    QPixmap pixmapToRound(const QPixmap &src, int radius);
 private:
     bool m_loginStatus;
     bool m_isManualQuit = false;

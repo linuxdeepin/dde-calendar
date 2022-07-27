@@ -86,7 +86,26 @@ void UserloginWidget::initConnect()
     connect(m_ptrDoaNetwork,&DOANetWorkDBus::sign_NetWorkChange,this,&UserloginWidget::slotNetworkStateChange);
 }
 
- void UserloginWidget::slotNetworkStateChange(DOANetWorkDBus::NetWorkState state) {
+QPixmap UserloginWidget::pixmapToRound(const QPixmap &src, int radius)
+{
+    QSize size(2*radius, 2*radius);
+    QPixmap pic(size);
+    pic.fill(Qt::transparent);
+
+    QPainterPath painterPath;
+    painterPath.addEllipse(QRect(0, 0, pic.width(), pic.height()));
+
+    QPainter painter(&pic);
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setClipPath(painterPath);
+
+    painter.drawPixmap(0, 0, src.scaled(size));
+    pic.setDevicePixelRatio(devicePixelRatioF());
+
+    return pic;
+}
+
+void UserloginWidget::slotNetworkStateChange(DOANetWorkDBus::NetWorkState state) {
     if(DOANetWorkDBus::NetWorkState::Disconnect == state)  {
         m_buttonLogin->setEnabled(false);
         m_buttonLoginOut->setEnabled(false);
@@ -137,7 +156,7 @@ void UserloginWidget::slotReplyPixmapLoad(QNetworkReply* reply)
     }
 
     if (!pixmap.isNull()) {
-        m_buttonImg->setIcon(pixmap);
+        m_buttonImg->setIcon(pixmapToRound( pixmap,32));
     }
 }
 
