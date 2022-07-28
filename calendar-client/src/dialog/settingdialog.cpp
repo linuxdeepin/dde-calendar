@@ -599,6 +599,8 @@ void CSettingDialog::accountUpdate()
     if (m_accountComboBox->currentIndex() < 0)
         m_accountComboBox->setCurrentIndex(0);
     m_accountComboBox->blockSignals(false);
+
+    m_syncFreqComboBox->setCurrentIndex(1);  //每次登录的时候 默认15分钟
     slotAccountCurrentChanged(m_accountComboBox->currentIndex());
 }
 
