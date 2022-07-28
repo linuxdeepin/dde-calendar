@@ -26,7 +26,7 @@ void CSystemdTimerControl::buildingConfiggure(const QVector<SystemDInfo> &infoVe
         return;
     QStringList fileNameList{};
     foreach (auto info, infoVector) {
-        fileNameList.append(QString("calendar-remind-%1-%2").arg(info.alarmID.mid(0, 8)).arg(info.laterCount));
+        fileNameList.append(QString("calendar-remind-%1-%2-%3").arg(info.accountID.mid(0,8)).arg(info.alarmID.mid(0, 8)).arg(info.laterCount));
         createService(fileNameList.last(), info);
         createTimer(fileNameList.last(), info.triggerTimer);
     }
@@ -37,7 +37,7 @@ void CSystemdTimerControl::stopSystemdTimerByJobInfos(const QVector<SystemDInfo>
 {
     QStringList fileNameList;
     foreach (auto info, infoVector) {
-        fileNameList.append(QString("calendar-remind-%1-%2").arg(info.alarmID.mid(0, 8)).arg(info.laterCount));
+        fileNameList.append(QString("calendar-remind-%1-%2-%3").arg(info.accountID.mid(0,8)).arg(info.alarmID.mid(0, 8)).arg(info.laterCount));
     }
     stopSystemdTimer(fileNameList);
 }
@@ -46,7 +46,7 @@ void CSystemdTimerControl::stopSystemdTimerByJobInfo(const SystemDInfo &info)
 {
     QStringList fileName;
     //停止刚刚提醒的稍后提醒，所以需要对提醒次数减一
-    fileName << QString("calendar-remind-%1-%2").arg(info.alarmID).arg(info.laterCount - 1);
+    fileName << QString("calendar-remind-%1-%2-%3").arg(info.accountID.mid(0,8)).arg(info.alarmID).arg(info.laterCount - 1);
     stopSystemdTimer(fileName);
 }
 
@@ -81,17 +81,17 @@ void CSystemdTimerControl::removeFile(const QStringList &fileName)
     }
 }
 
-void CSystemdTimerControl::stopAllRemindSystemdTimer()
+void CSystemdTimerControl::stopAllRemindSystemdTimer(const QString &accountID)
 {
-    execLinuxCommand("systemctl --user stop calendar-remind-*.timer");
+    execLinuxCommand(QString("systemctl --user stop calendar-remind-%1-*.timer").arg(accountID.mid(0,8)));
 }
 
-void CSystemdTimerControl::removeRemindFile()
+void CSystemdTimerControl::removeRemindFile(const QString &accountID)
 {
     QDir dir(m_systemdPath);
     if (dir.exists()) {
         QStringList filters;
-        filters << "calendar-remind";
+        filters << QString("calendar-remind-%1*").arg(accountID.mid(0,8));
         dir.setFilter(QDir::Files | QDir::NoSymLinks);
         dir.setNameFilters(filters);
         for (uint i = 0; i < dir.count(); ++i) {

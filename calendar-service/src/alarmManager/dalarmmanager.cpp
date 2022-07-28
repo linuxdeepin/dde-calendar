@@ -52,10 +52,13 @@ DAlarmManager::DAlarmManager(QObject *parent)
 
 void DAlarmManager::updateRemind(const DRemindData::List &remindList)
 {
+    if(remindList.size() == 0)
+        return;
+    QString &&accountID = remindList.at(0)->accountID();
     CSystemdTimerControl systemdTimerControl;
-    //清空日程提醒
-    systemdTimerControl.stopAllRemindSystemdTimer();
-    systemdTimerControl.removeRemindFile();
+    //清空该帐户下日程提醒
+    systemdTimerControl.stopAllRemindSystemdTimer(accountID);
+    systemdTimerControl.removeRemindFile(accountID);
 
     QVector<SystemDInfo> infoVector {};
     foreach (auto remind, remindList) {

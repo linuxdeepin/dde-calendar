@@ -54,12 +54,12 @@ public:
     /**
      * @brief stopAllRemindSystemdTimer 停止所有的日程定时任务
      */
-    void stopAllRemindSystemdTimer();
+    void stopAllRemindSystemdTimer(const QString &accountID);
 
     /**
      * @brief removeRemindFile      移除日程定时任务相关文件
      */
-    void removeRemindFile();
+    void removeRemindFile(const QString &accountID);
 
     /**
      * @brief startCalendarServiceSystemdTimer      开启日程后端定时器
