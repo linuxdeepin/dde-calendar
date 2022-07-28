@@ -27,7 +27,7 @@
 SidebarItemWidget::SidebarItemWidget(QWidget *parent)
     : QWidget(parent)
 {
-//    setFixedWidth(178);
+    setFixedWidth(170);
 }
 
 SidebarItemWidget *SidebarItemWidget::getAccountItemWidget(AccountItem::Ptr ptr)
@@ -216,7 +216,7 @@ void SidebarAccountItemWidget::initView()
     hLayout->addWidget(m_syncIconButton);
     hLayout->addWidget(m_warningLabel);
     //给控件右部留出足够的距离，防止被滚动条覆盖无法被点击事件
-    hLayout->addSpacing(10);
+    hLayout->addSpacing(15);
 
     this->setLayout(hLayout);
     if (m_accountItem->getAccount()->accountType() == DAccount::Account_UnionID) {
