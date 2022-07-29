@@ -246,7 +246,7 @@ bool CScheduleDlg::createSchedule(const QString &scheduleTypeId)
     if (m_textEdit->toPlainText().isEmpty()) {
         schedule->setSummary(m_textEdit->placeholderText());
     } else {
-        schedule->setSummary(m_textEdit->toPlainText());
+        schedule->setSummary(m_textEdit->toPlainText().trimmed());
     }
 
     if (schedule->summary().isEmpty()) {
@@ -451,7 +451,9 @@ void CScheduleDlg::slotTextChange()
         return;
     }
 
-    m_context = m_textEdit->toPlainText();
+    setOkBtnEnabled();
+
+    m_context = m_textEdit->toPlainText().trimmed();
 }
 
 void CScheduleDlg::slotendrepeatTextchange()
@@ -1547,6 +1549,13 @@ void CScheduleDlg::setOkBtnEnabled()
         m_OkBt->setEnabled(!m_endrepeattimes->text().isEmpty());
     } else {
         //日期  //永不
+        m_OkBt->setEnabled(true);
+    }
+
+    if(!m_textEdit->toPlainText().isEmpty() && m_textEdit->toPlainText().trimmed().isEmpty()) {
+        m_OkBt->setEnabled(false);
+    }
+    else {
         m_OkBt->setEnabled(true);
     }
 }
