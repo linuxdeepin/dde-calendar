@@ -34,6 +34,7 @@ ScheduleManager *ScheduleManager::getInstace()
 void ScheduleManager::initconnect()
 {
     connect(gAccountManager, &AccountManager::signalScheduleUpdate, this, &ScheduleManager::slotScheduleUpdate);
+    connect(gAccountManager, &AccountManager::signalSearchScheduleUpdate, this, &ScheduleManager::slotSearchUpdate);
 }
 
 /**
@@ -117,9 +118,11 @@ void ScheduleManager::updateSearchSchedule()
 void ScheduleManager::slotScheduleUpdate()
 {
     updateSchedule();
-    if (m_searchQuery) {
-        searchSchedule(m_searchQuery->key(), m_searchQuery->dtStart(), m_searchQuery->dtEnd());
-    }
+}
+
+void ScheduleManager::slotSearchUpdate()
+{
+    updateSearchSchedule();
 }
 
 /**

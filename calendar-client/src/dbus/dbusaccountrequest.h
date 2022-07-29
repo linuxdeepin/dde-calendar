@@ -153,6 +153,7 @@ signals:
     void signalDtLastUpdate(QString);
     void signalSyncStateChange(DAccount::AccountSyncState);
     void signalAccountStateChange(DAccount::AccountStates);
+    void signalSearchUpdate();
 
 public slots:
     //dbus服务端调用

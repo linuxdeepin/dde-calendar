@@ -40,6 +40,7 @@ void AccountItem::initConnect()
     connect(m_dbusRequest, &DbusAccountRequest::signalAccountStateChange, this, &AccountItem::signalAccountStateChange);
     connect(m_dbusRequest, &DbusAccountRequest::signalSyncStateChange, this, &AccountItem::slotSyncStateChange);
     connect(m_dbusRequest, &DbusAccountRequest::signalAccountStateChange, this, &AccountItem::slotAccountStateChange);
+    connect(m_dbusRequest, &DbusAccountRequest::signalSearchUpdate, this, &AccountItem::slotSearchUpdata);
 }
 
 /**
@@ -358,6 +359,7 @@ void AccountItem::querySchedulesWithParameter(const QString &key, const QDateTim
  */
 void AccountItem::querySchedulesWithParameter(const DScheduleQueryPar::Ptr &params, CallbackFunc callback)
 {
+    m_preQuery = params;
     m_dbusRequest->setCallbackFunc(callback);
     m_dbusRequest->querySchedulesWithParameter(params);
 }
@@ -457,5 +459,14 @@ void AccountItem::slotSyncStateChange(DAccount::AccountSyncState state)
 QString AccountItem::getDtLastUpdate()
 {
     return m_dbusRequest->getDtLastUpdate();
+}
+
+void AccountItem::slotSearchUpdata()
+{
+
+    //如果存在查询则更新查询
+    if(nullptr != m_preQuery){
+        querySchedulesWithParameter(m_preQuery);
+    }
 }
 

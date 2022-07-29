@@ -336,7 +336,10 @@ void DbusAccountRequest::slotDbusCall(const QDBusMessage &msg)
     } else if (msg.member() == "scheduleTypeUpdate") {
         getScheduleTypeList();
     } else if (msg.member() == "scheduleUpdate") {
+        //更新全局数据
         querySchedulesWithParameter(m_priParams);
+        //更新搜索数据
+        emit signalSearchUpdate();
     }
 }
 

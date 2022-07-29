@@ -420,7 +420,7 @@ void CScheduleSearchItem::focusInEvent(QFocusEvent *e)
         if (!CalendarGlobalEnv::getGlobalEnv()->registerKey("SearchItemEvent", "Keyboard")) {
             CalendarGlobalEnv::getGlobalEnv()->reviseValue("SearchItemEvent", "Keyboard");
         }
-        emit signalSelectSchedule(m_ScheduleInfo);
+       emit signalSelectSchedule(m_ScheduleInfo);
         emit signalSelectCurrentItem(this, false);
         m_tabFocus = true;
     }
@@ -432,12 +432,13 @@ void CScheduleSearchItem::focusInEvent(QFocusEvent *e)
 
 void CScheduleSearchItem::focusOutEvent(QFocusEvent *e)
 {
-    //只针对tab的情况生效
-    if (e->reason() == Qt::TabFocusReason)
+   //只针对tab的情况生效
+    if (e->reason() == Qt::TabFocusReason){
         emit signalSelectCurrentItem(this, true);
-    DLabel::focusOutEvent(e);
-    m_tabFocusBeforeActive = m_tabFocus;
-    m_tabFocus = false;
+    }
+   DLabel::focusOutEvent(e);
+   m_tabFocusBeforeActive = m_tabFocus;
+   m_tabFocus = false;
 }
 
 void CScheduleSearchItem::keyPressEvent(QKeyEvent *event)
@@ -789,7 +790,7 @@ void CScheduleSearchView::slotSelectCurrentItem(CScheduleSearchItem *item, bool 
         if (item == m_gradientItemList->itemWidget(cItem)) {
             m_selectItem = item;
             //设置选中的item为最上面一个
-            m_gradientItemList->scrollToItem(m_gradientItemList->item(i), QAbstractItemView::PositionAtTop);
+            m_gradientItemList->scrollToItem(cItem, QAbstractItemView::PositionAtTop);
             if (i == m_gradientItemList->count() - 1 && itemFocusOut && !keyPressUP) {
                 //最后一个item,发送信号将焦点传递给搜索框
                 emit signalSelectCurrentItem();

@@ -129,6 +129,7 @@ void SidebarTypeItemWidget::initView()
     QPalette palette = m_checkBox->palette();
     palette.setBrush(QPalette::Highlight, QColor(m_scheduleType->getColorCode()));
     m_checkBox->setPalette(palette);
+    m_checkBox->setFocusPolicy(Qt::NoFocus);
     setSelectStatus((m_scheduleType->showState() == DScheduleType::Show));
     connect(m_checkBox, &QCheckBox::clicked, this, [this]() {
         setSelectStatus(m_checkBox->isChecked());
@@ -185,6 +186,8 @@ void SidebarAccountItemWidget::initView()
     m_headIconButton->setFixedSize(16, 16);
     m_headIconButton->setIconSize(QSize(10, 10));
     m_headIconButton->setIcon(DStyle::SP_ArrowRight);
+
+    m_headIconButton->setFocusPolicy(Qt::NoFocus);
     connect(m_headIconButton, &DIconButton::clicked, this, [this](){
         setSelectStatus(!m_selectStatus);
     });

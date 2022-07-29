@@ -362,7 +362,6 @@ void Calendarmainwindow::initUI()
     setTabOrder(this->titlebar(), m_titleWidget);
     //设置状态栏焦点代理为标题窗口
     this->titlebar()->setFocusProxy(m_titleWidget);
-    //this->titlebar()->setFocusProxy(titleWidget);
 
     this->titlebar()->setQuitMenuVisible(true);//先设置后，才可以获取menu内容。因为setQuitMenuVisible接口中进行了action的添加操作
     QMenu *menuTitleBar = this->titlebar()->menu();
@@ -683,8 +682,6 @@ void Calendarmainwindow::slotSearchSelectSchedule(const DSchedule::Ptr &schedule
     //如果小尺寸显示模式，在显示搜索窗口的时候，左侧视图会被隐藏
     //如果点击一个搜索结果则隐藏搜索窗口，展示左侧视图
     if (!m_isNormalStateShow) {
-        //        CalendarGlobalEnv::getGlobalEnv()->registerKey("SearchItemEvent", "Keyboard");
-
         QVariant variant;
         CalendarGlobalEnv::getGlobalEnv()->getValueByKey("SearchItemEvent", variant);
         QString searchItemEvent = variant.toString();
@@ -701,14 +698,14 @@ void Calendarmainwindow::slotSearchSelectSchedule(const DSchedule::Ptr &schedule
         bool changeYear = _showWidget->getSelectDate().year() != scheduleInfo->dtStart().date().year();
         //设置选择时间
         if (_showWidget->setSelectDate(scheduleInfo->dtStart().date(), changeYear)) {
-            //更新显示数据
-            _showWidget->updateData();
-            //设置年份信息显示
-            _showWidget->setYearData();
-            //延迟150毫秒设置选中动画
-            QTimer::singleShot(150, this, [ = ] {
-                _showWidget->setSelectSearchScheduleInfo(scheduleInfo);
-            });
+           //更新显示数据
+           _showWidget->updateData();
+           //设置年份信息显示
+           _showWidget->setYearData();
+           //延迟150毫秒设置选中动画
+           QTimer::singleShot(150, this, [ = ] {
+               _showWidget->setSelectSearchScheduleInfo(scheduleInfo);
+           });
         }
         //如果当前界面不为年试图则更新年视图数据
         if (_showWidget != m_yearwindow) {

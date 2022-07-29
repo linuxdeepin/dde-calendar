@@ -71,6 +71,7 @@ signals:
 public slots:
     //日程数据更新事件
     void slotScheduleUpdate();
+    void slotSearchUpdate();
 
 private:
     void initconnect();

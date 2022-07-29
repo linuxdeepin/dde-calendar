@@ -54,6 +54,9 @@ void SidebarCalendarWidget::initView()
     m_nextPage->setFlat(true);
     m_previousPage->setFlat(true);
 
+    m_nextPage->setFocusPolicy(Qt::NoFocus);
+    m_previousPage->setFocusPolicy(Qt::NoFocus);
+
     QHBoxLayout *headLayout = new QHBoxLayout();
     headLayout->setMargin(0);
     headLayout->setAlignment(Qt::AlignCenter);
@@ -77,6 +80,7 @@ void SidebarCalendarWidget::initView()
     //循坏实例化6*7个日期按键
     for (int i = 0; i < 42; ++i) {
         SidebarCalendarKeyButton *button = new SidebarCalendarKeyButton();
+        button->setFocusPolicy(Qt::NoFocus);
         m_keyButtonList.push_back(button);
         m_keyLayout->addWidget(button, i/7, i%7, 1, 1, Qt::AlignCenter);
         connect(button, &SidebarCalendarKeyButton::signaClicked, this, &SidebarCalendarWidget::slotKeyButtonClicked);

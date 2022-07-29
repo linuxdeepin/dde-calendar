@@ -58,7 +58,7 @@ void SidebarView::initView()
     m_treeWidget->setSelectionMode(QAbstractItemView::NoSelection); //屏蔽item选择效果
     m_treeWidget->setFrameStyle(QFrame::NoFrame); //去除边框
     m_treeWidget->setIndentation(0);    //设置item前间距为0
-    m_treeWidget->setFocusPolicy(Qt::TabFocus);
+    m_treeWidget->setFocusPolicy(Qt::NoFocus);
     m_calendarWidget = new SidebarCalendarWidget(this);
     m_calendarWidget->setFixedHeight(220);
 //    m_calendarWidget->setFixedSize(180, 220);

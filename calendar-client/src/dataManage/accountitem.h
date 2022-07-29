@@ -144,6 +144,8 @@ public slots:
     void slotSyncStateChange(DAccount::AccountSyncState);
     //获取最后一次同步时间
     QString getDtLastUpdate();
+
+    void slotSearchUpdata();
 private:
     void initConnect();
 
@@ -158,6 +160,7 @@ private:
     QMap<QDate, DSchedule::List> m_searchedScheduleMap{};
 
     QMap<QString, bool> m_dataStatus;   //数据状态
+    DScheduleQueryPar::Ptr    m_preQuery = nullptr;       //上一次查询
 
 };
 
