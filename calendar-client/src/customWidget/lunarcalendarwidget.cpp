@@ -243,7 +243,8 @@ void CalenderStyle::drawControl(QStyle::ControlElement element, const QStyleOpti
                     //如果是第一行会显示上个月的日期
                     if (vopt->index.row() < 2 && day > 20) {
                         curDate = curDate.addMonths(-1);
-                    } else if (vopt->index.row() == model->rowCount() - 1 && day < 10) {
+                    } else if (vopt->index.row() > 3 && day < 15) {
+                        //如果显示行数大于3且显示的天小于15则表示是下个月
                         curDate = curDate.addMonths(1);
                     }
                     curDate.setDate(curDate.year(), curDate.month(), day);

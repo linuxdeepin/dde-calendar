@@ -463,7 +463,6 @@ QString AccountItem::getDtLastUpdate()
 
 void AccountItem::slotSearchUpdata()
 {
-
     //如果存在查询则更新查询
     if(nullptr != m_preQuery){
         querySchedulesWithParameter(m_preQuery);
