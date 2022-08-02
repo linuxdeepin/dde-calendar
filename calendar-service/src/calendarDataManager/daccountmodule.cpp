@@ -34,6 +34,9 @@
 #include "ddatasyncbase.h"
 #include "dbusnotify.h"
 
+#include <QDir>
+#include <QFile>
+
 #define UPDATEREMINDJOBTIMEINTERVAL 1000 * 60 * 10 //提醒任务更新时间间隔毫秒数（10分钟）
 
 DAccountModule::DAccountModule(const DAccount::Ptr &account, QObject *parent)
@@ -684,6 +687,21 @@ QString DAccountModule::getDtLastUpdate()
 void DAccountModule::removeDB()
 {
     m_accountDB->removeDB();
+    //如果为uid帐户退出则清空目录下所有关于uid的数据库文件
+    //解决在某些条件下数据库没有被移除的问题（自测未发现）
+    if(account()->accountType() == DAccount::Type::Account_UnionID){
+        QString &dbPatch = getHomeConfigPath().append(QString("/deepin/dde-calendar-service/"));
+        QDir dir(dbPatch);
+        if (dir.exists()) {
+            QStringList filters;
+            filters << QString("account_uid_*");
+            dir.setFilter(QDir::Files | QDir::NoSymLinks);
+            dir.setNameFilters(filters);
+            for (uint i = 0; i < dir.count(); ++i) {
+                QFile::remove(dbPatch + dir[i]);
+            }
+        }
+    }
 }
 
 QMap<QDate, DSchedule::List> DAccountModule::getScheduleTimesOn(const QDateTime &dtStart, const QDateTime &dtEnd, const DSchedule::List &scheduleList, bool extend)
