@@ -332,7 +332,6 @@ void CYearWindow::initUI()
     yeartitleLayout1->setMargin(0);
     yeartitleLayout1->setSpacing(0);
     yeartitleLayout1->addWidget(m_yearLunarLabel);
-    yeartitleLayout1->addSpacing(390);
     yeartitleLayout1->addStretch();
     yeartitleLayout1->addWidget(m_yearLunarDayLabel, 0, Qt::AlignVCenter);
 
