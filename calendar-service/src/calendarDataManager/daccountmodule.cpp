@@ -275,7 +275,8 @@ bool DAccountModule::updateScheduleType(const QString &typeInfo)
                 //添加创建颜色任务
                 if (m_account->isNetWorkAccount()) {
                     DUploadTaskData::Ptr uploadTask(new DUploadTaskData);
-                    uploadTask->setTaskType(DUploadTaskData::TaskType::Delete);
+//                    uploadTask->setTaskType(DUploadTaskData::TaskType::Delete);
+                    uploadTask->setTaskType(DUploadTaskData::TaskType::Create);
                     uploadTask->setTaskObject(DUploadTaskData::Task_Color);
                     uploadTask->setObjectId(typeColor->colorID());
                     m_accountDB->addUploadTask(uploadTask);
