@@ -327,8 +327,10 @@ int SyncStack::downloadUidData(bool &isInitSyncData, SyncFileManage &fileManger)
 
         if (accountState & DAccount::Account_Setting) {
             qInfo() << "默认通用设置";
-            if (!syncIntoTable("calendargeneralsettings", dbname_manager_thread, dbname_sync_thread))
-                return -1;
+            if(needUpdateSettingValue()) {
+                if (!syncIntoTable("calendargeneralsettings", dbname_manager_thread, dbname_sync_thread))
+                    return -1;
+            }
         }
         //云端没有对应数据需要初始化，返回初始化状态
         isInitSyncData = true;
@@ -375,23 +377,42 @@ int SyncStack::loadToTmp()
     }
 
     if (accountState & DAccount::Account_Setting) {
+
         qInfo() << "同步通用设置";
-        QDateTime managerDate = selectValue("vch_value", "calendargeneralsettings", "vch_key", "dt_update", dbname_manager_thread).toDateTime();
-        QDateTime syncDate = selectValue("vch_value", "calendargeneralsettings", "vch_key", "dt_update", dbname_sync_thread).toDateTime();
-        if (managerDate > syncDate)
-            if (!syncIntoTable("calendargeneralsettings", dbname_manager_thread, dbname_sync_thread)){
-                qWarning()<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
-                return -1;
-            }
-        if (syncDate > managerDate)
-            if (!syncIntoTable("calendargeneralsettings", dbname_sync_thread, dbname_manager_thread)){
-                qWarning()<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
-                return -1;
-            }
+        if(needUpdateSettingValue()) {
+            QDateTime managerDate = selectValue("vch_value", "calendargeneralsettings", "vch_key", "dt_update", dbname_manager_thread).toDateTime();
+            QDateTime syncDate = selectValue("vch_value", "calendargeneralsettings", "vch_key", "dt_update", dbname_sync_thread).toDateTime();
+            if (managerDate > syncDate)
+                if (!syncIntoTable("calendargeneralsettings", dbname_manager_thread, dbname_sync_thread)){
+                    qWarning()<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
+                    return -1;
+                }
+            if (syncDate > managerDate)
+                if (!syncIntoTable("calendargeneralsettings", dbname_sync_thread, dbname_manager_thread)){
+                    qWarning()<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
+                    return -1;
+                }
+        }
     }
 
 
     return 0;
+}
+
+bool SyncStack::needUpdateSettingValue() {
+    int mangerdayweek = selectValue("vch_value", "calendargeneralsettings", "vch_key", "firstDayOfWeek", dbname_manager_thread).toInt();
+    int syncdayweek = selectValue("vch_value", "calendargeneralsettings", "vch_key", "firstDayOfWeek", dbname_sync_thread).toInt();
+    if(mangerdayweek != syncdayweek) {
+        return  true;
+    }
+
+    int mangerTimeShow = selectValue("vch_value", "calendargeneralsettings", "vch_key", "timeShowType", dbname_manager_thread).toInt();
+    int syncTimeShow = selectValue("vch_value", "calendargeneralsettings", "vch_key", "timeShowType", dbname_sync_thread).toInt();
+    if(mangerTimeShow != syncTimeShow) {
+        return  true;
+    }
+
+    return false;
 }
 
 int SyncStack::tmpToLoad(DDataSyncBase::UpdateTypes &updateType)
@@ -415,10 +436,13 @@ int SyncStack::tmpToLoad(DDataSyncBase::UpdateTypes &updateType)
 
     if (accountState & DAccount::Account_Setting) {
         qInfo() << "更新通用设置";
-        if (!syncIntoTable("calendargeneralsettings", dbname_sync_thread, dbname_manager_thread)){
-            qWarning()<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
-            return -1;
+        if(needUpdateSettingValue()) {
+            if (!syncIntoTable("calendargeneralsettings", dbname_sync_thread, dbname_manager_thread)){
+                qWarning()<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
+                return -1;
+            }
         }
+
         updateType = updateType | DUnionIDDav::Update_Setting;
     }
 

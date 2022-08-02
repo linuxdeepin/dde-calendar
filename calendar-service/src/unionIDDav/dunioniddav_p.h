@@ -93,6 +93,8 @@ struct SyncStack {
     bool deleteTable(const QString &table_name, const QString &connection_name);
     //sql add column to server
     bool repairTable(const QString &table_name, const QString &connection_name_local, const QString &connection_name_server);
+
+    bool  needUpdateSettingValue();
 };
 
 

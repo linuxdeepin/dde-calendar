@@ -274,7 +274,6 @@ void DAccountManagerDataBase::createDB()
                        "    replace into calendargeneralsettings (vch_key, vch_value) values('dt_update', datetime(CURRENT_TIMESTAMP,'localtime')); "
                        "END;");
         }
-
         if (query.isActive()) {
             query.finish();
         }
