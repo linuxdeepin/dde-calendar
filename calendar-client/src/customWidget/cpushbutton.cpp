@@ -103,6 +103,7 @@ void CPushButton::paintEvent(QPaintEvent *event)
     m_iconButton->setIcon(QIcon::fromTheme("dde_calendar_create"));
     if (m_Highlighted) {
         //背景设置为高亮色
+        m_iconButton->setIcon(QIcon(":/icons/deepin/builtin/dark/icons/dde_calendar_create_32px.svg"));
         painter.setBrush(palette.highlight());
         m_textLabel->setBackgroundRole(QPalette::Highlight);       
     } else {
