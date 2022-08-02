@@ -249,7 +249,7 @@ void CScheduleView::paintEvent(QPaintEvent *event)
                 painter.setPen(m_currenttimecolor);
                 QString str = QTime::currentTime().toString(m_timeFormat);
                 painter.drawText(QRect((m_leftMargin - hourTextWidth) / 2 - 5,
-                                       m_topMargin - 8 + m_vPos[m_vPos.count() - 1], hourTextWidth,
+                                       m_topMargin - 8 + m_vPos[m_vPos.count() - 1], hourTextWidth + 1,
                                        hourTextHeight),
                                  Qt::AlignCenter, str);
                 painter.restore();

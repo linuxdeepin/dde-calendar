@@ -39,9 +39,9 @@ SidebarView::SidebarView(QWidget *parent) : QWidget(parent)
  */
 void SidebarView::initView()
 {
-    QVBoxLayout *hLayout = new QVBoxLayout(this);
-    hLayout->setContentsMargins(0, 8, 0, 10);
-    hLayout->setSpacing(0);
+    QVBoxLayout *vLayout = new QVBoxLayout(this);
+    vLayout->setContentsMargins(0, 8, 0, 10);
+    vLayout->setSpacing(0);
 
     m_treeWidget = new QTreeWidget();
     delegate = new SideBarTreeWidgetItemDelegate;
@@ -66,11 +66,11 @@ void SidebarView::initView()
     DPushButton *btn = new DPushButton;
     btn->setFocusPolicy(Qt::NoFocus);
     btn->setFixedHeight(1);
-    hLayout->addWidget(m_treeWidget, 1);
-    hLayout->addWidget(btn);
-    hLayout->addWidget(m_calendarWidget, 1);
+    vLayout->addWidget(m_treeWidget, 1);
+    vLayout->addWidget(btn);
+    vLayout->addWidget(m_calendarWidget, 1);
 
-    setLayout(hLayout);
+    setLayout(vLayout);
     setFixedWidth(180);
 }
 
