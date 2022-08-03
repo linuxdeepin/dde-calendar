@@ -96,7 +96,6 @@ int DAccountModule::getAccountState()
 
 void DAccountModule::setAccountState(const int accountState)
 {
-    qInfo() << accountState;
     if (int(m_account->accountState()) != accountState) {
         m_account->setAccountState(static_cast<DAccount::AccountState>(accountState));
         m_accountDB->updateAccountInfo();
@@ -690,7 +689,7 @@ void DAccountModule::removeDB()
     //如果为uid帐户退出则清空目录下所有关于uid的数据库文件
     //解决在某些条件下数据库没有被移除的问题（自测未发现）
     if(account()->accountType() == DAccount::Type::Account_UnionID){
-        QString &dbPatch = getHomeConfigPath().append(QString("/deepin/dde-calendar-service/"));
+        QString dbPatch = getHomeConfigPath().append(QString("/deepin/dde-calendar-service/"));
         QDir dir(dbPatch);
         if (dir.exists()) {
             QStringList filters;
