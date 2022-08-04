@@ -166,7 +166,7 @@ void ScheduleTypeEditDlg::initView()
     gwi->setLayout(maintlayout);
     gwi->setMinimumWidth(360);
     addContent(gwi, Qt::AlignCenter);
-
+    setLabelText();
     //添加按钮
     addButton(tr("Cancel", "button"));
     addButton(tr("Save", "button"), false, DDialog::ButtonRecommend);
@@ -233,18 +233,8 @@ void ScheduleTypeEditDlg::slotEditTextChanged(const QString &strName)
 void ScheduleTypeEditDlg::changeEvent(QEvent *e)  {
     DDialog::changeEvent(e);
     if(e->type() == QEvent::FontChange) {
-       QString str  = m_strLabelName.trimmed();
-       QFontMetrics fontMetrice(m_eName->font());
-       if(fontMetrice.width(str) > (m_eName->width())) {
-            str = fontMetrice.elidedText(str,Qt::ElideRight,m_eName->width());
-       }
-       m_eName->setText(str);
-       str = m_strLabelColor.trimmed();
-       if(fontMetrice.width(str) > (m_eName->width()+15)) {
-         str = fontMetrice.elidedText(str,Qt::ElideRight,m_cName->width());
-       }
-       m_cName->setText(str);
-   }
+        setLabelText();
+    }
 
 }
 void ScheduleTypeEditDlg::slotFocusChanged(bool onFocus)
@@ -255,7 +245,23 @@ void ScheduleTypeEditDlg::slotFocusChanged(bool onFocus)
         emit m_lineEdit->editingFinished();
     }
 }
-
+void ScheduleTypeEditDlg::setLabelText() {
+    QLocale local;
+    if(local.language() == QLocale::Chinese) {
+        return;
+    }
+    QString str  = m_strLabelName.trimmed();
+    QFontMetrics fontMetrice(m_eName->font());
+    if(fontMetrice.width(str) > (m_eName->width()+6)) {
+         str = fontMetrice.elidedText(str,Qt::ElideRight,m_eName->width());
+    }
+    m_eName->setText(str);
+    str = m_strLabelColor.trimmed();
+    if(fontMetrice.width(str) > (m_eName->width()+5)) {
+      str = fontMetrice.elidedText(str,Qt::ElideRight,m_cName->width());
+    }
+    m_cName->setText(str);
+}
 void ScheduleTypeEditDlg::slotBtnCancel()
 {
     this->reject();
