@@ -39,9 +39,9 @@
 #include <QKeyEvent>
 #include <QPainter>
 #include <QBitmap>
+#include <QTimer>
 
 const int  dialog_width = 468;      //对话框宽度
-
 DGUI_USE_NAMESPACE
 CScheduleDlg::CScheduleDlg(int type, QWidget *parent, const bool isAllDay)
     : DCalendarDDialog(parent)
@@ -192,15 +192,21 @@ bool CScheduleDlg::selectScheduleType()
         type->setTypeID("0");
         type->setDisplayName(m_typeComBox->lineEdit()->text());
         type->setTypeColor(*m_colorSeletorWideget->getSelectedColorInfo().data());
-        //创建日程类型，等待回调
-        m_accountItem->createJobType(type, [&](CallMessge call) {
-            if (call.code == 0) {
-                //返回值为日程类型id
-                createSchedule(call.msg.toString());
-            }
-            //关闭本弹窗
-            this->close();
-        });
+        if(m_bCanCreateType) {
+            m_bCanCreateType = false;
+            //创建日程类型，等待回调
+            m_accountItem->createJobType(type, [&](CallMessge call) {
+                if (call.code == 0) {
+                    //返回值为日程类型id
+                    createSchedule(call.msg.toString());
+                } else {
+                    m_bCanCreateType = true;
+                }
+                //关闭本弹窗
+                this->close();
+            });
+        }
+
     } else if (m_typeComBox->currentIndex() >= 0) {
         //选择已有日程，直接创建日程
         return createSchedule(m_typeComBox->getCurrentJobTypeNo());
@@ -408,7 +414,7 @@ void CScheduleDlg::slotBtClick(int buttonIndex, const QString &buttonName)
         //确定
         //自动化测试会出现短时间内按钮click2次的情况。添加第一次触发后将保存按钮置灰的设置。
         //若保存按钮不启用则不处理
-        if (getButton(1)->isEnabled()) {
+        if (getButton(1)->isEnabled()  && !this->isHidden()) {
             m_setAccept = clickOkBtn();
             //若新建或编辑成功则将保存按钮置灰
             getButton(1)->setEnabled(!m_setAccept);

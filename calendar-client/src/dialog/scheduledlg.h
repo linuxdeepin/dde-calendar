@@ -233,6 +233,7 @@ private:
     QDateTime m_EndDate;
     bool m_typeEditStatus = false; //日程类型编辑状态
     int m_prevCheckRadioID = -1; //上一次点击Radio的id编号
+    bool m_bCanCreateType = true;;
 };
 
 #endif // SCHEDULEDLG_H
