@@ -160,7 +160,7 @@ void DbusAccountManagerRequest::slotCallFinished(CDBusPendingCallWatcher *call)
         if (DAccount::fromJsonListString(accountList, str)) {
             emit signalGetAccountListFinish(accountList);
         } else {
-            qWarning() << "AccountList Parsing failed!";
+            qWarning() << Q_FUNC_INFO <<"AccountList Parsing failed!" << str;
             ret = 2;
         }
     } else if (call->getmember() == "getCalendarGeneralSettings") {
@@ -171,7 +171,7 @@ void DbusAccountManagerRequest::slotCallFinished(CDBusPendingCallWatcher *call)
         if (DCalendarGeneralSettings::fromJsonString(ptr, str)) {
             emit signalGetGeneralSettingsFinish(ptr);
         } else {
-            qWarning() << "AccountList Parsing failed!";
+            qWarning() <<Q_FUNC_INFO << "AccountList Parsing failed!" << str;
             ret = 2;
         }
     } else if (call->getmember() == "setCalendarGeneralSettings") {
