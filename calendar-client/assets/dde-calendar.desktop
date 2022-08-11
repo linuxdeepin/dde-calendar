@@ -9,7 +9,7 @@ Name=Deepin Calendar
 StartupNotify=false
 Terminal=false
 Type=Application
-X-Deepin-TurboType=dtkwidget
+#X-Deepin-TurboType=dtkwidget
 X-Deepin-Vendor=deepin
 X-MultipleArgs=false
 
