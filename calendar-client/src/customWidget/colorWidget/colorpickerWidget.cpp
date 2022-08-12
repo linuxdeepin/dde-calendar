@@ -89,6 +89,7 @@ void CColorPickerWidget::initUI()
     mLayout->addWidget(m_colorSlider);
 
     m_wordLabel->setText(tr("Color"));
+    m_strColorLabel = m_wordLabel->text();
     m_wordLabel->setFixedWidth(40);
     m_wordLabel->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
     m_colHexLineEdit->setClearButtonEnabled(false); //不显示清空按钮
@@ -116,13 +117,32 @@ void CColorPickerWidget::initUI()
     btnLayout->addWidget(m_enterBtn);
     mLayout->addLayout(btnLayout);
     this->setLayout(mLayout);
-
+     setLabelText();
     this->setFocusPolicy(Qt::TabFocus);
     setTabOrder(m_colHexLineEdit, m_cancelBtn);
     setTabOrder(m_cancelBtn, m_enterBtn);
     setTabOrder(m_enterBtn, m_colorSlider);
 }
 
+void CColorPickerWidget::setLabelText() {
+    QLocale local;
+    if(local.language() == QLocale::Chinese) {
+        return;
+    }
+    QString  str = m_strColorLabel;
+    QFontMetrics fontMetrice(m_wordLabel->font());
+    if(fontMetrice.width(str) > (m_wordLabel->width()+4)) {
+        str = fontMetrice.elidedText(str,Qt::ElideRight,m_wordLabel->width());
+    }
+    m_wordLabel->setText(str);
+}
+
+void CColorPickerWidget::changeEvent(QEvent *e)  {
+    QWidget::changeEvent(e);
+    if(e->type() == QEvent::FontChange) {
+        setLabelText();
+    }
+}
 void CColorPickerWidget::slotHexLineEditChange(const QString &text)
 {
     QString lowerText = text.toLower();

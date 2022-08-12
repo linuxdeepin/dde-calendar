@@ -40,6 +40,7 @@ public:
 private:
     void initUI();
     void setColorHexLineEdit();
+    void setLabelText();
 
 public slots:
 
@@ -59,7 +60,7 @@ public slots:
 
 protected:
     void keyPressEvent(QKeyEvent *e) override;
-
+    void changeEvent(QEvent *e) override;
 private:
     ColorLabel *m_colorLabel;
     ColorSlider *m_colorSlider;
@@ -68,7 +69,7 @@ private:
     DLabel *m_wordLabel;
     DPushButton *m_cancelBtn;
     DPushButton *m_enterBtn;
-
+    QString     m_strColorLabel;
     QColor curColor;
 };
 
