@@ -87,12 +87,10 @@ target_link_libraries(${PROJECT_NAME}
     basestruct
 )
 
-set(CMAKE_INSTALL_PREFIX /usr)
-
 # Install files
-install(TARGETS dde-calendar DESTINATION bin)
+install(TARGETS dde-calendar DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 install(DIRECTORY ${APP_RES_DIR}/dde-calendar
-        DESTINATION /usr/share/deepin-manual/manual-assets/application/)
-install(FILES ${APP_DESKTOP} DESTINATION share/applications)
-install(FILES ${APP_SERVICE} DESTINATION share/dbus-1/services)
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/deepin-manual/manual-assets/application/)
+install(FILES ${APP_DESKTOP} DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
+install(FILES ${APP_SERVICE} DESTINATION ${CMAKE_INSTALL_DATADIR}/dbus-1/services)

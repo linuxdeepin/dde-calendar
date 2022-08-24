@@ -55,12 +55,10 @@ add_executable(${PROJECT_NAME} ${CALENDARSERVICE_SRCS})
 
 target_link_libraries(${PROJECT_NAME} ${LINK_LIBS} basestruct)
 
-set(CMAKE_INSTALL_PREFIX /usr)
-
 # Install files
 install(TARGETS ${PROJECT_NAME} DESTINATION lib/deepin-daemon/)
-install(FILES ${APP_SERVICE} DESTINATION share/dbus-1/services/)
-install(FILES ${AUTOSTART_DESKTOP} DESTINATION /etc/xdg/autostart/)
-install(FILES ${HUANGLIDB} DESTINATION share/dde-calendar/data/)
+install(FILES ${APP_SERVICE} DESTINATION ${CMAKE_INSTALL_DATADIR}/dbus-1/services/)
+install(FILES ${AUTOSTART_DESKTOP} DESTINATION ${CMAKE_INSTALL_SYSCONFDIR}/xdg/autostart/)
+install(FILES ${HUANGLIDB} DESTINATION ${CMAKE_INSTALL_DATADIR}/dde-calendar/data/)
 install(FILES ${APP_SYSTEMD_SERVICE} DESTINATION lib/systemd/user/)
 install(FILES ${APP_SYSTEMD_TIMER} DESTINATION lib/systemd/user/)
