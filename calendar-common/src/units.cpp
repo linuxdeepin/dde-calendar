@@ -67,7 +67,11 @@ bool isChineseEnv()
 QString getHomeConfigPath()
 {
     //根据环境变量获取config目录
-    return QString(qgetenv("XDG_CONFIG_HOME"));
+    QString configPath = QString(qgetenv("XDG_CONFIG_HOME"));
+    if(configPath.trimmed().isEmpty()) {
+        configPath = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
+    }
+    return configPath;
 }
 
 bool withinTimeFrame(const QDate &date)
