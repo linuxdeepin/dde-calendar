@@ -1,0 +1,79 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: dde-calendar
+Upstream-Contact: haifeng.chen <chenhaifeng@uniontech.com>
+Source: 
+
+# README # 此类文件多使用cc0 或者 CC-BY-4.0协议
+Files: README.md CHANGELOG.md README.zh_CN.md
+Copyright: None
+License: CC-BY-4.0
+
+# assets
+Files: calendar-client/assets/* schedule-plugin/assets/* calendar-service/assets/* # 匹配这个文件夹下所有文件
+Copyright: UnionTech Software Technology Co., Ltd.
+License: GPL-3.0-or-later
+
+# Project file # 其实不推荐通过匹配文件后缀方式，但是下面三种文件无复用或者被抄袭可呢个，所以指定cc0
+Files: *.pro *.prf *.pri *.txt *.cmake
+Copyright: None
+License: CC0-1.0
+
+# css
+Files: *.css
+Copyright: None
+License: CC0-1.0
+
+# ts
+Files: *.ts
+Copyright: None
+License: CC0-1.0
+
+# qrc
+Files: *.qrc
+Copyright: None
+License: CC0-1.0
+
+# png svg # 使用具体文件名指定版权信息
+Files: calendar-client/assets/dde-calendar/calendar/common/*.svg calendar-client/assets/dde-calendar/calendar/en_US/fig/*.png calendar-client/assets/resources/DynamicIcon/*.svg calendar-client/assets/resources/icon/*.svg schedule-plugin/assets/resources/DynamicIcon/*.svg 
+Copyright: None
+License: CC0-1.0
+
+# sh
+Files: tests/cmake-lcov-test.sh tests/test-prj-running.sh calendar-client/assets/translate_generation.sh changelicense.sh
+Copyright: None
+License: CC0-1.0
+
+# ci
+Files: .github/* .gitlab-ci.yml
+Copyright: None
+License: CC0-1.0
+
+# gitignore
+Files: .gitignore 
+Copyright: None
+License: CC0-1.0
+
+# xml toml json conf yaml
+Files: *.xml *.toml *.json *conf *.yaml
+Copyright: None
+License: CC0-1.0
+
+# rpm
+Files: rpm/*
+Copyright: None
+License: CC0-1.0
+
+# debian
+Files: debian/*
+Copyright: None
+License: CC0-1.0
+
+# Arch
+Files: archlinux/*
+Copyright: None
+License: CC0-1.0
+
+#other files
+Files: *.db
+Copyright: None
+License: CC0-1.0
