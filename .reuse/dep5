@@ -4,7 +4,7 @@ Upstream-Contact: haifeng.chen <chenhaifeng@uniontech.com>
 Source: 
 
 # README # 此类文件多使用cc0 或者 CC-BY-4.0协议
-Files: README.md CHANGELOG.md
+Files: README.md CHANGELOG.md README.zh_CN.md
 Copyright: None
 License: CC-BY-4.0
 

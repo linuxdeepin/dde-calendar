@@ -4,65 +4,65 @@
 <context>
     <name>JobRemindManager</name>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="107"/>
+        <location filename="../calendar-service/src/jobremindmanager.cpp" line="91"/>
         <source>One day before start</source>
         <translation>One day before start</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="104"/>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="111"/>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="116"/>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="126"/>
+        <location filename="../calendar-service/src/jobremindmanager.cpp" line="88"/>
+        <location filename="../calendar-service/src/jobremindmanager.cpp" line="95"/>
+        <location filename="../calendar-service/src/jobremindmanager.cpp" line="100"/>
+        <location filename="../calendar-service/src/jobremindmanager.cpp" line="110"/>
         <source>Close</source>
         <comment>button</comment>
         <translation>Close</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="112"/>
+        <location filename="../calendar-service/src/jobremindmanager.cpp" line="96"/>
         <source>Remind me tomorrow</source>
         <translation>Remind me tomorrow</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="117"/>
+        <location filename="../calendar-service/src/jobremindmanager.cpp" line="101"/>
         <source>Remind me later</source>
         <translation>Remind me later</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="119"/>
+        <location filename="../calendar-service/src/jobremindmanager.cpp" line="103"/>
         <source>15 mins later</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="120"/>
+        <location filename="../calendar-service/src/jobremindmanager.cpp" line="104"/>
         <source>1 hour later</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="121"/>
+        <location filename="../calendar-service/src/jobremindmanager.cpp" line="105"/>
         <source>4 hours later</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="129"/>
+        <location filename="../calendar-service/src/jobremindmanager.cpp" line="113"/>
         <source>Schedule Reminder</source>
         <translation>Schedule Reminder</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="245"/>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="254"/>
+        <location filename="../calendar-service/src/jobremindmanager.cpp" line="229"/>
+        <location filename="../calendar-service/src/jobremindmanager.cpp" line="238"/>
         <source>%1 to %2</source>
         <translation>%1 to %2</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="305"/>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="316"/>
+        <location filename="../calendar-service/src/jobremindmanager.cpp" line="289"/>
+        <location filename="../calendar-service/src/jobremindmanager.cpp" line="300"/>
         <source>Today</source>
         <translation>Today</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="122"/>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="308"/>
-        <location filename="../calendar-service/src/jobremindmanager.cpp" line="319"/>
+        <location filename="../calendar-service/src/jobremindmanager.cpp" line="106"/>
+        <location filename="../calendar-service/src/jobremindmanager.cpp" line="292"/>
+        <location filename="../calendar-service/src/jobremindmanager.cpp" line="303"/>
         <source>Tomorrow</source>
         <translation>Tomorrow</translation>
     </message>
@@ -70,17 +70,17 @@
 <context>
     <name>SchedulerDatabase</name>
     <message>
-        <location filename="../calendar-service/src/dbmanager/schedulerdatabase.cpp" line="862"/>
+        <location filename="../calendar-service/src/dbmanager/schedulerdatabase.cpp" line="855"/>
         <source>Work</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/dbmanager/schedulerdatabase.cpp" line="863"/>
+        <location filename="../calendar-service/src/dbmanager/schedulerdatabase.cpp" line="856"/>
         <source>Life</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/dbmanager/schedulerdatabase.cpp" line="864"/>
+        <location filename="../calendar-service/src/dbmanager/schedulerdatabase.cpp" line="857"/>
         <source>Other</source>
         <translation type="unfinished"></translation>
     </message>
