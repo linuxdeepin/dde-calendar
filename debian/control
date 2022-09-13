@@ -3,7 +3,7 @@ Section: utils
 Priority: optional
 Maintainer: Deepin Packages Builder <packages@deepin.com>
 Build-Depends:
- debhelper-compat (= 13),
+ debhelper-compat (= 11),
  cmake,
  deepin-gettext-tools,
  libdframeworkdbus-dev (>= 5.4.20~),
