@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.7)
 project(dde-calendar)
 
+include(GNUInstallDirs)
+if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+   set(CMAKE_INSTALL_PREFIX /usr)
+endif ()
+
 #compile flags
 if (CMAKE_BUILD_TYPE MATCHES Debug)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -Wall -Wextra")
@@ -75,6 +80,5 @@ qt5_create_translation(DTNG_QM_FILES
      ${DTNG_QM_FILES}
      )
      
- set(CMAKE_INSTALL_PREFIX /usr)
  file(GLOB APP_QM_FILES "translations/*.qm")
- install(FILES ${APP_QM_FILES} DESTINATION share/dde-calendar/translations)
+ install(FILES ${APP_QM_FILES} DESTINATION ${CMAKE_INSTALL_DATADIR}/dde-calendar/translations)

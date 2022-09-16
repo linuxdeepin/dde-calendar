@@ -84,4 +84,4 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 # Install files
-install(TARGETS ${PROJECT_NAME} DESTINATION /usr/lib/deepin-aiassistant/serivce-plugins)
+install(TARGETS ${PROJECT_NAME} DESTINATION lib/deepin-aiassistant/serivce-plugins)
