@@ -65,39 +65,27 @@
     </message>
 </context>
 <context>
-    <name>JobRemindManager</name>
-    <message>
-        <source>One day before start</source>
-        <translation type="vanished">One day before start</translation>
-    </message>
-    <message>
-        <source>Close</source>
-        <comment>button</comment>
-        <translation type="vanished">Close</translation>
-    </message>
-    <message>
-        <source>Remind me tomorrow</source>
-        <translation type="vanished">Remind me tomorrow</translation>
-    </message>
-    <message>
-        <source>Remind me later</source>
-        <translation type="vanished">Remind me later</translation>
-    </message>
-    <message>
-        <source>Schedule Reminder</source>
-        <translation type="vanished">Schedule Reminder</translation>
-    </message>
-    <message>
-        <source>%1 to %2</source>
-        <translation type="vanished">%1 to %2</translation>
-    </message>
+    <name>Return</name>
     <message>
         <source>Today</source>
-        <translation type="vanished">Today</translation>
+        <comment>Return</comment>
+        <translation type="obsolete">Today</translation>
     </message>
+</context>
+<context>
+    <name>Return Today</name>
     <message>
-        <source>Tomorrow</source>
-        <translation type="vanished">Tomorrow</translation>
+        <source>Today</source>
+        <comment>Return Today</comment>
+        <translation type="obsolete">Today</translation>
+    </message>
+</context>
+<context>
+    <name>today</name>
+    <message>
+        <source>Today</source>
+        <comment>Today</comment>
+        <translation type="obsolete">Today</translation>
     </message>
 </context>
 </TS>

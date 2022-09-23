@@ -133,6 +133,7 @@ void SidebarView::initLocalAccountItem()
     QTreeWidgetItem *localItem = new QTreeWidgetItem();
     m_treeWidget->addTopLevelItem(localItem);
     QString localName = localAccount->getAccount()->accountName();
+
     m_localItemWidget = new SidebarAccountItemWidget(localAccount);
     m_treeWidget->setItemWidget(localItem, 0, m_localItemWidget);
     m_localItemWidget->setItem(localItem);

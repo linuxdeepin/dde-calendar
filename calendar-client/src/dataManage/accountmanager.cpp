@@ -222,7 +222,11 @@ void AccountManager::slotGetAccountListFinish(DAccount::List accountList)
     bool hasUnionAccount = false;
     for (DAccount::Ptr account : accountList) {
         if (account->accountType() == DAccount::Account_Local) {
-            account->setAccountName(tr("Local account"));
+            QString localName = tr("Local account");
+            if (!gAccountManager->getIsSupportUid()) {
+                localName = tr("Event types");
+            }
+            account->setAccountName(localName);
             if (!m_localAccountItem) {
                 m_localAccountItem.reset(new AccountItem(account, this));
             }

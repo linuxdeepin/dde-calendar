@@ -201,7 +201,9 @@ void CSettingDialog::initView()
     //如果不支持则屏蔽
     if (!gAccountManager->getIsSupportUid()) {
         setGroupVisible("setting_account", false);
+        setGroupVisible("setting_base.acccount_items", false);
     }
+
 
     //未登录uos帐号时，移除部分选项
     if (!gUosAccountItem) {
