@@ -24,6 +24,7 @@
 #include <DSettingsOption>
 #include <DSettingsWidgetFactory>
 #include <QHBoxLayout>
+#include <QPainterPath>
 #include <QNetworkReply>
 
 UserloginWidget::UserloginWidget(QWidget *parent)

@@ -1,6 +1,7 @@
 #include "sidebartreewidgetitemdelegate.h"
 
 #include <QPainter>
+#include <QPainterPath>
 #include <DPalette>
 
 SideBarTreeWidgetItemDelegate::SideBarTreeWidgetItemDelegate()
