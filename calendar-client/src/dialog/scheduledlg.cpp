@@ -71,6 +71,10 @@ CScheduleDlg::CScheduleDlg(int type, QWidget *parent, const bool isAllDay)
         m_titleLabel->setText(tr("Edit Event"));
     }
     setFixedSize(dialog_width, 561);
+    if(!gAccountManager->getIsSupportUid()) {
+        setFixedSize(dialog_width, 561-36);
+    }
+
     //焦点设置到输入框
     m_textEdit->setFocus();
 }
@@ -836,6 +840,9 @@ void CScheduleDlg::initUI()
         widget->setLayout(hlayout);
         widget->setFixedHeight(item_Fixed_Height);
         maintlayout->addWidget(widget);
+        if(!gAccountManager->getIsSupportUid()) {
+            widget->hide();
+        }
     }
 
     //类型
@@ -1531,6 +1538,10 @@ void CScheduleDlg::resize()
     if (m_colorSeletorWideget->isVisible()) {
         h += 18 + 10;
     }
+    if(!gAccountManager->getIsSupportUid()) {
+        h -=36;
+    }
+
     //573: 默认界面高度, h: 新增控件高度
     setFixedSize(dialog_width, 573 + h);
 }
