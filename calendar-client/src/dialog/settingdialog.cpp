@@ -164,7 +164,8 @@ void CSettingDialog::initView()
     QString strJson;
 
     CalendarSettingSettings calendarSettings;
-    calendarSettings.append(setting_account);
+    if(gAccountManager->getIsSupportUid())
+        calendarSettings.append(setting_account);
     calendarSettings.append(setting_base);
     calendarSettings.append(setting_general);
 
@@ -200,7 +201,6 @@ void CSettingDialog::initView()
 
     //如果不支持则屏蔽
     if (!gAccountManager->getIsSupportUid()) {
-        setGroupVisible("setting_account", false);
         setGroupVisible("setting_base.acccount_items", false);
     }
 
@@ -237,13 +237,14 @@ void CSettingDialog::initView()
     m_radiobuttonAccountCalendar = qobject_cast<SyncTagRadioButton *>(this->findChild<QWidget *>("Account_Calendar"));
     m_radiobuttonAccountSetting = qobject_cast<SyncTagRadioButton *>(this->findChild<QWidget *>("Account_Setting"));
 
-    Q_ASSERT(m_radiobuttonAccountCalendar);
-    Q_ASSERT(m_radiobuttonAccountSetting);
+   // Q_ASSERT(m_radiobuttonAccountSetting);
 
     connect(gAccountManager, &AccountManager::signalAccountStateChange, this, &CSettingDialog::slotSyncTagButtonUpdate);
     connect(gAccountManager, &AccountManager::signalAccountUpdate, this, &CSettingDialog::slotSyncTagButtonUpdate);
-    connect(m_radiobuttonAccountCalendar, &SyncTagRadioButton::clicked, this, &CSettingDialog::slotSyncAccountStateUpdate);
-    connect(m_radiobuttonAccountSetting, &SyncTagRadioButton::clicked, this, &CSettingDialog::slotSyncAccountStateUpdate);
+    if(m_radiobuttonAccountCalendar)
+        connect(m_radiobuttonAccountCalendar, &SyncTagRadioButton::clicked, this, &CSettingDialog::slotSyncAccountStateUpdate);
+    if(m_radiobuttonAccountSetting)
+        connect(m_radiobuttonAccountSetting, &SyncTagRadioButton::clicked, this, &CSettingDialog::slotSyncAccountStateUpdate);
 
     slotSyncTagButtonUpdate();
 }
