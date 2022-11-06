@@ -76,7 +76,7 @@ void JobRemindManager::RemindJob(const Job &job)
                               .arg(job.RecurID);
             auto argMake = [&](int operationNum, const QString &text, const QString &transText) {
                 actionlist << text << transText;
-                hints.insert("x-deepin-action-" + text, QString("/bin/bash,-c,%1 int32:%2").arg(cmd).arg(operationNum));
+                hints.insert("x-deepin-action-" + text, QString("bash,-c,%1 int32:%2").arg(cmd).arg(operationNum));
             };
 
             QDateTime tm = QDateTime::currentDateTime();
