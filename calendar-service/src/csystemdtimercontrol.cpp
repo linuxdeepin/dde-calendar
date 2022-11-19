@@ -111,7 +111,7 @@ void CSystemdTimerControl::createPath()
 QString CSystemdTimerControl::execLinuxCommand(const QString &command)
 {
     QProcess process;
-    process.start("/bin/bash",QStringList()<<"-c"<<command);
+    process.start("bash",QStringList()<<"-c"<<command);
     process.waitForFinished();
     QString strResult = process.readAllStandardOutput();
     return strResult;
@@ -128,7 +128,7 @@ void CSystemdTimerControl::createService(const QString &name, const SystemDInfo 
     content += "[Unit]\n";
     content += "Description = schedule reminder task.\n";
     content += "[Service]\n";
-    content += QString("ExecStart = /bin/bash -c \"%1\"\n").arg(remindCMD);
+    content += QString("ExecStart = bash -c \"%1\"\n").arg(remindCMD);
     createFile(fileName,content);
 }
 
