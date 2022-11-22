@@ -12,7 +12,7 @@ variables:
 
 runtime:
   id: org.deepin.Runtime
-  version: 20.5.0
+  version: 23.0.0
 
 depends:
   - id: "dde-qt-dbus-factory"
@@ -28,7 +28,6 @@ depends:
     version: 3.0.4
     type: runtime
     
-
 source:
   kind: local
 
