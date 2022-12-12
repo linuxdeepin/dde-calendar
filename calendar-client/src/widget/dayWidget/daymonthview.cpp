@@ -201,7 +201,7 @@ void CDayMonthView::initUI()
 {
     m_today = new CTodayButton;
     m_today->setText(QCoreApplication::translate("today", "Today", "Today"));
-    m_today->setFixedSize(80, DDEDayCalendar::D_MLabelHeight);   
+    m_today->setFixedSize(80, DDEDayCalendar::D_MLabelHeight);
     QFont todayfont;
     todayfont.setPixelSize(DDECalendar::FontSizeFourteen);
     m_today->setFont(todayfont);
@@ -282,28 +282,28 @@ void CDayMonthView::initUI()
     midLayout->addWidget(m_currentLuna);
 
     m_yiDownLayout = new QVBoxLayout;
-    m_yiDownLayout->setMargin(0);
     m_yiDownLayout->setSpacing(0);
     m_yiDownLayout->setContentsMargins(10, 5, 10, 0);
     hLabelF.setPixelSize(DDECalendar::FontSizeFourteen);
     m_yiLabel = new CDayHuangLiLabel(this);
     m_yiLabel->setbackgroundColor(QColor("#75C18E"));
     m_yiLabel->setTextInfo(QColor("#7B7B7B "), hLabelF);
-    m_yiLabel->setFixedSize(DDEDayCalendar::DHuangLiLabelWidth, DDEDayCalendar::DHuangLiLabelHeight);
+    m_yiLabel->setMinimumHeight(DDEDayCalendar::DHuangLiLabelHeight);
+    m_yiLabel->setMaximumHeight(DDEDayCalendar::DHuangLiLabelMaxHeight);
     m_yiLabel->setHuangLiText(QStringList());
-    m_yiDownLayout->addWidget(m_yiLabel);
+    m_yiDownLayout->addWidget(m_yiLabel, 1);
 
     m_jiDownLayout = new QVBoxLayout;
-    m_jiDownLayout->setMargin(0);
     m_jiDownLayout->setSpacing(0);
     m_jiDownLayout->setContentsMargins(10, 10, 10, 10);
 
     m_jiLabel = new CDayHuangLiLabel(this);
     m_jiLabel->setbackgroundColor(QColor("#C17575"));
     m_jiLabel->setTextInfo(QColor("#7B7B7B "), hLabelF);
-    m_jiLabel->setFixedSize(DDEDayCalendar::DHuangLiLabelWidth, DDEDayCalendar::DHuangLiLabelHeight);
+    m_jiLabel->setMinimumHeight(DDEDayCalendar::DHuangLiLabelHeight);
+    m_jiLabel->setMaximumHeight(DDEDayCalendar::DHuangLiLabelMaxHeight);
     m_jiLabel->setHuangLiText(QStringList(), 1);
-    m_jiDownLayout->addWidget(m_jiLabel);
+    m_jiDownLayout->addWidget(m_jiLabel, 1);
 
     m_hhLayout = new QVBoxLayout;
     m_hhLayout->setMargin(0);
@@ -312,15 +312,13 @@ void CDayMonthView::initUI()
     m_hhLayout->addLayout(midLayout);
 
     m_splitline = new DHorizontalLine;
+    m_splitline->setMinimumHeight(2);
 
-    m_splitline->setFixedSize(241, 2);
     QHBoxLayout *hlineLayout = new QHBoxLayout;
-    hlineLayout->setMargin(0);
     hlineLayout->setSpacing(0);
-    hlineLayout->setContentsMargins(0, 0, 0, 3);
-    hlineLayout->addStretch(1);
+    hlineLayout->setContentsMargins(50, 0, 50, 5);
     hlineLayout->addWidget(m_splitline);
-    hlineLayout->addStretch(1);
+
     m_hhLayout->addLayout(hlineLayout);
     m_hhLayout->addLayout(m_yiDownLayout);
     m_hhLayout->addLayout(m_jiDownLayout);
@@ -373,28 +371,6 @@ void CDayMonthView::updateDateLunarDay()
 void CDayMonthView::changeSelectDate(const QDate &date)
 {
     emit signalChangeSelectDate(date);
-}
-
-void CDayMonthView::resizeEvent(QResizeEvent *event)
-{
-    Q_UNUSED(event);
-    int leftMargin = qRound(width() * 0.0332 + 0.5);
-    int rightMargin = leftMargin;
-    int topMargin = qRound(height() * 0.0164 + 0.5);
-    int bottonMargin = topMargin;
-    m_upLayout->setContentsMargins(leftMargin, topMargin, rightMargin, bottonMargin);
-    m_splitline->setFixedWidth(qRound(0.6925 * width() + 0.5));
-
-    int hLeftMargin = qRound(width() * 0.026 + 0.5);
-    int hRightMargin = hLeftMargin;
-    int hTopMargin = qRound(height() * 0.01773 + 0.5);
-    int hBottonMargin = hTopMargin;
-    int lw = width() - hLeftMargin * 2;
-    int lh = qRound(height() * 0.0992);
-    m_yiLabel->setFixedSize(lw, lh);
-    m_yiDownLayout->setContentsMargins(hLeftMargin, qRound(hTopMargin * 0.5), hRightMargin, 0);
-    m_jiLabel->setFixedSize(lw, lh);
-    m_jiDownLayout->setContentsMargins(hLeftMargin, hTopMargin, hRightMargin, hBottonMargin);
 }
 
 void CDayMonthView::wheelEvent(QWheelEvent *event)
@@ -585,7 +561,7 @@ void CDayMonthWidget::paintCell(QWidget *cell)
 
     if (m_vlineflag.count() == DDEDayCalendar::PainterCellNum) {
         if (m_vlineflag[pos]) {
-            if(m_selectDate.month() == getCellDate(pos).month()) {
+            if (m_selectDate.month() == getCellDate(pos).month()) {
                 painter.save();
                 QPen pen;
                 pen.setWidth(2);
@@ -622,57 +598,57 @@ bool CDayMonthWidget::eventFilter(QObject *o, QEvent *e)
         } else if (e->type() == QEvent::MouseButtonPress) {
             m_dayMouseState = 1;
         } else if (e->type() == QEvent::MouseMove) {
-            if(m_dayMouseState == 1){
+            if (m_dayMouseState == 1) {
                 m_dayMouseState = 2;
             }
 
-            if ( 2 ==m_dayMouseState ) {
+            if (2 == m_dayMouseState) {
                 QMouseEvent *mouseEvent = dynamic_cast<QMouseEvent *>(e);
 
                 //如果m_dayCreateState为0需要判断是否离开了选择区域，否则不需要判断
-                if ( m_dayCreateState == 0 && !cell->rect().contains(mouseEvent->pos() ) ) {
+                if (m_dayCreateState == 0 && !cell->rect().contains(mouseEvent->pos())) {
                     //如果离开选择日期区域则修改鼠标显示
                     setCursor(Qt::ClosedHandCursor);
                     m_dayCreateState = 1;
                 }
 
-                if( m_dayCreateState != 0 ) {
+                if (m_dayCreateState != 0) {
                     //根据是否在日历界面内设置鼠标形状和创建状态
                     QPoint globalPoint =  QCursor::pos();
-                    QWidget *widget =QApplication::activeWindow();
+                    QWidget *widget = QApplication::activeWindow();
                     //
-                    if(widget != nullptr){
+                    if (widget != nullptr) {
                         QRect rect = widget->geometry();
 
-                        if ( rect.contains(globalPoint) ) {
+                        if (rect.contains(globalPoint)) {
                             setCursor(Qt::ClosedHandCursor);
-                            m_dayCreateState =1;
+                            m_dayCreateState = 1;
                         } else {
                             setCursor(Qt::ForbiddenCursor);
-                            m_dayCreateState =2;
+                            m_dayCreateState = 2;
                         }
                     }
                 }
             }
-        } else if(e->type() == QEvent::MouseButtonRelease) {
+        } else if (e->type() == QEvent::MouseButtonRelease) {
             QMouseEvent *mouseEvent = dynamic_cast<QMouseEvent *>(e);
             //
-            if ( m_dayCreateState == 1 ) {
+            if (m_dayCreateState == 1) {
                 //新建日程
                 const int pos = m_cellList.indexOf(cell);
                 QDate date = m_showDays.at(pos);
                 //设置日程开始时间
-                    QDateTime _beginTime(date, QTime::currentTime());
-                    //新建日程对话框
-                    CScheduleDlg _scheduleDig(1, this, false);
-                    //设置开始时间
-                    _scheduleDig.setDate(_beginTime);
-                    _scheduleDig.exec();
+                QDateTime _beginTime(date, QTime::currentTime());
+                //新建日程对话框
+                CScheduleDlg _scheduleDig(1, this, false);
+                //设置开始时间
+                _scheduleDig.setDate(_beginTime);
+                _scheduleDig.exec();
 
             } else {
                 //如果不在点击区域内则不跳转日期
                 //跳转日期
-                if ( mouseEvent->button() == Qt::LeftButton && cell->rect().contains(mouseEvent->pos())) {
+                if (mouseEvent->button() == Qt::LeftButton && cell->rect().contains(mouseEvent->pos())) {
                     cellClicked(cell);
                 }
             }

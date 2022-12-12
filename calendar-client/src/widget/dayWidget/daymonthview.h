@@ -74,7 +74,6 @@ private:
 private:
     void changeSelectDate(const QDate &date);
 protected:
-    void resizeEvent(QResizeEvent *event) override;
     void wheelEvent(QWheelEvent *event) override;
     void paintEvent(QPaintEvent *e) override;
 

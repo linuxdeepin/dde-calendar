@@ -167,6 +167,7 @@ static const int DDLabelHeight = 117;
 static const int DWLabelHeight = 22;
 static const int DHuangLiInfoLabelHeight = 17;
 static const int DHuangLiLabelHeight = 56;
+static const int DHuangLiLabelMaxHeight = 96;
 static const int DHuangLiLabelWidth = 330;
 static const int D_MWindowWidth = 350;
 static const int D_MWindowHeight = 564;
