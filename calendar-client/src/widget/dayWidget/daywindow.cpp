@@ -373,14 +373,6 @@ void CDayWindow::slotChangeSelectDate(const QDate &date)
     }
 }
 
-void CDayWindow::resizeEvent(QResizeEvent *event)
-{
-    Q_UNUSED(event);
-    qreal dw = 0.4 * width();
-    int dh = height() - 20;
-    m_daymonthView->setFixedSize(qRound(dw), dh);
-}
-
 void CDayWindow::slotIsDragging(bool &isDragging)
 {
     isDragging = m_scheduleView->IsDragging();

@@ -74,8 +74,7 @@ public slots:
     void slotScheduleHide();
     //更新选择时间
     void slotChangeSelectDate(const QDate &date);
-protected:
-    void resizeEvent(QResizeEvent *event) override;
+
 private slots:
     void slotIsDragging(bool &isDragging);
     //切换选择时间
