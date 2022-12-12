@@ -44,44 +44,59 @@ static CalendarSettingSetting setting_account = {
     "setting_account",
     QObject::tr("Account settings"),
     {
-        {"account",
-         QObject::tr("Account"),
-         {{
-             "login", //key
-             "", //name
-             "login", //type
-             "" //default
-         }}},
-        {"account_sync_items",
-         QObject::tr("Select items to be synced"),
-         {{
-              "Account_Calendar", //key
-              QObject::tr("Events"), //name
-              "SyncTagRadioButton", //type
-              "" //default
-          },
+        {
+            "account",
+            QObject::tr("Account"),
+            {{
+                    "login", //key
+                    "", //name
+                    "login", //type
+                    "" //default
+                }
+            }
+        },
+        {
+            "account_sync_items",
+            QObject::tr("Select items to be synced"),
+            {{
+                    "Account_Calendar", //key
+                    QObject::tr("Events"), //name
+                    "SyncTagRadioButton", //type
+                    "" //default
+                },
 
-          {
-              "Account_Setting", //key
-              QObject::tr("General settings"), //name
-              "SyncTagRadioButton", //type
-              "" //default
-          }}},
-        {"sync_interval",
-         "",
-         {{"Sync_interval", //key
-           QObject::tr("Sync interval"), //name
-           "SyncTimeCombobox", //type
-           ""}}},
-        {"manual_sync",
-         "",
-         {{
-             "manual_sync", //key
-             "", //name
-             "ManualSyncButton", //type
-             "" //default
-         }}},
-    }};
+                {
+                    "Account_Setting", //key
+                    QObject::tr("General settings"), //name
+                    "SyncTagRadioButton", //type
+                    "" //default
+                }
+            }
+        },
+        {
+            "sync_interval",
+            "",
+            {   {
+                    "Sync_interval", //key
+                    QObject::tr("Sync interval"), //name
+                    "SyncTimeCombobox", //type
+                    ""
+                }
+            }
+        },
+        {
+            "manual_sync",
+            "",
+            {{
+                    "manual_sync", //key
+                    "", //name
+                    "ManualSyncButton", //type
+                    "" //default
+                }
+            }
+        },
+    }
+};
 
 static CalendarSettingSetting setting_base = {
     "setting_base",
@@ -99,6 +114,25 @@ static CalendarSettingSetting setting_base = {
                 }
             }
         },
+        {
+            "event_types",
+            QObject::tr("Event types"),
+            {
+                {
+                    "JobTypeListView",   //key
+                    "",                  //name
+                    "JobTypeListView",   //type
+                    ""                   //default
+                }
+            }
+        }
+    }
+};
+
+static CalendarSettingSetting setting_base_noaccount = {
+    "setting_base",
+    QObject::tr("Manage calendar"),
+    {
         {
             "event_types",
             QObject::tr("Event types"),
@@ -164,9 +198,13 @@ void CSettingDialog::initView()
     QString strJson;
 
     CalendarSettingSettings calendarSettings;
-    if(gAccountManager->getIsSupportUid())
+    if (gAccountManager->getIsSupportUid()) {
         calendarSettings.append(setting_account);
-    calendarSettings.append(setting_base);
+        calendarSettings.append(setting_base);
+    } else {
+        calendarSettings.append(setting_base_noaccount);
+    }
+
     calendarSettings.append(setting_general);
 
     QJsonObject obj;
@@ -183,9 +221,6 @@ void CSettingDialog::initView()
     if (lstwidget.size() > 0) { //accessibleName
         for (QWidget *wid : lstwidget) {
             if ("ContentWidgetForsetting_base.event_types" == wid->accessibleName()) {
-                JobTypeListView *view = findChild<JobTypeListView *>("JobTypeListView");
-                if (!view)
-                    return;
                 DIconButton *addButton = this->createTypeAddButton();
                 wid->layout()->addWidget(addButton);
                 //使addButton的右边距等于view的右边距
@@ -198,12 +233,6 @@ void CSettingDialog::initView()
             }
         }
     }
-
-    //如果不支持则屏蔽
-    if (!gAccountManager->getIsSupportUid()) {
-        setGroupVisible("setting_base.acccount_items", false);
-    }
-
 
     //未登录uos帐号时，移除部分选项
     if (!gUosAccountItem) {
@@ -225,7 +254,7 @@ void CSettingDialog::initView()
 
 
     //账户登出登入时，隐藏显示相关界面
-    connect(gAccountManager, &AccountManager::signalAccountUpdate, this, [=]() {
+    connect(gAccountManager, &AccountManager::signalAccountUpdate, this, [ = ]() {
         if (!this->groupIsVisible("setting_account"))
             return;
         setGroupVisible("setting_account.account_sync_items",   gUosAccountItem != nullptr);
@@ -237,13 +266,13 @@ void CSettingDialog::initView()
     m_radiobuttonAccountCalendar = qobject_cast<SyncTagRadioButton *>(this->findChild<QWidget *>("Account_Calendar"));
     m_radiobuttonAccountSetting = qobject_cast<SyncTagRadioButton *>(this->findChild<QWidget *>("Account_Setting"));
 
-   // Q_ASSERT(m_radiobuttonAccountSetting);
+    // Q_ASSERT(m_radiobuttonAccountSetting);
 
     connect(gAccountManager, &AccountManager::signalAccountStateChange, this, &CSettingDialog::slotSyncTagButtonUpdate);
     connect(gAccountManager, &AccountManager::signalAccountUpdate, this, &CSettingDialog::slotSyncTagButtonUpdate);
-    if(m_radiobuttonAccountCalendar)
+    if (m_radiobuttonAccountCalendar)
         connect(m_radiobuttonAccountCalendar, &SyncTagRadioButton::clicked, this, &CSettingDialog::slotSyncAccountStateUpdate);
-    if(m_radiobuttonAccountSetting)
+    if (m_radiobuttonAccountSetting)
         connect(m_radiobuttonAccountSetting, &SyncTagRadioButton::clicked, this, &CSettingDialog::slotSyncAccountStateUpdate);
 
     slotSyncTagButtonUpdate();
@@ -275,15 +304,16 @@ void CSettingDialog::initConnect()
     //TODO:更新union帐户的的同步频率
     connect(m_syncFreqComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &CSettingDialog::slotSetUosSyncFreq);
     connect(m_syncBtn, &QPushButton::clicked, this, &CSettingDialog::slotUosManualSync);
-    connect(m_ptrNetworkState,&DOANetWorkDBus::sign_NetWorkChange,this,&CSettingDialog::slotNetworkStateChange);
+    connect(m_ptrNetworkState, &DOANetWorkDBus::sign_NetWorkChange, this, &CSettingDialog::slotNetworkStateChange);
 }
 
-void CSettingDialog::slotNetworkStateChange(DOANetWorkDBus::NetWorkState state) {
-    if(DOANetWorkDBus::NetWorkState::Active == state) {
+void CSettingDialog::slotNetworkStateChange(DOANetWorkDBus::NetWorkState state)
+{
+    if (DOANetWorkDBus::NetWorkState::Active == state) {
         if (!gUosAccountItem.isNull() && (gUosAccountItem->isCanSyncSetting() || gUosAccountItem->isCanSyncShedule())) {
             m_syncBtn->setEnabled(true);
         }
-    } else if(DOANetWorkDBus::NetWorkState::Disconnect == state) {
+    } else if (DOANetWorkDBus::NetWorkState::Disconnect == state) {
         m_syncBtn->setEnabled(false);
     }
 }
@@ -513,7 +543,7 @@ void CSettingDialog::slotSyncAccountStateUpdate(bool status)
         state = state & ~DAccount::Account_Calendar;
 
     gUosAccountItem->setAccountState(state);
-    if(status) {
+    if (status) {
         slotUosManualSync();
     }
 }
@@ -552,8 +582,7 @@ void CSettingDialog::slotAccountStateChange()
             m_syncFreqComboBox->setEnabled(false);
         }
     }
-    if (m_accountComboBox && m_typeAddBtn)
-    {
+    if (m_accountComboBox && m_typeAddBtn) {
         setTypeEnable(m_accountComboBox->currentIndex());
     }
 }
