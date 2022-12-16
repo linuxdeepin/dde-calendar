@@ -96,7 +96,7 @@ void SidebarItemWidget::setItem(QTreeWidgetItem *item)
     m_item = item;
 }
 
-QTreeWidgetItem* SidebarItemWidget::getTreeItem()
+QTreeWidgetItem *SidebarItemWidget::getTreeItem()
 {
     return m_item;
 }
@@ -161,7 +161,7 @@ void SidebarTypeItemWidget::updateStatus()
     AccountItem::Ptr account = gAccountManager->getAccountItemByAccountId(m_scheduleType->accountID());
     if (account) {
         if (m_selectStatus != (m_scheduleType->showState() == DScheduleType::Show)) {
-            m_scheduleType->setShowState(m_selectStatus? DScheduleType::Show:DScheduleType::Hide);
+            m_scheduleType->setShowState(m_selectStatus ? DScheduleType::Show : DScheduleType::Hide);
             account->updateScheduleTypeShowState(m_scheduleType);
         }
         m_checkBox->setChecked(m_selectStatus);
@@ -188,7 +188,7 @@ void SidebarAccountItemWidget::initView()
     m_headIconButton->setIcon(DStyle::SP_ArrowRight);
 
     m_headIconButton->setFocusPolicy(Qt::NoFocus);
-    connect(m_headIconButton, &DIconButton::clicked, this, [this](){
+    connect(m_headIconButton, &DIconButton::clicked, this, [this]() {
         setSelectStatus(!m_selectStatus);
     });
     m_ptrDoaNetwork = new DOANetWorkDBus(this);
@@ -202,6 +202,7 @@ void SidebarAccountItemWidget::initView()
     labelF.setWeight(QFont::Normal);
     m_titleLabel->setFont(labelF);
     m_titleLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    m_titleLabel->setTextFormat(Qt::PlainText);
     m_titleLabel->setText(m_accountItem->getAccount()->accountName());
 
     m_syncIconButton = new DIconButton(this);
@@ -237,28 +238,29 @@ void SidebarAccountItemWidget::initConnect()
     connect(m_syncIconButton, &DIconButton::clicked, this, &SidebarAccountItemWidget::slotRearIconClicked);
     connect(m_accountItem.data(), &AccountItem::signalSyncStateChange, this, &SidebarAccountItemWidget::slotSyncStatusChange);
     connect(gAccountManager, &AccountManager::signalAccountStateChange, this, &SidebarAccountItemWidget::slotAccountStateChange);
-    connect(m_ptrDoaNetwork,&DOANetWorkDBus::sign_NetWorkChange,this,&SidebarAccountItemWidget::slotNetworkStateChange);
+    connect(m_ptrDoaNetwork, &DOANetWorkDBus::sign_NetWorkChange, this, &SidebarAccountItemWidget::slotNetworkStateChange);
 }
 
- void SidebarAccountItemWidget::slotNetworkStateChange(DOANetWorkDBus::NetWorkState state) {
-     //控件不显示则不处理
-     if ( !m_accountItem || m_accountItem->getAccount()->accountType() != DAccount::Account_UnionID) {
-         return;
-     }
-     if(DOANetWorkDBus::NetWorkState::Disconnect == state) {
-         m_syncIconButton->hide();
-         m_warningLabel->show();
-         QString msg = m_accountItem->getSyncMsg(DAccount::AccountSyncState::Sync_NetworkAnomaly);
-         m_warningLabel->setToolTip(msg);
-     } else if(DOANetWorkDBus::NetWorkState::Active == state) {
-         m_warningLabel->hide();
-         if (m_accountItem->isCanSyncSetting() || m_accountItem->isCanSyncShedule()) {
-             m_syncIconButton->show();
-         } else {
-             m_syncIconButton->hide();
-         }
-     }
- }
+void SidebarAccountItemWidget::slotNetworkStateChange(DOANetWorkDBus::NetWorkState state)
+{
+    //控件不显示则不处理
+    if (!m_accountItem || m_accountItem->getAccount()->accountType() != DAccount::Account_UnionID) {
+        return;
+    }
+    if (DOANetWorkDBus::NetWorkState::Disconnect == state) {
+        m_syncIconButton->hide();
+        m_warningLabel->show();
+        QString msg = m_accountItem->getSyncMsg(DAccount::AccountSyncState::Sync_NetworkAnomaly);
+        m_warningLabel->setToolTip(msg);
+    } else if (DOANetWorkDBus::NetWorkState::Active == state) {
+        m_warningLabel->hide();
+        if (m_accountItem->isCanSyncSetting() || m_accountItem->isCanSyncShedule()) {
+            m_syncIconButton->show();
+        } else {
+            m_syncIconButton->hide();
+        }
+    }
+}
 
 void SidebarAccountItemWidget::resetRearIconButton()
 {
