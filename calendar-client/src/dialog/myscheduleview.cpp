@@ -51,11 +51,13 @@ CMyScheduleView::CMyScheduleView(const DSchedule::Ptr &schduleInfo, QWidget *par
     slotAccountStateChange();
 }
 
-void CMyScheduleView::setSchedules(const DSchedule::Ptr &schduleInfo) {
-      m_scheduleInfo = schduleInfo;
+void CMyScheduleView::setSchedules(const DSchedule::Ptr &schduleInfo)
+{
+    m_scheduleInfo = schduleInfo;
 }
 
-void CMyScheduleView::updateFormat() {
+void CMyScheduleView::updateFormat()
+{
     updateDateTimeFormat();
     slotAccountStateChange();
 }
@@ -162,19 +164,16 @@ void CMyScheduleView::setLabelTextColor(const int type)
     //时间显示颜色
     QColor timeColor;
     if (type == 2) {
-        titleColor = "#FFFFFF";
-        titleColor.setAlphaF(0.9);
+        titleColor = "#C0C6D4";
         scheduleTitleColor = "#FFFFFF";
-        scheduleTitleColor.setAlphaF(0.8);
         timeColor = "#FFFFFF";
         timeColor.setAlphaF(0.7);
     } else {
-        titleColor = "#000000";
-        titleColor.setAlphaF(0.9);
+        titleColor = "#001A2E";
         scheduleTitleColor = "#000000";
-        scheduleTitleColor.setAlphaF(0.7);
+        scheduleTitleColor.setAlphaF(0.9);
         timeColor = "#000000";
-        timeColor.setAlphaF(0.7);
+        timeColor.setAlphaF(0.6);
     }
     //设置颜色
     setPaletteTextColor(m_Title, titleColor);
@@ -275,17 +274,10 @@ void CMyScheduleView::initUI()
     m_Title = new QLabel(this);
     m_Title->setFixedSize(108, 51);
     m_Title->setAlignment(Qt::AlignCenter);
-    QFont titleFont;
-    //设置字重
-    titleFont.setWeight(QFont::Bold);
-    m_Title->setFont(titleFont);
-    DFontSizeManager::instance()->bind(m_Title, DFontSizeManager::T5);
+    DFontSizeManager::instance()->bind(m_Title, DFontSizeManager::T5, QFont::DemiBold);
     //设置日期图标
     QIcon t_icon(CDynamicIcon::getInstance()->getPixmap());
     setIcon(t_icon);
-    QFont labelTitle;
-    labelTitle.setWeight(QFont::DemiBold);
-    m_Title->setFont(labelTitle);
     m_Title->setText(tr("My Event"));
     m_Title->move(137, 0);
 
