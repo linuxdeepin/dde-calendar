@@ -252,3 +252,9 @@ void CTimeEdit::paintEvent(QPaintEvent *e)
         style()->drawPrimitive(QStyle::PE_FrameFocusRect, &option, &painter, this);
     }
 }
+
+void CTimeEdit::resizeEvent(QResizeEvent *e)
+{
+    DComboBox::resizeEvent(e);
+    m_timeEdit->setFixedHeight(this->height());
+}

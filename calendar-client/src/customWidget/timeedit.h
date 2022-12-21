@@ -69,10 +69,10 @@ public slots:
     void setTimeFormat(int value);
     //焦点获取效果绘制
     void slotFocusDraw(bool showFocus);
-    
+
 
     /**
-     * @brief slotSetPlainText      设置当前编辑框显示文本     
+     * @brief slotSetPlainText      设置当前编辑框显示文本
      * @param arg
      */
     void slotSetPlainText(const QString &arg);
@@ -97,6 +97,7 @@ protected:
     void showPopup() override;
     void focusInEvent(QFocusEvent *event) override;
     void paintEvent(QPaintEvent *e) override;
+    void resizeEvent(QResizeEvent *e) override;
 private:
     QString m_timeFormat = "hh:mm";
     QTime m_time;

@@ -71,17 +71,19 @@ public:
      */
     void setCalendarPopup(bool enable);
 
+    void setEditCursorPos(int pos);
+
 signals:
 protected:
 
-void changeEvent(QEvent *e) override;
+    void changeEvent(QEvent *e) override;
 
 private slots:
 
     //连接时间改变信号，填充农历信息
     void slotDateEidtInfo(const QDate &date);
     //连接输入框文本改变信号，刷新文本样式
-    void slotRefreshLineEditTextFormat(const QString&);
+    void slotRefreshLineEditTextFormat(const QString &);
     //连接光标位置改变信号，限制光标位置
     void slotCursorPositionChanged(int, int);
     //连接文本选择改变信号，处理键盘全选时情况
@@ -89,9 +91,9 @@ private slots:
 
 private:
     //获取农历信息
-    QString getLunarName(const QDate&);
+    QString getLunarName(const QDate &);
     //设置文本样式
-    void setLineEditTextFormat(QLineEdit* lineEdit, const QList<QTextLayout::FormatRange>& formats);
+    void setLineEditTextFormat(QLineEdit *lineEdit, const QList<QTextLayout::FormatRange> &formats);
     //更新日历显示类型
     void updateCalendarWidget();
     bool showGongli();
