@@ -645,8 +645,10 @@ void CSettingDialog::setTypeEnable(int index)
     AccountItem::Ptr account = gAccountManager->getAccountItemByAccountId(accountId);
 
     if (account->getAccount()->accountType() == DAccount::Account_Local || gUosAccountItem->isCanSyncShedule()) {
-        m_typeAddBtn->setEnabled(true);
-        m_scheduleTypeWidget->setItemEnabled(true);
+        if (account->getScheduleTypeList().count() < 20) {
+            m_typeAddBtn->setEnabled(true);
+            m_scheduleTypeWidget->setItemEnabled(true);
+        }
     } else {
         m_typeAddBtn->setEnabled(false);
         m_scheduleTypeWidget->setItemEnabled(false);
