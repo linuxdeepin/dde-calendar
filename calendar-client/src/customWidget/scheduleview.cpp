@@ -342,6 +342,13 @@ void CScheduleView::paintEvent(QPaintEvent *event)
         painter.setPen(Qt::NoPen);
         painter.setBrush(m_outerBorderColor);
         painter.drawRect(QRectF(this->width() - 1, 0, this->width(), this->height()));
+        //绘制个三角遮住左上角圆角
+        QPainterPath path;
+        path.moveTo(0,0);
+        path.lineTo(m_radius, 0);
+        path.lineTo(0, m_radius);
+        path.lineTo(0, 0);
+        painter.fillPath(path, palette().color(backgroundRole()));
     }
 }
 
