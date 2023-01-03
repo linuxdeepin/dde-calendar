@@ -78,6 +78,7 @@ private:
     void createview();
     //重置界面大小
     void resizeView();
+    void removeSyncToast();
 protected:
     void resizeEvent(QResizeEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;

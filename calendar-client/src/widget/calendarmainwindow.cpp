@@ -333,13 +333,13 @@ void Calendarmainwindow::slotOpenSchedule(QString job)
     //设置非全天时间定位位置
     m_DayWindow->setTime(out->dtStart().time());
     //弹出编辑对话框
-    if(m_dlg == Q_NULLPTR) {
-        m_dlg = new CMyScheduleView(out,this);
+    if (m_dlg == Q_NULLPTR) {
+        m_dlg = new CMyScheduleView(out, this);
     } else {
         m_dlg->setSchedules(out);
         m_dlg->updateFormat();
     }
-    if(m_dlg->isHidden())
+    if (m_dlg->isHidden())
         m_dlg->exec();
     slotWUpdateSchedule();
 }
@@ -379,7 +379,7 @@ void Calendarmainwindow::initUI()
     connect(pPrivacy, &QAction::triggered, this, &Calendarmainwindow::slotShowPrivacy);
 
     //接收设置按键焦点
-    connect(m_titleWidget, &CTitleWidget::signalSetButtonFocus, [=] {
+    connect(m_titleWidget, &CTitleWidget::signalSetButtonFocus, [ = ] {
         m_setButtonFocus = true;
     });
     connect(m_titleWidget, &CTitleWidget::signalSearchFocusSwitch, this,
@@ -463,7 +463,7 @@ void Calendarmainwindow::initConnection()
             &Calendarmainwindow::slotSearchSelectSchedule);
     connect(m_scheduleSearchView, &CScheduleSearchView::signalScheduleHide, this,
             &Calendarmainwindow::setScheduleHide);
-    connect(m_sidebarView,&SidebarView::signalScheduleHide,this,&Calendarmainwindow::setScheduleHide);
+    connect(m_sidebarView, &SidebarView::signalScheduleHide, this, &Calendarmainwindow::setScheduleHide);
     connect(m_scheduleSearchView, &CScheduleSearchView::signalSelectCurrentItem, this,
             &Calendarmainwindow::slotSetSearchFocus);
     //更新当前时间
@@ -536,11 +536,11 @@ void Calendarmainwindow::resizeView()
 
     //根据界面大小改变趋势设置侧边栏可显示状态
     //如果帐户列表窗口为显示状态
-    if( m_titleWidget->getSidevarStatus()){
+    if (m_titleWidget->getSidevarStatus()) {
         //如果显示搜索窗口，若需要显示帐户列表则界面的最小尺寸需要984，否则为826
         int minWidth = m_opensearchflag ? 984 : 826 ;
 
-        if ( width() < minWidth) {
+        if (width() < minWidth) {
             m_titleWidget->setSidebarCanDisplay(false);
             m_sidebarView->setVisible(false);
         } else if (width() > minWidth) {
@@ -696,14 +696,14 @@ void Calendarmainwindow::slotSearchSelectSchedule(const DSchedule::Ptr &schedule
         bool changeYear = _showWidget->getSelectDate().year() != scheduleInfo->dtStart().date().year();
         //设置选择时间
         if (_showWidget->setSelectDate(scheduleInfo->dtStart().date(), changeYear)) {
-           //更新显示数据
-           _showWidget->updateData();
-           //设置年份信息显示
-           _showWidget->setYearData();
-           //延迟150毫秒设置选中动画
-           QTimer::singleShot(150, this, [ = ] {
-               _showWidget->setSelectSearchScheduleInfo(scheduleInfo);
-           });
+            //更新显示数据
+            _showWidget->updateData();
+            //设置年份信息显示
+            _showWidget->setYearData();
+            //延迟150毫秒设置选中动画
+            QTimer::singleShot(150, this, [ = ] {
+                _showWidget->setSelectSearchScheduleInfo(scheduleInfo);
+            });
         }
         //如果当前界面不为年试图则更新年视图数据
         if (_showWidget != m_yearwindow) {
@@ -827,11 +827,11 @@ void Calendarmainwindow::slotSidebarStatusChange(bool status)
 {
     //先显示再调整窗口大小
     m_sidebarView->setVisible(status);
-    if(status){
+    if (status) {
         //如果显示搜索窗口，若需要显示帐户列表则界面的最小尺寸需要984，否则为826
         int minWidth = m_opensearchflag ? 984 : 826 ;
-        if (width() < minWidth){
-            resize(minWidth,height());
+        if (width() < minWidth) {
+            resize(minWidth, height());
         }
     }
 }
@@ -931,6 +931,17 @@ void Calendarmainwindow::slotShowPrivacy()
     QDesktopServices::openUrl(url);
 }
 
+void Calendarmainwindow::removeSyncToast()
+{
+    QWidget *content = this->window()->findChild<QWidget *>("_d_message_manager_content", Qt::FindDirectChildrenOnly);
+    if (nullptr == content) return;
+    for (DFloatingMessage *message : content->findChildren<DFloatingMessage *>(QString(), Qt::FindDirectChildrenOnly)) {
+        content->layout()->removeWidget(message);
+        message->hide();
+        message->deleteLater();
+    }
+}
+
 void Calendarmainwindow::slotShowSyncToast(int syncNum)
 {
     //-1:正在刷新 0:正常 1:网络异常 2:服务器异常 3：存储已经满
@@ -938,6 +949,7 @@ void Calendarmainwindow::slotShowSyncToast(int syncNum)
     if (preSyncNum != syncNum && syncNum == -1) {
         preSyncNum = -1;
         //同步中
+        removeSyncToast();
         DMessageManager::instance()->sendMessage(this->window(), QIcon::fromTheme(":/icons/deepin/builtin/icons/dde_calendar_spinner_32px.svg"), tr("Syncing..."));
         return;
     }
@@ -945,16 +957,20 @@ void Calendarmainwindow::slotShowSyncToast(int syncNum)
     if (preSyncNum == -1 && syncNum != -1) {
         preSyncNum = -2;
         switch (syncNum) {
-        case 0:
+        case 0: {
             //同步成功
+            removeSyncToast();
             DMessageManager::instance()->sendMessage(this->window(), QIcon::fromTheme(":/icons/deepin/builtin/icons/dde_calendar_success_200px.png"), tr("Sync successful"));
             break;
+        }
         case 1:
         case 2:
-        case 3:
+        case 3: {
             //同步失败
+            removeSyncToast();
             DMessageManager::instance()->sendMessage(this->window(), QIcon::fromTheme(":/icons/deepin/builtin/icons/dde_calendar_fail_200px.png"), tr("Sync failed, please try later"));
             break;
+        }
         default:
             break;
         }
