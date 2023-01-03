@@ -194,8 +194,13 @@ void CAllDayEventWeekView::upDateInfoShow(const DragStatus &status, const DSched
 
     QVector<MScheduleDateRangeInfo> vMDaySchedule;
     for (int i = 0; i < vListData.count(); i++) {
-        QDate tbegindate = vListData.at(i)->dtStart().date();
-        QDate tenddate = vListData.at(i)->dtEnd().date();
+        DSchedule::Ptr ptr = vListData.at(i);
+        if (ptr.isNull()) {
+            continue;
+        }
+
+        QDate tbegindate = ptr->dtStart().date();
+        QDate tenddate = ptr->dtEnd().date();
         if (tbegindate < m_beginDate)
             tbegindate = m_beginDate;
         if (tenddate > m_endDate)
@@ -203,7 +208,7 @@ void CAllDayEventWeekView::upDateInfoShow(const DragStatus &status, const DSched
         MScheduleDateRangeInfo sinfo;
         sinfo.bdate = tbegindate;
         sinfo.edate = tenddate;
-        sinfo.tData = vListData.at(i);
+        sinfo.tData = ptr;
         sinfo.state = false;
         vMDaySchedule.append(sinfo);
     }

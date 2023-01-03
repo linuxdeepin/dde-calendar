@@ -177,16 +177,21 @@ void CGraphicsView::upDateInfoShow(const CGraphicsView::DragStatus &status, cons
         currentInfo.clear();
 
         for (int j = 0; j < vListData.size(); ++j) {
-            beginoffset = vListData.at(j)->dtStart().date().daysTo(currentDate);
-            endoffset = currentDate.daysTo(vListData.at(j)->dtEnd().date());
+            DSchedule::Ptr ptr = vListData.at(j);
+            if (ptr.isNull()) {
+                continue;
+            }
+
+            beginoffset = ptr->dtStart().date().daysTo(currentDate);
+            endoffset = currentDate.daysTo(ptr->dtEnd().date());
 
             if (beginoffset < 0 || endoffset < 0) {
                 continue;
             }
-            if (vListData.at(j)->dtEnd().date() == currentDate && vListData.at(j)->dtStart().daysTo(vListData.at(j)->dtEnd()) > 0 && vListData.at(j)->dtEnd().time() == QTime(0, 0, 0)) {
+            if (ptr->dtEnd().date() == currentDate && ptr->dtStart().daysTo(ptr->dtEnd()) > 0 && ptr->dtEnd().time() == QTime(0, 0, 0)) {
                 continue;
             }
-            currentInfo.append(vListData.at(j));
+            currentInfo.append(ptr);
         }
         std::sort(currentInfo.begin(), currentInfo.end());
         if (currentInfo.size() > 0) {

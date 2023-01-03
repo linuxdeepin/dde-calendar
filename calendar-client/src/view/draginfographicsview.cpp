@@ -118,7 +118,7 @@ void DragInfoGraphicsView::mousePressEvent(QMouseEvent *event)
     }
     mousePress(event->pos());
     m_Scene->currentItemInit();
-     //更新其它view中item状态显示
+    //更新其它view中item状态显示
     emit signalSceneUpdate();
 }
 
@@ -339,7 +339,7 @@ void DragInfoGraphicsView::contextMenuEvent(QContextMenuEvent *event)
     DragInfoItem *infoitem = dynamic_cast<DragInfoItem *>(listItem);
 
     CScheduleItem *tt = dynamic_cast<CScheduleItem *>(listItem);
-    if(tt != nullptr && tt->getType() != 0){
+    if (tt != nullptr && tt->getType() != 0) {
         return;
     }
     if (infoitem != nullptr) {
@@ -430,7 +430,7 @@ void DragInfoGraphicsView::dropEvent(QDropEvent *event)
         if (event->source() != this || m_MoveDate != m_PressDate) {
             auto startDate = m_DragScheduleInfo->dtStart();
             auto endDate = m_DragScheduleInfo->dtEnd();
-            if ( startDate.date().year() >= DDECalendar::QueryEarliestYear && endDate.date().year() <= DDECalendar::QueryLatestYear) {
+            if (startDate.date().year() >= DDECalendar::QueryEarliestYear && endDate.date().year() <= DDECalendar::QueryLatestYear) {
                 updateScheduleInfo(m_DragScheduleInfo);
             } else {
                 emit signalsUpdateSchedule();
@@ -691,6 +691,7 @@ void DragInfoGraphicsView::stopTouchAnimation()
  */
 void DragInfoGraphicsView::DeleteItem(const DSchedule::Ptr &info)
 {
+    if (info.isNull()) return;
     //删除日程
     CScheduleOperation _scheduleOperation(info->scheduleTypeID(), this);
     _scheduleOperation.deleteSchedule(info);
@@ -874,8 +875,8 @@ void DragInfoGraphicsView::slotDeleteItem()
     //判断是否有效,如果为有效日程且日程类型不为节日或纪念日或不可更改日程则删除
     //判断日程信息
     if (!_pressSchedule.isNull() && _pressSchedule->isValid()
-        && !CScheduleOperation::isFestival(_pressSchedule)
-        && !CScheduleOperation::scheduleIsInvariant(_pressSchedule)) {
+            && !CScheduleOperation::isFestival(_pressSchedule)
+            && !CScheduleOperation::scheduleIsInvariant(_pressSchedule)) {
         CScheduleOperation _scheduleOperation(_pressSchedule->scheduleTypeID(), this);
         _scheduleOperation.deleteSchedule(_pressSchedule);
         //设置选择日程为无效日程

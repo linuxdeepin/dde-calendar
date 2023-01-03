@@ -72,10 +72,14 @@ void CYearScheduleView::setData(DSchedule::List &vListData)
     DSchedule::List valldayListData, vDaylistdata;
 
     for (int i = 0; i < vListData.count(); i++) {
-        if (vListData.at(i)->allDay()) {
-            valldayListData.append(vListData.at(i));
+        DSchedule::Ptr ptr = vListData.at(i);
+        if (ptr.isNull()) {
+            continue;
+        }
+        if (ptr->allDay()) {
+            valldayListData.append(ptr);
         } else {
-            vDaylistdata.append(vListData.at(i));
+            vDaylistdata.append(ptr);
         }
     }
 
