@@ -23,6 +23,8 @@
 #include <DFontSizeManager>
 #include <QVBoxLayout>
 #include <QTimer>
+#include <QApplication>
+#include <QSizePolicy>
 
 SidebarItemWidget::SidebarItemWidget(QWidget *parent)
     : QWidget(parent)
@@ -208,11 +210,14 @@ void SidebarAccountItemWidget::initView()
     m_syncIconButton = new DIconButton(this);
     m_syncIconButton->setIcon(QIcon(":/icons/deepin/builtin/icons/icon_refresh.svg"));
     m_syncIconButton->setFixedSize(QSize(20, 20));
-    m_syncIconButton->setIconSize(QSize(10, 10));
+    qreal ratio = qApp->devicePixelRatio();
+    if (ratio == 1){
+        m_syncIconButton->setIconSize(QSize(10, 10));
+    }
     m_syncIconButton->setFocusPolicy(Qt::NoFocus);
 
     m_warningLabel = new DLabel();
-    m_warningLabel->setFixedSize(QSize(18, 18));
+    m_warningLabel->setFixedSize(QSize(20, 20));
     m_warningLabel->setPixmap(QIcon(":/icons/deepin/builtin/icons/dde_calendar_warning_light_32px.svg").pixmap(18, 18));
 
     hLayout->addWidget(m_headIconButton);

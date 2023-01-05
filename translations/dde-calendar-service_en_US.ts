@@ -1,4 +1,6 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS version="2.1" language="en_US">
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.1" language="en_US">
 <context>
     <name>DAccountDataBase</name>
     <message>
@@ -60,30 +62,6 @@
     <message>
         <source>Today</source>
         <translation>Today</translation>
-    </message>
-</context>
-<context>
-    <name>Return</name>
-    <message>
-        <source>Today</source>
-        <comment>Return</comment>
-        <translation type="unfinished"/>
-    </message>
-</context>
-<context>
-    <name>Return Today</name>
-    <message>
-        <source>Today</source>
-        <comment>Return Today</comment>
-        <translation type="unfinished"/>
-    </message>
-</context>
-<context>
-    <name>today</name>
-    <message>
-        <source>Today</source>
-        <comment>Today</comment>
-        <translation type="unfinished"/>
     </message>
 </context>
 </TS>
