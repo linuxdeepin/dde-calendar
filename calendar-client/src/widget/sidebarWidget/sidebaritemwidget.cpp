@@ -206,6 +206,7 @@ void SidebarAccountItemWidget::initView()
     m_titleLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     m_titleLabel->setTextFormat(Qt::PlainText);
     m_titleLabel->setText(m_accountItem->getAccount()->accountName());
+    m_titleLabel->setToolTip("<p style='white-space:pre;'>" + m_accountItem->getAccount()->accountName().toHtmlEscaped());
 
     m_syncIconButton = new DIconButton(this);
     m_syncIconButton->setIcon(QIcon(":/icons/deepin/builtin/icons/icon_refresh.svg"));
