@@ -428,6 +428,9 @@ void DragInfoGraphicsView::dropEvent(QDropEvent *event)
 {
     if (event->mimeData()->hasFormat("Info")) {
         if (event->source() != this || m_MoveDate != m_PressDate) {
+            //后面方法出现模态框，阻塞，导致拖拽图片不消失，手动先调用取消接口解决
+            QDrag::cancel();
+
             auto startDate = m_DragScheduleInfo->dtStart();
             auto endDate = m_DragScheduleInfo->dtEnd();
             if (startDate.date().year() >= DDECalendar::QueryEarliestYear && endDate.date().year() <= DDECalendar::QueryLatestYear) {
