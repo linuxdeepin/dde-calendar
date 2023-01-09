@@ -129,7 +129,7 @@ void CMonthWindow::updateShowDate(const bool isUpdateBar)
     m_startDate = _monthShowData.first();
     m_stopDate = _monthShowData.last();
     m_monthView->setShowDate(_monthShowData);
-    m_monthView->setRemindWidgetTimeFormat((m_calendarManager->getTimeShowType()?"AP ":"") + m_calendarManager->getTimeFormat());
+    m_monthView->setRemindWidgetTimeFormat((m_calendarManager->getTimeShowType() ? "AP " : "") + m_calendarManager->getTimeFormat());
     if (isUpdateBar)
         m_monthDayView->setSelectDate(_selectDate); //设置12个月份显示
     //如果为中文环境则显示班休和农历信息
@@ -350,13 +350,23 @@ void CMonthWindow::initConnection()
 void CMonthWindow::slideMonth(bool next)
 {
     slotScheduleHide();
-    if (next) {
-        setSelectDate(getSelectDate().addMonths(-1), true);
-    } else {
-        setSelectDate(getSelectDate().addMonths(1), true);
-    }
-    //更新日程
-    updateShowDate();
+
+    if (m_isSwitchStatus)
+        return;
+
+    m_isSwitchStatus = true;
+
+    QTimer::singleShot(5, [this, next]() {
+        if (next) {
+            setSelectDate(getSelectDate().addMonths(-1), true);
+        } else {
+            setSelectDate(getSelectDate().addMonths(1), true);
+        }
+        //更新日程
+        updateShowDate();
+
+        m_isSwitchStatus = false;
+    });
 }
 
 /**
