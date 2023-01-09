@@ -573,12 +573,13 @@ void CScheduleSearchView::updateDateShow()
     //是否搜索到日程标志
     hasScheduleShow = true;
 
-    for (int i = 0; i < m_gradientItemList->count(); i++) {
-        QListWidgetItem *item11 = m_gradientItemList->takeItem(i);
-        m_gradientItemList->removeItemWidget(item11);
-        delete item11;
-        item11 = nullptr;
+    //清空列表之前先断开信号响应
+    for(auto widget : m_scheduleSearchItem){
+        if(nullptr != widget){
+            widget->disconnect();
+        }
     }
+
     m_gradientItemList->clear();
     m_labellist.clear();
     m_scheduleSearchItem.clear();
