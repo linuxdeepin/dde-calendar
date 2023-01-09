@@ -162,7 +162,7 @@ void CTitleWidget::setSidebarStatus(bool status)
     m_sidebarstatus = status;
     updateSidebarIconStatus();
     m_clickShowLeft = status;
-    emit signalSidebarStatusChange(m_sidebarstatus&m_sidebarCanDisplay);
+    emit signalSidebarStatusChange(m_sidebarstatus & m_sidebarCanDisplay);
     //将状态保存在配置文件中
     gSetting->setUserSidebarStatus(status);
 }
@@ -222,7 +222,7 @@ void CTitleWidget::miniStateShowSearchEdit()
     m_searchPush->hide();
     m_searchEdit->setMaximumWidth(width());
     m_searchEdit->show();
-  
+
     m_searchEdit->setPlaceHolder(m_strPlaceHolder);
     m_searchEdit->setPlaceholderText(m_strPlaceHolder);
 }
@@ -239,6 +239,8 @@ void CTitleWidget::normalStateUpdateSearchEditWidth()
         searchWidth = 354;
     }
     m_searchEdit->setMaximumWidth(searchWidth);
+    m_searchEdit->setPlaceHolder(m_strPlaceHolder);
+    m_searchEdit->setPlaceholderText(m_strPlaceHolder);
 }
 
 void CTitleWidget::updateSidebarIconStatus()
@@ -254,8 +256,8 @@ void CTitleWidget::resizeEvent(QResizeEvent *event)
     }
     QString str  = m_strPlaceHolder;
     QFontMetrics fontMetrice(m_searchEdit->font());
-    if(fontMetrice.width(str) > (m_searchEdit->width()-30) && m_clickShowLeft == false && !m_buttonBox->isHidden()) {
-        str = fontMetrice.elidedText(str,Qt::ElideRight,m_searchEdit->width()-30);
+    if (fontMetrice.width(str) > (m_searchEdit->width() - 30) && m_clickShowLeft == false && !m_buttonBox->isHidden()) {
+        str = fontMetrice.elidedText(str, Qt::ElideRight, m_searchEdit->width() - 30);
         m_searchEdit->setPlaceHolder(str);
         m_searchEdit->setPlaceholderText(str);
     } else {
@@ -265,18 +267,20 @@ void CTitleWidget::resizeEvent(QResizeEvent *event)
     }
 }
 
-void CTitleWidget::changeEvent(QEvent *e) {
+void CTitleWidget::changeEvent(QEvent *e)
+{
     QWidget::changeEvent(e);
-    if(e->type() == QEvent::FontChange) {
+    if (e->type() == QEvent::FontChange) {
         updateSearchEditPlaceHolder();
     }
 }
 
-void  CTitleWidget::updateSearchEditPlaceHolder() {
+void  CTitleWidget::updateSearchEditPlaceHolder()
+{
     QString str  = m_strPlaceHolder;
     QFontMetrics fontMetrice(m_searchEdit->font());
-    if(fontMetrice.width(str) > (m_searchEdit->width()-30)) {
-        str = fontMetrice.elidedText(str,Qt::ElideRight,m_searchEdit->width()-30);
+    if (fontMetrice.width(str) > (m_searchEdit->width() - 30)) {
+        str = fontMetrice.elidedText(str, Qt::ElideRight, m_searchEdit->width() - 30);
         m_searchEdit->setPlaceHolder(str);
         m_searchEdit->setPlaceholderText(str);
     } else {
@@ -304,7 +308,7 @@ bool CTitleWidget::eventFilter(QObject *o, QEvent *e)
             }
             //根据焦点离开原因，决定是否隐藏搜索框
             if (focusOutEvent->reason() == Qt::TabFocusReason
-                || focusOutEvent->reason() == Qt::MouseFocusReason) {
+                    || focusOutEvent->reason() == Qt::MouseFocusReason) {
                 slotSearchEditFocusChanged(false);
             }
         }
@@ -336,7 +340,7 @@ void CTitleWidget::slotSearchEditFocusChanged(bool onFocus)
 void CTitleWidget::slotSidebarIconClicked()
 {
     //获取当前侧边栏显示状态
-    bool display = m_sidebarCanDisplay&m_sidebarstatus;
+    bool display = m_sidebarCanDisplay & m_sidebarstatus;
     //点击按钮后侧边栏状态重新恢复为可显示状态
     m_sidebarCanDisplay = true;
     setSidebarStatus(!display); //切换显示状态
