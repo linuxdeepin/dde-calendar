@@ -41,10 +41,20 @@ static QString layoutHM("15:04");
 DAlarmManager::DAlarmManager(QObject *parent)
     : QObject(parent)
 {
-    m_dbusnotify = new DBusNotify("com.deepin.dde.Notification",
-                                  "/com/deepin/dde/Notification",
+    m_dbusnotify = new DBusNotify("org.deepin.dde.Notification1",
+                                  "/org/deepin/dde/Notification1",
+                                  "org.deepin.dde.Notification1",
                                   QDBusConnection::sessionBus(),
                                   this);
+    if (!m_dbusnotify->isValid()) {
+        delete m_dbusnotify;
+        m_dbusnotify = new DBusNotify("com.deepin.dde.Notification",
+                                      "/com/deepin/dde/Notification",
+                                      "com.deepin.dde.Notification",
+                                      QDBusConnection::sessionBus(),
+                                      this);
+    }
+
     //若没开启定时任务则开启定时任务
     CSystemdTimerControl systemdTimer;
     systemdTimer.startCalendarServiceSystemdTimer();
@@ -52,7 +62,7 @@ DAlarmManager::DAlarmManager(QObject *parent)
 
 void DAlarmManager::updateRemind(const DRemindData::List &remindList)
 {
-    if(remindList.size() == 0)
+    if (remindList.size() == 0)
         return;
     QString &&accountID = remindList.at(0)->accountID();
     CSystemdTimerControl systemdTimerControl;

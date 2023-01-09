@@ -20,8 +20,8 @@
 */
 #include "dbusnotify.h"
 
-DBusNotify::DBusNotify(const QString &service, const QString &path, const QDBusConnection &connection, QObject *parent)
-    : QDBusAbstractInterface(service, path, staticInterfaceName(), connection, parent)
+DBusNotify::DBusNotify(const QString &service, const QString &path, const QString &interface, const QDBusConnection &connection, QObject *parent)
+    : QDBusAbstractInterface(service, path, interface.toLatin1().data(), connection, parent)
 {
 }
 

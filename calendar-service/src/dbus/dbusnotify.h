@@ -26,11 +26,7 @@ class DBusNotify : public QDBusAbstractInterface
 {
     Q_OBJECT
 public:
-    static inline const char *staticInterfaceName()
-    {
-        return "com.deepin.dde.Notification";
-    }
-    explicit DBusNotify(const QString &service, const QString &path, const QDBusConnection &connection, QObject *parent = nullptr);
+    explicit DBusNotify(const QString &service, const QString &path, const QString &interface, const QDBusConnection &connection, QObject *parent = nullptr);
     inline int Notify(const QList<QVariant> &argumentList)
     {
         QDBusMessage reply = callWithArgumentList(QDBus::Block, QStringLiteral("Notify"), argumentList);
@@ -47,6 +43,7 @@ public:
         }
         return notifyid;
     }
+
     /**
      * @brief closeNotification 根据通知ID关闭桌面顶部通知
      * @param notifyID          通知ID
