@@ -161,7 +161,7 @@ bool AccountItem::isCanSyncSetting()
     }
     DOANetWorkDBus netManger;
     return getAccount()->accountState().testFlag(DAccount::Account_Setting)
-            && getAccount()->accountState().testFlag(DAccount::Account_Open) && netManger.getNetWorkState() == DOANetWorkDBus::Active;
+           && getAccount()->accountState().testFlag(DAccount::Account_Open) && netManger.getNetWorkState() == DOANetWorkDBus::Active;
 }
 
 bool AccountItem::isEnableForUosAccount()
@@ -338,7 +338,12 @@ void AccountItem::querySchedulesWithParameter(const int year, CallbackFunc callb
 
 void AccountItem::querySchedulesWithParameter(const QDateTime &start, const QDateTime &end, CallbackFunc callback)
 {
-    querySchedulesWithParameter("", start, end, callback);
+    QString key;
+    if (nullptr != m_preQuery) {
+        key = m_preQuery->key();
+    }
+
+    querySchedulesWithParameter(key, start, end, callback);
 }
 
 void AccountItem::querySchedulesWithParameter(const QString &key, const QDateTime &start, const QDateTime &end, CallbackFunc callback)
@@ -464,7 +469,7 @@ QString AccountItem::getDtLastUpdate()
 void AccountItem::slotSearchUpdata()
 {
     //如果存在查询则更新查询
-    if(nullptr != m_preQuery){
+    if (nullptr != m_preQuery) {
         querySchedulesWithParameter(m_preQuery);
     }
 }
