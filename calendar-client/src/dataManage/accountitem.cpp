@@ -338,13 +338,7 @@ void AccountItem::querySchedulesWithParameter(const int year, CallbackFunc callb
 
 void AccountItem::querySchedulesWithParameter(const QDateTime &start, const QDateTime &end, CallbackFunc callback)
 {
-    //更新视图
     querySchedulesWithParameter("", start, end, callback);
-
-    //更新搜索结果列表
-    if (nullptr != m_preQuery && !m_preQuery->key().isEmpty()) {
-        querySchedulesWithParameter(m_preQuery->key(), start, end, callback);
-    }
 }
 
 void AccountItem::querySchedulesWithParameter(const QString &key, const QDateTime &start, const QDateTime &end, CallbackFunc callback)
