@@ -26,6 +26,8 @@
 #include "calendarmanage.h"
 #include "units.h"
 
+#include <QSpacerItem>
+
 #include <DComboBox>
 #include <DSysInfo>
 #include <DSettingsGroup>
@@ -220,7 +222,10 @@ void CSettingDialog::initView()
     QList<QWidget *> lstwidget = findChildren<QWidget *>();
     if (lstwidget.size() > 0) { //accessibleName
         for (QWidget *wid : lstwidget) {
-            if ("ContentWidgetForsetting_base.event_types" == wid->accessibleName()) {
+            if ("ContentWidgetForsetting_base.event_types" == wid->accessibleName()
+                    || ("ContentSubTitleText" == wid->objectName()  && "setting_base.event_types" == wid->property("key").toString())) {
+                QSpacerItem *spaceitem = new QSpacerItem(1, 1, QSizePolicy::Policy::Expanding);
+                wid->layout()->addItem(spaceitem);
                 DIconButton *addButton = this->createTypeAddButton();
                 wid->layout()->addWidget(addButton);
                 //使addButton的右边距等于view的右边距
