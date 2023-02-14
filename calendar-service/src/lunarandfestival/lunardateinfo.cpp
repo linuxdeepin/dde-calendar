@@ -100,10 +100,13 @@ QMap<int, QDate> LunarDateInfo::getAllNextYearLunarDayBySolar(const QDate &solar
     lunarInfo info = solarDateLunar->SolarDayToLunarDay(solarDate.month(), solarDate.day());
     //计算时间为日程开始时间
     QDate bDate = solarDate;
+    QDate beforeDate;
 
     int count = 0;
 
-    while (bDate <= m_queryEndDate) {
+    //beforeDate == bDate时，两次执行结果相同，会进入死循环
+    while (bDate <= m_queryEndDate && beforeDate != bDate) {
+        beforeDate = bDate;
         //开始时间农历日期
         LunarCalendar *lunc = LunarCalendar::GetLunarCalendar(bDate.year());
         lunarInfo startLunarInfo = lunc->SolarDayToLunarDay(bDate.month(), bDate.day());
@@ -227,7 +230,7 @@ bool LunarDateInfo::addSolarMap(QMap<int, QDate> &solarMap, QDate &nextDate, int
     //    当结束重复为按多少次结束判断时，检查重复次数是否达到，达到则退出
     //    当重复次数达到最大限制直接返回
     //    duration > 0 表示结束与次数
-    if ((m_recurenceRule->duration() > 0 && (m_recurenceRule->duration() -1 ) < count ) || count > RECURENCELIMIT) {
+    if ((m_recurenceRule->duration() > 0 && (m_recurenceRule->duration() - 1) < count) || count > RECURENCELIMIT) {
         return true;
     }
 
@@ -237,7 +240,7 @@ bool LunarDateInfo::addSolarMap(QMap<int, QDate> &solarMap, QDate &nextDate, int
     //判断next是否有效,时间大于RRule的until
     //判断next是否大于查询的截止时间,这里应该比较date，而不是datetime，如果是非全天的日程，这个设计具体时间的问题，会导致返回的job个数出现问题
     if ((m_recurenceRule->duration() == 0 && nextDate > m_recurenceRule->endDt().date())
-        || nextDate > m_queryEndDate) {
+            || nextDate > m_queryEndDate) {
         return true;
     }
     return false;
