@@ -540,7 +540,7 @@ bool DAccountDataBase::deleteScheduleTypeByID(const QString &typeID, const int i
         //弱删除
         QDateTime &&dtCurrent = QDateTime::currentDateTime();
         strSql = QString("UPDATE scheduleType  SET  dtDelete='%1', isDeleted=1  WHERE typeID=?;")
-                     .arg(dtToString(dtCurrent));
+                 .arg(dtToString(dtCurrent));
     } else {
         //真删除
         strSql = "DELETE FROM scheduleType WHERE typeID = ?";
@@ -629,7 +629,8 @@ void DAccountDataBase::getAccountInfo(const DAccount::Ptr &account)
     SqliteQuery query(m_database);
     if (query.prepare(strSql) && query.exec() && query.next()) {
         account->setSyncState(static_cast<DAccount::AccountSyncState>(query.value("syncState").toInt()));
-        account->setAccountState(static_cast<DAccount::AccountState>(query.value("accountState").toInt()));
+        // accountState字段以accountmanager.db中accountManager字段为准,它会在登陆和切换状态时根据最新云同步状态去更新开关状态
+//        account->setAccountState(static_cast<DAccount::AccountState>(query.value("accountState").toInt()));
         account->setAccountName(query.value("accountName").toString());
         account->setDisplayName(query.value("displayName").toString());
         account->setCloudPath(query.value("cloudPath").toString());
