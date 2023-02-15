@@ -157,8 +157,6 @@ void createScheduleTask::setDateTime(CreateJsonData *createJsonData)
         replyNotValidDT = "您输入的时间不正确，请重新输入";
     } break;
     }
-    qInfo() << "scheduleBeginTime: " << m_begintime
-            << "scheduleEndTime: " << m_endtime;
 }
 
 void createScheduleTask::setScheduleTitleName(CreateJsonData *createJsonData)

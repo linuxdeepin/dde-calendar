@@ -121,7 +121,7 @@
 <context>
     <name>CGraphicsView</name>
     <message>
-        <location filename="../calendar-client/src/view/graphicsview.cpp" line="600"/>
+        <location filename="../calendar-client/src/view/graphicsview.cpp" line="605"/>
         <source>New Event</source>
         <translation>New Event</translation>
     </message>
@@ -585,17 +585,17 @@
 <context>
     <name>CScheduleSearchDateItem</name>
     <message>
-        <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="915"/>
+        <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="916"/>
         <source>Y</source>
         <translation>Y</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="915"/>
+        <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="916"/>
         <source>M</source>
         <translation>M</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="915"/>
+        <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="916"/>
         <source>D</source>
         <translation>D</translation>
     </message>
@@ -621,7 +621,7 @@
 <context>
     <name>CScheduleSearchView</name>
     <message>
-        <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="658"/>
+        <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="659"/>
         <source>No search results</source>
         <translation>No search results</translation>
     </message>
@@ -637,57 +637,57 @@
 <context>
     <name>CSettingDialog</name>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="351"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="356"/>
         <source>Sunday</source>
         <translation>Sunday</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="352"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="357"/>
         <source>Monday</source>
         <translation>Monday</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="369"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="374"/>
         <source>24-hour clock</source>
         <translation>24-hour clock</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="370"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="375"/>
         <source>12-hour clock</source>
         <translation>12-hour clock</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="403"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="408"/>
         <source>Manual</source>
         <translation>Manual</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="404"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="409"/>
         <source>15 mins</source>
         <translation>15 mins</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="405"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="410"/>
         <source>30 mins</source>
         <translation>30 mins</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="406"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="411"/>
         <source>1 hour</source>
         <translation>1 hour</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="407"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="412"/>
         <source>24 hours</source>
         <translation>24 hours</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="418"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="423"/>
         <source>Sync Now</source>
         <translation>Sync Now</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="561"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="566"/>
         <source>Last sync</source>
         <translation>Last sync</translation>
     </message>
@@ -793,13 +793,13 @@
 <context>
     <name>CYearScheduleView</name>
     <message>
-        <location filename="../calendar-client/src/widget/yearWidget/yearscheduleview.cpp" line="278"/>
-        <location filename="../calendar-client/src/widget/yearWidget/yearscheduleview.cpp" line="281"/>
+        <location filename="../calendar-client/src/widget/yearWidget/yearscheduleview.cpp" line="282"/>
+        <location filename="../calendar-client/src/widget/yearWidget/yearscheduleview.cpp" line="285"/>
         <source>All Day</source>
         <translation>All Day</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/yearWidget/yearscheduleview.cpp" line="298"/>
+        <location filename="../calendar-client/src/widget/yearWidget/yearscheduleview.cpp" line="302"/>
         <source>No event</source>
         <translation>No event</translation>
     </message>
@@ -843,17 +843,17 @@
         <translation>Privacy Policy</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="941"/>
+        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="953"/>
         <source>Syncing...</source>
         <translation>Syncing...</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="950"/>
+        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="963"/>
         <source>Sync successful</source>
         <translation>Sync successful</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="956"/>
+        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="971"/>
         <source>Sync failed, please try later</source>
         <translation>Sync failed, please try later</translation>
     </message>
@@ -884,7 +884,7 @@
         <translation>New event</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/view/draginfographicsview.cpp" line="749"/>
+        <location filename="../calendar-client/src/view/draginfographicsview.cpp" line="753"/>
         <source>New Event</source>
         <translation>New Event</translation>
     </message>
@@ -917,65 +917,65 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="103"/>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="134"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="105"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="136"/>
         <source>Manage calendar</source>
         <translation>Manage calendar</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="119"/>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="138"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="121"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="140"/>
         <source>Event types</source>
         <translation>Event types</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="45"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="47"/>
         <source>Account settings</source>
         <translation>Account settings</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="49"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="51"/>
         <source>Account</source>
         <translation>Account</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="60"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="62"/>
         <source>Select items to be synced</source>
         <translation>Select items to be synced</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="63"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="65"/>
         <source>Events</source>
         <translation>Events</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="70"/>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="153"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="72"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="155"/>
         <source>General settings</source>
         <translation>General settings</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="81"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="83"/>
         <source>Sync interval</source>
         <translation>Sync interval</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="111"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="113"/>
         <source>Calendar account</source>
         <translation>Calendar account</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="157"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="159"/>
         <source>General</source>
         <translation>General</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="161"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="163"/>
         <source>First day of week</source>
         <translation>First day of week</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="169"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="171"/>
         <source>Time</source>
         <translation>Time</translation>
     </message>
@@ -1108,13 +1108,13 @@
 <context>
     <name>UserloginWidget</name>
     <message>
-        <location filename="../calendar-client/src/widget/settingWidget/userloginwidget.cpp" line="63"/>
+        <location filename="../calendar-client/src/widget/settingWidget/userloginwidget.cpp" line="64"/>
         <source>Sign In</source>
         <comment>button</comment>
         <translation>Sign In</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/settingWidget/userloginwidget.cpp" line="64"/>
+        <location filename="../calendar-client/src/widget/settingWidget/userloginwidget.cpp" line="65"/>
         <source>Sign Out</source>
         <comment>button</comment>
         <translation>Sign Out</translation>

@@ -83,8 +83,8 @@ bool SyncFileManage::SyncDbCreate(const QString &DBpath)
 
 bool SyncFileManage::SyncDbDelete(const QString &DBpath)
 {
-    if(DBpath.isEmpty()){
-        qWarning()<<"DBpath isEmpty";
+    if (DBpath.isEmpty()) {
+        qWarning() << "DBpath isEmpty";
         return false;
     }
     QFileInfo fileinfo(DBpath);
@@ -132,11 +132,6 @@ DAccount::Ptr SyncFileManage::getuserInfo()
         qInfo() << "can't get userinfo";
         return nullptr;
     }
-
-    qInfo() << userInfoMap.value("username").toString();
-    qInfo() << userInfoMap.value("profile_image").toString();
-    qInfo() << userInfoMap.value("nickname").toString();
-    qInfo() << userInfoMap.value("uid").toString();
 
     m_account->setDisplayName(userInfoMap.value("username").toString());
     m_account->setAccountID(userInfoMap.value("uid").toString());

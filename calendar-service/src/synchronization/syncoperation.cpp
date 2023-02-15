@@ -43,7 +43,7 @@ SyncoptResult Syncoperation::optUpload(const QString &key)
     QDBusPendingReply<QByteArray> reply = m_syncInter->Upload(key);
     reply.waitForFinished();
     if (reply.error().message().isEmpty()) {
-        qInfo() << "Upload success!" << reply.value();
+        qInfo() << "Upload success!";
         //解析上传成功数据的元信息ID值 ,这个ID值暂时没用，不解析出来
 //        QJsonObject json;
 //        json = QJsonDocument::fromJson(reply).object();
@@ -55,7 +55,6 @@ SyncoptResult Syncoperation::optUpload(const QString &key)
 //            }
 //        }
         result.data = reply.value();
-        qInfo() << result.data;
         result.ret = true;
         result.error_code = SYNC_No_Error;
     } else {
@@ -65,7 +64,6 @@ SyncoptResult Syncoperation::optUpload(const QString &key)
         QJsonObject obj = jsonDocument.object();
         if (obj.contains(QString("code"))) {
             result.error_code = obj.value(QString("code")).toInt();
-            qInfo() << result.error_code;
         }
     }
 
@@ -80,7 +78,6 @@ SyncoptResult Syncoperation::optDownload(const QString &key, const QString &path
     if (reply.error().message().isEmpty()) {
         qInfo() << "Download success!";
         result.data = reply.value();
-        qInfo() << result.data;
         result.ret = true;
         result.error_code = SYNC_No_Error;
     } else {
@@ -130,7 +127,6 @@ SyncoptResult Syncoperation::optMetadata(const QString &key)
         qInfo() << "Metadata success!";
         //元数据获取接口，暂时好像用不到
         result.data = reply.value();
-        qInfo() << result.data;
         result.ret = true;
         result.error_code = SYNC_No_Error;
     } else {
@@ -217,7 +213,6 @@ SyncoptResult Syncoperation::optGetCalendarSwitcher()
             reply.waitForFinished();
             if (reply.error().message().isEmpty()) {
                 result.switch_state = reply.value();
-                qInfo() << "calendar:" << result.switch_state;
                 result.ret = true;
             } else {
                 qDebug() << "get calendar switcher failed";
@@ -236,7 +231,6 @@ SyncoptResult Syncoperation::optGetCalendarSwitcher()
 
 void Syncoperation::slotDbusCall(const QDBusMessage &msg)
 {
-    qInfo() << msg;
     if (msg.member() == "SwitcherChange") {
         SyncoptResult result;
         //获取总开关状态

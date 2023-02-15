@@ -44,7 +44,7 @@ DAccountManageModule::DAccountManageModule(QObject *parent)
     //根据获取到的帐户信息创建对应的帐户服务
     foreach (auto account, m_accountList) {
         //如果不支持云同步且帐户类型为UID则过滤
-        if(!m_isSupportUid && account->accountType() == DAccount::Account_UnionID){
+        if (!m_isSupportUid && account->accountType() == DAccount::Account_UnionID) {
             continue;
         }
         DAccountModule::Ptr accountModule = DAccountModule::Ptr(new DAccountModule(account));
@@ -63,10 +63,10 @@ DAccountManageModule::DAccountManageModule(QObject *parent)
     }
     m_generalSetting = m_accountManagerDB->getCalendarGeneralSettings();
 
-    connect(&m_timer,&QTimer::timeout,this,&DAccountManageModule::slotClientIsOpen);
+    connect(&m_timer, &QTimer::timeout, this, &DAccountManageModule::slotClientIsOpen);
     m_timer.start(2000);
 
-    if(m_isSupportUid) {
+    if (m_isSupportUid) {
         QObject::connect(m_syncFileManage->getSyncoperation(), &Syncoperation::signalLoginStatusChange, this, &DAccountManageModule::slotUidLoginStatueChange);
         QObject::connect(m_syncFileManage->getSyncoperation(), &Syncoperation::SwitcherChange, this, &DAccountManageModule::slotSwitcherChange);
     }
@@ -92,7 +92,6 @@ QString DAccountManageModule::getCalendarGeneralSettings()
 
 void DAccountManageModule::setCalendarGeneralSettings(const QString &cgSet)
 {
-    qInfo() << cgSet;
     DCalendarGeneralSettings::Ptr cgSetPtr = DCalendarGeneralSettings::Ptr(new DCalendarGeneralSettings);
     DCalendarGeneralSettings::fromJsonString(cgSetPtr, cgSet);
     if (m_generalSetting != cgSetPtr) {
@@ -213,7 +212,7 @@ void DAccountManageModule::unionIDDataMerging()
     m_accountList = m_accountManagerDB->getAccountList();
 
     //如果不支持云同步
-    if(!m_isSupportUid) {
+    if (!m_isSupportUid) {
         DAccount::Ptr unionidDB;
         auto hasUnionid = [ =, &unionidDB](const DAccount::Ptr & account) {
             if (account->accountType() == DAccount::Account_UnionID) {
@@ -363,7 +362,7 @@ void DAccountManageModule::slotUidLoginStatueChange(const int status)
     switch (status) {
     case 1: {
         //移除登出状态
-        if(oldStatus.contains(3)){
+        if (oldStatus.contains(3)) {
             oldStatus.removeAt(oldStatus.indexOf(3));
         }
 
@@ -391,7 +390,7 @@ void DAccountManageModule::slotUidLoginStatueChange(const int status)
     } break;
     case 3: {
         //移除登录状态
-        if(oldStatus.contains(1)){
+        if (oldStatus.contains(1)) {
             oldStatus.removeAt(oldStatus.indexOf(1));
         }
         //登出
@@ -457,13 +456,13 @@ void DAccountManageModule::slotClientIsOpen()
     //如果日历界面不存在则退出
     QProcess process;
     process.start("/bin/bash", QStringList() << "-c"
-                                             << "pidof dde-calendar");
+                  << "pidof dde-calendar");
     process.waitForFinished();
     QString strResult = process.readAllStandardOutput();
 
     static QString preResult = "";
 
-    if ( preResult == strResult ) {
+    if (preResult == strResult) {
         return;
     } else {
         preResult = strResult;

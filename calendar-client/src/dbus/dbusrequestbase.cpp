@@ -95,5 +95,4 @@ void DbusRequestBase::asyncCall(const QString &method, const QString &callName,
  */
 void DbusRequestBase::slotDbusCall(const QDBusMessage &msg)
 {
-    qInfo() << msg.member();
 }
