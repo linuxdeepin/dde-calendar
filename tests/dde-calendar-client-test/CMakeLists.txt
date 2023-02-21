@@ -40,7 +40,7 @@ SUBDIRLIST(all_src ${APP_COMMON_DIR}/src)
 include_directories(${APP_3PARTY_DIR}/src)
 SUBDIRLIST(all_src ${APP_3PARTY_DIR}/src)
 
-#Include all app own subdirectorys
+#Include all app own subdirectories
 foreach(subdir ${all_src})
     include_directories(${APP_CLIENT_DIR}/src/${subdir})
     include_directories(${APP_COMMON_DIR}/src/${subdir})

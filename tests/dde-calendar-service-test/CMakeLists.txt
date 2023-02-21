@@ -34,7 +34,7 @@ include_directories(${APP_SERVICE_DIR}/src)
 
 SUBDIRLIST(all_src ${APP_SERVICE_DIR}/src)
 
-#Include all app own subdirectorys
+#Include all app own subdirectories
 foreach(subdir ${all_src})
     include_directories(${APP_SERVICE_DIR}/src/${subdir})
 endforeach()

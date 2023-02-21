@@ -52,7 +52,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 SUBDIRLIST(all_src ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-#Include all app own subdirectorys
+#Include all app own subdirectories
 foreach(subdir ${all_src})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/${subdir})
 endforeach()
