@@ -315,10 +315,11 @@ bool CScheduleDlg::createSchedule(const QString &scheduleTypeId)
         }
         schedule->recurrence()->setDuration(0);
         schedule->recurrence()->setEndDateTime(endrpeattime);
-    } else {
+    } /*else {
+        KCalendarCore中说明了不重复就不要setDuration，传入错误的值会导致各个版本libical解析器结果不同
         //永不
-        schedule->recurrence()->setDuration(-1);
-    }
+//        schedule->recurrence()->setDuration(-1);
+    }*/
 
     CScheduleOperation _scheduleOperation(m_accountItem, this);
 
