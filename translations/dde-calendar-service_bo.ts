@@ -836,7 +836,7 @@
     <message>
         <source>Today</source>
         <comment>Return</comment>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">དེ་རིང་།</translation>
     </message>
 </context>
 <context>
@@ -844,7 +844,7 @@
     <message>
         <source>Today</source>
         <comment>Return Today</comment>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">དེ་རིང་།</translation>
     </message>
 </context>
 <context>
@@ -959,7 +959,7 @@
     <message>
         <source>Today</source>
         <comment>Today</comment>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">དེ་རིང་།</translation>
     </message>
 </context>
 </TS>
