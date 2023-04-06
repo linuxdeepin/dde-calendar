@@ -1,3 +1,11 @@
+dde-calendar (5.10.0) unstable; urgency=medium
+
+  * chore: deepin system does not support calendar sync
+  * chore: correct a typo in CMakeLists.txt
+
+ -- myml <wurongjie@deepin.com>  Thu, 6 Apr 2023 11:43:00 +0800
+
+
 dde-calendar (5.9.1) unstable; urgency=medium
 
   * Init.
