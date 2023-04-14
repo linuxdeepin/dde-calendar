@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.7)
 
 if (NOT DEFINED VERSION)
-     message(WARNING "Not defined version ,about dialog version set 1.2.2")
-    set(VERSION 1.2.2)
+    message(WARNING "Not defined version, about dialog version set 5.10.0")
+    set(VERSION 5.10.0)
 endif ()
 
 #common resource names
@@ -10,7 +10,7 @@ set(APP_RES_DIR "assets")
 set(APP_BIN_NAME "dde-calendar")
 set(APP_DESKTOP "${APP_RES_DIR}/dde-calendar.desktop")
 set(APP_QRC "${APP_RES_DIR}/resources.qrc")
-set(APP_SERVICE "${APP_RES_DIR}/dbus/com.deepin.Calendar.service")
+set(APP_SERVICE_IN "${APP_RES_DIR}/dbus/com.deepin.Calendar.service.in")
 
 project(${APP_BIN_NAME})
 
@@ -19,7 +19,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,--as-needed -fPIE")
-set(CMAKE_EXE_LINKER_FLAGS "-pie")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pie")
 
 
 if (${CMAKE_SYSTEM_PROCESSOR} MATCHES "sw_64")
@@ -88,18 +88,10 @@ target_link_libraries(${PROJECT_NAME}
     commondata
 )
 
-#根据环境修改dbus服务文件
-if(DEFINED ENV{PREFIX})
-    set(APP_DBUS_SERVICE "[D-BUS Service]
-Name=com.deepin.Calendar
-Exec=/usr/bin/ll-cli run org.dde.calendar --exec dde-calendar")
-   file(WRITE ${APP_SERVICE} "${APP_DBUS_SERVICE}")
+#修改dbus服务文件
+set (EXEC_DDE_CALENDAR "${CMAKE_INSTALL_FULL_BINDIR}/${APP_BIN_NAME}" CACHE STRING "Command to execute dde-calendar")
 
-   set(CMAKE_INSTALL_PREFIX $ENV{PREFIX})
-else()
-   set(CMAKE_INSTALL_PREFIX /usr)
-endif()
-
+configure_file(${APP_SERVICE_IN} ${CMAKE_CURRENT_BINARY_DIR}/dbus/com.deepin.Calendar.service @ONLY)
 
 # Install files
 install(TARGETS dde-calendar DESTINATION ${CMAKE_INSTALL_BINDIR})
@@ -107,4 +99,4 @@ install(TARGETS dde-calendar DESTINATION ${CMAKE_INSTALL_BINDIR})
 install(DIRECTORY ${APP_RES_DIR}/dde-calendar
         DESTINATION ${CMAKE_INSTALL_DATADIR}/deepin-manual/manual-assets/application/)
 install(FILES ${APP_DESKTOP} DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
-install(FILES ${APP_SERVICE} DESTINATION ${CMAKE_INSTALL_DATADIR}/dbus-1/services)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/dbus/com.deepin.Calendar.service DESTINATION ${CMAKE_INSTALL_DATADIR}/dbus-1/services)

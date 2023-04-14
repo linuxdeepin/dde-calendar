@@ -9,14 +9,13 @@
 #include <QDebug>
 #include <QSqlError>
 
-#ifndef LINGLONG_PREFIX
-#define LINGLONG_PREFIX "/usr/"
-#endif
-
 DHuangLiDataBase::DHuangLiDataBase(QObject *parent)
     : DDataBase(parent)
 {
-    setDBPath(QString("%1share/dde-calendar/data/huangli.db").arg(LINGLONG_PREFIX));
+    QString huangliPath = QStandardPaths::locate(QStandardPaths::GenericDataLocation,
+                                                 QString("dde-calendar/data/huangli.db"),
+                                                 QStandardPaths::LocateFile);
+    setDBPath(huangliPath);
     setConnectionName("HuangLi");
     dbOpen();
 }

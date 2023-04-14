@@ -1,4 +1,4 @@
 [D-BUS Service]
 Name=com.deepin.dataserver.Calendar
-Exec=/usr/lib/deepin-daemon/dde-calendar-service
+Exec=@EXEC_DDE_CALENDAR_SERVICE@
 

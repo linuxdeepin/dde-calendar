@@ -12,15 +12,13 @@
 #include <QTranslator>
 #include <QCoreApplication>
 
-#ifndef LINGLONG_PREFIX
-#define LINGLONG_PREFIX "/usr/"
-#endif
-
-const static QString CalendarServiceTranslationsDir = QString("%1share/dde-calendar/translations").arg(LINGLONG_PREFIX);
 
 bool loadTranslator(QCoreApplication *app, QList<QLocale> localeFallback = QList<QLocale>() << QLocale::system())
 {
     bool bsuccess = false;
+    QString CalendarServiceTranslationsDir = QStandardPaths::locate(QStandardPaths::GenericDataLocation,
+                                                  		    QString("dde-calendar/translations"),
+								    QStandardPaths::LocateDirectory);
     for (auto &locale : localeFallback) {
         QString translateFilename = QString("%1_%2").arg(app->applicationName()).arg(locale.name());
         QString translatePath = QString("%1/%2.qm").arg(CalendarServiceTranslationsDir).arg(translateFilename);
