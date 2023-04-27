@@ -605,7 +605,7 @@ void CScheduleDlg::signalLogout(DAccount::Type type)
     if (DAccount::Account_UnionID == type && gUosAccountItem == m_accountItem) {
         if (m_type) {
             //TODO：弹窗提示？
-            qInfo() << m_accountComBox->currentText() << "帐户已退出";
+            qInfo() << "帐户已退出";
             getButtons()[1]->setEnabled(false);
             m_accountItem.reset(nullptr);
         } else {
