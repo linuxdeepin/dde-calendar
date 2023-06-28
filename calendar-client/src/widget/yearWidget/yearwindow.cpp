@@ -16,6 +16,7 @@
 #include <QMenuBar>
 #include <QMouseEvent>
 #include <QApplication>
+#include <QDesktopWidget>
 
 DGUI_USE_NAMESPACE
 CYearWindow::CYearWindow(QWidget *parent)

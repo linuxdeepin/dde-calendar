@@ -20,6 +20,7 @@
 #include <QShortcut>
 #include <QVBoxLayout>
 #include <QApplication>
+#include <QDesktopWidget>
 
 DGUI_USE_NAMESPACE
 

@@ -15,6 +15,7 @@
 #include <QTime>
 #include <QApplication>
 #include <QMouseEvent>
+#include <QDesktopWidget>
 
 DGUI_USE_NAMESPACE
 
