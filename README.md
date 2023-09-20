@@ -11,7 +11,6 @@ _The **master** branch is current development branch, build dependencies may cha
 * debhelper-compat (=11)
 * cmake
 * deepin-gettext-tools
-* libdframeworkdbus-dev (>= 5.4.20~)
 * libdtkgui-dev (>= 5.5.17~)
 * libdtkwidget-dev (>= 5.5.17~)
 * libgtest-dev

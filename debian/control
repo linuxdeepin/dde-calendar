@@ -6,7 +6,6 @@ Build-Depends:
  debhelper-compat (=11),
  cmake,
  deepin-gettext-tools,
- libdframeworkdbus-dev (>= 5.4.20~),
  libdtkgui-dev (>= 5.5.17~),
  libdtkwidget-dev (>= 5.5.17~),
  libgtest-dev,
@@ -16,7 +15,6 @@ Build-Depends:
  qttools5-dev,
  qttools5-dev-tools,
  deepin-gettext-tools,
- libdframeworkdbus-dev,
  libgtest-dev,
  qttools5-dev,
  libical-dev,
@@ -30,7 +28,6 @@ Package: dde-calendar
 Architecture: linux-any
 Depends:
  dde-qt5integration,
- libdframeworkdbus2,
  dde-api,
  ${misc:Depends},
  ${shlibs:Depends},

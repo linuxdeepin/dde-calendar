@@ -68,7 +68,6 @@ find_package(Qt5DBus REQUIRED)
 find_package(Qt5Svg REQUIRED)
 find_package(DtkWidget REQUIRED)
 find_package(DtkGui REQUIRED)
-find_package(DFrameworkdbus REQUIRED)
 find_package(Qt5Network REQUIRED)
 
 include_directories(${Qt5Gui_PRIVATE_INCLUDE_DIRS})
@@ -83,7 +82,6 @@ target_link_libraries(${PROJECT_NAME}
     ${Qt5Widgets_LIBRARIES}
     ${Qt5Svg_LIBRARIES}
     ${Qt5DBus_LIBRARIES}
-    ${DFrameworkdbus_LIBRARIES}
     ${Qt5Network_LIBRARIES}
     commondata
 )

@@ -11,7 +11,6 @@ _**master**分支是当前开发分支，编译依赖可能在未更新README.md
 * debhelper-compat (=11)
 * cmake
 * deepin-gettext-tools
-* libdframeworkdbus-dev (>= 5.4.20~)
 * libdtkgui-dev (>= 5.5.17~)
 * libdtkwidget-dev (>= 5.5.17~)
 * libgtest-dev

@@ -63,7 +63,6 @@ endforeach()
 file(GLOB_RECURSE Schedule_Plugin_SRC ${CMAKE_CURRENT_LIST_DIR}/src/*.cpp)
 
 find_package(PkgConfig REQUIRED)
-find_package(DFrameworkdbus REQUIRED)
 find_package(DtkWidget REQUIRED)
 find_package(Qt5Svg REQUIRED)
 find_package(Qt5DBus REQUIRED)
@@ -80,7 +79,6 @@ target_link_libraries(${PROJECT_NAME}
     ${Qt5Svg_LIBRARIES}
     ${Qt5DBus_LIBRARIES}
     ${DtkWidget_LIBRARIES}
-    ${DFrameworkdbus_LIBRARIES}
     commondata
 )
 

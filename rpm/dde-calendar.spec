@@ -20,7 +20,6 @@ BuildRequires: qt5-devel
 BuildRequires: dtkgui-devel
 BuildRequires: dtkwidget-devel
 BuildRequires: deepin-gettext-tools
-BuildRequires: pkgconfig(dframeworkdbus)
 BuildRequires: gtest-devel
 
 %description
