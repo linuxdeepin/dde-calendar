@@ -11,7 +11,7 @@ Calendar is a helpful tool to view dates and manage your personal life. By creat
 
 You can run, exit or create a desktop shortcut of Calendar as follows.
 
-### Run Calender
+### Run Calendar
 
 1.  Click ![deepin_launcher](../common/deepin_launcher.svg) in the Dock to enter the Launcher interface.
 2.  Locate ![draw](../common/dde_calendar.svg) by scrolling the mouse wheel or searching for "Calendar" on the Launcher interface and click it to run.
@@ -242,7 +242,7 @@ Descriptions of buttons in the prompts are listed as below.
 
 Descriptions of icons in the deletion prompts for repeating and non-repeating events are listed as below.
 
-<table border="1"><tr>   <th width="130px">Button</th>   <th width=“200px”>Description</th></tr><tr>   <td>Delete</td>   <td>Delete non-repeating events. </td></tr><tr>   <td>Delete All</td>   <td>Delete all occurrences of this event.</td></tr><tr>   <td>Delete Only This Event </td>   <td>Delete only the selected occurrence of the event. This is only applicable to repeating events.</td></tr><tr>   <td>Delete All Future Events</td>   <td> Delete this occurences and all future occurrences of the event but the occurrences of the event before the selected date will be retained. This is only applicable to repeating events.</td></tr> </table>
+<table border="1"><tr>   <th width="130px">Button</th>   <th width=“200px”>Description</th></tr><tr>   <td>Delete</td>   <td>Delete non-repeating events. </td></tr><tr>   <td>Delete All</td>   <td>Delete all occurrences of this event.</td></tr><tr>   <td>Delete Only This Event </td>   <td>Delete only the selected occurrence of the event. This is only applicable to repeating events.</td></tr><tr>   <td>Delete All Future Events</td>   <td> Delete this occurrence and all future occurrences of the event but the occurrences of the event before the selected date will be retained. This is only applicable to repeating events.</td></tr> </table>
 
    
 
