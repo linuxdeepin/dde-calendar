@@ -274,7 +274,7 @@
 
 日歷支持通過UOS ID將日程數據及設置同步至雲端。
 
-> ![notes](../common/notes.svg) 說明：該功能暫不對老版本系統開放。
+> ![notes](../common/notes.svg) 說明：該功能暫不對老版本系統和deepin系統開放。
 
 **登錄和登出UOS ID**
 

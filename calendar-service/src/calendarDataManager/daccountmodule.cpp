@@ -1,23 +1,7 @@
-/*
-* Copyright (C) 2019 ~ 2020 Uniontech Software Technology Co.,Ltd.
-*
-* Author:     chenhaifeng  <chenhaifeng@uniontech.com>
-*
-* Maintainer: chenhaifeng  <chenhaifeng@uniontech.com>
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+//
+// SPDX-License-Identifier: LGPL-3.0-or-later
+
 #include "daccountmodule.h"
 #include "units.h"
 #include "dscheduletype.h"
@@ -213,7 +197,7 @@ bool DAccountModule::deleteScheduleTypeByID(const QString &typeID)
         m_accountDB->addUploadTask(uploadTask);
 
         //如果颜色不为系统类型则删除
-        if (scheduleType->typeColor().privilege() != DTypeColor::PriSystem) {
+        if(scheduleType->typeColor().privilege() != DTypeColor::PriSystem){
             m_accountDB->deleteTypeColor(scheduleType->typeColor().colorID());
             DUploadTaskData::Ptr uploadTask(new DUploadTaskData);
             uploadTask->setTaskType(DUploadTaskData::TaskType::Delete);
@@ -226,7 +210,7 @@ bool DAccountModule::deleteScheduleTypeByID(const QString &typeID)
         uploadNetWorkAccountData();
     } else {
         m_accountDB->deleteScheduleTypeByID(typeID, 1);
-        if (scheduleType->typeColor().privilege() != DTypeColor::PriSystem) {
+        if(scheduleType->typeColor().privilege() != DTypeColor::PriSystem){
             m_accountDB->deleteTypeColor(scheduleType->typeColor().colorID());
         }
     }
@@ -540,7 +524,7 @@ void DAccountModule::updateRemindSchedules(bool isClear)
 {
     //因为全天的当前提醒日程会在开始时间延后9小时提醒
     QDateTime dtCurrent = QDateTime::currentDateTime();
-    QDateTime dtStart = dtCurrent.addSecs(-9 * 60 * 60);
+    QDateTime dtStart = dtCurrent.addSecs(-9*60*60);
     QDateTime dtEnd = dtCurrent.addMSecs(UPDATEREMINDJOBTIMEINTERVAL);
 
     //获取未提醒的日程相关信息
@@ -688,7 +672,7 @@ void DAccountModule::removeDB()
     m_accountDB->removeDB();
     //如果为uid帐户退出则清空目录下所有关于uid的数据库文件
     //解决在某些条件下数据库没有被移除的问题（自测未发现）
-    if (account()->accountType() == DAccount::Type::Account_UnionID) {
+    if(account()->accountType() == DAccount::Type::Account_UnionID){
         QString dbPatch = getHomeConfigPath().append(QString("/deepin/dde-calendar-service/"));
         QDir dir(dbPatch);
         if (dir.exists()) {
@@ -717,7 +701,7 @@ QMap<QDate, DSchedule::List> DAccountModule::getScheduleTimesOn(const QDateTime 
         //获取日程的开始结束时间差
         qint64 interval = schedule->dtStart().secsTo(schedule->dtEnd());
         //如果存在重复日程
-        if (schedule->recurs() && DSchedule::RRule_None != schedule->getRRuleType()) {
+        if (schedule->recurs()) {
             //如果为农历日程
             if (schedule->lunnar()) {
                 //农历重复日程计算
@@ -763,8 +747,8 @@ QMap<QDate, DSchedule::List> DAccountModule::getScheduleTimesOn(const QDateTime 
             //如果在查询时间范围内
             QDateTime queryDtStart = dtStart;
             //如果日程为全天日程，则查询的开始时间设置为0点，因为全天日程的开始和结束时间都是0点
-            if (schedule->allDay()) {
-                queryDtStart.setTime(QTime(0, 0, 0));
+            if(schedule->allDay()){
+                queryDtStart.setTime(QTime(0,0,0));
             }
             if (!(schedule->dtEnd() < queryDtStart || schedule->dtStart() > dtEnd)) {
                 if (extend && schedule->isMultiDay()) {
@@ -772,7 +756,7 @@ QMap<QDate, DSchedule::List> DAccountModule::getScheduleTimesOn(const QDateTime 
                     int extenddays = static_cast<int>(schedule->dtStart().daysTo(schedule->dtEnd()));
                     for (int i = 0; i <= extenddays; ++i) {
                         //如果扩展的日期在查询范围内则添加，否则退出
-                        if (m_scheduleMap.contains(schedule->dtStart().date().addDays(i))) {
+                        if(m_scheduleMap.contains(schedule->dtStart().date().addDays(i))){
                             m_scheduleMap[schedule->dtStart().date().addDays(i)].append(schedule);
                         } else {
                             break;
@@ -816,8 +800,8 @@ void DAccountModule::extendRecurrence(DSchedule::Map &scheduleMap, const DSchedu
 {
     QDateTime queryDtStart = dtStart;
     //如果日程为全天日程，则查询的开始时间设置为0点，因为全天日程的开始和结束时间都是0点
-    if (schedule->allDay()) {
-        queryDtStart.setTime(QTime(0, 0, 0));
+    if(schedule->allDay()){
+        queryDtStart.setTime(QTime(0,0,0));
     }
     if (schedule->recurs()) {
         //获取日程的开始结束时间差
@@ -960,7 +944,7 @@ void DAccountModule::slotSyncState(const int syncState)
         m_account->setSyncState(DAccount::Sync_StorageFull);
         break;
     default:
-        qWarning() << "syncState:" << syncState << "fun:" << __FUNCTION__ << " line:" << __LINE__;
+        qWarning()<<"syncState:"<<syncState<<"fun:"<<__FUNCTION__<<" line:"<<__LINE__;
         //默认服务器异常
         m_account->setSyncState(DAccount::Sync_ServerException);
         break;

@@ -1,11 +1,25 @@
+dde-calendar (5.10.1) unstable; urgency=medium
+
+  * fix: remove illegal gcc option
+    Thanks to rewine
+  * chore(CI): Update obs tag build workflow
+  * feat: avoid use hardcode path
+    Thanks to rewine
+  * fix: use imcomplete class QDesktopWidget
+  * feat: Remove caller checks for Huangli dbus interface
+
+ -- myml <wurongjie@deepin.org>  Mon, 24 Jul 2023 14:30:45 +0800
+
+dde-calendar (5.10.0) unstable; urgency=medium
+
+  * chore: deepin system does not support calendar sync
+  * chore: correct a typo in CMakeLists.txt
+
+ -- myml <wurongjie@deepin.org>  Thu, 6 Apr 2023 11:43:00 +0800
+
+
 dde-calendar (5.9.1) unstable; urgency=medium
 
-  * Translation update.
+  * Init.
 
- -- <chenhaifeng@uniontech.com>  Tue, 18 Jun 2022 13:01:43 +0800
-
-dde-calendar (1.0.0) unstable; urgency=medium
-
-  * Initial Release.
-
- -- <chenhaifeng@uniontech.com>  Fri, 18 Mar 2016 17:01:43 +0800
+ -- Clay Stan <claystan97@gmail.com>  Thu, 14 Jul 2022 14:13:00 +0800

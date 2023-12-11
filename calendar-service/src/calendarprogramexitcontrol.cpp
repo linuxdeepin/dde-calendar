@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
+//
+// SPDX-License-Identifier: LGPL-3.0-or-later
+
 #include "calendarprogramexitcontrol.h"
 
 #include <QCoreApplication>
@@ -41,7 +45,9 @@ void CalendarProgramExitControl::reduce()
 
 void CalendarProgramExitControl::exit()
 {
+#ifdef NDEBUG
     qApp->exit();
+#endif
 }
 
 bool CalendarProgramExitControl::getClientIsOpen()

@@ -6,10 +6,6 @@ package:
   description: |
     calendar for deepin os.
 
-variables: 
-  extra_args: |
-    -DVERSION=${VERSION}
-
 runtime:
   id: org.deepin.Runtime
   version: 23.0.0
@@ -33,3 +29,9 @@ source:
 
 build:
   kind: cmake
+  manual:
+    configure: |
+      cmake -B ${build_dir} ${conf_args} \
+        -DVERSION=${VERSION} \
+        -DEXEC_DDE_CALENDAR="/usr/bin/ll-cli run org.dde.calendar --exec dde-calendar" \
+        -DEXEC_DDE_CALENDAR_SERVICE="/usr/bin/ll-cli run org.dde.calendar --exec /opt/apps/org.dde.calendar/files/lib/deepin-daemon/dde-calendar-service"

@@ -1,21 +1,7 @@
-/*
- * Copyright (C) 2017 ~ 2018 Deepin Technology Co., Ltd.
- *
- * Author:     kirigaya <kirigaya@mkacg.com>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: 2017 - 2022 UnionTech Software Technology Co., Ltd.
+//
+// SPDX-License-Identifier: LGPL-3.0-or-later
+
 #include "scheduledlg.h"
 #include "schedulectrldlg.h"
 #include "scheduledatamanage.h"
@@ -315,11 +301,10 @@ bool CScheduleDlg::createSchedule(const QString &scheduleTypeId)
         }
         schedule->recurrence()->setDuration(0);
         schedule->recurrence()->setEndDateTime(endrpeattime);
-    } /*else {
-        KCalendarCore中说明了不重复就不要setDuration，传入错误的值会导致各个版本libical解析器结果不同
+    } else {
         //永不
-//        schedule->recurrence()->setDuration(-1);
-    }*/
+        schedule->recurrence()->setDuration(-1);
+    }
 
     CScheduleOperation _scheduleOperation(m_accountItem, this);
 
@@ -605,7 +590,7 @@ void CScheduleDlg::signalLogout(DAccount::Type type)
     if (DAccount::Account_UnionID == type && gUosAccountItem == m_accountItem) {
         if (m_type) {
             //TODO：弹窗提示？
-            qInfo() << "帐户已退出";
+            qInfo() << m_accountComBox->currentText() << "帐户已退出";
             getButtons()[1]->setEnabled(false);
             m_accountItem.reset(nullptr);
         } else {

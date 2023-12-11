@@ -38,7 +38,7 @@ else()
 endif()
 
 #安全编译参数
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fstack-protector-strong -D_FORTITY_SOURCE=1 -z noexecstack -pie -fPIC -z lazy")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fstack-protector-strong -z noexecstack -pie -fPIC -z lazy")
 
 macro(SUBDIRLIST result curdir)
     file(GLOB children RELATIVE ${curdir} ${curdir}/*)
@@ -55,7 +55,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 SUBDIRLIST(all_src ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-#Include all app own subdirectorys
+#Include all app own subdirectories
 foreach(subdir ${all_src})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/${subdir})
 endforeach()
@@ -85,4 +85,4 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 # Install files
-install(TARGETS ${PROJECT_NAME} DESTINATION /usr/lib/deepin-aiassistant/serivce-plugins)
+install(TARGETS ${PROJECT_NAME} DESTINATION lib/deepin-aiassistant/serivce-plugins)

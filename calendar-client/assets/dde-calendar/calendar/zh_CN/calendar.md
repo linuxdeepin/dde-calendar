@@ -288,7 +288,7 @@
 
 日历支持通过UOS ID将日程数据及设置同步至云端。
 
-> ![notes](../common/notes.svg) 说明：该功能暂不对老版本UOS系统开放。
+> ![notes](../common/notes.svg) 说明：该功能暂不对老版本UOS系统和deepin系统开放。
 
 **登录和登出UOS ID**
 

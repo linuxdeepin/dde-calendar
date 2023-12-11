@@ -1,23 +1,7 @@
-/*
-* Copyright (C) 2019 ~ 2020 Uniontech Software Technology Co.,Ltd.
-*
-* Author:     chenhaifeng  <chenhaifeng@uniontech.com>
-*
-* Maintainer: chenhaifeng  <chenhaifeng@uniontech.com>
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+//
+// SPDX-License-Identifier: LGPL-3.0-or-later
+
 #include "dhuangliservice.h"
 #include "units.h"
 
@@ -37,9 +21,6 @@ DHuangliService::DHuangliService(QObject *parent)
 QString DHuangliService::getFestivalMonth(quint32 year, quint32 month)
 {
     DServiceExitControl exitControl;
-    if (!clientWhite(0)) {
-        return QString();
-    }
     QString festivalInfo = m_huangli->getFestivalMonth(year, month);
     return festivalInfo;
 }
@@ -51,9 +32,6 @@ QString DHuangliService::getHuangLiDay(quint32 year, quint32 month, quint32 day)
     if( 0 >= year || 0 >= month || 0 >= day)
         return "";
     DServiceExitControl exitControl;
-    if (!clientWhite(0)) {
-        return QString();
-    }
     QString huangliInfo = m_huangli->getHuangLiDay(year, month, day);
     return huangliInfo;
 }
@@ -62,9 +40,6 @@ QString DHuangliService::getHuangLiDay(quint32 year, quint32 month, quint32 day)
 QString DHuangliService::getHuangLiMonth(quint32 year, quint32 month, bool fill)
 {
     DServiceExitControl exitControl;
-    if (!clientWhite(0)) {
-        return QString();
-    }
     QString huangliInfo = m_huangli->getHuangLiMonth(year, month, fill);
     return huangliInfo;
 }
@@ -73,9 +48,6 @@ QString DHuangliService::getHuangLiMonth(quint32 year, quint32 month, bool fill)
 CaLunarDayInfo DHuangliService::getLunarInfoBySolar(quint32 year, quint32 month, quint32 day)
 {
     DServiceExitControl exitControl;
-    if (!clientWhite(0)) {
-        return CaLunarDayInfo();
-    }
     CaLunarDayInfo huangliInfo = m_huangli->getLunarInfoBySolar(year, month, day);
     return huangliInfo;
 }
@@ -84,9 +56,6 @@ CaLunarDayInfo DHuangliService::getLunarInfoBySolar(quint32 year, quint32 month,
 CaLunarMonthInfo DHuangliService::getLunarMonthCalendar(quint32 year, quint32 month, bool fill)
 {
     DServiceExitControl exitControl;
-    if (!clientWhite(0)) {
-        return CaLunarMonthInfo();
-    }
     CaLunarMonthInfo huangliInfo = m_huangli->getLunarCalendarMonth(year, month, fill);
     return huangliInfo;
 }

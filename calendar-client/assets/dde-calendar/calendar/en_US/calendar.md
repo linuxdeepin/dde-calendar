@@ -260,7 +260,7 @@ Click ![icon_menu](../common/icon_menu.svg) > **Manage** to open the manage wind
 
 Calendar supports sync events and settings to the cloud by UOS ID.
 
-> ![notes](../common/notes.svg) Notes: It is not available in old system versions at present.
+> ![notes](../common/notes.svg) Notes: It is not available in old system versions and deepin system at present.
 
 **UOS ID Sign In and Sign Out**
 

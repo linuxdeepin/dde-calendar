@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+//
+// SPDX-License-Identifier: LGPL-3.0-or-later
+
 #ifndef SYNCOPERATION_H
 #define SYNCOPERATION_H
 
@@ -27,7 +31,7 @@
 #define SYNC_Invalid_File_Size          7510            /*文件大小不合法*/
 #define SYNC_Metadata_Check_Error       7511            /*元数据校验出错*/
 
-const QString utcloudcalendatpath = "/usr/lib/deepin-daemon/dde-calendar-service";
+const QString utcloudcalendatpath = CALENDAR_SERVICE_PATH"/dde-calendar-service";
 
 using SyncInter = com::deepin::sync::cloudopt;
 
