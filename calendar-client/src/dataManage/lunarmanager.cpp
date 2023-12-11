@@ -5,12 +5,12 @@
 #include "lunarmanager.h"
 
 LunarManager::LunarManager(QObject *parent) : QObject(parent)
-  , m_dbusRequest(new DbusHuangLiRequest)
+    , m_dbusRequest(new DbusHuangLiRequest)
 {
 
 }
 
-LunarManager* LunarManager::getInstace()
+LunarManager *LunarManager::getInstace()
 {
     static LunarManager lunarManager;
     return &lunarManager;
@@ -24,7 +24,7 @@ LunarManager* LunarManager::getInstace()
  * @param festivalInfo 数据保存位置
  * @return
  */
-bool LunarManager::getFestivalMonth(quint32 year, quint32 month, FestivalInfo& festivalInfo)
+bool LunarManager::getFestivalMonth(quint32 year, quint32 month, FestivalInfo &festivalInfo)
 {
     return m_dbusRequest->getFestivalMonth(year, month, festivalInfo);
 }
@@ -36,7 +36,7 @@ bool LunarManager::getFestivalMonth(quint32 year, quint32 month, FestivalInfo& f
  * @param festivalInfo 数据储存位置
  * @return  请求成功状态
  */
-bool LunarManager::getFestivalMonth(const QDate &date, FestivalInfo& festivalInfo)
+bool LunarManager::getFestivalMonth(const QDate &date, FestivalInfo &festivalInfo)
 {
     return m_dbusRequest->getFestivalMonth(quint32(date.year()), quint32(date.month()), festivalInfo);
 }
@@ -113,9 +113,15 @@ QString LunarManager::getHuangLiShortName(const QDate &date)
  */
 void LunarManager::queryLunarInfo(const QDate &startDate, const QDate &stopDate)
 {
+    QElapsedTimer timer;
+    timer.start();
+
     QMap<QDate, CaHuangLiDayInfo> lunarInfoMap;
     CaHuangLiMonthInfo monthInfo;
     const int offsetMonth = (stopDate.year() - startDate.year()) * 12 + stopDate.month() - startDate.month();
+
+    qInfo() << "windowcreated-ui-create sidebar SidebarCalendarWidget-init data: CalendarManager data queryLunarInfo prepare" << timer.elapsed();
+    timer.restart();
     //获取开始时间至结束时间所在月的农历和节假日信息
     for (int i = 0; i <= offsetMonth; ++i) {
         monthInfo.clear();
@@ -126,8 +132,14 @@ void LunarManager::queryLunarInfo(const QDate &startDate, const QDate &stopDate)
         for (int j = 0; j < monthInfo.mDays; ++j) {
             lunarInfoMap[getDate.addDays(j)] = monthInfo.mCaLunarDayInfo.at(j);
         }
+        qInfo() << i;
+        qInfo() << "windowcreated-ui-create sidebar SidebarCalendarWidget-init data: CalendarManager data queryLunarInfo prepare" << timer.elapsed();
+        timer.restart();
     }
     m_lunarInfoMap = lunarInfoMap;
+
+    qInfo() << "windowcreated-ui-create sidebar SidebarCalendarWidget-init data: CalendarManager data queryLunarInfo" << timer.elapsed();
+    timer.restart();
 }
 
 /**
@@ -187,7 +199,7 @@ QMap<QDate, CaHuangLiDayInfo> LunarManager::getHuangLiDayMap(const QDate &startD
 {
     QMap<QDate, CaHuangLiDayInfo> lunarInfoMap;
     auto iterator = m_lunarInfoMap.begin();
-    while(iterator != m_lunarInfoMap.end()) {
+    while (iterator != m_lunarInfoMap.end()) {
         if (iterator.key() >= startDate || iterator.key() <= stopDate) {
             iterator.value();
             lunarInfoMap[iterator.key()] = iterator.value();
@@ -208,7 +220,7 @@ QMap<QDate, int> LunarManager::getFestivalInfoDateMap(const QDate &startDate, co
 {
     QMap<QDate, int> festivalDateMap;
     auto iterator = m_festivalDateMap.begin();
-    while(iterator != m_festivalDateMap.end()) {
+    while (iterator != m_festivalDateMap.end()) {
         if (iterator.key() >= startDate || iterator.key() <= stopDate) {
             iterator.value();
             festivalDateMap[iterator.key()] = iterator.value();

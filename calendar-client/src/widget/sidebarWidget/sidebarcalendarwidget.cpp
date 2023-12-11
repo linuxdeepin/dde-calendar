@@ -9,6 +9,7 @@
 
 #include <DApplicationHelper>
 #include <QMouseEvent>
+#include <QElapsedTimer>
 
 QDate SidebarCalendarKeyButton::m_selectedData = QDate();
 QDate SidebarCalendarKeyButton::m_displayedMonth = QDate();
@@ -16,13 +17,28 @@ QDate SidebarCalendarKeyButton::m_displayedMonth = QDate();
 
 SidebarCalendarWidget::SidebarCalendarWidget(QWidget *parent) : QWidget(parent)
 {
+    QElapsedTimer timer;
+    timer.start();
+
     initView();
+
+    qInfo() << "windowcreated-ui-create sidebar SidebarCalendarWidget-init view:" << timer.elapsed();
+    timer.restart();
+
+
     initConnection();
+    //初始化数据
     initData();
+
+    qInfo() << "windowcreated-ui-create sidebar SidebarCalendarWidget-init data:" << timer.elapsed();
+    timer.restart();
 }
 
 void SidebarCalendarWidget::initView()
 {
+    QElapsedTimer timer;
+    timer.start();
+
     m_dateLabel = new QLabel();
     QFont font = m_dateLabel->font();
     font.setPixelSize(DDECalendar::FontSizeTwelve);
@@ -33,8 +49,8 @@ void SidebarCalendarWidget::initView()
     m_previousPage->setIcon(DStyle().standardIcon(QStyle::SP_ArrowLeft));
     m_nextPage->setFixedSize(20, 20);
     m_previousPage->setFixedSize(20, 20);
-    m_nextPage->setIconSize(QSize(10,10));
-    m_previousPage->setIconSize(QSize(10,10));
+    m_nextPage->setIconSize(QSize(10, 10));
+    m_previousPage->setIconSize(QSize(10, 10));
     m_nextPage->setFlat(true);
     m_previousPage->setFlat(true);
 
@@ -52,6 +68,9 @@ void SidebarCalendarWidget::initView()
     m_headWidget->setLayout(headLayout);
     m_headWidget->setMinimumHeight(30);
 
+    qInfo() << "windowcreated-ui-create sidebar SidebarCalendarWidget-init view widgets:" << timer.elapsed();
+    timer.restart();
+
     m_weekWidget = new CWeekWidget(this);
     m_weekWidget->setAutoFontSizeByWindow(false);
     m_weekWidget->setFirstDay(Qt::Sunday);
@@ -61,14 +80,21 @@ void SidebarCalendarWidget::initView()
     m_keyLayout->setMargin(0);
     m_keyLayout->setSpacing(0);
     m_keyWidget->setLayout(m_keyLayout);
+
+    qInfo() << "windowcreated-ui-create sidebar SidebarCalendarWidget-init view CWeekWidget:" << timer.elapsed();
+    timer.restart();
+
     //循坏实例化6*7个日期按键
     for (int i = 0; i < 42; ++i) {
         SidebarCalendarKeyButton *button = new SidebarCalendarKeyButton();
         button->setFocusPolicy(Qt::NoFocus);
         m_keyButtonList.push_back(button);
-        m_keyLayout->addWidget(button, i/7, i%7, 1, 1, Qt::AlignCenter);
+        m_keyLayout->addWidget(button, i / 7, i % 7, 1, 1, Qt::AlignCenter);
         connect(button, &SidebarCalendarKeyButton::signaClicked, this, &SidebarCalendarWidget::slotKeyButtonClicked);
     }
+
+    qInfo() << "windowcreated-ui-create sidebar SidebarCalendarWidget-init view SidebarCalendarKeyButtons:" << timer.elapsed();
+    timer.restart();
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->setMargin(0);
@@ -106,7 +132,7 @@ void SidebarCalendarWidget::initData()
  * 设置显示的日期
  * @param date 将被选择显示的日期
  */
-void SidebarCalendarWidget::setDate(QDate& date)
+void SidebarCalendarWidget::setDate(QDate &date)
 {
     SidebarCalendarKeyButton::setSelectedDate(date);
     setKeyDate(date);
@@ -119,7 +145,7 @@ void SidebarCalendarWidget::setDate(QDate& date)
  */
 void SidebarCalendarWidget::setKeyDate(QDate date)
 {
-    if(!withinTimeFrame(date)){
+    if (!withinTimeFrame(date)) {
         return;
     }
     QString fd = "";
@@ -133,7 +159,7 @@ void SidebarCalendarWidget::setKeyDate(QDate date)
     int day = date.dayOfWeek();
     //计算当前月日历第一天该显示的时间
     date = date.addDays(-(day - m_firstday + 7) % 7);
-    for (SidebarCalendarKeyButton* btn : m_keyButtonList) {
+    for (SidebarCalendarKeyButton *btn : m_keyButtonList) {
         btn->setDate(date);
         date = date.addDays(1);
     }
@@ -145,13 +171,13 @@ void SidebarCalendarWidget::setKeyDate(QDate date)
  * 日期按键点击事件
  * @param keyButton 事件发送者
  */
-void SidebarCalendarWidget::slotKeyButtonClicked(SidebarCalendarKeyButton* keyButton)
+void SidebarCalendarWidget::slotKeyButtonClicked(SidebarCalendarKeyButton *keyButton)
 {
     QDate date = keyButton->getSelectedDate();
-    if(!withinTimeFrame(date)){
+    if (!withinTimeFrame(date)) {
         return;
     }
-    if (date.year() ==keyButton->getDisplayedMonth().year() && date.month() == keyButton->getDisplayedMonth().month()) {
+    if (date.year() == keyButton->getDisplayedMonth().year() && date.month() == keyButton->getDisplayedMonth().month()) {
         //未切换月份，只刷新界面显示
         update();
     } else {
@@ -203,7 +229,7 @@ SidebarCalendarKeyButton::SidebarCalendarKeyButton(QWidget *parent)
  * 设置被选中的日期
  * @param date 将被选中的日期
  */
-void SidebarCalendarKeyButton::setSelectedDate(const QDate& date)
+void SidebarCalendarKeyButton::setSelectedDate(const QDate &date)
 {
     m_selectedData = date;
 }
@@ -222,7 +248,7 @@ QDate SidebarCalendarKeyButton::getSelectedDate()
  * 设置显示的月份
  * @param date 将显示的月份日期
  */
-void SidebarCalendarKeyButton::setDisplayedMonth(const QDate& date)
+void SidebarCalendarKeyButton::setDisplayedMonth(const QDate &date)
 {
     m_displayedMonth = date;
 }
@@ -241,7 +267,7 @@ QDate SidebarCalendarKeyButton::getDisplayedMonth()
  * 设置被显示的日期
  * @param date 将被显示的日期
  */
-void SidebarCalendarKeyButton::setDate(const QDate& date)
+void SidebarCalendarKeyButton::setDate(const QDate &date)
 {
     this->m_displayedDate = date;
     update();
@@ -262,7 +288,7 @@ QDate SidebarCalendarKeyButton::getDate()
  */
 void SidebarCalendarKeyButton::click()
 {
-    if(!withinTimeFrame(m_displayedDate)){
+    if (!withinTimeFrame(m_displayedDate)) {
         return;
     }
     m_selectedData = m_displayedDate;
@@ -309,8 +335,8 @@ void SidebarCalendarKeyButton::paintEvent(QPaintEvent *event)
 
     qreal w = this->width();
     qreal h = this->height();
-    const qreal r = w > h ? h: w;
-    QRectF rectf(qRound((w-r)/2), qRound((h-r)/2), r, r);   //绘制区域
+    const qreal r = w > h ? h : w;
+    QRectF rectf(qRound((w - r) / 2), qRound((h - r) / 2), r, r); //绘制区域
 
     QFont font;
     font.setPixelSize(DDECalendar::FontSizeTwelve);
@@ -323,7 +349,7 @@ void SidebarCalendarKeyButton::paintEvent(QPaintEvent *event)
         painter.drawEllipse(rectf);
         //设置高亮下的字体颜色
         painter.setPen(DApplicationHelper::instance()->palette(this).highlightedText().color());
-    } else if (!(m_displayedDate.year() == m_displayedMonth.year() && m_displayedDate.month() == m_displayedMonth.month())){
+    } else if (!(m_displayedDate.year() == m_displayedMonth.year() && m_displayedDate.month() == m_displayedMonth.month())) {
         //设置正常显示状态下的字体颜色
         painter.setOpacity(0.3);
     }

@@ -16,11 +16,15 @@
 #include <DApplicationSettings>
 
 #include <QDBusConnection>
+#include <QElapsedTimer>
 
 DWIDGET_USE_NAMESPACE
 
 int main(int argc, char *argv[])
 {
+    QElapsedTimer timer;
+    timer.start();
+
     //在root下或者非deepin/uos环境下运行不会发生异常，需要加上XDG_CURRENT_DESKTOP=Deepin环境变量；
     if (!QString(qgetenv("XDG_CURRENT_DESKTOP")).toLower().startsWith("deepin")) {
         setenv("XDG_CURRENT_DESKTOP", "Deepin", 1);
@@ -72,8 +76,16 @@ int main(int argc, char *argv[])
         DLogManager::registerFileAppender();
         //获取应用配置
         DApplicationSettings applicationset(app);
+
+        qInfo() << "config:" << timer.elapsed();
+        timer.restart();
+
         //为了与老版本配置兼容
         Calendarmainwindow ww(viewtype - 1);
+        qInfo() << "windowcreated:" << timer.elapsed();
+        timer.restart();
+
+
         ExportedInterface einterface(&ww);
         einterface.registerAction("CREATE", "create a new schedule");
         einterface.registerAction("VIEW", "check a date on calendar");
@@ -88,6 +100,8 @@ int main(int argc, char *argv[])
             qWarning() << "registerObject Error:" << dbus.lastError();
         }
         ww.slotTheme(DGuiApplicationHelper::instance()->themeType());
+
+        qInfo() << "client:" << timer.elapsed();
         ww.show();
         return app->exec();
     }

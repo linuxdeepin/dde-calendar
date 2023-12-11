@@ -8,13 +8,25 @@
 #include "widget/dayWidget/daymonthview.h"
 #include <QVBoxLayout>
 #include <QPixmap>
+#include <QElapsedTimer>
 
 SidebarView::SidebarView(QWidget *parent) : QWidget(parent)
 {
+    QElapsedTimer timer;
+    timer.start();
+
     initView();
+
+    qInfo() << "windowcreated-ui-create sidebar-init view:" << timer.elapsed();
+    timer.restart();
+
+
     initConnection();
     //初始化数据
     initData();
+
+    qInfo() << "windowcreated-ui-create sidebar-init data:" << timer.elapsed();
+    timer.restart();
 }
 
 /**
@@ -23,12 +35,18 @@ SidebarView::SidebarView(QWidget *parent) : QWidget(parent)
  */
 void SidebarView::initView()
 {
+    QElapsedTimer timer;
+    timer.start();
+
     QVBoxLayout *vLayout = new QVBoxLayout(this);
     vLayout->setContentsMargins(0, 8, 0, 10);
     vLayout->setSpacing(0);
 
     m_treeWidget = new QTreeWidget();
     delegate = new SideBarTreeWidgetItemDelegate;
+
+    qInfo() << "windowcreated-ui-create sidebar-init view-delegate:" << timer.elapsed();
+    timer.restart();
 
     // 设置底色透明，否则展开/收起出现背景色
     QPalette pal = m_treeWidget->palette();
@@ -46,6 +64,9 @@ void SidebarView::initView()
     m_calendarWidget = new SidebarCalendarWidget(this);
     m_calendarWidget->setFixedHeight(220);
 //    m_calendarWidget->setFixedSize(180, 220);
+
+    qInfo() << "windowcreated-ui-create sidebar-init view-SidebarCalendarWidget:" << timer.elapsed();
+    timer.restart();
 
     DPushButton *btn = new DPushButton;
     btn->setFocusPolicy(Qt::NoFocus);
@@ -87,7 +108,7 @@ void SidebarView::initData()
 void SidebarView::initExpandStatus()
 {
     //初始化列表展开状态
-    QList<SidebarAccountItemWidget*> itemWidget;
+    QList<SidebarAccountItemWidget *> itemWidget;
     itemWidget << m_localItemWidget << m_unionItemWidget;
     for (SidebarAccountItemWidget *widget : itemWidget) {
         if (widget != nullptr) {
@@ -139,7 +160,7 @@ void SidebarView::initUnionAccountItem()
     QString unionName = unionAccount->getAccount()->accountName();
     m_unionItemWidget = new SidebarAccountItemWidget(unionAccount);
     m_treeWidget->setItemWidget(unionItem, 0, m_unionItemWidget);
-    unionItem->setToolTip(0,unionName);
+    unionItem->setToolTip(0, unionName);
     m_unionItemWidget->setItem(unionItem);
 }
 
@@ -155,9 +176,8 @@ void SidebarView::resetJobTypeChildItem(SidebarAccountItemWidget *parentItemWidg
     }
     QTreeWidgetItem *parentItem = parentItemWidget->getTreeItem();
     int itemChildrenCounts = parentItem->childCount();
-    while(itemChildrenCounts--)
-    {
-        QTreeWidgetItem * child =  parentItem->child(itemChildrenCounts); //index从大到小区做删除处理
+    while (itemChildrenCounts--) {
+        QTreeWidgetItem *child =  parentItem->child(itemChildrenCounts);  //index从大到小区做删除处理
         parentItem->removeChild(child);
         delete child;
         child = nullptr;
@@ -173,7 +193,7 @@ void SidebarView::resetJobTypeChildItem(SidebarAccountItemWidget *parentItemWidg
             parentItem->addChild(item);
             SidebarItemWidget *widget = new SidebarTypeItemWidget(p, this);
             m_treeWidget->setItemWidget(item, 0, widget);
-            connect(widget,&SidebarItemWidget::signalStatusChange,this,[&](bool status, QString id){
+            connect(widget, &SidebarItemWidget::signalStatusChange, this, [&](bool status, QString id) {
                 Q_UNUSED(id)
                 Q_UNUSED(status)
                 emit signalScheduleHide();
@@ -193,12 +213,11 @@ void SidebarView::resetTreeItemPos(QTreeWidgetItem *item)
     if (nullptr == item) {
         return;
     }
-    QWidget* ptmpWidget = nullptr;
+    QWidget *ptmpWidget = nullptr;
     ptmpWidget = m_treeWidget->itemWidget(item, 0);
     int x = ptmpWidget->x();
     QTreeWidgetItem *ptmp = nullptr;
-    for(int i = 0; i < item->childCount(); i++)
-    {
+    for (int i = 0; i < item->childCount(); i++) {
         ptmp = item->child(i);
         ptmpWidget = m_treeWidget->itemWidget(ptmp, 0);
         ptmpWidget->move(x, ptmpWidget->y());
@@ -236,7 +255,7 @@ void SidebarView::signalLogout(DAccount::Type accountType)
 {
     //先清空列表
     m_treeWidget->clear();
-    if (DAccount::Account_UnionID == accountType){
+    if (DAccount::Account_UnionID == accountType) {
         if (m_unionItemWidget) {
             //清空数据
             m_unionItemWidget->getAccountItem().reset(nullptr);

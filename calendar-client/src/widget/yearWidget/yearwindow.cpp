@@ -22,7 +22,14 @@ DGUI_USE_NAMESPACE
 CYearWindow::CYearWindow(QWidget *parent)
     : CScheduleBaseWidget(parent)
 {
+    QElapsedTimer timer;
+    timer.start();
+
+
     initUI();
+
+    qInfo() << "windowcreated-ui-create view: CYearWindow ui" << timer.elapsed();
+
     initConnection();
     setContentsMargins(0, 0, 0, 0);
     //设置接受触摸事件
@@ -250,6 +257,13 @@ TouchGestureData CYearWindow::calculateAzimuthAngle(QPointF &startPoint,  QPoint
  */
 void CYearWindow::initUI()
 {
+    QElapsedTimer timer;
+    timer.start();
+
+
+    qInfo() << "windowcreated-ui-create view: CYearWindow 1" << timer.elapsed();
+    timer.restart();
+
     m_today = new LabelWidget(this);
     m_today->setObjectName("yearToDay");
     m_today->setAccessibleName("yearToDay");
@@ -269,7 +283,8 @@ void CYearWindow::initUI()
     m_prevButton->setAccessibleName("PrevButton");
     m_prevButton->setFixedWidth(DDEYearCalendar::Y_MLabelHeight);
     m_prevButton->setFixedHeight(DDEYearCalendar::Y_MLabelHeight);
-
+    qInfo() << "windowcreated-ui-create view: CYearWindow 1" << timer.elapsed();
+    timer.restart();
     m_nextButton = new DIconButton(DStyle::SP_ArrowRight, this);
     //设置对象名称和辅助显示名称
     m_nextButton->setObjectName("NextButton");
@@ -290,7 +305,8 @@ void CYearWindow::initUI()
 
     m_yearLunarLabel = new QLabel(this);
     m_yearLunarLabel->setFixedSize(DDEMonthCalendar::M_YLunaLabelWindth, DDEMonthCalendar::M_YLunaLabelHeight);
-
+    qInfo() << "windowcreated-ui-create view: CYearWindow 1" << timer.elapsed();
+    timer.restart();
     QFont yLabelF;
     yLabelF.setWeight(QFont::Medium);
     yLabelF.setPixelSize(DDECalendar::FontSizeFourteen);
@@ -304,7 +320,8 @@ void CYearWindow::initUI()
     m_yearLunarDayLabel->setFont(yLabelF);
     m_yearLunarDayLabel->setPalette(LunaPa);
     m_yearLunarDayLabel->setAlignment(Qt::AlignRight);
-
+    qInfo() << "windowcreated-ui-create view: CYearWindow 1" << timer.elapsed();
+    timer.restart();
     QHBoxLayout *yeartitleLayout = new QHBoxLayout;
     yeartitleLayout->setMargin(0);
     yeartitleLayout->setSpacing(0);
@@ -340,8 +357,15 @@ void CYearWindow::initUI()
     yeartitleLayout->addSpacing(6);
     yeartitleLayout->addLayout(yeartitleLayout1);
 
+
+    timer.restart();
     m_firstYearWidget = new YearFrame();
+    qInfo() << "windowcreated-ui-create view: CYearWindow m_firstYearWidget" << timer.elapsed();
+    timer.restart();
     m_secondYearWidget = new YearFrame();
+    qInfo() << "windowcreated-ui-create view: CYearWindow m_secondYearWidget    " << timer.elapsed();
+    timer.restart();
+
     //设置过滤事件
     m_firstYearWidget->installEventFilter(this);
     m_secondYearWidget->installEventFilter(this);
@@ -370,8 +394,11 @@ void CYearWindow::initUI()
 
     m_topWidget = new DWidget(this);
     m_topWidget->setLayout(yeartitleLayout);
-
+    qInfo() << "windowcreated-ui-create view: CYearWindow 1" << timer.elapsed();
+    timer.restart();
     m_scheduleView = new CYearScheduleOutView(this);
+    qInfo() << "windowcreated-ui-create view: CYearWindow 1" << timer.elapsed();
+    timer.restart();
 }
 
 /**
@@ -464,7 +491,7 @@ void CYearWindow::setSearchWFlag(bool flag)
 void CYearWindow::updateShowDate(const bool isUpdateBar)
 {
     Q_UNUSED(isUpdateBar);
-    m_scheduleView->setTimeFormat((m_calendarManager->getTimeShowType()?"AP ":"") + m_calendarManager->getTimeFormat());
+    m_scheduleView->setTimeFormat((m_calendarManager->getTimeShowType() ? "AP " : "") + m_calendarManager->getTimeFormat());
     m_yearWidget->setShowDate(getSelectDate());
 }
 
@@ -524,8 +551,7 @@ void CYearWindow::slotSetScheduleHide()
 void CYearWindow::slotprev()
 {
     QDate minYear = getSelectDate();
-    if (minYear.year() > 1900)
-    {
+    if (minYear.year() > 1900) {
         switchYear(-1);
     }
 }
@@ -536,8 +562,7 @@ void CYearWindow::slotprev()
 void CYearWindow::slotnext()
 {
     QDate maxYear = getSelectDate();
-    if (maxYear.year() < 2100)
-    {
+    if (maxYear.year() < 2100) {
         switchYear(1);
     }
 }
@@ -605,6 +630,7 @@ void CYearWindow::setLunarShow()
  */
 void CYearWindow::setYearData()
 {
+
     //如果选择日期为本地时间日期则显示今天，否则显示返回当天
     if (getSelectDate() == getCurrendDateTime().date()) {
         m_today->setText(QCoreApplication::translate("today", "Today", "Today"));
@@ -704,6 +730,8 @@ YearFrame::YearFrame(DWidget *parent)
     gridLayout->setMargin(0);
     gridLayout->setSpacing(8);
 
+    QElapsedTimer timer;
+    timer.start();
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 4; j++) {
             CYearView *view = new CYearView(this);
@@ -762,6 +790,9 @@ YearFrame::YearFrame(DWidget *parent)
     hhLayout->addWidget(m_topWidget);
     hhLayout->addLayout(gridLayout);
     this->setLayout(hhLayout);
+
+    qInfo() << "windowcreated-ui-create view: YearFrame" << timer.elapsed();
+    timer.restart();
 }
 
 YearFrame::~YearFrame()
