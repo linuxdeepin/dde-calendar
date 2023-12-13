@@ -49,7 +49,7 @@ CYearView::CYearView(QWidget *parent)
 
     qInfo() << "windowcreated-ui-create view: CYearView else1" << timer.elapsed();
     timer.restart();
-    m_currentMouth->show();
+    //m_currentMouth->show();
     m_currentMouth->move(0, 0);
     qInfo() << "windowcreated-ui-create view: CYearView else1.5" << timer.elapsed();
     timer.restart();

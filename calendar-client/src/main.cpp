@@ -77,14 +77,13 @@ int main(int argc, char *argv[])
         //获取应用配置
         DApplicationSettings applicationset(app);
 
-        qInfo() << "config:" << timer.elapsed();
-        timer.restart();
+        qInfo() << "main config:" << timer.elapsed();
 
         //为了与老版本配置兼容
         Calendarmainwindow ww(viewtype - 1);
-        qInfo() << "windowcreated:" << timer.elapsed();
-        timer.restart();
 
+        //在创建窗口前开启ForceRasterWidgets，让Qt不要创建gl窗口。
+        //QApplication::setAttribute(Qt::AA_ForceRasterWidgets, true);
 
         ExportedInterface einterface(&ww);
         einterface.registerAction("CREATE", "create a new schedule");
@@ -101,8 +100,11 @@ int main(int argc, char *argv[])
         }
         ww.slotTheme(DGuiApplicationHelper::instance()->themeType());
 
-        qInfo() << "client:" << timer.elapsed();
+        qInfo() << "main client created:" << timer.elapsed();
         ww.show();
+
+        qInfo() << "main client show:" << timer.elapsed();
+
         return app->exec();
     }
     return 0;
