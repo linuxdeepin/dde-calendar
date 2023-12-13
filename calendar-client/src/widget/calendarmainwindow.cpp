@@ -79,15 +79,9 @@ Calendarmainwindow::Calendarmainwindow(int index, QWidget *w)
     : DMainWindow(w)
     , m_defaultIndex(index)
 {
-    QElapsedTimer timer;
-    timer.start();
-
     setContentsMargins(QMargins(0, 0, 0, 0));
+
     initUI();
-
-    qInfo() << "windowcreated-ui:" << timer.elapsed();
-    timer.restart();
-
     initConnection();
     initData();
 
@@ -146,8 +140,6 @@ Calendarmainwindow::Calendarmainwindow(int index, QWidget *w)
     CalendarGlobalEnv::getGlobalEnv()->registerKey(DDECalendar::CursorPointKey, QPoint());
     //保存主窗口指针
     CalendarGlobalEnv::getGlobalEnv()->registerKey("MainWindow", QVariant::fromValue(static_cast<void *>(this)));
-
-    qInfo() << "windowcreated-else:" << timer.elapsed();
 }
 
 Calendarmainwindow::~Calendarmainwindow()
@@ -272,6 +264,11 @@ void Calendarmainwindow::setSearchWidth(int w)
     m_contentBackground->setFixedWidth(w);
 }
 
+void Calendarmainwindow::initLater()
+{
+
+}
+
 void Calendarmainwindow::slotTheme(int type)
 {
     if (type == 0) {
@@ -346,7 +343,6 @@ void Calendarmainwindow::initUI()
     QElapsedTimer timer;
     timer.start();
 
-
     //设置主窗口辅助技术显示名称和描述
     this->setObjectName("MainWindow");
     this->setAccessibleName("MainWindow");
@@ -368,7 +364,7 @@ void Calendarmainwindow::initUI()
     this->titlebar()->setQuitMenuVisible(true);//先设置后，才可以获取menu内容。因为setQuitMenuVisible接口中进行了action的添加操作
     QMenu *menuTitleBar = this->titlebar()->menu();
 
-    qInfo() << "windowcreated-ui-1.1:" << timer.elapsed();
+    qInfo() << "main created title" << timer.elapsed();
     timer.restart();
 
     QAction *pSetting = new QAction(tr("Manage"), menuTitleBar);
@@ -376,8 +372,6 @@ void Calendarmainwindow::initUI()
     menuTitleBar->insertSeparator(menuTitleBar->actions()[0]);
     menuTitleBar->insertAction(menuTitleBar->actions()[0], pSetting);
     connect(pSetting, &QAction::triggered, this, &Calendarmainwindow::slotOpenSettingDialog);
-
-
 
     //添加隐私政策
     QAction *pPrivacy = new QAction(tr("Privacy Policy"), menuTitleBar);
@@ -400,13 +394,10 @@ void Calendarmainwindow::initUI()
     tMainLayout->setContentsMargins(10, 10, 10, 10);
     tMainLayout->setSpacing(10);
 
-    qInfo() << "windowcreated-ui-create layout:" << timer.elapsed();
-    timer.restart();
-
     m_sidebarView = new SidebarView(this);
     tMainLayout->addWidget(m_sidebarView, 1);
 
-    qInfo() << "windowcreated-ui-create sidebar:" << timer.elapsed();
+    qInfo() << "main created sidebar" << timer.elapsed();
     timer.restart();
 
     m_stackWidget = new AnimationStackedWidget();
@@ -415,14 +406,7 @@ void Calendarmainwindow::initUI()
     m_stackWidget->setAccessibleDescription("Container for year window, month window, week window and day window");
     m_stackWidget->setContentsMargins(0, 0, 0, 0);
     m_stackWidget->setDuration(250);
-
-    qInfo() << "windowcreated-ui-create stacked:" << timer.elapsed();
-    timer.restart();
-
     createview();
-
-    qInfo() << "windowcreated-ui-create view:" << timer.elapsed();
-    timer.restart();
 
     tMainLayout->addWidget(m_stackWidget, 4);
 
@@ -465,8 +449,6 @@ void Calendarmainwindow::initUI()
     QShortcut *dShortcut = new QShortcut(this);
     dShortcut->setKey(QKeySequence(QLatin1String("Delete")));
     connect(dShortcut, &QShortcut::activated, this, &Calendarmainwindow::slotDeleteitem);
-
-    qInfo() << "windowcreated-ui-2:" << timer.elapsed();
 }
 
 void Calendarmainwindow::initConnection()
@@ -525,7 +507,7 @@ void Calendarmainwindow::createview()
     m_yearwindow->updateData();
     m_stackWidget->addWidget(m_yearwindow);
 
-    qInfo() << "windowcreated-ui-create view: CYearWindow" << timer.elapsed();
+    qInfo() << "main created CYearWindow" << timer.elapsed();
     timer.restart();
     m_monthWindow = new CMonthWindow(this);
     m_monthWindow->setObjectName("monthWindow");
@@ -533,21 +515,21 @@ void Calendarmainwindow::createview()
     m_monthWindow->updateData();
     m_stackWidget->addWidget(m_monthWindow);
 
-    qInfo() << "windowcreated-ui-create view: CMonthWindow" << timer.elapsed();
+    qInfo() << "main created CMonthWindow" << timer.elapsed();
     timer.restart();
 
     m_weekWindow  = new CWeekWindow(this);
     m_weekWindow->updateData();
     m_stackWidget->addWidget(m_weekWindow);
 
-    qInfo() << "windowcreated-ui-create view: CWeekWindow" << timer.elapsed();
+    qInfo() << "main created CWeekWindow" << timer.elapsed();
     timer.restart();
 
     m_DayWindow = new CDayWindow;
     m_DayWindow->updateData();
     m_stackWidget->addWidget(m_DayWindow);
 
-    qInfo() << "windowcreated-ui-create view: CDayWindow" << timer.elapsed();
+    qInfo() << "main created CDayWindow" << timer.elapsed();
     timer.restart();
 
     //如果默认视图不在范围内则设置为月窗口显示
@@ -561,9 +543,6 @@ void Calendarmainwindow::createview()
     if (m_defaultIndex == DDECalendar::CalendarDayWindow) {
         m_DayWindow->setTime();
     }
-
-    qInfo() << "windowcreated-ui-create view: else" << timer.elapsed();
-    timer.restart();
 }
 
 void Calendarmainwindow::resizeView()

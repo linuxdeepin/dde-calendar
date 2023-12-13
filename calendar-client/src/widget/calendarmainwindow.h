@@ -49,6 +49,7 @@ public:
     void updateHeight();
     void setSearchWidth(int w);
 public slots:
+    void initLater();
     void slotTheme(int type);
     void slotOpenSchedule(QString job);
     void slotViewShortcut();
@@ -137,6 +138,7 @@ private:
     bool m_setButtonFocus {false};
     bool m_isNormalStateShow {true}; //是否为正常状态显示
     QPoint m_startPos;
+    bool m_hasInit = false;
 
     CMyScheduleView *m_dlg = Q_NULLPTR;
 

@@ -24,12 +24,17 @@ int main(int argc, char *argv[])
 {
     QElapsedTimer timer;
     timer.start();
+    QElapsedTimer ttimer;
+    ttimer.start();
 
     //在root下或者非deepin/uos环境下运行不会发生异常，需要加上XDG_CURRENT_DESKTOP=Deepin环境变量；
     if (!QString(qgetenv("XDG_CURRENT_DESKTOP")).toLower().startsWith("deepin")) {
         setenv("XDG_CURRENT_DESKTOP", "Deepin", 1);
     }
     QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+    //在创建窗口前开启ForceRasterWidgets，让Qt不要创建gl窗口。
+    QApplication::setAttribute(Qt::AA_ForceRasterWidgets, true);
+
     //适配deepin-turbo启动加速
     DApplication *app = nullptr;
 #if(DTK_VERSION < DTK_VERSION_CHECK(5,4,0,0))
@@ -77,13 +82,11 @@ int main(int argc, char *argv[])
         //获取应用配置
         DApplicationSettings applicationset(app);
 
-        qInfo() << "main config:" << timer.elapsed();
+        qInfo() << "main config" << timer.elapsed();
+        timer.restart();
 
         //为了与老版本配置兼容
         Calendarmainwindow ww(viewtype - 1);
-
-        //在创建窗口前开启ForceRasterWidgets，让Qt不要创建gl窗口。
-        //QApplication::setAttribute(Qt::AA_ForceRasterWidgets, true);
 
         ExportedInterface einterface(&ww);
         einterface.registerAction("CREATE", "create a new schedule");
@@ -99,11 +102,12 @@ int main(int argc, char *argv[])
             qWarning() << "registerObject Error:" << dbus.lastError();
         }
         ww.slotTheme(DGuiApplicationHelper::instance()->themeType());
+        qInfo() << "main created" << timer.elapsed();
+        timer.restart();
 
-        qInfo() << "main client created:" << timer.elapsed();
         ww.show();
-
-        qInfo() << "main client show:" << timer.elapsed();
+        qInfo() << "main shown" << timer.elapsed();
+        qInfo() << "main" << ttimer.elapsed();
 
         return app->exec();
     }

@@ -17,28 +17,13 @@ QDate SidebarCalendarKeyButton::m_displayedMonth = QDate();
 
 SidebarCalendarWidget::SidebarCalendarWidget(QWidget *parent) : QWidget(parent)
 {
-    QElapsedTimer timer;
-    timer.start();
-
     initView();
-
-    qInfo() << "windowcreated-ui-create sidebar SidebarCalendarWidget-init view:" << timer.elapsed();
-    timer.restart();
-
-
     initConnection();
-    //初始化数据
     initData();
-
-    qInfo() << "windowcreated-ui-create sidebar SidebarCalendarWidget-init data:" << timer.elapsed();
-    timer.restart();
 }
 
 void SidebarCalendarWidget::initView()
 {
-    QElapsedTimer timer;
-    timer.start();
-
     m_dateLabel = new QLabel();
     QFont font = m_dateLabel->font();
     font.setPixelSize(DDECalendar::FontSizeTwelve);
@@ -68,21 +53,21 @@ void SidebarCalendarWidget::initView()
     m_headWidget->setLayout(headLayout);
     m_headWidget->setMinimumHeight(30);
 
-    qInfo() << "windowcreated-ui-create sidebar SidebarCalendarWidget-init view widgets:" << timer.elapsed();
-    timer.restart();
+    QElapsedTimer timer;
+    timer.start();
 
     m_weekWidget = new CWeekWidget(this);
     m_weekWidget->setAutoFontSizeByWindow(false);
     m_weekWidget->setFirstDay(Qt::Sunday);
+
+    qInfo() << "main created sidebar -> SidebarCalendarWidget -> CWeekWidget" << timer.elapsed();
+    timer.restart();
 
     m_keyWidget = new QWidget(this);
     m_keyLayout = new QGridLayout();
     m_keyLayout->setMargin(0);
     m_keyLayout->setSpacing(0);
     m_keyWidget->setLayout(m_keyLayout);
-
-    qInfo() << "windowcreated-ui-create sidebar SidebarCalendarWidget-init view CWeekWidget:" << timer.elapsed();
-    timer.restart();
 
     //循坏实例化6*7个日期按键
     for (int i = 0; i < 42; ++i) {
@@ -92,9 +77,6 @@ void SidebarCalendarWidget::initView()
         m_keyLayout->addWidget(button, i / 7, i % 7, 1, 1, Qt::AlignCenter);
         connect(button, &SidebarCalendarKeyButton::signaClicked, this, &SidebarCalendarWidget::slotKeyButtonClicked);
     }
-
-    qInfo() << "windowcreated-ui-create sidebar SidebarCalendarWidget-init view SidebarCalendarKeyButtons:" << timer.elapsed();
-    timer.restart();
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->setMargin(0);

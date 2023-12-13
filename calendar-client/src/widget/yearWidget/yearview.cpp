@@ -23,8 +23,6 @@ DGUI_USE_NAMESPACE
 CYearView::CYearView(QWidget *parent)
     : CustomFrame(parent)
 {
-    QElapsedTimer timer;
-    timer.start();
     //设置焦点类型
     setFocusPolicy(Qt::FocusPolicy::TabFocus);
     setMouseTracking(true);
@@ -39,7 +37,6 @@ CYearView::CYearView(QWidget *parent)
     m_momthFont.setPixelSize(DDECalendar::FontSizeSixteen);
     m_currentMouth->setTextFont(m_momthFont);
 
-
     QHBoxLayout *separatorLineLayout = new QHBoxLayout;
     separatorLineLayout->setMargin(0);
     separatorLineLayout->setSpacing(0);
@@ -47,17 +44,9 @@ CYearView::CYearView(QWidget *parent)
     separatorLineLayout->addWidget(m_currentMouth);
     separatorLineLayout->addStretch();
 
-    qInfo() << "windowcreated-ui-create view: CYearView else1" << timer.elapsed();
-    timer.restart();
     //m_currentMouth->show();
     m_currentMouth->move(0, 0);
-    qInfo() << "windowcreated-ui-create view: CYearView else1.5" << timer.elapsed();
-    timer.restart();
     m_currentMouth->installEventFilter(this);
-
-    qInfo() << "windowcreated-ui-create view: CYearView else2" << timer.elapsed();
-    timer.restart();
-
     m_weekWidget = new CWeekWidget(this);
 //    m_weekWidget->setMinimumHeight(20);
 
@@ -79,9 +68,6 @@ CYearView::CYearView(QWidget *parent)
     m_hhLayout->setSpacing(0);
     m_hhLayout->setContentsMargins(13, 10, 10, 10);
     setLayout(m_hhLayout);
-
-    qInfo() << "windowcreated-ui-create view: CYearView" << timer.elapsed();
-    timer.restart();
 }
 
 /**

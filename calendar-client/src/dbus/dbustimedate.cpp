@@ -17,9 +17,6 @@
 DBusTimedate::DBusTimedate(QObject *parent)
     : QDBusAbstractInterface(NETWORK_DBUS_NAME, NETWORK_DBUS_PATH, NETWORK_DBUS_INTEERFACENAME, QDBusConnection::sessionBus(), parent)
 {
-    QElapsedTimer timer;
-    timer.start();
-
     //关联后端dbus触发信号
     if (!QDBusConnection::sessionBus().connect(NETWORK_DBUS_NAME,
                                                NETWORK_DBUS_PATH,
@@ -31,8 +28,6 @@ DBusTimedate::DBusTimedate(QObject *parent)
     }
 
     m_hasDateTimeFormat = getHasDateTimeFormat();
-
-    qInfo() << "windowcreated-ui-create sidebar SidebarCalendarWidget-init data: DBusTimedate" << timer.elapsed();
 }
 
 int DBusTimedate::shortTimeFormat()

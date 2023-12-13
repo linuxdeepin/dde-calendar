@@ -113,15 +113,13 @@ QString LunarManager::getHuangLiShortName(const QDate &date)
  */
 void LunarManager::queryLunarInfo(const QDate &startDate, const QDate &stopDate)
 {
-    QElapsedTimer timer;
-    timer.start();
-
     QMap<QDate, CaHuangLiDayInfo> lunarInfoMap;
     CaHuangLiMonthInfo monthInfo;
     const int offsetMonth = (stopDate.year() - startDate.year()) * 12 + stopDate.month() - startDate.month();
 
-    qInfo() << "windowcreated-ui-create sidebar SidebarCalendarWidget-init data: CalendarManager data queryLunarInfo prepare" << timer.elapsed();
-    timer.restart();
+    QElapsedTimer timer;
+    timer.start();
+
     //获取开始时间至结束时间所在月的农历和节假日信息
     for (int i = 0; i <= offsetMonth; ++i) {
         monthInfo.clear();
@@ -132,13 +130,10 @@ void LunarManager::queryLunarInfo(const QDate &startDate, const QDate &stopDate)
         for (int j = 0; j < monthInfo.mDays; ++j) {
             lunarInfoMap[getDate.addDays(j)] = monthInfo.mCaLunarDayInfo.at(j);
         }
-        qInfo() << i;
-        qInfo() << "windowcreated-ui-create sidebar SidebarCalendarWidget-init data: CalendarManager data queryLunarInfo prepare" << timer.elapsed();
-        timer.restart();
     }
     m_lunarInfoMap = lunarInfoMap;
 
-    qInfo() << "windowcreated-ui-create sidebar SidebarCalendarWidget-init data: CalendarManager data queryLunarInfo" << timer.elapsed();
+    qInfo() << "main created sidebar -> SidebarCalendarWidget -> CWeekWidget -> LunarManager::queryLunarInfo" << timer.elapsed();
     timer.restart();
 }
 

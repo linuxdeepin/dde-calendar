@@ -12,21 +12,9 @@
 
 SidebarView::SidebarView(QWidget *parent) : QWidget(parent)
 {
-    QElapsedTimer timer;
-    timer.start();
-
     initView();
-
-    qInfo() << "windowcreated-ui-create sidebar-init view:" << timer.elapsed();
-    timer.restart();
-
-
     initConnection();
-    //初始化数据
     initData();
-
-    qInfo() << "windowcreated-ui-create sidebar-init data:" << timer.elapsed();
-    timer.restart();
 }
 
 /**
@@ -35,9 +23,6 @@ SidebarView::SidebarView(QWidget *parent) : QWidget(parent)
  */
 void SidebarView::initView()
 {
-    QElapsedTimer timer;
-    timer.start();
-
     QVBoxLayout *vLayout = new QVBoxLayout(this);
     vLayout->setContentsMargins(0, 8, 0, 10);
     vLayout->setSpacing(0);
@@ -45,8 +30,8 @@ void SidebarView::initView()
     m_treeWidget = new QTreeWidget();
     delegate = new SideBarTreeWidgetItemDelegate;
 
-    qInfo() << "windowcreated-ui-create sidebar-init view-delegate:" << timer.elapsed();
-    timer.restart();
+    QElapsedTimer timer;
+    timer.start();
 
     // 设置底色透明，否则展开/收起出现背景色
     QPalette pal = m_treeWidget->palette();
@@ -65,7 +50,7 @@ void SidebarView::initView()
     m_calendarWidget->setFixedHeight(220);
 //    m_calendarWidget->setFixedSize(180, 220);
 
-    qInfo() << "windowcreated-ui-create sidebar-init view-SidebarCalendarWidget:" << timer.elapsed();
+    qInfo() << "main created sidebar -> SidebarCalendarWidget" << timer.elapsed();
     timer.restart();
 
     DPushButton *btn = new DPushButton;
