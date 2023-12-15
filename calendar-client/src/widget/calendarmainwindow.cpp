@@ -81,9 +81,7 @@ Calendarmainwindow::Calendarmainwindow(int index, QWidget *w)
 {
     setContentsMargins(QMargins(0, 0, 0, 0));
 
-    initUI();
-    initConnection();
-    initData();
+    QTimer::singleShot(10, this, &Calendarmainwindow::initLater);
 
     setMinimumSize(CalendarMWidth, CalendarMHeight);
     setWindowTitle(tr("Calendar"));
@@ -266,11 +264,20 @@ void Calendarmainwindow::setSearchWidth(int w)
 
 void Calendarmainwindow::initLater()
 {
+    initUI();
+    initConnection();
+    initData();
+    m_hasInit = true;
 
+    resizeView();
+    slotTheme(DGuiApplicationHelper::instance()->themeType());
 }
 
 void Calendarmainwindow::slotTheme(int type)
 {
+    if (!m_contentBackground)
+        return;
+
     if (type == 0) {
         type = DGuiApplicationHelper::instance()->themeType();
     }
@@ -547,11 +554,17 @@ void Calendarmainwindow::createview()
 
 void Calendarmainwindow::resizeView()
 {
+    if (!m_hasInit) {
+        qWarning() << "Calendarmainwindow's not inited,be careful!";
+        return;
+    } else {
+        qWarning() << "Calendarmainwindow's inited,be happy!";
+    }
+
     //帐户列表窗口（A），视图窗口(B),搜索结果窗口(C)
     //窗口由大变小先隐藏A，在隐藏B
     //窗口由小变大先显示B，在显示A
     //不能出现只显示A和C的情况
-
 
     //根据界面大小改变趋势设置侧边栏可显示状态
     //如果帐户列表窗口为显示状态
@@ -603,10 +616,14 @@ void Calendarmainwindow::resizeView()
  */
 void Calendarmainwindow::setScheduleHide()
 {
-    m_yearwindow->slotSetScheduleHide();
-    m_monthWindow->slotScheduleHide();
-    m_weekWindow->slotScheduleHide();
-    m_DayWindow->slotScheduleHide();
+    if (m_yearwindow)
+        m_yearwindow->slotSetScheduleHide();
+    if (m_monthWindow)
+        m_monthWindow->slotScheduleHide();
+    if (m_weekWindow)
+        m_weekWindow->slotScheduleHide();
+    if (m_DayWindow)
+        m_DayWindow->slotScheduleHide();
 }
 
 void Calendarmainwindow::resizeEvent(QResizeEvent *event)
@@ -737,6 +754,13 @@ void Calendarmainwindow::slotSearchSelectSchedule(const DSchedule::Ptr &schedule
  */
 void Calendarmainwindow::slotViewtransparentFrame(const bool isShow)
 {
+    if (!m_transparentFrame) {
+        qWarning() << "Calendarmainwindow's not inited,be careful!" << isShow;
+        return;
+    } else {
+        qWarning() << "Calendarmainwindow's inited,be happy!" << isShow;
+    }
+
     if (isShow) {
         m_transparentFrame->resize(width(), height() - 50);
         m_transparentFrame->move(0, 50);
