@@ -86,38 +86,29 @@ int main(int argc, char *argv[])
         qInfo() << "main config" << timer.elapsed();
         timer.restart();
 
-        DMainWindow w;
-        w.setContentsMargins(QMargins(0, 0, 0, 0));
-        w.resize(800, 600);
-        Dtk::Widget::moveToCenter(&w);
+        //为了与老版本配置兼容
+        Calendarmainwindow ww(viewtype - 1);
+        ExportedInterface einterface(&ww);
+        einterface.registerAction("CREATE", "create a new schedule");
+        einterface.registerAction("VIEW", "check a date on calendar");
+        einterface.registerAction("QUERY", "find a schedule information");
+        einterface.registerAction("CANCEL", "cancel a schedule");
+        QDBusConnection dbus = QDBusConnection::sessionBus();
+        //如果注册失败打印出失败信息
+        if (!dbus.registerService("com.deepin.Calendar")) {
+            qWarning() << "registerService Error:" << dbus.lastError();
+        }
+        if (!dbus.registerObject("/com/deepin/Calendar", &ww)) {
+            qWarning() << "registerObject Error:" << dbus.lastError();
+        }
+        ww.slotTheme(DGuiApplicationHelper::instance()->themeType());
+
         qInfo() << "main created" << timer.elapsed();
         timer.restart();
-        w.show();
-
-//        //为了与老版本配置兼容
-//        Calendarmainwindow ww(viewtype - 1);
-
-//        ExportedInterface einterface(&ww);
-//        einterface.registerAction("CREATE", "create a new schedule");
-//        einterface.registerAction("VIEW", "check a date on calendar");
-//        einterface.registerAction("QUERY", "find a schedule information");
-//        einterface.registerAction("CANCEL", "cancel a schedule");
-//        QDBusConnection dbus = QDBusConnection::sessionBus();
-//        //如果注册失败打印出失败信息
-//        if (!dbus.registerService("com.deepin.Calendar")) {
-//            qWarning() << "registerService Error:" << dbus.lastError();
-//        }
-//        if (!dbus.registerObject("/com/deepin/Calendar", &ww)) {
-//            qWarning() << "registerObject Error:" << dbus.lastError();
-//        }
-//        ww.slotTheme(DGuiApplicationHelper::instance()->themeType());
-//        qInfo() << "main created" << timer.elapsed();
-//        timer.restart();
-//        ww.show();
+        ww.show();
 
         qInfo() << "main shown" << timer.elapsed();
         qInfo() << "main" << ttimer.elapsed();
-
         return app->exec();
     }
     return 0;
