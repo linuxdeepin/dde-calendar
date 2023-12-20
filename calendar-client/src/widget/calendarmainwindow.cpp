@@ -23,7 +23,7 @@
 #include "calendarglobalenv.h"
 #include "settingWidget/userloginwidget.h"
 #include "settingWidget/settingwidgets.h"
-
+#include "exportedinterface.h"
 #include "scheduletypeeditdlg.h"
 #include "accountmanager.h"
 #include "units.h"
@@ -267,6 +267,21 @@ void Calendarmainwindow::initLater()
     initUI();
     initConnection();
     initData();
+
+    ExportedInterface einterface(this);
+    einterface.registerAction("CREATE", "create a new schedule");
+    einterface.registerAction("VIEW", "check a date on calendar");
+    einterface.registerAction("QUERY", "find a schedule information");
+    einterface.registerAction("CANCEL", "cancel a schedule");
+    QDBusConnection dbus = QDBusConnection::sessionBus();
+    //如果注册失败打印出失败信息
+    if (!dbus.registerService("com.deepin.Calendar")) {
+        qWarning() << "registerService Error:" << dbus.lastError();
+    }
+    if (!dbus.registerObject("/com/deepin/Calendar", this)) {
+        qWarning() << "registerObject Error:" << dbus.lastError();
+    }
+
     m_hasInit = true;
 
     resizeView();
