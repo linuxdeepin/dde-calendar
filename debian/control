@@ -32,6 +32,8 @@ Depends:
  dde-qt5integration,
  libdframeworkdbus2,
  dde-api,
+ deepin-turbo (>> 0.0.6.3-1),
+ deepin-turbo-booster (>> 0.0.6.3-1),
  ${misc:Depends},
  ${shlibs:Depends},
 Description: Calendar is a smart daily planner to schedule all things in life.
