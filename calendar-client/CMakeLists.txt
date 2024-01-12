@@ -8,12 +8,11 @@ endif ()
 #common resource names
 set(APP_RES_DIR "assets")
 set(APP_BIN_NAME "dde-calendar")
-set(APP_LIB_NAME "dde-calendar-lib")
 set(APP_DESKTOP "${APP_RES_DIR}/dde-calendar.desktop")
 set(APP_QRC "${APP_RES_DIR}/resources.qrc")
 set(APP_SERVICE_IN "${APP_RES_DIR}/dbus/com.deepin.Calendar.service.in")
 
-project(${APP_LIB_NAME})
+project(${APP_BIN_NAME})
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -74,7 +73,7 @@ find_package(Qt5Network REQUIRED)
 
 include_directories(${Qt5Gui_PRIVATE_INCLUDE_DIRS})
 # Tell CMake to create the executable
-add_library(${PROJECT_NAME} SHARED ${Calendar_SRC} ${APP_QRC})
+add_executable(${PROJECT_NAME} ${Calendar_SRC} ${APP_QRC})
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${DtkWidget_INCLUDE_DIRS} ${OBJECT_BINARY_DIR} ../calendar-common/src)
 target_link_libraries(${PROJECT_NAME}
@@ -95,7 +94,9 @@ set (EXEC_DDE_CALENDAR "${CMAKE_INSTALL_FULL_BINDIR}/${APP_BIN_NAME}" CACHE STRI
 configure_file(${APP_SERVICE_IN} ${CMAKE_CURRENT_BINARY_DIR}/dbus/com.deepin.Calendar.service @ONLY)
 
 # Install files
-install(TARGETS ${PROJECT_NAME} DESTINATION lib/dde-calendar)
-install(DIRECTORY ${APP_RES_DIR}/dde-calendar DESTINATION ${CMAKE_INSTALL_DATADIR}/deepin-manual/manual-assets/application/)
+install(TARGETS dde-calendar DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+install(DIRECTORY ${APP_RES_DIR}/dde-calendar
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/deepin-manual/manual-assets/application/)
 install(FILES ${APP_DESKTOP} DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/dbus/com.deepin.Calendar.service DESTINATION ${CMAKE_INSTALL_DATADIR}/dbus-1/services)
