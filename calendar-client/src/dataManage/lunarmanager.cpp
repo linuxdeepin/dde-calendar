@@ -3,6 +3,11 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "lunarmanager.h"
+#include "dbushuanglirequest.h"
+#include <qfuturewatcher.h>
+#include <qvector.h>
+#include <QFutureWatcher>
+#include <QtConcurrent>
 
 LunarManager::LunarManager(QObject *parent) : QObject(parent)
     , m_dbusRequest(new DbusHuangLiRequest)
@@ -113,28 +118,29 @@ QString LunarManager::getHuangLiShortName(const QDate &date)
  */
 void LunarManager::queryLunarInfo(const QDate &startDate, const QDate &stopDate)
 {
-    QMap<QDate, CaHuangLiDayInfo> lunarInfoMap;
-    CaHuangLiMonthInfo monthInfo;
     const int offsetMonth = (stopDate.year() - startDate.year()) * 12 + stopDate.month() - startDate.month();
+    QFutureWatcher<QMap<QDate, CaHuangLiDayInfo>> * w= new QFutureWatcher<QMap<QDate, CaHuangLiDayInfo>>(this);
+    QFuture<QMap<QDate, CaHuangLiDayInfo>> future = QtConcurrent::run([offsetMonth, startDate]()->QMap<QDate, CaHuangLiDayInfo> {
+        auto dbus = new DbusHuangLiRequest();
+        QMap<QDate, CaHuangLiDayInfo> lunarInfoMap;
+        CaHuangLiMonthInfo monthInfo;
+        //获取开始时间至结束时间所在月的农历和节假日信息
+        for (int i = 0; i <= offsetMonth; ++i) {
+            monthInfo.clear();
+            QDate beginDate = startDate.addMonths(i);
+            dbus->getHuangLiMonth(beginDate.year(), beginDate.month(), false, monthInfo);
 
-    QElapsedTimer timer;
-    timer.start();
-
-    //获取开始时间至结束时间所在月的农历和节假日信息
-    for (int i = 0; i <= offsetMonth; ++i) {
-        monthInfo.clear();
-        QDate beginDate = startDate.addMonths(i);
-        getHuangLiMonth(beginDate, monthInfo);
-
-        QDate getDate(beginDate.year(), beginDate.month(), 1);
-        for (int j = 0; j < monthInfo.mDays; ++j) {
-            lunarInfoMap[getDate.addDays(j)] = monthInfo.mCaLunarDayInfo.at(j);
+            QDate getDate(beginDate.year(), beginDate.month(), 1);
+            for (int j = 0; j < monthInfo.mDays; ++j) {
+                lunarInfoMap[getDate.addDays(j)] = monthInfo.mCaLunarDayInfo.at(j);
+            }
         }
-    }
-    m_lunarInfoMap = lunarInfoMap;
-
-    qInfo() << "main created sidebar -> SidebarCalendarWidget -> CWeekWidget -> LunarManager::queryLunarInfo" << timer.elapsed();
-    timer.restart();
+        return lunarInfoMap;
+    });
+    connect(w, &QFutureWatcher<QMap<QDate, CaHuangLiDayInfo>>::finished, this, [this, w](){
+        m_lunarInfoMap = w->result();
+    });
+    w->setFuture(future);
 }
 
 /**
@@ -145,24 +151,32 @@ void LunarManager::queryLunarInfo(const QDate &startDate, const QDate &stopDate)
  */
 void LunarManager::queryFestivalInfo(const QDate &startDate, const QDate &stopDate)
 {
-    QVector<FestivalInfo> festivallist{};
-
     const int offsetMonth = (stopDate.year() - startDate.year()) * 12 + stopDate.month() - startDate.month();
-
-    for (int i = 0; i <= offsetMonth; ++i) {
-        FestivalInfo info;
-        QDate beginDate = startDate.addMonths(i);
-        if (getFestivalMonth(beginDate, info)) {
-            festivallist.push_back(info);
+    QFutureWatcher<QVector<FestivalInfo>> *w = new QFutureWatcher<QVector<FestivalInfo>>(this);
+    QFuture<QVector<FestivalInfo>> future = QtConcurrent::run([offsetMonth, startDate]()->QVector<FestivalInfo> {
+        auto dbus = new DbusHuangLiRequest();
+        QVector<FestivalInfo> festivallist{};
+        for (int i = 0; i <= offsetMonth; ++i) {
+            FestivalInfo info;
+            QDate beginDate = startDate.addMonths(i);
+            auto ret = dbus->getFestivalMonth(quint32(beginDate.year()), quint32(beginDate.month()), info);
+            if (ret) {
+                festivallist.push_back(info);
+            }
         }
-    }
-
-    m_festivalDateMap.clear();
-    for (FestivalInfo info : festivallist) {
-        for (HolidayInfo h : info.listHoliday) {
-            m_festivalDateMap[h.date] = h.status;
+        return festivallist;
+    });
+    connect(w, &QFutureWatcher<QVector<FestivalInfo>>::finished, w, [this, w](){
+        auto festivallist = w->result();
+        m_festivalDateMap.clear();
+        for (FestivalInfo info : festivallist) {
+            for (HolidayInfo h : info.listHoliday) {
+                m_festivalDateMap[h.date] = h.status;
+            }
         }
-    }
+    });
+    w->setFuture(future);
+
 }
 
 /**
