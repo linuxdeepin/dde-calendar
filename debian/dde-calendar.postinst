@@ -24,7 +24,7 @@ for userName in ${userNameArr[@]} ; do
     #如果为活跃的则表示服务已开启
     if [ "$serviceStatus" = "$activeStr" ];then
         #如果服务已经启动则重新加载
-        runuser -l ${userName} -c "XDG_RUNTIME_DIR=\"/run/user/$(id -u ${userName})\" systemctl --user daemon-reload"
+        runuser -l ${userName} -c "XDG_RUNTIME_DIR=\"/run/user/$(id -u ${userName})\" systemctl --user daemon-reload ||true "
     else
         #如果服务没有启动则设置开启
         runuser -l ${userName} -c "XDG_RUNTIME_DIR=\"/run/user/$(id -u ${userName})\" systemctl --user enable ${sysTimer}"
