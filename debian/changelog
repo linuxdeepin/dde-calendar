@@ -1,3 +1,9 @@
+dde-calendar (5.12.2) unstable; urgency=medium
+
+  * chore: update changelog(5.12.2)
+
+ -- wangcong <wangcong@uniontech.com>  Thu, 29 Feb 2024 14:20:24 +0800
+
 dde-calendar (5.10.1) unstable; urgency=medium
 
   * fix: remove illegal gcc option
