@@ -8,6 +8,10 @@
 #include <qvector.h>
 #include <QFutureWatcher>
 #include <QtConcurrent>
+#include <QTimerEvent>
+
+// 数据更新提示间隔，降低重复更新界面频率
+static const int REFRESH_INTERVAL = 20;
 
 LunarManager::LunarManager(QObject *parent) : QObject(parent)
     , m_dbusRequest(new DbusHuangLiRequest)
@@ -139,6 +143,10 @@ void LunarManager::queryLunarInfo(const QDate &startDate, const QDate &stopDate)
     });
     connect(w, &QFutureWatcher<QMap<QDate, CaHuangLiDayInfo>>::finished, this, [this, w](){
         m_lunarInfoMap = w->result();
+
+        if (!m_RefreshTimer.isActive()) {
+            m_RefreshTimer.start(REFRESH_INTERVAL, this);
+        }
     });
     w->setFuture(future);
 }
@@ -173,6 +181,10 @@ void LunarManager::queryFestivalInfo(const QDate &startDate, const QDate &stopDa
             for (HolidayInfo h : info.listHoliday) {
                 m_festivalDateMap[h.date] = h.status;
             }
+        }
+
+        if (!m_RefreshTimer.isActive()) {
+            m_RefreshTimer.start(REFRESH_INTERVAL, this);
         }
     });
     w->setFuture(future);
@@ -216,6 +228,18 @@ QMap<QDate, CaHuangLiDayInfo> LunarManager::getHuangLiDayMap(const QDate &startD
         iterator++;
     }
     return lunarInfoMap;
+}
+
+/**
+   @brief 处理定时任务，目前用于降低刷新农历、假日数据的频率
+ */
+void LunarManager::timerEvent(QTimerEvent *e)
+{
+    if (e->timerId() == m_RefreshTimer.timerId()) {
+        m_RefreshTimer.stop();
+        // 接收刷新事件，发送数据查询完成信号
+        Q_EMIT queryInfoFinished();
+    }
 }
 
 /**

@@ -45,14 +45,19 @@ public:
     QMap<QDate, CaHuangLiDayInfo> getHuangLiDayMap(const QDate &startDate, const QDate &stopDate);
 
 signals:
+    // 查询农历/节假日信息结束
+    void queryInfoFinished();
 
 public slots:
+
+protected:
+    void timerEvent(QTimerEvent *e) override;
 
 private:
     DbusHuangLiRequest* m_dbusRequest = nullptr;    //dbus请求实例
     QMap<QDate, CaHuangLiDayInfo> m_lunarInfoMap;   //缓存的农历数据
     QMap<QDate, int> m_festivalDateMap;     //缓存的节假日数据
-
+    QBasicTimer m_RefreshTimer;
 };
 #define gLunarManager LunarManager::getInstace()
 #endif // LUNARMANAGER_H

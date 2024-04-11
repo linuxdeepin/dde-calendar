@@ -507,6 +507,14 @@ void Calendarmainwindow::initConnection()
     //signalAccountUpdate
     connect(gAccountManager, &AccountManager::signalSyncNum, this, &Calendarmainwindow::slotShowSyncToast);
     connect(gAccountManager, &AccountManager::signalAccountUpdate, this, &Calendarmainwindow::slotAccountUpdate);
+
+    // 获取农历、工作日信息调整为异步请求DBus服务，需要每次成功读取后刷新当前显示的窗口。
+    connect(gLunarManager, &LunarManager::queryInfoFinished, this, [this](){
+        CScheduleBaseWidget *_showWidget = qobject_cast<CScheduleBaseWidget *>(m_stackWidget->currentWidget());
+        if (_showWidget) {
+            _showWidget->updateShowLunar();
+        }
+    });
 }
 
 void Calendarmainwindow::initData()
