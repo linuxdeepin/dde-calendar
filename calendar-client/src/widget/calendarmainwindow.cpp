@@ -514,6 +514,14 @@ void Calendarmainwindow::initConnection()
         if (_showWidget) {
             _showWidget->updateShowLunar();
         }
+
+        // 月视图需要单独加载
+        if (DDECalendar::CalendarMonthWindow != m_stackWidget->currentIndex()) {
+            _showWidget = qobject_cast<CScheduleBaseWidget *>(m_stackWidget->widget(DDECalendar::CalendarMonthWindow));
+            if (_showWidget) {
+                _showWidget->updateShowLunar();
+            }
+        }
     });
 }
 
