@@ -1,3 +1,9 @@
+dde-calendar (5.12.3) unstable; urgency=medium
+
+  * fix: Lunar info is not updated on startup.(Bug: 247453)
+
+ -- renbin <renbin@uinontech.com>  Fri, 12 Apr 2024 14:51:38 +0800
+
 dde-calendar (5.12.2) unstable; urgency=medium
 
   * chore: update changelog(5.12.2)
