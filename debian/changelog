@@ -1,3 +1,9 @@
+dde-calendar (5.12.4) unstable; urgency=medium
+
+  * fix: package installation failure and stuck.
+
+ -- wangrong <wangrong@uniontech.com>  Mon, 22 Apr 2024 11:14:00 +0800
+
 dde-calendar (5.12.3) unstable; urgency=medium
 
   * fix: Lunar info is not updated on startup.(Bug: 247453)

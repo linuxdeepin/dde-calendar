@@ -1,4 +1,5 @@
 #!/bin/bash
+
 #日历后端服务进程名称
 calendarServiceName="dde-calendar-service"
 #获取日历后端进程id
@@ -18,16 +19,19 @@ sysTimer="com.dde.calendarserver.calendar.timer"
 #根据已登陆的用户开启后端定时任务
 for userName in ${userNameArr[@]} ; do
     #获取服务状态
-    serviceStatus=$(runuser -l ${userName} -c "XDG_RUNTIME_DIR=\"/run/user/$(id -u ${userName})\" systemctl --user is-active ${sysTimer}")
+    serviceStatus=$(runuser -f -l ${userName} -c "XDG_RUNTIME_DIR=\"/run/user/$(id -u ${userName})\" systemctl --user is-active ${sysTimer}")
     #活跃的关键字
     activeStr="active"
     #如果为活跃的则表示服务已开启
     if [ "$serviceStatus" = "$activeStr" ];then
         #如果服务已经启动则重新加载
-        runuser -l ${userName} -c "XDG_RUNTIME_DIR=\"/run/user/$(id -u ${userName})\" systemctl --user daemon-reload ||true "
+        runuser -f -l ${userName} -c "XDG_RUNTIME_DIR=\"/run/user/$(id -u ${userName})\" systemctl --user daemon-reload"
     else
         #如果服务没有启动则设置开启
-        runuser -l ${userName} -c "XDG_RUNTIME_DIR=\"/run/user/$(id -u ${userName})\" systemctl --user enable ${sysTimer}"
-        runuser -l ${userName} -c "XDG_RUNTIME_DIR=\"/run/user/$(id -u ${userName})\" systemctl --user start ${sysTimer}"
+        runuser -f -l ${userName} -c "XDG_RUNTIME_DIR=\"/run/user/$(id -u ${userName})\" systemctl --user enable ${sysTimer}"
+        runuser -f -l ${userName} -c "XDG_RUNTIME_DIR=\"/run/user/$(id -u ${userName})\" systemctl --user start ${sysTimer}"
     fi
 done
+
+#确保软件包安装不会失败
+exit 0
