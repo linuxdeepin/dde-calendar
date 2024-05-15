@@ -13,6 +13,7 @@
 #include "alarm.h"
 #include "icalformat.h"
 #include "memorycalendar.h"
+#include "ddlogService.h"
 
 #include <QStandardPaths>
 #include <QDir>
@@ -21,6 +22,8 @@
 #include <QSqlError>
 #include <QDateTime>
 #include <QJsonArray>
+
+using namespace DDLOG_SERVICE;
 
 const QString localDBName = "localAccount.db";
 
@@ -321,7 +324,7 @@ DSchedule::List DDataBaseManagement::queryOldJobData(QSqlDatabase &db, const boo
             if (m_typeMap.contains(type)) {
                 schedule->setScheduleTypeID(m_typeMap[type]);
             } else {
-                qWarning() << " can not find type:" << type;
+                qCWarning(calendar_service) << " can not find type:" << type;
             }
             scheduleList.append(schedule);
         }

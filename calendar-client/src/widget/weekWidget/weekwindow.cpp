@@ -9,6 +9,7 @@
 #include "weekview.h"
 #include "schedulesearchview.h"
 #include "todaybutton.h"
+#include "ddlogClient.h"
 #include <scheduledatamanage.h>
 
 #include <DPalette>
@@ -19,6 +20,8 @@
 #include <QHBoxLayout>
 #include <QMouseEvent>
 #include <QShortcut>
+
+using namespace DDLOG_CLIENT;
 
 DGUI_USE_NAMESPACE
 CWeekWindow::CWeekWindow(QWidget *parent)
@@ -292,7 +295,7 @@ void CWeekWindow::updateShowDate(const bool isUpdateBar)
     m_stopDate = _weekShowData.last();
     //如果时间无效则打印log
     if (m_startDate.isNull() || m_stopDate.isNull()) {
-        qWarning() << "week start or stop date error";
+        qCWarning(calendar_client) << "week start or stop date error";
     }
     //设置全天和非全天显示时间范围
     m_scheduleView->setRange(m_startDate, m_stopDate);

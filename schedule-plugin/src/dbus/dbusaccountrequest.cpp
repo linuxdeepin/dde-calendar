@@ -3,8 +3,11 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "dbusaccountrequest.h"
+#include "ddlogPlugin.h"
 
 #include <QDBusReply>
+
+using namespace DDLOG_PLUGNI;
 
 DbusAccountRequest::DbusAccountRequest(const QString &path, const QString &interface, QObject *parent)
     : DbusRequestBase(path, interface, QDBusConnection::sessionBus(), parent)
@@ -39,7 +42,7 @@ DScheduleType::List DbusAccountRequest::getScheduleTypeList()
     pCall.waitForFinished();
     QDBusMessage reply = pCall.reply();
     if (reply.type() != QDBusMessage::ReplyMessage) {
-        qWarning() << "getScheduleTypeList error ," << reply;
+        qCWarning(calendar_plugin) << "getScheduleTypeList error ," << reply;
         return typeList;
     }
     QDBusReply<QString> scheduleReply = reply;
@@ -118,7 +121,7 @@ QString DbusAccountRequest::createSchedule(const DSchedule::Ptr &scheduleInfo)
     pCall.waitForFinished();
     QDBusMessage reply = pCall.reply();
     if (reply.type() != QDBusMessage::ReplyMessage) {
-        qWarning() << "getScheduleTypeByID error ," << reply;
+        qCWarning(calendar_plugin) << "getScheduleTypeByID error ," << reply;
         return nullptr;
     }
     QDBusReply<QString> scheduleReply = reply;
@@ -145,7 +148,7 @@ DSchedule::Ptr DbusAccountRequest::getScheduleByID(const QString &scheduleID)
     pCall.waitForFinished();
     QDBusMessage reply = pCall.reply();
     if (reply.type() != QDBusMessage::ReplyMessage) {
-        qWarning() << "getScheduleTypeByID error ," << reply;
+        qCWarning(calendar_plugin) << "getScheduleTypeByID error ," << reply;
         return nullptr;
     }
     QDBusReply<QString> scheduleReply = reply;
@@ -193,7 +196,7 @@ DSchedule::Map DbusAccountRequest::querySchedulesWithParameter(const DScheduleQu
     pCall.waitForFinished();
     QDBusMessage reply = pCall.reply();
     if (reply.type() != QDBusMessage::ReplyMessage) {
-        qWarning() << "getSysColors error ," << reply;
+        qCWarning(calendar_plugin) << "getSysColors error ," << reply;
         return scheduleMap;
     }
     QDBusReply<QString> scheduleReply = reply;
@@ -209,7 +212,7 @@ DTypeColor::List DbusAccountRequest::getSysColors()
     pCall.waitForFinished();
     QDBusMessage reply = pCall.reply();
     if (reply.type() != QDBusMessage::ReplyMessage) {
-        qWarning() << "getSysColors error ," << reply;
+        qCWarning(calendar_plugin) << "getSysColors error ," << reply;
         return colorList;
     }
     QDBusReply<QString> scheduleReply = reply;
@@ -224,7 +227,7 @@ void DbusAccountRequest::slotCallFinished(CDBusPendingCallWatcher *call)
     QString msg = "";
 
     if (call->isError()) {
-        qWarning() << call->reply().member() << call->error().message();
+        qCWarning(calendar_plugin) << call->reply().member() << call->error().message();
         ret = 1;
     } else {
         QDBusPendingReply<QVariant> reply = *call;
@@ -235,7 +238,7 @@ void DbusAccountRequest::slotCallFinished(CDBusPendingCallWatcher *call)
             if (DAccount::fromJsonString(ptr, str.toString())) {
                 emit signalGetAccountInfoFinish(ptr);
             } else {
-                qWarning() << "AccountInfo Parsing failed!";
+                qCWarning(calendar_plugin) << "AccountInfo Parsing failed!";
                 ret = 2;
             }
         } else if (call->getmember() == "getScheduleTypeList") {
@@ -243,7 +246,7 @@ void DbusAccountRequest::slotCallFinished(CDBusPendingCallWatcher *call)
             if (DScheduleType::fromJsonListString(stList, str.toString())) {
                 emit signalGetScheduleTypeListFinish(stList);
             } else {
-                qWarning() << "ScheduleTypeList Parsing failed!";
+                qCWarning(calendar_plugin) << "ScheduleTypeList Parsing failed!";
                 ret = 2;
             }
         } else if (call->getmember() == "querySchedulesWithParameter") {

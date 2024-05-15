@@ -5,6 +5,9 @@
 #include "dscheduledatamanager.h"
 
 #include "accountmanager.h"
+#include "ddlogPlugin.h"
+
+using namespace DDLOG_PLUGNI;
 
 DScheduleDataManager *DScheduleDataManager::getInstance()
 {
@@ -16,7 +19,7 @@ QString DScheduleDataManager::createSchedule(const DSchedule::Ptr &schedule)
 {
     AccountItem::Ptr account = gAccounManager->getLocalAccountItem();
     if (account.isNull()) {
-        qWarning() << "account is null";
+        qCWarning(calendar_plugin) << "account is null";
         return QString();
     }
     return account->createSchedule(schedule);
@@ -27,7 +30,7 @@ DSchedule::Ptr DScheduleDataManager::queryScheduleByScheduleID(const QString &sc
     DSchedule::Ptr schedule;
     AccountItem::Ptr account = gAccounManager->getLocalAccountItem();
     if (account.isNull()) {
-        qWarning() << "account is null";
+        qCWarning(calendar_plugin) << "account is null";
         return nullptr;
     }
     return account->getScheduleByID(scheduleID);
@@ -37,7 +40,7 @@ bool DScheduleDataManager::deleteScheduleByScheduleID(const QString &scheduleID)
 {
     AccountItem::Ptr account = gAccounManager->getLocalAccountItem();
     if (account.isNull()) {
-        qWarning() << "account is null";
+        qCWarning(calendar_plugin) << "account is null";
         return false;
     }
     account->deleteScheduleByID(scheduleID);
@@ -48,7 +51,7 @@ bool DScheduleDataManager::updateSchedule(const DSchedule::Ptr &schedule)
 {
     AccountItem::Ptr account = gAccounManager->getLocalAccountItem();
     if (account.isNull()) {
-        qWarning() << "account is null";
+        qCWarning(calendar_plugin) << "account is null";
         return false;
     }
     account->updateSchedule(schedule);

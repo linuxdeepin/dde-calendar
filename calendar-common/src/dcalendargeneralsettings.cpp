@@ -3,11 +3,14 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "dcalendargeneralsettings.h"
+#include "ddlogCommon.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonParseError>
 #include <QDebug>
+
+using namespace DDLOG_COMMON;
 
 DCalendarGeneralSettings::DCalendarGeneralSettings()
     : m_firstDayOfWeek(Qt::Sunday)
@@ -61,7 +64,7 @@ bool DCalendarGeneralSettings::fromJsonString(Ptr &cgSet, const QString &jsonStr
     QJsonParseError jsonError;
     QJsonDocument jsonDoc(QJsonDocument::fromJson(jsonStr.toLocal8Bit(), &jsonError));
     if (jsonError.error != QJsonParseError::NoError) {
-        qWarning() << "error:" << jsonError.errorString();
+        qCWarning(calendar_common) << "error:" << jsonError.errorString();
         return false;
     }
 

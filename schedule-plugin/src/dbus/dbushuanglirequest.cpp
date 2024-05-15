@@ -3,7 +3,10 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "dbushuanglirequest.h"
+#include "ddlogPlugin.h"
 #include <QDebug>
+
+using namespace DDLOG_PLUGNI;
 
 DbusHuangLiRequest::DbusHuangLiRequest(QObject *parent)
     : DbusRequestBase("/com/deepin/dataserver/Calendar/HuangLi", "com.deepin.dataserver.Calendar.HuangLi", QDBusConnection::sessionBus(), parent)
@@ -72,7 +75,7 @@ void DbusHuangLiRequest::getLunarMonthCalendar(quint32 year, quint32 month, bool
 void DbusHuangLiRequest::slotCallFinished(CDBusPendingCallWatcher *call)
 {
     if (call->isError()) {
-        qWarning() << call->reply().member() << call->error().message();
+        qCWarning(calendar_plugin) << call->reply().member() << call->error().message();
         return;
     }
 

@@ -3,6 +3,7 @@ project(commondata)
 
 # Find the library
 find_package(PkgConfig REQUIRED)
+find_package(DtkCore REQUIRED)
 find_package(Qt5 COMPONENTS
     Core
     DBus
@@ -25,6 +26,7 @@ add_library(${PROJECT_NAME} STATIC ${BASESTRUCT_SRCS} ${BASESTRUCT_SRCS_HUANGLI}
 target_include_directories(${PROJECT_NAME} PUBLIC ../3rdparty/kcalendarcore/src)
 
 target_link_libraries(${PROJECT_NAME}
+    ${DtkCore_LIBRARIES}
     Qt5::Core
     Qt5::DBus
     Qt5::Sql

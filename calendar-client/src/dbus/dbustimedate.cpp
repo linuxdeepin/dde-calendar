@@ -3,12 +3,15 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "dbustimedate.h"
+#include "ddlogClient.h"
 
 #include <QDBusPendingReply>
 #include <QDBusReply>
 #include <QtDebug>
 #include <QDBusInterface>
 #include <QElapsedTimer>
+
+using namespace DDLOG_CLIENT;
 
 #define NETWORK_DBUS_INTEERFACENAME "com.deepin.daemon.Timedate"
 #define NETWORK_DBUS_NAME "com.deepin.daemon.Timedate"
@@ -23,8 +26,8 @@ DBusTimedate::DBusTimedate(QObject *parent)
                                                "org.freedesktop.DBus.Properties",
                                                QLatin1String("PropertiesChanged"), this,
                                                SLOT(propertiesChanged(QDBusMessage)))) {
-        qWarning() << "the PropertiesChanged was fail!";
-        qWarning() << this->lastError();
+        qCWarning(calendar_client) << "the PropertiesChanged was fail!";
+        qCWarning(calendar_client) << this->lastError();
     }
 
     m_hasDateTimeFormat = getHasDateTimeFormat();

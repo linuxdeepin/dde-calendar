@@ -4,11 +4,14 @@
 
 #include "pinyinsearch.h"
 #include "pinyindict.h"
+#include "ddlogService.h"
 
 #include <QRegularExpression>
 #include <QFile>
 #include <QTextStream>
 #include <QDebug>
+
+using namespace DDLOG_SERVICE;
 
 pinyinsearch *pinyinsearch::m_pinyinsearch = nullptr;
 QMap<int, QString> pinyinsearch::pinyinDictVector {};
@@ -80,7 +83,7 @@ void pinyinsearch::initDict()
     QFile file(kDictFile);
 
     if (!file.open(QIODevice::ReadOnly)) {
-        qWarning() << "open dictFile error :" << file.error();
+        qCWarning(calendar_service) << "open dictFile error :" << file.error();
         return;
     }
 

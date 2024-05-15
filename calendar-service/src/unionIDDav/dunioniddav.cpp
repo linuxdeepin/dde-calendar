@@ -9,6 +9,7 @@
 #include "units.h"
 #include "ddatabase.h"
 #include "dunioniddav_p.h"
+#include "ddlogService.h"
 
 #include <QDBusConnection>
 #include <QSqlError>
@@ -19,6 +20,8 @@
 #include <QMutex>
 
 #include <unistd.h>
+
+using namespace DDLOG_SERVICE;
 
 /**
  * @brief The SqlTransactionLocker class 用于数据库事务相关
@@ -229,7 +232,7 @@ void DUIDSynDataWorker::startUpdate()
     //删除临时文件
     mSync.deleteTmpData(fileManger);
 
-    qInfo() << "同步完成";
+    qCInfo(calendar_service) << "同步完成";
     if (errCode == 0) {
         //发送数据更新消息
         emit signalUpdate(updateType);
@@ -253,7 +256,7 @@ DUnionIDDav::~DUnionIDDav()
 
 void DUnionIDDav::syncData(QString accountId, QString accountName, int accountState, DDataSyncBase::SyncTypes syncType)
 {
-    qInfo() << "DUnionIDDav 同步数据";
+    qCInfo(calendar_service) << "DUnionIDDav 同步数据";
 
     d->syncData(accountId, accountName, accountState, syncType);
 }
@@ -273,7 +276,7 @@ int SyncStack::downloadUidData(bool &isInitSyncData, SyncFileManage &fileManger)
     if (!db_sync.open()) {
         return -1;
     }
-    qInfo() << "初始化表结构";
+    qCInfo(calendar_service) << "初始化表结构";
 
     SqliteQuery query(dbname_sync_thread);
 
@@ -298,19 +301,19 @@ int SyncStack::downloadUidData(bool &isInitSyncData, SyncFileManage &fileManger)
 
     query.exec("select count(0) from scheduleType");
     if (query.next() && query.value(0).toInt() == 0) {
-        qInfo() << "没有数据则设置：默认日程类型、颜色、默认通用设置";
+        qCInfo(calendar_service) << "没有数据则设置：默认日程类型、颜色、默认通用设置";
         SyncAccount accountDb(dbname_sync_thread, accountId);
 
-        qInfo() << "默认日程类型";
+        qCInfo(calendar_service) << "默认日程类型";
         if (!accountDb.defaultScheduleType())
             return -1;
 
-        qInfo() << "默认颜色";
+        qCInfo(calendar_service) << "默认颜色";
         if (!accountDb.defaultTypeColor())
             return -1;
 
         if (accountState & DAccount::Account_Setting) {
-            qInfo() << "默认通用设置";
+            qCInfo(calendar_service) << "默认通用设置";
             if(needUpdateSettingValue()) {
                 if (!syncIntoTable("calendargeneralsettings", dbname_manager_thread, dbname_sync_thread))
                     return -1;
@@ -325,7 +328,7 @@ int SyncStack::downloadUidData(bool &isInitSyncData, SyncFileManage &fileManger)
 
 int SyncStack::loadToTmp()
 {
-    qInfo() << "将本地A的uploadTask同步到刚刚下载的B里";
+    qCInfo(calendar_service) << "将本地A的uploadTask同步到刚刚下载的B里";
     if(accountState & DAccount::Account_Calendar) {
         SqliteQuery query(dbname_account_thread);
         query.exec("select taskID,uploadType,uploadObject,objectID  from uploadTask");
@@ -340,40 +343,40 @@ int SyncStack::loadToTmp()
             case DUploadTaskData::Create:
             case DUploadTaskData::Modify:
                 if (!replaceIntoRecord(table_name, selectRecord(table_name, key_name, key_value, dbname_account_thread), dbname_sync_thread)){
-                    qWarning()<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
+                    qCWarning(calendar_service)<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
                     return -1;
                 }
                 break;
             case DUploadTaskData::Delete:
                 if (!deleteTableLine(table_name, key_name, key_value, dbname_sync_thread)){
-                    qWarning()<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
+                    qCWarning(calendar_service)<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
                     return -1;
                 }
                 break;
             }
         }
 
-        qInfo() << "清空uploadTask";
+        qCInfo(calendar_service) << "清空uploadTask";
         if (!deleteTable("uploadTask", dbname_account_thread)){
-            qWarning()<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
+            qCWarning(calendar_service)<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
             return -1;
         }
     }
 
     if (accountState & DAccount::Account_Setting) {
 
-        qInfo() << "同步通用设置";
+        qCInfo(calendar_service) << "同步通用设置";
         if(needUpdateSettingValue()) {
             QDateTime managerDate = selectValue("vch_value", "calendargeneralsettings", "vch_key", "dt_update", dbname_manager_thread).toDateTime();
             QDateTime syncDate = selectValue("vch_value", "calendargeneralsettings", "vch_key", "dt_update", dbname_sync_thread).toDateTime();
             if (managerDate > syncDate)
                 if (!syncIntoTable("calendargeneralsettings", dbname_manager_thread, dbname_sync_thread)){
-                    qWarning()<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
+                    qCWarning(calendar_service)<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
                     return -1;
                 }
             if (syncDate > managerDate)
                 if (!syncIntoTable("calendargeneralsettings", dbname_sync_thread, dbname_manager_thread)){
-                    qWarning()<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
+                    qCWarning(calendar_service)<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
                     return -1;
                 }
         }
@@ -402,27 +405,27 @@ bool SyncStack::needUpdateSettingValue() {
 int SyncStack::tmpToLoad(DDataSyncBase::UpdateTypes &updateType)
 {
     if (accountState & DAccount::Account_Calendar) {
-        qInfo() << "更新schedules、schedules、typeColor";
+        qCInfo(calendar_service) << "更新schedules、schedules、typeColor";
         if (!syncIntoTable("schedules", dbname_sync_thread, dbname_account_thread)){
-            qWarning()<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
+            qCWarning(calendar_service)<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
             return -1;
         }
         if (!syncIntoTable("scheduleType", dbname_sync_thread, dbname_account_thread)){
-            qWarning()<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
+            qCWarning(calendar_service)<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
             return -1;
         }
         if (!syncIntoTable("typeColor", dbname_sync_thread, dbname_account_thread)){
-            qWarning()<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
+            qCWarning(calendar_service)<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
             return -1;
         }
         updateType = DUnionIDDav::Update_Schedule | DUnionIDDav::Update_ScheduleType;
     }
 
     if (accountState & DAccount::Account_Setting) {
-        qInfo() << "更新通用设置";
+        qCInfo(calendar_service) << "更新通用设置";
         if(needUpdateSettingValue()) {
             if (!syncIntoTable("calendargeneralsettings", dbname_sync_thread, dbname_manager_thread)){
-                qWarning()<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
+                qCWarning(calendar_service)<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
                 return -1;
             }
         }
@@ -466,7 +469,7 @@ bool SyncStack::syncIntoTable(const QString &table_name, const QString &connecti
     SqliteQuery source(QSqlDatabase::database(connection_name_source));
     SqliteQuery target(QSqlDatabase::database(connection_name_target));
     if (!target.exec(" delete from " + table_name)){
-        qWarning() << target.lastError() <<"table_name:"<<table_name;
+        qCWarning(calendar_service) << target.lastError() <<"table_name:"<<table_name;
         return false;
     }
     source.exec(" select * from " + table_name);
@@ -474,7 +477,7 @@ bool SyncStack::syncIntoTable(const QString &table_name, const QString &connecti
         target.prepare("replace into " + table_name + " values(" + prepareQuest(source.record().count()) + ")");
         prepareBinds(target, source.record());
         if (!target.exec()) {
-            qWarning() << target.lastError();
+            qCWarning(calendar_service) << target.lastError();
             return false;
         }
     }
@@ -532,7 +535,7 @@ bool SyncStack::deleteTable(const QString &table_name, const QString &connection
 {
     SqliteQuery query(connection_name);
     if (!query.exec("delete from " + table_name)) {
-        qInfo() << query.lastError();
+        qCInfo(calendar_service) << query.lastError();
         return false;
     }
     return true;
@@ -584,7 +587,7 @@ bool SyncStack::repairTable(const QString &table_name, const QString &connection
                                 .arg(sql_type)
                                 .arg(default_value);
         if (!query_server.exec(alter_sql)) {
-            qInfo() << query_server.lastError();
+            qCInfo(calendar_service) << query_server.lastError();
             return false;
         }
     }

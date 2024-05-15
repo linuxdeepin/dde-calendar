@@ -5,8 +5,11 @@
 #include "dsyncdatafactory.h"
 
 #include "dunioniddav.h"
+#include "ddlogService.h"
 
 #include <QDebug>
+
+using namespace DDLOG_SERVICE;
 
 DSyncDataFactory::DSyncDataFactory()
 {
@@ -18,7 +21,7 @@ DDataSyncBase *DSyncDataFactory::createDataSync(const DAccount::Ptr &account)
     switch (account->accountType()) {
     case DAccount::Account_UnionID:
         syncBase = new DUnionIDDav();
-        qInfo() << "创建同步任务";
+        qCInfo(calendar_service) << "创建同步任务";
         break;
     default:
         syncBase = nullptr;

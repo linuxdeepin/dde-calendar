@@ -12,6 +12,7 @@
 #include "configsettings.h"
 #include "accountmanager.h"
 #include "units.h"
+#include "ddlogClient.h"
 
 #include <DHiDPIHelper>
 #include <DFontSizeManager>
@@ -26,6 +27,8 @@
 #include <QPainter>
 #include <QBitmap>
 #include <QTimer>
+
+using namespace DDLOG_CLIENT;
 
 const int  dialog_width = 468;      //对话框宽度
 DGUI_USE_NAMESPACE
@@ -590,7 +593,7 @@ void CScheduleDlg::signalLogout(DAccount::Type type)
     if (DAccount::Account_UnionID == type && gUosAccountItem == m_accountItem) {
         if (m_type) {
             //TODO：弹窗提示？
-            qInfo() << m_accountComBox->currentText() << "帐户已退出";
+            qCInfo(calendar_client) << m_accountComBox->currentText() << "帐户已退出";
             getButtons()[1]->setEnabled(false);
             m_accountItem.reset(nullptr);
         } else {

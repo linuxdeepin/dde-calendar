@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "daccount.h"
+#include "ddlogCommon.h"
 
 #include "units.h"
 
@@ -10,6 +11,8 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QDebug>
+
+using namespace DDLOG_COMMON;
 
 DAccount::DAccount(DAccount::Type type)
     : m_displayName("")
@@ -167,7 +170,7 @@ void DAccount::setDtUpdate(const QDateTime &dtUpdate)
 bool DAccount::toJsonString(const DAccount::Ptr &account, QString &jsonStr)
 {
     if (account.isNull()) {
-        qWarning() << "hold a reference to a null pointer.";
+        qCWarning(calendar_common) << "hold a reference to a null pointer.";
         return false;
     }
     QJsonObject rootObj;
@@ -202,7 +205,7 @@ bool DAccount::fromJsonString(Ptr &account, const QString &jsonStr)
     QJsonParseError jsonError;
     QJsonDocument jsonDoc(QJsonDocument::fromJson(jsonStr.toLocal8Bit(), &jsonError));
     if (jsonError.error != QJsonParseError::NoError) {
-        qWarning() << "error:" << jsonError.errorString();
+        qCWarning(calendar_common) << "error:" << jsonError.errorString();
         return false;
     }
     QJsonObject rootObj = jsonDoc.object();
@@ -283,7 +286,7 @@ bool DAccount::fromJsonListString(List &accountList, const QString &jsonStr)
     QJsonParseError jsonError;
     QJsonDocument jsonDoc(QJsonDocument::fromJson(jsonStr.toLocal8Bit(), &jsonError));
     if (jsonError.error != QJsonParseError::NoError) {
-        qWarning() << "error:" << jsonError.errorString();
+        qCWarning(calendar_common) << "error:" << jsonError.errorString();
         return false;
     }
     QJsonObject rootObj = jsonDoc.object();
@@ -296,7 +299,7 @@ bool DAccount::fromJsonListString(List &accountList, const QString &jsonStr)
             if (fromJsonString(account, strAcc)) {
                 accountList.append(account);
             } else {
-                qWarning() << "format failed:" << strAcc;
+                qCWarning(calendar_common) << "format failed:" << strAcc;
             }
         }
     }
@@ -388,7 +391,7 @@ void DAccount::syncFreqFromJsonString(const DAccount::Ptr &account, const QStrin
     QJsonParseError jsonError;
     QJsonDocument jsonDoc(QJsonDocument::fromJson(syncFreqStr.toLocal8Bit(), &jsonError));
     if (jsonError.error != QJsonParseError::NoError) {
-        qWarning() << "error:" << jsonError.errorString();
+        qCWarning(calendar_common) << "error:" << jsonError.errorString();
         return;
     }
     QJsonObject rootObj = jsonDoc.object();

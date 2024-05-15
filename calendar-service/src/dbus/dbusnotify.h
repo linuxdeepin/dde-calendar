@@ -17,13 +17,15 @@ public:
 
         int notifyid = -1;
         if (QDBusMessage::ReplyMessage == reply.type()) {
-            qDebug() << reply.type() << reply.errorName() << reply.errorMessage();
+            QLoggingCategory calendar_service("org.deepin.dde.calendar.service");
+            qCDebug(calendar_service) << reply.type() << reply.errorName() << reply.errorMessage();
             QDBusReply<quint32> id = reply;
             if (id.isValid()) {
                 notifyid = id.value();
             }
         } else {
-            qDebug() << reply.type() << reply.errorName() << reply.errorMessage();
+            QLoggingCategory calendar_service("org.deepin.dde.calendar.service");
+            qCDebug(calendar_service) << reply.type() << reply.errorName() << reply.errorMessage();
         }
         return notifyid;
     }

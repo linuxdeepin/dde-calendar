@@ -9,6 +9,8 @@
 #include "accessible/accessible.h"
 #include "tabletconfig.h"
 #include "schedulemanager.h"
+#include "loggerClient.h"
+#include "ddlogClient.h"
 
 #include <DApplication>
 #include <DLog>
@@ -19,10 +21,14 @@
 #include <QDBusConnection>
 #include <QElapsedTimer>
 
+using namespace DDLOG_CLIENT;
 DWIDGET_USE_NAMESPACE
 
 int main(int argc, char *argv[])
 {
+    MLogger();// 日志处理要放在app之前，否则QApplication
+              // 内部可能进行了日志打印，导致环境变量设置不生效
+
     QElapsedTimer timer;
     timer.start();
     QElapsedTimer ttimer;
@@ -45,6 +51,8 @@ int main(int argc, char *argv[])
 #endif
 
     app->setAutoActivateWindows(true);
+
+
     //如果dtk版本为5.2.0.1以上则使用新的dtk接口
 #if (DTK_VERSION > DTK_VERSION_CHECK(5, 2, 0, 1))
     //设置为-1将永久等待
@@ -74,30 +82,44 @@ int main(int argc, char *argv[])
 
         app->setAutoActivateWindows(true);
 
-        qInfo() << "main config" << timer.elapsed();
+        qCInfo(calendar_client) << "main config" << timer.elapsed();
         timer.restart();
 
         bool isOk = false;
         int viewtype = CConfigSettings::getInstance()->value("base.view").toInt(&isOk);
         if (!isOk)
             viewtype = 2;
+
+        // DtkCore 5.6.8版本，支持journal方式日志存储，
+        #if (DTK_VERSION >= DTK_VERSION_CHECK(5, 6, 8, 0))
+            DLogManager::registerJournalAppender();// 开启journal日志存储
+        #ifdef QT_DEBUG
+            DLogManager::registerConsoleAppender();
+        #endif
+        // 为保证兼容性，在该版本以下，自研应用应采用原有log文件日志输出方式保存日志
+        #else
+            DLogManager::registerConsoleAppender();
+            DLogManager::registerFileAppender();
+        #endif
+
         DLogManager::registerConsoleAppender();
-        DLogManager::registerFileAppender();
+
         //获取应用配置
         DApplicationSettings applicationset(app);
 
-        qInfo() << "main viewtype" << timer.elapsed();
+        qCInfo(calendar_client) << "main viewtype" << timer.elapsed();
         timer.restart();
 
         //为了与老版本配置兼容
         Calendarmainwindow ww(viewtype - 1);
 
-        qInfo() << "main created" << timer.elapsed();
+        qCInfo(calendar_client) << "main created" << timer.elapsed();
+        qCWarning(calendar_client) << "!!!!!!!!!!!!!!";
         timer.restart();
         ww.show();
 
-        qInfo() << "main shown" << timer.elapsed();
-        qInfo() << "main" << ttimer.elapsed();
+        qCInfo(calendar_client) << "main shown" << timer.elapsed();
+        qCInfo(calendar_client) << "main" << ttimer.elapsed();
         return app->exec();
     }
     return 0;

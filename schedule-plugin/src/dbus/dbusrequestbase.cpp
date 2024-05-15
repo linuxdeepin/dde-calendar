@@ -3,14 +3,17 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "dbusrequestbase.h"
+#include "ddlogPlugin.h"
 #include <QDebug>
+
+using namespace DDLOG_PLUGNI;
 
 DbusRequestBase::DbusRequestBase(const QString &path, const QString &interface, const QDBusConnection &connection, QObject *parent)
     : QDBusAbstractInterface(DBUS_SERVER_NAME, path, interface.toStdString().c_str(), connection, parent)
 {
     //关联后端dbus触发信号
     if (!QDBusConnection::sessionBus().connect(this->service(), this->path(), this->interface(), "", this, SLOT(slotDbusCall(QDBusMessage)))) {
-        qWarning() << "the connection was fail!"
+        qCWarning(calendar_plugin) << "the connection was fail!"
                    << "path: " << this->path() << "interface: " << this->interface();
     };
 }

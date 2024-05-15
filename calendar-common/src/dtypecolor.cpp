@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "dtypecolor.h"
+#include "ddlogCommon.h"
 
 #include "units.h"
 
@@ -10,6 +11,8 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QDebug>
+
+using namespace DDLOG_COMMON;
 
 DTypeColor::DTypeColor()
     : m_colorID("")
@@ -72,7 +75,7 @@ DTypeColor::List DTypeColor::fromJsonString(const QString &colorJson)
     QJsonParseError jsonError;
     QJsonDocument jsonDoc(QJsonDocument::fromJson(colorJson.toLocal8Bit(), &jsonError));
     if (jsonError.error != QJsonParseError::NoError) {
-        qWarning() << "error:" << jsonError.errorString();
+        qCWarning(calendar_common) << "error:" << jsonError.errorString();
         return colorList;
     }
     QJsonArray rootArr = jsonDoc.array();

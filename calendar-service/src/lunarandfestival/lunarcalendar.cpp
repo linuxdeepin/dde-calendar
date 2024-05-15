@@ -139,7 +139,7 @@ void LunarCalendar::calcLeapMonth()
         }
         if (i < 14) {
             // 找到闰月
-            //qDebug()<<QString("找到闰月 %1").arg(i);
+            //qCDebug(service)<<QString("找到闰月 %1").arg(i);
             Months[i].IsLeap = true;
             // 对后面的农历月调整月名
             while (i < 14) {

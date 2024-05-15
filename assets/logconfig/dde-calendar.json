@@ -1,0 +1,32 @@
+{
+  "name": "dde-calendar",
+  "group": "",
+  "submodules": [
+    {
+      "name": "dde-calendar.client",
+      "filter": "",
+      "exec": "/usr/bin/dde-calendar",
+      "logType": "journal",
+      "logPath": ""
+    },
+    {
+      "name": "dde-calendar.service",
+      "filter": "",
+      "exec": "/usr/libexec/deepin-daemon/dde-calendar-service",
+      "logType": "journal",
+      "logPath":  ""
+    },
+    {
+      "name": "dde-calendar.plugin",
+      "filter": "",
+      "exec": "/usr/lib/deepin-aiassistant/serivce-plugins/libuosschedulex-plugin.so",
+      "logType": "journal",
+      "logPath":  ""
+    }
+   ],
+   "visible": 1,
+   "version": "V1.0"
+}
+
+
+

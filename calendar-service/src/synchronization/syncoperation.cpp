@@ -3,7 +3,9 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "syncoperation.h"
+#include "ddlogService.h"
 
+using namespace DDLOG_SERVICE;
 
 Syncoperation::Syncoperation(QObject *parent)
     : QObject(parent)
@@ -15,12 +17,12 @@ Syncoperation::Syncoperation(QObject *parent)
                                                "org.freedesktop.DBus.Properties",
                                                QLatin1String("PropertiesChanged"), this,
                                                SLOT(onPropertiesChanged(QString, QVariantMap, QStringList)))) {
-        qWarning() << "the PropertiesChanged was fail!";
+        qCWarning(calendar_service) << "the PropertiesChanged was fail!";
     }
 
     if (!QDBusConnection::sessionBus().connect(m_syncInter->service(), m_syncInter->path(), m_syncInter->interface(),
                                                "", this, SLOT(slotDbusCall(QDBusMessage)))) {
-        qWarning() << "the connection was fail!" << "path: " << m_syncInter->path() << "interface: " << m_syncInter->interface();
+        qCWarning(calendar_service) << "the connection was fail!" << "path: " << m_syncInter->path() << "interface: " << m_syncInter->interface();
     };
 }
 
@@ -47,7 +49,7 @@ SyncoptResult Syncoperation::optUpload(const QString &key)
     QDBusPendingReply<QByteArray> reply = m_syncInter->Upload(key);
     reply.waitForFinished();
     if (reply.error().message().isEmpty()) {
-        qInfo() << "Upload success!";
+        qCInfo(calendar_service) << "Upload success!";
         //解析上传成功数据的元信息ID值 ,这个ID值暂时没用，不解析出来
 //        QJsonObject json;
 //        json = QJsonDocument::fromJson(reply).object();
@@ -55,14 +57,14 @@ SyncoptResult Syncoperation::optUpload(const QString &key)
 //            QJsonObject subJsonObject = json.value(QString("data")).toObject();
 //            if (subJsonObject.contains(QString("id"))) {
 //                result.data = subJsonObject.value(QString("id")).toString();
-//                qInfo() << result.data;
+//                qCInfo(calendar_service) << result.data;
 //            }
 //        }
         result.data = reply.value();
         result.ret = true;
         result.error_code = SYNC_No_Error;
     } else {
-        qWarning() << "Upload failed:" << reply.error().message();
+        qCWarning(calendar_service) << "Upload failed:" << reply.error().message();
         result.ret = false;
         QJsonDocument jsonDocument = QJsonDocument::fromJson(reply.error().message().toLocal8Bit().data());
         QJsonObject obj = jsonDocument.object();
@@ -80,18 +82,18 @@ SyncoptResult Syncoperation::optDownload(const QString &key, const QString &path
     QDBusPendingReply<QString> reply = m_syncInter->Download(key, path);
     reply.waitForFinished();
     if (reply.error().message().isEmpty()) {
-        qInfo() << "Download success!";
+        qCInfo(calendar_service) << "Download success!";
         result.data = reply.value();
         result.ret = true;
         result.error_code = SYNC_No_Error;
     } else {
-        qWarning() << "Download failed:" << reply.error().message();
+        qCWarning(calendar_service) << "Download failed:" << reply.error().message();
         result.ret = false;
         QJsonDocument jsonDocument = QJsonDocument::fromJson(reply.error().message().toLocal8Bit().data());
         QJsonObject obj = jsonDocument.object();
         if (obj.contains(QString("code"))) {
             result.error_code = obj.value(QString("code")).toInt();
-            qWarning() << result.error_code;
+            qCWarning(calendar_service) << result.error_code;
         }
     }
 
@@ -104,18 +106,18 @@ SyncoptResult Syncoperation::optDelete(const QString &key)
     QDBusPendingReply<QString> reply = m_syncInter->Delete(key);
     reply.waitForFinished();
     if (reply.error().message().isEmpty()) {
-        qInfo() << "Delete success!";
+        qCInfo(calendar_service) << "Delete success!";
         result.data = reply.value();
         result.ret = true;
         result.error_code = SYNC_No_Error;
     } else {
-        qWarning() << "Delete failed:" << reply.error().message();
+        qCWarning(calendar_service) << "Delete failed:" << reply.error().message();
         result.ret = false;
         QJsonDocument jsonDocument = QJsonDocument::fromJson(reply.error().message().toLocal8Bit().data());
         QJsonObject obj = jsonDocument.object();
         if (obj.contains(QString("code"))) {
             result.error_code = obj.value(QString("code")).toInt();
-            qWarning() << result.error_code;
+            qCWarning(calendar_service) << result.error_code;
         }
     }
 
@@ -128,19 +130,19 @@ SyncoptResult Syncoperation::optMetadata(const QString &key)
     QDBusPendingReply<QString> reply = m_syncInter->Metadata(key);
     reply.waitForFinished();
     if (reply.error().message().isEmpty()) {
-        qInfo() << "Metadata success!";
+        qCInfo(calendar_service) << "Metadata success!";
         //元数据获取接口，暂时好像用不到
         result.data = reply.value();
         result.ret = true;
         result.error_code = SYNC_No_Error;
     } else {
-        qWarning() << "Metadata failed:" << reply.error().message();
+        qCWarning(calendar_service) << "Metadata failed:" << reply.error().message();
         result.ret = false;
         QJsonDocument jsonDocument = QJsonDocument::fromJson(reply.error().message().toLocal8Bit().data());
         QJsonObject obj = jsonDocument.object();
         if (obj.contains(QString("code"))) {
             result.error_code = obj.value(QString("code")).toInt();
-            qWarning() << result.error_code;
+            qCWarning(calendar_service) << result.error_code;
         }
     }
 
@@ -162,7 +164,7 @@ bool Syncoperation::optUserData(QVariantMap &userInfoMap)
         argument >> userInfoMap;
         return true;
     } else {
-        qWarning() << "Download failed:";
+        qCWarning(calendar_service) << "Download failed:";
         return false;
     }
 }
@@ -219,14 +221,14 @@ SyncoptResult Syncoperation::optGetCalendarSwitcher()
                 result.switch_state = reply.value();
                 result.ret = true;
             } else {
-                qDebug() << "get calendar switcher failed";
+                qCDebug(calendar_service) << "get calendar switcher failed";
                 result.ret = false;
             }
         } else {
             result.ret = false;
         }
     } else {
-        qDebug() << "get main switcher failed";
+        qCDebug(calendar_service) << "get main switcher failed";
         result.ret = false;
     }
 
@@ -258,7 +260,7 @@ void Syncoperation::slotDbusCall(const QDBusMessage &msg)
         if (loginStatus.size() > 0) {
             emit signalLoginStatusChange(loginStatus.first());
         } else {
-            qWarning() << "get loginStatus error";
+            qCWarning(calendar_service) << "get loginStatus error";
         }
     }
 }

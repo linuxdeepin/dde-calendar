@@ -11,7 +11,9 @@
 #include "accountmanager.h"
 #include "lunarmanager.h"
 #include "doanetworkdbus.h"
+#include "ddlogClient.h"
 
+using namespace DDLOG_CLIENT;
 
 CScheduleOperation::CScheduleOperation(const AccountItem::Ptr &accountItem, QWidget *parent)
     : QObject(parent)
@@ -31,7 +33,7 @@ CScheduleOperation::CScheduleOperation(const QString &scheduleTypeID, QWidget *p
 {
     //如果为空默认设置为本地帐户
     if (m_accountItem.isNull()) {
-        qWarning() << "Cannot get account by schedule type,scheduleTypeID:" << scheduleTypeID;
+        qCWarning(calendar_client) << "Cannot get account by schedule type,scheduleTypeID:" << scheduleTypeID;
         m_accountItem = gAccountManager->getLocalAccountItem();
     }
 }
@@ -410,7 +412,7 @@ bool CScheduleOperation::isFestival(const DSchedule::Ptr &schedule)
     //判断是否为节假日日程
     AccountItem::Ptr account = gAccountManager->getAccountItemByScheduleTypeId(schedule->scheduleTypeID());
     if (account.isNull()) {
-        qWarning() << "Cannot get account by schedule type,scheduleTypeID:" << schedule->scheduleTypeID();
+        qCWarning(calendar_client) << "Cannot get account by schedule type,scheduleTypeID:" << schedule->scheduleTypeID();
         return false;
     }
     DScheduleType::Ptr scheduleType = gAccountManager->getScheduleTypeByScheduleTypeId(schedule->scheduleTypeID());

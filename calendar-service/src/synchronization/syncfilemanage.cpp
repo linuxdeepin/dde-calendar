@@ -3,6 +3,9 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "syncfilemanage.h"
+#include "ddlogService.h"
+
+using namespace DDLOG_SERVICE;
 
 #include <DSysInfo>
 
@@ -39,7 +42,7 @@ bool SyncFileManage::SyncDataDownload(const QString &uid, QString &filepath, int
             //文件下载路径不正确
             //将文件移动到正确路径
             if (!QFile::rename(result.data, syncDB)) {
-                qWarning() << "down path error!";
+                qCWarning(calendar_service) << "down path error!";
                 errorcode = -1;
                 return false;
             }
@@ -66,7 +69,7 @@ bool SyncFileManage::SyncDbCreate(const QString &DBpath)
     if (!file.exists()) {
         bool bRet = file.open(QIODevice::ReadWrite | QIODevice::Text | QIODevice::Append);
         if (!bRet) {
-            qWarning() << "file creat failed";
+            qCWarning(calendar_service) << "file creat failed";
             return false;
         }
         file.close();
@@ -77,10 +80,10 @@ bool SyncFileManage::SyncDbCreate(const QString &DBpath)
     m_db.setPassword(syncDBpassword);
     m_db.setDatabaseName(DBpath);
     if (!m_db.open()) {
-        qWarning() << "db open failed";
+        qCWarning(calendar_service) << "db open failed";
         return false;
     }
-    qInfo() << "db open successed";
+    qCInfo(calendar_service) << "db open successed";
     m_db.close();
     return true;
 }
@@ -88,7 +91,7 @@ bool SyncFileManage::SyncDbCreate(const QString &DBpath)
 bool SyncFileManage::SyncDbDelete(const QString &DBpath)
 {
     if (DBpath.isEmpty()) {
-        qWarning() << "DBpath isEmpty";
+        qCWarning(calendar_service) << "DBpath isEmpty";
         return false;
     }
     QFileInfo fileinfo(DBpath);
@@ -109,7 +112,7 @@ bool SyncFileManage::SyncDataUpload(const QString &filepath, int &errorcode)
     result = m_syncoperation->optUpload(filepath);
     errorcode = result.error_code;
     if (result.error_code != SYNC_No_Error) {
-        qWarning() << "upload failed";
+        qCWarning(calendar_service) << "upload failed";
         return false;
     }
     return true;
@@ -118,7 +121,7 @@ bool SyncFileManage::SyncDataUpload(const QString &filepath, int &errorcode)
 bool SyncFileManage::syncDataDelete(const QString &filepath)
 {
     if (!SyncDbDelete(filepath)) {
-        qWarning() << "delete file error:" << filepath;
+        qCWarning(calendar_service) << "delete file error:" << filepath;
         return false;
     }
     return true;
@@ -133,7 +136,7 @@ DAccount::Ptr SyncFileManage::getuserInfo()
     }
 
     if (!m_syncoperation->optUserData(userInfoMap)) {
-        qInfo() << "can't get userinfo";
+        qCInfo(calendar_service) << "can't get userinfo";
         return nullptr;
     }
 

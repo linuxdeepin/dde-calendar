@@ -4,10 +4,13 @@
 
 #include "dhuanglidatabase.h"
 #include "units.h"
+#include "ddlogService.h"
 
 #include <QSqlQuery>
 #include <QDebug>
 #include <QSqlError>
+
+using namespace DDLOG_SERVICE;
 
 DHuangLiDataBase::DHuangLiDataBase(QObject *parent)
     : DDataBase(parent)
@@ -43,7 +46,7 @@ QString DHuangLiDataBase::queryFestivalList(quint32 year, quint8 month)
             if (!doctmp.isNull()) {
                 listarr = doctmp.array();
             } else {
-                qDebug() << __FUNCTION__ << error.errorString();
+                qCDebug(calendar_service) << __FUNCTION__ << error.errorString();
             }
             obj.insert("list", listarr);
             arr.append(obj);
@@ -51,7 +54,7 @@ QString DHuangLiDataBase::queryFestivalList(quint32 year, quint8 month)
         doc.setArray(arr);
         strjson = QString::fromUtf8(doc.toJson(QJsonDocument::Compact));
     } else {
-        qWarning() << Q_FUNC_INFO << query.lastError();
+        qCWarning(calendar_service) << Q_FUNC_INFO << query.lastError();
     }
     if (query.isActive()) {
         query.finish();

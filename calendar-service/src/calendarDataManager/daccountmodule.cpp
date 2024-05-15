@@ -17,9 +17,12 @@
 #include "unionIDDav/dunioniddav.h"
 #include "ddatasyncbase.h"
 #include "dbusnotify.h"
+#include "ddlogService.h"
 
 #include <QDir>
 #include <QFile>
+
+using namespace DDLOG_SERVICE;
 
 #define UPDATEREMINDJOBTIMEINTERVAL 1000 * 60 * 10 //提醒任务更新时间间隔毫秒数（10分钟）
 
@@ -215,7 +218,7 @@ bool DAccountModule::deleteScheduleTypeByID(const QString &typeID)
         }
     }
     if (scheduleType.isNull()) {
-        qWarning() << "scheduleType isNull, typeID:" << typeID;
+        qCWarning(calendar_service) << "scheduleType isNull, typeID:" << typeID;
         return false;
     }
 
@@ -239,7 +242,7 @@ bool DAccountModule::updateScheduleType(const QString &typeInfo)
     DScheduleType::Ptr oldScheduleType = m_accountDB->getScheduleTypeByID(scheduleType->typeID());
     //如果颜色有改动
     if (oldScheduleType.isNull()) {
-        qWarning() << "get oldScheduleType error,typeID:" << scheduleType->typeID();
+        qCWarning(calendar_service) << "get oldScheduleType error,typeID:" << scheduleType->typeID();
     } else {
         if (oldScheduleType->typeColor() != scheduleType->typeColor()) {
             if (!oldScheduleType->typeColor().isSysColorInfo()) {
@@ -649,7 +652,7 @@ void DAccountModule::remindJob(const QString &alarmID)
 void DAccountModule::accountDownload()
 {
     if (m_dataSync != nullptr) {
-        qInfo() << "开始下载数据";
+        qCInfo(calendar_service) << "开始下载数据";
         m_dataSync->syncData(this->account()->accountID(), this->account()->accountName(), (int)this->account()->accountState(), DDataSyncBase::Sync_Upload | DDataSyncBase::Sync_Download);
     }
 }
@@ -657,7 +660,7 @@ void DAccountModule::accountDownload()
 void DAccountModule::uploadNetWorkAccountData()
 {
     if (m_dataSync != nullptr) {
-        qInfo() << "开始上传数据";
+        qCInfo(calendar_service) << "开始上传数据";
         m_dataSync->syncData(this->account()->accountID(), this->account()->accountName(), (int)this->account()->accountState(), DDataSyncBase::Sync_Upload);
     }
 }
@@ -913,7 +916,7 @@ void DAccountModule::slotOpenCalendar(const QString &alarmID)
                                     this);
     DRemindData::Ptr remindData = m_accountDB->getRemindData(alarmID);
     if (remindData.isNull()) {
-        qWarning() << "No corresponding reminder ID found";
+        qCWarning(calendar_service) << "No corresponding reminder ID found";
         return;
     }
     DSchedule::Ptr schedule = getScheduleByRemind(remindData);
@@ -944,7 +947,7 @@ void DAccountModule::slotSyncState(const int syncState)
         m_account->setSyncState(DAccount::Sync_StorageFull);
         break;
     default:
-        qWarning()<<"syncState:"<<syncState<<"fun:"<<__FUNCTION__<<" line:"<<__LINE__;
+        qCWarning(calendar_service)<<"syncState:"<<syncState<<"fun:"<<__FUNCTION__<<" line:"<<__LINE__;
         //默认服务器异常
         m_account->setSyncState(DAccount::Sync_ServerException);
         break;

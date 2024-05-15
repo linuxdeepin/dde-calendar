@@ -6,6 +6,9 @@
 #include "../globaldef.h"
 #include "../task/schedulebasetask.h"
 #include "../data/changejsondata.h"
+#include "ddlogPlugin.h"
+
+using namespace DDLOG_PLUGNI;
 
 SelectAndQueryState::SelectAndQueryState(scheduleBaseTask *task)
     : scheduleState(task)
@@ -90,7 +93,7 @@ Reply SelectAndQueryState::normalEvent(const JsonData *jsonData)
         }
         return m_Task->getReplyBySelectSchedule(m_localData->SelectInfo());
     } else {
-        qDebug() << "offset <=0";
+        qCDebug(calendar_plugin) << "offset <=0";
         Reply reply;
         REPLY_ONLY_TTS(reply, G_ERR_TTS, G_ERR_TTS, false);
         return reply;

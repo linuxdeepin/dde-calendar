@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "cweekdaygraphicsview.h"
+#include "ddlogClient.h"
 
 #include "constants.h"
 #include "schedulecoormanage.h"
@@ -14,6 +15,8 @@
 #include "calldaykeyrightdeal.h"
 
 #include <QDebug>
+
+using namespace DDLOG_CLIENT;
 
 CWeekDayGraphicsview::CWeekDayGraphicsview(QWidget *parent, ViewPosition viewPos, ViewType viewtype)
     : DragInfoGraphicsView(parent)
@@ -94,7 +97,7 @@ void CWeekDayGraphicsview::setCurrentFocusItem(const QDate &focusDate, bool setI
         m_Scene->setCurrentFocusItem(m_backgroundItem.at(static_cast<int>(offset)));
         m_Scene->setIsShowCurrentItem(setItemFocus);
     } else {
-        qWarning() << "set CurrentFocusItem Error,offset:" << offset << ",focusDate:" << focusDate << ",firstDate:" << m_backgroundItem.first()->getDate();
+        qCWarning(calendar_client) << "set CurrentFocusItem Error,offset:" << offset << ",focusDate:" << focusDate << ",firstDate:" << m_backgroundItem.first()->getDate();
     }
 }
 
@@ -157,7 +160,7 @@ void CWeekDayGraphicsview::setSceneCurrentItemFocus(const QDate &focusDate)
         m_Scene->setCurrentFocusItem(m_backgroundItem.at(offset));
         m_Scene->currentFocusItemUpdate();
     } else {
-        qWarning() << "Switching time range error! focusDate:" << focusDate << " first item date:" << m_backgroundItem.first()->getDate();
+        qCWarning(calendar_client) << "Switching time range error! focusDate:" << focusDate << " first item date:" << m_backgroundItem.first()->getDate();
     }
 }
 

@@ -3,12 +3,15 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "dschedulequerypar.h"
+#include "ddlogCommon.h"
 
 #include "units.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QDebug>
+
+using namespace DDLOG_COMMON;
 
 DScheduleQueryPar::DScheduleQueryPar()
     : m_key("")
@@ -53,7 +56,7 @@ DScheduleQueryPar::Ptr DScheduleQueryPar::fromJsonString(const QString &queryStr
     QJsonParseError jsonError;
     QJsonDocument jsonDoc(QJsonDocument::fromJson(queryStr.toLocal8Bit(), &jsonError));
     if (jsonError.error != QJsonParseError::NoError) {
-        qWarning() << "error:" << jsonError.errorString() << " queryStr:" << queryStr;
+        qCWarning(calendar_common) << "error:" << jsonError.errorString() << " queryStr:" << queryStr;
         return nullptr;
     }
     DScheduleQueryPar::Ptr queryPar = DScheduleQueryPar::Ptr(new DScheduleQueryPar);
@@ -92,7 +95,7 @@ DScheduleQueryPar::Ptr DScheduleQueryPar::fromJsonString(const QString &queryStr
 QString DScheduleQueryPar::toJsonString(const DScheduleQueryPar::Ptr &queryPar)
 {
     if (queryPar.isNull()) {
-        qWarning() << "hold a reference to a null pointer.";
+        qCWarning(calendar_common) << "hold a reference to a null pointer.";
         return QString();
     }
     QJsonObject jsonObj;

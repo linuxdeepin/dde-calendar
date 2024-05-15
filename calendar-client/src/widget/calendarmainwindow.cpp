@@ -27,6 +27,7 @@
 #include "scheduletypeeditdlg.h"
 #include "accountmanager.h"
 #include "units.h"
+#include "ddlogClient.h"
 
 #include <DHiDPIHelper>
 #include <DPalette>
@@ -59,6 +60,8 @@
 
 #include <stdlib.h>
 #include <functional>
+
+using namespace DDLOG_CLIENT;
 
 DGUI_USE_NAMESPACE
 DWIDGET_USE_NAMESPACE
@@ -203,7 +206,7 @@ void Calendarmainwindow::slotSetSearchFocus()
 void Calendarmainwindow::viewWindow(int type, const bool showAnimation)
 {
     if (type < 0 || type >= m_stackWidget->count()) {
-        qWarning() << "set view error,set index:" << type;
+        qCWarning(calendar_client) << "set view error,set index:" << type;
         return;
     }
     if (showAnimation) {
@@ -276,10 +279,10 @@ void Calendarmainwindow::initLater()
     QDBusConnection dbus = QDBusConnection::sessionBus();
     //如果注册失败打印出失败信息
     if (!dbus.registerService("com.deepin.Calendar")) {
-        qWarning() << "registerService Error:" << dbus.lastError();
+        qCWarning(calendar_client) << "registerService Error:" << dbus.lastError();
     }
     if (!dbus.registerObject("/com/deepin/Calendar", this)) {
-        qWarning() << "registerObject Error:" << dbus.lastError();
+        qCWarning(calendar_client) << "registerObject Error:" << dbus.lastError();
     }
 
     m_hasInit = true;
@@ -573,7 +576,7 @@ void Calendarmainwindow::createview()
     //如果默认视图不在范围内则设置为月窗口显示
     if (m_defaultIndex < 0 || m_defaultIndex >= m_stackWidget->count()) {
         m_defaultIndex = 1;
-        qWarning() << "set default view index beyond,index:" << m_defaultIndex;
+        qCWarning(calendar_client) << "set default view index beyond,index:" << m_defaultIndex;
     }
     m_stackWidget->setCurrentIndex(m_defaultIndex);
     m_buttonBox->button(m_defaultIndex)->setChecked(true);
@@ -586,10 +589,10 @@ void Calendarmainwindow::createview()
 void Calendarmainwindow::resizeView()
 {
     if (!m_hasInit) {
-        qWarning() << "Calendarmainwindow's not inited,be careful!";
+        qCWarning(calendar_client) << "Calendarmainwindow's not inited,be careful!";
         return;
     } else {
-        qWarning() << "Calendarmainwindow's inited,be happy!";
+        qCWarning(calendar_client) << "Calendarmainwindow's inited,be happy!";
     }
 
     //帐户列表窗口（A），视图窗口(B),搜索结果窗口(C)
@@ -786,10 +789,10 @@ void Calendarmainwindow::slotSearchSelectSchedule(const DSchedule::Ptr &schedule
 void Calendarmainwindow::slotViewtransparentFrame(const bool isShow)
 {
     if (!m_transparentFrame) {
-        qWarning() << "Calendarmainwindow's not inited,be careful!" << isShow;
+        qCWarning(calendar_client) << "Calendarmainwindow's not inited,be careful!" << isShow;
         return;
     } else {
-        qWarning() << "Calendarmainwindow's inited,be happy!" << isShow;
+        qCWarning(calendar_client) << "Calendarmainwindow's inited,be happy!" << isShow;
     }
 
     if (isShow) {

@@ -6,6 +6,9 @@
 
 #include "units.h"
 #include "calendarprogramexitcontrol.h"
+#include "ddlogService.h"
+
+using namespace DDLOG_SERVICE;
 
 DAccountManageModule::DAccountManageModule(QObject *parent)
     : QObject(parent)
@@ -36,7 +39,7 @@ DAccountManageModule::DAccountManageModule(QObject *parent)
         m_accountModuleMap[account->accountID()] = accountModule;
         DAccountService::Ptr accountService = DAccountService::Ptr(new DAccountService(account->dbusPath(), account->dbusInterface(), accountModule, this));
         if (!sessionBus.registerObject(accountService->getPath(), accountService->getInterface(), accountService.data(), options)) {
-            qWarning() << "registerObject accountService failed:" << sessionBus.lastError();
+            qCWarning(calendar_service) << "registerObject accountService failed:" << sessionBus.lastError();
         } else {
             m_AccountServiceMap[account->accountType()].insert(account->accountID(), accountService);
             //如果是网络帐户则开启定时下载任务
@@ -353,7 +356,7 @@ void DAccountManageModule::slotUidLoginStatueChange(const int status)
         //登陆成功
         DAccount::Ptr accountUnionid = m_syncFileManage->getuserInfo();
         if (accountUnionid.isNull() || accountUnionid->accountName().isEmpty()) {
-            qWarning() << "Error getting account information";
+            qCWarning(calendar_service) << "Error getting account information";
             oldStatus.removeAt(oldStatus.indexOf(1));
             return;
         }
@@ -364,7 +367,7 @@ void DAccountManageModule::slotUidLoginStatueChange(const int status)
         m_accountModuleMap[accountUnionid->accountID()] = accountModule;
         DAccountService::Ptr accountService = DAccountService::Ptr(new DAccountService(accountUnionid->dbusPath(), accountUnionid->dbusInterface(), accountModule, this));
         if (!sessionBus.registerObject(accountService->getPath(), accountService->getInterface(), accountService.data(), options)) {
-            qWarning() << "registerObject accountService failed:" << sessionBus.lastError();
+            qCWarning(calendar_service) << "registerObject accountService failed:" << sessionBus.lastError();
         } else {
             m_AccountServiceMap[accountUnionid->accountType()].insert(accountUnionid->accountID(), accountService);
             if (accountUnionid->accountState().testFlag(DAccount::Account_Open)) {

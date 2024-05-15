@@ -83,3 +83,25 @@ qt5_create_translation(DTNG_QM_FILES
   
 file(GLOB APP_QM_FILES "translations/*.qm")
 install(FILES ${APP_QM_FILES} DESTINATION ${CMAKE_INSTALL_DATADIR}/dde-calendar/translations)
+
+#安装日志收集工具配置
+set(journel_dde_calendar assets/logconfig/dde-calendar.json)
+install(FILES ${journel_dde_calendar} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/deepin-log-viewer/deepin-log.conf.d/)
+
+#安装DConfig配置
+set(APPID org.deepin.dde.calendar)
+set(dde.calendar.client assets/configs/org.deepin.dde.calendar.client.json)
+set(dde.calendar.service assets/configs/org.deepin.dde.calendar.service.json)
+set(dde.calendar.plugin assets/configs/org.deepin.dde.calendar.plugin.json)
+
+if (DEFINED DSG_DATA_DIR)
+    dconfig_meta_files(APPID ${APPID} FILES ${dde.calendar.client})
+    dconfig_meta_files(APPID ${APPID} FILES ${dde.calendar.service})
+    dconfig_meta_files(APPID ${APPID} FILES ${dde.calendar.plugin})
+    message("-- DConfig is supported by DTK")
+else()
+    install(FILES ${dde.calendar.client} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/dsg/configs/${APPID}/)
+    install(FILES ${dde.calendar.service} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/dsg/configs/${APPID}/)
+    install(FILES ${dde.calendar.plugin} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/dsg/configs/${APPID}/)
+    message("-- DConfig is not supported by DTK")
+endif()
