@@ -432,6 +432,9 @@ void CSettingDialog::slotAccountUpdate()
     if (gUosAccountItem) {
         slotLastSyncTimeUpdate(gUosAccountItem->getDtLastUpdate());
         connect(gUosAccountItem.get(), &AccountItem::signalDtLastUpdate, this, &CSettingDialog::slotLastSyncTimeUpdate);
+
+        //登录时，判断"同步按钮"的状态
+        slotAccountStateChange();
     }
 }
 
