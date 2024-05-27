@@ -114,7 +114,6 @@ int main(int argc, char *argv[])
         Calendarmainwindow ww(viewtype - 1);
 
         qCInfo(calendar_client) << "main created" << timer.elapsed();
-        qCWarning(calendar_client) << "!!!!!!!!!!!!!!";
         timer.restart();
         ww.show();
 
