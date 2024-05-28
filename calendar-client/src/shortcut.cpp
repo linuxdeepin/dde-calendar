@@ -10,20 +10,21 @@ Shortcut::Shortcut(QObject *parent)
     ShortcutGroup group1;
     ShortcutGroup group2;
     ShortcutGroup group3;
-    ShortcutGroup group4;
 
-    group1.groupName = "";
-    group1.groupItems << ShortcutItem(tr("Help"),  "F1") <<
-                      ShortcutItem(tr("Delete event"),       "Delete");
+    group1.groupName = tr("System");
+    group1.groupItems << ShortcutItem(tr("Display shortcuts"), "Ctrl+Shift+?") <<
+                      ShortcutItem(tr("Help"),  "F1") <<
+                      ShortcutItem(tr("Delete event"), "Delete");
 
-    group2.groupName = "";
+    group2.groupName = tr("File");
     group2.groupItems << ShortcutItem(tr("Copy"), "Ctrl+C") <<
                       ShortcutItem(tr("Cut"),  "Ctrl+X") <<
-                      ShortcutItem(tr("Paste"), "Ctrl+V") ;
-
-    group3.groupName = "";
-    group3.groupItems << ShortcutItem(tr("Delete"), "Delete") <<
+                      ShortcutItem(tr("Paste"), "Ctrl+V") <<
+                      ShortcutItem(tr("Delete"), "Delete") <<
                       ShortcutItem(tr("Select all"), "Ctrl+A");
+
+    group3.groupName = tr("Search");
+    group3.groupItems << ShortcutItem(tr("Search"), "Ctrl+F");
     m_shortcutGroups << group1 << group2 << group3;
     //convert to json object
     QJsonArray jsonGroups;
@@ -37,6 +38,7 @@ Shortcut::Shortcut(QObject *parent)
             jsonGroupItems.append(jsonItem);
         }
         jsonGroup.insert("groupItems", jsonGroupItems);
+        jsonGroup.insert("gruopName", scg.groupName);
         jsonGroups.append(jsonGroup);
     }
     m_shortcutObj.insert("shortcut", jsonGroups);
