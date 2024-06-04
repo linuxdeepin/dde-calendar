@@ -38,7 +38,7 @@ Shortcut::Shortcut(QObject *parent)
             jsonGroupItems.append(jsonItem);
         }
         jsonGroup.insert("groupItems", jsonGroupItems);
-        jsonGroup.insert("gruopName", scg.groupName);
+        jsonGroup.insert("groupName", scg.groupName);
         jsonGroups.append(jsonGroup);
     }
     m_shortcutObj.insert("shortcut", jsonGroups);
