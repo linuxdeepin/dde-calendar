@@ -376,6 +376,8 @@ void CMonthGraphicsview::mouseDoubleClickEvent(QMouseEvent *event)
         CMyScheduleView dlg(infoitem->getData(), this);
         connect(&dlg, &CMyScheduleView::signalsEditorDelete, this, &CMonthGraphicsview::signalsUpdateSchedule);
         dlg.exec();
+        //此dialog属于模态对话框，关闭对话框后要主动处理主窗口的活动状态
+        activateWindow();
         return;
     }
 
