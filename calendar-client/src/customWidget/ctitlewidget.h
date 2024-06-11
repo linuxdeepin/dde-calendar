@@ -67,6 +67,7 @@ protected:
     void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
     bool eventFilter(QObject *o, QEvent *e) override;
     void changeEvent(QEvent *e) override;
+    void showEvent(QShowEvent *event) override;
 signals:
     void signalSetButtonFocus();
     void signalSearchFocusSwitch();
@@ -97,6 +98,7 @@ private:
     QString     m_strPlaceHolder;
     Title_State m_showState {Title_State_Normal};
     bool m_clickShowLeft = false;
+    int m_searchEditInitialWidth;
 };
 
 #endif // CTITLEWIDGET_H

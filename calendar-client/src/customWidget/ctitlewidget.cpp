@@ -232,16 +232,40 @@ void CTitleWidget::updateSidebarIconStatus()
     m_sidebarIcon->setIcon(QIcon::fromTheme("dde_calendar_sidebar"));
 }
 
+void CTitleWidget::showEvent(QShowEvent *event)
+{
+    QWidget::showEvent(event);
+    //m_searchEdit不通过showEvent来获取宽度时，m_searchEdit->width()会一直保持100不变，所以需要在初始化界面时获取m_searchEdit的宽度
+    m_searchEditInitialWidth = m_searchEdit->width();
+    QString str  = m_strPlaceHolder;
+    QFontMetrics fontMetrice(m_searchEdit->font());
+    int lengthOfEllipsis = fontMetrice.width("...");
+    if (fontMetrice.width(str) > (m_searchEditInitialWidth - lengthOfEllipsis) && m_clickShowLeft == false && !m_buttonBox->isHidden()) {
+        str = fontMetrice.elidedText(str, Qt::ElideRight, m_searchEditInitialWidth - lengthOfEllipsis);
+        m_searchEdit->setPlaceHolder(str);
+        m_searchEdit->setPlaceholderText(str);
+    } else {
+        m_searchEdit->setPlaceHolder(m_strPlaceHolder);
+        m_searchEdit->setPlaceholderText(m_strPlaceHolder);
+        m_clickShowLeft = false;
+    }
+}
+
 void CTitleWidget::resizeEvent(QResizeEvent *event)
 {
     QWidget::resizeEvent(event);
     if (m_showState == Title_State_Normal) {
         normalStateUpdateSearchEditWidth();
     }
+    //宽度固定100时，就不做省略符判断，在showEvent中去做判断
+    if (m_searchEdit->width() == 100) {
+        return;
+    }
     QString str  = m_strPlaceHolder;
     QFontMetrics fontMetrice(m_searchEdit->font());
-    if (fontMetrice.width(str) > (m_searchEdit->width() - 30) && m_clickShowLeft == false && !m_buttonBox->isHidden()) {
-        str = fontMetrice.elidedText(str, Qt::ElideRight, m_searchEdit->width() - 30);
+    int lengthOfEllipsis = fontMetrice.width("...");
+    if (fontMetrice.width(str) > (m_searchEdit->width() - lengthOfEllipsis) && m_clickShowLeft == false && !m_buttonBox->isHidden()) {
+        str = fontMetrice.elidedText(str, Qt::ElideRight, m_searchEdit->width() - lengthOfEllipsis);
         m_searchEdit->setPlaceHolder(str);
         m_searchEdit->setPlaceholderText(str);
     } else {
