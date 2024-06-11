@@ -139,6 +139,7 @@ private:
     bool m_isNormalStateShow {true}; //是否为正常状态显示
     QPoint m_startPos;
     bool m_hasInit = false;
+    QDateTime m_currentDateTime;
 
     CMyScheduleView *m_dlg = Q_NULLPTR;
 
