@@ -12,14 +12,7 @@
     {
       "name": "dde-calendar.service",
       "filter": "",
-      "exec": "/usr/libexec/deepin-daemon/dde-calendar-service",
-      "logType": "journal",
-      "logPath":  ""
-    },
-    {
-      "name": "dde-calendar.plugin",
-      "filter": "",
-      "exec": "/usr/lib/deepin-aiassistant/serivce-plugins/libuosschedulex-plugin.so",
+      "exec": "/usr/lib/deepin-daemon/dde-calendar-service",
       "logType": "journal",
       "logPath":  ""
     }
