@@ -9,8 +9,9 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fstack-protector-strong -z noexecstack -pie -fPIC -z lazy")
 
 set(APP_RES_DIR "assets")
-set(APP_SERVICE_IN "${APP_RES_DIR}/data/com.deepin.dataserver.Calendar.service.in")
-set(APP_SYSTEMD_SERVICE "${APP_RES_DIR}/data/com.dde.calendarserver.calendar.service")
+set( SERVER_SERVICE_IN "${APP_RES_DIR}/data/com.deepin.dataserver.Calendar.service.in")
+set( APP_SERVICE_IN "${APP_RES_DIR}/data/dde-calendar.service.in")
+set( SERVER_SYSTEMD_SERVICE "${APP_RES_DIR}/data/com.dde.calendarserver.calendar.service")
 set(APP_SYSTEMD_TIMER "${APP_RES_DIR}/data/com.dde.calendarserver.calendar.timer")
 set(AUTOSTART_DESKTOP "${APP_RES_DIR}/dde-calendar-service.desktop")
 set(HUANGLIDB "${APP_RES_DIR}/data/huangli.db")
@@ -72,13 +73,14 @@ target_compile_definitions(${PROJECT_NAME}
 #修改dbus服务文件
 set (EXEC_DDE_CALENDAR_SERVICE "${SERVICE_INSTALL_DIR}/dde-calendar-service" CACHE STRING "Command to execute dde-calendar-service")
 
-configure_file(${APP_SERVICE_IN} ${CMAKE_CURRENT_BINARY_DIR}/dbus/com.deepin.dataserver.Calendar.service @ONLY)
-
+configure_file(${SERVER_SERVICE_IN} ${CMAKE_CURRENT_BINARY_DIR}/dbus/com.deepin.dataserver.Calendar.service @ONLY)
+configure_file(${APP_SERVICE_IN} ${CMAKE_CURRENT_BINARY_DIR}/assets/dde-calendar.service @ONLY)
 
 # Install files
 install(TARGETS ${PROJECT_NAME} DESTINATION ${SERVICE_INSTALL_DIR})
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/dbus/com.deepin.dataserver.Calendar.service DESTINATION ${CMAKE_INSTALL_DATADIR}/dbus-1/services/)
 install(FILES ${AUTOSTART_DESKTOP} DESTINATION ${CMAKE_INSTALL_SYSCONFDIR}/xdg/autostart/)
 install(FILES ${HUANGLIDB} DESTINATION ${CMAKE_INSTALL_DATADIR}/dde-calendar/data/)
-install(FILES ${APP_SYSTEMD_SERVICE} DESTINATION lib/systemd/user/)
+install(FILES ${SERVER_SYSTEMD_SERVICE} DESTINATION lib/systemd/user/)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/assets/dde-calendar.service DESTINATION lib/systemd/user/)
 install(FILES ${APP_SYSTEMD_TIMER} DESTINATION lib/systemd/user/)
