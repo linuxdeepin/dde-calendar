@@ -6,6 +6,7 @@
 
 #include "commondef.h"
 #include "units.h"
+#include <qloggingcategory.h>
 
 #include <QDir>
 #include <QStandardPaths>
@@ -231,8 +232,14 @@ void CSystemdTimerControl::stopUploadTask()
 void CSystemdTimerControl::createPath()
 {
     m_systemdPath = getHomeConfigPath().append("/systemd/user/");
+    // 如果位于玲珑环境, 更改systemd path路径
+    QString linglongAppID = qgetenv("LINGLONG_APPID");
+    if (!linglongAppID.isEmpty()) {
+        m_systemdPath = "/run/host/rootfs" + m_systemdPath;
+        qCInfo(ServiceLogger) << "In Linglong environment, change the systemd path to " << m_systemdPath;
+    }
     QDir dir;
-    //如果该路径不存在，则创建该文件夹
+    // 如果该路径不存在，则创建该文件夹
     if (!dir.exists(m_systemdPath)) {
         dir.mkpath(m_systemdPath);
     }

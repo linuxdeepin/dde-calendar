@@ -1,3 +1,9 @@
+dde-calendar (5.14.4) unstable; urgency=medium
+
+  * feat: Unable to set timer reminder in Linglong environment
+
+ -- myml <wurongjie@deepin.org>  Thu, 08 Aug 2024 11:29:59 +0800
+
 dde-calendar (5.14.3) unstable; urgency=medium
 
   * fix: dialog window display position error(Issue: https://github.com/linuxdeepin/developer-center/issues/10141)
