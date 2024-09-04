@@ -19,7 +19,7 @@
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="43"/>
         <source>Storage full</source>
-        <translation>Pamięć zapełniona</translation>
+        <translation>Pamięć pełna</translation>
     </message>
 </context>
 <context>
@@ -723,7 +723,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="770"/>
         <source>Please go to the &lt;a href=&apos;/&apos;&gt;Control Center&lt;/a&gt; to change system settings</source>
-        <translation type="unfinished"/>
+        <translation>Przejdź do &lt;a href=&apos;/&apos;&gt;Centrum kontroli&lt;/a&gt;, aby zmienić ustawienia systemu</translation>
     </message>
 </context>
 <context>
