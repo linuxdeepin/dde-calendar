@@ -625,7 +625,7 @@
     <name>CWeekWindow</name>
     <message>
         <source>Week</source>
-        <translation type="vanished">Hét</translation>
+        <translation type="vanished">Heti</translation>
     </message>
     <message>
         <source>Y</source>
