@@ -15,7 +15,7 @@
     </message>
     <message>
         <source>Storage full</source>
-        <translation type="vanished">Pamięć zapełniona</translation>
+        <translation type="vanished">Pamięć pełna</translation>
     </message>
 </context>
 <context>
