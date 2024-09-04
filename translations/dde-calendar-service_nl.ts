@@ -26,7 +26,7 @@
     </message>
     <message>
         <source>Event types</source>
-        <translation type="vanished">Afspraaktypes</translation>
+        <translation type="vanished">Soorten afspraken</translation>
     </message>
 </context>
 <context>
@@ -154,7 +154,7 @@
     <name>CPushButton</name>
     <message>
         <source>New event type</source>
-        <translation type="vanished">Nieuw afspraaktype</translation>
+        <translation type="vanished">Nieuw soort afspraak</translation>
     </message>
 </context>
 <context>
@@ -222,7 +222,7 @@
     </message>
     <message>
         <source>The name can not only contain whitespaces</source>
-        <translation type="vanished">De naam mag niet alleen bestaan uit spaties</translation>
+        <translation type="vanished">De naam mag niet alleen uit spaties bestaan</translation>
     </message>
     <message>
         <source>Type:</source>
@@ -355,7 +355,7 @@
     <name>CScheduleOperation</name>
     <message>
         <source>All occurrences of a repeating event must have the same all-day status.</source>
-        <translation type="vanished">Alle afspraken in reeks moeten voorzien zijn van de status &apos;hele dag&apos;.</translation>
+        <translation type="vanished">Alle afspraken in de reeks moeten voorzien zijn van de status ‘hele dag’.</translation>
     </message>
     <message>
         <source>Do you want to change all occurrences?</source>
@@ -376,7 +376,7 @@
     </message>
     <message>
         <source>You are deleting an event.</source>
-        <translation type="vanished">Je verwijdert een afspraak.</translation>
+        <translation type="vanished">Je staat op het punt een afspraak te verwijderen.</translation>
     </message>
     <message>
         <source>Are you sure you want to delete this event?</source>
@@ -409,7 +409,7 @@
     </message>
     <message>
         <source>You are changing a repeating event.</source>
-        <translation type="vanished">Je past een reeks afspraken aan.</translation>
+        <translation type="vanished">Je staat op het punt een reeks aan te passen.</translation>
     </message>
     <message>
         <source>Do you want to change only this occurrence of the event, or all occurrences?</source>
@@ -587,7 +587,7 @@
     </message>
     <message>
         <source>Search events and festivals</source>
-        <translation type="vanished">Zoeken naar afspraken en festivals</translation>
+        <translation type="vanished">Zoeken naar afspraken en evenementen</translation>
     </message>
 </context>
 <context>
@@ -669,7 +669,7 @@
     </message>
     <message>
         <source>Manage</source>
-        <translation type="vanished">Beheren</translation>
+        <translation type="vanished">Instellingen</translation>
     </message>
     <message>
         <source>Privacy Policy</source>
@@ -834,7 +834,7 @@
     </message>
     <message>
         <source>Event types</source>
-        <translation type="vanished">Afspraaktypes</translation>
+        <translation type="vanished">Soorten afspraken</translation>
     </message>
     <message>
         <source>General</source>
@@ -846,7 +846,7 @@
     </message>
     <message>
         <source>Time</source>
-        <translation type="vanished">Tijdstip</translation>
+        <translation type="vanished">Tijdsklok</translation>
     </message>
 </context>
 <context>
@@ -869,7 +869,7 @@
     <name>ScheduleTypeEditDlg</name>
     <message>
         <source>New event type</source>
-        <translation type="vanished">Nieuw afspraaktype</translation>
+        <translation type="vanished">Nieuw soort afspraak</translation>
     </message>
     <message>
         <source>Edit event type</source>
