@@ -93,7 +93,7 @@
     </message>
     <message>
         <source>Lunar</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Lunárny</translation>
     </message>
 </context>
 <context>
@@ -218,7 +218,7 @@
     </message>
     <message>
         <source>Enter a name please</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Zadajte prosím meno</translation>
     </message>
     <message>
         <source>The name can not only contain whitespaces</source>
@@ -286,11 +286,11 @@
     </message>
     <message>
         <source>Solar</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Solárny</translation>
     </message>
     <message>
         <source>Lunar</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Lunárny</translation>
     </message>
     <message>
         <source>Starts</source>
@@ -842,7 +842,7 @@
     </message>
     <message>
         <source>First day of week</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Prvý deň v týždni</translation>
     </message>
     <message>
         <source>Time</source>
@@ -899,7 +899,7 @@
     </message>
     <message>
         <source>Enter a name please</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Zadajte prosím meno</translation>
     </message>
 </context>
 <context>
