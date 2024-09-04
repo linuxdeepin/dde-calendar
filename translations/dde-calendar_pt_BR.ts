@@ -276,7 +276,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="573"/>
         <source>Enter a name please</source>
-        <translation>Digite um nome, por favor</translation>
+        <translation>Insira um nome</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="668"/>
@@ -668,7 +668,7 @@
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="347"/>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="366"/>
         <source>Use System Setting</source>
-        <translation type="unfinished"/>
+        <translation>Utilizar a configuração do sistema</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="364"/>
@@ -723,7 +723,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="770"/>
         <source>Please go to the &lt;a href=&apos;/&apos;&gt;Control Center&lt;/a&gt; to change system settings</source>
-        <translation type="unfinished"/>
+        <translation>Acesse a &lt;a href=&apos;/&apos;&gt;Central de Controle&lt;/a&gt; para alterar as configurações do sistema</translation>
     </message>
 </context>
 <context>
@@ -874,7 +874,7 @@
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="363"/>
         <source>Privacy Policy</source>
-        <translation>Política de Privacidade</translation>
+        <translation>Política de privacidade</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="940"/>
@@ -996,7 +996,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="213"/>
         <source>import ICS file</source>
-        <translation type="unfinished"/>
+        <translation>importar arquivo ICS</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="401"/>
@@ -1160,7 +1160,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="241"/>
         <source>Enter a name please</source>
-        <translation>Digite um nome por favor</translation>
+        <translation>Insira um nome</translation>
     </message>
 </context>
 <context>
