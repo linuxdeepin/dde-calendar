@@ -218,7 +218,7 @@
     </message>
     <message>
         <source>Enter a name please</source>
-        <translation type="vanished">Digite um nome, por favor</translation>
+        <translation type="vanished">Insira um nome</translation>
     </message>
     <message>
         <source>The name can not only contain whitespaces</source>
@@ -673,7 +673,7 @@
     </message>
     <message>
         <source>Privacy Policy</source>
-        <translation type="vanished">Política de Privacidade</translation>
+        <translation type="vanished">Política de privacidade</translation>
     </message>
     <message>
         <source>Syncing...</source>
@@ -899,7 +899,7 @@
     </message>
     <message>
         <source>Enter a name please</source>
-        <translation type="vanished">Digite um nome por favor</translation>
+        <translation type="vanished">Insira um nome</translation>
     </message>
 </context>
 <context>
