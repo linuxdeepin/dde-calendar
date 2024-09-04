@@ -271,7 +271,7 @@
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1164"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1165"/>
         <source>time(s)</source>
-        <translation>kohë(ra)</translation>
+        <translation>kohë()</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="573"/>
@@ -329,7 +329,7 @@
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="759"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1131"/>
         <source>End Repeat:</source>
-        <translation>Përfundoje Përsëritjen më:</translation>
+        <translation>Përfundoje Përsëritjen Më:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="815"/>
@@ -412,21 +412,21 @@
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1111"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1404"/>
         <source>Weekly</source>
-        <translation>Javore</translation>
+        <translation>Çdo javë</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1112"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1398"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1405"/>
         <source>Monthly</source>
-        <translation>Mujore</translation>
+        <translation>Çdo muaj</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1113"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1399"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1406"/>
         <source>Yearly</source>
-        <translation>Vjetore</translation>
+        <translation>Çdo vit</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1133"/>
@@ -461,7 +461,7 @@
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="79"/>
         <source>All occurrences of a repeating event must have the same all-day status.</source>
-        <translation>Krejt përsëritjet e një veprimtarie që përsëritet duhet të kenë të njëjtën gjendje gjithë-ditën.</translation>
+        <translation>Krejt rastet e një veprimtarie që përsëritet duhet të kenë të njëjtën gjendje gjithë-ditën.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="80"/>
@@ -723,7 +723,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="770"/>
         <source>Please go to the &lt;a href=&apos;/&apos;&gt;Control Center&lt;/a&gt; to change system settings</source>
-        <translation type="unfinished"/>
+        <translation>Që të ndryshoni rregullime sistemit, ju lutemi, kaloni te &lt;a href=&apos;/&apos;&gt;Qendra e Kontrollit&lt;/a&gt;</translation>
     </message>
 </context>
 <context>
@@ -856,7 +856,7 @@
     <message>
         <location filename="../calendar-client/src/main.cpp" line="66"/>
         <source>Calendar is a tool to view dates, and also a smart daily planner to schedule all things in life. </source>
-        <translation>Kalendari është një mjet për parje datash, dhe gjithashtu edhe një planifikues i përditshëm për të vënë në plan krejt gjërat e jetës së përditshme. </translation>
+        <translation>Kalendari është një mjet për parje datash, si dhe një planifikues i përditshëm për të vënë në plan krejt gjërat e jetës së përditshme. </translation>
     </message>
 </context>
 <context>
