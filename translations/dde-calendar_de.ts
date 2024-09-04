@@ -668,7 +668,7 @@
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="347"/>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="366"/>
         <source>Use System Setting</source>
-        <translation type="unfinished"/>
+        <translation>Systemeinstellung verwenden</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="364"/>
