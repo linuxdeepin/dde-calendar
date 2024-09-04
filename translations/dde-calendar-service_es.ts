@@ -594,31 +594,31 @@
     <name>CWeekWidget</name>
     <message>
         <source>Sun</source>
-        <translation type="vanished">Domingo</translation>
+        <translation type="vanished">dom.</translation>
     </message>
     <message>
         <source>Mon</source>
-        <translation type="vanished">Lunes</translation>
+        <translation type="vanished">lun.</translation>
     </message>
     <message>
         <source>Tue</source>
-        <translation type="vanished">Mar</translation>
+        <translation type="vanished">mar.</translation>
     </message>
     <message>
         <source>Wed</source>
-        <translation type="vanished">Miércoles</translation>
+        <translation type="vanished">miérc.</translation>
     </message>
     <message>
         <source>Thu</source>
-        <translation type="vanished">Jue</translation>
+        <translation type="vanished">juev.</translation>
     </message>
     <message>
         <source>Fri</source>
-        <translation type="vanished">Viernes</translation>
+        <translation type="vanished">vier.</translation>
     </message>
     <message>
         <source>Sat</source>
-        <translation type="vanished">Sábado</translation>
+        <translation type="vanished">sáb.</translation>
     </message>
 </context>
 <context>
