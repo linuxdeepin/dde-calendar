@@ -32,7 +32,7 @@
     <message>
         <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="225"/>
         <source>Event types</source>
-        <translation>Afspraaktypes</translation>
+        <translation>Soorten afspraken</translation>
     </message>
 </context>
 <context>
@@ -184,7 +184,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/cpushbutton.cpp" line="17"/>
         <source>New event type</source>
-        <translation>Nieuw afspraaktype</translation>
+        <translation>Nieuw soort afspraak</translation>
     </message>
 </context>
 <context>
@@ -281,7 +281,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="668"/>
         <source>The name can not only contain whitespaces</source>
-        <translation>De naam mag niet alleen bestaan uit spaties</translation>
+        <translation>De naam mag niet alleen uit spaties bestaan</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="724"/>
@@ -461,7 +461,7 @@
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="79"/>
         <source>All occurrences of a repeating event must have the same all-day status.</source>
-        <translation>Alle afspraken in reeks moeten voorzien zijn van de status &apos;hele dag&apos;.</translation>
+        <translation>Alle afspraken in de reeks moeten voorzien zijn van de status ‘hele dag’.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="80"/>
@@ -497,7 +497,7 @@
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="145"/>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="165"/>
         <source>You are deleting an event.</source>
-        <translation>Je verwijdert een afspraak.</translation>
+        <translation>Je staat op het punt een afspraak te verwijderen.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="127"/>
@@ -540,7 +540,7 @@
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="235"/>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="265"/>
         <source>You are changing a repeating event.</source>
-        <translation>Je past een reeks afspraken aan.</translation>
+        <translation>Je staat op het punt een reeks aan te passen.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="237"/>
@@ -723,7 +723,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="770"/>
         <source>Please go to the &lt;a href=&apos;/&apos;&gt;Control Center&lt;/a&gt; to change system settings</source>
-        <translation type="unfinished"/>
+        <translation>De instellingen kunnen worden aangepast in het &lt;a href=&apos;/&apos;&gt;instellingencentrum&lt;/a&gt; </translation>
     </message>
 </context>
 <context>
@@ -770,7 +770,7 @@
         <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="92"/>
         <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="93"/>
         <source>Search events and festivals</source>
-        <translation>Zoeken naar afspraken en festivals</translation>
+        <translation>Zoeken naar afspraken en evenementen</translation>
     </message>
 </context>
 <context>
@@ -869,7 +869,7 @@
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="356"/>
         <source>Manage</source>
-        <translation>Beheren</translation>
+        <translation>Instellingen</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="363"/>
@@ -1033,7 +1033,7 @@
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="112"/>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="131"/>
         <source>Event types</source>
-        <translation>Afspraaktypes</translation>
+        <translation>Soorten afspraken</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="38"/>
@@ -1084,7 +1084,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="153"/>
         <source>Time</source>
-        <translation>Tijdstip</translation>
+        <translation>Tijdsklok</translation>
     </message>
 </context>
 <context>
@@ -1113,7 +1113,7 @@
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="21"/>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="47"/>
         <source>New event type</source>
-        <translation>Nieuw afspraaktype</translation>
+        <translation>Nieuw soort afspraak</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="31"/>
