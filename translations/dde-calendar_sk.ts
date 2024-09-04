@@ -113,7 +113,7 @@
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daywindow.cpp" line="170"/>
         <source>Lunar</source>
-        <translation type="unfinished"/>
+        <translation>Lunárny</translation>
     </message>
 </context>
 <context>
@@ -276,7 +276,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="573"/>
         <source>Enter a name please</source>
-        <translation type="unfinished"/>
+        <translation>Zadajte prosím meno</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="668"/>
@@ -369,12 +369,12 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="947"/>
         <source>Solar</source>
-        <translation type="unfinished"/>
+        <translation>Solárny</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="948"/>
         <source>Lunar</source>
-        <translation type="unfinished"/>
+        <translation>Lunárny</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="981"/>
@@ -1079,7 +1079,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="152"/>
         <source>First day of week</source>
-        <translation type="unfinished"/>
+        <translation>Prvý deň v týždni</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="153"/>
@@ -1160,7 +1160,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="241"/>
         <source>Enter a name please</source>
-        <translation type="unfinished"/>
+        <translation>Zadajte prosím meno</translation>
     </message>
 </context>
 <context>
