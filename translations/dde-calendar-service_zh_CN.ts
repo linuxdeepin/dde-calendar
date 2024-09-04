@@ -806,7 +806,7 @@
     </message>
     <message>
         <source>Account</source>
-        <translation type="vanished">账户</translation>
+        <translation type="vanished">帐户</translation>
     </message>
     <message>
         <source>Select items to be synced</source>
