@@ -1,708 +1,698 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="el">
+<?xml version="1.0" ?><!DOCTYPE TS><TS version="2.1" language="el">
 <context>
     <name>AccountItem</name>
     <message>
         <source>Sync successful</source>
-        <translation>Επιτυχής συγχρονισμός</translation>
+        <translation type="vanished">Επιτυχής συγχρονισμός</translation>
     </message>
     <message>
         <source>Network error</source>
-        <translation>Σφάλμα δικτύου</translation>
+        <translation type="vanished">Σφάλμα δικτύου</translation>
     </message>
     <message>
         <source>Server exception</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Storage full</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>AccountManager</name>
     <message>
         <source>Local account</source>
-        <translation>Τοπικός λογαριασμός</translation>
+        <translation type="vanished">Τοπικός λογαριασμός</translation>
     </message>
     <message>
         <source>Event types</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>CColorPickerWidget</name>
     <message>
         <source>Color</source>
-        <translation>Χρώμα </translation>
+        <translation type="vanished">Χρώμα </translation>
     </message>
     <message>
         <source>Cancel</source>
         <comment>button</comment>
-        <translation>Ακύρωση</translation>
+        <translation type="vanished">Ακύρωση</translation>
     </message>
     <message>
         <source>Save</source>
         <comment>button</comment>
-        <translation>Αποθήκευση</translation>
+        <translation type="vanished">Αποθήκευση</translation>
     </message>
 </context>
 <context>
     <name>CDayMonthView</name>
     <message>
         <source>Monday</source>
-        <translation>Δευτέρα</translation>
+        <translation type="vanished">Δευτέρα</translation>
     </message>
     <message>
         <source>Tuesday</source>
-        <translation>Τρίτη</translation>
+        <translation type="vanished">Τρίτη</translation>
     </message>
     <message>
         <source>Wednesday</source>
-        <translation>Τετάρτη</translation>
+        <translation type="vanished">Τετάρτη</translation>
     </message>
     <message>
         <source>Thursday</source>
-        <translation>Πέμπτη</translation>
+        <translation type="vanished">Πέμπτη</translation>
     </message>
     <message>
         <source>Friday</source>
-        <translation>Παρασκευή</translation>
+        <translation type="vanished">Παρασκευή</translation>
     </message>
     <message>
         <source>Saturday</source>
-        <translation>Σάββατο</translation>
+        <translation type="vanished">Σάββατο</translation>
     </message>
     <message>
         <source>Sunday</source>
-        <translation>Κυριακή</translation>
+        <translation type="vanished">Κυριακή</translation>
     </message>
 </context>
 <context>
     <name>CDayWindow</name>
     <message>
         <source>Y</source>
-        <translation>Ε</translation>
+        <translation type="vanished">Ε</translation>
     </message>
     <message>
         <source>M</source>
-        <translation>Μ</translation>
+        <translation type="vanished">Μ</translation>
     </message>
     <message>
         <source>D</source>
-        <translation>Η</translation>
+        <translation type="vanished">Η</translation>
     </message>
     <message>
         <source>Lunar</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>CGraphicsView</name>
     <message>
         <source>New Event</source>
-        <translation>Νέο Συμβάν</translation>
+        <translation type="vanished">Νέο Συμβάν</translation>
     </message>
 </context>
 <context>
     <name>CMonthScheduleNumItem</name>
     <message>
         <source>%1 more</source>
-        <translation>%1 περισσότερο-α</translation>
+        <translation type="vanished">%1 περισσότερο-α</translation>
     </message>
 </context>
 <context>
     <name>CMonthView</name>
     <message>
         <source>New event</source>
-        <translation>Νέο συμβάν</translation>
+        <translation type="vanished">Νέο συμβάν</translation>
     </message>
     <message>
         <source>New Event</source>
-        <translation>Νέο Συμβάν</translation>
+        <translation type="vanished">Νέο Συμβάν</translation>
     </message>
 </context>
 <context>
     <name>CMonthWindow</name>
     <message>
         <source>Y</source>
-        <translation>Y</translation>
+        <translation type="vanished">Y</translation>
     </message>
 </context>
 <context>
     <name>CMyScheduleView</name>
     <message>
         <source>My Event</source>
-        <translation>Το συμβάν μου</translation>
+        <translation type="vanished">Το συμβάν μου</translation>
     </message>
     <message>
         <source>OK</source>
         <comment>button</comment>
-        <translation>ΟΚ</translation>
+        <translation type="vanished">ΟΚ</translation>
     </message>
     <message>
         <source>Delete</source>
         <comment>button</comment>
-        <translation>Διαγραφή</translation>
+        <translation type="vanished">Διαγραφή</translation>
     </message>
     <message>
         <source>Edit</source>
         <comment>button</comment>
-        <translation>Επεξεργασία</translation>
+        <translation type="vanished">Επεξεργασία</translation>
     </message>
 </context>
 <context>
     <name>CPushButton</name>
     <message>
         <source>New event type</source>
-        <translation>Νέος τύπος συμβάντος</translation>
+        <translation type="vanished">Νέος τύπος συμβάντος</translation>
     </message>
 </context>
 <context>
     <name>CScheduleDlg</name>
     <message>
         <source>New Event</source>
-        <translation>Νέο συμβάν</translation>
+        <translation type="vanished">Νέο συμβάν</translation>
     </message>
     <message>
         <source>Edit Event</source>
-        <translation>Επεξεργασία συμβάντος</translation>
+        <translation type="vanished">Επεξεργασία συμβάντος</translation>
     </message>
     <message>
         <source>End time must be greater than start time</source>
-        <translation>Ο χρόνος λήξης πρέπει να είναι μεγαλύτερος του χρόνου έναρξης</translation>
+        <translation type="vanished">Ο χρόνος λήξης πρέπει να είναι μεγαλύτερος του χρόνου έναρξης</translation>
     </message>
     <message>
         <source>OK</source>
         <comment>button</comment>
-        <translation>OK</translation>
+        <translation type="vanished">OK</translation>
     </message>
     <message>
         <source>Never</source>
-        <translation>Ποτέ</translation>
+        <translation type="vanished">Ποτέ</translation>
     </message>
     <message>
         <source>At time of event</source>
-        <translation>Την ώρα του συμβάντος</translation>
+        <translation type="vanished">Την ώρα του συμβάντος</translation>
     </message>
     <message>
         <source>15 minutes before</source>
-        <translation>15 λεπτά πριν</translation>
+        <translation type="vanished">15 λεπτά πριν</translation>
     </message>
     <message>
         <source>30 minutes before</source>
-        <translation>30 λεπτά πριν</translation>
+        <translation type="vanished">30 λεπτά πριν</translation>
     </message>
     <message>
         <source>1 hour before</source>
-        <translation>1 ώρα πριν</translation>
+        <translation type="vanished">1 ώρα πριν</translation>
     </message>
     <message>
         <source>1 day before</source>
-        <translation>1 ημέρα πριν</translation>
+        <translation type="vanished">1 ημέρα πριν</translation>
     </message>
     <message>
         <source>2 days before</source>
-        <translation>2 ημέρες πριν</translation>
+        <translation type="vanished">2 ημέρες πριν</translation>
     </message>
     <message>
         <source>1 week before</source>
-        <translation>1 εβδομάδα πριν</translation>
+        <translation type="vanished">1 εβδομάδα πριν</translation>
     </message>
     <message>
         <source>On start day (9:00 AM)</source>
-        <translation>Στην έναρξη της ημέρας (9:00 ΠΜ)</translation>
+        <translation type="vanished">Στην έναρξη της ημέρας (9:00 ΠΜ)</translation>
     </message>
     <message>
         <source>time(s)</source>
-        <translation>φορά(ές)</translation>
+        <translation type="vanished">φορά(ές)</translation>
     </message>
     <message>
         <source>Enter a name please</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>The name can not only contain whitespaces</source>
-        <translation>Το όνομα δεν μπορρεί να περιέχει μόνο κενούς χαρακτήρες</translation>
+        <translation type="vanished">Το όνομα δεν μπορρεί να περιέχει μόνο κενούς χαρακτήρες</translation>
     </message>
     <message>
         <source>Type:</source>
-        <translation>Τύπος:</translation>
+        <translation type="vanished">Τύπος:</translation>
     </message>
     <message>
         <source>Description:</source>
-        <translation>Περιγραφή:</translation>
+        <translation type="vanished">Περιγραφή:</translation>
     </message>
     <message>
         <source>All Day:</source>
-        <translation>Ολοήμερο:</translation>
+        <translation type="vanished">Ολοήμερο:</translation>
     </message>
     <message>
         <source>Starts:</source>
-        <translation>Αρχίζει:</translation>
+        <translation type="vanished">Αρχίζει:</translation>
     </message>
     <message>
         <source>Ends:</source>
-        <translation>Τελειώνει:</translation>
+        <translation type="vanished">Τελειώνει:</translation>
     </message>
     <message>
         <source>Remind Me:</source>
-        <translation>Υπενθύμισέ μου:</translation>
+        <translation type="vanished">Υπενθύμισέ μου:</translation>
     </message>
     <message>
         <source>Repeat:</source>
-        <translation>Επανάληψη:</translation>
+        <translation type="vanished">Επανάληψη:</translation>
     </message>
     <message>
         <source>End Repeat:</source>
-        <translation>Τέλος Επανάληψης:</translation>
+        <translation type="vanished">Τέλος Επανάληψης:</translation>
     </message>
     <message>
         <source>Calendar account:</source>
-        <translation>Λογαριασμός ημερολογίου:</translation>
+        <translation type="vanished">Λογαριασμός ημερολογίου:</translation>
     </message>
     <message>
         <source>Calendar account</source>
-        <translation>Λογαριασμός ημερολογίου</translation>
+        <translation type="vanished">Λογαριασμός ημερολογίου</translation>
     </message>
     <message>
         <source>Type</source>
-        <translation>Τύπος</translation>
+        <translation type="vanished">Τύπος</translation>
     </message>
     <message>
         <source>Description</source>
-        <translation>Περιγραφή</translation>
+        <translation type="vanished">Περιγραφή</translation>
     </message>
     <message>
         <source>All Day</source>
-        <translation>Ολοήμερο</translation>
+        <translation type="vanished">Ολοήμερο</translation>
     </message>
     <message>
         <source>Time:</source>
-        <translation>Ώρα:</translation>
+        <translation type="vanished">Ώρα:</translation>
     </message>
     <message>
         <source>Time</source>
-        <translation>Ώρα</translation>
+        <translation type="vanished">Ώρα</translation>
     </message>
     <message>
         <source>Solar</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Lunar</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Starts</source>
-        <translation>Αρχίζει</translation>
+        <translation type="vanished">Αρχίζει</translation>
     </message>
     <message>
         <source>Ends</source>
-        <translation>Τελειώνει</translation>
+        <translation type="vanished">Τελειώνει</translation>
     </message>
     <message>
         <source>Remind Me</source>
-        <translation>Υπενθύμισέ μου</translation>
+        <translation type="vanished">Υπενθύμισέ μου</translation>
     </message>
     <message>
         <source>Repeat</source>
-        <translation>Επανάληψη</translation>
+        <translation type="vanished">Επανάληψη</translation>
     </message>
     <message>
         <source>Daily</source>
-        <translation>Ημερήσιο</translation>
+        <translation type="vanished">Ημερήσιο</translation>
     </message>
     <message>
         <source>Weekdays</source>
-        <translation>Εργάσιμες</translation>
+        <translation type="vanished">Εργάσιμες</translation>
     </message>
     <message>
         <source>Weekly</source>
-        <translation>Εβδομαδιαίο</translation>
+        <translation type="vanished">Εβδομαδιαίο</translation>
     </message>
     <message>
         <source>Monthly</source>
-        <translation>Μηνιαίο</translation>
+        <translation type="vanished">Μηνιαίο</translation>
     </message>
     <message>
         <source>Yearly</source>
-        <translation>Ετήσιο</translation>
+        <translation type="vanished">Ετήσιο</translation>
     </message>
     <message>
         <source>End Repeat</source>
-        <translation>Τέλος Επανάληψης</translation>
+        <translation type="vanished">Τέλος Επανάληψης</translation>
     </message>
     <message>
         <source>After</source>
-        <translation>Μετά</translation>
+        <translation type="vanished">Μετά</translation>
     </message>
     <message>
         <source>On</source>
-        <translation>Ενεργό</translation>
+        <translation type="vanished">Ενεργό</translation>
     </message>
     <message>
         <source>Cancel</source>
         <comment>button</comment>
-        <translation>Ακύρωση</translation>
+        <translation type="vanished">Ακύρωση</translation>
     </message>
     <message>
         <source>Save</source>
         <comment>button</comment>
-        <translation>Αποθήκευση</translation>
+        <translation type="vanished">Αποθήκευση</translation>
     </message>
 </context>
 <context>
     <name>CScheduleOperation</name>
     <message>
         <source>All occurrences of a repeating event must have the same all-day status.</source>
-        <translation>Όλες οι εμφανίσεις ενός επαναλαμβανόμενου συμβάντος πρέπει να έχουν την ίδια ολοήμερη κατάσταση.</translation>
+        <translation type="vanished">Όλες οι εμφανίσεις ενός επαναλαμβανόμενου συμβάντος πρέπει να έχουν την ίδια ολοήμερη κατάσταση.</translation>
     </message>
     <message>
         <source>Do you want to change all occurrences?</source>
-        <translation>Θέλετε να αλλάξετε όλες τις εμφανίσεις;</translation>
+        <translation type="vanished">Θέλετε να αλλάξετε όλες τις εμφανίσεις;</translation>
     </message>
     <message>
         <source>Cancel</source>
         <comment>button</comment>
-        <translation>Ακύρωση</translation>
+        <translation type="vanished">Ακύρωση</translation>
     </message>
     <message>
         <source>Change All</source>
-        <translation>Αλλαγή Όλων</translation>
+        <translation type="vanished">Αλλαγή Όλων</translation>
     </message>
     <message>
         <source>You are changing the repeating rule of this event.</source>
-        <translation>Αλλάζεις τον κανόνα επανάληψης αυτού του συμβάντος.</translation>
+        <translation type="vanished">Αλλάζεις τον κανόνα επανάληψης αυτού του συμβάντος.</translation>
     </message>
     <message>
         <source>You are deleting an event.</source>
-        <translation>Διαγράφεις ένα συμβάν</translation>
+        <translation type="vanished">Διαγράφεις ένα συμβάν</translation>
     </message>
     <message>
         <source>Are you sure you want to delete this event?</source>
-        <translation>Είστε σίγουρος ότι θέλετε να διαγράψετε αυτό το συμβάν;</translation>
+        <translation type="vanished">Είστε σίγουρος ότι θέλετε να διαγράψετε αυτό το συμβάν;</translation>
     </message>
     <message>
         <source>Delete</source>
         <comment>button</comment>
-        <translation>Διαγραφή</translation>
+        <translation type="vanished">Διαγραφή</translation>
     </message>
     <message>
         <source>Do you want to delete all occurrences of this event, or only the selected occurrence?</source>
-        <translation>Θέλετε να διαγράψετε όλες τις εμφανίσεις αυτού του συμβάντος ή μόνο την επιλεγμένη εμφάνιση;</translation>
+        <translation type="vanished">Θέλετε να διαγράψετε όλες τις εμφανίσεις αυτού του συμβάντος ή μόνο την επιλεγμένη εμφάνιση;</translation>
     </message>
     <message>
         <source>Delete All</source>
-        <translation>Διαγραφή όλων</translation>
+        <translation type="vanished">Διαγραφή όλων</translation>
     </message>
     <message>
         <source>Delete Only This Event</source>
-        <translation>Διαγραφή Μόνο Αυτού του Συμβάντος</translation>
+        <translation type="vanished">Διαγραφή Μόνο Αυτού του Συμβάντος</translation>
     </message>
     <message>
         <source>Do you want to delete this and all future occurrences of this event, or only the selected occurrence?</source>
-        <translation>Θέλετε να διαγράψετε αυτήν και όλες τις μελλοντικές εμφανίσεις αυτού του συμβάντος ή μόνο την επιλεγμένη εμφάνιση;</translation>
+        <translation type="vanished">Θέλετε να διαγράψετε αυτήν και όλες τις μελλοντικές εμφανίσεις αυτού του συμβάντος ή μόνο την επιλεγμένη εμφάνιση;</translation>
     </message>
     <message>
         <source>Delete All Future Events</source>
-        <translation>Διαγραφή Όλων των Μελλοντικών Συμβάντων</translation>
+        <translation type="vanished">Διαγραφή Όλων των Μελλοντικών Συμβάντων</translation>
     </message>
     <message>
         <source>You are changing a repeating event.</source>
-        <translation>Αλλάζεις ένα επαναλαμβανόμενο συμβάν.</translation>
+        <translation type="vanished">Αλλάζεις ένα επαναλαμβανόμενο συμβάν.</translation>
     </message>
     <message>
         <source>Do you want to change only this occurrence of the event, or all occurrences?</source>
-        <translation>Θέλετε να αλλάξετε μόνο αυτήν την εμφάνιση του συμβάντος ή όλες τις εμφανίσεις;</translation>
+        <translation type="vanished">Θέλετε να αλλάξετε μόνο αυτήν την εμφάνιση του συμβάντος ή όλες τις εμφανίσεις;</translation>
     </message>
     <message>
         <source>All</source>
-        <translation>Όλα</translation>
+        <translation type="vanished">Όλα</translation>
     </message>
     <message>
         <source>Only This Event</source>
-        <translation>Μόνο Αυτό το Συμβάν</translation>
+        <translation type="vanished">Μόνο Αυτό το Συμβάν</translation>
     </message>
     <message>
         <source>Do you want to change only this occurrence of the event, or this and all future occurrences?</source>
-        <translation>Θέλετε να αλλάξετε μόνο αυτήν την εμφάνιση του συμβάντος ή αυτήν και όλες τις μελλοντικές εμφανίσεις;</translation>
+        <translation type="vanished">Θέλετε να αλλάξετε μόνο αυτήν την εμφάνιση του συμβάντος ή αυτήν και όλες τις μελλοντικές εμφανίσεις;</translation>
     </message>
     <message>
         <source>All Future Events</source>
-        <translation>Όλα τα Μελλοντικά Συμβάντα</translation>
+        <translation type="vanished">Όλα τα Μελλοντικά Συμβάντα</translation>
     </message>
     <message>
         <source>You have selected a leap month, and will be reminded according to the rules of the lunar calendar.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>OK</source>
         <comment>button</comment>
-        <translation>ΟΚ</translation>
+        <translation type="vanished">ΟΚ</translation>
     </message>
 </context>
 <context>
     <name>CScheduleSearchDateItem</name>
     <message>
         <source>Y</source>
-        <translation>Ε</translation>
+        <translation type="vanished">Ε</translation>
     </message>
     <message>
         <source>M</source>
-        <translation>Μ</translation>
+        <translation type="vanished">Μ</translation>
     </message>
     <message>
         <source>D</source>
-        <translation>Η</translation>
+        <translation type="vanished">Η</translation>
     </message>
 </context>
 <context>
     <name>CScheduleSearchItem</name>
     <message>
         <source>Edit</source>
-        <translation>Επεξεργασία</translation>
+        <translation type="vanished">Επεξεργασία</translation>
     </message>
     <message>
         <source>Delete</source>
-        <translation>Διαγραφή</translation>
+        <translation type="vanished">Διαγραφή</translation>
     </message>
     <message>
         <source>All Day</source>
-        <translation>Ολοήμερο</translation>
+        <translation type="vanished">Ολοήμερο</translation>
     </message>
 </context>
 <context>
     <name>CScheduleSearchView</name>
     <message>
         <source>No search results</source>
-        <translation>Χωρίς αποτελέσματα αναζήτησης</translation>
+        <translation type="vanished">Χωρίς αποτελέσματα αναζήτησης</translation>
     </message>
 </context>
 <context>
     <name>CScheduleView</name>
     <message>
         <source>ALL DAY</source>
-        <translation>ΟΛΟΗΜΕΡΟ</translation>
+        <translation type="vanished">ΟΛΟΗΜΕΡΟ</translation>
     </message>
 </context>
 <context>
     <name>CSettingDialog</name>
     <message>
-        <source>import ICS file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Manual</source>
-        <translation>Μη αυτόματα</translation>
+        <translation type="vanished">Μη αυτόματα</translation>
     </message>
     <message>
         <source>15 mins</source>
-        <translation>15 λεπτά</translation>
+        <translation type="vanished">15 λεπτά</translation>
     </message>
     <message>
         <source>30 mins</source>
-        <translation>30 λεπτά</translation>
+        <translation type="vanished">30 λεπτά</translation>
     </message>
     <message>
         <source>1 hour</source>
-        <translation>1 ώρα</translation>
+        <translation type="vanished">1 ώρα</translation>
     </message>
     <message>
         <source>24 hours</source>
-        <translation>24 ώρες</translation>
+        <translation type="vanished">24 ώρες</translation>
     </message>
     <message>
         <source>Sync Now</source>
-        <translation>Συγχρονισμός Τώρα</translation>
+        <translation type="vanished">Συγχρονισμός Τώρα</translation>
     </message>
     <message>
         <source>Last sync</source>
-        <translation>Τελευταίος συγχρονισμός</translation>
+        <translation type="vanished">Τελευταίος συγχρονισμός</translation>
     </message>
     <message>
         <source>Monday</source>
-        <translation>Δευτέρα</translation>
-    </message>
-    <message>
-        <source>Tuesday</source>
-        <translation type="unfinished">Τρίτη</translation>
-    </message>
-    <message>
-        <source>Wednesday</source>
-        <translation type="unfinished">Τετάρτη</translation>
-    </message>
-    <message>
-        <source>Thursday</source>
-        <translation type="unfinished">Πέμπτη</translation>
-    </message>
-    <message>
-        <source>Friday</source>
-        <translation type="unfinished">Παρασκευή</translation>
-    </message>
-    <message>
-        <source>Saturday</source>
-        <translation type="unfinished">Σάββατο</translation>
+        <translation type="vanished">Δευτέρα</translation>
     </message>
     <message>
         <source>Sunday</source>
-        <translation>Κυριακή</translation>
+        <translation type="vanished">Κυριακή</translation>
     </message>
     <message>
         <source>12-hour clock</source>
-        <translation>12-ωρο ρολόι</translation>
+        <translation type="vanished">12-ωρο ρολόι</translation>
     </message>
     <message>
         <source>24-hour clock</source>
-        <translation>24-ωρο ρολόι</translation>
+        <translation type="vanished">24-ωρο ρολόι</translation>
     </message>
     <message>
-        <source>Please go to the &lt;a href=&apos;/&apos;&gt;Control Center&lt;/a&gt; to change settings</source>
-        <translation type="unfinished"></translation>
+        <source>Tuesday</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Wednesday</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Thursday</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Friday</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Saturday</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>CTimeEdit</name>
     <message>
         <source>(%1 mins)</source>
-        <translation>(%1 λεπτά)</translation>
+        <translation type="vanished">(%1 λεπτά)</translation>
     </message>
     <message>
         <source>(%1 hour)</source>
-        <translation>(%1 ώρα)</translation>
+        <translation type="vanished">(%1 ώρα)</translation>
     </message>
     <message>
         <source>(%1 hours)</source>
-        <translation>(%1 ώρες)</translation>
+        <translation type="vanished">(%1 ώρες)</translation>
     </message>
 </context>
 <context>
     <name>CTitleWidget</name>
     <message>
         <source>Y</source>
-        <translation>Ε</translation>
+        <translation type="vanished">Ε</translation>
     </message>
     <message>
         <source>M</source>
-        <translation>Μ</translation>
+        <translation type="vanished">Μ</translation>
     </message>
     <message>
         <source>W</source>
-        <translation>Β</translation>
+        <translation type="vanished">Β</translation>
     </message>
     <message>
         <source>D</source>
-        <translation>Η</translation>
+        <translation type="vanished">Η</translation>
     </message>
     <message>
         <source>Search events and festivals</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>CWeekWidget</name>
     <message>
         <source>Sun</source>
-        <translation>Κυρ</translation>
+        <translation type="vanished">Κυρ</translation>
     </message>
     <message>
         <source>Mon</source>
-        <translation>Δευ</translation>
+        <translation type="vanished">Δευ</translation>
     </message>
     <message>
         <source>Tue</source>
-        <translation>Τρι</translation>
+        <translation type="vanished">Τρι</translation>
     </message>
     <message>
         <source>Wed</source>
-        <translation>Τετ</translation>
+        <translation type="vanished">Τετ</translation>
     </message>
     <message>
         <source>Thu</source>
-        <translation>Πεμ</translation>
+        <translation type="vanished">Πεμ</translation>
     </message>
     <message>
         <source>Fri</source>
-        <translation>Παρ</translation>
+        <translation type="vanished">Παρ</translation>
     </message>
     <message>
         <source>Sat</source>
-        <translation>Σαβ</translation>
+        <translation type="vanished">Σαβ</translation>
     </message>
 </context>
 <context>
     <name>CWeekWindow</name>
     <message>
         <source>Week</source>
-        <translation>Εβδομάδα</translation>
+        <translation type="vanished">Εβδομάδα</translation>
     </message>
     <message>
         <source>Y</source>
-        <translation>Y</translation>
+        <translation type="vanished">Y</translation>
     </message>
 </context>
 <context>
     <name>CYearScheduleView</name>
     <message>
         <source>All Day</source>
-        <translation>Ολοήμερο</translation>
+        <translation type="vanished">Ολοήμερο</translation>
     </message>
     <message>
         <source>No event</source>
-        <translation>Χωρίς συμβάν</translation>
+        <translation type="vanished">Χωρίς συμβάν</translation>
     </message>
 </context>
 <context>
     <name>CYearWindow</name>
     <message>
         <source>Y</source>
-        <translation>Y</translation>
+        <translation type="vanished">Y</translation>
     </message>
 </context>
 <context>
     <name>CalendarWindow</name>
     <message>
         <source>Calendar</source>
-        <translation>Ημερολόγιο</translation>
+        <translation type="vanished">Ημερολόγιο</translation>
     </message>
     <message>
         <source>Calendar is a tool to view dates, and also a smart daily planner to schedule all things in life. </source>
-        <translation>Το Ημερολόγιο είναι ένα εργαλείο για να δεις ημερομηνίες, αλλα και επίσης ένας εξύπνος σχεδιαστής ημέρας για να προγραμματίσεις όλα τα πράγματα στην ζωή.</translation>
+        <translation type="vanished">Το Ημερολόγιο είναι ένα εργαλείο για να δεις ημερομηνίες, αλλα και επίσης ένας εξύπνος σχεδιαστής ημέρας για να προγραμματίσεις όλα τα πράγματα στην ζωή.</translation>
     </message>
 </context>
 <context>
     <name>Calendarmainwindow</name>
     <message>
         <source>Calendar</source>
-        <translation>Ημερολόγιο</translation>
+        <translation type="vanished">Ημερολόγιο</translation>
     </message>
     <message>
         <source>Manage</source>
-        <translation>Διαχείρηση</translation>
+        <translation type="vanished">Διαχείρηση</translation>
     </message>
     <message>
         <source>Privacy Policy</source>
-        <translation>Πολιτική Απορρήτου</translation>
+        <translation type="vanished">Πολιτική Απορρήτου</translation>
     </message>
     <message>
         <source>Syncing...</source>
-        <translation>Συγχρονισμός...</translation>
+        <translation type="vanished">Συγχρονισμός...</translation>
     </message>
     <message>
         <source>Sync successful</source>
-        <translation>Επιτυχής συγχρονισμός</translation>
+        <translation type="vanished">Επιτυχής συγχρονισμός</translation>
     </message>
     <message>
         <source>Sync failed, please try later</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>CenterWidget</name>
     <message>
         <source>All Day</source>
-        <translation>Ολοήμερο</translation>
+        <translation type="vanished">Ολοήμερο</translation>
     </message>
 </context>
 <context>
@@ -772,99 +762,91 @@
     <name>DragInfoGraphicsView</name>
     <message>
         <source>Edit</source>
-        <translation>Επεξεργασία</translation>
+        <translation type="vanished">Επεξεργασία</translation>
     </message>
     <message>
         <source>Delete</source>
-        <translation>Διαγραφή</translation>
+        <translation type="vanished">Διαγραφή</translation>
     </message>
     <message>
         <source>New event</source>
-        <translation>Νέο συμβάν</translation>
+        <translation type="vanished">Νέο συμβάν</translation>
     </message>
     <message>
         <source>New Event</source>
-        <translation>Νέο Συμβάν</translation>
+        <translation type="vanished">Νέο Συμβάν</translation>
     </message>
 </context>
 <context>
     <name>JobTypeListView</name>
     <message>
-        <source>export</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>import ICS file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>You are deleting an event type.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>All events under this type will be deleted and cannot be recovered.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Cancel</source>
         <comment>button</comment>
-        <translation>Ακύρωση</translation>
+        <translation type="vanished">Ακύρωση</translation>
     </message>
     <message>
         <source>Delete</source>
         <comment>button</comment>
-        <translation>Διαγραφή</translation>
+        <translation type="vanished">Διαγραφή</translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
         <source>Account settings</source>
-        <translation>Ρυθμίσεις λογαριασμού</translation>
+        <translation type="vanished">Ρυθμίσεις λογαριασμού</translation>
     </message>
     <message>
         <source>Account</source>
-        <translation>Λογαριασμός</translation>
+        <translation type="vanished">Λογαριασμός</translation>
     </message>
     <message>
         <source>Select items to be synced</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Events</source>
-        <translation>Συμβάντα</translation>
+        <translation type="vanished">Συμβάντα</translation>
     </message>
     <message>
         <source>General settings</source>
-        <translation>Γενικές ρυθμίσεις</translation>
+        <translation type="vanished">Γενικές ρυθμίσεις</translation>
     </message>
     <message>
         <source>Sync interval</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Manage calendar</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Calendar account</source>
-        <translation>Λογαριασμός ημερολογίου</translation>
+        <translation type="vanished">Λογαριασμός ημερολογίου</translation>
     </message>
     <message>
         <source>Event types</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>General</source>
-        <translation>Γενικά</translation>
+        <translation type="vanished">Γενικά</translation>
     </message>
     <message>
         <source>First day of week</source>
-        <translation>Πρώτη ημέρα της εβδομάδας</translation>
+        <translation type="vanished">Πρώτη ημέρα της εβδομάδας</translation>
     </message>
     <message>
         <source>Time</source>
-        <translation>Ώρα</translation>
+        <translation type="vanished">Ώρα</translation>
     </message>
 </context>
 <context>
@@ -872,7 +854,7 @@
     <message>
         <source>Today</source>
         <comment>Return</comment>
-        <translation>Σήμερα</translation>
+        <translation type="vanished">Σήμερα</translation>
     </message>
 </context>
 <context>
@@ -880,94 +862,86 @@
     <message>
         <source>Today</source>
         <comment>Return Today</comment>
-        <translation>Σήμερα</translation>
+        <translation type="vanished">Σήμερα</translation>
     </message>
 </context>
 <context>
     <name>ScheduleTypeEditDlg</name>
     <message>
         <source>New event type</source>
-        <translation>Νέος τύπος συμβάντος</translation>
+        <translation type="vanished">Νέος τύπος συμβάντος</translation>
     </message>
     <message>
         <source>Edit event type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Import ICS file</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Name:</source>
-        <translation>Όνομα:</translation>
+        <translation type="vanished">Όνομα:</translation>
     </message>
     <message>
         <source>Color:</source>
-        <translation>Χρώμα:</translation>
-    </message>
-    <message>
-        <source>&lt;a href=&apos;https://wikipedia.org/wiki/ICalendar&apos;&gt;ICS&lt;/a&gt; File:</source>
-        <translation type="unfinished"></translation>
+        <translation type="vanished">Χρώμα:</translation>
     </message>
     <message>
         <source>Cancel</source>
         <comment>button</comment>
-        <translation>Ακύρωση</translation>
+        <translation type="vanished">Ακύρωση</translation>
     </message>
     <message>
         <source>Save</source>
         <comment>button</comment>
-        <translation>Αποθήκευση</translation>
+        <translation type="vanished">Αποθήκευση</translation>
     </message>
     <message>
         <source>The name can not only contain whitespaces</source>
-        <translation>Το όνομα δεν μπορρεί να περιέχει μόνο κενούς χαρακτήρες</translation>
+        <translation type="vanished">Το όνομα δεν μπορρεί να περιέχει μόνο κενούς χαρακτήρες</translation>
     </message>
     <message>
         <source>Enter a name please</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>Shortcut</name>
     <message>
         <source>Help</source>
-        <translation>Βοήθεια</translation>
+        <translation type="vanished">Βοήθεια</translation>
     </message>
     <message>
         <source>Delete event</source>
-        <translation>Διαγραφή συμβάντος</translation>
+        <translation type="vanished">Διαγραφή συμβάντος</translation>
     </message>
     <message>
         <source>Copy</source>
-        <translation>Αντιγραφή</translation>
+        <translation type="vanished">Αντιγραφή</translation>
     </message>
     <message>
         <source>Cut</source>
-        <translation>Αποκοπή</translation>
+        <translation type="vanished">Αποκοπή</translation>
     </message>
     <message>
         <source>Paste</source>
-        <translation>Επικόλληση</translation>
+        <translation type="vanished">Επικόλληση</translation>
     </message>
     <message>
         <source>Delete</source>
-        <translation>Διαγραφή</translation>
+        <translation type="vanished">Διαγραφή</translation>
     </message>
     <message>
         <source>Select all</source>
-        <translation>Επιλογή όλων</translation>
+        <translation type="vanished">Επιλογή όλων</translation>
     </message>
 </context>
 <context>
     <name>SidebarCalendarWidget</name>
     <message>
         <source>Y</source>
-        <translation>Ε</translation>
+        <translation type="vanished">Ε</translation>
     </message>
     <message>
         <source>M</source>
-        <translation>Μ</translation>
+        <translation type="vanished">Μ</translation>
     </message>
 </context>
 <context>
@@ -975,7 +949,7 @@
     <message>
         <source>Go</source>
         <comment>button</comment>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -983,19 +957,19 @@
     <message>
         <source>Sign In</source>
         <comment>button</comment>
-        <translation>Σύνδεση</translation>
+        <translation type="vanished">Σύνδεση</translation>
     </message>
     <message>
         <source>Sign Out</source>
         <comment>button</comment>
-        <translation>Έξοδος</translation>
+        <translation type="vanished">Έξοδος</translation>
     </message>
 </context>
 <context>
     <name>YearFrame</name>
     <message>
         <source>Y</source>
-        <translation>Y</translation>
+        <translation type="vanished">Y</translation>
     </message>
 </context>
 <context>
@@ -1003,7 +977,7 @@
     <message>
         <source>Today</source>
         <comment>Today</comment>
-        <translation>Σήμερα</translation>
+        <translation type="vanished">Σήμερα</translation>
     </message>
 </context>
 </TS>
