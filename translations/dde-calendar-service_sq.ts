@@ -15,7 +15,7 @@
     </message>
     <message>
         <source>Storage full</source>
-        <translation type="vanished">Depozitë e plotë</translation>
+        <translation type="vanished">Depozita plot</translation>
     </message>
 </context>
 <context>
@@ -154,7 +154,7 @@
     <name>CPushButton</name>
     <message>
         <source>New event type</source>
-        <translation type="vanished">Lloj i ri veprimtarie</translation>
+        <translation type="vanished">Lloj veprimtarie të re</translation>
     </message>
 </context>
 <context>
@@ -258,11 +258,11 @@
     </message>
     <message>
         <source>Calendar account:</source>
-        <translation type="vanished">Llogari Kalendari:</translation>
+        <translation type="vanished">Llogari kalendari:</translation>
     </message>
     <message>
         <source>Calendar account</source>
-        <translation type="vanished">Llogari Kalendari</translation>
+        <translation type="vanished">Llogari kalendari</translation>
     </message>
     <message>
         <source>Type</source>
@@ -310,7 +310,7 @@
     </message>
     <message>
         <source>Daily</source>
-        <translation type="vanished">Ditore</translation>
+        <translation type="vanished">Përditë</translation>
     </message>
     <message>
         <source>Weekdays</source>
@@ -401,7 +401,7 @@
     </message>
     <message>
         <source>Do you want to delete this and all future occurrences of this event, or only the selected occurrence?</source>
-        <translation type="vanished">Doni të fshihet kjo dhe krejt përsëritjet në të ardhmen të kësaj veprimtarie, apo vetëm përsëritjen e përzgjedhur?</translation>
+        <translation type="vanished">Doni të fshihet kjo dhe krejt përsëritjet e ardhshme të kësaj veprimtarie, apo vetëm përsëritjen e përzgjedhur?</translation>
     </message>
     <message>
         <source>Delete All Future Events</source>
@@ -425,7 +425,7 @@
     </message>
     <message>
         <source>Do you want to change only this occurrence of the event, or this and all future occurrences?</source>
-        <translation type="vanished">Doni të ndryshohet vetëm kjo përsëritje e veprimtarisë, apo këtë dhe krejt përsëritjet në të ardhmen?</translation>
+        <translation type="vanished">Doni të ndryshohet vetëm kjo përsëritje e veprimtarisë, apo këtë dhe krejt përsëritjet e ardhshme?</translation>
     </message>
     <message>
         <source>All Future Events</source>
@@ -513,7 +513,7 @@
     </message>
     <message>
         <source>Last sync</source>
-        <translation type="vanished">Njëkohësimi i fundit</translation>
+        <translation type="vanished">Njëkohësimi i fundit më</translation>
     </message>
     <message>
         <source>Monday</source>
@@ -658,7 +658,7 @@
     </message>
     <message>
         <source>Calendar is a tool to view dates, and also a smart daily planner to schedule all things in life. </source>
-        <translation type="vanished">Kalendari është një mjet për parje datash, si dhe një planifikues i përditshëm për të vënë në plan krejt gjërat e jetës së përditshme. </translation>
+        <translation type="vanished">Kalendari është një mjet për parje datash, si dhe një planifikues i mençur ditor për të vënë në plan krejt gjërat e jetës së përditshme. </translation>
     </message>
 </context>
 <context>
@@ -869,7 +869,7 @@
     <name>ScheduleTypeEditDlg</name>
     <message>
         <source>New event type</source>
-        <translation type="vanished">Lloj i ri veprimtarie</translation>
+        <translation type="vanished">Lloj veprimtarie të re</translation>
     </message>
     <message>
         <source>Edit event type</source>
