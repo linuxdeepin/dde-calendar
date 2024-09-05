@@ -19,7 +19,7 @@
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="43"/>
         <source>Storage full</source>
-        <translation>Depozitë e plotë</translation>
+        <translation>Depozita plot</translation>
     </message>
 </context>
 <context>
@@ -184,7 +184,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/cpushbutton.cpp" line="17"/>
         <source>New event type</source>
-        <translation>Lloj i ri veprimtarie</translation>
+        <translation>Lloj veprimtarie të re</translation>
     </message>
 </context>
 <context>
@@ -334,12 +334,12 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="815"/>
         <source>Calendar account:</source>
-        <translation>Llogari Kalendari:</translation>
+        <translation>Llogari kalendari:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="816"/>
         <source>Calendar account</source>
-        <translation>Llogari Kalendari</translation>
+        <translation>Llogari kalendari</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="843"/>
@@ -400,7 +400,7 @@
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1109"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1402"/>
         <source>Daily</source>
-        <translation>Ditore</translation>
+        <translation>Përditë</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1110"/>
@@ -718,7 +718,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="576"/>
         <source>Last sync</source>
-        <translation>Njëkohësimi i fundit</translation>
+        <translation>Njëkohësimi i fundit më</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="770"/>
@@ -1113,7 +1113,7 @@
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="21"/>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="47"/>
         <source>New event type</source>
-        <translation>Lloj i ri veprimtarie</translation>
+        <translation>Lloj veprimtarie të re</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="31"/>
