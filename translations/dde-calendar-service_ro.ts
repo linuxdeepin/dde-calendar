@@ -3,30 +3,30 @@
     <name>AccountItem</name>
     <message>
         <source>Sync successful</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Sincronizare reușită</translation>
     </message>
     <message>
         <source>Network error</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Eroare de rețea</translation>
     </message>
     <message>
         <source>Server exception</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Excepție server</translation>
     </message>
     <message>
         <source>Storage full</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Spațiu de stocare încărcat</translation>
     </message>
 </context>
 <context>
     <name>AccountManager</name>
     <message>
         <source>Local account</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Cont local</translation>
     </message>
     <message>
         <source>Event types</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Tipuri de evenimente</translation>
     </message>
 </context>
 <context>
@@ -93,7 +93,7 @@
     </message>
     <message>
         <source>Lunar</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Lunar</translation>
     </message>
 </context>
 <context>
@@ -154,7 +154,7 @@
     <name>CPushButton</name>
     <message>
         <source>New event type</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Tip nou de eveniment</translation>
     </message>
 </context>
 <context>
@@ -218,11 +218,11 @@
     </message>
     <message>
         <source>Enter a name please</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Introduceți un nume, vă rugăm</translation>
     </message>
     <message>
         <source>The name can not only contain whitespaces</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Numele nu poate conține numai spații libere</translation>
     </message>
     <message>
         <source>Type:</source>
@@ -258,11 +258,11 @@
     </message>
     <message>
         <source>Calendar account:</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Cont calendar:</translation>
     </message>
     <message>
         <source>Calendar account</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Cont calendar</translation>
     </message>
     <message>
         <source>Type</source>
@@ -278,19 +278,19 @@
     </message>
     <message>
         <source>Time:</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Oră:</translation>
     </message>
     <message>
         <source>Time</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Oră</translation>
     </message>
     <message>
         <source>Solar</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Solar</translation>
     </message>
     <message>
         <source>Lunar</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Lunar</translation>
     </message>
     <message>
         <source>Starts</source>
@@ -433,7 +433,7 @@
     </message>
     <message>
         <source>You have selected a leap month, and will be reminded according to the rules of the lunar calendar.</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Ați selectat o lună bisectă și vi se va aminti în conformitate cu regulile calendarului lunar.</translation>
     </message>
     <message>
         <source>OK</source>
@@ -493,11 +493,11 @@
     </message>
     <message>
         <source>15 mins</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">15 minute</translation>
     </message>
     <message>
         <source>30 mins</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">30 minute</translation>
     </message>
     <message>
         <source>1 hour</source>
@@ -505,15 +505,15 @@
     </message>
     <message>
         <source>24 hours</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">24 ore</translation>
     </message>
     <message>
         <source>Sync Now</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Sincronizează acum</translation>
     </message>
     <message>
         <source>Last sync</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Ultima sincronizare</translation>
     </message>
     <message>
         <source>Monday</source>
@@ -525,11 +525,11 @@
     </message>
     <message>
         <source>12-hour clock</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Mod ceas 12 ore</translation>
     </message>
     <message>
         <source>24-hour clock</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Mod ceas 24 ore</translation>
     </message>
     <message>
         <source>Tuesday</source>
@@ -556,15 +556,15 @@
     <name>CTimeEdit</name>
     <message>
         <source>(%1 mins)</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">(%1 minnute)</translation>
     </message>
     <message>
         <source>(%1 hour)</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">(%1 oră)</translation>
     </message>
     <message>
         <source>(%1 hours)</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">(%1 ore)</translation>
     </message>
 </context>
 <context>
@@ -587,7 +587,7 @@
     </message>
     <message>
         <source>Search events and festivals</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Căutare evenimente și festivaluri</translation>
     </message>
 </context>
 <context>
@@ -669,7 +669,7 @@
     </message>
     <message>
         <source>Manage</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Gestionare</translation>
     </message>
     <message>
         <source>Privacy Policy</source>
@@ -681,11 +681,11 @@
     </message>
     <message>
         <source>Sync successful</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Sincronizare reușită</translation>
     </message>
     <message>
         <source>Sync failed, please try later</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Sincronizarea a eșuat, vă rugăm să încercați mai târziu</translation>
     </message>
 </context>
 <context>
@@ -731,15 +731,15 @@
     </message>
     <message>
         <source>15 mins later</source>
-        <translation type="unfinished"/>
+        <translation>peste 15 minute</translation>
     </message>
     <message>
         <source>1 hour later</source>
-        <translation type="unfinished"/>
+        <translation>peste 1 oră</translation>
     </message>
     <message>
         <source>4 hours later</source>
-        <translation type="unfinished"/>
+        <translation>peste 4 ore</translation>
     </message>
     <message>
         <source>Tomorrow</source>
@@ -781,11 +781,11 @@
     <name>JobTypeListView</name>
     <message>
         <source>You are deleting an event type.</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Ștergeți un tip de eveniment.</translation>
     </message>
     <message>
         <source>All events under this type will be deleted and cannot be recovered.</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Toate evenimentele de acest tip vor fi șterse și nu vor putea fi recuperate.</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -802,7 +802,7 @@
     <name>QObject</name>
     <message>
         <source>Account settings</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Setări cont</translation>
     </message>
     <message>
         <source>Account</source>
@@ -810,31 +810,31 @@
     </message>
     <message>
         <source>Select items to be synced</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Selectați elementele care urmează să fie sincronizate</translation>
     </message>
     <message>
         <source>Events</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Evenimente</translation>
     </message>
     <message>
         <source>General settings</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Setări generale</translation>
     </message>
     <message>
         <source>Sync interval</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Interval de sincronizare</translation>
     </message>
     <message>
         <source>Manage calendar</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Gestionare calendar</translation>
     </message>
     <message>
         <source>Calendar account</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Cont calendar</translation>
     </message>
     <message>
         <source>Event types</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Tipuri de evenimente</translation>
     </message>
     <message>
         <source>General</source>
@@ -842,11 +842,11 @@
     </message>
     <message>
         <source>First day of week</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Prima zi a săptămânii</translation>
     </message>
     <message>
         <source>Time</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Oră</translation>
     </message>
 </context>
 <context>
@@ -869,11 +869,11 @@
     <name>ScheduleTypeEditDlg</name>
     <message>
         <source>New event type</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Tip nou de eveniment</translation>
     </message>
     <message>
         <source>Edit event type</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Editarea tipului de eveniment</translation>
     </message>
     <message>
         <source>Name:</source>
@@ -881,7 +881,7 @@
     </message>
     <message>
         <source>Color:</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Culoare:</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -895,11 +895,11 @@
     </message>
     <message>
         <source>The name can not only contain whitespaces</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Numele nu poate conține numai spații albe</translation>
     </message>
     <message>
         <source>Enter a name please</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Introduceți un nume, vă rugăm</translation>
     </message>
 </context>
 <context>
@@ -949,7 +949,7 @@
     <message>
         <source>Go</source>
         <comment>button</comment>
-        <translation type="unfinished"/>
+        <translation type="vanished">Mergi</translation>
     </message>
 </context>
 <context>
