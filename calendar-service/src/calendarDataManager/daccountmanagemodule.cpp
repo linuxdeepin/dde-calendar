@@ -11,9 +11,7 @@
 using namespace DDLOG_SERVICE;
 
 DAccountManageModule::DAccountManageModule(QObject *parent)
-    : QObject(parent)
-    , m_syncFileManage(new SyncFileManage())
-    , m_accountManagerDB(new DAccountManagerDataBase)
+    : QObject(parent), m_syncFileManage(new SyncFileManage()), m_accountManagerDB(new DAccountManagerDataBase)
 {
     m_isSupportUid = m_syncFileManage->getSyncoperation()->hasAvailable();
     //新文件路径
@@ -201,7 +199,7 @@ void DAccountManageModule::unionIDDataMerging()
     //如果不支持云同步
     if (!m_isSupportUid) {
         DAccount::Ptr unionidDB;
-        auto hasUnionid = [ =, &unionidDB](const DAccount::Ptr & account) {
+        auto hasUnionid = [=, &unionidDB](const DAccount::Ptr &account) {
             if (account->accountType() == DAccount::Account_UnionID) {
                 unionidDB = account;
                 return true;
@@ -219,7 +217,7 @@ void DAccountManageModule::unionIDDataMerging()
     DAccount::Ptr accountUnionid = m_syncFileManage->getuserInfo();
 
     DAccount::Ptr unionidDB;
-    auto hasUnionid = [ =, &unionidDB](const DAccount::Ptr & account) {
+    auto hasUnionid = [=, &unionidDB](const DAccount::Ptr &account) {
         if (account->accountType() == DAccount::Account_UnionID) {
             unionidDB = account;
             return true;
@@ -334,7 +332,7 @@ void DAccountManageModule::slotTimeFormatType(const int timeType)
 void DAccountManageModule::slotUidLoginStatueChange(const int status)
 {
     //因为有时登录成功会触发2次
-    static QList<int> oldStatus{};
+    static QList<int> oldStatus {};
     //登录成功后会触发多次，状态也不一致。比如登录后会连续触发 1 -- 4 -- 1 信号
     if (!oldStatus.contains(status)) {
         oldStatus.append(status);
@@ -442,8 +440,7 @@ void DAccountManageModule::slotClientIsOpen()
 {
     //如果日历界面不存在则退出
     QProcess process;
-    process.start("/bin/bash", QStringList() << "-c"
-                  << "pidof dde-calendar");
+    process.start("pidof dde-calendar");
     process.waitForFinished();
     QString strResult = process.readAllStandardOutput();
 
