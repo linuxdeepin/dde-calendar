@@ -33,3 +33,7 @@ Makefile
 CMakeLists.txt.user
 *.user.*
 binaries
+
+#linglong building dir
+linglong
+build
