@@ -1,3 +1,10 @@
+dde-calendar (5.14.6) unstable; urgency=medium
+
+  * New version 5.14.6
+  * Adapt linglong.
+
+-- re2zero <yangwu@uniontech.com>  Fri, 13 Sep 2024 14:06:16 +0800
+
 dde-calendar (5.14.5) unstable; urgency=medium
 
   * fix: sidebar calendar widget(Issue: https://github.com/linuxdeepin/developer-center/issues/10343)
