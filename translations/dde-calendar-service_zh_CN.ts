@@ -957,19 +957,19 @@
     <message>
         <source>Sign In</source>
         <comment>button</comment>
-        <translation type="unfinished"/>
+        <translation type="vanished">登 录</translation>
     </message>
     <message>
         <source>Sign Out</source>
         <comment>button</comment>
-        <translation type="unfinished"/>
+        <translation type="vanished">退出登录</translation>
     </message>
 </context>
 <context>
     <name>YearFrame</name>
     <message>
         <source>Y</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">年</translation>
     </message>
 </context>
 <context>
@@ -977,7 +977,7 @@
     <message>
         <source>Today</source>
         <comment>Today</comment>
-        <translation type="unfinished"/>
+        <translation type="vanished">今天</translation>
     </message>
 </context>
 </TS>
