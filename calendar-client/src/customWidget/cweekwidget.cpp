@@ -7,6 +7,7 @@
 #include "constants.h"
 #include <QLocale>
 #include <QPainter>
+#include <QDate>
 
 CWeekWidget::CWeekWidget(QWidget *parent) : QPushButton(parent)
   , m_firstDay(CalendarManager::getInstance()->getFirstDayOfWeek())
@@ -69,7 +70,10 @@ void CWeekWidget::paintEvent(QPaintEvent *event)
     }
 
     QStringList weekStr;
-    weekStr << tr("Sun") << tr("Mon") << tr("Tue") << tr("Wed") << tr("Thu") << tr("Fri") << tr("Sat");
+    for (auto i : { 7, 1, 2, 3, 4, 5, 6 }) {
+        QString weekDayName = locale.dayName(i, QLocale::NarrowFormat);
+        weekStr << weekDayName;
+    }
 
     //绘制周一到周日
     for (int i = Qt::Monday; i <= Qt::Sunday; ++i) {

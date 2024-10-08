@@ -1,3 +1,18 @@
+dde-calendar (5.14.7) UNRELEASED; urgency=medium
+
+  [ transifex-integration[bot] ]
+  * i18n: Translate dde-calendar_en_US.ts in ro
+  * i18n: Translate dde-calendar-service_en_US.ts in ro
+  * i18n: Translate dde-calendar_en_US.ts in sq
+  * i18n: Translate dde-calendar-service_en_US.ts in sq
+  * i18n: Translate dde-calendar-service_en_US.ts in zh_CN
+  * i18n: Removing dde-calendar-service_en_US.ts in zh_CN
+
+  [ myml ]
+  * feat: cweekwidget uses locale to replace tr
+
+ -- myml <wurongjie@deepin.org>  Sun, 29 Sep 2024 15:42:47 +0800
+
 dde-calendar (5.14.6) unstable; urgency=medium
 
   * New version 5.14.6
