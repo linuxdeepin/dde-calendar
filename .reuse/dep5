@@ -82,3 +82,8 @@ License: CC0-1.0
 Files: *.db
 Copyright: None
 License: CC0-1.0
+
+# linglong
+Files: install_dep arm64/org.dde.calendar.install org.dde.calendar.install
+Copyright: UnionTech Software Technology Co., Ltd.
+License: GPL-3.0-or-later

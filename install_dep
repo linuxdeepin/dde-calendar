@@ -1,7 +1,3 @@
-# SPDX-FileCopyrightText: 2023-2024 UnionTech Software Technology Co., Ltd.
-#
-# SPDX-License-Identifier: GPL-3.0-or-later
-
 #!/bin/bash
 set -e
 # 文件名 deb-source.bash
