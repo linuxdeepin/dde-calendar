@@ -7,7 +7,7 @@ version: "1"
 package:
   id: org.dde.calendar
   name: dde-calendar
-  version: 5.14.7.1
+  version: 5.14.8.1
   kind: app
   description: |
     calendar for deepin os.
@@ -35,6 +35,8 @@ build: |
 
   cmake --build build -j`nproc`
   cmake --build build --target install >app.install 2>&1
+
+  cp arm64/org.dde.calendar.install .
 
 sources:
   # - kind: git
