@@ -121,7 +121,7 @@
     <message>
         <location filename="../calendar-client/src/view/graphicsview.cpp" line="592"/>
         <source>New Event</source>
-        <translation>Novo Evento</translation>
+        <translation>Novo evento</translation>
     </message>
 </context>
 <context>
@@ -142,7 +142,7 @@
     <message>
         <location filename="../calendar-client/src/widget/monthWidget/monthview.cpp" line="209"/>
         <source>New Event</source>
-        <translation>Novo Evento</translation>
+        <translation>Novo evento</translation>
     </message>
 </context>
 <context>
@@ -983,7 +983,7 @@
     <message>
         <location filename="../calendar-client/src/view/draginfographicsview.cpp" line="737"/>
         <source>New Event</source>
-        <translation>Novo Evento</translation>
+        <translation>Novo evento</translation>
     </message>
 </context>
 <context>
@@ -1012,7 +1012,7 @@
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="403"/>
         <source>Cancel</source>
         <comment>button</comment>
-        <translation>Cancelar.</translation>
+        <translation>Cancelar</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="404"/>

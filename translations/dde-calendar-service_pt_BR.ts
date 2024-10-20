@@ -493,11 +493,11 @@
     </message>
     <message>
         <source>15 mins</source>
-        <translation type="vanished">15 mins</translation>
+        <translation type="vanished">15 minutos</translation>
     </message>
     <message>
         <source>30 mins</source>
-        <translation type="vanished">30 mins</translation>
+        <translation type="vanished">30 minutos</translation>
     </message>
     <message>
         <source>1 hour</source>
@@ -790,7 +790,7 @@
     <message>
         <source>Cancel</source>
         <comment>button</comment>
-        <translation type="vanished">Cancelar.</translation>
+        <translation type="vanished">Cancelar</translation>
     </message>
     <message>
         <source>Delete</source>
@@ -930,7 +930,7 @@
     </message>
     <message>
         <source>Select all</source>
-        <translation type="vanished">Selecionar Tudo</translation>
+        <translation type="vanished">Selecionar tudo</translation>
     </message>
 </context>
 <context>
