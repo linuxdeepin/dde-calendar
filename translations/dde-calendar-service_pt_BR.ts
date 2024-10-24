@@ -389,7 +389,7 @@
     </message>
     <message>
         <source>Do you want to delete all occurrences of this event, or only the selected occurrence?</source>
-        <translation type="vanished">Excluir todas as ocorrências deste evento; ou apenas a ocorrência selecionada?</translation>
+        <translation type="vanished">Excluir todas as ocorrências deste evento ou apenas a ocorrência selecionada?</translation>
     </message>
     <message>
         <source>Delete All</source>
@@ -413,7 +413,7 @@
     </message>
     <message>
         <source>Do you want to change only this occurrence of the event, or all occurrences?</source>
-        <translation type="vanished">Alterar apenas esta ocorrência do evento; ou todas as ocorrências?</translation>
+        <translation type="vanished">Alterar apenas esta ocorrência do evento ou todas as ocorrências?</translation>
     </message>
     <message>
         <source>All</source>
@@ -425,7 +425,7 @@
     </message>
     <message>
         <source>Do you want to change only this occurrence of the event, or this and all future occurrences?</source>
-        <translation type="vanished">Alterar apenas esta ocorrência do evento; ou esta e todas as ocorrências futuras?</translation>
+        <translation type="vanished">Alterar apenas esta ocorrência do evento ou esta e todas as ocorrências futuras?</translation>
     </message>
     <message>
         <source>All Future Events</source>
@@ -658,7 +658,7 @@
     </message>
     <message>
         <source>Calendar is a tool to view dates, and also a smart daily planner to schedule all things in life. </source>
-        <translation type="vanished">O Calendário é uma ferramenta que permite agendar e visualizar eventos.</translation>
+        <translation type="vanished">O Calendário é uma ferramenta para visualizar datas e também um planejador diário inteligente para programar todas as coisas da vida.</translation>
     </message>
 </context>
 <context>
