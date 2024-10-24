@@ -132,7 +132,7 @@
     <name>CMyScheduleView</name>
     <message>
         <source>My Event</source>
-        <translation type="vanished">Evento</translation>
+        <translation type="vanished">Meu Evento</translation>
     </message>
     <message>
         <source>OK</source>
