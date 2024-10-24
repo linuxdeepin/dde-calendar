@@ -372,15 +372,15 @@
     </message>
     <message>
         <source>You are changing the repeating rule of this event.</source>
-        <translation type="vanished">A regra de repetição deste evento será alterada.</translation>
+        <translation type="vanished">Você está alterando a regra de repetição deste evento.</translation>
     </message>
     <message>
         <source>You are deleting an event.</source>
-        <translation type="vanished">Um evento será excluído.</translation>
+        <translation type="vanished">Você está deletando um evento.</translation>
     </message>
     <message>
         <source>Are you sure you want to delete this event?</source>
-        <translation type="vanished">Excluir este evento?</translation>
+        <translation type="vanished">Você tem certeza que quer deletar este evento?</translation>
     </message>
     <message>
         <source>Delete</source>
@@ -781,11 +781,11 @@
     <name>JobTypeListView</name>
     <message>
         <source>You are deleting an event type.</source>
-        <translation type="vanished">Você está a eliminar um tipo de evento.</translation>
+        <translation type="vanished">Você está deletando um tipo de evento.</translation>
     </message>
     <message>
         <source>All events under this type will be deleted and cannot be recovered.</source>
-        <translation type="vanished">Todos os eventos deste tipo serão eliminados e não poderão ser recuperados.</translation>
+        <translation type="vanished">Todos os eventos deste tipo serão deletados e não poderão ser recuperados.</translation>
     </message>
     <message>
         <source>Cancel</source>
