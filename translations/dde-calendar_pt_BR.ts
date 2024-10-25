@@ -121,7 +121,7 @@
     <message>
         <location filename="../calendar-client/src/view/graphicsview.cpp" line="592"/>
         <source>New Event</source>
-        <translation>Novo Evento</translation>
+        <translation>Novo evento</translation>
     </message>
 </context>
 <context>
@@ -142,7 +142,7 @@
     <message>
         <location filename="../calendar-client/src/widget/monthWidget/monthview.cpp" line="209"/>
         <source>New Event</source>
-        <translation>Novo Evento</translation>
+        <translation>Novo evento</translation>
     </message>
 </context>
 <context>
@@ -158,7 +158,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="267"/>
         <source>My Event</source>
-        <translation>Evento</translation>
+        <translation>Meu Evento</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="308"/>
@@ -540,12 +540,12 @@
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="235"/>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="265"/>
         <source>You are changing a repeating event.</source>
-        <translation>Um evento repetido será alterado.</translation>
+        <translation>Você está alterando um evento repetitivo.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="237"/>
         <source>Do you want to change only this occurrence of the event, or all occurrences?</source>
-        <translation>Alterar apenas esta ocorrência do evento; ou todas as ocorrências?</translation>
+        <translation>Alterar apenas esta ocorrência do evento ou todas as ocorrências?</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="240"/>
@@ -561,7 +561,7 @@
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="267"/>
         <source>Do you want to change only this occurrence of the event, or this and all future occurrences?</source>
-        <translation>Alterar apenas esta ocorrência do evento; ou esta e todas as ocorrências futuras?</translation>
+        <translation>Alterar apenas esta ocorrência do evento ou esta e todas as ocorrências futuras?</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="270"/>
@@ -856,7 +856,7 @@
     <message>
         <location filename="../calendar-client/src/main.cpp" line="66"/>
         <source>Calendar is a tool to view dates, and also a smart daily planner to schedule all things in life. </source>
-        <translation>O Calendário é uma ferramenta que permite agendar e visualizar eventos.</translation>
+        <translation>O Calendário é uma ferramenta para visualizar datas e também um planejador diário inteligente para programar todas as coisas da vida.</translation>
     </message>
 </context>
 <context>
@@ -983,7 +983,7 @@
     <message>
         <location filename="../calendar-client/src/view/draginfographicsview.cpp" line="737"/>
         <source>New Event</source>
-        <translation>Novo Evento</translation>
+        <translation>Novo evento</translation>
     </message>
 </context>
 <context>
@@ -1001,7 +1001,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="401"/>
         <source>You are deleting an event type.</source>
-        <translation>Você está a eliminar um tipo de evento.</translation>
+        <translation>Você está eliminando um tipo de evento.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="402"/>
@@ -1012,7 +1012,7 @@
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="403"/>
         <source>Cancel</source>
         <comment>button</comment>
-        <translation>Cancelar.</translation>
+        <translation>Cancelar</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="404"/>
