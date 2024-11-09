@@ -991,7 +991,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="142"/>
         <source>export</source>
-        <translation type="unfinished"/>
+        <translation>exporter</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="213"/>
