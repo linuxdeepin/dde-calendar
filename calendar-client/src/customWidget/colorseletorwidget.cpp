@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2024 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -122,7 +122,7 @@ void ColorSeletorWidget::setSelectedColorById(int colorId)
     } else {
         ++colorId;
     }
-    if (m_colorGroup->buttons().size() > 0) {
+    if (m_colorGroup->buttons().size() > colorId) {
          m_colorGroup->buttons().at(colorId)->click();
     }
 }

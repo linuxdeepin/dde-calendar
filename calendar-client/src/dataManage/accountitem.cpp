@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2024 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -315,8 +315,8 @@ void AccountItem::deleteSchedulesByTypeID(const QString &typeID, CallbackFunc ca
 
 void AccountItem::querySchedulesWithParameter(const int year, CallbackFunc callback)
 {
-    QDateTime start = QDate(year - 1, 12, 1).startOfDay();
-    QDateTime end = QDate(year + 1, 1, 31).startOfDay();
+    QDateTime start = QDateTime(QDate(year, 1, 1));
+    QDateTime end = QDateTime(QDate(year, 12, 31));
     querySchedulesWithParameter(start, end, callback);
 }
 

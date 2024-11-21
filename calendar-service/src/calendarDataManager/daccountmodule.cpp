@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2024 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -7,8 +7,8 @@
 #include "dscheduletype.h"
 #include "dschedulequerypar.h"
 #include "memorycalendar.h"
-#include "lunardateinfo.h"
-#include "lunarmanager.h"
+#include "lunarandfestival/lunardateinfo.h"
+#include "lunarandfestival/lunarmanager.h"
 #include "dbus/dbusuiopenschedule.h"
 #include "dalarmmanager.h"
 #include "syncfilemanage.h"
@@ -442,16 +442,7 @@ QString DAccountModule::querySchedulesWithParameter(const QString &params)
         if (schedule.isNull()) {
             return QString();
         }
-        QMap<QDate, DSchedule::List> m_scheduleMap;
-        //相差多少天
-        int days = static_cast<int>(queryPar->dtStart().daysTo(queryPar->dtEnd()));
-        for (int i = 0; i <= days; ++i) {
-            DSchedule::List scheduleList;
-            m_scheduleMap[queryPar->dtStart().addDays(i).date()] = scheduleList;
-        }
-        extendRecurrence(m_scheduleMap, schedule, queryPar->dtStart(), queryPar->dtEnd(), false);
-        return DSchedule::toMapString(m_scheduleMap);
-
+        scheduleList.append(schedule);
     } else {
         scheduleList = m_accountDB->querySchedulesByKey(queryPar->key());
     }
@@ -462,32 +453,7 @@ QString DAccountModule::querySchedulesWithParameter(const QString &params)
         scheduleList.append(getFestivalSchedule(queryPar->dtStart(), queryPar->dtEnd(), queryPar->key()));
     }
 
-    //获取一定范围内的日程
-    QMap<QDate, DSchedule::List> scheduleMap = getScheduleTimesOn(queryPar->dtStart(), queryPar->dtEnd(), scheduleList, extend);
-
-    //如果为查询前N个日程，则取前N个日程
-    if (queryPar->queryType() == DScheduleQueryPar::Query_Top) {
-        int scheduleNum = 0;
-        DSchedule::Map filterSchedule;
-        DSchedule::Map::const_iterator iter = scheduleMap.constBegin();
-        for (; iter != scheduleMap.constEnd(); ++iter) {
-            if (iter.value().size() == 0) {
-                continue;
-            }
-            if (scheduleNum + iter.value().size() > queryPar->queryTop()) {
-                DSchedule::List scheduleList;
-                int residuesNum = queryPar->queryTop() - scheduleNum;
-                for (int i = 0; i < residuesNum; ++i) {
-                    scheduleList.append(iter.value().at(i));
-                }
-                filterSchedule[iter.key()] = scheduleList;
-            } else {
-                filterSchedule[iter.key()] = iter.value();
-            }
-        }
-        scheduleMap = filterSchedule;
-    }
-    return DSchedule::toMapString(scheduleMap);
+    return DSchedule::toListString(params, scheduleList);
 }
 
 DSchedule::List DAccountModule::getRemindScheduleList(const QDateTime &dtStart, const QDateTime &dtEnd)

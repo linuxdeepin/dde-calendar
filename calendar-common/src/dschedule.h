@@ -6,6 +6,7 @@
 #define DSCHEDULE_H
 
 #include "event.h"
+#include "dschedulequerypar.h"
 
 #include <QString>
 #include <QDebug>
@@ -91,6 +92,13 @@ public:
     //
     static QMap<QDate, DSchedule::List> fromMapString(const QString &json);
     static QString toMapString(const QMap<QDate, DSchedule::List> &scheduleMap);
+
+    static QPair<QString, DSchedule::List> fromListString(const QString &json);
+    static QString toListString(const QString &query, const DSchedule::List &scheduleList);
+
+    static void expendRecurrence(DSchedule::Map &scheduleMap, const DSchedule::Ptr &schedule, const QDateTime &dtStart, const QDateTime &dtEnd);
+    static QMap<QDate, DSchedule::List> convertSchedules(const DScheduleQueryPar::Ptr &queryPar, const DSchedule::List &scheduleList);
+    static QMap<QDate, DSchedule::List> fromQueryResult(const QString &query);
 
 private:
     QMap<int, AlarmType> getAlarmMap();

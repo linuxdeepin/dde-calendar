@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2024 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -282,12 +282,12 @@ void DbusAccountRequest::slotCallFinished(CDBusPendingCallWatcher *call)
         } else if (call->getmember() == "querySchedulesWithParameter") {
             QDBusPendingReply<QString> reply = *call;
             QString str = reply.argumentAt<0>();
-            QMap<QDate, DSchedule::List> map = DSchedule::fromMapString(str);
+            QMap<QDate, DSchedule::List> map = DSchedule::fromQueryResult(str);
             emit signalGetScheduleListFinish(map);
         } else if (call->getmember() == "searchSchedulesWithParameter") {
             QDBusPendingReply<QString> reply = *call;
             QString str = reply.argumentAt<0>();
-            QMap<QDate, DSchedule::List> map = DSchedule::fromMapString(str);
+            QMap<QDate, DSchedule::List> map = DSchedule::fromQueryResult(str);
             emit signalSearchScheduleListFinish(map);
         } else if (call->getmember() == "getSysColors") {
             QDBusPendingReply<QString> reply = *call;

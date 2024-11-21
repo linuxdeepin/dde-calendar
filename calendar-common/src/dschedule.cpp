@@ -1,9 +1,10 @@
-// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2024 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "dschedule.h"
 #include "commondef.h"
+#include "lunarandfestival/lunardateinfo.h"
 
 #include "icalformat.h"
 #include "memorycalendar.h"
@@ -341,6 +342,191 @@ QString DSchedule::toMapString(const QMap<QDate, DSchedule::List> &scheduleMap)
     QJsonDocument jsonDoc;
     jsonDoc.setArray(rootArray);
     return QString::fromUtf8(jsonDoc.toJson(QJsonDocument::Compact));
+}
+
+QPair<QString, DSchedule::List> DSchedule::fromListString(const QString &json)
+{
+    QPair<QString, DSchedule::List> schedulePair;
+    QJsonParseError jsonError;
+    QJsonDocument jsonDoc(QJsonDocument::fromJson(json.toLocal8Bit(), &jsonError));
+    if (jsonError.error != QJsonParseError::NoError) {
+        qCWarning(CommonLogger) << "error:" << jsonError.errorString();
+        return schedulePair;
+    }
+
+    QJsonObject jsonObj = jsonDoc.object();
+    DSchedule::List scheduleList;
+    if (jsonObj.contains("query")) {
+        schedulePair.first = jsonObj.value("query").toString();
+    }
+    if (jsonObj.contains("schedules")) {
+        QJsonArray jsonArray = jsonObj.value("schedules").toArray();
+        foreach (auto scheduleValue, jsonArray) {
+            QString scheduleStr = scheduleValue.toString();
+            DSchedule::Ptr schedule = DSchedule::Ptr(new DSchedule);
+            DSchedule::fromJsonString(schedule, scheduleStr);
+            scheduleList.append(schedule);
+        }
+    }
+    schedulePair.second = scheduleList;
+
+    return schedulePair;
+}
+
+QString DSchedule::toListString(const QString &query, const DSchedule::List &scheduleList)
+{
+    QJsonObject jsonObj;
+    jsonObj.insert("query", query);
+    QJsonArray jsonArray;
+    foreach (auto &schedule, scheduleList) {
+        QString scheduleStr;
+        DSchedule::toJsonString(schedule, scheduleStr);
+        jsonArray.append(scheduleStr);
+    }
+    jsonObj.insert("schedules", jsonArray);
+
+
+    QJsonDocument jsonDoc;
+    jsonDoc.setObject(jsonObj);
+    return QString::fromUtf8(jsonDoc.toJson(QJsonDocument::Compact));
+}
+
+void DSchedule::expendRecurrence(DSchedule::Map &scheduleMap, const DSchedule::Ptr &schedule, const QDateTime &dtStart, const QDateTime &dtEnd)
+{
+    QDateTime queryDtStart = dtStart;
+    //如果日程为全天日程，则查询的开始时间设置为0点，因为全天日程的开始和结束时间都是0点
+    if(schedule->allDay()){
+        queryDtStart.setTime(QTime(0,0,0));
+    }
+    if (schedule->recurs()) {
+        //获取日程的开始结束时间差
+        qint64 interval = schedule->dtStart().secsTo(schedule->dtEnd());
+        QList<QDateTime> dtList = schedule->recurrence()->timesInInterval(queryDtStart, dtEnd);
+        foreach (auto &dt, dtList) {
+            QDateTime scheduleDtEnd = dt.addSecs(interval);
+            DSchedule::Ptr newSchedule = DSchedule::Ptr(schedule->clone());
+            newSchedule->setDtStart(dt);
+            newSchedule->setDtEnd(scheduleDtEnd);
+
+            //只有重复日程设置RecurrenceId
+            if (schedule->dtStart() != dt) {
+                newSchedule->setRecurrenceId(dt);
+            }
+            scheduleMap[dt.date()].append(newSchedule);
+        }
+    } else {
+        if (!(schedule->dtStart() > dtEnd || schedule->dtEnd() < queryDtStart)) {
+            scheduleMap[schedule->dtStart().date()].append(schedule);
+        }
+    }
+}
+
+QMap<QDate, DSchedule::List> DSchedule::convertSchedules(const DScheduleQueryPar::Ptr &queryPar, const DSchedule::List &scheduleList)
+{
+    QDateTime dtStart = queryPar->dtStart();
+    QDateTime dtEnd = queryPar->dtEnd();
+    bool extend = queryPar->queryType() == DScheduleQueryPar::Query_None;
+
+    QMap<QDate, DSchedule::List> scheduleMap;
+    foreach (auto &schedule, scheduleList) {
+        //获取日程的开始结束时间差
+        qint64 interval = schedule->dtStart().secsTo(schedule->dtEnd());
+        //如果存在重复日程
+        if (schedule->recurs()) {
+            //如果为农历日程
+            if (schedule->lunnar()) {
+                //农历重复日程计算
+                LunarDateInfo lunardate(schedule->recurrence()->defaultRRuleConst(), interval);
+
+                QMap<int, QDate> ruleStartDate = lunardate.getRRuleStartDate(dtStart.date(), dtEnd.date(), schedule->dtStart().date());
+
+                QDateTime recurDateTime;
+                recurDateTime.setTime(schedule->dtStart().time());
+                QDateTime copyEnd;
+                QMap<int, QDate>::ConstIterator iter = ruleStartDate.constBegin();
+                for (; iter != ruleStartDate.constEnd(); iter++) {
+                    recurDateTime.setDate(iter.value());
+                    //如果在忽略时间列表中,则忽略
+                    if (schedule->recurrence()->exDateTimes().contains(recurDateTime))
+                        continue;
+                    copyEnd = recurDateTime.addSecs(interval);
+                    DSchedule::Ptr newSchedule = DSchedule::Ptr(new DSchedule(*schedule.data()));
+                    newSchedule->setDtStart(recurDateTime);
+                    newSchedule->setDtEnd(copyEnd);
+                    //只有重复日程设置RecurrenceId
+                    if (schedule->dtStart() != recurDateTime) {
+                        newSchedule->setRecurrenceId(recurDateTime);
+                    }
+                    scheduleMap[recurDateTime.date()].append(newSchedule);
+                }
+            } else {
+                //非农历日程
+                expendRecurrence(scheduleMap, schedule, dtStart, dtEnd);
+            }
+        } else {
+            //普通日程
+            //如果在查询时间范围内
+            QDateTime queryDtStart = dtStart;
+            //如果日程为全天日程，则查询的开始时间设置为0点，因为全天日程的开始和结束时间都是0点
+            if(schedule->allDay()){
+                queryDtStart.setTime(QTime(0,0,0));
+            }
+            if (!(schedule->dtEnd() < queryDtStart || schedule->dtStart() > dtEnd)) {
+                if (extend && schedule->isMultiDay()) {
+                    //需要扩展的天数
+                    int extenddays = static_cast<int>(schedule->dtStart().daysTo(schedule->dtEnd()));
+                    for (int i = 0; i <= extenddays; ++i) {
+                        //如果扩展的日期在查询范围内则添加，否则退出
+                        if(scheduleMap.contains(schedule->dtStart().date().addDays(i))){
+                            scheduleMap[schedule->dtStart().date().addDays(i)].append(schedule);
+                        } else {
+                            break;
+                        }
+                    }
+                } else {
+                    scheduleMap[schedule->dtStart().date()].append(schedule);
+                }
+            }
+        }
+    }
+
+    //如果为查询前N个日程，则取前N个日程
+    if (queryPar->queryType() == DScheduleQueryPar::Query_Top) {
+        int scheduleNum = 0;
+        DSchedule::Map filterSchedule;
+        DSchedule::Map::const_iterator iter = scheduleMap.constBegin();
+        for (; iter != scheduleMap.constEnd(); ++iter) {
+            if (iter.value().size() == 0) {
+                continue;
+            }
+            if (scheduleNum + iter.value().size() > queryPar->queryTop()) {
+                DSchedule::List scheduleList;
+                int residuesNum = queryPar->queryTop() - scheduleNum;
+                for (int i = 0; i < residuesNum; ++i) {
+                    scheduleList.append(iter.value().at(i));
+                }
+                filterSchedule[iter.key()] = scheduleList;
+            } else {
+                filterSchedule[iter.key()] = iter.value();
+            }
+        }
+        scheduleMap = filterSchedule;
+    }
+
+    return scheduleMap;
+}
+
+QMap<QDate, DSchedule::List> DSchedule::fromQueryResult(const QString &query)
+{
+    QMap<QDate, DSchedule::List> scheduleMap;
+    QPair<QString, DSchedule::List> pair = fromListString(query);
+    DScheduleQueryPar::Ptr queryPar = DScheduleQueryPar::fromJsonString(pair.first);
+    if (queryPar.isNull()) {
+        return scheduleMap;
+    }
+
+    scheduleMap = DSchedule::convertSchedules(queryPar, pair.second);
+    return scheduleMap;
 }
 
 bool operator==(const DSchedule::Ptr &s1, const DSchedule::Ptr &s2)
