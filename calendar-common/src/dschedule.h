@@ -96,7 +96,7 @@ public:
     static QPair<QString, DSchedule::List> fromListString(const QString &json);
     static QString toListString(const QString &query, const DSchedule::List &scheduleList);
 
-    static void expendRecurrence(DSchedule::Map &scheduleMap, const DSchedule::Ptr &schedule, const QDateTime &dtStart, const QDateTime &dtEnd);
+    static void expendRecurrence(DSchedule::Map &scheduleMap, const DSchedule::Ptr &schedule, const QDateTime &dtStart, const QDateTime &dtEnd, bool extend);
     static QMap<QDate, DSchedule::List> convertSchedules(const DScheduleQueryPar::Ptr &queryPar, const DSchedule::List &scheduleList);
     static QMap<QDate, DSchedule::List> fromQueryResult(const QString &query);
 

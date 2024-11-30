@@ -391,7 +391,7 @@ QString DSchedule::toListString(const QString &query, const DSchedule::List &sch
     return QString::fromUtf8(jsonDoc.toJson(QJsonDocument::Compact));
 }
 
-void DSchedule::expendRecurrence(DSchedule::Map &scheduleMap, const DSchedule::Ptr &schedule, const QDateTime &dtStart, const QDateTime &dtEnd)
+void DSchedule::expendRecurrence(DSchedule::Map &scheduleMap, const DSchedule::Ptr &schedule, const QDateTime &dtStart, const QDateTime &dtEnd, bool extend)
 {
     QDateTime queryDtStart = dtStart;
     //如果日程为全天日程，则查询的开始时间设置为0点，因为全天日程的开始和结束时间都是0点
@@ -412,7 +412,15 @@ void DSchedule::expendRecurrence(DSchedule::Map &scheduleMap, const DSchedule::P
             if (schedule->dtStart() != dt) {
                 newSchedule->setRecurrenceId(dt);
             }
-            scheduleMap[dt.date()].append(newSchedule);
+            if (extend) {
+                //需要扩展的天数
+                int extenddays = static_cast<int>(dt.daysTo(scheduleDtEnd));
+                for (int i = 0; i <= extenddays; ++i) {
+                    scheduleMap[dt.date().addDays(i)].append(newSchedule);
+                }
+            } else {
+                scheduleMap[dt.date()].append(newSchedule);
+            }
         }
     } else {
         if (!(schedule->dtStart() > dtEnd || schedule->dtEnd() < queryDtStart)) {
@@ -457,11 +465,21 @@ QMap<QDate, DSchedule::List> DSchedule::convertSchedules(const DScheduleQueryPar
                     if (schedule->dtStart() != recurDateTime) {
                         newSchedule->setRecurrenceId(recurDateTime);
                     }
-                    scheduleMap[recurDateTime.date()].append(newSchedule);
+
+                    if (extend) {
+                        //需要扩展的天数
+                        int extenddays = static_cast<int>(recurDateTime.daysTo(copyEnd));
+                        for (int i = 0; i <= extenddays; ++i) {
+                            scheduleMap[recurDateTime.date().addDays(i)].append(newSchedule);
+                        }
+
+                    } else {
+                        scheduleMap[recurDateTime.date()].append(newSchedule);
+                    }
                 }
             } else {
                 //非农历日程
-                expendRecurrence(scheduleMap, schedule, dtStart, dtEnd);
+                expendRecurrence(scheduleMap, schedule, dtStart, dtEnd, extend);
             }
         } else {
             //普通日程
