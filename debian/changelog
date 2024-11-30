@@ -1,3 +1,9 @@
+dde-calendar (5.14.10) unstable; urgency=medium
+
+  * chore: Update linglong build script.
+
+ -- xiepengfei <xiepengfei@uniontech.com>  Sat, 30 Nov 2024 14:08:37 +0800
+
 dde-calendar (5.14.9) UNRELEASED; urgency=medium
 
   [ transifex-integration[bot] ]
