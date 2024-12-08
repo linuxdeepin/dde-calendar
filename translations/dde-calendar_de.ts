@@ -25,12 +25,12 @@
 <context>
     <name>AccountManager</name>
     <message>
-        <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="223"/>
+        <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="227"/>
         <source>Local account</source>
         <translation>Lokales Konto</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="225"/>
+        <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="229"/>
         <source>Event types</source>
         <translation>Termintypen</translation>
     </message>
@@ -140,7 +140,7 @@
         <translation>Neuer Termin</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/monthWidget/monthview.cpp" line="209"/>
+        <location filename="../calendar-client/src/widget/monthWidget/monthview.cpp" line="211"/>
         <source>New Event</source>
         <translation>Neuer Termin</translation>
     </message>
@@ -723,7 +723,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="770"/>
         <source>Please go to the &lt;a href=&apos;/&apos;&gt;Control Center&lt;/a&gt; to change system settings</source>
-        <translation type="unfinished"/>
+        <translation>Bitte gehe ins&lt;a href=&apos;/&apos;&gt;Kontrollzentrum&lt;/a&gt;um die Systemeinstellung zu ändern </translation>
     </message>
 </context>
 <context>
@@ -877,17 +877,17 @@
         <translation>Datenschutzerklärung</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="940"/>
+        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="939"/>
         <source>Syncing...</source>
         <translation>Wird synchronisiert ...</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="950"/>
+        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="949"/>
         <source>Sync successful</source>
         <translation>Synchronisierung erfolgreich</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="958"/>
+        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="957"/>
         <source>Sync failed, please try later</source>
         <translation>Synchronisierung fehlgeschlagen, bitte später erneut versuchen</translation>
     </message>
@@ -989,12 +989,12 @@
 <context>
     <name>JobTypeListView</name>
     <message>
-        <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="142"/>
+        <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="143"/>
         <source>export</source>
         <translation>exportieren</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="213"/>
+        <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="214"/>
         <source>import ICS file</source>
         <translation>ICS-Datei importieren</translation>
     </message>
@@ -1241,7 +1241,7 @@
 <context>
     <name>YearFrame</name>
     <message>
-        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="925"/>
+        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="929"/>
         <source>Y</source>
         <translation>J</translation>
     </message>
