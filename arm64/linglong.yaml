@@ -30,8 +30,8 @@ build: |
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
         -DVERSION=${VERSION} \
-        -DEXEC_DDE_CALENDAR="/usr/bin/ll-cli run org.dde.calendar --exec dde-calendar" \
-        -DEXEC_DDE_CALENDAR_SERVICE="/usr/bin/ll-cli run org.dde.calendar --exec /opt/apps/org.dde.calendar/files/libexec/deepin-daemon/dde-calendar-service"
+        -DEXEC_DDE_CALENDAR="dde-calendar" \
+        -DEXEC_DDE_CALENDAR_SERVICE="/opt/apps/org.dde.calendar/files/libexec/deepin-daemon/dde-calendar-service"
 
   cmake --build build -j`nproc`
   cmake --build build --target install >app.install 2>&1
