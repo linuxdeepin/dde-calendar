@@ -3,30 +3,30 @@
     <name>AccountItem</name>
     <message>
         <source>Sync successful</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">التزامن بنجاح</translation>
     </message>
     <message>
         <source>Network error</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">خطأ في الشبكة</translation>
     </message>
     <message>
         <source>Server exception</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">استثناء في الخادم</translation>
     </message>
     <message>
         <source>Storage full</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">مساحة التخزين ممتلئة</translation>
     </message>
 </context>
 <context>
     <name>AccountManager</name>
     <message>
         <source>Local account</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">الحساب المحلي</translation>
     </message>
     <message>
         <source>Event types</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">أنواع الأحداث</translation>
     </message>
 </context>
 <context>
@@ -93,7 +93,7 @@
     </message>
     <message>
         <source>Lunar</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">التقويم القمري</translation>
     </message>
 </context>
 <context>
@@ -154,7 +154,7 @@
     <name>CPushButton</name>
     <message>
         <source>New event type</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">نوع حدث جديد</translation>
     </message>
 </context>
 <context>
@@ -218,11 +218,11 @@
     </message>
     <message>
         <source>Enter a name please</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">أدخل اسمًا يرجى</translation>
     </message>
     <message>
         <source>The name can not only contain whitespaces</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">لا يمكن أن يتضمن الاسم سوى المسافات trắng</translation>
     </message>
     <message>
         <source>Type:</source>
@@ -258,11 +258,11 @@
     </message>
     <message>
         <source>Calendar account:</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">حساب التقويم:</translation>
     </message>
     <message>
         <source>Calendar account</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">حساب التقويم</translation>
     </message>
     <message>
         <source>Type</source>
@@ -278,19 +278,19 @@
     </message>
     <message>
         <source>Time:</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">الوقت:</translation>
     </message>
     <message>
         <source>Time</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">الوقت</translation>
     </message>
     <message>
         <source>Solar</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">التقويم الشمسي</translation>
     </message>
     <message>
         <source>Lunar</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">التقويم القمري</translation>
     </message>
     <message>
         <source>Starts</source>
@@ -433,7 +433,7 @@
     </message>
     <message>
         <source>You have selected a leap month, and will be reminded according to the rules of the lunar calendar.</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">لقد قمت باختيار شهر قمري قمري، وسوف يتم تذكيرك وفقًا لقواعد التقويم القمري.</translation>
     </message>
     <message>
         <source>OK</source>
@@ -493,11 +493,11 @@
     </message>
     <message>
         <source>15 mins</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">15 دقيقة</translation>
     </message>
     <message>
         <source>30 mins</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">30 دقيقة</translation>
     </message>
     <message>
         <source>1 hour</source>
@@ -505,15 +505,15 @@
     </message>
     <message>
         <source>24 hours</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">24 ساعة</translation>
     </message>
     <message>
         <source>Sync Now</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">التزامن الآن</translation>
     </message>
     <message>
         <source>Last sync</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">آخر مزامنة</translation>
     </message>
     <message>
         <source>Monday</source>
@@ -525,11 +525,11 @@
     </message>
     <message>
         <source>12-hour clock</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">ساعة 12 ساعة</translation>
     </message>
     <message>
         <source>24-hour clock</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">ساعة 24 ساعة</translation>
     </message>
     <message>
         <source>Tuesday</source>
@@ -802,7 +802,7 @@
     <name>QObject</name>
     <message>
         <source>Account settings</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">إعدادات الحساب</translation>
     </message>
     <message>
         <source>Account</source>
@@ -810,19 +810,19 @@
     </message>
     <message>
         <source>Select items to be synced</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">حدد العناصر التي سيتم مزامنتها</translation>
     </message>
     <message>
         <source>Events</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">الأحداث</translation>
     </message>
     <message>
         <source>General settings</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">إعدادات عامة</translation>
     </message>
     <message>
         <source>Sync interval</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">فاصل التزامن</translation>
     </message>
     <message>
         <source>Manage calendar</source>
@@ -830,11 +830,11 @@
     </message>
     <message>
         <source>Calendar account</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">حساب التقويم</translation>
     </message>
     <message>
         <source>Event types</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">أنواع الأحداث</translation>
     </message>
     <message>
         <source>General</source>
@@ -842,11 +842,11 @@
     </message>
     <message>
         <source>First day of week</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">أول يوم في الأسبوع</translation>
     </message>
     <message>
         <source>Time</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">الوقت</translation>
     </message>
 </context>
 <context>
@@ -869,11 +869,11 @@
     <name>ScheduleTypeEditDlg</name>
     <message>
         <source>New event type</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">نوع حدث جديد</translation>
     </message>
     <message>
         <source>Edit event type</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">تعديل نوع الحدث</translation>
     </message>
     <message>
         <source>Name:</source>
@@ -881,7 +881,7 @@
     </message>
     <message>
         <source>Color:</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">اللون :</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -895,11 +895,11 @@
     </message>
     <message>
         <source>The name can not only contain whitespaces</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">لا يمكن أن تحتوي الأسماء على مسافات فقط</translation>
     </message>
     <message>
         <source>Enter a name please</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">أدخل اسمًا، يرجى</translation>
     </message>
 </context>
 <context>
@@ -949,7 +949,7 @@
     <message>
         <source>Go</source>
         <comment>button</comment>
-        <translation type="unfinished"/>
+        <translation type="vanished">اذهب</translation>
     </message>
 </context>
 <context>
