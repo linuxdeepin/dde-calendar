@@ -60,7 +60,6 @@ Execute `dde-calendar`
 ## Documentations
 
  - [Development Documentation](https://linuxdeepin.github.io/)
- - [User Documentation](https://wikidev.uniontech.com/index.php?title=%E7%94%BB%E6%9D%BF) 
 
 ## Getting help
 
