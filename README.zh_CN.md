@@ -59,7 +59,6 @@ $ sudo make install
 ## 文档
 
  - [Development Documentation](https://linuxdeepin.github.io/)
- - [用户文档](https://wikidev.uniontech.com/index.php?title=%E7%94%BB%E6%9D%BF)
 
 ## 帮助
 
