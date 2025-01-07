@@ -10,6 +10,8 @@
 #include <QDebug>
 #include <QSqlError>
 
+const QString HolidayDir = ":/holiday-cn";
+
 using namespace DDLOG_SERVICE;
 
 DHuangLiDataBase::DHuangLiDataBase(QObject *parent)
@@ -25,41 +27,31 @@ DHuangLiDataBase::DHuangLiDataBase(QObject *parent)
 
 QString DHuangLiDataBase::queryFestivalList(quint32 year, quint8 month)
 {
-    QString strtable = QString("festival_%1").arg(year);
-    QString strsql = QString("SELECT id,month,name,description,rest,list FROM %1 WHERE month = %2").arg(strtable).arg(month);
-    SqliteQuery query(strsql, m_database);
-    QString strjson;
-    if (query.exec()) {
-        QJsonDocument doc;
-        QJsonArray arr;
-        while (query.next()) {
-            QJsonObject obj;
-            obj.insert("id", query.value("id").toString());
-            obj.insert("month", query.value("month").toInt());
-            obj.insert("name", query.value("name").toString());
-            obj.insert("rest", query.value("rest").toString());
-            obj.insert("description", query.value("description").toString());
-            QString strlist = query.value("list").toString();
-            QJsonParseError error;
-            QJsonArray listarr;
-            QJsonDocument doctmp = QJsonDocument::fromJson(strlist.toLocal8Bit(), &error);
-            if (!doctmp.isNull()) {
-                listarr = doctmp.array();
-            } else {
-                qCDebug(calendar_service) << __FUNCTION__ << error.errorString();
+    QJsonArray dataset;
+    QFile file(QString("%1/%2.json").arg(HolidayDir).arg(year));
+    if (file.open(QIODevice::ReadOnly)) {
+        auto data = file.readAll();
+        file.close();
+        auto doc = QJsonDocument::fromJson(data);
+        for (auto val : doc.object().value("days").toArray()) {
+            auto day = val.toObject();
+            auto name = day.value("name").toString();
+            auto date = QDate::fromString(day.value("date").toString(), "yyyy-MM-dd");
+            auto isOffday = day.value("isOffDay").toBool();
+            if (quint32(date.year()) == year && quint32(date.month()) == month) {
+                QJsonObject obj;
+                obj.insert("name", name);
+                obj.insert("date", date.toString("yyyy-MM-dd"));
+                obj.insert("status", isOffday ? 1 : 2);
+                dataset.append(obj);
             }
-            obj.insert("list", listarr);
-            arr.append(obj);
         }
-        doc.setArray(arr);
-        strjson = QString::fromUtf8(doc.toJson(QJsonDocument::Compact));
-    } else {
-        qCWarning(calendar_service) << Q_FUNC_INFO << query.lastError();
+        file.close();
     }
-    if (query.isActive()) {
-        query.finish();
-    }
-    return strjson;
+    QJsonDocument result;
+    QJsonObject obj;
+    result.setArray(dataset);
+    return QString(result.toJson(QJsonDocument::Compact));
 }
 
 QList<stHuangLi> DHuangLiDataBase::queryHuangLiByDays(const QList<stDay> &days)
