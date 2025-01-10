@@ -32,7 +32,7 @@ void DbusRequestBase::setCallbackFunc(CallbackFunc func)
  */
 void DbusRequestBase::asyncCall(const QString &method, const QList<QVariant> &args)
 {
-    QDBusPendingCall async = QDBusAbstractInterface::asyncCall(method, args);
+    QDBusPendingCall async = QDBusAbstractInterface::asyncCallWithArgumentList(method, args);
     CDBusPendingCallWatcher *watcher = new CDBusPendingCallWatcher(async, method, this);
     //将回调函数放进CallWatcher中，随CallWatcher调用结果返回
     watcher->setCallbackFunc(m_callbackFunc);
@@ -41,30 +41,9 @@ void DbusRequestBase::asyncCall(const QString &method, const QList<QVariant> &ar
     connect(watcher, &CDBusPendingCallWatcher::signalCallFinished, this, &DbusRequestBase::slotCallFinished);
 }
 
-/**
- * @brief DbusRequestBase::asyncCall
- * 异步访问dbus接口
- * @param method    dbus方法名
- * @param args  参数
- */
-void DbusRequestBase::asyncCall(const QString &method,
-                                const QVariant &arg1, const QVariant &arg2, const QVariant &arg3, const QVariant &arg4,
-                                const QVariant &arg5, const QVariant &arg6, const QVariant &arg7, const QVariant &arg8)
+void DbusRequestBase::asyncCall(const QString &method, const QString &callName, const QList<QVariant> &args)
 {
-    asyncCall(method, method, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
-}
-
-/**
- * @brief DbusRequestBase::asyncCall
- * 异步访问dbus接口
- * @param method    dbus方法名
- * @param args  参数
- */
-void DbusRequestBase::asyncCall(const QString &method, const QString &callName,
-                                const QVariant &arg1, const QVariant &arg2, const QVariant &arg3, const QVariant &arg4,
-                                const QVariant &arg5, const QVariant &arg6, const QVariant &arg7, const QVariant &arg8)
-{
-    QDBusPendingCall async = QDBusAbstractInterface::asyncCall(method, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+    QDBusPendingCall async = QDBusAbstractInterface::asyncCallWithArgumentList(method, args);
     CDBusPendingCallWatcher *watcher = new CDBusPendingCallWatcher(async, callName, this);
     //将回调函数放进CallWatcher中，随CallWatcher调用结果返回
     watcher->setCallbackFunc(m_callbackFunc);

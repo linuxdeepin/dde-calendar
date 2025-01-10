@@ -34,7 +34,7 @@ void TimeJumpDialog::initView()
     m_jumpButton->setFixedSize(82, 36);
 
     QHBoxLayout *hLayout = new QHBoxLayout(this);
-    hLayout->setMargin(0);
+    hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(10);
 
     hLayout->addWidget(m_yearEdit);

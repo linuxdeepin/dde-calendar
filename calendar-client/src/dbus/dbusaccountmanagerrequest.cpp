@@ -110,7 +110,7 @@ void DbusAccountManagerRequest::getAccountList()
  */
 void DbusAccountManagerRequest::downloadByAccountID(const QString &accountID)
 {
-    asyncCall("downloadByAccountID", QVariant(accountID));
+    asyncCall("downloadByAccountID", {QVariant(accountID)});
 }
 
 /**

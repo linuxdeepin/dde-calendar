@@ -63,4 +63,7 @@ private:
     QDateTime m_dtEnd; //查询的截止时间
 };
 
+Q_DECLARE_METATYPE(DScheduleQueryPar)
+Q_DECLARE_METATYPE(DScheduleQueryPar::Ptr)
+
 #endif // DSCHEDULEQUERYPAR_H

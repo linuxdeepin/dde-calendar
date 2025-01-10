@@ -9,7 +9,6 @@
 #include "cweekwidget.h"
 
 #include <DWidget>
-#include <DImageButton>
 #include <DPushButton>
 #include <DFrame>
 #include <DIconButton>

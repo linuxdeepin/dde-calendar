@@ -50,8 +50,8 @@ void CColorPickerWidget::setColorHexLineEdit()
     //确认按钮初始置灰
     m_enterBtn->setDisabled(true);
     //输入框输入限制
-    QRegExp reg("^[0-9A-Fa-f]{6}$");
-    QValidator *validator = new QRegExpValidator(reg, m_colHexLineEdit->lineEdit());
+    QRegularExpression reg("^[0-9A-Fa-f]{6}$");
+    QValidator *validator = new QRegularExpressionValidator(reg, m_colHexLineEdit->lineEdit());
     m_colHexLineEdit->lineEdit()->setValidator(validator);
     setFocusProxy(m_colHexLineEdit);
 }
@@ -80,7 +80,7 @@ void CColorPickerWidget::initUI()
     m_wordLabel->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
     m_colHexLineEdit->setClearButtonEnabled(false); //不显示清空按钮
     QHBoxLayout *inputLayout = new QHBoxLayout;
-    inputLayout->setMargin(0);
+    inputLayout->setContentsMargins(0, 0, 0, 0);
     inputLayout->setSpacing(6);
     inputLayout->addWidget(m_wordLabel);
     inputLayout->addWidget(m_colHexLineEdit, 1);
@@ -92,7 +92,7 @@ void CColorPickerWidget::initUI()
     m_enterBtn->setText(tr("Save", "button"));
     m_enterBtn->setFixedSize(140, 36);
     QHBoxLayout *btnLayout = new QHBoxLayout;
-    btnLayout->setMargin(0);
+    btnLayout->setContentsMargins(0, 0, 0, 0);
     btnLayout->setSpacing(5);
     btnLayout->addWidget(m_cancelBtn);
     DVerticalLine *line = new DVerticalLine(this);
@@ -133,12 +133,14 @@ void CColorPickerWidget::slotHexLineEditChange(const QString &text)
 {
     QString lowerText = text.toLower();
     if (lowerText == text) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        QRegularExpression rx("^[0-9a-f]{6}$");
+        m_enterBtn->setDisabled(!rx.match(lowerText).hasMatch());
+#else
         QRegExp rx("^[0-9a-f]{6}$");
-        if (rx.indexIn(lowerText) == -1) {
-            m_enterBtn->setDisabled(true);
-        } else {
-            m_enterBtn->setDisabled(false);
-        }
+        m_enterBtn->setDisabled(rx.indexIn(lowerText) == -1);
+#endif
+
     } else {
         m_colHexLineEdit->setText(lowerText);
     }

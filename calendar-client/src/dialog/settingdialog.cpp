@@ -220,7 +220,7 @@ void CSettingDialog::initView()
             }
             if (wid->accessibleName().contains("DefaultWidgetAtContentRow")) {
                 //DefaultWidgetAtContentRow是设置对话框右边每一个option条目对应widget的accessibleName的前缀，所以如果后续有更多条目，需要做修改
-                wid->layout()->setMargin(0);
+                wid->layout()->setContentsMargins(0, 0, 0, 0);
             }
         }
     }

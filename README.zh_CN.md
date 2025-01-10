@@ -10,15 +10,17 @@ _**master**分支是当前开发分支，编译依赖可能在未更新README.md
 
 * debhelper-compat (=11)
 * cmake
-* deepin-gettext-tools
-* libdtkgui-dev (>= 5.5.17~)
-* libdtkwidget-dev (>= 5.5.17~)
-* libgtest-dev
-* libqt5svg5-dev
 * pkg-config
-* qtbase5-dev
-* qttools5-dev
-* qttools5-dev-tools
+* deepin-gettext-tools
+* libdtk6gui-dev
+* libdtk6widget-dev
+* qt6-base-dev
+* qt6-tools-dev
+* qt6-tools-dev-tools
+* qt6-svg-dev
+* libgtest-dev
+* libical-dev
+* libgcrypt20-dev
 
 ## 安装
 

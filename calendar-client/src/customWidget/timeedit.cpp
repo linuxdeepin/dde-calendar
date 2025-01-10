@@ -4,7 +4,6 @@
 
 #include "timeedit.h"
 
-#include <QRegExpValidator>
 #include <QEvent>
 #include <QFocusEvent>
 #include <QPainter>
@@ -234,7 +233,7 @@ void CTimeEdit::paintEvent(QPaintEvent *e)
         QPainter painter(this);
         QStyleOptionFocusRect option;
         option.initFrom(this);
-        option.backgroundColor = palette().color(QPalette::Background);
+        option.backgroundColor = palette().color(QPalette::Window);
         style()->drawPrimitive(QStyle::PE_FrameFocusRect, &option, &painter, this);
     }
 }

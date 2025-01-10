@@ -216,7 +216,7 @@ void CDayWindow::setLunarVisible(bool state)
 void CDayWindow::initUI()
 {
     QHBoxLayout *titleLayout = new QHBoxLayout;
-    titleLayout->setMargin(0);
+    titleLayout->setContentsMargins(0, 0, 0, 0);
     titleLayout->setSpacing(0);
     titleLayout->setContentsMargins(10, 9, 0, 3);
 
@@ -254,7 +254,7 @@ void CDayWindow::initUI()
     titleLayout->addStretch();
 
     QVBoxLayout *leftLayout = new QVBoxLayout;
-    leftLayout->setMargin(0);
+    leftLayout->setContentsMargins(0, 0, 0, 0);
     leftLayout->setSpacing(0);
     m_scheduleView = new CScheduleView(this, ScheduleViewPos::DayPos);
     m_scheduleView->setviewMargin(72, 109, 20, 0);
@@ -268,7 +268,7 @@ void CDayWindow::initUI()
     m_daymonthView = new CDayMonthView(this);
 
     QHBoxLayout *leftMainLayout = new QHBoxLayout;
-    leftMainLayout->setMargin(0);
+    leftMainLayout->setContentsMargins(0, 0, 0, 0);
     leftMainLayout->setSpacing(1);
     leftMainLayout->setContentsMargins(0, 0, 0, 0);
     leftMainLayout->addLayout(leftLayout);
@@ -285,7 +285,7 @@ void CDayWindow::initUI()
     m_leftground->setBColor("#FFFFFF");
 
     m_mainLayout = new QHBoxLayout;
-    m_mainLayout->setMargin(0);
+    m_mainLayout->setContentsMargins(0, 0, 0, 0);
     m_mainLayout->setSpacing(0);
     m_mainLayout->addWidget(m_leftground);
 

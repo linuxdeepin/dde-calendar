@@ -63,9 +63,9 @@ void CMonthWindow::setTheMe(int type)
         m_YearLunarLabel->setForegroundRole(DPalette::WindowText);
 
         DPalette gpa = m_gridWidget->palette();
-        gpa.setColor(DPalette::Background, "#F8F8F8");
+        gpa.setColor(DPalette::Window, "#F8F8F8");
         m_gridWidget->setPalette(gpa);
-        m_gridWidget->setBackgroundRole(DPalette::Background);
+        m_gridWidget->setBackgroundRole(DPalette::Window);
     } else if (type == 2) {
 
 
@@ -79,9 +79,9 @@ void CMonthWindow::setTheMe(int type)
         m_YearLunarLabel->setForegroundRole(DPalette::WindowText);
 
         DPalette gpa = m_gridWidget->palette();
-        gpa.setColor(DPalette::Background, "#252525");
+        gpa.setColor(DPalette::Window, "#252525");
         m_gridWidget->setPalette(gpa);
-        m_gridWidget->setBackgroundRole(DPalette::Background);
+        m_gridWidget->setBackgroundRole(DPalette::Window);
     }
     m_monthDayView->setTheMe(type);
     m_monthView->setTheMe(type);
@@ -256,14 +256,14 @@ void CMonthWindow::initUI()
     m_monthDayView = new CMonthDayView(this);
 
     QHBoxLayout *yeartitleLayout = new QHBoxLayout;
-    yeartitleLayout->setMargin(0);
+    yeartitleLayout->setContentsMargins(0, 0, 0, 0);
     yeartitleLayout->setSpacing(0);
     yeartitleLayout->addSpacing(10);
     yeartitleLayout->addWidget(m_YearLabel);
     yeartitleLayout->addWidget(m_dialogIconButton);
 
     QHBoxLayout *yeartitleLayout1 = new QHBoxLayout;
-    yeartitleLayout1->setMargin(0);
+    yeartitleLayout1->setContentsMargins(0, 0, 0, 0);
     yeartitleLayout1->setSpacing(0);
 
     yeartitleLayout1->addWidget(m_YearLunarLabel);
@@ -280,13 +280,13 @@ void CMonthWindow::initUI()
     m_monthView->setAccessibleName("monthViewWidget");
     m_monthView->setCurrentDate(getCurrendDateTime().date());
     QVBoxLayout *mhLayout = new QVBoxLayout;
-    mhLayout->setMargin(0);
+    mhLayout->setContentsMargins(0, 0, 0, 0);
     mhLayout->setSpacing(0);
     mhLayout->addWidget(m_monthView);
 
     QVBoxLayout *hhLayout = new QVBoxLayout;
     hhLayout->setSpacing(0);
-    hhLayout->setMargin(0);
+    hhLayout->setContentsMargins(0, 0, 0, 0);
 
     //头部控件统一高度为 M_YTopHeight
     QWidget *top = new QWidget(this);
@@ -301,12 +301,12 @@ void CMonthWindow::initUI()
     hhLayout->addWidget(m_gridWidget);
 
     m_tMainLayout = new QHBoxLayout;
-    m_tMainLayout->setMargin(0);
+    m_tMainLayout->setContentsMargins(0, 0, 0, 0);
     m_tMainLayout->setSpacing(0);
     m_tMainLayout->addLayout(hhLayout);
 
     QVBoxLayout *ssLayout = new QVBoxLayout;
-    ssLayout->setMargin(0);
+    ssLayout->setContentsMargins(0, 0, 0, 0);
     ssLayout->setSpacing(0);
     m_tMainLayout->addLayout(ssLayout);
 

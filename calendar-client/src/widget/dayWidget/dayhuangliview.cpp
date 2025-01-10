@@ -18,7 +18,7 @@
 CDayHuangLiLabel::CDayHuangLiLabel(QWidget *parent)
     : DLabel(parent)
 {
-    setMargin(0);
+    setContentsMargins(0, 0, 0, 0);
 }
 
 void CDayHuangLiLabel::setbackgroundColor(QColor backgroundColor)
@@ -55,7 +55,7 @@ void CDayHuangLiLabel::paintEvent(QPaintEvent *e)
 
     QPainter painter(this);
     QRect fillRect = QRect(0, 0, labelwidth, labelheight);
-    painter.setRenderHints(QPainter::HighQualityAntialiasing);
+    painter.setRenderHints(QPainter::Antialiasing);
     painter.setBrush(QBrush(m_backgroundColor));
     painter.setPen(Qt::NoPen);
     painter.drawRoundedRect(fillRect, 12, 12);
@@ -68,7 +68,7 @@ void CDayHuangLiLabel::paintEvent(QPaintEvent *e)
     pixmap.setDevicePixelRatio(devicePixelRatioF());
     painter.save();
     painter.setRenderHint(QPainter::Antialiasing);
-    painter.setRenderHint(QPainter::HighQualityAntialiasing);
+    painter.setRenderHint(QPainter::Antialiasing);
     painter.setRenderHint(QPainter::SmoothPixmapTransform);
     painter.drawPixmap(QRect(m_leftMagin, m_topMagin + 1, 22, 22), pixmap);
     painter.restore();

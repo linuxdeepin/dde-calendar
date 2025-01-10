@@ -69,7 +69,7 @@ void DbusAccountManagerRequest::setCalendarGeneralSettings(DCalendarGeneralSetti
 {
     QString jsonStr;
     DCalendarGeneralSettings::toJsonString(ptr, jsonStr);
-    asyncCall("setCalendarGeneralSettings", QVariant(jsonStr));
+    asyncCall("setCalendarGeneralSettings", {QVariant(jsonStr)});
 }
 
 void DbusAccountManagerRequest::clientIsShow(bool isShow)

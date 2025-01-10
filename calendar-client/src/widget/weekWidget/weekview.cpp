@@ -28,7 +28,7 @@ CWeekView::CWeekView(const GetWeekNumOfYear &getWeekNumOfYear, QWidget *parent)
     , m_weekNumWidget(nullptr)
 {
     QHBoxLayout *hBoxLayout = new QHBoxLayout;
-    hBoxLayout->setMargin(0);
+    hBoxLayout->setContentsMargins(0, 0, 0, 0);
     hBoxLayout->setSpacing(0);
 
     //上一周按钮
@@ -149,7 +149,7 @@ CWeekNumWidget::CWeekNumWidget(const GetWeekNumOfYear &getWeekNumOfYear, QWidget
 
     QHBoxLayout *hBoxLayout = new QHBoxLayout;
     hBoxLayout->setSpacing(0);
-    hBoxLayout->setMargin(0);
+    hBoxLayout->setContentsMargins(0, 0, 0, 0);
     //显示周数的widget
     for (int c = 0; c != DDEWeekCalendar::NumWeeksDisplayed; ++c) {
         QWidget *cell = new QWidget;

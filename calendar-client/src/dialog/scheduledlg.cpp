@@ -804,13 +804,13 @@ void CScheduleDlg::initUI()
     mlabelF.setWeight(QFont::Medium);
 
     QVBoxLayout *maintlayout = new QVBoxLayout;
-    maintlayout->setMargin(0);
+    maintlayout->setContentsMargins(0, 0, 0, 0);
     maintlayout->setSpacing(10);
     //帐户
     {
         QHBoxLayout *hlayout = new QHBoxLayout;
         hlayout->setSpacing(0);
-        hlayout->setMargin(0);
+        hlayout->setContentsMargins(0, 0, 0, 0);
 
         DLabel *aLabel = new DLabel(tr("Calendar account:"));
         aLabel->setToolTip(tr("Calendar account"));
@@ -838,7 +838,7 @@ void CScheduleDlg::initUI()
         //使用网格布局
         QGridLayout *typelayout = new QGridLayout;
         typelayout->setSpacing(0);
-        typelayout->setMargin(0);
+        typelayout->setContentsMargins(0, 0, 0, 0);
         m_typeLabel = new QLabel();
         m_typeLabel->setToolTip(tr("Type"));
         DFontSizeManager::instance()->bind(m_typeLabel, DFontSizeManager::T6);
@@ -873,7 +873,7 @@ void CScheduleDlg::initUI()
     {
         QHBoxLayout *contentLabellayout = new QHBoxLayout;
         contentLabellayout->setSpacing(0);
-        contentLabellayout->setMargin(0);
+        contentLabellayout->setContentsMargins(0, 0, 0, 0);
 
         m_contentLabel = new QLabel(this);
         DFontSizeManager::instance()->bind(m_contentLabel, DFontSizeManager::T6);
@@ -910,7 +910,7 @@ void CScheduleDlg::initUI()
     {
         QHBoxLayout *alldayLabellayout = new QHBoxLayout;
         alldayLabellayout->setSpacing(0);
-        alldayLabellayout->setMargin(0);
+        alldayLabellayout->setContentsMargins(0, 0, 0, 0);
         m_adllDayLabel = new QLabel(this);
         m_adllDayLabel->setToolTip(tr("All Day"));
         DFontSizeManager::instance()->bind(m_adllDayLabel, DFontSizeManager::T6);
@@ -958,7 +958,7 @@ void CScheduleDlg::initUI()
 
         QHBoxLayout *tLayout = new QHBoxLayout;
         tLayout->setSpacing(8);
-        tLayout->setMargin(0);
+        tLayout->setContentsMargins(0, 0, 0, 0);
         tLayout->addWidget(tLabel);
         tLayout->addWidget(m_solarRadioBtn);
         tLayout->addWidget(m_lunarRadioBtn);
@@ -976,7 +976,7 @@ void CScheduleDlg::initUI()
     {
         QHBoxLayout *beginLabellayout = new QHBoxLayout;
         beginLabellayout->setSpacing(0);
-        beginLabellayout->setMargin(0);
+        beginLabellayout->setContentsMargins(0, 0, 0, 0);
         m_beginTimeLabel = new QLabel(this);
         m_beginTimeLabel->setToolTip(tr("Starts"));
         DFontSizeManager::instance()->bind(m_beginTimeLabel, DFontSizeManager::T6);
@@ -1017,7 +1017,7 @@ void CScheduleDlg::initUI()
     {
         QHBoxLayout *enQLabellayout = new QHBoxLayout;
         enQLabellayout->setSpacing(0);
-        enQLabellayout->setMargin(0);
+        enQLabellayout->setContentsMargins(0, 0, 0, 0);
         m_endTimeLabel = new QLabel(this);
         m_endTimeLabel->setToolTip(tr("Ends"));
         DFontSizeManager::instance()->bind(m_endTimeLabel, DFontSizeManager::T6);
@@ -1058,7 +1058,7 @@ void CScheduleDlg::initUI()
     {
         QHBoxLayout *rminQLabellayout = new QHBoxLayout;
         rminQLabellayout->setSpacing(0);
-        rminQLabellayout->setMargin(0);
+        rminQLabellayout->setContentsMargins(0, 0, 0, 0);
         m_remindSetLabel = new QLabel();
         DFontSizeManager::instance()->bind(m_remindSetLabel, DFontSizeManager::T6);
         QFontMetrics fontWidth_remindSetLabel(mlabelF);
@@ -1089,7 +1089,7 @@ void CScheduleDlg::initUI()
     {
         QHBoxLayout *repeatLabellayout = new QHBoxLayout;
         repeatLabellayout->setSpacing(0);
-        repeatLabellayout->setMargin(0);
+        repeatLabellayout->setContentsMargins(0, 0, 0, 0);
         m_beginrepeatLabel = new QLabel();
         m_beginrepeatLabel->setToolTip(tr("Repeat"));
         DFontSizeManager::instance()->bind(m_beginrepeatLabel, DFontSizeManager::T6);
@@ -1124,7 +1124,7 @@ void CScheduleDlg::initUI()
     {
         QHBoxLayout *endrepeatLabellayout = new QHBoxLayout;
         endrepeatLabellayout->setSpacing(0);
-        endrepeatLabellayout->setMargin(0);
+        endrepeatLabellayout->setContentsMargins(0, 0, 0, 0);
         m_endrepeatLabel = new QLabel();
         DFontSizeManager::instance()->bind(m_endrepeatLabel, DFontSizeManager::T6);
         QFontMetrics fontWidth_endrepeatLabel(mlabelF);
@@ -1149,7 +1149,7 @@ void CScheduleDlg::initUI()
 
         QHBoxLayout *endrepeattimeslayout = new QHBoxLayout;
         endrepeattimeslayout->setSpacing(0);
-        endrepeattimeslayout->setMargin(0);
+        endrepeattimeslayout->setContentsMargins(0, 0, 0, 0);
         endrepeattimeslayout->setContentsMargins(0, 0, 0, 0);
         m_endrepeattimes = new DLineEdit(this);
         //设置对象名称和辅助显示名称
@@ -1158,8 +1158,8 @@ void CScheduleDlg::initUI()
         m_endrepeattimes->setFixedSize(71, item_Fixed_Height);
         m_endrepeattimes->setText(QString::number(10));
         m_endrepeattimes->setClearButtonEnabled(false);
-        QRegExp rx("^[1-9]\\d{0,2}$");
-        QValidator *validator = new QRegExpValidator(rx, this);
+        QRegularExpression rx("^[1-9]\\d{0,2}$");
+        QValidator *validator = new QRegularExpressionValidator(rx, this);
         m_endrepeattimes->lineEdit()->setValidator(validator);
         m_endrepeattimesLabel = new QLabel(tr("time(s)"));
         m_endrepeattimesLabel->setToolTip(tr("time(s)"));

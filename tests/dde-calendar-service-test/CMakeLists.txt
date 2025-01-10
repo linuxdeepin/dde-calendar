@@ -14,27 +14,22 @@ set(APP_QRC "${APP_SERVICE_RES_DIR}/resources.qrc")
 
 # Find the library
 find_package(PkgConfig REQUIRED)
-find_package(DtkCore REQUIRED)
-find_package(Qt5 COMPONENTS
-    Core
-    DBus
-    Sql
-REQUIRED)
-find_package(Qt5Test REQUIRED)
+find_package(Dtk${DTK_VERSION_MAJOR} REQUIRED COMPONENTS Core)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core DBus Sql Test)
 find_package(GTest REQUIRED)
 
 set(LINK_LIBS
-    Qt5::Core
-    Qt5::DBus
-    Qt5::Sql
-    ${DtkCore_LIBRARIES}
+    Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::DBus
+    Qt${QT_VERSION_MAJOR}::Sql
+    Dtk${DTK_VERSION_MAJOR}::Core
 )
 
 include_directories(${APP_SERVICE_DIR}/src)
 
 SUBDIRLIST(all_src ${APP_SERVICE_DIR}/src)
 
-#Include all app own subdirectories
+# Include all app own subdirectories
 foreach(subdir ${all_src})
     include_directories(${APP_SERVICE_DIR}/src/${subdir})
 endforeach()
@@ -43,8 +38,9 @@ file(GLOB_RECURSE CALENDARSERVICE_SRCS ${APP_SERVICE_DIR}/src/*.cpp)
 include_directories(../../calendar-basicstruct/)
 list(REMOVE_ITEM CALENDARSERVICE_SRCS ${APP_SERVICE_DIR}/src/main.cpp)
 
-#test src
+# test src
 SUBDIRLIST(TEST_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+
 foreach(subdir ${TEST_SRC})
     include_directories(${subdir})
 endforeach()
@@ -60,7 +56,7 @@ include(asan)
 
 add_executable(${APP_BIN_NAME} ${Calendar_Service_TEST_SRC} ${CALENDARSERVICE_SRCS} ${APP_QRC})
 
-target_link_libraries(${APP_BIN_NAME} 
+target_link_libraries(${APP_BIN_NAME}
     ${LINK_LIBS}
     ${GTEST_LIBRARIES}
     ${GTEST_MAIN_LIBRARIES}

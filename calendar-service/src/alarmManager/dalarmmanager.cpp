@@ -256,7 +256,11 @@ QString DAlarmManager::getBodyTimePart(const QDateTime &nowtime, const QDateTime
     if (allday) {
         //全天日程，只展示日期，即date
         //日程开始时间距离现在超过两天
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        strmsg.append(jobtime.date().toString(QLocale().dateFormat(QLocale::ShortFormat)));
+#else
         strmsg.append(jobtime.date().toString(Qt::LocalDate));
+#endif
         if (diff == 0) {
             //日程开始时间是今天
             strmsg = tr("Today");

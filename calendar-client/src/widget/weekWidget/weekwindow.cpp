@@ -98,14 +98,14 @@ void CWeekWindow::initUI()
     m_YearLunarLabel->setPalette(YearLpa);
 
     QHBoxLayout *yeartitleLayout = new QHBoxLayout;
-    yeartitleLayout->setMargin(0);
+    yeartitleLayout->setContentsMargins(0, 0, 0, 0);
     yeartitleLayout->setSpacing(0);
     yeartitleLayout->addSpacing(10);
     yeartitleLayout->addWidget(m_YearLabel);
     yeartitleLayout->addWidget(m_dialogIconButton);
 
     QHBoxLayout *yeartitleLayout1 = new QHBoxLayout;
-    yeartitleLayout1->setMargin(0);
+    yeartitleLayout1->setContentsMargins(0, 0, 0, 0);
     yeartitleLayout1->setSpacing(0);
     yeartitleLayout1->addWidget(m_YearLunarLabel);
     yeartitleLayout->addSpacing(6);
@@ -119,7 +119,7 @@ void CWeekWindow::initUI()
     m_todayframe->setFixedHeight(DDEYearCalendar::Y_MLabelHeight);
     m_todayframe->setboreder(1);
     QHBoxLayout *todaylayout = new QHBoxLayout;
-    todaylayout->setMargin(0);
+    todaylayout->setContentsMargins(0, 0, 0, 0);
     todaylayout->setSpacing(0);
     //将显示周数的view加入布局
     todaylayout->addWidget(m_weekview);
@@ -138,12 +138,12 @@ void CWeekWindow::initUI()
     m_scheduleView->setRange(763, 1032, QDate(2019, 8, 12), QDate(2019, 8, 18));
 
     m_mainHLayout = new QVBoxLayout;
-    m_mainHLayout->setMargin(0);
+    m_mainHLayout->setContentsMargins(0, 0, 0, 0);
     m_mainHLayout->setSpacing(0);
     m_mainHLayout->addWidget(m_weekHeadView, 1);
     m_mainHLayout->addWidget(m_scheduleView, 9);
     QVBoxLayout *hhLayout = new QVBoxLayout;
-    hhLayout->setMargin(0);
+    hhLayout->setContentsMargins(0, 0, 0, 0);
     hhLayout->setSpacing(0);
     //头部控件统一高度为 M_YTopHeight
     QWidget *top = new QWidget(this);
@@ -153,7 +153,7 @@ void CWeekWindow::initUI()
     hhLayout->addLayout(m_mainHLayout);
 
     m_tMainLayout = new QHBoxLayout;
-    m_tMainLayout->setMargin(0);
+    m_tMainLayout->setContentsMargins(0, 0, 0, 0);
     m_tMainLayout->setSpacing(0);
     m_tMainLayout->addLayout(hhLayout);
 

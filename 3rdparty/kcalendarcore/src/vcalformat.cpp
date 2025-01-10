@@ -334,13 +334,18 @@ Todo::Ptr VCalFormat::VTodoToEvent(VObject *vtodo)
                 recurrenceType = Recurrence::rWeekly;
             } else if (tmpStrLen > 1) {
                 recurrenceTypeAbbrLen = 2;
-                if (tmpStr.leftRef(2) == QLatin1String("MP")) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                auto prefix = QStringView(tmpStr).left(2);
+#else
+                auto prefix = tmpStr.leftRef(2);
+#endif
+                if (prefix == QLatin1String("MP")) {
                     recurrenceType = Recurrence::rMonthlyPos;
-                } else if (tmpStr.leftRef(2) == QLatin1String("MD")) {
+                } else if (prefix == QLatin1String("MD")) {
                     recurrenceType = Recurrence::rMonthlyDay;
-                } else if (tmpStr.leftRef(2) == QLatin1String("YM")) {
+                } else if (prefix == QLatin1String("YM")) {
                     recurrenceType = Recurrence::rYearlyMonth;
-                } else if (tmpStr.leftRef(2) == QLatin1String("YD")) {
+                } else if (prefix == QLatin1String("YD")) {
                     recurrenceType = Recurrence::rYearlyDay;
                 }
             }
@@ -350,7 +355,11 @@ Todo::Ptr VCalFormat::VTodoToEvent(VObject *vtodo)
             // Immediately after the type is the frequency
             int index = tmpStr.indexOf(QLatin1Char(' '));
             int last = tmpStr.lastIndexOf(QLatin1Char(' ')) + 1; // find last entry
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            int rFreq = QStringView(tmpStr).mid(recurrenceTypeAbbrLen, (index - 1)).toInt();
+#else
             int rFreq = tmpStr.midRef(recurrenceTypeAbbrLen, (index - 1)).toInt();
+#endif
             ++index; // advance to beginning of stuff after freq
 
             // Read the type-specific settings
@@ -485,7 +494,11 @@ Todo::Ptr VCalFormat::VTodoToEvent(VObject *vtodo)
             if (tmpStr.mid(index, 1) == QLatin1String("#")) {
                 // Nr of occurrences
                 index++;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                int rDuration = QStringView(tmpStr).mid(index, tmpStr.length() - index).toInt();
+#else
                 int rDuration = tmpStr.midRef(index, tmpStr.length() - index).toInt();
+#endif
                 if (rDuration > 0) {
                     anEvent->recurrence()->setDuration(rDuration);
                 }
@@ -769,13 +782,19 @@ Event::Ptr VCalFormat::VEventToEvent(VObject *vevent)
                 recurrenceType = Recurrence::rWeekly;
             } else if (tmpStrLen > 1) {
                 recurrenceTypeAbbrLen = 2;
-                if (tmpStr.leftRef(2) == QLatin1String("MP")) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                auto prefix = QStringView(tmpStr).left(2);
+#else
+                auto prefix = tmpStr.leftRef(2);
+#endif
+
+                if (prefix == QLatin1String("MP")) {
                     recurrenceType = Recurrence::rMonthlyPos;
-                } else if (tmpStr.leftRef(2) == QLatin1String("MD")) {
+                } else if (prefix == QLatin1String("MD")) {
                     recurrenceType = Recurrence::rMonthlyDay;
-                } else if (tmpStr.leftRef(2) == QLatin1String("YM")) {
+                } else if (prefix == QLatin1String("YM")) {
                     recurrenceType = Recurrence::rYearlyMonth;
-                } else if (tmpStr.leftRef(2) == QLatin1String("YD")) {
+                } else if (prefix == QLatin1String("YD")) {
                     recurrenceType = Recurrence::rYearlyDay;
                 }
             }
@@ -785,7 +804,11 @@ Event::Ptr VCalFormat::VEventToEvent(VObject *vevent)
             // Immediately after the type is the frequency
             int index = tmpStr.indexOf(QLatin1Char(' '));
             int last = tmpStr.lastIndexOf(QLatin1Char(' ')) + 1; // find last entry
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            int rFreq = QStringView(tmpStr).mid(recurrenceTypeAbbrLen, (index - 1)).toInt();
+#else
             int rFreq = tmpStr.midRef(recurrenceTypeAbbrLen, (index - 1)).toInt();
+#endif
             ++index; // advance to beginning of stuff after freq
 
             // Read the type-specific settings
@@ -920,7 +943,11 @@ Event::Ptr VCalFormat::VEventToEvent(VObject *vevent)
             if (tmpStr.mid(index, 1) == QLatin1String("#")) {
                 // Nr of occurrences
                 index++;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                int rDuration = QStringView(tmpStr).mid(index, tmpStr.length() - index).toInt();
+#else
                 int rDuration = tmpStr.midRef(index, tmpStr.length() - index).toInt();
+#endif
                 if (rDuration > 0) {
                     anEvent->recurrence()->setDuration(rDuration);
                 }
@@ -1210,16 +1237,26 @@ QDateTime VCalFormat::ISOToQDateTime(const QString &dtStr)
 {
     QDate tmpDate;
     QTime tmpTime;
-    QString tmpStr;
     int year, month, day, hour, minute, second;
 
-    tmpStr = dtStr;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QStringView tmpStr{dtStr};
+    year = tmpStr.left(4).toInt();
+    month = tmpStr.mid(4, 2).toInt();
+    day = tmpStr.mid(6, 2).toInt();
+    hour = tmpStr.mid(9, 2).toInt();
+    minute = tmpStr.mid(11, 2).toInt();
+    second = tmpStr.mid(13, 2).toInt();
+#else
+    QString tmpStr = dtStr;
     year = tmpStr.leftRef(4).toInt();
     month = tmpStr.midRef(4, 2).toInt();
     day = tmpStr.midRef(6, 2).toInt();
     hour = tmpStr.midRef(9, 2).toInt();
     minute = tmpStr.midRef(11, 2).toInt();
     second = tmpStr.midRef(13, 2).toInt();
+#endif
+
     tmpDate.setDate(year, month, day);
     tmpTime.setHMS(hour, minute, second);
 
@@ -1239,9 +1276,16 @@ QDate VCalFormat::ISOToQDate(const QString &dateStr)
 {
     int year, month, day;
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QStringView tmpStr{dateStr};
+    year = tmpStr.left(4).toInt();
+    month = tmpStr.mid(4, 2).toInt();
+    day = tmpStr.mid(6, 2).toInt();
+#else
     year = dateStr.leftRef(4).toInt();
     month = dateStr.midRef(4, 2).toInt();
     day = dateStr.midRef(6, 2).toInt();
+#endif
 
     return QDate(year, month, day);
 }
@@ -1280,8 +1324,12 @@ bool VCalFormat::parseTZOffsetISO8601(const QString &s, int &result)
     if (str.size() < (ofs + 2)) {
         return false;
     }
-
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QStringView tmpStr{str};
+    v = tmpStr.mid(ofs, 2).toInt(&ok) * 60;
+#else
     v = str.midRef(ofs, 2).toInt(&ok) * 60;
+#endif
     if (!ok) {
         return false;
     }
@@ -1295,7 +1343,12 @@ bool VCalFormat::parseTZOffsetISO8601(const QString &s, int &result)
             if (str.size() < (ofs + 2)) {
                 return false;
             }
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            v += tmpStr.mid(ofs, 2).toInt(&ok);
+#else
             v += str.midRef(ofs, 2).toInt(&ok);
+#endif
             if (!ok) {
                 return false;
             }

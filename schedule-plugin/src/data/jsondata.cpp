@@ -152,6 +152,24 @@ void JsonData::repeatJsonResolve(const QJsonObject &jsobj)
         return;
     }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QRegularExpression rxlen("([W,M])([0-9]{0,2})");
+    QVector<int> repeatnum {};
+    repeatnum.clear();
+    QRegularExpressionMatchIterator it = rxlen.globalMatch(repeatValue);
+    while (it.hasNext()) {
+        QRegularExpressionMatch match = it.next();
+        if (match.captured(1).contains("M")) {
+            setRepeatStatus(EVEM);
+        }
+        if (match.captured(1).contains("W")) {
+            setRepeatStatus(EVEW);
+        }
+        if (match.captured(0).size() > 0 && match.captured(2) != "") {
+            repeatnum.append(match.captured(2).toInt());
+        }
+    }
+#else
     QRegExp rxlen("([W,M])([0-9]{0,2})");
     int pos = 0;
     QVector<int> repeatnum {};
@@ -168,6 +186,7 @@ void JsonData::repeatJsonResolve(const QJsonObject &jsobj)
         }
         pos += rxlen.matchedLength();
     }
+#endif
     setRepeatNum(repeatnum);
 }
 

@@ -149,7 +149,7 @@ void CustomFrame::paintEvent(QPaintEvent *e)
 
     if (!m_text.isEmpty()) {
         painter.save();
-        painter.setRenderHints(QPainter::HighQualityAntialiasing);
+        painter.setRenderHints(QPainter::Antialiasing);
         painter.setFont(m_font);
         painter.setPen(m_tnormalColor);
         painter.drawText(fillRect, m_textflag, m_text);

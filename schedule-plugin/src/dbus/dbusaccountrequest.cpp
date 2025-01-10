@@ -25,7 +25,7 @@ void DbusAccountRequest::updateAccountInfo(const DAccount::Ptr &account)
 {
     QString jsonStr;
     DAccount::toJsonString(account, jsonStr);
-    asyncCall("updateAccountInfo", QVariant(jsonStr));
+    asyncCall("updateAccountInfo", {QVariant(jsonStr)});
 }
 
 /**
@@ -55,7 +55,7 @@ DScheduleType::List DbusAccountRequest::getScheduleTypeList()
  */
 void DbusAccountRequest::getScheduleTypeByID(const QString &typeID)
 {
-    asyncCall("getScheduleTypeByID", QVariant(typeID));
+    asyncCall("getScheduleTypeByID", {QVariant(typeID)});
 }
 
 /**
@@ -67,7 +67,7 @@ void DbusAccountRequest::createScheduleType(const DScheduleType::Ptr &typeInfo)
 {
     QString jsonStr;
     DScheduleType::toJsonString(typeInfo, jsonStr);
-    asyncCall("createScheduleType", QVariant(jsonStr));
+    asyncCall("createScheduleType", {QVariant(jsonStr)});
 }
 
 /**
@@ -79,7 +79,7 @@ void DbusAccountRequest::updateScheduleType(const DScheduleType::Ptr &typeInfo)
 {
     QString jsonStr;
     DScheduleType::toJsonString(typeInfo, jsonStr);
-    asyncCall("updateScheduleType", QVariant(jsonStr));
+    asyncCall("updateScheduleType", {QVariant(jsonStr)});
 }
 
 /**
@@ -90,7 +90,7 @@ void DbusAccountRequest::updateScheduleType(const DScheduleType::Ptr &typeInfo)
 void DbusAccountRequest::deleteScheduleTypeByID(const QString &typeID)
 {
     QList<QVariant> argumentList;
-    asyncCall("deleteScheduleTypeByID", QVariant(typeID));
+    asyncCall("deleteScheduleTypeByID", {QVariant(typeID)});
 }
 
 /**
@@ -100,7 +100,7 @@ void DbusAccountRequest::deleteScheduleTypeByID(const QString &typeID)
  */
 void DbusAccountRequest::scheduleTypeByUsed(const QString &typeID)
 {
-    asyncCall("scheduleTypeByUsed", QVariant(typeID));
+    asyncCall("scheduleTypeByUsed", {QVariant(typeID)});
 }
 
 /**
@@ -135,7 +135,7 @@ void DbusAccountRequest::updateSchedule(const DSchedule::Ptr &scheduleInfo)
 {
     QString jsonStr;
     DSchedule::toJsonString(scheduleInfo, jsonStr);
-    asyncCall("updateSchedule", QVariant(jsonStr));
+    asyncCall("updateSchedule", {QVariant(jsonStr)});
 }
 
 DSchedule::Ptr DbusAccountRequest::getScheduleByID(const QString &scheduleID)
@@ -165,7 +165,7 @@ DSchedule::Ptr DbusAccountRequest::getScheduleByID(const QString &scheduleID)
 void DbusAccountRequest::deleteScheduleByScheduleID(const QString &scheduleID)
 {
     QList<QVariant> argumentList;
-    asyncCall("deleteScheduleByScheduleID", QVariant(scheduleID));
+    asyncCall("deleteScheduleByScheduleID", {QVariant(scheduleID)});
 }
 
 /**
@@ -176,7 +176,7 @@ void DbusAccountRequest::deleteScheduleByScheduleID(const QString &scheduleID)
 void DbusAccountRequest::deleteSchedulesByScheduleTypeID(const QString &typeID)
 {
     QList<QVariant> argumentList;
-    asyncCall("deleteSchedulesByScheduleTypeID", QVariant(typeID));
+    asyncCall("deleteSchedulesByScheduleTypeID", {QVariant(typeID)});
 }
 
 /**

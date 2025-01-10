@@ -21,7 +21,7 @@ CPushButton::CPushButton(QWidget *parent) : QWidget(parent)
 
     m_textLabel->setFixedSize(200,34);
     layoutAddType->setSpacing(0);
-    layoutAddType->setMargin(0);
+    layoutAddType->setContentsMargins(0, 0, 0, 0);
     layoutAddType->setAlignment(Qt::AlignLeft);
     m_iconButton = new DIconButton(this);
     m_iconButton->setFocusPolicy(Qt::NoFocus);

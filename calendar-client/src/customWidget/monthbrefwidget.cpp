@@ -22,7 +22,7 @@ MonthBrefWidget::MonthBrefWidget(QWidget *parent)
 {
     QGridLayout *gridLayout = new QGridLayout(this);
     gridLayout->setSpacing(0);
-    gridLayout->setMargin(0);
+    gridLayout->setContentsMargins(0, 0, 0, 0);
 
     for (int i = 0; i < DDEYearCalendar::RectSizeOfEveryMonth; ++i) {
         CMonthDayRectWidget *item = new CMonthDayRectWidget(m_globalData, this);
@@ -340,7 +340,11 @@ void CMonthDayRectWidget::paintEvent(QPaintEvent *event)
  * 鼠标进入事件
  * @param event
  */
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+void CMonthDayRectWidget::enterEvent(QEnterEvent *event)
+#else
 void CMonthDayRectWidget::enterEvent(QEvent *event)
+#endif
 {
     m_hovered = true;
     QWidget::enterEvent(event);

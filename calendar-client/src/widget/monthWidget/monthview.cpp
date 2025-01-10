@@ -15,7 +15,6 @@
 #include <QTime>
 #include <QApplication>
 #include <QMouseEvent>
-#include <QDesktopWidget>
 
 DGUI_USE_NAMESPACE
 
@@ -42,7 +41,7 @@ CMonthView::CMonthView(QWidget *parent) : DWidget(parent)
     connect(m_monthGraphicsView, &CMonthGraphicsview::signalGotoDayView, this, &CMonthView::signalsViewSelectDate);
     //新建最终布局
     m_mainLayout = new QVBoxLayout;
-    m_mainLayout->setMargin(0);
+    m_mainLayout->setContentsMargins(0, 0, 0, 0);
     m_mainLayout->setSpacing(0);
     m_mainLayout->addWidget(m_weekIndicator);
     m_mainLayout->addWidget(m_monthGraphicsView);

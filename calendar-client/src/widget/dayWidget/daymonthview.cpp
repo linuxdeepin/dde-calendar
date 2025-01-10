@@ -71,9 +71,9 @@ void CDayMonthView::setTheMe(int type)
     if (type == 0 || type == 1) {
         DPalette aniPa = this->palette();
         QColor tbColor = "#FFFFFF";
-        aniPa.setColor(DPalette::Background, tbColor);
+        aniPa.setColor(DPalette::Window, tbColor);
         setPalette(aniPa);
-        setBackgroundRole(DPalette::Background);
+        setBackgroundRole(DPalette::Window);
         setBColor(tbColor);
 
         QColor todayhover = "#000000";
@@ -119,9 +119,9 @@ void CDayMonthView::setTheMe(int type)
     } else if (type == 2) {
         DPalette aniPa = this->palette();
         QColor tbColor = "#282828";
-        aniPa.setColor(DPalette::Background, tbColor);
+        aniPa.setColor(DPalette::Window, tbColor);
         setPalette(aniPa);
-        setBackgroundRole(DPalette::Background);
+        setBackgroundRole(DPalette::Window);
         setBColor(tbColor);
 
         DPalette prevPalette = m_prevButton->palette();
@@ -197,7 +197,7 @@ void CDayMonthView::initUI()
     m_nextButton->setFixedSize(36, 36);
 
     QHBoxLayout *titleLayout = new QHBoxLayout;
-    titleLayout->setMargin(0);
+    titleLayout->setContentsMargins(0, 0, 0, 0);
     titleLayout->setSpacing(0);
     titleLayout->setContentsMargins(0, 0, 0, 3);
     //add separator line
@@ -216,7 +216,7 @@ void CDayMonthView::initUI()
 
     //上半部分
     m_upLayout = new QVBoxLayout;
-    m_upLayout->setMargin(0);
+    m_upLayout->setContentsMargins(0, 0, 0, 0);
     m_upLayout->setSpacing(0);
     m_upLayout->setContentsMargins(22, 9, 0, 7);
     m_upLayout->addLayout(titleLayout);
@@ -229,7 +229,7 @@ void CDayMonthView::initUI()
 
     //中间部分
     QVBoxLayout *midLayout = new QVBoxLayout;
-    midLayout->setMargin(0);
+    midLayout->setContentsMargins(0, 0, 0, 0);
     midLayout->setSpacing(0);
     midLayout->setContentsMargins(0, 0, 0, 20);
     m_currentDay = new CustomFrame(this);
@@ -291,7 +291,7 @@ void CDayMonthView::initUI()
     m_jiDownLayout->addWidget(m_jiLabel, 1);
 
     m_hhLayout = new QVBoxLayout;
-    m_hhLayout->setMargin(0);
+    m_hhLayout->setContentsMargins(0, 0, 0, 0);
     m_hhLayout->setSpacing(0);
     m_hhLayout->addLayout(m_upLayout, 6);
     m_hhLayout->addLayout(midLayout);
@@ -424,7 +424,7 @@ CDayMonthWidget::CDayMonthWidget(QWidget *parent)
     , m_isFocus(false)
 {
     m_gridLayout = new QGridLayout;
-    m_gridLayout->setMargin(0);
+    m_gridLayout->setContentsMargins(0, 0, 0, 0);
     m_gridLayout->setSpacing(0);
     m_dayNumFont.setPixelSize(DDECalendar::FontSizeTwelve);
     for (int r = 0; r < 6; ++r) {

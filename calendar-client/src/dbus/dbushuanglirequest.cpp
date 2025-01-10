@@ -137,7 +137,7 @@ bool DbusHuangLiRequest::getHuangLiMonth(quint32 year,
  */
 void DbusHuangLiRequest::getLunarInfoBySolar(quint32 year, quint32 month, quint32 day)
 {
-    asyncCall("getLunarInfoBySolar", QVariant(year), QVariant(month), QVariant(day));
+    asyncCall("getLunarInfoBySolar", {QVariant(year), QVariant(month), QVariant(day)});
 }
 
 /**
@@ -149,7 +149,7 @@ void DbusHuangLiRequest::getLunarInfoBySolar(quint32 year, quint32 month, quint3
  */
 void DbusHuangLiRequest::getLunarMonthCalendar(quint32 year, quint32 month, bool fill)
 {
-    asyncCall("getLunarMonthCalendar", QVariant(year), QVariant(month), QVariant(fill));
+    asyncCall("getLunarMonthCalendar", {QVariant(year), QVariant(month), QVariant(fill)});
 }
 
 void DbusHuangLiRequest::slotCallFinished(CDBusPendingCallWatcher *call)

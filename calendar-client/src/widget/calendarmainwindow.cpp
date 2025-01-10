@@ -40,8 +40,10 @@
 #include <DSettingsWidgetFactory>
 #include <DBackgroundGroup>
 #include <DMessageManager>
-
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include <QDesktopWidget>
+#endif
+
 #include <QJsonDocument>
 #include <QJsonParseError>
 #include <QJsonObject>
@@ -269,28 +271,28 @@ void Calendarmainwindow::slotTheme(int type)
 
     if (type == 1) {
         DPalette anipa = m_contentBackground->palette();
-        anipa.setColor(DPalette::Background, "#F8F8F8");
+        anipa.setColor(DPalette::Window, "#F8F8F8");
         m_contentBackground->setPalette(anipa);
-        m_contentBackground->setBackgroundRole(DPalette::Background);
+        m_contentBackground->setBackgroundRole(DPalette::Window);
 
         DPalette tframepa = m_transparentFrame->palette();
         QColor tColor = "#FFFFFF";
         tColor.setAlphaF(0.3);
-        tframepa.setColor(DPalette::Background, tColor);
+        tframepa.setColor(DPalette::Window, tColor);
         m_transparentFrame->setPalette(tframepa);
-        m_transparentFrame->setBackgroundRole(DPalette::Background);
+        m_transparentFrame->setBackgroundRole(DPalette::Window);
     } else {
         DPalette anipa = m_contentBackground->palette();
-        anipa.setColor(DPalette::Background, "#252525");
+        anipa.setColor(DPalette::Window, "#252525");
         m_contentBackground->setPalette(anipa);
-        m_contentBackground->setBackgroundRole(DPalette::Background);
+        m_contentBackground->setBackgroundRole(DPalette::Window);
 
         DPalette tframepa = m_transparentFrame->palette();
         QColor tColor = "#000000";
         tColor.setAlphaF(0.3);
-        tframepa.setColor(DPalette::Background, tColor);
+        tframepa.setColor(DPalette::Window, tColor);
         m_transparentFrame->setPalette(tframepa);
-        m_transparentFrame->setBackgroundRole(DPalette::Background);
+        m_transparentFrame->setBackgroundRole(DPalette::Window);
     }
     CScheduleDataManage::getScheduleDataManage()->setTheMe(type);
     m_yearwindow->setTheMe(type);
@@ -398,7 +400,7 @@ void Calendarmainwindow::initUI()
     m_contentBackground->setObjectName("ScheduleSearchWidgetBackgroundFrame");
     m_contentBackground->setContentsMargins(0, 0, 0, 0);
     DPalette anipa = m_contentBackground->palette();
-    anipa.setColor(DPalette::Background, "#F8F8F8");
+    anipa.setColor(DPalette::Window, "#F8F8F8");
     m_contentBackground->setAutoFillBackground(true);
     m_contentBackground->setPalette(anipa);
 
@@ -408,7 +410,7 @@ void Calendarmainwindow::initUI()
     m_scheduleSearchView->setAccessibleDescription("Window showing search results");
 
     QVBoxLayout *ssLayout = new QVBoxLayout;
-    ssLayout->setMargin(0);
+    ssLayout->setContentsMargins(0, 0, 0, 0);
     ssLayout->setSpacing(0);
     ssLayout->addWidget(m_scheduleSearchView, 1);
     m_contentBackground->setLayout(ssLayout);
@@ -793,7 +795,11 @@ void Calendarmainwindow::slotDeleteitem()
 void Calendarmainwindow::slotSetMaxSize()
 {
     //获取屏幕大小
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QSize deskSize = QGuiApplication::primaryScreen()->size();
+#else
     QSize deskSize = QApplication::desktop()->size();
+#endif
     //设置最大尺寸为屏幕尺寸
     setMaximumSize(deskSize);
     if (TabletConfig::isTablet()) {

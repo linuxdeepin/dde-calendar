@@ -35,7 +35,7 @@ CWeekHeadView::CWeekHeadView(QWidget *parent)
 
     // cells grid
     QHBoxLayout *hBoxLayout = new QHBoxLayout;
-    hBoxLayout->setMargin(0);
+    hBoxLayout->setContentsMargins(0, 0, 0, 0);
     hBoxLayout->setSpacing(0);
 
     m_monthLabel = new CustomFrame(this);

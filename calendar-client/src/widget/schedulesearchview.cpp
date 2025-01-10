@@ -370,8 +370,11 @@ void CScheduleSearchItem::mouseReleaseEvent(QMouseEvent *event)
     }
     DLabel::mouseReleaseEvent(event);
 }
-
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+void CScheduleSearchItem::enterEvent(QEnterEvent *event)
+#else
 void CScheduleSearchItem::enterEvent(QEvent *event)
+#endif
 {
     DLabel::enterEvent(event);
     m_mouseStatus = M_HOVER;
@@ -645,7 +648,7 @@ void CScheduleSearchView::updateDateShow()
         gwi->setText(tr("No search results"));
         gwi->setFixedSize(m_maxWidth - 20, 450);
         listItem->setSizeHint(QSize(m_maxWidth - 20, 450)); //每次改变Item的高度
-        listItem->setFlags(Qt::ItemIsTristate);
+        listItem->setFlags(Qt::ItemIsAutoTristate);
         m_gradientItemList->addItem(listItem);
         m_gradientItemList->setItemWidget(listItem, gwi);
         m_labellist.append(gwi);
@@ -691,7 +694,7 @@ void CScheduleSearchView::createItemWidget(DSchedule::Ptr info, QDate date, int 
 
     QListWidgetItem *listItem = new QListWidgetItem;
     listItem->setSizeHint(QSize(m_maxWidth - 15, 36)); //每次改变Item的高度
-    listItem->setFlags(Qt::ItemIsTristate);
+    listItem->setFlags(Qt::ItemIsAutoTristate);
     m_gradientItemList->addItem(listItem);
     m_gradientItemList->setItemWidget(listItem, gwi);
     m_labellist.append(gwi);
@@ -717,7 +720,7 @@ QListWidgetItem *CScheduleSearchView::createItemWidget(QDate date)
             &CScheduleSearchView::signalScheduleHide);
     QListWidgetItem *listItem = new QListWidgetItem;
     listItem->setSizeHint(QSize(m_maxWidth - 15, 36)); //每次改变Item的高度
-    listItem->setFlags(Qt::ItemIsTristate);
+    listItem->setFlags(Qt::ItemIsAutoTristate);
     m_gradientItemList->addItem(listItem);
     m_gradientItemList->setItemWidget(listItem, gwi);
     m_labellist.append(gwi);

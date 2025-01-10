@@ -24,7 +24,7 @@ CMonthDayView::CMonthDayView(QWidget *parent)
     , m_touchGesture(this)
 {
     QHBoxLayout *hBoxLayout = new QHBoxLayout;
-    hBoxLayout->setMargin(0);
+    hBoxLayout->setContentsMargins(0, 0, 0, 0);
     hBoxLayout->setSpacing(0);
     hBoxLayout->setContentsMargins(10, 0, 10, 0);
     m_monthWidget = new CMonthWidget(this);
@@ -68,9 +68,9 @@ void CMonthDayView::setTheMe(int type)
         frameColor.setAlphaF(0.05);
     }
     DPalette aniPa = palette();
-    aniPa.setColor(DPalette::Background, frameColor);
+    aniPa.setColor(DPalette::Window, frameColor);
     setPalette(aniPa);
-    setBackgroundRole(DPalette::Background);
+    setBackgroundRole(DPalette::Window);
     CMonthRect::setTheMe(type);
 }
 
@@ -415,7 +415,7 @@ void CMonthRect::paintItem(QPainter *painter, const QRectF &rect, bool drawFocus
             painter->setBrush(Qt::NoBrush);
             painter->drawEllipse(focusRect);
         }
-        painter->setRenderHint(QPainter::HighQualityAntialiasing);
+        painter->setRenderHint(QPainter::Antialiasing);
         painter->setPen(m_currentDayTextColor);
         painter->setFont(m_dayNumFont);
         painter->drawText(rect, Qt::AlignCenter, dayNum);

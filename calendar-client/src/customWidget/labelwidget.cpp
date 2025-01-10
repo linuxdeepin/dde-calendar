@@ -25,7 +25,7 @@ void LabelWidget::paintEvent(QPaintEvent *ev)
         //有焦点，绘制焦点
         QStyleOptionFocusRect option;
         option.initFrom(this);
-        option.backgroundColor = palette().color(QPalette::Background);
+        option.backgroundColor = palette().color(QPalette::Window);
         style()->drawPrimitive(QStyle::PE_FrameFocusRect, &option, &painter, this);
     }
     QLabel::paintEvent(ev);

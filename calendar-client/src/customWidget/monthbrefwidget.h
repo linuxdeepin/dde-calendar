@@ -145,7 +145,11 @@ protected:
     //绘制日期以及当天状态
     void paintEvent(QPaintEvent *event) override;
     //鼠标进入事件
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    void enterEvent(QEnterEvent *event) override;
+#else
     void enterEvent(QEvent *event) override;
+#endif
     //离开事件，设置当前选中的日期为空
     void leaveEvent(QEvent *event) override;
 

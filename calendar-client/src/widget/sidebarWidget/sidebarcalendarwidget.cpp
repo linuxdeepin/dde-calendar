@@ -42,7 +42,7 @@ void SidebarCalendarWidget::initView()
     m_previousPage->setFocusPolicy(Qt::NoFocus);
 
     QHBoxLayout *headLayout = new QHBoxLayout();
-    headLayout->setMargin(0);
+    headLayout->setContentsMargins(0, 0, 0, 0);
     headLayout->setAlignment(Qt::AlignCenter);
     headLayout->addWidget(m_previousPage);
     headLayout->addWidget(m_dateLabel);
@@ -58,7 +58,7 @@ void SidebarCalendarWidget::initView()
 
     m_keyWidget = new QWidget(this);
     m_keyLayout = new QGridLayout();
-    m_keyLayout->setMargin(0);
+    m_keyLayout->setContentsMargins(0, 0, 0, 0);
     m_keyLayout->setSpacing(0);
     m_keyWidget->setLayout(m_keyLayout);
     //循坏实例化6*7个日期按键
@@ -71,7 +71,7 @@ void SidebarCalendarWidget::initView()
     }
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
-    mainLayout->setMargin(0);
+    mainLayout->setContentsMargins(0, 0, 0, 0);
     this->setLayout(mainLayout);
     mainLayout->addSpacing(6);
     mainLayout->addWidget(m_headWidget);

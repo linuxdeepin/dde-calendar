@@ -20,7 +20,9 @@
 #include <QShortcut>
 #include <QVBoxLayout>
 #include <QApplication>
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include <QDesktopWidget>
+#endif
 
 DGUI_USE_NAMESPACE
 
@@ -400,7 +402,7 @@ void CScheduleView::initUI()
 {
     m_layout = new QVBoxLayout;
     m_layout->setSpacing(0);
-    m_layout->setMargin(0);
+    m_layout->setContentsMargins(0, 0, 0, 0);
     m_alldaylist = new CAllDayEventWeekView(this, m_viewPos);
     m_layout->addWidget(m_alldaylist);
     m_layout->addSpacing(1);
@@ -483,10 +485,17 @@ void CScheduleView::slotScheduleShow(const bool isShow, const DSchedule::Ptr &ou
         //根据日程类型获取颜色
         CSchedulesColor gdColor = CScheduleDataManage::getScheduleDataManage()->getScheduleColorByType(
             out->scheduleTypeID());
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        QScreen *screen = QGuiApplication::primaryScreen();
+        QRect screenGeometry = screen->geometry();
+#else
         QDesktopWidget *w = QApplication::desktop();
+        QRect screenGeometry = w->screenGeometry();
+#endif
         m_ScheduleRemindWidget->setData(out, gdColor);
 
-        if ((pos22.x() + m_ScheduleRemindWidget->width() + 15) > w->width()) {
+        if ((pos22.x() + m_ScheduleRemindWidget->width() + 15) > screenGeometry.width()) {
             m_ScheduleRemindWidget->setDirection(DArrowRectangle::ArrowRight);
             m_ScheduleRemindWidget->show(pos22.x() - 15, pos22.y());
         } else {

@@ -38,7 +38,7 @@ CYearView::CYearView(QWidget *parent)
     m_currentMouth->setTextFont(m_momthFont);
 
     QHBoxLayout *separatorLineLayout = new QHBoxLayout;
-    separatorLineLayout->setMargin(0);
+    separatorLineLayout->setContentsMargins(0, 0, 0, 0);
     separatorLineLayout->setSpacing(0);
     separatorLineLayout->setContentsMargins(0, 0, 0, 0);
     separatorLineLayout->addWidget(m_currentMouth);
@@ -64,7 +64,7 @@ CYearView::CYearView(QWidget *parent)
     m_hhLayout->addLayout(separatorLineLayout);
     m_hhLayout->addWidget(m_weekWidget, 1);
     m_hhLayout->addWidget(m_monthView, 6);
-    m_hhLayout->setMargin(0);
+    m_hhLayout->setContentsMargins(0, 0, 0, 0);
     m_hhLayout->setSpacing(0);
     m_hhLayout->setContentsMargins(13, 10, 10, 10);
     setLayout(m_hhLayout);
@@ -224,7 +224,7 @@ void CYearView::paintEvent(QPaintEvent *e)
         //有焦点，绘制焦点
         QStyleOptionFocusRect option;
         option.initFrom(this);
-        option.backgroundColor = palette().color(QPalette::Background);
+        option.backgroundColor = palette().color(QPalette::Window);
         style()->drawPrimitive(QStyle::PE_FrameFocusRect, &option, &painter, this);
     }
 }

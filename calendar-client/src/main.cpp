@@ -15,7 +15,6 @@
 #include <DApplication>
 #include <DLog>
 #include <DGuiApplicationHelper>
-#include <DApplicationSettings>
 
 #include <QDBusConnection>
 

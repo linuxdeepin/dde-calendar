@@ -7,6 +7,7 @@
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusConnectionInterface>
 #include <QFile>
+#include <QRegularExpression>
 #include <QtDebug>
 
 DServiceBase::DServiceBase(const QString &path, const QString &interface, QObject *parent)
@@ -32,7 +33,7 @@ QString DServiceBase::getClientName()
     QString name;
     QFile file(QString("/proc/%1/status").arg(pid));
     if (file.open(QFile::ReadOnly)) {
-        name = QString(file.readLine()).section(QRegExp("([\\t ]*:[\\t ]*|\\n)"), 1, 1);
+        name = QString(file.readLine()).section(QRegularExpression("([\\t ]*:[\\t ]*|\\n)"), 1, 1);
         file.close();
     }
     return name;

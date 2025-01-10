@@ -268,7 +268,7 @@ void CMyScheduleView::initUI()
     m_Title->move(137, 0);
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
-    mainLayout->setMargin(0);
+    mainLayout->setContentsMargins(0, 0, 0, 0);
     mainLayout->setSpacing(0);
 
     area = new QScrollArea(this);
@@ -276,7 +276,7 @@ void CMyScheduleView::initUI()
     area->setFocusPolicy(Qt::FocusPolicy::NoFocus);
     area->setFrameShape(QFrame::NoFrame);
     area->setFixedWidth(363);
-    area->setBackgroundRole(QPalette::Background);
+    area->setBackgroundRole(QPalette::Window);
     area->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
     area->setWidgetResizable(true);
     area->setAlignment(Qt::AlignCenter);
@@ -324,7 +324,7 @@ void CMyScheduleView::initUI()
     //获取widget的调色板
     DPalette centerWidgetPalette = centerWidget->palette();
     //设置背景色为透明
-    centerWidgetPalette.setColor(DPalette::Background, Qt::transparent);
+    centerWidgetPalette.setColor(DPalette::Window, Qt::transparent);
     centerWidget->setPalette(centerWidgetPalette);
     //添加窗口为剧中对齐
     addContent(centerWidget, Qt::AlignCenter);

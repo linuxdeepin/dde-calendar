@@ -13,7 +13,6 @@ buttonwidget::buttonwidget(QWidget *parent)
     , buttonLayout(new QHBoxLayout())
     , clickedButtonIndex(0)
 {
-    buttonLayout->setMargin(0);
     buttonLayout->setContentsMargins(BTWidget::BUTTON_LAYOUT_LEFT_MARGIN,
                                      BTWidget::BUTTON_LAYOUT_TOP_MARGIN,
                                      BTWidget::BUTTON_LAYOUT_RIGHT_MARGIN,

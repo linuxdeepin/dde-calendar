@@ -36,7 +36,7 @@ void CScheduleCtrlDlg::initUI()
     setIcon(t_icon);
 
     m_mainBoxLayout = new QVBoxLayout();
-    m_mainBoxLayout->setMargin(0);
+    m_mainBoxLayout->setContentsMargins(0, 0, 0, 0);
     m_mainBoxLayout->setSpacing(0);
 
     m_firstLabel = new QLabel();
@@ -67,10 +67,10 @@ void CScheduleCtrlDlg::initUI()
     DPalette anipa = gwi->palette();
     QColor color = "#F8F8F8";
     color.setAlphaF(0.0);
-    anipa.setColor(DPalette::Background, color);
+    anipa.setColor(DPalette::Window, color);
     gwi->setAutoFillBackground(true);
     gwi->setPalette(anipa);
-    gwi->setBackgroundRole(DPalette::Background);
+    gwi->setBackgroundRole(DPalette::Window);
     addContent(gwi, Qt::AlignCenter);
 }
 

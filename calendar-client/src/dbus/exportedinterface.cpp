@@ -59,7 +59,7 @@ QVariant ExportedInterface::invoke(const QString &action, const QString &paramet
         //口查询日程
         if (gLocalAccountItem && gLocalAccountItem->querySchedulesByExternal(para.ADTitleName, para.ADStartTime, para.ADEndTime, out)) {
             //删除查询到的日程
-            QMap<QDate, DSchedule::List>::const_iterator _iterator = nullptr;
+            QMap<QDate, DSchedule::List>::const_iterator _iterator;
             for (_iterator = out.constBegin(); _iterator != out.constEnd(); ++_iterator) {
                 for (int i = 0 ; i < _iterator.value().size(); ++i) {
                     _scheduleOperation.deleteOnlyInfo(_iterator.value().at(i));

@@ -33,25 +33,8 @@ public slots:
 
 protected:
     //异步调用，包装异步调用事件
-    void asyncCall(const QString &method, const QList<QVariant> &args);
-    void asyncCall(const QString &method,
-                   const QVariant &arg1 = QVariant(),
-                   const QVariant &arg2 = QVariant(),
-                   const QVariant &arg3 = QVariant(),
-                   const QVariant &arg4 = QVariant(),
-                   const QVariant &arg5 = QVariant(),
-                   const QVariant &arg6 = QVariant(),
-                   const QVariant &arg7 = QVariant(),
-                   const QVariant &arg8 = QVariant());
-    void asyncCall(const QString &method, const QString &callName,
-                   const QVariant &arg1 = QVariant(),
-                   const QVariant &arg2 = QVariant(),
-                   const QVariant &arg3 = QVariant(),
-                   const QVariant &arg4 = QVariant(),
-                   const QVariant &arg5 = QVariant(),
-                   const QVariant &arg6 = QVariant(),
-                   const QVariant &arg7 = QVariant(),
-                   const QVariant &arg8 = QVariant());
+    void asyncCall(const QString &method, const QList<QVariant> &args = {});
+    void asyncCall(const QString &method, const QString &callName, const QList<QVariant> &args = {});
 
 private:
     CallbackFunc m_callbackFunc = nullptr; //回调函数

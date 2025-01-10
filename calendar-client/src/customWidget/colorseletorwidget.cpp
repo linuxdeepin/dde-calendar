@@ -162,9 +162,9 @@ void ColorSeletorWidget::initView()
     hLayout->addWidget(addColorBut);
     hLayout->addStretch(1);
 
-    m_colorLayout->setMargin(0);
+    m_colorLayout->setContentsMargins(0, 0, 0, 0);
     m_colorLayout->setSpacing(3);
-    hLayout->setMargin(0);
+    hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(3);
 
     this->setLayout(hLayout);

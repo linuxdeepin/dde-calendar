@@ -19,7 +19,7 @@ DbusHuangLiRequest::DbusHuangLiRequest(QObject *parent)
  */
 void DbusHuangLiRequest::getFestivalMonth(quint32 year, quint32 month)
 {
-    asyncCall("getFestivalMonth", QVariant(year), QVariant(month));
+    asyncCall("getFestivalMonth", {QVariant(year), QVariant(month)});
 }
 
 /**
@@ -31,7 +31,7 @@ void DbusHuangLiRequest::getFestivalMonth(quint32 year, quint32 month)
  */
 void DbusHuangLiRequest::getHuangLiDay(quint32 year, quint32 month, quint32 day)
 {
-    asyncCall("getHuangLiDay", QVariant(year), QVariant(month), QVariant(day));
+    asyncCall("getHuangLiDay", {QVariant(year), QVariant(month), QVariant(day)});
 }
 
 /**
@@ -43,7 +43,7 @@ void DbusHuangLiRequest::getHuangLiDay(quint32 year, quint32 month, quint32 day)
  */
 void DbusHuangLiRequest::getHuangLiMonth(quint32 year, quint32 month, bool fill)
 {
-    asyncCall("getHuangLiMonth", QVariant(year), QVariant(month), QVariant(fill));
+    asyncCall("getHuangLiMonth", {QVariant(year), QVariant(month), QVariant(fill)});
 }
 
 /**
@@ -55,7 +55,7 @@ void DbusHuangLiRequest::getHuangLiMonth(quint32 year, quint32 month, bool fill)
  */
 void DbusHuangLiRequest::getLunarInfoBySolar(quint32 year, quint32 month, quint32 day)
 {
-    asyncCall("getLunarInfoBySolar", QVariant(year), QVariant(month), QVariant(day));
+    asyncCall("getLunarInfoBySolar", {QVariant(year), QVariant(month), QVariant(day)});
 }
 
 /**
@@ -67,7 +67,7 @@ void DbusHuangLiRequest::getLunarInfoBySolar(quint32 year, quint32 month, quint3
  */
 void DbusHuangLiRequest::getLunarMonthCalendar(quint32 year, quint32 month, bool fill)
 {
-    asyncCall("getLunarMonthCalendar", QVariant(year), QVariant(month), QVariant(fill));
+    asyncCall("getLunarMonthCalendar", {QVariant(year), QVariant(month), QVariant(fill)});
 }
 
 void DbusHuangLiRequest::slotCallFinished(CDBusPendingCallWatcher *call)

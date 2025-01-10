@@ -165,7 +165,7 @@ SidebarAccountItemWidget::SidebarAccountItemWidget(AccountItem::Ptr ptr, QWidget
 void SidebarAccountItemWidget::initView()
 {
     QHBoxLayout *hLayout = new QHBoxLayout(this);
-    hLayout->setMargin(0);
+    hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(0);
     m_headIconButton = new DIconButton(this);
     m_headIconButton->setFlat(true);

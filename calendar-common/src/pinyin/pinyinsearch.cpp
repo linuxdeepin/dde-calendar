@@ -47,8 +47,13 @@ pinyinsearch *pinyinsearch::getPinPinSearch()
  */
 bool pinyinsearch::CanQueryByPinyin(QString str)
 {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QRegularExpression regexp("^[a-zA-Z]+$");
+    return regexp.match(str).hasMatch();
+#else
     QRegExp regexp("^[a-zA-Z]+$");
     return regexp.exactMatch(str);
+#endif
 }
 
 /**

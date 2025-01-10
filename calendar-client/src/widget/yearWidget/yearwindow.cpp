@@ -16,7 +16,6 @@
 #include <QMenuBar>
 #include <QMouseEvent>
 #include <QApplication>
-#include <QDesktopWidget>
 
 DGUI_USE_NAMESPACE
 CYearWindow::CYearWindow(QWidget *parent)
@@ -306,14 +305,14 @@ void CYearWindow::initUI()
     m_yearLunarDayLabel->setAlignment(Qt::AlignRight);
 
     QHBoxLayout *yeartitleLayout = new QHBoxLayout;
-    yeartitleLayout->setMargin(0);
+    yeartitleLayout->setContentsMargins(0, 0, 0, 0);
     yeartitleLayout->setSpacing(0);
     yeartitleLayout->addSpacing(10);
     yeartitleLayout->addWidget(m_yearLabel);
     yeartitleLayout->addWidget(m_dialogIconButton);
 
     QHBoxLayout *yeartitleLayout1 = new QHBoxLayout;
-    yeartitleLayout1->setMargin(0);
+    yeartitleLayout1->setContentsMargins(0, 0, 0, 0);
     yeartitleLayout1->setSpacing(0);
     yeartitleLayout1->addWidget(m_yearLunarLabel);
     yeartitleLayout1->addStretch();
@@ -326,7 +325,7 @@ void CYearWindow::initUI()
     m_todayFrame->setFixedHeight(DDEYearCalendar::Y_MLabelHeight);
     m_todayFrame->setboreder(1);
     QHBoxLayout *todaylayout = new QHBoxLayout;
-    todaylayout->setMargin(0);
+    todaylayout->setContentsMargins(0, 0, 0, 0);
     todaylayout->setSpacing(0);
     //设置tab选中顺序
     setTabOrder(m_prevButton, m_today);
@@ -356,13 +355,13 @@ void CYearWindow::initUI()
 
     m_yearWidget = qobject_cast<YearFrame *>(m_StackedWidget->widget(0));
     QVBoxLayout *hhLayout = new QVBoxLayout;
-    hhLayout->setMargin(0);
+    hhLayout->setContentsMargins(0, 0, 0, 0);
     hhLayout->setSpacing(0);
     hhLayout->setContentsMargins(0, 0, 0, 0);
     hhLayout->addWidget(m_StackedWidget);
 
     m_tMainLayout = new QVBoxLayout;
-    m_tMainLayout->setMargin(0);
+    m_tMainLayout->setContentsMargins(0, 0, 0, 0);
     m_tMainLayout->setSpacing(0);
     m_tMainLayout->setContentsMargins(0, 0, 0, 0);
     m_tMainLayout->addLayout(hhLayout);
@@ -396,10 +395,10 @@ void CYearWindow::setTheMe(int type)
     if (type == 0 || type == 1) {
         DPalette todayPa = m_today->palette();
         todayPa.setColor(DPalette::WindowText, QColor("#000000"));
-        todayPa.setColor(DPalette::Background, Qt::white);
+        todayPa.setColor(DPalette::Window, Qt::white);
         m_today->setPalette(todayPa);
         m_today->setForegroundRole(DPalette::WindowText);
-        m_today->setBackgroundRole(DPalette::Background);
+        m_today->setBackgroundRole(DPalette::Window);
 
         m_todayFrame->setBColor(Qt::white);
 
@@ -420,10 +419,10 @@ void CYearWindow::setTheMe(int type)
         todayPa.setColor(DPalette::WindowText, QColor("#C0C6D4"));
         QColor tbColor = "#414141";
         tbColor.setAlphaF(0.0);
-        todayPa.setColor(DPalette::Background, tbColor);
+        todayPa.setColor(DPalette::Window, tbColor);
         m_today->setPalette(todayPa);
         m_today->setForegroundRole(DPalette::WindowText);
-        m_today->setBackgroundRole(DPalette::Background);
+        m_today->setBackgroundRole(DPalette::Window);
         QColor tbColor2 = "#414141";
         tbColor2.setAlphaF(0.3);
         m_todayFrame->setBColor(tbColor2);
@@ -705,7 +704,7 @@ YearFrame::YearFrame(DWidget *parent)
     : QWidget(parent)
 {
     QGridLayout *gridLayout = new QGridLayout;
-    gridLayout->setMargin(0);
+    gridLayout->setContentsMargins(0, 0, 0, 0);
     gridLayout->setSpacing(8);
 
     for (int i = 0; i < 3; i++) {
@@ -742,13 +741,13 @@ YearFrame::YearFrame(DWidget *parent)
     m_YearLunarLabel->setPalette(LunaPa);
 
     QHBoxLayout *yeartitleLayout = new QHBoxLayout;
-    yeartitleLayout->setMargin(0);
+    yeartitleLayout->setContentsMargins(0, 0, 0, 0);
     yeartitleLayout->setSpacing(0);
     yeartitleLayout->setContentsMargins(11, 12, 8, 10);
     yeartitleLayout->addWidget(m_YearLabel);
 
     QHBoxLayout *yeartitleLayout1 = new QHBoxLayout;
-    yeartitleLayout1->setMargin(0);
+    yeartitleLayout1->setContentsMargins(0, 0, 0, 0);
     yeartitleLayout1->setSpacing(0);
     yeartitleLayout1->setContentsMargins(4, 9, 0, 7);
     yeartitleLayout1->addWidget(m_YearLunarLabel);
@@ -761,7 +760,7 @@ YearFrame::YearFrame(DWidget *parent)
     m_topWidget->setLayout(yeartitleLayout);
     m_topWidget->setFixedHeight(DDEMonthCalendar::M_YTopHeight);
     QVBoxLayout *hhLayout = new QVBoxLayout;
-    hhLayout->setMargin(0);
+    hhLayout->setContentsMargins(0, 0, 0, 0);
     hhLayout->setSpacing(0);
     hhLayout->addWidget(m_topWidget);
     hhLayout->addLayout(gridLayout);
@@ -836,9 +835,9 @@ void YearFrame::setTheMe(int type)
 {
     if (type == 0 || type == 1) {
         DPalette gpa = palette();
-        gpa.setColor(DPalette::Background, "#F8F8F8");
+        gpa.setColor(DPalette::Window, "#F8F8F8");
         setPalette(gpa);
-        setBackgroundRole(DPalette::Background);
+        setBackgroundRole(DPalette::Window);
 
         DPalette pa = m_YearLabel->palette();
         pa.setColor(DPalette::WindowText, QColor("#3B3B3B"));
@@ -851,9 +850,9 @@ void YearFrame::setTheMe(int type)
         m_YearLunarLabel->setForegroundRole(DPalette::WindowText);
     } else if (type == 2) {
         DPalette gpa = palette();
-        gpa.setColor(DPalette::Background, "#252525");
+        gpa.setColor(DPalette::Window, "#252525");
         setPalette(gpa);
-        setBackgroundRole(DPalette::Background);
+        setBackgroundRole(DPalette::Window);
 
         DPalette pa = m_YearLabel->palette();
         pa.setColor(DPalette::WindowText, QColor("#C0C6D4"));

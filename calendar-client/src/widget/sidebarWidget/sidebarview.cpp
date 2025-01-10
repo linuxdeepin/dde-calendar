@@ -32,7 +32,7 @@ void SidebarView::initView()
 
     // 设置底色透明，否则展开/收起出现背景色
     QPalette pal = m_treeWidget->palette();
-    pal.setBrush(QPalette::Background, QBrush(QColor(255, 255, 255, 0)));
+    pal.setBrush(QPalette::Window, QBrush(QColor(255, 255, 255, 0)));
     m_treeWidget->setPalette(pal);
 
     m_treeWidget->setItemDelegate(delegate);
