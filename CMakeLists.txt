@@ -69,8 +69,14 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS LinguistTools)
 
 # In fact, it only makes sense to manually translate .ts files without automatic translation,
 # and you can create TS files with different language names, the same below
-find_program(LUPDATE_EXECUTABLE lupdate)
-find_program(LRELEASE_EXECUTABLE lrelease)
+if (SUPPORT_QT6)
+    get_target_property(LUPDATE_EXECUTABLE Qt6::lupdate LOCATION)
+    get_target_property(LRELEASE_EXECUTABLE Qt6::lrelease LOCATION)
+else()
+    find_program(LUPDATE_EXECUTABLE lupdate)
+    find_program(LRELEASE_EXECUTABLE lrelease)
+endif()
+
 set(TS_FILES "${CMAKE_CURRENT_SOURCE_DIR}/translations/${PROJECT_NAME}_en_US.ts")
 set(TS_SERVICEFILES "${CMAKE_CURRENT_SOURCE_DIR}/translations/${PROJECT_NAME}-service_en_US.ts")
 
