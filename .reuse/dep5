@@ -87,3 +87,7 @@ License: CC0-1.0
 Files: install_dep arm64/org.dde.calendar.install org.dde.calendar.install loong64/org.dde.calendar.install
 Copyright: UnionTech Software Technology Co., Ltd.
 License: GPL-3.0-or-later
+
+Files: toolGenerate/**/*
+Copyright: None
+License: CC0-1.0
