@@ -772,7 +772,13 @@ QWidget *CSettingDialog::createControlCenterLink(QObject *obj)
     myLabel->setFixedHeight(36);
     connect(myLabel, &DLabel::linkActivated, this, [this]{
         qCDebug(ClientLogger) << "open deepin control center";
-        this->m_controlCenterProxy->ShowPage(ControlCenterPage);
+        QString datePage = ControlCenterPage;
+        auto ver = DSysInfo::majorVersion().toInt();
+        if (ver > 23) {
+            // v25 control center has changed the datetime page.
+            datePage = "system/timeAndLang";
+        }
+        this->m_controlCenterProxy->ShowPage(datePage);
     });
     auto w = new QWidget(this);
     QHBoxLayout *layout = new QHBoxLayout(w);
