@@ -26,7 +26,7 @@
     </message>
     <message>
         <source>Event types</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Типы событий</translation>
     </message>
 </context>
 <context>
@@ -826,7 +826,7 @@
     </message>
     <message>
         <source>Manage calendar</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Управление календарём</translation>
     </message>
     <message>
         <source>Calendar account</source>
