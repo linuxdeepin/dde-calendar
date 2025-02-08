@@ -25,14 +25,14 @@
 <context>
     <name>AccountManager</name>
     <message>
-        <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="223"/>
+        <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="227"/>
         <source>Local account</source>
         <translation>Учетная запись домена</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="225"/>
+        <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="229"/>
         <source>Event types</source>
-        <translation type="unfinished"/>
+        <translation>Типы событий</translation>
     </message>
 </context>
 <context>
@@ -140,7 +140,7 @@
         <translation>Новое событие</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/monthWidget/monthview.cpp" line="209"/>
+        <location filename="../calendar-client/src/widget/monthWidget/monthview.cpp" line="211"/>
         <source>New Event</source>
         <translation>Новое Событие</translation>
     </message>
@@ -668,7 +668,7 @@
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="347"/>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="366"/>
         <source>Use System Setting</source>
-        <translation type="unfinished"/>
+        <translation>Использовать системные настройки</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="364"/>
@@ -877,17 +877,17 @@
         <translation>Политика конфиденциальности</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="940"/>
+        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="939"/>
         <source>Syncing...</source>
         <translation>Синхронизация...</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="950"/>
+        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="949"/>
         <source>Sync successful</source>
         <translation>Успешная синхронизация</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="958"/>
+        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="957"/>
         <source>Sync failed, please try later</source>
         <translation>Не удалось синхронизировать, пожалуйста, попробуйте позже</translation>
     </message>
@@ -989,12 +989,12 @@
 <context>
     <name>JobTypeListView</name>
     <message>
-        <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="142"/>
+        <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="143"/>
         <source>export</source>
         <translation>Экспорт</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="213"/>
+        <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="214"/>
         <source>import ICS file</source>
         <translation type="unfinished"/>
     </message>
@@ -1027,7 +1027,7 @@
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="96"/>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="127"/>
         <source>Manage calendar</source>
-        <translation type="unfinished"/>
+        <translation>Управление календарём</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="112"/>
@@ -1241,7 +1241,7 @@
 <context>
     <name>YearFrame</name>
     <message>
-        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="925"/>
+        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="929"/>
         <source>Y</source>
         <translation>Г</translation>
     </message>
