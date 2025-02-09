@@ -692,7 +692,7 @@
     <name>CenterWidget</name>
     <message>
         <source>All Day</source>
-        <translation type="vanished">Весь День:</translation>
+        <translation type="vanished">Весь день:</translation>
     </message>
 </context>
 <context>
