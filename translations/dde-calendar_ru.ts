@@ -394,7 +394,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1094"/>
         <source>Repeat</source>
-        <translation>Повторять</translation>
+        <translation>Повтор</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1109"/>
