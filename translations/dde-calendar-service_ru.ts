@@ -250,7 +250,7 @@
     </message>
     <message>
         <source>Repeat:</source>
-        <translation type="vanished">Повторять:</translation>
+        <translation type="vanished">Повтор:</translation>
     </message>
     <message>
         <source>End Repeat:</source>
