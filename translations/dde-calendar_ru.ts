@@ -897,7 +897,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="174"/>
         <source>All Day</source>
-        <translation>Весь День:</translation>
+        <translation>Весь день:</translation>
     </message>
 </context>
 <context>
