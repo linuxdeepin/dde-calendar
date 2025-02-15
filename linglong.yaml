@@ -12,8 +12,8 @@ package:
   description: |
     calendar for deepin os.
 
-base: org.deepin.base/25.0.0
-runtime: org.deepin.runtime.dtk/25.2.0
+base: org.deepin.base/25.2.0/x86_64
+runtime: org.deepin.runtime.dtk/25.2.0/x86_64
 
 command:
   - dde-calendar
