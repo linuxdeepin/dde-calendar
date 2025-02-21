@@ -476,12 +476,8 @@ QMap<QDate, DSchedule::List> DSchedule::convertSchedules(const DScheduleQueryPar
                     //需要扩展的天数
                     int extenddays = static_cast<int>(schedule->dtStart().daysTo(schedule->dtEnd()));
                     for (int i = 0; i <= extenddays; ++i) {
-                        //如果扩展的日期在查询范围内则添加，否则退出
-                        if(scheduleMap.contains(schedule->dtStart().date().addDays(i))){
-                            scheduleMap[schedule->dtStart().date().addDays(i)].append(schedule);
-                        } else {
-                            break;
-                        }
+                        // 开始结束日期已经在查询时间范围内
+                        scheduleMap[schedule->dtStart().date().addDays(i)].append(schedule);
                     }
                 } else {
                     scheduleMap[schedule->dtStart().date()].append(schedule);
