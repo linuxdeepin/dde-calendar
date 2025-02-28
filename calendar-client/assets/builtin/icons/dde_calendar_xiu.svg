@@ -7,8 +7,8 @@
         <g id="类型-休" transform="translate(-8.000000, -4.000000)">
             <g id="类型" transform="translate(8.000000, 4.000000)">
                 <circle id="椭圆形" fill="#7CE73F" cx="6" cy="6" r="6"></circle>
-                <text id="休" font-family="SourceHanSansSC-Medium, Source Han Sans SC" font-size="8" font-weight="400" fill="#FFFFFF">
-                    <tspan x="2" y="9">休</tspan>
+                <text id="休" font-size="8" font-weight="400" fill="#FFFFFF" x="2" y="9">
+                    <tspan>休</tspan>
                 </text>
             </g>
         </g>

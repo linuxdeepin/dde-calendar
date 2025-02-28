@@ -52,6 +52,7 @@ void CDayHuangLiLabel::paintEvent(QPaintEvent *e)
     Q_UNUSED(e);
     int labelwidth = width();
     int labelheight = height();
+    const QSize iconSize = QSize(22, 22);
 
     QPainter painter(this);
     QRect fillRect = QRect(0, 0, labelwidth, labelheight);
@@ -59,18 +60,20 @@ void CDayHuangLiLabel::paintEvent(QPaintEvent *e)
     painter.setBrush(QBrush(m_backgroundColor));
     painter.setPen(Qt::NoPen);
     painter.drawRoundedRect(fillRect, 12, 12);
-    QPixmap pixmap;
-    if (m_type == 0)
-        pixmap = DIcon::loadNxPixmap(":/icons/deepin/builtin/icons/dde_calendar_yi_32px.svg");
-    else {
-        pixmap = DIcon::loadNxPixmap(":/icons/deepin/builtin/icons/dde_calendar_ji_32px.svg");
-    }
+
+    QString iconPath = (m_type == 0) ? ":/icons/deepin/builtin/icons/dde_calendar_yi_32px.svg" : ":/icons/deepin/builtin/icons/dde_calendar_ji_32px.svg";
+    // Use QIcon replace DIcon in order to fix image non-clear issue
+    QPixmap pixmap = QIcon(iconPath).pixmap(iconSize);
     pixmap.setDevicePixelRatio(devicePixelRatioF());
+
+    // 计算绘制区域，确保图像按比例缩放
+    QRect pixmapRect = QRect(QPoint(m_leftMagin, m_topMagin + 1), iconSize);
+    pixmapRect.setSize(pixmapRect.size() * devicePixelRatioF());
+
     painter.save();
     painter.setRenderHint(QPainter::Antialiasing);
-    painter.setRenderHint(QPainter::Antialiasing);
     painter.setRenderHint(QPainter::SmoothPixmapTransform);
-    painter.drawPixmap(QRect(m_leftMagin, m_topMagin + 1, 22, 22), pixmap);
+    painter.drawPixmap(pixmapRect, pixmap);
     painter.restore();
 
     painter.setFont(m_font);
@@ -79,7 +82,7 @@ void CDayHuangLiLabel::paintEvent(QPaintEvent *e)
     int bh = m_topMagin;
     int ss = 14;
     for (int i = 0; i < m_vHuangli.count(); i++) {
-        int currentsw = m_vHuangli.at(i).count() * ss;
+        int currentsw = m_vHuangli.at(i).size() * ss;
         if (bw + currentsw + 15 >= labelwidth) {
             painter.drawText(QRect(bw, bh, labelwidth - bw, 21), Qt::AlignLeft, "...");
             break;

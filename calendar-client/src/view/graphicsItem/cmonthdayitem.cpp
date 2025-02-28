@@ -162,21 +162,20 @@ void CMonthDayItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
         QFontMetrics metrics(m_LunerFont);
         int Lunarwidth = metrics.horizontalAdvance(m_DayLunar);
         qreal filleRectX = this->rect().width() - 12 - 3 - (58 + Lunarwidth) / 2;
-        QRectF fillRectT(this->rect().x() + filleRectX,
-                         this->rect().y() + 9,
-                         12,
-                         12);
+        const QSize iconSize = QSize(14, 14);
+        QRect fillRectT(QPoint(this->rect().x() + filleRectX, this->rect().y() + 9), iconSize);
 
         if (filleRectX > hh) {
             painter->setRenderHint(QPainter::Antialiasing);
+            // Use QIcon replace DIcon in order to fix image non-clear issue
             switch (m_DayStatus) {
             case H_WORK: {
-                QPixmap pixmap = DIcon::loadNxPixmap(":/icons/deepin/builtin/icons/dde_calendar_ban_32px.svg");
-                painter->drawPixmap(fillRectT.toRect(), pixmap);
+                QPixmap pixmap = QIcon(":/icons/deepin/builtin/icons/dde_calendar_ban_32px.svg").pixmap(iconSize);
+                painter->drawPixmap(fillRectT, pixmap);
             } break;
             case H_REST: {
-                QPixmap pixmap = DIcon::loadNxPixmap(":/icons/deepin/builtin/icons/dde_calendar_xiu.svg");
-                painter->drawPixmap(fillRectT.toRect(), pixmap);
+                QPixmap pixmap = QIcon(":/icons/deepin/builtin/icons/dde_calendar_xiu.svg").pixmap(iconSize);
+                painter->drawPixmap(fillRectT, pixmap);
             } break;
             default:
                 break;

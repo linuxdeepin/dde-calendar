@@ -63,6 +63,12 @@ void CMonthScheduleItem::paintBackground(QPainter *painter, const QRectF &rect, 
         brushColor = gdColor.pressColor;
     }
 
+    // increase the height of the rectangle to make it look better
+    QFontMetrics fm = painter->fontMetrics();
+    if (fm.height() > labelheight) {
+        labelheight = fm.height() + 2;
+    }
+
     QRectF fillRect = QRectF(rect.x() + 2,
                              rect.y() + 2,
                              labelwidth - 2,
@@ -84,7 +90,6 @@ void CMonthScheduleItem::paintBackground(QPainter *painter, const QRectF &rect, 
     painter->restore();
     painter->setFont(m_font);
     painter->setPen(textcolor);
-    QFontMetrics fm = painter->fontMetrics();
 
     QString tSTitleName = m_vScheduleInfo->summary();
     tSTitleName.replace("\n", "");

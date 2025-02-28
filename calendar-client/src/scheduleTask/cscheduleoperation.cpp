@@ -62,13 +62,14 @@ bool CScheduleOperation::changeSchedule(const DSchedule::Ptr &newInfo, const DSc
 
     if (newInfo->getRRuleType() == DSchedule::RRule_None && newInfo->getRRuleType() == oldInfo->getRRuleType()) {
         //如果为普通日程且没有修改重复类型则更新日程
-        if(newInfo->allDay() != oldInfo->allDay()) {
-            if(newInfo->allDay()) {
-                newInfo->setAlarmType(DSchedule::AlarmType::Alarm_15Hour_Front);
-            } else {
-                newInfo->setAlarmType(DSchedule::AlarmType::Alarm_15Min_Front);
-            }
-        }
+        // FIXME: cause BUG:#298283
+        // if(newInfo->allDay() != oldInfo->allDay()) {
+        //     if(newInfo->allDay()) {
+        //         newInfo->setAlarmType(DSchedule::AlarmType::Alarm_15Hour_Front);
+        //     } else {
+        //         newInfo->setAlarmType(DSchedule::AlarmType::Alarm_15Min_Front);
+        //     }
+        // }
         m_accountItem->updateSchedule(newInfo);
         _result = true;
     } else {

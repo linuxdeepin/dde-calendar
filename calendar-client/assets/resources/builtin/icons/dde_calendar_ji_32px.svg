@@ -11,8 +11,8 @@
                         <g id="编组-3" transform="translate(24.000000, 516.000000)">
                             <g id="icon_ji">
                                 <circle id="椭圆形" fill="#C18475" cx="10" cy="10" r="10"></circle>
-                                <text id="忌" font-family="PingFangSC-Semibold, PingFang SC" font-size="11.5789474" font-weight="500" fill="#FFFFFF">
-                                    <tspan x="4.21052632" y="13.5789474">忌</tspan>
+                                <text id="忌" font-size="11.5789474" font-weight="500" fill="#FFFFFF" x="4.21052632" y="13.5789474">
+                                    <tspan>忌</tspan>
                                 </text>
                             </g>
                         </g>
