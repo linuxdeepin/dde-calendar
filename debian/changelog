@@ -1,3 +1,9 @@
+dde-calendar (6.5.4) unstable; urgency=medium
+
+  * fix: Fix some UI issues (#228)(Bug: 304001)
+
+ -- renbin <renbin@uniontech.com>  Thu, 06 Mar 2025 19:50:56 +0800
+
 dde-calendar (6.5.3) unstable; urgency=medium
 
   * chore: New version 6.5.3.
