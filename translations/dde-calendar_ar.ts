@@ -683,7 +683,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="389"/>
         <source>import ICS file</source>
-        <translation type="unfinished"/>
+        <translation>تحميل ملف ICS</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="403"/>
@@ -723,7 +723,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="770"/>
         <source>Please go to the &lt;a href=&apos;/&apos;&gt;Control Center&lt;/a&gt; to change system settings</source>
-        <translation type="unfinished"/>
+        <translation>يرجى زيارة &lt;a href=&apos;/&apos;&gt;نقطة التحكم&lt;/a&gt; لتغيير الإعدادات النظامية</translation>
     </message>
 </context>
 <context>
@@ -731,17 +731,17 @@
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="72"/>
         <source>(%1 mins)</source>
-        <translation type="unfinished"/>
+        <translation>(%1 دقيقة),</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="74"/>
         <source>(%1 hour)</source>
-        <translation type="unfinished"/>
+        <translation>(%1 ساعة),</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="76"/>
         <source>(%1 hours)</source>
-        <translation type="unfinished"/>
+        <translation>(%1 ساعات),</translation>
     </message>
 </context>
 <context>
@@ -770,7 +770,7 @@
         <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="92"/>
         <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="93"/>
         <source>Search events and festivals</source>
-        <translation type="unfinished"/>
+        <translation>ابحث عن الأحداث والمهرجانات</translation>
     </message>
 </context>
 <context>
@@ -869,12 +869,12 @@
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="356"/>
         <source>Manage</source>
-        <translation type="unfinished"/>
+        <translation>إدارة</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="363"/>
         <source>Privacy Policy</source>
-        <translation type="unfinished"/>
+        <translation>سياسة الخصوصية</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="939"/>
@@ -884,12 +884,12 @@
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="949"/>
         <source>Sync successful</source>
-        <translation type="unfinished"/>
+        <translation>عملية توحيد ناجحة</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="957"/>
         <source>Sync failed, please try later</source>
-        <translation type="unfinished"/>
+        <translation>عملية التوحيد رسحت، يرجى المحاولة لاحقاً</translation>
     </message>
 </context>
 <context>
@@ -936,15 +936,15 @@
     </message>
     <message>
         <source>15 mins later</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">بعد 15 دقيقة</translation>
     </message>
     <message>
         <source>1 hour later</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">بعد ساعة</translation>
     </message>
     <message>
         <source>4 hours later</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">بعد أربع ساعات</translation>
     </message>
     <message>
         <source>Tomorrow</source>
@@ -956,7 +956,7 @@
     </message>
     <message>
         <source>%1 to %2</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">&apos;%1 إلى %2&apos;</translation>
     </message>
     <message>
         <source>Today</source>
@@ -991,22 +991,22 @@
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="143"/>
         <source>export</source>
-        <translation type="unfinished"/>
+        <translation>التصدير</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="214"/>
         <source>import ICS file</source>
-        <translation type="unfinished"/>
+        <translation>تحميل ملف ICS</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="401"/>
         <source>You are deleting an event type.</source>
-        <translation type="unfinished"/>
+        <translation>أنت تقوم إزالة نوع حدث.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="402"/>
         <source>All events under this type will be deleted and cannot be recovered.</source>
-        <translation type="unfinished"/>
+        <translation>ستتم إزالة جميع الأحداث لهذا النوع وسيكون أيًا منها غير قابل للإعادة.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="403"/>
@@ -1027,7 +1027,7 @@
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="96"/>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="127"/>
         <source>Manage calendar</source>
-        <translation type="unfinished"/>
+        <translation>إدارة الجدول الزمني</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="112"/>
