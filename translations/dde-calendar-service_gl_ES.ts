@@ -3,30 +3,30 @@
     <name>AccountItem</name>
     <message>
         <source>Sync successful</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Sincronización exitosa</translation>
     </message>
     <message>
         <source>Network error</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Error de rede</translation>
     </message>
     <message>
         <source>Server exception</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Excepción do servidor</translation>
     </message>
     <message>
         <source>Storage full</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Espazo de almacenamento completo</translation>
     </message>
 </context>
 <context>
     <name>AccountManager</name>
     <message>
         <source>Local account</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Cuenta local</translation>
     </message>
     <message>
         <source>Event types</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Tipos de eventos</translation>
     </message>
 </context>
 <context>
@@ -93,7 +93,7 @@
     </message>
     <message>
         <source>Lunar</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Lunar</translation>
     </message>
 </context>
 <context>
@@ -154,7 +154,7 @@
     <name>CPushButton</name>
     <message>
         <source>New event type</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Novo tipo de evento</translation>
     </message>
 </context>
 <context>
@@ -218,11 +218,11 @@
     </message>
     <message>
         <source>Enter a name please</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Introduza un nome, por favor</translation>
     </message>
     <message>
         <source>The name can not only contain whitespaces</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">O nome non pode conténse só espazos en branco</translation>
     </message>
     <message>
         <source>Type:</source>
@@ -258,11 +258,11 @@
     </message>
     <message>
         <source>Calendar account:</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Cuenta do calendario:</translation>
     </message>
     <message>
         <source>Calendar account</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Cuenta do calendario</translation>
     </message>
     <message>
         <source>Type</source>
@@ -278,19 +278,19 @@
     </message>
     <message>
         <source>Time:</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Hora:</translation>
     </message>
     <message>
         <source>Time</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Hora</translation>
     </message>
     <message>
         <source>Solar</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Solar</translation>
     </message>
     <message>
         <source>Lunar</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Lunar</translation>
     </message>
     <message>
         <source>Starts</source>
@@ -433,7 +433,7 @@
     </message>
     <message>
         <source>You have selected a leap month, and will be reminded according to the rules of the lunar calendar.</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Seleccionou un mes intercalado e será lembrado segundo as normas do calendario lunar.</translation>
     </message>
     <message>
         <source>OK</source>
@@ -493,11 +493,11 @@
     </message>
     <message>
         <source>15 mins</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">15 minutos</translation>
     </message>
     <message>
         <source>30 mins</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">30 minutos</translation>
     </message>
     <message>
         <source>1 hour</source>
@@ -505,15 +505,15 @@
     </message>
     <message>
         <source>24 hours</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">24 horas</translation>
     </message>
     <message>
         <source>Sync Now</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Sincroniza agora</translation>
     </message>
     <message>
         <source>Last sync</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Última sincronización</translation>
     </message>
     <message>
         <source>Monday</source>
@@ -525,11 +525,11 @@
     </message>
     <message>
         <source>12-hour clock</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Reloxo de 12 horas</translation>
     </message>
     <message>
         <source>24-hour clock</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Reloxo de 24 horas</translation>
     </message>
     <message>
         <source>Tuesday</source>
@@ -556,15 +556,15 @@
     <name>CTimeEdit</name>
     <message>
         <source>(%1 mins)</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">(%1 minutos</translation>
     </message>
     <message>
         <source>(%1 hour)</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">(%1 hora</translation>
     </message>
     <message>
         <source>(%1 hours)</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">(%1 horas</translation>
     </message>
 </context>
 <context>
@@ -587,7 +587,7 @@
     </message>
     <message>
         <source>Search events and festivals</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Busca eventos e festivais</translation>
     </message>
 </context>
 <context>
@@ -669,7 +669,7 @@
     </message>
     <message>
         <source>Manage</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Gestionar</translation>
     </message>
     <message>
         <source>Privacy Policy</source>
@@ -681,11 +681,11 @@
     </message>
     <message>
         <source>Sync successful</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Sincronización exitosa</translation>
     </message>
     <message>
         <source>Sync failed, please try later</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Sincronización fallida, por favor inténtalo más tarde</translation>
     </message>
 </context>
 <context>
@@ -731,15 +731,15 @@
     </message>
     <message>
         <source>15 mins later</source>
-        <translation type="unfinished"/>
+        <translation>15 minutos máis tarde</translation>
     </message>
     <message>
         <source>1 hour later</source>
-        <translation type="unfinished"/>
+        <translation>1 hora máis tarde</translation>
     </message>
     <message>
         <source>4 hours later</source>
-        <translation type="unfinished"/>
+        <translation>4 horas máis tarde</translation>
     </message>
     <message>
         <source>Tomorrow</source>
@@ -781,11 +781,11 @@
     <name>JobTypeListView</name>
     <message>
         <source>You are deleting an event type.</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Estás a eliminar un tipo de evento.</translation>
     </message>
     <message>
         <source>All events under this type will be deleted and cannot be recovered.</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Todos os eventos deste tipo serán eliminados e non se poden recuperar.</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -802,7 +802,7 @@
     <name>QObject</name>
     <message>
         <source>Account settings</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Configuración de conta</translation>
     </message>
     <message>
         <source>Account</source>
@@ -810,31 +810,31 @@
     </message>
     <message>
         <source>Select items to be synced</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Selecciona os elementos a sincronizar</translation>
     </message>
     <message>
         <source>Events</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Eventos</translation>
     </message>
     <message>
         <source>General settings</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Configuración general</translation>
     </message>
     <message>
         <source>Sync interval</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Intervalo de sincronización</translation>
     </message>
     <message>
         <source>Manage calendar</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Gestionar calendario</translation>
     </message>
     <message>
         <source>Calendar account</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Cuenta de calendario</translation>
     </message>
     <message>
         <source>Event types</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Tipos de evento</translation>
     </message>
     <message>
         <source>General</source>
@@ -842,11 +842,11 @@
     </message>
     <message>
         <source>First day of week</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Primer día da semana</translation>
     </message>
     <message>
         <source>Time</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Tiempo</translation>
     </message>
 </context>
 <context>
@@ -869,11 +869,11 @@
     <name>ScheduleTypeEditDlg</name>
     <message>
         <source>New event type</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Novo tipo de evento</translation>
     </message>
     <message>
         <source>Edit event type</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Editar tipo de evento</translation>
     </message>
     <message>
         <source>Name:</source>
@@ -881,7 +881,7 @@
     </message>
     <message>
         <source>Color:</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Cor:</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -895,11 +895,11 @@
     </message>
     <message>
         <source>The name can not only contain whitespaces</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">O nome non pode conténse só espazos</translation>
     </message>
     <message>
         <source>Enter a name please</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Introduza un nome, por favor</translation>
     </message>
 </context>
 <context>
@@ -949,7 +949,7 @@
     <message>
         <source>Go</source>
         <comment>button</comment>
-        <translation type="unfinished"/>
+        <translation type="vanished">Ir</translation>
     </message>
 </context>
 <context>
