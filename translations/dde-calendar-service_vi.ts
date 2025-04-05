@@ -3,37 +3,37 @@
     <name>AccountItem</name>
     <message>
         <source>Sync successful</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Sincronización exitosa</translation>
     </message>
     <message>
         <source>Network error</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Lỗi mạng</translation>
     </message>
     <message>
         <source>Server exception</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Lỗi từ máy chủ</translation>
     </message>
     <message>
         <source>Storage full</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Không gian lưu trữ đầy</translation>
     </message>
 </context>
 <context>
     <name>AccountManager</name>
     <message>
         <source>Local account</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Tài khoản địa phương</translation>
     </message>
     <message>
         <source>Event types</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Loại sự kiện</translation>
     </message>
 </context>
 <context>
     <name>CColorPickerWidget</name>
     <message>
         <source>Color</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Màu sắc</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -93,7 +93,7 @@
     </message>
     <message>
         <source>Lunar</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Lunar</translation>
     </message>
 </context>
 <context>
@@ -154,7 +154,7 @@
     <name>CPushButton</name>
     <message>
         <source>New event type</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Loại sự kiện mới</translation>
     </message>
 </context>
 <context>
@@ -218,11 +218,11 @@
     </message>
     <message>
         <source>Enter a name please</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Nhập tên, vui lòng</translation>
     </message>
     <message>
         <source>The name can not only contain whitespaces</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Tên không thể chỉ chứa khoảng trắng</translation>
     </message>
     <message>
         <source>Type:</source>
@@ -258,11 +258,11 @@
     </message>
     <message>
         <source>Calendar account:</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Tài khoản lịch:</translation>
     </message>
     <message>
         <source>Calendar account</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Tài khoản lịch</translation>
     </message>
     <message>
         <source>Type</source>
@@ -278,19 +278,19 @@
     </message>
     <message>
         <source>Time:</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Thời gian:</translation>
     </message>
     <message>
         <source>Time</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Thời gian</translation>
     </message>
     <message>
         <source>Solar</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Solar</translation>
     </message>
     <message>
         <source>Lunar</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Lunar</translation>
     </message>
     <message>
         <source>Starts</source>
@@ -433,7 +433,7 @@
     </message>
     <message>
         <source>You have selected a leap month, and will be reminded according to the rules of the lunar calendar.</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Bạn đã chọn tháng nhuận, và sẽ được nhắc nhở theo quy tắc của lịch âm.</translation>
     </message>
     <message>
         <source>OK</source>
@@ -493,27 +493,27 @@
     </message>
     <message>
         <source>15 mins</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">15 phút</translation>
     </message>
     <message>
         <source>30 mins</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">30 phút</translation>
     </message>
     <message>
         <source>1 hour</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">1 giờ</translation>
     </message>
     <message>
         <source>24 hours</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">24 giờ</translation>
     </message>
     <message>
         <source>Sync Now</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Sincronizar ahora</translation>
     </message>
     <message>
         <source>Last sync</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Sincronización anterior</translation>
     </message>
     <message>
         <source>Monday</source>
@@ -525,11 +525,11 @@
     </message>
     <message>
         <source>12-hour clock</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Giao diện 12 giờ</translation>
     </message>
     <message>
         <source>24-hour clock</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Đồng hồ 24 giờ</translation>
     </message>
     <message>
         <source>Tuesday</source>
@@ -556,15 +556,15 @@
     <name>CTimeEdit</name>
     <message>
         <source>(%1 mins)</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">(%1 phút</translation>
     </message>
     <message>
         <source>(%1 hour)</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">(%1 giờ</translation>
     </message>
     <message>
         <source>(%1 hours)</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">(%1 giờ</translation>
     </message>
 </context>
 <context>
@@ -587,7 +587,7 @@
     </message>
     <message>
         <source>Search events and festivals</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Tìm kiếm sự kiện và lễ hội</translation>
     </message>
 </context>
 <context>
@@ -618,7 +618,7 @@
     </message>
     <message>
         <source>Sat</source>
-        <translation type="vanished">CU</translation>
+        <translation type="vanished">CN</translation>
     </message>
 </context>
 <context>
@@ -669,7 +669,7 @@
     </message>
     <message>
         <source>Manage</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Quản lý</translation>
     </message>
     <message>
         <source>Privacy Policy</source>
@@ -681,11 +681,11 @@
     </message>
     <message>
         <source>Sync successful</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Sincronisierung erfolgreich</translation>
     </message>
     <message>
         <source>Sync failed, please try later</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Sincronisierung fehlgeschlagen, bitte später erneut versuchen</translation>
     </message>
 </context>
 <context>
@@ -731,15 +731,15 @@
     </message>
     <message>
         <source>15 mins later</source>
-        <translation type="unfinished"/>
+        <translation>15 phút sau</translation>
     </message>
     <message>
         <source>1 hour later</source>
-        <translation type="unfinished"/>
+        <translation>1 giờ sau</translation>
     </message>
     <message>
         <source>4 hours later</source>
-        <translation type="unfinished"/>
+        <translation>4 giờ sau</translation>
     </message>
     <message>
         <source>Tomorrow</source>
@@ -751,7 +751,7 @@
     </message>
     <message>
         <source>%1 to %2</source>
-        <translation type="unfinished"/>
+        <translation>%1 đến %2</translation>
     </message>
     <message>
         <source>Today</source>
@@ -781,11 +781,11 @@
     <name>JobTypeListView</name>
     <message>
         <source>You are deleting an event type.</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Bạn đang xóa một loại sự kiện.</translation>
     </message>
     <message>
         <source>All events under this type will be deleted and cannot be recovered.</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Tất cả sự kiện thuộc loại này sẽ bị xóa và không thể phục hồi.</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -802,7 +802,7 @@
     <name>QObject</name>
     <message>
         <source>Account settings</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Cài đặt tài khoản</translation>
     </message>
     <message>
         <source>Account</source>
@@ -810,31 +810,31 @@
     </message>
     <message>
         <source>Select items to be synced</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Chọn các mục cần đồng bộ</translation>
     </message>
     <message>
         <source>Events</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Sự kiện</translation>
     </message>
     <message>
         <source>General settings</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Cài đặt chung</translation>
     </message>
     <message>
         <source>Sync interval</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Khoảng thời gian đồng bộ</translation>
     </message>
     <message>
         <source>Manage calendar</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Quản lý lịch</translation>
     </message>
     <message>
         <source>Calendar account</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Tài khoản lịch</translation>
     </message>
     <message>
         <source>Event types</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Loại sự kiện</translation>
     </message>
     <message>
         <source>General</source>
@@ -842,11 +842,11 @@
     </message>
     <message>
         <source>First day of week</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Ngày đầu tuần</translation>
     </message>
     <message>
         <source>Time</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Thời gian</translation>
     </message>
 </context>
 <context>
@@ -869,11 +869,11 @@
     <name>ScheduleTypeEditDlg</name>
     <message>
         <source>New event type</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Loại sự kiện mới</translation>
     </message>
     <message>
         <source>Edit event type</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Sửa loại sự kiện</translation>
     </message>
     <message>
         <source>Name:</source>
@@ -881,7 +881,7 @@
     </message>
     <message>
         <source>Color:</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Màu:</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -895,11 +895,11 @@
     </message>
     <message>
         <source>The name can not only contain whitespaces</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Tên không chỉ được chứa các khoảng trắng</translation>
     </message>
     <message>
         <source>Enter a name please</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Vui lòng nhập tên</translation>
     </message>
 </context>
 <context>
@@ -949,7 +949,7 @@
     <message>
         <source>Go</source>
         <comment>button</comment>
-        <translation type="unfinished"/>
+        <translation type="vanished">Đi</translation>
     </message>
 </context>
 <context>
