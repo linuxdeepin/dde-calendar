@@ -3,37 +3,37 @@
     <name>AccountItem</name>
     <message>
         <source>Sync successful</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Siski sissa</translation>
     </message>
     <message>
         <source>Network error</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Errour tafir</translation>
     </message>
     <message>
         <source>Server exception</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Xetisar t-servis</translation>
     </message>
     <message>
         <source>Storage full</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Talab t-afir t-talab</translation>
     </message>
 </context>
 <context>
     <name>AccountManager</name>
     <message>
         <source>Local account</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Tafir watan tal</translation>
     </message>
     <message>
         <source>Event types</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Tefas t-tefas</translation>
     </message>
 </context>
 <context>
     <name>CColorPickerWidget</name>
     <message>
         <source>Color</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Couleur</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -93,7 +93,7 @@
     </message>
     <message>
         <source>Lunar</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Lunar</translation>
     </message>
 </context>
 <context>
@@ -154,7 +154,7 @@
     <name>CPushButton</name>
     <message>
         <source>New event type</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Tefas n-nouveau</translation>
     </message>
 </context>
 <context>
@@ -218,11 +218,11 @@
     </message>
     <message>
         <source>Enter a name please</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Minsik n-ismen</translation>
     </message>
     <message>
         <source>The name can not only contain whitespaces</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">L-ismen n-ta yasik t-talab t-talab</translation>
     </message>
     <message>
         <source>Type:</source>
@@ -258,11 +258,11 @@
     </message>
     <message>
         <source>Calendar account:</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Tafir t-talab t-talab:</translation>
     </message>
     <message>
         <source>Calendar account</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Tafir t-talab t-talab</translation>
     </message>
     <message>
         <source>Type</source>
@@ -278,19 +278,19 @@
     </message>
     <message>
         <source>Time:</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Tafir:</translation>
     </message>
     <message>
         <source>Time</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Tafir</translation>
     </message>
     <message>
         <source>Solar</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Solaar</translation>
     </message>
     <message>
         <source>Lunar</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Lunar</translation>
     </message>
     <message>
         <source>Starts</source>
@@ -433,7 +433,7 @@
     </message>
     <message>
         <source>You have selected a leap month, and will be reminded according to the rules of the lunar calendar.</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Yasik t-tafir t-mes yamn, yassik t-tafir t-tafir t-talab t-lunar.</translation>
     </message>
     <message>
         <source>OK</source>
@@ -493,27 +493,27 @@
     </message>
     <message>
         <source>15 mins</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">15 gdi n-gas</translation>
     </message>
     <message>
         <source>30 mins</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">30 gdi n-gas</translation>
     </message>
     <message>
         <source>1 hour</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">1 gdi n-gas</translation>
     </message>
     <message>
         <source>24 hours</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">24 gdi n-gas</translation>
     </message>
     <message>
         <source>Sync Now</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Sissi ddi-ach</translation>
     </message>
     <message>
         <source>Last sync</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Sissi di-ach lli-d-dif</translation>
     </message>
     <message>
         <source>Monday</source>
@@ -525,11 +525,11 @@
     </message>
     <message>
         <source>12-hour clock</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">12-gdi n-gas</translation>
     </message>
     <message>
         <source>24-hour clock</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Hor t-sifra 24</translation>
     </message>
     <message>
         <source>Tuesday</source>
@@ -556,15 +556,15 @@
     <name>CTimeEdit</name>
     <message>
         <source>(%1 mins)</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">(%1 gdi n-gas]</translation>
     </message>
     <message>
         <source>(%1 hour)</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">(%1 gdi n-gas]</translation>
     </message>
     <message>
         <source>(%1 hours)</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">(%1 gdi n-gas]</translation>
     </message>
 </context>
 <context>
@@ -587,7 +587,7 @@
     </message>
     <message>
         <source>Search events and festivals</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Tafes n-tawen iwlac iwez</translation>
     </message>
 </context>
 <context>
@@ -669,7 +669,7 @@
     </message>
     <message>
         <source>Manage</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Gdiw d-dif</translation>
     </message>
     <message>
         <source>Privacy Policy</source>
@@ -681,11 +681,11 @@
     </message>
     <message>
         <source>Sync successful</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Sissi ddi-ach n-suss</translation>
     </message>
     <message>
         <source>Sync failed, please try later</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Sissi ddi-ach n-awal, ammaz ddi-ach lli-d-dif</translation>
     </message>
 </context>
 <context>
@@ -731,11 +731,11 @@
     </message>
     <message>
         <source>15 mins later</source>
-        <translation type="unfinished"/>
+        <translation>15 gdi n-gas lli-d-dif</translation>
     </message>
     <message>
         <source>1 hour later</source>
-        <translation type="unfinished"/>
+        <translation>1 gdi n-gas lli-d-dif</translation>
     </message>
     <message>
         <source>4 hours later</source>
