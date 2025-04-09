@@ -4,22 +4,22 @@
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="40"/>
         <source>Sync successful</source>
-        <translation type="unfinished"/>
+        <translation>Siski sissa</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="41"/>
         <source>Network error</source>
-        <translation type="unfinished"/>
+        <translation>Errour tafir</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="42"/>
         <source>Server exception</source>
-        <translation type="unfinished"/>
+        <translation>Xetisar t-servis</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="43"/>
         <source>Storage full</source>
-        <translation type="unfinished"/>
+        <translation>Talab t-afir t-talab</translation>
     </message>
 </context>
 <context>
@@ -27,12 +27,12 @@
     <message>
         <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="227"/>
         <source>Local account</source>
-        <translation type="unfinished"/>
+        <translation>Tafir watan tal</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="229"/>
         <source>Event types</source>
-        <translation type="unfinished"/>
+        <translation>Tefas t-tefas</translation>
     </message>
 </context>
 <context>
@@ -40,7 +40,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/colorWidget/colorpickerWidget.cpp" line="77"/>
         <source>Color</source>
-        <translation type="unfinished"/>
+        <translation>Couleur</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/colorWidget/colorpickerWidget.cpp" line="90"/>
@@ -113,7 +113,7 @@
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daywindow.cpp" line="170"/>
         <source>Lunar</source>
-        <translation type="unfinished"/>
+        <translation>Lunar</translation>
     </message>
 </context>
 <context>
@@ -184,7 +184,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/cpushbutton.cpp" line="17"/>
         <source>New event type</source>
-        <translation type="unfinished"/>
+        <translation>Tefas n-nouveau</translation>
     </message>
 </context>
 <context>
@@ -276,12 +276,12 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="573"/>
         <source>Enter a name please</source>
-        <translation type="unfinished"/>
+        <translation>Minsik n-ismen</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="668"/>
         <source>The name can not only contain whitespaces</source>
-        <translation type="unfinished"/>
+        <translation>L-ismen n-ta yasik t-talab t-talab</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="724"/>
@@ -334,12 +334,12 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="815"/>
         <source>Calendar account:</source>
-        <translation type="unfinished"/>
+        <translation>Tafir t-talab t-talab:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="816"/>
         <source>Calendar account</source>
-        <translation type="unfinished"/>
+        <translation>Tafir t-talab t-talab</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="843"/>
@@ -359,22 +359,22 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="939"/>
         <source>Time:</source>
-        <translation type="unfinished"/>
+        <translation>Tafir:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="940"/>
         <source>Time</source>
-        <translation type="unfinished"/>
+        <translation>Tafir</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="947"/>
         <source>Solar</source>
-        <translation type="unfinished"/>
+        <translation>Solaar</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="948"/>
         <source>Lunar</source>
-        <translation type="unfinished"/>
+        <translation>Lunar</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="981"/>
@@ -571,7 +571,7 @@
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="382"/>
         <source>You have selected a leap month, and will be reminded according to the rules of the lunar calendar.</source>
-        <translation type="unfinished"/>
+        <translation>Yasik t-tafir t-mes yamn, yassik t-tafir t-tafir t-talab t-lunar.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="383"/>
@@ -668,22 +668,22 @@
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="347"/>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="366"/>
         <source>Use System Setting</source>
-        <translation type="unfinished"/>
+        <translation>Minsik t-systa</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="364"/>
         <source>24-hour clock</source>
-        <translation type="unfinished"/>
+        <translation>Hor t-sifra 24</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="365"/>
         <source>12-hour clock</source>
-        <translation type="unfinished"/>
+        <translation>12-gdi n-gas</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="389"/>
         <source>import ICS file</source>
-        <translation type="unfinished"/>
+        <translation>insa ICS d-af</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="403"/>
@@ -693,37 +693,37 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="404"/>
         <source>15 mins</source>
-        <translation type="unfinished"/>
+        <translation>15 gdi n-gas</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="405"/>
         <source>30 mins</source>
-        <translation type="unfinished"/>
+        <translation>30 gdi n-gas</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="406"/>
         <source>1 hour</source>
-        <translation type="unfinished"/>
+        <translation>1 gdi n-gas</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="407"/>
         <source>24 hours</source>
-        <translation type="unfinished"/>
+        <translation>24 gdi n-gas</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="418"/>
         <source>Sync Now</source>
-        <translation type="unfinished"/>
+        <translation>Sissi ddi-ach</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="576"/>
         <source>Last sync</source>
-        <translation type="unfinished"/>
+        <translation>Sissi di-ach lli-d-dif</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="770"/>
         <source>Please go to the &lt;a href=&apos;/&apos;&gt;Control Center&lt;/a&gt; to change system settings</source>
-        <translation type="unfinished"/>
+        <translation>Ammaz gdiw &lt;a href=&apos;/&apos;&gt;Center d-af&lt;/a&gt; lli-d-dif as-syslem</translation>
     </message>
 </context>
 <context>
@@ -731,17 +731,17 @@
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="72"/>
         <source>(%1 mins)</source>
-        <translation type="unfinished"/>
+        <translation>(%1 gdi n-gas]</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="74"/>
         <source>(%1 hour)</source>
-        <translation type="unfinished"/>
+        <translation>(%1 gdi n-gas]</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="76"/>
         <source>(%1 hours)</source>
-        <translation type="unfinished"/>
+        <translation>(%1 gdi n-gas]</translation>
     </message>
 </context>
 <context>
@@ -770,7 +770,7 @@
         <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="92"/>
         <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="93"/>
         <source>Search events and festivals</source>
-        <translation type="unfinished"/>
+        <translation>Tafes n-tawen iwlac iwez</translation>
     </message>
 </context>
 <context>
@@ -778,37 +778,37 @@
     <message>
         <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="72"/>
         <source>Sun</source>
-        <translation>Sennat</translation>
+        <translation>Ddul</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="72"/>
         <source>Mon</source>
-        <translation>Mounat</translation>
+        <translation>Ddum</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="72"/>
         <source>Tue</source>
-        <translation>Tutut</translation>
+        <translation>Ddud</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="72"/>
         <source>Wed</source>
-        <translation>Wedut</translation>
+        <translation>Ddud</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="72"/>
         <source>Thu</source>
-        <translation>Tutut</translation>
+        <translation>Ddud</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="72"/>
         <source>Fri</source>
-        <translation>Fritut</translation>
+        <translation>Ddud</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="72"/>
         <source>Sat</source>
-        <translation>Sattut</translation>
+        <translation>Ddud</translation>
     </message>
 </context>
 <context>
@@ -869,7 +869,7 @@
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="356"/>
         <source>Manage</source>
-        <translation type="unfinished"/>
+        <translation>Gdiw d-dif</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="363"/>
@@ -884,12 +884,12 @@
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="949"/>
         <source>Sync successful</source>
-        <translation type="unfinished"/>
+        <translation>Sissi ddi-ach n-suss</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="957"/>
         <source>Sync failed, please try later</source>
-        <translation type="unfinished"/>
+        <translation>Sissi ddi-ach n-awal, ammaz ddi-ach lli-d-dif</translation>
     </message>
 </context>
 <context>
@@ -936,11 +936,11 @@
     </message>
     <message>
         <source>15 mins later</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">15 gdi n-gas lli-d-dif</translation>
     </message>
     <message>
         <source>1 hour later</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">1 gdi n-gas lli-d-dif</translation>
     </message>
     <message>
         <source>4 hours later</source>
