@@ -3,7 +3,7 @@
     <name>AccountItem</name>
     <message>
         <source>Sync successful</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Sincronizacija sėkminga</translation>
     </message>
     <message>
         <source>Network error</source>
@@ -11,22 +11,22 @@
     </message>
     <message>
         <source>Server exception</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Sekundinio svetainės klaida</translation>
     </message>
     <message>
         <source>Storage full</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Saugyklos atlikimas pietas</translation>
     </message>
 </context>
 <context>
     <name>AccountManager</name>
     <message>
         <source>Local account</source>
-        <translation type="unfinished"/>
+        <translation type="vanished"> vietinis paskyra</translation>
     </message>
     <message>
         <source>Event types</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">monadi tipai</translation>
     </message>
 </context>
 <context>
@@ -93,7 +93,7 @@
     </message>
     <message>
         <source>Lunar</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Lūnaris</translation>
     </message>
 </context>
 <context>
@@ -107,7 +107,7 @@
     <name>CMonthScheduleNumItem</name>
     <message>
         <source>%1 more</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">%1 daugiau</translation>
     </message>
 </context>
 <context>
@@ -132,7 +132,7 @@
     <name>CMyScheduleView</name>
     <message>
         <source>My Event</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Mano įvykis</translation>
     </message>
     <message>
         <source>OK</source>
@@ -154,7 +154,7 @@
     <name>CPushButton</name>
     <message>
         <source>New event type</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Naujas įvykio tipas</translation>
     </message>
 </context>
 <context>
@@ -165,11 +165,11 @@
     </message>
     <message>
         <source>Edit Event</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Redaguoti įvykį</translation>
     </message>
     <message>
         <source>End time must be greater than start time</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Pabaigos laikas turi būti didesnis už pradžios laiką</translation>
     </message>
     <message>
         <source>OK</source>
@@ -182,47 +182,47 @@
     </message>
     <message>
         <source>At time of event</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Kai įvyksta įvykis</translation>
     </message>
     <message>
         <source>15 minutes before</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">15 minutes praejo</translation>
     </message>
     <message>
         <source>30 minutes before</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">30 minutes praejo</translation>
     </message>
     <message>
         <source>1 hour before</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">1 valandos praejo</translation>
     </message>
     <message>
         <source>1 day before</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">1 diena praejo</translation>
     </message>
     <message>
         <source>2 days before</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">2 dienos praejo</translation>
     </message>
     <message>
         <source>1 week before</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">1 savaitė praejo</translation>
     </message>
     <message>
         <source>On start day (9:00 AM)</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Pradžios dienos (9:00 AM),</translation>
     </message>
     <message>
         <source>time(s)</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">laikas(s),</translation>
     </message>
     <message>
         <source>Enter a name please</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Įveskite vardą</translation>
     </message>
     <message>
         <source>The name can not only contain whitespaces</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Vardas gali turėti tik tarpus</translation>
     </message>
     <message>
         <source>Type:</source>
@@ -234,27 +234,27 @@
     </message>
     <message>
         <source>All Day:</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Visos dienos:</translation>
     </message>
     <message>
         <source>Starts:</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Pradeda:</translation>
     </message>
     <message>
         <source>Ends:</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Baigiasi:</translation>
     </message>
     <message>
         <source>Remind Me:</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Atimykite man:</translation>
     </message>
     <message>
         <source>Repeat:</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Pakartoti:</translation>
     </message>
     <message>
         <source>End Repeat:</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Pabaigos pakartojimas:</translation>
     </message>
     <message>
         <source>Calendar account:</source>
@@ -274,11 +274,11 @@
     </message>
     <message>
         <source>All Day</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Viso dienos</translation>
     </message>
     <message>
         <source>Time:</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Laikas:</translation>
     </message>
     <message>
         <source>Time</source>
@@ -286,23 +286,23 @@
     </message>
     <message>
         <source>Solar</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Saulės</translation>
     </message>
     <message>
         <source>Lunar</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Mėnulio</translation>
     </message>
     <message>
         <source>Starts</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Prasideda</translation>
     </message>
     <message>
         <source>Ends</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Baigiasi</translation>
     </message>
     <message>
         <source>Remind Me</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Atimykite man</translation>
     </message>
     <message>
         <source>Repeat</source>
@@ -310,31 +310,31 @@
     </message>
     <message>
         <source>Daily</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Kiekvieną dieną</translation>
     </message>
     <message>
         <source>Weekdays</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Kiekvieną darbo dieną</translation>
     </message>
     <message>
         <source>Weekly</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Kiekvieną savaitę</translation>
     </message>
     <message>
         <source>Monthly</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Kiekvieną mėnesį</translation>
     </message>
     <message>
         <source>Yearly</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Kiekvieną metus</translation>
     </message>
     <message>
         <source>End Repeat</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Pabaigoje pakartoti</translation>
     </message>
     <message>
         <source>After</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Po</translation>
     </message>
     <message>
         <source>On</source>
@@ -355,11 +355,11 @@
     <name>CScheduleOperation</name>
     <message>
         <source>All occurrences of a repeating event must have the same all-day status.</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Pakartojamo įvykio visos kintamos dienos statusai turi būti tautiniai.</translation>
     </message>
     <message>
         <source>Do you want to change all occurrences?</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Ar norite pakeisti visus pasikartojimus?</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -368,15 +368,15 @@
     </message>
     <message>
         <source>Change All</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Pakeisti visus</translation>
     </message>
     <message>
         <source>You are changing the repeating rule of this event.</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Jūs pakeičiate šio įvykio pakartojimo taisyklę.</translation>
     </message>
     <message>
         <source>You are deleting an event.</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Jūs ištrijate įvykį.</translation>
     </message>
     <message>
         <source>Are you sure you want to delete this event?</source>
@@ -389,51 +389,51 @@
     </message>
     <message>
         <source>Do you want to delete all occurrences of this event, or only the selected occurrence?</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Ar norite ištrinti visus šio įvykio pasikartojimus arba tik pasirinktą pasikartojimą?</translation>
     </message>
     <message>
         <source>Delete All</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Ištrinti visus</translation>
     </message>
     <message>
         <source>Delete Only This Event</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Ištrinti tik šį įvykį</translation>
     </message>
     <message>
         <source>Do you want to delete this and all future occurrences of this event, or only the selected occurrence?</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Arūkite, vėlaiti šį įvykių atidarojimą arba tik pasirinktą atidarojimą ištrinti？</translation>
     </message>
     <message>
         <source>Delete All Future Events</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Ištrinti visus ateities įvykius</translation>
     </message>
     <message>
         <source>You are changing a repeating event.</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Jūs keičiate atlikiančiąsi įvykį.</translation>
     </message>
     <message>
         <source>Do you want to change only this occurrence of the event, or all occurrences?</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Ar norite keisti tik šį įvykių atidarojimą arba visus atidarojimus？</translation>
     </message>
     <message>
         <source>All</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Visi</translation>
     </message>
     <message>
         <source>Only This Event</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Tik šis įvykis</translation>
     </message>
     <message>
         <source>Do you want to change only this occurrence of the event, or this and all future occurrences?</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Ar norite keisti tik šį įvykių atidarojimą arba šį ir visus ateities atidarojimus？</translation>
     </message>
     <message>
         <source>All Future Events</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Visi ateities įvykiai</translation>
     </message>
     <message>
         <source>You have selected a leap month, and will be reminded according to the rules of the lunar calendar.</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Pasirinkote leipo mėnesį, ir jums nurodytų lūnijos kalendorio taisyklėmis atminimas bus priklausomas.</translation>
     </message>
     <message>
         <source>OK</source>
@@ -468,7 +468,7 @@
     </message>
     <message>
         <source>All Day</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Visos dienos</translation>
     </message>
 </context>
 <context>
@@ -482,7 +482,7 @@
     <name>CScheduleView</name>
     <message>
         <source>ALL DAY</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">VISOS DIENOS</translation>
     </message>
 </context>
 <context>
@@ -509,11 +509,11 @@
     </message>
     <message>
         <source>Sync Now</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Sincronizuoti dabar</translation>
     </message>
     <message>
         <source>Last sync</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Paskutinė sincronizacija</translation>
     </message>
     <message>
         <source>Monday</source>
@@ -525,11 +525,11 @@
     </message>
     <message>
         <source>12-hour clock</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">12 valandinė laikrodis</translation>
     </message>
     <message>
         <source>24-hour clock</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">24 valandinė laikrodis</translation>
     </message>
     <message>
         <source>Tuesday</source>
@@ -556,15 +556,15 @@
     <name>CTimeEdit</name>
     <message>
         <source>(%1 mins)</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">(%1 minūčių) </translation>
     </message>
     <message>
         <source>(%1 hour)</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">(%1 valandas) </translation>
     </message>
     <message>
         <source>(%1 hours)</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">(%1 valandų) </translation>
     </message>
 </context>
 <context>
@@ -579,7 +579,7 @@
     </message>
     <message>
         <source>W</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">W</translation>
     </message>
     <message>
         <source>D</source>
@@ -587,7 +587,7 @@
     </message>
     <message>
         <source>Search events and festivals</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Ieškoti įvykių ir festiavalių</translation>
     </message>
 </context>
 <context>
@@ -636,11 +636,11 @@
     <name>CYearScheduleView</name>
     <message>
         <source>All Day</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Viso dienė</translation>
     </message>
     <message>
         <source>No event</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Nėra įvykio</translation>
     </message>
 </context>
 <context>
@@ -658,7 +658,7 @@
     </message>
     <message>
         <source>Calendar is a tool to view dates, and also a smart daily planner to schedule all things in life. </source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Kalendorius yra įrankis, skirtas peržiūrėti datų, taip pat inteligentus dieninį planavimo įrankį visiškai vaizdo įvykiams.</translation>
     </message>
 </context>
 <context>
@@ -669,11 +669,11 @@
     </message>
     <message>
         <source>Manage</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Valdyti</translation>
     </message>
     <message>
         <source>Privacy Policy</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Privatumo teisės</translation>
     </message>
     <message>
         <source>Syncing...</source>
@@ -681,18 +681,18 @@
     </message>
     <message>
         <source>Sync successful</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Sincronizacija sėkminga</translation>
     </message>
     <message>
         <source>Sync failed, please try later</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Sincronizavimas nepavyko, bandykite vėliau</translation>
     </message>
 </context>
 <context>
     <name>CenterWidget</name>
     <message>
         <source>All Day</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Viso dienos</translation>
     </message>
 </context>
 <context>
@@ -731,15 +731,15 @@
     </message>
     <message>
         <source>15 mins later</source>
-        <translation type="unfinished"/>
+        <translation>15 minučių vėliau</translation>
     </message>
     <message>
         <source>1 hour later</source>
-        <translation type="unfinished"/>
+        <translation>1 valandą vėliau</translation>
     </message>
     <message>
         <source>4 hours later</source>
-        <translation type="unfinished"/>
+        <translation>4 valandas vėliau</translation>
     </message>
     <message>
         <source>Tomorrow</source>
@@ -781,11 +781,11 @@
     <name>JobTypeListView</name>
     <message>
         <source>You are deleting an event type.</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Jūs ištrinkite įvykių tipą.</translation>
     </message>
     <message>
         <source>All events under this type will be deleted and cannot be recovered.</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Visi šio tipo įvykiai bus ištrinti ir nebus gauti grąžos.</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -810,19 +810,19 @@
     </message>
     <message>
         <source>Select items to be synced</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Pasirinkti įtraukiamus elementus</translation>
     </message>
     <message>
         <source>Events</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Įvykiai</translation>
     </message>
     <message>
         <source>General settings</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Visuomeninės nustatymai</translation>
     </message>
     <message>
         <source>Sync interval</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Sincronizavimo intervalas</translation>
     </message>
     <message>
         <source>Manage calendar</source>
@@ -830,11 +830,11 @@
     </message>
     <message>
         <source>Calendar account</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Kalendorio paskyra</translation>
     </message>
     <message>
         <source>Event types</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Įvykių tipai</translation>
     </message>
     <message>
         <source>General</source>
@@ -842,7 +842,7 @@
     </message>
     <message>
         <source>First day of week</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Savaitės pirmasis diena</translation>
     </message>
     <message>
         <source>Time</source>
@@ -869,11 +869,11 @@
     <name>ScheduleTypeEditDlg</name>
     <message>
         <source>New event type</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Naujas įvykių tipas</translation>
     </message>
     <message>
         <source>Edit event type</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Redaguoti įvykių tipą</translation>
     </message>
     <message>
         <source>Name:</source>
@@ -895,11 +895,11 @@
     </message>
     <message>
         <source>The name can not only contain whitespaces</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Pavadinimas gali turėti tik tarpusavyje</translation>
     </message>
     <message>
         <source>Enter a name please</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">Įveskite pavadinimą, lūčių</translation>
     </message>
 </context>
 <context>
@@ -949,7 +949,7 @@
     <message>
         <source>Go</source>
         <comment>button</comment>
-        <translation type="unfinished"/>
+        <translation type="vanished">Tęsti</translation>
     </message>
 </context>
 <context>

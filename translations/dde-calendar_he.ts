@@ -1,25 +1,25 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS version="2.1" language="kab">
+<?xml version="1.0" ?><!DOCTYPE TS><TS version="2.1" language="he">
 <context>
     <name>AccountItem</name>
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="40"/>
         <source>Sync successful</source>
-        <translation>Siski sissa</translation>
+        <translation>הסינכרוניזציה成功率</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="41"/>
         <source>Network error</source>
-        <translation>Errour tafir</translation>
+        <translation>שגיאה ב-network</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="42"/>
         <source>Server exception</source>
-        <translation>Xetisar t-servis</translation>
+        <translation>שגיאה בשרת</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="43"/>
         <source>Storage full</source>
-        <translation>Talab t-afir t-talab</translation>
+        <translation>מלאת חלל שומן</translation>
     </message>
 </context>
 <context>
@@ -27,12 +27,12 @@
     <message>
         <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="227"/>
         <source>Local account</source>
-        <translation>Tafir watan tal</translation>
+        <translation>חשבון מקומי</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="229"/>
         <source>Event types</source>
-        <translation>Tefas t-tefas</translation>
+        <translation>סוגי אירועים</translation>
     </message>
 </context>
 <context>
@@ -40,19 +40,19 @@
     <message>
         <location filename="../calendar-client/src/customWidget/colorWidget/colorpickerWidget.cpp" line="77"/>
         <source>Color</source>
-        <translation>Couleur</translation>
+        <translation>צבע</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/colorWidget/colorpickerWidget.cpp" line="90"/>
         <source>Cancel</source>
         <comment>button</comment>
-        <translation>Sefsex</translation>
+        <translation>בטל</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/colorWidget/colorpickerWidget.cpp" line="92"/>
         <source>Save</source>
         <comment>button</comment>
-        <translation>Sekles</translation>
+        <translation>שמור</translation>
     </message>
 </context>
 <context>
@@ -60,37 +60,37 @@
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="33"/>
         <source>Monday</source>
-        <translation>Arim</translation>
+        <translation>יום שני</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="34"/>
         <source>Tuesday</source>
-        <translation>Aram</translation>
+        <translation>יום שלישי</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="35"/>
         <source>Wednesday</source>
-        <translation>Ahad</translation>
+        <translation>יום רביעי</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="36"/>
         <source>Thursday</source>
-        <translation>Amhad</translation>
+        <translation>יום חמישי</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="37"/>
         <source>Friday</source>
-        <translation>Sem</translation>
+        <translation>יום שישי</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="38"/>
         <source>Saturday</source>
-        <translation>Sed</translation>
+        <translation>יום שבת</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="39"/>
         <source>Sunday</source>
-        <translation>Acer</translation>
+        <translation>יום ראשון</translation>
     </message>
 </context>
 <context>
@@ -98,22 +98,22 @@
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daywindow.cpp" line="112"/>
         <source>Y</source>
-        <translation>Aseggas</translation>
+        <translation>י</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daywindow.cpp" line="113"/>
         <source>M</source>
-        <translation>Ayyur</translation>
+        <translation>מ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daywindow.cpp" line="114"/>
         <source>D</source>
-        <translation>Ass</translation>
+        <translation>י</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daywindow.cpp" line="170"/>
         <source>Lunar</source>
-        <translation>Lunar</translation>
+        <translation>לנורא</translation>
     </message>
 </context>
 <context>
@@ -121,7 +121,7 @@
     <message>
         <location filename="../calendar-client/src/view/graphicsview.cpp" line="592"/>
         <source>New Event</source>
-        <translation>Tadyant tamaynut</translation>
+        <translation>אירוע חדש</translation>
     </message>
 </context>
 <context>
@@ -129,7 +129,7 @@
     <message>
         <location filename="../calendar-client/src/view/graphicsItem/cmonthschedulenumitem.cpp" line="80"/>
         <source>%1 more</source>
-        <translation>Ugar n 1%</translation>
+        <translation>%1 נוסף</translation>
     </message>
 </context>
 <context>
@@ -137,12 +137,12 @@
     <message>
         <location filename="../calendar-client/src/widget/monthWidget/monthview.cpp" line="51"/>
         <source>New event</source>
-        <translation>Tadyant tamaynut</translation>
+        <translation>אירוע חדש</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/monthWidget/monthview.cpp" line="211"/>
         <source>New Event</source>
-        <translation>Tadyant tamaynut</translation>
+        <translation>אירוע חדש</translation>
     </message>
 </context>
 <context>
@@ -150,7 +150,7 @@
     <message>
         <location filename="../calendar-client/src/widget/monthWidget/monthwindow.cpp" line="98"/>
         <source>Y</source>
-        <translation>Aseggas</translation>
+        <translation>י</translation>
     </message>
 </context>
 <context>
@@ -158,25 +158,25 @@
     <message>
         <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="267"/>
         <source>My Event</source>
-        <translation>Tadyant-iw</translation>
+        <translation>האירוע שלי</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="308"/>
         <source>OK</source>
         <comment>button</comment>
-        <translation>IH</translation>
+        <translation>אישור</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="312"/>
         <source>Delete</source>
         <comment>button</comment>
-        <translation>Kkes</translation>
+        <translation>מחיקה</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="313"/>
         <source>Edit</source>
         <comment>button</comment>
-        <translation>Ẓreg</translation>
+        <translation>ערוך</translation>
     </message>
 </context>
 <context>
@@ -184,7 +184,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/cpushbutton.cpp" line="17"/>
         <source>New event type</source>
-        <translation>Tefas n-nouveau</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -194,23 +194,23 @@
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="600"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="896"/>
         <source>New Event</source>
-        <translation>Tadyant tamaynut</translation>
+        <translation>אירוע חדש</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="58"/>
         <source>Edit Event</source>
-        <translation>Ẓreg tadyant</translation>
+        <translation>ערוך אירוע</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="256"/>
         <source>End time must be greater than start time</source>
-        <translation>Akud n taggara yezmer d netta ara igerrzen ɣef wakud n tazwara</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="257"/>
         <source>OK</source>
         <comment>button</comment>
-        <translation>IH</translation>
+        <translation>אישור</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="481"/>
@@ -220,50 +220,50 @@
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1397"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1401"/>
         <source>Never</source>
-        <translation>Werǧin</translation>
+        <translation>אף פעם</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="482"/>
         <source>At time of event</source>
-        <translation>Deg wakud n tedyant</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="483"/>
         <source>15 minutes before</source>
-        <translation>15 tesdatin send</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="484"/>
         <source>30 minutes before</source>
-        <translation>30 tesdatin send</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="485"/>
         <source>1 hour before</source>
-        <translation>1 usrag send</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="486"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="512"/>
         <source>1 day before</source>
-        <translation>1 wass send</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="487"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="513"/>
         <source>2 days before</source>
-        <translation>2 wussan send</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="488"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="514"/>
         <source>1 week before</source>
-        <translation>1 dduṛt send</translation>
+        <translation>לפני שבוע 1</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="511"/>
         <source>On start day (9:00 AM)</source>
-        <translation>Deg tazwara n wass (9:00 SRG)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="558"/>
@@ -271,189 +271,189 @@
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1164"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1165"/>
         <source>time(s)</source>
-        <translation>Akud (akuden)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="573"/>
         <source>Enter a name please</source>
-        <translation>Minsik n-ismen</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="668"/>
         <source>The name can not only contain whitespaces</source>
-        <translation>L-ismen n-ta yasik t-talab t-talab</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="724"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="846"/>
         <source>Type:</source>
-        <translation>Anaw:</translation>
+        <translation>סוג</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="729"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="881"/>
         <source>Description:</source>
-        <translation>Aglam:</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="734"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="918"/>
         <source>All Day:</source>
-        <translation>Yal ass:</translation>
+        <translation>כל היום:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="739"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="984"/>
         <source>Starts:</source>
-        <translation>Yebda</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="744"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1025"/>
         <source>Ends:</source>
-        <translation>Yekfa</translation>
+        <translation>מסיימת:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="749"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1065"/>
         <source>Remind Me:</source>
-        <translation>Smekti-yi-d:</translation>
+        <translation>זכר לי:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="754"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1097"/>
         <source>Repeat:</source>
-        <translation>Ales</translation>
+        <translation>איטרציה:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="759"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1131"/>
         <source>End Repeat:</source>
-        <translation>Taggara n wallus:</translation>
+        <translation>סיים איטרציה:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="815"/>
         <source>Calendar account:</source>
-        <translation>Tafir t-talab t-talab:</translation>
+        <translation> חשבון תוארי：</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="816"/>
         <source>Calendar account</source>
-        <translation>Tafir t-talab t-talab</translation>
+        <translation> חשבון תוארי</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="843"/>
         <source>Type</source>
-        <translation>Anaw</translation>
+        <translation>סוג</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="885"/>
         <source>Description</source>
-        <translation>Aglam</translation>
+        <translation>תיאור</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="915"/>
         <source>All Day</source>
-        <translation>Meṛṛa ass</translation>
+        <translation>כל היום</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="939"/>
         <source>Time:</source>
-        <translation>Tafir:</translation>
+        <translation>הזמן:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="940"/>
         <source>Time</source>
-        <translation>Tafir</translation>
+        <translation>הזמן</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="947"/>
         <source>Solar</source>
-        <translation>Solaar</translation>
+        <translation>משמש שמש</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="948"/>
         <source>Lunar</source>
-        <translation>Lunar</translation>
+        <translation>משמש⽉相</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="981"/>
         <source>Starts</source>
-        <translation>Yebda</translation>
+        <translation>STARes</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1022"/>
         <source>Ends</source>
-        <translation>Yekfa</translation>
+        <translation>מסיימת</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1067"/>
         <source>Remind Me</source>
-        <translation>Smekti-yi-d</translation>
+        <translation>זכר לי</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1094"/>
         <source>Repeat</source>
-        <translation>Ales</translation>
+        <translation>איטרציה</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1109"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1402"/>
         <source>Daily</source>
-        <translation>S wass</translation>
+        <translation>יום יום</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1110"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1403"/>
         <source>Weekdays</source>
-        <translation>Ussan n yimalas</translation>
+        <translation>ימי שבוע</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1111"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1404"/>
         <source>Weekly</source>
-        <translation>S yimalas</translation>
+        <translation>שבועה</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1112"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1398"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1405"/>
         <source>Monthly</source>
-        <translation>S wayyur</translation>
+        <translation>חודשית</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1113"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1399"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1406"/>
         <source>Yearly</source>
-        <translation>S useggas</translation>
+        <translation>שנתית</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1133"/>
         <source>End Repeat</source>
-        <translation>Taggara n wallus</translation>
+        <translation>סיים איטרציה</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1144"/>
         <source>After</source>
-        <translation>Seld</translation>
+        <translation>אחרי</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1145"/>
         <source>On</source>
-        <translation>Ɣef</translation>
+        <translation>ב</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1215"/>
         <source>Cancel</source>
         <comment>button</comment>
-        <translation>Sefsex</translation>
+        <translation>ביטול</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1216"/>
         <source>Save</source>
         <comment>button</comment>
-        <translation>Sekles</translation>
+        <translation>שמור</translation>
     </message>
 </context>
 <context>
@@ -461,13 +461,13 @@
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="79"/>
         <source>All occurrences of a repeating event must have the same all-day status.</source>
-        <translation>Meṛṛa timeḍriwin n tedyant i d-yettuɣalen ilaq ad sɛunt yiwen waddad i wass kamel.</translation>
+        <translation>לכל ה.INSTANCEי האירוע המרומם יש להיות מצב יום מלא זהה.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="80"/>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="97"/>
         <source>Do you want to change all occurrences?</source>
-        <translation>Tebɣiḍ ad tesnefleḍ meṛṛa timeḍriwin?</translation>
+        <translation>אתה רוצה לשנות את כל ה.INSTANCEי האירוע?</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="81"/>
@@ -479,105 +479,105 @@
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="269"/>
         <source>Cancel</source>
         <comment>button</comment>
-        <translation>Sefsex</translation>
+        <translation>ביטול</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="82"/>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="99"/>
         <source>Change All</source>
-        <translation>Senfel kullec</translation>
+        <translation>שנה הכל</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="96"/>
         <source>You are changing the repeating rule of this event.</source>
-        <translation>Tbeddleḍ alugen i d-yettuɣalen n tedyant-a.</translation>
+        <translation>אתה שינך את חוק ההתרחשות של האירוע.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="126"/>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="145"/>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="165"/>
         <source>You are deleting an event.</source>
-        <translation>Tekkseḍ yiwet tedyant.</translation>
+        <translation>אתה מחסרים את האירוע.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="127"/>
         <source>Are you sure you want to delete this event?</source>
-        <translation>D tidet tebɣiḍ ad tekkseḍ tadyant-a?</translation>
+        <translation>אתה בטוח שאתה רוצה מחסרים את האירוע?</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="129"/>
         <source>Delete</source>
         <comment>button</comment>
-        <translation>Kkes</translation>
+        <translation>מחסרים</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="146"/>
         <source>Do you want to delete all occurrences of this event, or only the selected occurrence?</source>
-        <translation>Tebɣiḍ ad tekkseḍ meṛṛa timeḍriwin n tedyant-a neɣ tid kan i d-yettwafernen?</translation>
+        <translation>אתה רוצה מחסרים את כל ה.INSTANCEי האירוע או רק את ה.INSTANCE שסומקה?</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="148"/>
         <source>Delete All</source>
-        <translation>Kkes kullec</translation>
+        <translation>מחסרים הכל</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="149"/>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="169"/>
         <source>Delete Only This Event</source>
-        <translation>Kkes kan tadyant-a</translation>
+        <translation>מחסרים רק את האירוע הזה</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="166"/>
         <source>Do you want to delete this and all future occurrences of this event, or only the selected occurrence?</source>
-        <translation>Tebɣiḍ ad tekkseḍ timeḍriwt-a d tid meṛṛa i d-iteddun, neɣ d tid kan i d-yettufernen?</translation>
+        <translation>אתה רוצה מחסרים את האירוע הזה ואת כל ה.INSTANCEי העתידיים או רק את ה.INSTANCE שסומקה?</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="168"/>
         <source>Delete All Future Events</source>
-        <translation>Kkes meṛṛa tidyanin i d-iteddun</translation>
+        <translation>מחסרים את כל ה.INSTANCEי העתידיים</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="235"/>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="265"/>
         <source>You are changing a repeating event.</source>
-        <translation>Tbeddleḍ tadyant i d-yettuɣalen.</translation>
+        <translation>אתה שינך אירוע מ반ור.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="237"/>
         <source>Do you want to change only this occurrence of the event, or all occurrences?</source>
-        <translation>Tebɣiḍ ad tbeddleḍ timeḍriwt-agi kan  n tedyant, neɣ meṛṛa timeḍriwen?</translation>
+        <translation>אתה רוצה לשנות רק את ה.INSTANCE של האירוע או את כל ה.INSTANCEי?</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="240"/>
         <source>All</source>
-        <translation>Meṛṛa</translation>
+        <translation>כל</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="241"/>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="271"/>
         <source>Only This Event</source>
-        <translation>Tadyant-agi kan</translation>
+        <translation>אך את האירוע הזה</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="267"/>
         <source>Do you want to change only this occurrence of the event, or this and all future occurrences?</source>
-        <translation>Tebɣiḍ ad tbeddleḍ timeḍriwt-a n tedyant, neɣ tagi d meṛṛa timeḍriwen i d-iteddun?</translation>
+        <translation>אתה רוצה לשנות רק את ה.INSTANCE של האירוע או את האירוע הזה ואת כל ה.INSTANCEי העתידיים?</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="270"/>
         <source>All Future Events</source>
-        <translation>Tidyanin akk i d-iteddun</translation>
+        <translation>כל ה.INSTANCEי העתידיים</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="382"/>
         <source>You have selected a leap month, and will be reminded according to the rules of the lunar calendar.</source>
-        <translation>Yasik t-tafir t-mes yamn, yassik t-tafir t-tafir t-talab t-lunar.</translation>
+        <translation>הȘלחת את חודש מעבר, ואתה תישמע לפי חוקי החודשים החולמים.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="383"/>
         <source>OK</source>
         <comment>button</comment>
-        <translation>IH</translation>
+        <translation>אישור</translation>
     </message>
 </context>
 <context>
@@ -585,17 +585,17 @@
     <message>
         <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="902"/>
         <source>Y</source>
-        <translation>Aseggas</translation>
+        <translation>כן</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="902"/>
         <source>M</source>
-        <translation>Ayyur</translation>
+        <translation>חודש</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="902"/>
         <source>D</source>
-        <translation>Ass</translation>
+        <translation>יום</translation>
     </message>
 </context>
 <context>
@@ -603,17 +603,17 @@
     <message>
         <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="42"/>
         <source>Edit</source>
-        <translation>Ẓreg</translation>
+        <translation>ערוך</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="43"/>
         <source>Delete</source>
-        <translation>Kkes</translation>
+        <translation>מחק</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="267"/>
         <source>All Day</source>
-        <translation>Meṛṛa ass</translation>
+        <translation>בכל היום</translation>
     </message>
 </context>
 <context>
@@ -621,7 +621,7 @@
     <message>
         <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="645"/>
         <source>No search results</source>
-        <translation>Ulac igmaḍ n unadi</translation>
+        <translation> Wyniki wyszukiwania</translation>
     </message>
 </context>
 <context>
@@ -629,7 +629,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/scheduleview.cpp" line="314"/>
         <source>ALL DAY</source>
-        <translation>YAL ASS</translation>
+        <translation>בכל היום</translation>
     </message>
 </context>
 <context>
@@ -637,12 +637,12 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="345"/>
         <source>Sunday</source>
-        <translation>Acer</translation>
+        <translation>ראשון</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="346"/>
         <source>Monday</source>
-        <translation>Arim</translation>
+        <translation>שני</translation>
     </message>
     <message>
         <source>Tuesday</source>
@@ -668,62 +668,62 @@
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="347"/>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="366"/>
         <source>Use System Setting</source>
-        <translation>Minsik t-systa</translation>
+        <translation>לבדוק הגדרות מערכת</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="364"/>
         <source>24-hour clock</source>
-        <translation>Hor t-sifra 24</translation>
+        <translation> שעון 24 שעות</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="365"/>
         <source>12-hour clock</source>
-        <translation>12-gdi n-gas</translation>
+        <translation> שעון 12 שעות</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="389"/>
         <source>import ICS file</source>
-        <translation>insa ICS d-af</translation>
+        <translation>ייבא קובץ ICS</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="403"/>
         <source>Manual</source>
-        <translation>S ufus</translation>
+        <translation>יידיד</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="404"/>
         <source>15 mins</source>
-        <translation>15 gdi n-gas</translation>
+        <translation>15 דקות</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="405"/>
         <source>30 mins</source>
-        <translation>30 gdi n-gas</translation>
+        <translation>30 דקות</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="406"/>
         <source>1 hour</source>
-        <translation>1 gdi n-gas</translation>
+        <translation>שעה</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="407"/>
         <source>24 hours</source>
-        <translation>24 gdi n-gas</translation>
+        <translation>24 שעות</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="418"/>
         <source>Sync Now</source>
-        <translation>Sissi ddi-ach</translation>
+        <translation>התחבר עכשיו</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="576"/>
         <source>Last sync</source>
-        <translation>Sissi di-ach lli-d-dif</translation>
+        <translation>התחבר לאחרונה</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="770"/>
         <source>Please go to the &lt;a href=&apos;/&apos;&gt;Control Center&lt;/a&gt; to change system settings</source>
-        <translation>Ammaz gdiw &lt;a href=&apos;/&apos;&gt;Center d-af&lt;/a&gt; lli-d-dif as-syslem</translation>
+        <translation>לRAY ל &lt;a href=&apos;/&apos;&gt;מרכז kontrolה&lt;/a&gt; כדי לשנות את הגדרות המערכת</translation>
     </message>
 </context>
 <context>
@@ -731,17 +731,17 @@
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="72"/>
         <source>(%1 mins)</source>
-        <translation>(%1 gdi n-gas]</translation>
+        <translation>(%1 דקות</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="74"/>
         <source>(%1 hour)</source>
-        <translation>(%1 gdi n-gas]</translation>
+        <translation>(%1 שעה</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="76"/>
         <source>(%1 hours)</source>
-        <translation>(%1 gdi n-gas]</translation>
+        <translation>(%1 שעות</translation>
     </message>
 </context>
 <context>
@@ -749,28 +749,28 @@
     <message>
         <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="30"/>
         <source>Y</source>
-        <translation>Aseggas</translation>
+        <translation>&apos;Y</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="42"/>
         <source>M</source>
-        <translation>Ayyur</translation>
+        <translation>M</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="50"/>
         <source>W</source>
-        <translation>Imalas</translation>
+        <translation>W</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="58"/>
         <source>D</source>
-        <translation>Ass</translation>
+        <translation>כ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="92"/>
         <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="93"/>
         <source>Search events and festivals</source>
-        <translation>Tafes n-tawen iwlac iwez</translation>
+        <translation> חפש אירועים ופסטיבל</translation>
     </message>
 </context>
 <context>
@@ -778,37 +778,37 @@
     <message>
         <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="72"/>
         <source>Sun</source>
-        <translation>Ddul</translation>
+        <translation>ראשון</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="72"/>
         <source>Mon</source>
-        <translation>Ddum</translation>
+        <translation>שני</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="72"/>
         <source>Tue</source>
-        <translation>Ddud</translation>
+        <translation>שלישי</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="72"/>
         <source>Wed</source>
-        <translation>Ddud</translation>
+        <translation>רביעי</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="72"/>
         <source>Thu</source>
-        <translation>Ddud</translation>
+        <translation>חמישי</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="72"/>
         <source>Fri</source>
-        <translation>Ddud</translation>
+        <translation>שישי</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="72"/>
         <source>Sat</source>
-        <translation>Ddud</translation>
+        <translation>שבת</translation>
     </message>
 </context>
 <context>
@@ -816,12 +816,12 @@
     <message>
         <location filename="../calendar-client/src/widget/weekWidget/weekwindow.cpp" line="89"/>
         <source>Week</source>
-        <translation>Dduṛt</translation>
+        <translation>שבוע</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/weekWidget/weekwindow.cpp" line="276"/>
         <source>Y</source>
-        <translation>Aseggas</translation>
+        <translation>ב</translation>
     </message>
 </context>
 <context>
@@ -830,12 +830,12 @@
         <location filename="../calendar-client/src/widget/yearWidget/yearscheduleview.cpp" line="268"/>
         <location filename="../calendar-client/src/widget/yearWidget/yearscheduleview.cpp" line="271"/>
         <source>All Day</source>
-        <translation>Meṛṛa ass</translation>
+        <translation>כל היום</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/yearWidget/yearscheduleview.cpp" line="288"/>
         <source>No event</source>
-        <translation>Ulac tadyant</translation>
+        <translation>אין אירועים</translation>
     </message>
 </context>
 <context>
@@ -843,7 +843,7 @@
     <message>
         <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="616"/>
         <source>Y</source>
-        <translation>Aseggas</translation>
+        <translation>ב</translation>
     </message>
 </context>
 <context>
@@ -851,12 +851,12 @@
     <message>
         <location filename="../calendar-client/src/main.cpp" line="63"/>
         <source>Calendar</source>
-        <translation>Awitay</translation>
+        <translation>კALENDAR</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/main.cpp" line="66"/>
         <source>Calendar is a tool to view dates, and also a smart daily planner to schedule all things in life. </source>
-        <translation>Awitay d afecku i uskan n wazemz akked daɣen d aɣawas n yal ass i usɣiwes n wayen akk ara tgeḍ deg tudert.</translation>
+        <translation>კALENDAR היא כלי לצפייה בדATES, ותאגיד חכם לבריה של כל הדברים בחיים.</translation>
     </message>
 </context>
 <context>
@@ -864,32 +864,32 @@
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="87"/>
         <source>Calendar</source>
-        <translation>Awitay</translation>
+        <translation>კALENDAR</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="356"/>
         <source>Manage</source>
-        <translation>Gdiw d-dif</translation>
+        <translation>ניהול</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="363"/>
         <source>Privacy Policy</source>
-        <translation>Tasertit n tbaḍnit</translation>
+        <translation>מדיניות פרטיות</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="939"/>
         <source>Syncing...</source>
-        <translation>Amtawi...</translation>
+        <translation>המשיכת...</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="949"/>
         <source>Sync successful</source>
-        <translation>Sissi ddi-ach n-suss</translation>
+        <translation>המשיכת בהצלחה</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="957"/>
         <source>Sync failed, please try later</source>
-        <translation>Sissi ddi-ach n-awal, ammaz ddi-ach lli-d-dif</translation>
+        <translation>המשיכת נכשלה, נסה מאוחר יותר</translation>
     </message>
 </context>
 <context>
@@ -897,22 +897,22 @@
     <message>
         <location filename="../calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="174"/>
         <source>All Day</source>
-        <translation>Yal ass</translation>
+        <translation>כל היום</translation>
     </message>
 </context>
 <context>
     <name>DAccountDataBase</name>
     <message>
         <source>Work</source>
-        <translation type="vanished">Amahil</translation>
+        <translation type="vanished">עבודה</translation>
     </message>
     <message>
         <source>Life</source>
-        <translation type="vanished">Tudert</translation>
+        <translation type="vanished">חיים</translation>
     </message>
     <message>
         <source>Other</source>
-        <translation type="vanished">Wayeḍ</translation>
+        <translation type="vanished">אחר</translation>
     </message>
 </context>
 <context>
@@ -920,47 +920,47 @@
     <message>
         <source>Close</source>
         <comment>button</comment>
-        <translation type="vanished">Mdel</translation>
+        <translation type="vanished">סגירה</translation>
     </message>
     <message>
         <source>One day before start</source>
-        <translation type="vanished">Yiwen wass send beddu</translation>
+        <translation type="vanished">יום לפניENCE</translation>
     </message>
     <message>
         <source>Remind me tomorrow</source>
-        <translation type="vanished">Smekti-yi-d azekka</translation>
+        <translation type="vanished">זכור לי אתמול</translation>
     </message>
     <message>
         <source>Remind me later</source>
-        <translation type="vanished">Smekti-yi-d ticki</translation>
+        <translation type="vanished">זכור לי מאוחר יותר</translation>
     </message>
     <message>
         <source>15 mins later</source>
-        <translation type="vanished">15 gdi n-gas lli-d-dif</translation>
+        <translation type="vanished">15 דקות מאוחר יותר</translation>
     </message>
     <message>
         <source>1 hour later</source>
-        <translation type="vanished">1 gdi n-gas lli-d-dif</translation>
+        <translation type="vanished">שעה מאוחר יותר</translation>
     </message>
     <message>
         <source>4 hours later</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">4 שעות מאוחר יותר</translation>
     </message>
     <message>
         <source>Tomorrow</source>
-        <translation type="vanished">Azekka</translation>
+        <translation type="vanished">מחר</translation>
     </message>
     <message>
         <source>Schedule Reminder</source>
-        <translation type="vanished">Asmekti s usɣiwes</translation>
+        <translation type="vanished">תזכير בתאריך</translation>
     </message>
     <message>
         <source>%1 to %2</source>
-        <translation type="vanished">%1 ɣer %2</translation>
+        <translation type="vanished">%1 עד %2</translation>
     </message>
     <message>
         <source>Today</source>
-        <translation type="vanished">Ass-a</translation>
+        <translation type="vanished">היום</translation>
     </message>
 </context>
 <context>
@@ -968,22 +968,22 @@
     <message>
         <location filename="../calendar-client/src/view/draginfographicsview.cpp" line="47"/>
         <source>Edit</source>
-        <translation>Ẓreg</translation>
+        <translation>עריכה</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/view/draginfographicsview.cpp" line="48"/>
         <source>Delete</source>
-        <translation>Kkes</translation>
+        <translation>מחק</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/view/draginfographicsview.cpp" line="49"/>
         <source>New event</source>
-        <translation>Tadyant tamaynut</translation>
+        <translation>אירוע חדש</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/view/draginfographicsview.cpp" line="737"/>
         <source>New Event</source>
-        <translation>Tadyant tamaynut</translation>
+        <translation>אירוע חדש</translation>
     </message>
 </context>
 <context>
@@ -991,34 +991,34 @@
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="143"/>
         <source>export</source>
-        <translation type="unfinished"/>
+        <translation>ייצוא</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="214"/>
         <source>import ICS file</source>
-        <translation type="unfinished"/>
+        <translation>העתקת קובץ ICS</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="401"/>
         <source>You are deleting an event type.</source>
-        <translation type="unfinished"/>
+        <translation>אתם ממחקים סוג אירוע.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="402"/>
         <source>All events under this type will be deleted and cannot be recovered.</source>
-        <translation type="unfinished"/>
+        <translation>כל האירועים עבור סוג האירוע הזה ימחקו ויב克思ו לא נפגעים.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="403"/>
         <source>Cancel</source>
         <comment>button</comment>
-        <translation>Sefsex</translation>
+        <translation>ביטול</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="404"/>
         <source>Delete</source>
         <comment>button</comment>
-        <translation>Kkes</translation>
+        <translation>מחק</translation>
     </message>
 </context>
 <context>
@@ -1027,64 +1027,64 @@
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="96"/>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="127"/>
         <source>Manage calendar</source>
-        <translation type="unfinished"/>
+        <translation>א adidasנה календאר</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="112"/>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="131"/>
         <source>Event types</source>
-        <translation type="unfinished"/>
+        <translation>סוגי אירועים</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="38"/>
         <source>Account settings</source>
-        <translation type="unfinished"/>
+        <translation>הגדרות חשבון</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="42"/>
         <source>Account</source>
-        <translation type="unfinished"/>
+        <translation>חשבון</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="53"/>
         <source>Select items to be synced</source>
-        <translation type="unfinished"/>
+        <translation>בחר פריטים להסינון</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="56"/>
         <source>Events</source>
-        <translation type="unfinished"/>
+        <translation>אירועים</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="63"/>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="146"/>
         <source>General settings</source>
-        <translation type="unfinished"/>
+        <translation>הגדרות כלליות</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="74"/>
         <source>Sync interval</source>
-        <translation type="unfinished"/>
+        <translation> fkkת עדכון</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="104"/>
         <source>Calendar account</source>
-        <translation type="unfinished"/>
+        <translation>חשבון קלאינדר</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="150"/>
         <source>General</source>
-        <translation>Amatu</translation>
+        <translation>כללי</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="152"/>
         <source>First day of week</source>
-        <translation type="unfinished"/>
+        <translation>יום ראשון של שבוע</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="153"/>
         <source>Time</source>
-        <translation type="unfinished"/>
+        <translation>זמן</translation>
     </message>
 </context>
 <context>
@@ -1093,7 +1093,7 @@
         <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="612"/>
         <source>Today</source>
         <comment>Return</comment>
-        <translation>Ass-a</translation>
+        <translation>היום</translation>
     </message>
 </context>
 <context>
@@ -1104,7 +1104,7 @@
         <location filename="../calendar-client/src/widget/weekWidget/weekwindow.cpp" line="273"/>
         <source>Today</source>
         <comment>Return Today</comment>
-        <translation>Ass-a</translation>
+        <translation>היום</translation>
     </message>
 </context>
 <context>
@@ -1113,54 +1113,54 @@
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="21"/>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="47"/>
         <source>New event type</source>
-        <translation type="unfinished"/>
+        <translation>סוג אירוע חדש</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="31"/>
         <source>Edit event type</source>
-        <translation type="unfinished"/>
+        <translation>ערוך סוג אירוע</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="43"/>
         <source>Import ICS file</source>
-        <translation type="unfinished"/>
+        <translation>הכנס קובץ ICS</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="140"/>
         <source>Name:</source>
-        <translation>Isem:</translation>
+        <translation>שם:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="141"/>
         <source>Color:</source>
-        <translation type="unfinished"/>
+        <translation>צבע:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="145"/>
         <source>&lt;a href=&apos;https://wikipedia.org/wiki/ICalendar&apos;&gt;ICS&lt;/a&gt; File:</source>
-        <translation type="unfinished"/>
+        <translation>&lt;a href=&apos;&apos;https://wikipedia.org/wiki/ICalendar&apos;&apos;&gt;ICS&lt;/a&gt; קובץ:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="156"/>
         <source>Cancel</source>
         <comment>button</comment>
-        <translation>Sefsex</translation>
+        <translation>בטל</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="157"/>
         <source>Save</source>
         <comment>button</comment>
-        <translation>Sekles</translation>
+        <translation>שמור</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="205"/>
         <source>The name can not only contain whitespaces</source>
-        <translation type="unfinished"/>
+        <translation>השם יכול להכיל רק רווחים</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="241"/>
         <source>Enter a name please</source>
-        <translation type="unfinished"/>
+        <translation>בבקשה הכנס שם</translation>
     </message>
 </context>
 <context>
@@ -1168,37 +1168,37 @@
     <message>
         <location filename="../calendar-client/src/shortcut.cpp" line="16"/>
         <source>Help</source>
-        <translation>Tallalt</translation>
+        <translation>הצלה</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/shortcut.cpp" line="17"/>
         <source>Delete event</source>
-        <translation>Kkes tadyant</translation>
+        <translation>מחק אירוע</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/shortcut.cpp" line="20"/>
         <source>Copy</source>
-        <translation>Nɣel</translation>
+        <translation>העתק</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/shortcut.cpp" line="21"/>
         <source>Cut</source>
-        <translation>Gzem</translation>
+        <translation>קטף</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/shortcut.cpp" line="22"/>
         <source>Paste</source>
-        <translation>Senteḍ</translation>
+        <translation>נ.CopyTo</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/shortcut.cpp" line="25"/>
         <source>Delete</source>
-        <translation>Kkes</translation>
+        <translation>מחק</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/shortcut.cpp" line="26"/>
         <source>Select all</source>
-        <translation>Fren kullec</translation>
+        <translation>בחר הכל</translation>
     </message>
 </context>
 <context>
@@ -1206,12 +1206,12 @@
     <message>
         <location filename="../calendar-client/src/widget/sidebarWidget/sidebarcalendarwidget.cpp" line="126"/>
         <source>Y</source>
-        <translation>Aseggas</translation>
+        <translation>י</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/sidebarWidget/sidebarcalendarwidget.cpp" line="126"/>
         <source>M</source>
-        <translation>Ayyur</translation>
+        <translation>מ</translation>
     </message>
 </context>
 <context>
@@ -1220,7 +1220,7 @@
         <location filename="../calendar-client/src/dialog/timejumpdialog.cpp" line="29"/>
         <source>Go</source>
         <comment>button</comment>
-        <translation type="unfinished"/>
+        <translation>לנgewater</translation>
     </message>
 </context>
 <context>
@@ -1229,13 +1229,13 @@
         <location filename="../calendar-client/src/widget/settingWidget/userloginwidget.cpp" line="48"/>
         <source>Sign In</source>
         <comment>button</comment>
-        <translation>Kcem</translation>
+        <translation>הירשם</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/settingWidget/userloginwidget.cpp" line="49"/>
         <source>Sign Out</source>
         <comment>button</comment>
-        <translation>Ffeɣ</translation>
+        <translation>התנתק</translation>
     </message>
 </context>
 <context>
@@ -1243,7 +1243,7 @@
     <message>
         <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="929"/>
         <source>Y</source>
-        <translation>Aseggas</translation>
+        <translation>י</translation>
     </message>
 </context>
 <context>
@@ -1259,7 +1259,7 @@
         <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="610"/>
         <source>Today</source>
         <comment>Today</comment>
-        <translation>Ass-a</translation>
+        <translation>היום</translation>
     </message>
 </context>
 </TS>
