@@ -326,7 +326,7 @@ void DragInfoGraphicsView::contextMenuEvent(QContextMenuEvent *event)
     if (tt != nullptr && tt->getType() != 0) {
         return;
     }
-    if (infoitem != nullptr) {
+    if (infoitem != nullptr && infoitem->isVisible()) {
         //是否为节假日日程判断
         if (!CScheduleOperation::isFestival(infoitem->getData())) {
             m_rightMenu->clear();
@@ -344,7 +344,9 @@ void DragInfoGraphicsView::contextMenuEvent(QContextMenuEvent *event)
                     emit signalsUpdateSchedule();
                 }
             } else if (action_t == m_deleteAction) {
-                DeleteItem(infoitem->getData());
+                if(DeleteItem(infoitem->getData())) {
+                    infoitem->setVisible(false);
+                }
             }
         } else {
             CMyScheduleView dlg(infoitem->getData(), this);
@@ -676,12 +678,12 @@ void DragInfoGraphicsView::stopTouchAnimation()
  * @brief DragInfoGraphicsView::DeleteItem      删除日程
  * @param info
  */
-void DragInfoGraphicsView::DeleteItem(const DSchedule::Ptr &info)
+bool DragInfoGraphicsView::DeleteItem(const DSchedule::Ptr &info)
 {
-    if (info.isNull()) return;
+    if (info.isNull()) return false;
     //删除日程
     CScheduleOperation _scheduleOperation(info->scheduleTypeID(), this);
-    _scheduleOperation.deleteSchedule(info);
+    return _scheduleOperation.deleteSchedule(info);
 }
 
 /**
@@ -897,7 +899,7 @@ void DragInfoGraphicsView::slotSwitchNextPage(const QDate &focusDate, bool isSwi
 void DragInfoGraphicsView::slotContextMenu(CFocusItem *item)
 {
     DragInfoItem *infoitem = dynamic_cast<DragInfoItem *>(item);
-    if (infoitem != nullptr) {
+    if (infoitem != nullptr && infoitem->isVisible()) {
         //如果为节假日则退出不展示右击菜单
         if (CScheduleOperation::isFestival(infoitem->getData()))
             return;
@@ -921,7 +923,9 @@ void DragInfoGraphicsView::slotContextMenu(CFocusItem *item)
                 emit signalsUpdateSchedule();
             }
         } else if (action_t == m_deleteAction) {
-            DeleteItem(infoitem->getData());
+            if(DeleteItem(infoitem->getData())) {
+                infoitem->setVisible(false);
+            }
         }
         m_Scene->setIsContextMenu(false);
         m_Scene->currentFocusItemUpdate();
