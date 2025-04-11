@@ -92,7 +92,7 @@ private:
 
 protected:
     //删除日程
-    void DeleteItem(const DSchedule::Ptr &info);
+    bool DeleteItem(const DSchedule::Ptr &info);
 
 public:
     //设置搜索选中日程
