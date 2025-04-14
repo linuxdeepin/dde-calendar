@@ -778,37 +778,37 @@
     <message>
         <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="72"/>
         <source>Sun</source>
-        <translation>dom</translation>
+        <translation>Dom</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="72"/>
         <source>Mon</source>
-        <translation>lun</translation>
+        <translation>Lun</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="72"/>
         <source>Tue</source>
-        <translation>mar</translation>
+        <translation>Mar</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="72"/>
         <source>Wed</source>
-        <translation>mié</translation>
+        <translation>Mié</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="72"/>
         <source>Thu</source>
-        <translation>jue</translation>
+        <translation>Jue</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="72"/>
         <source>Fri</source>
-        <translation>vie</translation>
+        <translation>Vie</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="72"/>
         <source>Sat</source>
-        <translation>sáb</translation>
+        <translation>Sáb</translation>
     </message>
 </context>
 <context>
