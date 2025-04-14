@@ -25,12 +25,12 @@
 <context>
     <name>AccountManager</name>
     <message>
-        <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="223"/>
+        <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="227"/>
         <source>Local account</source>
         <translation>Cuenta local</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="225"/>
+        <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="229"/>
         <source>Event types</source>
         <translation>Tipos de eventos</translation>
     </message>
@@ -140,7 +140,7 @@
         <translation>Nuevo evento</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/monthWidget/monthview.cpp" line="209"/>
+        <location filename="../calendar-client/src/widget/monthWidget/monthview.cpp" line="211"/>
         <source>New Event</source>
         <translation>Nuevo evento</translation>
     </message>
@@ -778,37 +778,37 @@
     <message>
         <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="72"/>
         <source>Sun</source>
-        <translation>dom.</translation>
+        <translation>dom</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="72"/>
         <source>Mon</source>
-        <translation>lun.</translation>
+        <translation>lun</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="72"/>
         <source>Tue</source>
-        <translation>mar.</translation>
+        <translation>mar</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="72"/>
         <source>Wed</source>
-        <translation>miérc.</translation>
+        <translation>mié</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="72"/>
         <source>Thu</source>
-        <translation>juev.</translation>
+        <translation>jue</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="72"/>
         <source>Fri</source>
-        <translation>vier.</translation>
+        <translation>vie</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="72"/>
         <source>Sat</source>
-        <translation>sáb.</translation>
+        <translation>sáb</translation>
     </message>
 </context>
 <context>
@@ -877,17 +877,17 @@
         <translation>Política de privacidad</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="940"/>
+        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="939"/>
         <source>Syncing...</source>
         <translation>Sincronizando…</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="950"/>
+        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="949"/>
         <source>Sync successful</source>
         <translation>Sincronización exitosa</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="958"/>
+        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="957"/>
         <source>Sync failed, please try later</source>
         <translation>La sincronización falló, intentelo más tarde</translation>
     </message>
@@ -989,12 +989,12 @@
 <context>
     <name>JobTypeListView</name>
     <message>
-        <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="142"/>
+        <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="143"/>
         <source>export</source>
         <translation>Exportar</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="213"/>
+        <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="214"/>
         <source>import ICS file</source>
         <translation>Importar archivo ICS</translation>
     </message>
@@ -1241,7 +1241,7 @@
 <context>
     <name>YearFrame</name>
     <message>
-        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="925"/>
+        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="929"/>
         <source>Y</source>
         <translation>A</translation>
     </message>
