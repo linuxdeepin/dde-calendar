@@ -50,31 +50,31 @@
     <name>CDayMonthView</name>
     <message>
         <source>Monday</source>
-        <translation type="vanished">lunes</translation>
+        <translation type="vanished">Lunes</translation>
     </message>
     <message>
         <source>Tuesday</source>
-        <translation type="vanished">martes</translation>
+        <translation type="vanished">Martes</translation>
     </message>
     <message>
         <source>Wednesday</source>
-        <translation type="vanished">miércoles</translation>
+        <translation type="vanished">Miércoles</translation>
     </message>
     <message>
         <source>Thursday</source>
-        <translation type="vanished">jueves</translation>
+        <translation type="vanished">Jueves</translation>
     </message>
     <message>
         <source>Friday</source>
-        <translation type="vanished">viernes</translation>
+        <translation type="vanished">Viernes</translation>
     </message>
     <message>
         <source>Saturday</source>
-        <translation type="vanished">sábado</translation>
+        <translation type="vanished">Sábado</translation>
     </message>
     <message>
         <source>Sunday</source>
-        <translation type="vanished">domingo</translation>
+        <translation type="vanished">Domingo</translation>
     </message>
 </context>
 <context>
@@ -594,31 +594,31 @@
     <name>CWeekWidget</name>
     <message>
         <source>Sun</source>
-        <translation type="vanished">dom.</translation>
+        <translation type="vanished">Dom</translation>
     </message>
     <message>
         <source>Mon</source>
-        <translation type="vanished">lun.</translation>
+        <translation type="vanished">Lun</translation>
     </message>
     <message>
         <source>Tue</source>
-        <translation type="vanished">mar.</translation>
+        <translation type="vanished">Mar</translation>
     </message>
     <message>
         <source>Wed</source>
-        <translation type="vanished">miérc.</translation>
+        <translation type="vanished">Mié</translation>
     </message>
     <message>
         <source>Thu</source>
-        <translation type="vanished">juev.</translation>
+        <translation type="vanished">Jue</translation>
     </message>
     <message>
         <source>Fri</source>
-        <translation type="vanished">vier.</translation>
+        <translation type="vanished">Vie</translation>
     </message>
     <message>
         <source>Sat</source>
-        <translation type="vanished">sáb.</translation>
+        <translation type="vanished">Sáb</translation>
     </message>
 </context>
 <context>
