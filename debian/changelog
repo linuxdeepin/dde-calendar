@@ -1,3 +1,10 @@
+dde-calendar (6.5.5) unstable; urgency=medium
+
+  * fix: crash caused by repeatedly deleting the
+         same schedule data (Bug: 303095)
+
+ -- renbin <renbin@uniontech.com>  Wed, 16 Apr 2025 15:35:34 +0800
+
 dde-calendar (6.5.4) unstable; urgency=medium
 
   * fix: Fix some UI issues (#228)(Bug: 304001)
