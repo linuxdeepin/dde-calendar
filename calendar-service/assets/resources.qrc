@@ -1,7 +1,12 @@
 <RCC>
     <qresource prefix="/">
         <file>pinyin.dict</file>
+        <file>holiday-cn/2019.json</file>
+        <file>holiday-cn/2020.json</file>
+        <file>holiday-cn/2021.json</file>
+        <file>holiday-cn/2022.json</file>
         <file>holiday-cn/2023.json</file>
         <file>holiday-cn/2024.json</file>
+        <file>holiday-cn/2025.json</file>
     </qresource>
 </RCC>
