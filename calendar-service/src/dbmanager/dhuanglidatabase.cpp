@@ -86,25 +86,25 @@ QJsonArray DHuangLiDataBase::queryFestivalList(quint32 year, quint8 month)
     qCDebug(ServiceLogger) << "query festival list"
                            << "year" << year << "month" << month;
     QJsonArray dataset;
-    auto filename = getAppCacheDir().filePath(QString("%1.json").arg(year));
-    if (!QFile(filename).exists()) {
-        filename = QString("%1/%2.json").arg(HolidayDir).arg(year);
-    }
-    qCDebug(ServiceLogger) << "festival file name" << filename;
-    auto doc = readJSON(filename, true);
-    for (auto val : doc.object().value("days").toArray()) {
-        auto day = val.toObject();
-        auto name = day.value("name").toString();
-        auto date = QDate::fromString(day.value("date").toString(), "yyyy-MM-dd");
-        auto isOffday = day.value("isOffDay").toBool();
-        if (quint32(date.year()) == year && quint32(date.month()) == month) {
-            qCDebug(ServiceLogger) << "festival day" << name << date << isOffday;
-            QJsonObject obj;
-            obj.insert("name", name);
-            obj.insert("date", date.toString("yyyy-MM-dd"));
-            obj.insert("status", isOffday ? 1 : 2);
-            dataset.append(obj);
+    QFile file(QString("%1/%2.json").arg(HolidayDir).arg(year));
+    if (file.open(QIODevice::ReadOnly)) {
+        auto data = file.readAll();
+        file.close();
+        auto doc = QJsonDocument::fromJson(data);
+        for (auto val : doc.object().value("days").toArray()) {
+            auto day = val.toObject();
+            auto name = day.value("name").toString();
+            auto date = QDate::fromString(day.value("date").toString(), "yyyy-MM-dd");
+            auto isOffday = day.value("isOffDay").toBool();
+            if (quint32(date.year()) == year && quint32(date.month()) == month) {
+                QJsonObject obj;
+                obj.insert("name", name);
+                obj.insert("date", date.toString("yyyy-MM-dd"));
+                obj.insert("status", isOffday ? 1 : 2);
+                dataset.append(obj);
+            }
         }
+        file.close();
     }
     return dataset;
 }

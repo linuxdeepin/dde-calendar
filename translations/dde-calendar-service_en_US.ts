@@ -700,14 +700,17 @@
 <context>
     <name>DAccountDataBase</name>
     <message>
+        <location filename="../calendar-service/src/dbmanager/daccountdatabase.cpp" line="1143"/>
         <source>Work</source>
         <translation>Work</translation>
     </message>
     <message>
+        <location filename="../calendar-service/src/dbmanager/daccountdatabase.cpp" line="1145"/>
         <source>Life</source>
         <translation>Life</translation>
     </message>
     <message>
+        <location filename="../calendar-service/src/dbmanager/daccountdatabase.cpp" line="1147"/>
         <source>Other</source>
         <translation>Other</translation>
     </message>
@@ -715,47 +718,65 @@
 <context>
     <name>DAlarmManager</name>
     <message>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="169"/>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="176"/>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="181"/>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="191"/>
         <source>Close</source>
         <comment>button</comment>
         <translation>Close</translation>
     </message>
     <message>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="172"/>
         <source>One day before start</source>
         <translation>One day before start</translation>
     </message>
     <message>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="177"/>
         <source>Remind me tomorrow</source>
         <translation>Remind me tomorrow</translation>
     </message>
     <message>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="182"/>
         <source>Remind me later</source>
         <translation>Remind me later</translation>
     </message>
     <message>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="184"/>
         <source>15 mins later</source>
         <translation>15 mins later</translation>
     </message>
     <message>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="185"/>
         <source>1 hour later</source>
         <translation>1 hour later</translation>
     </message>
     <message>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="186"/>
         <source>4 hours later</source>
         <translation>4 hours later</translation>
     </message>
     <message>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="187"/>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="269"/>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="280"/>
         <source>Tomorrow</source>
         <translation>Tomorrow</translation>
     </message>
     <message>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="194"/>
         <source>Schedule Reminder</source>
         <translation>Schedule Reminder</translation>
     </message>
     <message>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="233"/>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="242"/>
         <source>%1 to %2</source>
         <translation>%1 to %2</translation>
     </message>
     <message>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="266"/>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="277"/>
         <source>Today</source>
         <translation>Today</translation>
     </message>

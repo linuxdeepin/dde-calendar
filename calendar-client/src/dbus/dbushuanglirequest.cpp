@@ -41,38 +41,23 @@ bool DbusHuangLiRequest::getFestivalMonth(quint32 year, quint32 month, FestivalI
     // 解析数据
     QJsonArray rootarry = jsonDoc.array();
     for (int i = 0; i < rootarry.size(); i++) {
-        QJsonObject subObj = rootarry.at(i).toObject();
-        // 因为是预先定义好的JSON数据格式，所以这里可以这样读取
-        if (subObj.contains("id")) {
-            festivalInfo.ID = subObj.value("id").toString();
-        }
-        if (subObj.contains("name")) {
-            festivalInfo.FestivalName = subObj.value("name").toString();
-        }
-        if (subObj.contains("description")) {
-            festivalInfo.description = subObj.value("description").toString();
-        }
-        if (subObj.contains("rest")) {
-            festivalInfo.Rest = subObj.value("rest").toString();
-        }
-        if (subObj.contains("month")) {
-            festivalInfo.month = subObj.value("month").toInt();
-        }
-        if (subObj.contains("list")) {
-            QJsonArray sublistArray = subObj.value("list").toArray();
-            for (int j = 0; j < sublistArray.size(); j++) {
-                QJsonObject hsubObj = sublistArray.at(j).toObject();
-                HolidayInfo dayinfo;
-                if (hsubObj.contains("status")) {
-                    dayinfo.status = static_cast<char>(hsubObj.value("status").toInt());
-                }
-                if (hsubObj.contains("date")) {
-                    dayinfo.date = QDate::fromString(hsubObj.value("date").toString(), "yyyy-M-d");
-                }
-                festivalInfo.listHoliday.append(dayinfo);
+        QJsonObject hsubObj = rootarry.at(i).toObject();
+
+        QJsonArray subOnjArry = hsubObj.value("list").toArray();
+
+        // 遍历内部的节日列表数组
+        for (int j = 0; j < subOnjArry.size(); j++) {
+            QJsonObject dayObj = subOnjArry.at(j).toObject();
+
+            HolidayInfo dayinfo;
+            if (dayObj.contains("status")) {
+                dayinfo.status = static_cast<char>(dayObj.value("status").toInt());
             }
+            if (dayObj.contains("date")) {
+                dayinfo.date = QDate::fromString(dayObj.value("date").toString(), "yyyy-MM-dd");
+            }
+            festivalInfo.listHoliday.append(dayinfo);
         }
-        festivalInfo.year = static_cast<int>(year);
     }
     return true;
 }

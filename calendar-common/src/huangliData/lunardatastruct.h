@@ -16,16 +16,10 @@ typedef struct HuangLi {
 
 typedef struct _tagHolidayInfo {
     QDate date;
-    char status {};
+    uint status; // 1: 休 2: 补班
 } HolidayInfo;
 
 typedef struct _tagFestivalInfo {
-    QString ID {};
-    QString FestivalName {};
-    QString description {};
-    QString Rest {};
-    int month = 0;
-    int year = 0;
     QVector<HolidayInfo> listHoliday {};
 } FestivalInfo;
 
