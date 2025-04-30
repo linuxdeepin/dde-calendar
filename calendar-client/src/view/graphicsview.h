@@ -75,6 +75,7 @@ public slots:
     void slotDoubleEvent(int type);
     void slotScrollBar();
     void slotUpdateScene();
+    void slotStateChange(bool bState);
 signals:
     void signalsPosHours(QVector<int> vPos, QVector<int> vHours, int currentTimeType = 0);
     void signalsCurrentScheduleDate(QDate date);

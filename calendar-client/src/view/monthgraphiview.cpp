@@ -27,6 +27,7 @@ CMonthGraphicsview::CMonthGraphicsview(QWidget *parent)
     setShowRadius(true, true);
 
     m_MonthScheduleView = new CMonthScheduleView(this, m_Scene);
+    connect(this, &CMonthGraphicsview::sigStateChange, m_MonthScheduleView, &CMonthScheduleView::slotStateChange, Qt::DirectConnection);
     connect(this, &CMonthGraphicsview::signalFontChange, m_MonthScheduleView, &CMonthScheduleView::slotFontChange);
 
     for (int i = 0; i < DDEMonthCalendar::ItemSizeOfMonthDay; ++i) {
@@ -373,7 +374,9 @@ void CMonthGraphicsview::mouseDoubleClickEvent(QMouseEvent *event)
     if (infoitem != nullptr) {
         CMyScheduleView dlg(infoitem->getData(), this);
         connect(&dlg, &CMyScheduleView::signalsEditorDelete, this, &CMonthGraphicsview::signalsUpdateSchedule);
-        dlg.exec();
+        if (dlg.exec() == DDialog::Accepted) {
+            emit sigStateChange(true);
+        }
         return;
     }
 
@@ -543,5 +546,6 @@ void CMonthGraphicsview::slotCreate(const QDateTime &date)
     if (dlg.exec() == DDialog::Accepted) {
         emit signalsUpdateSchedule();
         emit signalsScheduleUpdate(0);
+        emit sigStateChange(true);
     }
 }

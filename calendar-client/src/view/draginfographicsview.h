@@ -161,6 +161,7 @@ signals:
     void signalSwitchPrePage();
     void signalSwitchNextPage();
     void signalGotoDayView(const QDate &date);
+    void sigStateChange(bool bState);
 public slots:
     //删除日程
     void slotDeleteItem();
