@@ -55,6 +55,7 @@ void CAllDayEventWeekView::slotCreate(const QDateTime &date)
     dlg.setAllDay(true);
     if (dlg.exec() == DDialog::Accepted) {
         emit signalsUpdateSchedule();
+        slotStateChange(true);
     }
 }
 
@@ -277,6 +278,7 @@ CAllDayEventWeekView::CAllDayEventWeekView(QWidget *parent, ViewPosition type)
     : CWeekDayGraphicsview(parent, type, ViewType::ALLDayView)
 {
     updateItemHeightByFontSize();
+    connect(this, &CAllDayEventWeekView::sigStateChange, this, &CAllDayEventWeekView::slotStateChange, Qt::DirectConnection);
 }
 
 CAllDayEventWeekView::~CAllDayEventWeekView()
@@ -316,7 +318,9 @@ void CAllDayEventWeekView::mouseDoubleClickEvent(QMouseEvent *event)
         m_updateDflag = false;
         CMyScheduleView dlg(item->getData(), this);
         connect(&dlg, &CMyScheduleView::signalsEditorDelete, this, &CAllDayEventWeekView::slotDoubleEvent);
-        dlg.exec();
+        if (dlg.exec() == DDialog::Accepted){
+            slotStateChange(true);
+        }
         disconnect(&dlg, &CMyScheduleView::signalsEditorDelete, this, &CAllDayEventWeekView::slotDoubleEvent);
     }
 }
@@ -368,6 +372,15 @@ void CAllDayEventWeekView::createItemWidget(int index, bool average)
         gwi->setData(m_vlistData[index].at(i));
         m_Scene->addItem(gwi);
         m_baseShowItem.append(gwi);
+    }
+}
+
+void CAllDayEventWeekView::slotStateChange(bool bState)
+{
+    if(bState) {
+        for (int i = 0; i < m_baseShowItem.count(); i++) {
+            m_baseShowItem[i]->setVisible(false);
+        }
     }
 }
 

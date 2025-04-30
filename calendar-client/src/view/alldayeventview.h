@@ -41,6 +41,7 @@ signals:
     void signalSceneUpdate();
 public slots:
     void slotUpdateScene();
+    void slotStateChange(bool bState);
 private slots:
     void slotDoubleEvent();
 public:

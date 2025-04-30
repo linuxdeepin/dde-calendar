@@ -42,6 +42,7 @@ signals:
     void signalPressScheduleShow(const bool isShow, const DSchedule::Ptr &out = DSchedule::Ptr());
 public slots:
     void slotFontChange();
+    void slotStateChange(bool bState);
 private:
     void updateDateShow(QVector<QVector<MScheduleDateRangeInfo>> &vCMDaySchedule, QVector<QGraphicsRectItem *> &scheduleShowItem);
     void createScheduleItemWidget(MScheduleDateRangeInfo info, int cNum, QVector<QGraphicsRectItem *> &scheduleShowItem);
@@ -88,6 +89,7 @@ public:
     }
     void updateSchedule(const bool isNormalDisplay, const DSchedule::Ptr &info = DSchedule::Ptr());
     void clearItem();
+    void hideItem();
 private:
     void setMaxNum();
     void mScheduleClear();

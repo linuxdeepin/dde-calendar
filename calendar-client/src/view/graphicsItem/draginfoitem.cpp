@@ -7,6 +7,7 @@
 #include <QPropertyAnimation>
 #include <QSequentialAnimationGroup>
 #include <QDebug>
+#include <QMutex>
 
 bool DragInfoItem::m_press = false;
 DSchedule::Ptr DragInfoItem::m_HoverInfo;
@@ -45,11 +46,13 @@ DragInfoItem::~DragInfoItem()
 
 void DragInfoItem::setData(const DSchedule::Ptr &vScheduleInfo)
 {
+    QMutexLocker locker(&m_Mutex);
     m_vScheduleInfo = vScheduleInfo;
 }
 
-DSchedule::Ptr DragInfoItem::getData() const
+DSchedule::Ptr DragInfoItem::getData()
 {
+    QMutexLocker locker(&m_Mutex);
     return  m_vScheduleInfo;
 }
 
@@ -127,6 +130,7 @@ void DragInfoItem::animationFinished()
 
 void DragInfoItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
+    QMutexLocker locker(&m_Mutex);
     Q_UNUSED(event);
     m_HoverInfo = m_vScheduleInfo;
     update();
@@ -134,6 +138,7 @@ void DragInfoItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 
 void DragInfoItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
+    QMutexLocker locker(&m_Mutex);
     Q_UNUSED(event);
     m_HoverInfo = DSchedule::Ptr();
     update();
@@ -141,6 +146,7 @@ void DragInfoItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 
 void DragInfoItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
+    QMutexLocker locker(&m_Mutex);
     Q_UNUSED(option);
     Q_UNUSED(widget);
     m_vHoverflag = m_HoverInfo == m_vScheduleInfo;

@@ -52,6 +52,7 @@ CGraphicsView::CGraphicsView(QWidget *parent, ViewPosition Type)
 
     connect(this->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(scrollBarValueChangedSlot()));
     connect(this->verticalScrollBar(), &QScrollBar::sliderPressed, this, &CGraphicsView::slotScrollBar);
+    connect(this, &CGraphicsView::sigStateChange, this, &CGraphicsView::slotStateChange, Qt::DirectConnection);
 
     //如果为周视图
     if (m_viewPos == WeekPos) {
@@ -105,6 +106,7 @@ void CGraphicsView::slotCreate(const QDateTime &date)
 
     if (dlg.exec() == DDialog::Accepted) {
         emit signalsUpdateSchedule();
+        slotStateChange(true);
     }
 }
 
@@ -374,6 +376,7 @@ void CGraphicsView::mouseDoubleClickEvent(QMouseEvent *event)
         dlg.setDate(tDatatime);
         if (dlg.exec() == DDialog::Accepted) {
             emit signalsUpdateSchedule();
+            emit sigStateChange(true);
         }
         return;
     }
@@ -385,7 +388,9 @@ void CGraphicsView::mouseDoubleClickEvent(QMouseEvent *event)
     //TODO: item->getData()中的scheduleType为""，不是正常日程，有崩溃风险，待分析解决
     CMyScheduleView dlg(item->getData(), this);
     connect(&dlg, &CMyScheduleView::signalsEditorDelete, this, &CGraphicsView::slotDoubleEvent);
-    dlg.exec();
+    if (dlg.exec() == DDialog::Accepted) {
+        emit sigStateChange(true);
+    }
     disconnect(&dlg, &CMyScheduleView::signalsEditorDelete, this, &CGraphicsView::slotDoubleEvent);
 }
 
@@ -429,6 +434,15 @@ void CGraphicsView::slotScrollBar()
 void CGraphicsView::slotUpdateScene()
 {
     this->scene()->update();
+}
+
+void CGraphicsView::slotStateChange(bool bState)
+{
+    if(bState) {
+        for (int i = 0; i < m_vScheduleItem.size(); i++) {
+            m_vScheduleItem[i]->setVisible(false);
+        }
+    }
 }
 
 #ifndef QT_NO_WHEELEVENT

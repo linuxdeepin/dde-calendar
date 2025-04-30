@@ -14,6 +14,7 @@ DWIDGET_USE_NAMESPACE
 
 class QPropertyAnimation;
 class QSequentialAnimationGroup;
+class QMutex;
 /**
  * @brief The DragInfoItem class
  * 显示项  支持拖拽
@@ -26,7 +27,7 @@ public:
     explicit DragInfoItem(QRectF rect, QGraphicsItem *parent = nullptr);
     ~DragInfoItem() override;
     void setData(const DSchedule::Ptr &vScheduleInfo);
-    DSchedule::Ptr getData() const;
+    DSchedule::Ptr getData();
 
     void setFont(DFontSizeManager::SizeType type);
     void setOffset(const int &offset);
@@ -75,6 +76,7 @@ protected:
     static DSchedule::Ptr m_HoverInfo;
     static DSchedule::Ptr m_pressInfo;
     static DSchedule::List m_searchScheduleInfo;
+    QMutex m_Mutex;
 };
 
 #endif // DRAGINFOITEM_H

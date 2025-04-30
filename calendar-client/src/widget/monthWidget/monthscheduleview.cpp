@@ -69,6 +69,17 @@ void CMonthScheduleView::slotFontChange()
     }
 }
 
+void CMonthScheduleView::slotStateChange(bool bState)
+{
+    if(bState) {
+        //日程显示
+        for (int i = 0; i < m_weekSchedule.size(); ++i) {
+            m_weekSchedule[i]->hideItem();
+        }
+    }
+
+}
+
 /**
  * @brief CMonthScheduleView::updateData        更新日程数据
  */
@@ -269,6 +280,7 @@ void CWeekScheduleView::setData(QMap<QDate, DSchedule::List> &data, const QDate 
 
 bool CWeekScheduleView::addData(const DSchedule::Ptr &info)
 {
+    if(info.isNull()) return false;
     if (info->dtStart().date().daysTo(endDate) >= 0 && beginDate.daysTo(info->dtEnd().date()) >= 0) {
         clearItem();
         updateSchedule(false, info);
@@ -350,6 +362,14 @@ void CWeekScheduleView::clearItem()
     }
     m_scheduleShowItem.clear();
 }
+
+void CWeekScheduleView::hideItem()
+{
+    for (int i = 0; i < m_scheduleShowItem.count(); i++) {
+        m_scheduleShowItem[i]->setVisible(false);
+    }
+}
+
 
 void CWeekScheduleView::setMaxNum()
 {
