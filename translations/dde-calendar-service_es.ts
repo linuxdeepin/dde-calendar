@@ -278,11 +278,11 @@
     </message>
     <message>
         <source>Time:</source>
-        <translation type="vanished">Tiempo:</translation>
+        <translation type="vanished">Calendario:</translation>
     </message>
     <message>
         <source>Time</source>
-        <translation type="vanished">Tiempo</translation>
+        <translation type="vanished">Hora</translation>
     </message>
     <message>
         <source>Solar</source>
@@ -846,7 +846,7 @@
     </message>
     <message>
         <source>Time</source>
-        <translation type="vanished">Tiempo</translation>
+        <translation type="vanished">Hora</translation>
     </message>
 </context>
 <context>
