@@ -359,12 +359,12 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="939"/>
         <source>Time:</source>
-        <translation>Tiempo:</translation>
+        <translation>Calendario:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="940"/>
         <source>Time</source>
-        <translation>Tiempo</translation>
+        <translation>Hora</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="947"/>
@@ -1084,7 +1084,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="153"/>
         <source>Time</source>
-        <translation>Tiempo</translation>
+        <translation>Hora</translation>
     </message>
 </context>
 <context>
