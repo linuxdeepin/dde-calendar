@@ -359,12 +359,12 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="939"/>
         <source>Time:</source>
-        <translation>Tiempo:</translation>
+        <translation>Calendario:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="940"/>
         <source>Time</source>
-        <translation>Tiempo</translation>
+        <translation>Hora</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="947"/>
@@ -518,7 +518,7 @@
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="148"/>
         <source>Delete All</source>
-        <translation>Eliminar todo</translation>
+        <translation>Borrar todo</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="149"/>
@@ -529,7 +529,7 @@
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="166"/>
         <source>Do you want to delete this and all future occurrences of this event, or only the selected occurrence?</source>
-        <translation>¿Desea eliminar este y todas las instancias futuras de este evento, o solo la instancia seleccionada?</translation>
+        <translation>¿Desea borrar este y todas las instancias futuras de este evento, o solo la instancia seleccionada?</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="168"/>
@@ -608,7 +608,7 @@
     <message>
         <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="43"/>
         <source>Delete</source>
-        <translation>Eliminar</translation>
+        <translation>Borrar</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="267"/>
@@ -1006,7 +1006,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="402"/>
         <source>All events under this type will be deleted and cannot be recovered.</source>
-        <translation>Todos los eventos de este tipo se eliminarán y no se podrán recuperar.</translation>
+        <translation>Todos los eventos de este tipo se borrarán y no se podrán recuperar.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="403"/>
@@ -1018,7 +1018,7 @@
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="404"/>
         <source>Delete</source>
         <comment>button</comment>
-        <translation>Eliminar</translation>
+        <translation>Borrar</translation>
     </message>
 </context>
 <context>
@@ -1084,7 +1084,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="153"/>
         <source>Time</source>
-        <translation>Tiempo</translation>
+        <translation>Hora</translation>
     </message>
 </context>
 <context>

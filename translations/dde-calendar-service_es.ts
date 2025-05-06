@@ -278,11 +278,11 @@
     </message>
     <message>
         <source>Time:</source>
-        <translation type="vanished">Tiempo:</translation>
+        <translation type="vanished">Calendario:</translation>
     </message>
     <message>
         <source>Time</source>
-        <translation type="vanished">Tiempo</translation>
+        <translation type="vanished">Hora</translation>
     </message>
     <message>
         <source>Solar</source>
@@ -393,7 +393,7 @@
     </message>
     <message>
         <source>Delete All</source>
-        <translation type="vanished">Eliminar todo</translation>
+        <translation type="vanished">Borrar todo</translation>
     </message>
     <message>
         <source>Delete Only This Event</source>
@@ -401,7 +401,7 @@
     </message>
     <message>
         <source>Do you want to delete this and all future occurrences of this event, or only the selected occurrence?</source>
-        <translation type="vanished">¿Desea eliminar este y todas las instancias futuras de este evento, o solo la instancia seleccionada?</translation>
+        <translation type="vanished">¿Desea borrar este y todas las instancias futuras de este evento, o solo la instancia seleccionada?</translation>
     </message>
     <message>
         <source>Delete All Future Events</source>
@@ -464,7 +464,7 @@
     </message>
     <message>
         <source>Delete</source>
-        <translation type="vanished">Eliminar</translation>
+        <translation type="vanished">Borrar</translation>
     </message>
     <message>
         <source>All Day</source>
@@ -785,7 +785,7 @@
     </message>
     <message>
         <source>All events under this type will be deleted and cannot be recovered.</source>
-        <translation type="vanished">Todos los eventos de este tipo se eliminarán y no se podrán recuperar.</translation>
+        <translation type="vanished">Todos los eventos de este tipo se borrarán y no se podrán recuperar.</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -795,7 +795,7 @@
     <message>
         <source>Delete</source>
         <comment>button</comment>
-        <translation type="vanished">Eliminar</translation>
+        <translation type="vanished">Borrar</translation>
     </message>
 </context>
 <context>
@@ -846,7 +846,7 @@
     </message>
     <message>
         <source>Time</source>
-        <translation type="vanished">Tiempo</translation>
+        <translation type="vanished">Hora</translation>
     </message>
 </context>
 <context>
