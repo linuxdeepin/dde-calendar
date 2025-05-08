@@ -1,3 +1,9 @@
+dde-calendar (6.5.7) unstable; urgency=medium
+
+  * crash fix (bug 303095 313675).
+
+ -- muyuankai <muyuankai@uniontech.com>  Thu, 08 May 2025 15:12:35 +0800
+
 dde-calendar (6.5.6) unstable; urgency=medium
 
   * feat: enhance holiday data handling and add 2024/2025 holiday JSON files
