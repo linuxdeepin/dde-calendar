@@ -47,6 +47,7 @@ SyncoptResult Syncoperation::optUpload(const QString &key)
 {
     SyncoptResult result;
     QDBusPendingReply<QByteArray> reply = m_syncInter->Upload(key);
+    qCInfo(ServiceLogger) << "Upload key:" << key;
     reply.waitForFinished();
     if (reply.error().message().isEmpty()) {
         qCInfo(ServiceLogger) << "Upload success!";

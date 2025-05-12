@@ -6,6 +6,7 @@
 #include "commondef.h"
 
 #include <DSysInfo>
+#include "units.h"
 
 SyncFileManage::SyncFileManage(QObject *parent)
     : QObject(parent)
@@ -23,7 +24,7 @@ SyncFileManage::~SyncFileManage()
 bool SyncFileManage::SyncDataDownload(const QString &uid, QString &filepath, int &errorcode)
 {
     //文件下载目录检查
-    QString usersyncdir(QString("/tmp/%1_calendar").arg(uid));
+    QString usersyncdir(getDBPath() +QString("/%1_calendar").arg(uid));
     UserSyncDirectory(usersyncdir);
     QString syncDB = usersyncdir + "/" + syncDBname;
     QFile syncDBfile(syncDB);
