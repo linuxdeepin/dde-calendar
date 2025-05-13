@@ -1,3 +1,9 @@
+dde-calendar (6.5.8) unstable; urgency=medium
+
+  * fix cloud synchronization (bug 311911).
+
+ -- muyuankai <muyuankai@uniontech.com>  Tue, 13 May 2025 16:26:10 +0800
+
 dde-calendar (6.5.7) unstable; urgency=medium
 
   * crash fix (bug 303095 313675).
