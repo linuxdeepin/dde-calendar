@@ -6,8 +6,13 @@
 #define DAYHUANGLILABEL_H
 
 #include <DLabel>
+#include <QLoggingCategory>
 
 DWIDGET_USE_NAMESPACE
+
+// Declare logging category
+Q_DECLARE_LOGGING_CATEGORY(dayHuangLiLog)
+
 class CDayHuangLiLabel : public DLabel
 {
     Q_OBJECT

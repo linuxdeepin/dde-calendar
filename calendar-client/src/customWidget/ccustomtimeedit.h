@@ -7,6 +7,8 @@
 
 #include <QDateTimeEdit>
 
+Q_DECLARE_LOGGING_CATEGORY(customTimeEditLog)
+
 /**
  * @brief The CCustomTimeEdit class
  */

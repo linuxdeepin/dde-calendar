@@ -19,6 +19,8 @@
 
 #include <dtkwidget_global.h>
 
+Q_LOGGING_CATEGORY(scheduleItemLog, "calendar.view.scheduleitem")
+
 DWIDGET_USE_NAMESPACE
 
 CScheduleItem::CScheduleItem(QRectF rect, QGraphicsItem *parent, int type)
@@ -28,6 +30,7 @@ CScheduleItem::CScheduleItem(QRectF rect, QGraphicsItem *parent, int type)
     , m_transparentcolor("#000000")
     , m_timeFormat(CalendarManager::getInstance()->getTimeFormat())
 {
+    qCDebug(scheduleItemLog) << "Creating schedule item with rect:" << rect << "type:" << type;
     m_transparentcolor.setAlphaF(0.05);
     connect(CalendarManager::getInstance(), &CalendarManager::signalTimeFormatChanged, this, &CScheduleItem::timeFormatChanged);
 }
@@ -44,6 +47,7 @@ CScheduleItem::~CScheduleItem()
  */
 void CScheduleItem::setData(const DSchedule::Ptr &info, QDate date, int totalNum)
 {
+    qCDebug(scheduleItemLog) << "Setting schedule data:" << info->summary() << "date:" << date << "total num:" << totalNum;
     m_vScheduleInfo = info;
     m_totalNum = totalNum;
     setDate(date);
@@ -57,7 +61,9 @@ void CScheduleItem::setData(const DSchedule::Ptr &info, QDate date, int totalNum
  */
 bool CScheduleItem::hasSelectSchedule(const DSchedule::Ptr &info)
 {
-    return info == m_vScheduleInfo;
+    bool hasSelect = info == m_vScheduleInfo;
+    qCDebug(scheduleItemLog) << "Checking if schedule is selected:" << info->summary() << "result:" << hasSelect;
+    return hasSelect;
 }
 
 /**
@@ -71,6 +77,7 @@ bool CScheduleItem::hasSelectSchedule(const DSchedule::Ptr &info)
  */
 void CScheduleItem::splitText(QFont font, int w, int h, QString str, QStringList &listStr, QFontMetrics &fontM)
 {
+    qCDebug(scheduleItemLog) << "Splitting text:" << str << "width:" << w << "height:" << h;
     if (str.isEmpty())
         return;
     QFontMetrics fontMetrics(font);
@@ -143,6 +150,7 @@ void CScheduleItem::splitText(QFont font, int w, int h, QString str, QStringList
  */
 void CScheduleItem::timeFormatChanged(int value)
 {
+    qCDebug(scheduleItemLog) << "Time format changed to:" << value;
     if (value) {
         m_timeFormat = "hh:mm";
     } else {
@@ -159,6 +167,7 @@ void CScheduleItem::timeFormatChanged(int value)
  */
 void CScheduleItem::paintBackground(QPainter *painter, const QRectF &rect, const bool isPixMap)
 {
+    qCDebug(scheduleItemLog) << "Painting background, rect:" << rect << "isPixMap:" << isPixMap;
     Q_UNUSED(isPixMap);
     //根据日程类型获取颜色
     CSchedulesColor gdColor = CScheduleDataManage::getScheduleDataManage()->getScheduleColorByType(m_vScheduleInfo->scheduleTypeID());

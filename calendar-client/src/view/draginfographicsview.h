@@ -14,6 +14,9 @@
 #include <QDate>
 #include <QDrag>
 #include <QColor>
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(dragInfoLog)
 
 DWIDGET_USE_NAMESPACE
 

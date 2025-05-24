@@ -9,6 +9,9 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QJsonDocument>
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(shortcutLog)
 
 struct ShortcutItem {
     QString name;

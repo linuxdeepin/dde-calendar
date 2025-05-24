@@ -9,7 +9,6 @@
 
 #include <DPalette>
 
-
 #include <QHBoxLayout>
 #include <QPainter>
 #include <QBrush>
@@ -17,12 +16,16 @@
 #include <QMouseEvent>
 #include <QDebug>
 #include <QKeyEvent>
+#include <QLoggingCategory>
+
+Q_LOGGING_CATEGORY(monthDayViewLog, "calendar.view.monthday")
 
 DGUI_USE_NAMESPACE
 CMonthDayView::CMonthDayView(QWidget *parent)
     : DFrame(parent)
     , m_touchGesture(this)
 {
+    qCDebug(monthDayViewLog) << "Initializing CMonthDayView";
     QHBoxLayout *hBoxLayout = new QHBoxLayout;
     hBoxLayout->setContentsMargins(0, 0, 0, 0);
     hBoxLayout->setSpacing(0);
@@ -46,6 +49,7 @@ CMonthDayView::~CMonthDayView()
  */
 void CMonthDayView::setSelectDate(const QDate &date)
 {
+    qCDebug(monthDayViewLog) << "Setting select date to:" << date;
     m_selectDate = date;
     for (int i = 0; i < DDEMonthCalendar::MonthNumOfYear; ++i) {
         m_days[i] = m_selectDate.addMonths(i - 5);
@@ -60,6 +64,7 @@ void CMonthDayView::setSelectDate(const QDate &date)
  */
 void CMonthDayView::setTheMe(int type)
 {
+    qCDebug(monthDayViewLog) << "Setting theme type to:" << type;
     QColor frameColor;
     if (type == 0 || type == 1) {
         frameColor = "#FFFFFF";
@@ -81,6 +86,7 @@ void CMonthDayView::setSearchflag(bool flag)
 
 void CMonthDayView::wheelEvent(QWheelEvent *e)
 {
+    qCDebug(monthDayViewLog) << "Wheel event delta x:" << e->angleDelta().x() << "y:" << e->angleDelta().y();
     //如果滚动为左右则触发信号
     if (e->angleDelta().x() != 0) {
         emit signalAngleDelta(e->angleDelta().x());
@@ -92,6 +98,7 @@ void CMonthDayView::wheelEvent(QWheelEvent *e)
 bool CMonthDayView::event(QEvent *e)
 {
     if (m_touchGesture.event(e)) {
+        qCDebug(monthDayViewLog) << "Touch gesture event, state:" << m_touchGesture.getTouchState();
         //获取触摸状态
         switch (m_touchGesture.getTouchState()) {
         case touchGestureOperation::T_SLIDE: {
@@ -127,6 +134,7 @@ CMonthWidget::CMonthWidget(QWidget *parent)
     : QWidget(parent)
     , m_isFocus(false)
 {
+    qCDebug(monthDayViewLog) << "Initializing CMonthWidget";
     for (int i = 0; i < DDEMonthCalendar::MonthNumOfYear; ++i) {
         CMonthRect *monthrect = new CMonthRect(this);
         m_MonthItem.append(monthrect);
@@ -147,6 +155,7 @@ CMonthWidget::~CMonthWidget()
 
 void CMonthWidget::setDate(const QDate date[12])
 {
+    qCDebug(monthDayViewLog) << "Setting month widget dates, first date:" << date[0];
     for (int i = 0; i < DDEMonthCalendar::MonthNumOfYear; ++i) {
         m_MonthItem.at(i)->setDate(date[i]);
     }
@@ -162,6 +171,7 @@ void CMonthWidget::resizeEvent(QResizeEvent *event)
 
 void CMonthWidget::mousePressEvent(QMouseEvent *event)
 {
+    qCDebug(monthDayViewLog) << "Mouse press event at:" << event->pos();
     if (event->source() == Qt::MouseEventSynthesizedByQt) {
         //如果为触摸转换则设置触摸状态和触摸开始坐标
         m_touchState = 1;
@@ -212,6 +222,7 @@ void CMonthWidget::mouseMoveEvent(QMouseEvent *event)
 
 void CMonthWidget::keyPressEvent(QKeyEvent *event)
 {
+    qCDebug(monthDayViewLog) << "Key press event, key:" << event->key();
     //获取当前选择时间
     QDate selectDate = CMonthRect::getSelectRect()->getDate();
     //初始化需要设置的时间
@@ -260,11 +271,14 @@ void CMonthWidget::focusOutEvent(QFocusEvent *event)
 
 void CMonthWidget::mousePress(const QPoint &point)
 {
+    qCDebug(monthDayViewLog) << "Processing mouse press at point:" << point;
     int itemindex = getMousePosItem(point);
     if (!(itemindex < 0)) {
         if (!withinTimeFrame(m_MonthItem.at(itemindex)->getDate())) {
+            qCWarning(monthDayViewLog) << "Date not within time frame";
             return;
         }
+        qCDebug(monthDayViewLog) << "Selected item index:" << itemindex;
         CMonthRect::setSelectRect(m_MonthItem.at(itemindex));
         emit signalsSelectDate(m_MonthItem.at(itemindex)->getDate());
     }

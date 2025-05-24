@@ -7,7 +7,6 @@
 #include "scheduledatamanage.h"
 #include "calendarglobalenv.h"
 
-
 #include <DPalette>
 
 #include <QPainter>
@@ -15,6 +14,9 @@
 #include <QTime>
 #include <QApplication>
 #include <QMouseEvent>
+#include <QLoggingCategory>
+
+Q_LOGGING_CATEGORY(monthViewLog, "calendar.view.month")
 
 DGUI_USE_NAMESPACE
 
@@ -24,12 +26,14 @@ DGUI_USE_NAMESPACE
  */
 void CMonthView::setTheMe(int type)
 {
+    qCDebug(monthViewLog) << "Setting theme type to:" << type;
     m_weekIndicator->setTheMe(type);
     m_monthGraphicsView->setTheMe(type);
 }
 
 CMonthView::CMonthView(QWidget *parent) : DWidget(parent)
 {
+    qCDebug(monthViewLog) << "Initializing CMonthView";
     m_weekIndicator = new CMonthWeekView;
     m_monthGraphicsView = new CMonthGraphicsview(this);
 
@@ -59,11 +63,13 @@ CMonthView::~CMonthView()
 
 void CMonthView::setSelectSchedule(const DSchedule::Ptr &scheduleInfo)
 {
+    qCDebug(monthViewLog) << "Setting select schedule:" << scheduleInfo->summary();
     m_monthGraphicsView->setSelectSearchSchedule(scheduleInfo);
 }
 
 void CMonthView::slotScheduleRemindWidget(const bool isShow, const DSchedule::Ptr &out)
 {
+    qCDebug(monthViewLog) << "Schedule remind widget show:" << isShow;
     if (isShow) {
         //获取当前鼠标位置
         QVariant variant;
@@ -118,6 +124,7 @@ bool CMonthView::event(QEvent *event)
  */
 void CMonthView::setFirstWeekday(Qt::DayOfWeek weekday)
 {
+    qCDebug(monthViewLog) << "Setting first weekday to:" << weekday;
     m_firstWeekDay = weekday;
     m_weekIndicator->setFirstDay(weekday);
 }
@@ -128,6 +135,7 @@ void CMonthView::setFirstWeekday(Qt::DayOfWeek weekday)
  */
 void CMonthView::setShowDate(const QVector<QDate> &showDate)
 {
+    qCDebug(monthViewLog) << "Setting show dates, first date:" << showDate.first() << "last date:" << showDate.last();
     m_showDate = showDate;
     m_monthGraphicsView->setDate(m_showDate);
 }
@@ -138,6 +146,7 @@ void CMonthView::setShowDate(const QVector<QDate> &showDate)
  */
 void CMonthView::setHuangLiInfo(const QMap<QDate, CaHuangLiDayInfo> &huangLiInfo)
 {
+    qCDebug(monthViewLog) << "Setting HuangLi info, size:" << huangLiInfo.size();
     m_monthGraphicsView->setLunarInfo(huangLiInfo);
 }
 
@@ -147,6 +156,7 @@ void CMonthView::setHuangLiInfo(const QMap<QDate, CaHuangLiDayInfo> &huangLiInfo
  */
 void CMonthView::setFestival(const QMap<QDate, int> &festivalInfo)
 {
+    qCDebug(monthViewLog) << "Setting festival info, size:" << festivalInfo.size();
     m_monthGraphicsView->setFestival(festivalInfo);
 }
 
@@ -156,6 +166,7 @@ void CMonthView::setFestival(const QMap<QDate, int> &festivalInfo)
  */
 void CMonthView::setScheduleInfo(const QMap<QDate, DSchedule::List> &scheduleInfo)
 {
+    qCDebug(monthViewLog) << "Setting schedule info, size:" << scheduleInfo.size();
     m_monthGraphicsView->setScheduleInfo(scheduleInfo);
 }
 
@@ -165,6 +176,7 @@ void CMonthView::setScheduleInfo(const QMap<QDate, DSchedule::List> &scheduleInf
  */
 void CMonthView::setSearchScheduleInfo(const DSchedule::List &searchScheduleInfo)
 {
+    qCDebug(monthViewLog) << "Setting search schedule info, size:" << searchScheduleInfo.size();
     m_monthGraphicsView->setSearchScheduleInfo(searchScheduleInfo);
 }
 
@@ -174,6 +186,7 @@ void CMonthView::setSearchScheduleInfo(const DSchedule::List &searchScheduleInfo
  */
 void CMonthView::setCurrentDate(const QDate &currentDate)
 {
+    qCDebug(monthViewLog) << "Setting current date to:" << currentDate;
     m_weekIndicator->setCurrentDate(currentDate);
     m_monthGraphicsView->setCurrentDate(currentDate);
 }
@@ -188,11 +201,13 @@ void CMonthView::setRemindWidgetTimeFormat(QString timeformat)
  */
 void CMonthView::deleteSelectSchedule()
 {
+    qCDebug(monthViewLog) << "Deleting selected schedule";
     m_monthGraphicsView->slotDeleteItem();
 }
 
 void CMonthView::setLunarVisible(bool visible)
 {
+    qCDebug(monthViewLog) << "Setting lunar visible:" << visible;
     m_monthGraphicsView->setLunarVisible(visible);
 }
 

@@ -12,6 +12,9 @@
 #include <QWidget>
 #include <QTreeWidgetItem>
 #include "sidebartreewidgetitemdelegate.h"
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(sidebarViewLog)
 
 class SidebarView : public QWidget
 {

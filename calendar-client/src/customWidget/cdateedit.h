@@ -8,6 +8,8 @@
 #include <QDateEdit>
 #include <QTextLayout>
 
+Q_DECLARE_LOGGING_CATEGORY(dateEditLog)
+
 class CDateEdit : public QDateEdit
 {
     Q_OBJECT

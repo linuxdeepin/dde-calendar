@@ -12,8 +12,11 @@
 #include <QWidget>
 #include <QGridLayout>
 #include <QDate>
+#include <QLoggingCategory>
 
 DWIDGET_USE_NAMESPACE
+
+Q_DECLARE_LOGGING_CATEGORY(sidebarCalendarLog)
 
 class SidebarCalendarKeyButton;
 //小日历类

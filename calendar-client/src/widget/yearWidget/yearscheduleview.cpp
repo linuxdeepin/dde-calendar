@@ -13,12 +13,17 @@
 #include <QPainter>
 #include <QRect>
 #include <QMouseEvent>
+#include <QLoggingCategory>
+
+// Add logging category
+Q_LOGGING_CATEGORY(yearScheduleLog, "calendar.year.schedule")
 
 DGUI_USE_NAMESPACE
 
 CYearScheduleView::CYearScheduleView(QWidget *parent)
     : DWidget(parent)
 {
+    qCDebug(yearScheduleLog) << "Initializing CYearScheduleView";
     m_textfont.setWeight(QFont::Medium);
     m_textfont.setPixelSize(DDECalendar::FontSizeTwelve);
 }
@@ -55,6 +60,7 @@ bool YScheduleDaysThan(const DSchedule::Ptr &s1, const DSchedule::Ptr &s2)
 
 void CYearScheduleView::setData(DSchedule::List &vListData)
 {
+    qCDebug(yearScheduleLog) << "Setting schedule data, count:" << vListData.count();
     DSchedule::List valldayListData, vDaylistdata;
 
     for (int i = 0; i < vListData.count(); i++) {
@@ -110,11 +116,13 @@ void CYearScheduleView::setData(DSchedule::List &vListData)
 
 void CYearScheduleView::clearData()
 {
+    qCDebug(yearScheduleLog) << "Clearing schedule data";
     m_vlistData.clear();
 }
 
 void CYearScheduleView::showWindow()
 {
+    qCDebug(yearScheduleLog) << "Showing schedule window, data count:" << m_vlistData.size();
     if (m_vlistData.isEmpty()) {
         setFixedSize(130, 45);
     } else {
@@ -124,6 +132,7 @@ void CYearScheduleView::showWindow()
 
 void CYearScheduleView::setTheMe(int type)
 {
+    qCDebug(yearScheduleLog) << "Setting theme type:" << type;
     if (type == 0 || type == 1) {
         m_btimecolor = "#414D68";
         m_btimecolor.setAlphaF(0.7);
@@ -137,6 +146,7 @@ void CYearScheduleView::setTheMe(int type)
 
 void CYearScheduleView::setCurrentDate(const QDate &cdate)
 {
+    qCDebug(yearScheduleLog) << "Setting current date:" << cdate;
     m_currentDate = cdate;
 }
 
@@ -147,29 +157,28 @@ QDate CYearScheduleView::getCurrentDate()
 
 void CYearScheduleView::setTimeFormat(const QString &format)
 {
+    qCDebug(yearScheduleLog) << "Setting time format:" << format;
     m_timeFormat = format;
     update();
 }
 
 int CYearScheduleView::getPressScheduleIndex()
 {
-    int resutle = -1;
-    //获取全局坐标
     QPoint currentPos = QCursor::pos();
-    //转换为当前坐标
     currentPos = this->mapFromGlobal(currentPos);
     for (int i = 0; i < m_drawRect.size(); ++i) {
-        //若坐标在绘制标签中则更新返回值
         if (m_drawRect.at(i).contains(currentPos)) {
-            resutle = i;
-            break;
+            qCDebug(yearScheduleLog) << "Found pressed schedule at index:" << i;
+            return i;
         }
     }
-    return resutle;
+    qCDebug(yearScheduleLog) << "No schedule found at pressed position";
+    return -1;
 }
 
 void CYearScheduleView::updateDateShow()
 {
+    qCDebug(yearScheduleLog) << "Updating date show, schedule count:" << m_vlistData.size();
     int sViewNum = 0;
     if (!m_vlistData.isEmpty()) {
         if (m_vlistData.size() > DDEYearCalendar::YearScheduleListMaxcount) {
@@ -293,6 +302,7 @@ void CYearScheduleView::paintItem(QPainter &painter)
 CYearScheduleOutView::CYearScheduleOutView(QWidget *parent)
     : DArrowRectangle(DArrowRectangle::ArrowLeft, DArrowRectangle::FloatWidget, parent)
 {
+    qCDebug(yearScheduleLog) << "Initializing CYearScheduleOutView";
     //如果dtk版本为5.3以上则使用新接口
 #if (DTK_VERSION > DTK_VERSION_CHECK(5, 3, 0, 0))
     //设置显示圆角
@@ -306,6 +316,7 @@ CYearScheduleOutView::CYearScheduleOutView(QWidget *parent)
 
 void CYearScheduleOutView::setData(DSchedule::List &vListData)
 {
+    qCDebug(yearScheduleLog) << "Setting schedule data for out view, count:" << vListData.size();
     list_count = vListData.size();
     yearscheduleview->setData(vListData);
     yearscheduleview->showWindow();
@@ -319,11 +330,13 @@ void CYearScheduleOutView::setData(DSchedule::List &vListData)
 
 void CYearScheduleOutView::clearData()
 {
+    qCDebug(yearScheduleLog) << "Clearing schedule data for out view";
     yearscheduleview->clearData();
 }
 
 void CYearScheduleOutView::setTheMe(int type)
 {
+    qCDebug(yearScheduleLog) << "Setting theme type for out view:" << type;
     yearscheduleview->setTheMe(type);
     //根据主题设备不一样的背景色
     if (type == 2) {
@@ -335,6 +348,7 @@ void CYearScheduleOutView::setTheMe(int type)
 
 void CYearScheduleOutView::setCurrentDate(const QDate &cDate)
 {
+    qCDebug(yearScheduleLog) << "Setting current date for out view:" << cDate;
     currentdate = cDate;
     yearscheduleview->setCurrentDate(cDate);
 }
@@ -345,6 +359,7 @@ void CYearScheduleOutView::setCurrentDate(const QDate &cDate)
  */
 void CYearScheduleOutView::setDirection(DArrowRectangle::ArrowDirection value)
 {
+    qCDebug(yearScheduleLog) << "Setting arrow direction:" << value;
     //设置箭头方向
     this->setArrowDirection(value);
     //设置内容窗口
@@ -353,6 +368,7 @@ void CYearScheduleOutView::setDirection(DArrowRectangle::ArrowDirection value)
 
 void CYearScheduleOutView::setTimeFormat(const QString &format)
 {
+    qCDebug(yearScheduleLog) << "Setting time format for out view:" << format;
     yearscheduleview->setTimeFormat(format);
 }
 
@@ -364,12 +380,14 @@ void CYearScheduleOutView::mousePressEvent(QMouseEvent *event)
 
     if (currentIndex > -1 && currentIndex < scheduleinfoList.size()) {
         if (currentIndex > 3 && list_count > DDEYearCalendar::YearScheduleListMaxcount) {
+            qCDebug(yearScheduleLog) << "Mouse press: switching to week view for date:" << currentdate;
             emit signalsViewSelectDate(currentdate);
             this->hide();
             //跳转到周视图
         } else {
             //如果日程类型不为节假日或纪念日则显示编辑框
             if (!CScheduleOperation::isFestival(scheduleinfoList.at(currentIndex))) {
+                qCDebug(yearScheduleLog) << "Mouse press: showing schedule dialog for index:" << currentIndex;
                 //因为提示框会消失，所以设置CScheduleDlg的父类为主窗口
                 CScheduleDlg dlg(0, qobject_cast<QWidget *>(this->parent()));
                 dlg.setData(scheduleinfoList.at(currentIndex));

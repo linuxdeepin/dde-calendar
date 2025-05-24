@@ -6,8 +6,11 @@
 
 #include <QTime>
 
+Q_LOGGING_CATEGORY(scheduleCoordLog, "calendar.schedule.coord")
+
 CScheduleCoorManage::CScheduleCoorManage()
 {
+    qCDebug(scheduleCoordLog) << "Creating schedule coordinate manager";
 }
 
 CScheduleCoorManage::~CScheduleCoorManage()
@@ -16,6 +19,9 @@ CScheduleCoorManage::~CScheduleCoorManage()
 
 void CScheduleCoorManage::setRange(int w, int h, QDate begindate, QDate enddate, int rightmagin)
 {
+    qCDebug(scheduleCoordLog) << "Setting range - width:" << w << "height:" << h 
+                             << "begin:" << begindate << "end:" << enddate 
+                             << "right margin:" << rightmagin;
     m_width = w;
     m_height = h;
     m_rightmagin = rightmagin;
@@ -26,6 +32,7 @@ void CScheduleCoorManage::setRange(int w, int h, QDate begindate, QDate enddate,
 
 void CScheduleCoorManage::setDateRange(QDate begindate, QDate enddate)
 {
+    qCDebug(scheduleCoordLog) << "Setting date range from" << begindate << "to" << enddate;
     m_begindate = begindate;
     m_enddate = enddate;
     m_totalDay = begindate.daysTo(enddate) + 1;
@@ -37,17 +44,22 @@ QRectF CScheduleCoorManage::getDrawRegion(QDateTime begintime, QDateTime endtime
     QString bb = begintime.toString("yyyyMMddhhmmsszzz");
     QString ee = endtime.toString("yyyyMMddhhmmsszzz");
 
-    if (begintime > endtime)
+    if (begintime > endtime) {
+        qCWarning(scheduleCoordLog) << "Invalid time range:" << begintime << ">" << endtime;
         return rect;
+    }
 
     QDate begindate = begintime.date();
     QDate enddate = endtime.date();
+    
+    if (begindate < m_begindate || enddate > m_enddate) {
+        qCWarning(scheduleCoordLog) << "Date range out of bounds:" << begindate << "-" << enddate;
+        return rect;
+    }
+
     QTime beginzero(0, 0, 0);
     QTime beginScheduleT = begintime.time();
     QTime endScheduleT = endtime.time();
-
-    if (begindate < m_begindate || enddate > m_enddate)
-        return rect;
 
     qint64 beginday = m_begindate.daysTo(begindate) + 1;
     qint64 day = begindate.daysTo(enddate) + 1;
@@ -59,6 +71,7 @@ QRectF CScheduleCoorManage::getDrawRegion(QDateTime begintime, QDateTime endtime
     qreal posY = m_height * (ScheduleBT / 86400.0);
     rect = QRectF(posX, posY, rWidth, rHeight);
 
+    qCDebug(scheduleCoordLog) << "Calculated draw region:" << rect;
     return rect;
 }
 
@@ -214,10 +227,13 @@ QDateTime CScheduleCoorManage::getDate(QPointF pos)
     qint64 day = static_cast<qint64>((1.0 * pos.x() / m_width) * m_totalDay);
 
     if (day < 0) {
+        qCWarning(scheduleCoordLog) << "Position x out of bounds (negative), clamping to 0";
         day = 0;
     } else if (day >= m_totalDay) {
+        qCWarning(scheduleCoordLog) << "Position x out of bounds (too large), clamping to" << (m_totalDay - 1);
         day = m_totalDay - 1;
     }
+    
     int time = static_cast<int>((1.0 * pos.y() / m_height) * 86400.0);
     int hours = time / 3600;
     int minutes = (time - 3600 * hours) / 60;
@@ -226,6 +242,7 @@ QDateTime CScheduleCoorManage::getDate(QPointF pos)
     begintime.setDate(date);
     begintime.setTime(QTime(hours, minutes, secss));
 
+    qCDebug(scheduleCoordLog) << "Converted position" << pos << "to datetime:" << begintime;
     return begintime;
 }
 

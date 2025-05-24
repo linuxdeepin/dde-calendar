@@ -8,14 +8,17 @@
 #include <QPainterPath>
 #include <DPalette>
 
+Q_LOGGING_CATEGORY(sidebarDelegateLog, "calendar.widget.sidebardelegate")
+
 SideBarTreeWidgetItemDelegate::SideBarTreeWidgetItemDelegate()
 {
-
+    qCDebug(sidebarDelegateLog) << "Creating new SideBarTreeWidgetItemDelegate";
 }
 
 void SideBarTreeWidgetItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     if (!index.isValid()) {
+        qCDebug(sidebarDelegateLog) << "Invalid index, using default painting";
         QStyledItemDelegate::paint(painter, option, index);
         return;
     }
@@ -28,12 +31,14 @@ void SideBarTreeWidgetItemDelegate::paint(QPainter *painter, const QStyleOptionV
     QPainterPath path, clipPath;
     switch (opt.viewItemPosition) {
     case QStyleOptionViewItem::OnlyOne: {
+        qCDebug(sidebarDelegateLog) << "Painting single item at position:" << rect;
         // 左间距
         rect.setX(rect.x() + 8);
         // 右间距
         rect.setWidth(rect.width() - 8);
     } break;
     default: {
+        qCDebug(sidebarDelegateLog) << "Using default painting for item position:" << opt.viewItemPosition;
         QStyledItemDelegate::paint(painter, option, index);
         return;
     }
@@ -45,6 +50,7 @@ void SideBarTreeWidgetItemDelegate::paint(QPainter *painter, const QStyleOptionV
     painter->setClipPath(clipPath);
 
     if (option.state & QStyle::State_MouseOver) {
+        qCDebug(sidebarDelegateLog) << "Mouse over state detected, filling with highlight color";
         painter->fillRect(painter->clipBoundingRect(), option.palette.midlight());
     }
 }

@@ -7,6 +7,9 @@
 
 #include "draginfographicsview.h"
 #include "graphicsItem/cweekdaybackgrounditem.h"
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(weekDayViewLog)
 
 /**
  * @brief The CWeekDayGraphicsview class

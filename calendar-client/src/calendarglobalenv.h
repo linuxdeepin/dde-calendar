@@ -6,6 +6,9 @@
 #define CALENDARGLOBALENV_H
 
 #include <QVariant>
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(calendarEnv)
 
 /**
  * @brief The CalendarGlobalEnv class       日历全局环境变量类，用来保存一些全局唯一的变量

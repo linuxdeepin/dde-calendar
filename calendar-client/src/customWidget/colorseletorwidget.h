@@ -11,12 +11,15 @@
 #include "dschedule.h"
 #include "dtypecolor.h"
 #include "accountmanager.h"
+#include <QLoggingCategory>
 
 #include <QWidget>
 #include <QColor>
 #include <QButtonGroup>
 #include <QHBoxLayout>
 #include <QMap>
+
+Q_DECLARE_LOGGING_CATEGORY(colorSelectorLog)
 
 //色彩控件选择类
 class ColorSeletorWidget : public QWidget

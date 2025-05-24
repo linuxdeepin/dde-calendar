@@ -6,6 +6,9 @@
 #define CRADIOBUTTON_H
 
 #include <QRadioButton>
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(cradiobuttonLog)
 
 //自定义颜色单选按钮
 class CRadioButton : public QRadioButton

@@ -9,6 +9,9 @@
 
 #include <QMap>
 #include <QKeyEvent>
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(keyPressProxyLog)
 
 class CKeyPressPrxy
 {

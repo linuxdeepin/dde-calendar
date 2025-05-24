@@ -6,12 +6,15 @@
 #define CTITLEWIDGET_H
 
 #include "cbuttonbox.h"
+#include <QLoggingCategory>
 
 #include <QWidget>
 #include <DSearchEdit>
 #include <DIconButton>
 
 DWIDGET_USE_NAMESPACE
+
+Q_DECLARE_LOGGING_CATEGORY(ctitlewidgetLog)
 
 class CTitleWidget : public QWidget
 {

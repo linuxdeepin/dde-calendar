@@ -5,16 +5,21 @@
 #include "colorseletorwidget.h"
 #include "configsettings.h"
 #include "units.h"
+#include <DLog>
 
 #include <QPushButton>
 
+Q_LOGGING_CATEGORY(colorSelectorLog, "calendar.widget.colorselector")
+
 ColorSeletorWidget::ColorSeletorWidget(QWidget *parent) : QWidget(parent)
 {
+    qCDebug(colorSelectorLog) << "Initializing ColorSeletorWidget";
     init();
 }
 
 void ColorSeletorWidget::init()
 {
+    qCDebug(colorSelectorLog) << "Setting up color selector widget";
     initView();
     m_colorGroup = new QButtonGroup(this);
     m_colorGroup->setExclusive(true);
@@ -25,8 +30,10 @@ void ColorSeletorWidget::init()
 
 void ColorSeletorWidget::resetColorButton(const AccountItem::Ptr &account)
 {
+    qCDebug(colorSelectorLog) << "Resetting color buttons for account";
     reset();
     if (nullptr == account) {
+        qCWarning(colorSelectorLog) << "Account is null, skipping color button reset";
         return;
     }
 
@@ -49,6 +56,7 @@ void ColorSeletorWidget::resetColorButton(const AccountItem::Ptr &account)
 
 void ColorSeletorWidget::reset()
 {
+    qCDebug(colorSelectorLog) << "Resetting color selector widget state";
     //清空所有的色彩实体和控件
     m_colorEntityMap.clear();
     QList<QAbstractButton *> buttons = m_colorGroup->buttons();
@@ -63,9 +71,9 @@ void ColorSeletorWidget::reset()
         btn = nullptr;
     }
     if (nullptr == m_userColorBtn) {
+        qCDebug(colorSelectorLog) << "Creating new user color button";
         m_userColorBtn = new CRadioButton(this);
         m_userColorBtn->setFixedSize(18, 18);
-
     }
     m_userColorBtn->hide();
 }
@@ -74,6 +82,7 @@ void ColorSeletorWidget::addColor(const DTypeColor::Ptr &cInfo)
 {
     static int count = 0;   //静态变量，充当色彩控件id
     count++;
+    qCDebug(colorSelectorLog) << "Adding new color with ID:" << count << "Color code:" << cInfo->colorCode();
     m_colorEntityMap.insert(count, cInfo); //映射id与控件,从1开始
     CRadioButton *radio = new CRadioButton(this);
     radio->setColor(QColor(cInfo->colorCode())); //设置控件颜色
@@ -84,6 +93,7 @@ void ColorSeletorWidget::addColor(const DTypeColor::Ptr &cInfo)
 
 DTypeColor::Ptr ColorSeletorWidget::getSelectedColorInfo()
 {
+    qCDebug(colorSelectorLog) << "Getting selected color info";
     if ( m_colorInfo->privilege() == DTypeColor::PriSystem) {
         CConfigSettings::getInstance()->setOption("LastSysColorTypeNo", m_colorInfo->colorID());
     } else if (!m_colorInfo->colorCode().isEmpty() ){
@@ -95,16 +105,20 @@ DTypeColor::Ptr ColorSeletorWidget::getSelectedColorInfo()
 
 void ColorSeletorWidget::setSelectedColorByIndex(int index)
 {
+    qCDebug(colorSelectorLog) << "Setting selected color by index:" << index;
     if (index >= 0 && index < m_colorGroup->buttons().size()) {
         QAbstractButton *but = m_colorGroup->buttons().at(index);
         if (nullptr != but) {
             but->click();
         }
+    } else {
+        qCWarning(colorSelectorLog) << "Invalid color index:" << index;
     }
 }
 
 void ColorSeletorWidget::setSelectedColorById(int colorId)
 {
+    qCDebug(colorSelectorLog) << "Setting selected color by ID:" << colorId;
     //默认选择第一个
     if( colorId < 0 ) {
         if (m_colorGroup->buttons().size() > 0) {
@@ -124,11 +138,14 @@ void ColorSeletorWidget::setSelectedColorById(int colorId)
     }
     if (m_colorGroup->buttons().size() > colorId) {
          m_colorGroup->buttons().at(colorId)->click();
+    } else {
+        qCWarning(colorSelectorLog) << "Invalid color ID:" << colorId;
     }
 }
 
 void ColorSeletorWidget::setSelectedColor(const DTypeColor &colorInfo)
 {
+    qCDebug(colorSelectorLog) << "Setting selected color with color info, ID:" << colorInfo.colorID();
     bool finding = false;
     auto iterator = m_colorEntityMap.begin();
     while (iterator != m_colorEntityMap.end()) {
@@ -143,6 +160,7 @@ void ColorSeletorWidget::setSelectedColor(const DTypeColor &colorInfo)
         iterator++;
     }
     if (!finding) {
+        qCDebug(colorSelectorLog) << "Color not found in existing buttons, creating new user color";
         DTypeColor::Ptr ptr;
         ptr.reset(new DTypeColor(colorInfo));
         setUserColor(ptr);
@@ -151,6 +169,7 @@ void ColorSeletorWidget::setSelectedColor(const DTypeColor &colorInfo)
 
 void ColorSeletorWidget::initView()
 {
+    qCDebug(colorSelectorLog) << "Initializing color selector view";
     m_colorLayout = new QHBoxLayout();
 
     QHBoxLayout *hLayout = new QHBoxLayout();
@@ -174,8 +193,10 @@ void ColorSeletorWidget::initView()
 
 void ColorSeletorWidget::slotButtonClicked(int butId)
 {
+    qCDebug(colorSelectorLog) << "Color button clicked with ID:" << butId;
     auto it = m_colorEntityMap.find(butId);
     if (m_colorEntityMap.end() == it) {
+        qCWarning(colorSelectorLog) << "Invalid button ID:" << butId;
         return;
     }
     DTypeColor::Ptr info = it.value();
@@ -187,6 +208,7 @@ void ColorSeletorWidget::slotButtonClicked(int butId)
 
 void ColorSeletorWidget::slotAddColorButClicked()
 {
+    qCDebug(colorSelectorLog) << "Add color button clicked, showing color picker";
     CColorPickerWidget colorPicker;
 
     if (colorPicker.exec()) {
@@ -201,7 +223,9 @@ void ColorSeletorWidget::slotAddColorButClicked()
 
 void ColorSeletorWidget::setUserColor(const DTypeColor::Ptr &colorInfo)
 {
+    qCDebug(colorSelectorLog) << "Setting user color with code:" << colorInfo->colorCode();
     if (nullptr == m_userColorBtn || DTypeColor::PriUser != colorInfo->privilege()) {
+        qCWarning(colorSelectorLog) << "Invalid user color button or privilege";
         return;
     }
     if (!m_userColorBtn->isVisible()) {

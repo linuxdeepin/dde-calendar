@@ -7,6 +7,9 @@
 
 #include <QSettings>
 #include <QPointer>
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(configSettings)
 
 class CConfigSettings : QObject
 {

@@ -8,12 +8,15 @@
 
 #include <QDBusConnection>
 
+Q_LOGGING_CATEGORY(calendarLog, "calendar.manage")
+
 const QString DBus_TimeDate_Name = "com.deepin.daemon.Timedate";
 const QString DBus_TimeDate_Path = "/com/deepin/daemon/Timedate";
 
 CalendarManager *CalendarManager::m_scheduleManager = nullptr;
 CalendarManager *CalendarManager::getInstance()
 {
+    qCDebug(calendarLog) << "Getting calendar manager instance";
     CaHuangLiDayInfo::registerMetaType();
     if (m_scheduleManager == nullptr) {
         m_scheduleManager = new  CalendarManager;
@@ -35,6 +38,7 @@ void CalendarManager::releaseInstance()
 //设置选择时间
 void CalendarManager::setSelectDate(const QDate &selectDate, bool isSwitchYear)
 {
+    qCDebug(calendarLog) << "Setting select date to:" << selectDate << "switch year:" << isSwitchYear;
     m_selectDate = selectDate;
     if (isSwitchYear || m_showDateRange.startDate > m_selectDate || m_showDateRange.stopDate < m_selectDate) {
         //如果选择时间不在显示范围内则修改显示年份,开始和结束时间
@@ -49,6 +53,7 @@ QDate CalendarManager::getSelectDate() const
 //设置当前时间
 void CalendarManager::setCurrentDateTime(const QDateTime &currentDateTime)
 {
+    qCDebug(calendarLog) << "Setting current datetime to:" << currentDateTime;
     m_currentDateTime = currentDateTime;
 }
 //获取当前时间
@@ -206,11 +211,15 @@ QString CalendarManager::getDateFormat() const
 
 void CalendarManager::setYearBeginAndEndDate(const int year)
 {
+    qCInfo(calendarLog) << "Setting year range for year:" << year;
     m_showDateRange.showYear = year;
     QDate _firstDayOfJan(year, 1, 1);
     m_showDateRange.startDate = getFirstDayOfWeek(_firstDayOfJan);
     QDate _firstDayOfDec(year, 12, 1);
     m_showDateRange.stopDate = getFirstDayOfWeek(_firstDayOfDec).addDays(42 - 1);
+    
+    qCDebug(calendarLog) << "Year range set - start:" << m_showDateRange.startDate << "end:" << m_showDateRange.stopDate;
+    
     //更新日程
     gScheduleManager->resetSchedule(m_showDateRange.startDate.startOfDay(), m_showDateRange.stopDate.startOfDay());
     if (m_showLunar) {
@@ -317,6 +326,7 @@ CalendarManager::~CalendarManager()
  */
 void CalendarManager::initData()
 {
+    qCDebug(calendarLog) << "Initializing calendar manager data";
     //获取本地语言判断是否为中文
     m_showLunar = QLocale::system().language() == QLocale::Chinese;
     //获取时间日期格式
@@ -327,6 +337,7 @@ void CalendarManager::initData()
     setTimeFormatChanged(_timeFormat);
     setDateFormatChanged(_dateFormat);
     slotGeneralSettingsUpdate();
+    qCInfo(calendarLog) << "Calendar manager initialized with lunar:" << m_showLunar;
 }
 
 /**

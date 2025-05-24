@@ -9,7 +9,6 @@
 
 #include <DWidget>
 
-
 #include <QHBoxLayout>
 #include <QPainter>
 #include <QBrush>
@@ -19,6 +18,10 @@
 #include <QtGlobal>
 #include <QMouseEvent>
 #include <QKeyEvent>
+#include <QLoggingCategory>
+
+// Add logging category
+Q_LOGGING_CATEGORY(weekViewLog, "calendar.week.view")
 
 DWIDGET_USE_NAMESPACE
 
@@ -27,6 +30,7 @@ CWeekView::CWeekView(const GetWeekNumOfYear &getWeekNumOfYear, QWidget *parent)
     , m_touchGesture(this)
     , m_weekNumWidget(nullptr)
 {
+    qCDebug(weekViewLog) << "Initializing CWeekView";
     QHBoxLayout *hBoxLayout = new QHBoxLayout;
     hBoxLayout->setContentsMargins(0, 0, 0, 0);
     hBoxLayout->setSpacing(0);
@@ -63,6 +67,7 @@ CWeekView::~CWeekView()
  */
 void CWeekView::setSelectDate(const QDate date)
 {
+    qCDebug(weekViewLog) << "Setting select date:" << date;
     m_weekNumWidget->setSelectDate(date);
 }
 
@@ -72,6 +77,7 @@ void CWeekView::setSelectDate(const QDate date)
  */
 void CWeekView::setCurrent(const QDateTime &dateTime)
 {
+    qCDebug(weekViewLog) << "Setting current datetime:" << dateTime;
     m_weekNumWidget->setCurrent(dateTime);
 }
 
@@ -81,6 +87,7 @@ void CWeekView::setCurrent(const QDateTime &dateTime)
  */
 void CWeekView::setTheMe(int type)
 {
+    qCDebug(weekViewLog) << "Setting theme type:" << type;
     m_weekNumWidget->setTheMe(type);
 }
 
@@ -96,9 +103,11 @@ void CWeekView::wheelEvent(QWheelEvent *event)
     if (!isDragging) {
         //左移切换上周,右移切换下周
         if (event->angleDelta().y() > 0) {
+            qCDebug(weekViewLog) << "Wheel event: scrolling up";
             //上一周
             signalBtnPrev();
         } else {
+            qCDebug(weekViewLog) << "Wheel event: scrolling down";
             //下一周
             signalBtnNext();
         }
@@ -116,10 +125,12 @@ bool CWeekView::event(QEvent *e)
                 m_touchGesture.setUpdate(false);
                 switch (m_touchGesture.getMovingDir()) {
                 case touchGestureOperation::T_LEFT:
+                    qCDebug(weekViewLog) << "Touch gesture: sliding left";
                     //切换下周
                     signalBtnNext();
                     break;
                 case touchGestureOperation::T_RIGHT:
+                    qCDebug(weekViewLog) << "Touch gesture: sliding right";
                     //切换上周
                     signalBtnPrev();
                     break;
@@ -143,6 +154,7 @@ CWeekNumWidget::CWeekNumWidget(const GetWeekNumOfYear &getWeekNumOfYear, QWidget
     , m_getWeekNumOfYear(getWeekNumOfYear)
     , m_isFocus(false)
 {
+    qCDebug(weekViewLog) << "Initializing CWeekNumWidget";
     m_dayNumFont.setPixelSize(DDECalendar::FontSizeSixteen);
     m_dayNumFont.setWeight(QFont::Light);
     setFocusPolicy(Qt::StrongFocus);
@@ -167,17 +179,20 @@ CWeekNumWidget::~CWeekNumWidget()
 
 void CWeekNumWidget::setSelectDate(const QDate date)
 {
+    qCDebug(weekViewLog) << "Setting select date for week num widget:" << date;
     m_selectDate = date;
     updateDate();
 }
 
 void CWeekNumWidget::setCurrent(const QDateTime &dateTime)
 {
+    qCDebug(weekViewLog) << "Setting current datetime for week num widget:" << dateTime;
     m_currentDate = dateTime;
 }
 
 void CWeekNumWidget::setTheMe(int type)
 {
+    qCDebug(weekViewLog) << "Setting theme type for week num widget:" << type;
     if (type == 0 || type == 1) {
         m_defaultTextColor = Qt::black;
         m_backgrounddefaultColor = Qt::white;
@@ -339,6 +354,8 @@ void CWeekNumWidget::setSelectedCell(int index)
     if (m_selectedCell == index)
         return;
 
+    qCDebug(weekViewLog) << "Setting selected cell to index:" << index;
+    
     const int prevPos = m_selectedCell;
     m_selectedCell = index;
 
@@ -346,13 +363,16 @@ void CWeekNumWidget::setSelectedCell(int index)
     m_cellList.at(index)->update();
     m_selectDate = m_days[index];
     const QString dayNum = QString::number(m_getWeekNumOfYear(m_selectDate));
-    if (m_days[index].year() < DDECalendar::QueryEarliestYear && dayNum != "1")
+    if (m_days[index].year() < DDECalendar::QueryEarliestYear && dayNum != "1") {
+        qCWarning(weekViewLog) << "Invalid year for selected date:" << m_days[index].year();
         return;
+    }
     emit signalsSelectDate(m_days[index]);
 }
 
 void CWeekNumWidget::updateDate()
 {
+    qCDebug(weekViewLog) << "Updating week num widget dates";
     for (int i = 0 ; i < DDEWeekCalendar::NumWeeksDisplayed; ++i) {
         m_days[i]  = m_selectDate.addDays((i - 4) * DDEWeekCalendar::AFewDaysofWeek);
         if (m_days[i] == m_selectDate)
@@ -368,10 +388,12 @@ bool CWeekNumWidget::event(QEvent *e)
         if (focusWidget() == this) {
             //如果焦点在该widget上,可以左右键切换时间
             if (keyEvent->key() == Qt::Key_Left) {
+                qCDebug(weekViewLog) << "Key press: Left arrow";
                 emit signalBtnPrev();
             }
 
             if (keyEvent->key() == Qt::Key_Right) {
+                qCDebug(weekViewLog) << "Key press: Right arrow";
                 emit signalBtnNext();
             }
         }
@@ -383,9 +405,12 @@ void CWeekNumWidget::cellClicked(QWidget *cell)
 {
     const int pos = m_cellList.indexOf(cell);
 
-    if (pos == -1)
+    if (pos == -1) {
+        qCWarning(weekViewLog) << "Invalid cell clicked";
         return;
+    }
 
+    qCDebug(weekViewLog) << "Cell clicked at position:" << pos;
     setSelectedCell(pos);
     update();
 }

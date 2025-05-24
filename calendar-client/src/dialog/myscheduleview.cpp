@@ -10,6 +10,8 @@
 #include "cscheduleoperation.h"
 #include "lunarmanager.h"
 
+// Add logging category
+Q_LOGGING_CATEGORY(scheduleViewLog, "calendar.dialog.scheduleview")
 
 #include <DPalette>
 #include <DFontSizeManager>
@@ -24,6 +26,7 @@ DGUI_USE_NAMESPACE
 CMyScheduleView::CMyScheduleView(const DSchedule::Ptr &schduleInfo, QWidget *parent)
     : DCalendarDDialog(parent)
 {
+    qCDebug(scheduleViewLog) << "Creating CMyScheduleView for schedule:" << schduleInfo->uid();
     setContentsMargins(0, 0, 0, 0);
     m_scheduleInfo = schduleInfo;
     initUI();
@@ -39,11 +42,13 @@ CMyScheduleView::CMyScheduleView(const DSchedule::Ptr &schduleInfo, QWidget *par
 
 void CMyScheduleView::setSchedules(const DSchedule::Ptr &schduleInfo)
 {
+    qCDebug(scheduleViewLog) << "Setting schedule:" << schduleInfo->uid();
     m_scheduleInfo = schduleInfo;
 }
 
 void CMyScheduleView::updateFormat()
 {
+    qCDebug(scheduleViewLog) << "Updating format";
     updateDateTimeFormat();
     slotAccountStateChange();
 }
@@ -54,8 +59,10 @@ void CMyScheduleView::updateFormat()
  */
 void CMyScheduleView::slotAutoFeed(const QFont &font)
 {
+    qCDebug(scheduleViewLog) << "Auto feed triggered with font change";
     Q_UNUSED(font)
     if (nullptr == m_timeLabel || nullptr == m_scheduleLabel) {
+        qCWarning(scheduleViewLog) << "Time label or schedule label is null";
         return;
     }
     QString strText = m_scheduleInfo->summary();

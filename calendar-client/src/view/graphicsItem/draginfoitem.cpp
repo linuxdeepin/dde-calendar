@@ -9,6 +9,8 @@
 #include <QDebug>
 #include <QMutex>
 
+Q_LOGGING_CATEGORY(dragInfoLog, "calendar.view.draginfo")
+
 bool DragInfoItem::m_press = false;
 DSchedule::Ptr DragInfoItem::m_HoverInfo;
 DSchedule::Ptr DragInfoItem::m_pressInfo;
@@ -18,6 +20,7 @@ DragInfoItem::DragInfoItem(QRectF rect, QGraphicsItem *parent)
     : CFocusItem(parent)
     , m_rect(rect)
 {
+    qCDebug(dragInfoLog) << "Creating drag info item with rect:" << rect;
     setRect(m_rect);
     setAcceptHoverEvents(true);
     const int duration = 200;
@@ -46,6 +49,7 @@ DragInfoItem::~DragInfoItem()
 
 void DragInfoItem::setData(const DSchedule::Ptr &vScheduleInfo)
 {
+    qCDebug(dragInfoLog) << "Setting schedule data:" << vScheduleInfo->summary();
     QMutexLocker locker(&m_Mutex);
     m_vScheduleInfo = vScheduleInfo;
 }
@@ -58,6 +62,7 @@ DSchedule::Ptr DragInfoItem::getData()
 
 void DragInfoItem::setPressFlag(const bool flag)
 {
+    qCDebug(dragInfoLog) << "Setting press flag:" << flag;
     m_press = flag;
 }
 
@@ -67,6 +72,7 @@ void DragInfoItem::setPressFlag(const bool flag)
  */
 void DragInfoItem::setPressSchedule(const DSchedule::Ptr &pressSchedule)
 {
+    qCDebug(dragInfoLog) << "Setting press schedule:" << (pressSchedule ? pressSchedule->summary() : "null");
     m_pressInfo = pressSchedule;
 }
 
@@ -85,6 +91,7 @@ DSchedule::Ptr DragInfoItem::getPressSchedule()
  */
 void DragInfoItem::setSearchScheduleInfo(const DSchedule::List &searchScheduleInfo)
 {
+    qCDebug(dragInfoLog) << "Setting search schedule info, count:" << searchScheduleInfo.size();
     m_searchScheduleInfo = searchScheduleInfo;
 }
 
@@ -95,6 +102,7 @@ void DragInfoItem::setFont(DFontSizeManager::SizeType type)
 
 void DragInfoItem::setOffset(const int &offset)
 {
+    qCDebug(dragInfoLog) << "Setting offset:" << offset;
     m_offset = offset;
     setRect(QRectF(m_rect.x() - offset,
                    m_rect.y() - offset / 2,
@@ -118,6 +126,7 @@ void DragInfoItem::setEndValue(const int value)
 
 void DragInfoItem::startAnimation()
 {
+    qCDebug(dragInfoLog) << "Starting animation, group state:" << m_Group->state();
     if (m_Group->state() != QAnimationGroup::Running) {
         m_Group->start();
     }
@@ -125,6 +134,7 @@ void DragInfoItem::startAnimation()
 
 void DragInfoItem::animationFinished()
 {
+    qCDebug(dragInfoLog) << "Animation finished";
     m_isAnimation = false;
 }
 
@@ -132,6 +142,7 @@ void DragInfoItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
     QMutexLocker locker(&m_Mutex);
     Q_UNUSED(event);
+    qCDebug(dragInfoLog) << "Hover enter event";
     m_HoverInfo = m_vScheduleInfo;
     update();
 }
@@ -140,6 +151,7 @@ void DragInfoItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
     QMutexLocker locker(&m_Mutex);
     Q_UNUSED(event);
+    qCDebug(dragInfoLog) << "Hover leave event";
     m_HoverInfo = DSchedule::Ptr();
     update();
 }

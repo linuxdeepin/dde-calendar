@@ -10,6 +10,10 @@
 
 #include <QObject>
 #include <QWidget>
+#include <QLoggingCategory>
+
+// Declare logging category for schedule operations
+Q_DECLARE_LOGGING_CATEGORY(scheduleOperation)
 
 class CScheduleDBus;
 /**

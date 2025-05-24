@@ -6,6 +6,9 @@
 #define SIDEBARTREEWIDGETITEMDELEGATE_H
 
 #include <QStyledItemDelegate>
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(sidebarDelegateLog)
 
 class SideBarTreeWidgetItemDelegate : public QStyledItemDelegate
 {

@@ -7,6 +7,7 @@
 #include "scheduledatamanage.h"
 #include "cdynamicicon.h"
 #include "constants.h"
+#include "cscheduleoperation.h"
 #include <QTimer>
 
 #include <DMessageBox>
@@ -17,10 +18,14 @@
 
 #include <QVBoxLayout>
 
+// Add logging category
+Q_LOGGING_CATEGORY(scheduleCtrlLog, "calendar.dialog.schedulectrl")
+
 DGUI_USE_NAMESPACE
 CScheduleCtrlDlg::CScheduleCtrlDlg(QWidget *parent)
     : DCalendarDDialog(parent)
 {
+    qCDebug(scheduleCtrlLog) << "Creating CScheduleCtrlDlg";
     setContentsMargins(0, 0, 0, 0);
     initUI();
     initConnection();
@@ -30,6 +35,7 @@ CScheduleCtrlDlg::CScheduleCtrlDlg(QWidget *parent)
 
 void CScheduleCtrlDlg::initUI()
 {
+    qCDebug(scheduleCtrlLog) << "Initializing UI";
     //在点击任何对话框上的按钮后不关闭对话框，保证关闭子窗口时不被一起关掉
     setOnButtonClickedClose(false);
     QIcon t_icon(CDynamicIcon::getInstance()->getPixmap());// = QIcon::fromTheme("dde-calendar");
@@ -76,6 +82,7 @@ void CScheduleCtrlDlg::initUI()
 
 void CScheduleCtrlDlg::initConnection()
 {
+    qCDebug(scheduleCtrlLog) << "Initializing connections";
     //关联主题信号
     QObject::connect(DGuiApplicationHelper::instance(), &DGuiApplicationHelper::themeTypeChanged,
                      this,
@@ -85,6 +92,7 @@ void CScheduleCtrlDlg::initConnection()
 
 void CScheduleCtrlDlg::setTheMe(const int type)
 {
+    qCDebug(scheduleCtrlLog) << "Setting theme type:" << type;
     //标题文字颜色
     QColor titleColor;
     //提示内容文字颜色
@@ -107,8 +115,10 @@ void CScheduleCtrlDlg::setTheMe(const int type)
 void CScheduleCtrlDlg::setPaletteTextColor(QWidget *widget, QColor textColor)
 {
     //如果为空指针则退出
-    if (nullptr == widget)
+    if (nullptr == widget) {
+        qCWarning(scheduleCtrlLog) << "Widget is null when setting palette text color";
         return;
+    }
     DPalette palette = widget->palette();
     //设置文字显示颜色
     palette.setColor(DPalette::WindowText, textColor);
@@ -117,6 +127,7 @@ void CScheduleCtrlDlg::setPaletteTextColor(QWidget *widget, QColor textColor)
 
 void CScheduleCtrlDlg::changeEvent(QEvent *event)
 {
+    qCDebug(scheduleCtrlLog) << "Change event triggered";
     Q_UNUSED(event)
     QFont font;
     QFontMetrics font_button(font);
@@ -146,12 +157,14 @@ void CScheduleCtrlDlg::changeEvent(QEvent *event)
 
 void CScheduleCtrlDlg::buttonJudge(int id)
 {
+    qCDebug(scheduleCtrlLog) << "Button clicked with id:" << id;
     m_id = id;
     accept();
 }
 
 QAbstractButton *CScheduleCtrlDlg::addPushButton(QString btName, bool type)
 {
+    qCDebug(scheduleCtrlLog) << "Adding push button:" << btName << "type:" << type;
     addButton(btName, false, DDialog::ButtonNormal);
     int button_index = getButtonIndexByText(btName);
     QAbstractButton *button = getButton(button_index);
@@ -172,6 +185,7 @@ QAbstractButton *CScheduleCtrlDlg::addPushButton(QString btName, bool type)
 
 QAbstractButton *CScheduleCtrlDlg::addsuggestButton(QString btName, bool type)
 {
+    qCDebug(scheduleCtrlLog) << "Adding suggest button:" << btName << "type:" << type;
     addButton(btName, false, DDialog::ButtonRecommend);
     int button_index = getButtonIndexByText(btName);
     QAbstractButton *suggestButton = getButton(button_index);
@@ -192,6 +206,7 @@ QAbstractButton *CScheduleCtrlDlg::addsuggestButton(QString btName, bool type)
 
 QAbstractButton *CScheduleCtrlDlg::addWaringButton(QString btName, bool type)
 {
+    qCDebug(scheduleCtrlLog) << "Adding warning button:" << btName << "type:" << type;
     addButton(btName, false, DDialog::ButtonWarning);
     int button_index = getButtonIndexByText(btName);
     QAbstractButton *suggestButton = getButton(button_index);
@@ -212,19 +227,24 @@ QAbstractButton *CScheduleCtrlDlg::addWaringButton(QString btName, bool type)
 
 void CScheduleCtrlDlg::setText(QString str)
 {
+    qCDebug(scheduleCtrlLog) << "Setting text:" << str;
     m_firstLabel->setText(str);
     m_firstLabel->setToolTip(str);
 }
 
 void CScheduleCtrlDlg::setInformativeText(QString str)
 {
+    qCDebug(scheduleCtrlLog) << "Setting informative text:" << str;
     m_seconLabel->setText(str);
     m_seconLabel->setToolTip(str);
 }
 
 int CScheduleCtrlDlg::clickButton()
 {
-    if (m_id < 0 || m_id > buttonCount() - 1) return buttonCount();
+    if (m_id < 0 || m_id > buttonCount() - 1) {
+        qCWarning(scheduleCtrlLog) << "Invalid button id:" << m_id;
+        return buttonCount();
+    }
     return  m_id;
 }
 

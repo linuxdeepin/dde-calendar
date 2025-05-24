@@ -14,6 +14,8 @@
 #include "units.h"
 #include "commondef.h"
 
+// Add logging category
+Q_LOGGING_CATEGORY(scheduleDlgLog, "calendar.dialog.schedule")
 
 #include <DFontSizeManager>
 #include <DRadioButton>
@@ -34,6 +36,7 @@ CScheduleDlg::CScheduleDlg(int type, QWidget *parent, const bool isAllDay)
     : DCalendarDDialog(parent)
     , m_createAllDay(isAllDay)
 {
+    qCDebug(scheduleDlgLog) << "Creating schedule dialog, type:" << type << "isAllDay:" << isAllDay;
     setContentsMargins(0, 0, 0, 0);
     m_type = type;
     initUI();
@@ -42,6 +45,7 @@ CScheduleDlg::CScheduleDlg(int type, QWidget *parent, const bool isAllDay)
     slotAccountUpdate();
 
     if (type == 1) {
+        qCDebug(scheduleDlgLog) << "Initializing new schedule dialog";
         m_titleLabel->setText(tr("New Event"));
         m_beginDateEdit->setDate(QDate::currentDate());
         int hours = QTime::currentTime().hour();
@@ -55,6 +59,7 @@ CScheduleDlg::CScheduleDlg(int type, QWidget *parent, const bool isAllDay)
         m_endDateEdit->setDate(QDate::currentDate());
         m_endTimeEdit->setTime(QTime(hours, minnutes).addSecs(3600));
     } else {
+        qCDebug(scheduleDlgLog) << "Initializing edit schedule dialog";
         m_titleLabel->setText(tr("Edit Event"));
     }
     setFixedSize(dialog_width, 561);
@@ -72,6 +77,7 @@ CScheduleDlg::~CScheduleDlg()
 
 void CScheduleDlg::setData(const DSchedule::Ptr &info)
 {
+    qCDebug(scheduleDlgLog) << "Setting schedule data for schedule:" << info->uid();
     m_scheduleDataInfo = info;
 
     if (m_type == 1) {
@@ -93,6 +99,7 @@ void CScheduleDlg::setData(const DSchedule::Ptr &info)
         m_accountComBox->setCurrentText(m_accountItem->getAccount()->accountName());
         m_typeComBox->updateJobType(m_accountItem);
     } else {
+        qCWarning(scheduleDlgLog) << "Account item is null, using local account";
         m_accountItem = gAccountManager->getLocalAccountItem();
     }
 
@@ -166,6 +173,7 @@ void CScheduleDlg::setAllDay(bool flag)
  */
 bool CScheduleDlg::clickOkBtn()
 {
+    qCDebug(scheduleDlgLog) << "OK button clicked";
     return selectScheduleType();
 }
 
@@ -176,6 +184,7 @@ bool CScheduleDlg::clickOkBtn()
  */
 bool CScheduleDlg::selectScheduleType()
 {
+    qCDebug(scheduleDlgLog) << "Selecting schedule type";
     //编辑状态，需要创建日程
     if (m_typeComBox->isEditable()) {
         DScheduleType::Ptr type;
@@ -186,11 +195,13 @@ bool CScheduleDlg::selectScheduleType()
         if (m_bCanCreateType) {
             m_bCanCreateType = false;
             //创建日程类型，等待回调
+            qCDebug(scheduleDlgLog) << "Creating new schedule type:" << type->displayName();
             m_accountItem->createJobType(type, [&](CallMessge call) {
                 if (call.code == 0) {
                     //返回值为日程类型id
                     createSchedule(call.msg.toString());
                 } else {
+                    qCWarning(scheduleDlgLog) << "Failed to create schedule type, error code:" << call.code;
                     m_bCanCreateType = true;
                 }
                 //关闭本弹窗
@@ -213,6 +224,7 @@ bool CScheduleDlg::selectScheduleType()
  */
 bool CScheduleDlg::createSchedule(const QString &scheduleTypeId)
 {
+    qCDebug(scheduleDlgLog) << "Creating schedule with type ID:" << scheduleTypeId;
     //创建新的日程实例
     DSchedule::Ptr schedule;
     schedule.reset(new DSchedule());
@@ -247,10 +259,12 @@ bool CScheduleDlg::createSchedule(const QString &scheduleTypeId)
     }
 
     if (schedule->summary().isEmpty()) {
+        qCWarning(scheduleDlgLog) << "Schedule summary is empty";
         return false;
     }
 
     if (beginDateTime > endDateTime) {
+        qCWarning(scheduleDlgLog) << "End time must be greater than start time";
         DCalendarDDialog *prompt = new DCalendarDDialog(this);
         prompt->setIcon(QIcon(":/icons/deepin/builtin/icons/dde_calendar_warning.svg"));
         prompt->setMessage(tr("End time must be greater than start time"));
@@ -288,6 +302,7 @@ bool CScheduleDlg::createSchedule(const QString &scheduleTypeId)
     if (m_endrepeatCombox->currentIndex() == 1) {
         //结束与次数
         if (m_endrepeattimes->text().isEmpty()) {
+            qCWarning(scheduleDlgLog) << "End repeat times is empty";
             return false;
         }
         schedule->recurrence()->setDuration(m_endrepeattimes->text().toInt() + 1);
@@ -298,6 +313,7 @@ bool CScheduleDlg::createSchedule(const QString &scheduleTypeId)
         endrpeattime.setDate(m_endRepeatDate->date());
 
         if (beginDateTime > endrpeattime) {
+            qCWarning(scheduleDlgLog) << "End repeat date must be greater than start date";
             return false;
         }
         schedule->recurrence()->setDuration(0);
@@ -313,6 +329,7 @@ bool CScheduleDlg::createSchedule(const QString &scheduleTypeId)
     if (m_type == 1) {
         //创建日程
         schedule->setUid("0");
+        qCDebug(scheduleDlgLog) << "Creating new schedule";
         res = _scheduleOperation.createSchedule(schedule);
 
     } else if (m_type == 0) {
@@ -321,6 +338,7 @@ bool CScheduleDlg::createSchedule(const QString &scheduleTypeId)
         if (schedule->recurs() && m_scheduleDataInfo->recurs()) {
             schedule->recurrence()->setExDateTimes(m_scheduleDataInfo->recurrence()->exDateTimes());
         }
+        qCDebug(scheduleDlgLog) << "Updating existing schedule:" << schedule->uid();
         res = _scheduleOperation.changeSchedule(schedule, m_scheduleDataInfo);
     }
     return res;
@@ -394,6 +412,7 @@ void CScheduleDlg::slotEndDateChange(const QDate &date)
 void CScheduleDlg::slotBtClick(int buttonIndex, const QString &buttonName)
 {
     Q_UNUSED(buttonName)
+    qCDebug(scheduleDlgLog) << "Button clicked, index:" << buttonIndex;
     //是否隐藏对话框
     switch (buttonIndex) {
     case 0: {
@@ -432,6 +451,7 @@ void CScheduleDlg::slotTextChange()
     int maxLength = 256; // 最大字符数
     //去除回车字符
     if (tStitlename.contains("\n")) {
+        qCDebug(scheduleDlgLog) << "Removing newline characters from text";
         //设置纯文本显示原始内容
         tStitlename.replace("\n", "");
         m_textEdit->setPlainText(tStitlename);
@@ -442,6 +462,7 @@ void CScheduleDlg::slotTextChange()
     }
     //如果长度大于最大长度则显示原来的字符
     if (length > maxLength) {
+        qCWarning(scheduleDlgLog) << "Text length exceeds maximum length of" << maxLength;
         m_textEdit->setPlainText(m_context);
         //将焦点移动到最后
         m_textEdit->moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
@@ -455,11 +476,13 @@ void CScheduleDlg::slotTextChange()
 
 void CScheduleDlg::slotendrepeatTextchange()
 {
+    qCDebug(scheduleDlgLog) << "End repeat text changed";
     setOkBtnEnabled();
 }
 
 void CScheduleDlg::slotBDateEidtInfo(const QDate &date)
 {
+    qCDebug(scheduleDlgLog) << "Begin date changed to:" << date;
     m_endRepeatDate->setMinimumDate(date);
     m_endDateEdit->setMinimumDate(date);
     m_currentDate.setDate(m_beginDateEdit->date());
@@ -475,6 +498,7 @@ void CScheduleDlg::slotBDateEidtInfo(const QDate &date)
 
 void CScheduleDlg::slotallDayStateChanged(int state)
 {
+    qCDebug(scheduleDlgLog) << "All day state changed to:" << state;
     m_rmindCombox->clear();
 
     if (!state) {
@@ -532,6 +556,7 @@ void CScheduleDlg::slotallDayStateChanged(int state)
 
 void CScheduleDlg::slotbRpeatactivated(int index)
 {
+    qCDebug(scheduleDlgLog) << "Begin repeat activated with index:" << index;
     if (index > 0) {
         m_endrepeatWidget->setVisible(true);
     } else {
@@ -546,6 +571,7 @@ void CScheduleDlg::slotbRpeatactivated(int index)
 
 void CScheduleDlg::sloteRpeatactivated(int index)
 {
+    qCDebug(scheduleDlgLog) << "End repeat activated with index:" << index;
     if (index == 0) {
         m_endrepeattimesWidget->setVisible(false);
         m_endRepeatDate->setVisible(false);
@@ -568,8 +594,10 @@ void CScheduleDlg::sloteRpeatactivated(int index)
 
 void CScheduleDlg::slotJobComboBoxEditingFinished()
 {
+    qCDebug(scheduleDlgLog) << "Job combo box editing finished";
     if (m_typeComBox->lineEdit()->text().isEmpty()) {
         //名称为空
+        qCWarning(scheduleDlgLog) << "Job type name is empty";
         m_typeComBox->showAlertMessage(tr("Enter a name please"));
         m_typeComBox->setAlert(true);
     }
@@ -577,6 +605,7 @@ void CScheduleDlg::slotJobComboBoxEditingFinished()
 
 void CScheduleDlg::slotAccoutBoxActivated(const QString &text)
 {
+    qCDebug(scheduleDlgLog) << "Account box activated with text:" << text;
     m_accountItem = gAccountManager->getAccountItemByAccountName(text);
     m_typeComBox->updateJobType(m_accountItem);
     resetColor(m_accountItem);
@@ -588,10 +617,11 @@ void CScheduleDlg::slotAccoutBoxActivated(const QString &text)
 
 void CScheduleDlg::signalLogout(DAccount::Type type)
 {
+    qCDebug(scheduleDlgLog) << "Account logout signal received, type:" << type;
     if (DAccount::Account_UnionID == type && gUosAccountItem == m_accountItem) {
         if (m_type) {
             //TODO：弹窗提示？
-            qCInfo(ClientLogger) << m_accountComBox->currentText() << "帐户已退出";
+            qCInfo(scheduleDlgLog) << m_accountComBox->currentText() << "帐户已退出";
             getButtons()[1]->setEnabled(false);
             m_accountItem.reset(nullptr);
         } else {
@@ -604,6 +634,7 @@ void CScheduleDlg::signalLogout(DAccount::Type type)
 
 void CScheduleDlg::slotTypeRpeatactivated(int index)
 {
+    qCDebug(scheduleDlgLog) << "Type repeat activated with index:" << index;
     Q_UNUSED(index);
     if (m_typeComBox->isEditable()) {
         m_typeComBox->setIconSize(QSize(0, 0));
@@ -622,6 +653,7 @@ void CScheduleDlg::slotTypeRpeatactivated(int index)
 
 void CScheduleDlg::slotRadioBtnClicked(int btnId)
 {
+    qCDebug(scheduleDlgLog) << "Radio button clicked with ID:" << btnId;
     //与上一次选项一致不做重置处理
     if (m_prevCheckRadioID == btnId) {
         return;
@@ -635,6 +667,7 @@ void CScheduleDlg::slotRadioBtnClicked(int btnId)
 
 void CScheduleDlg::slotBtnAddItemClicked()
 {
+    qCDebug(scheduleDlgLog) << "Add item button clicked";
     m_colorSeletorWideget->show();
     m_typeEditStatus = true;
     //添加日程类型的时候需要判断保存按钮是否可用
@@ -650,6 +683,7 @@ void CScheduleDlg::slotTypeEditTextChanged(const QString &text)
     QString tStitlename = text;
     //去除回车字符
     if (tStitlename.contains("\n")) {
+        qCDebug(scheduleDlgLog) << "Removing newline characters from type name";
         //设置纯文本显示原始内容
         tStitlename.replace("\n", "");
         m_typeComBox->setEditText(tStitlename);
@@ -657,6 +691,7 @@ void CScheduleDlg::slotTypeEditTextChanged(const QString &text)
     }
     //最大限制20个字符，超出后过滤掉
     if (tStitlename.length() > 20) {
+        qCWarning(scheduleDlgLog) << "Type name exceeds maximum length of 20";
         m_typeComBox->setEditText(m_TypeContext);
         return;
     } else {
@@ -665,6 +700,7 @@ void CScheduleDlg::slotTypeEditTextChanged(const QString &text)
     //如果内容不为空且去除空格内容为空表示为全空格
     if (!tStitlename.isEmpty() && tStitlename.trimmed().isEmpty()) {
         //名称为全空格，返回
+        qCWarning(scheduleDlgLog) << "Type name contains only whitespace";
         m_typeComBox->showAlertMessage(tr("The name can not only contain whitespaces"));
         m_typeComBox->setAlert(true);
     } else {
@@ -1407,7 +1443,7 @@ void CScheduleDlg::updateRepeatCombox(bool isLunar)
     }
     //重置重复规则
     m_beginrepeatCombox->setCurrentIndex(0);    //默认选择第一个
-    slotbRpeatactivated(0);     //更新“结束重复”状态
+    slotbRpeatactivated(0);     //更新"结束重复"状态
 }
 
 /**

@@ -30,6 +30,9 @@
 #include <QPainter>
 #include <QPainterPath>
 
+// Add logging category
+Q_LOGGING_CATEGORY(dragInfoLog, "calendar.view.draginfo")
+
 //定义拖拽日程
 DSchedule::Ptr DragInfoGraphicsView::m_DragScheduleInfo;
 bool DragInfoGraphicsView::m_hasUpdateMark = false;
@@ -89,10 +92,12 @@ DragInfoGraphicsView::~DragInfoGraphicsView()
 void DragInfoGraphicsView::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() != Qt::LeftButton) {
+        qCDebug(dragInfoLog) << "Ignoring non-left button press event";
         return;
     }
     stopTouchAnimation();
     if (event->source() == Qt::MouseEventSynthesizedByQt) {
+        qCDebug(dragInfoLog) << "Processing synthesized mouse press event";
         //如果为触摸点击则记录相关状态并改变触摸状态
         DGraphicsView::mousePressEvent(event);
         m_TouchBeginPoint = event->pos();
@@ -109,9 +114,11 @@ void DragInfoGraphicsView::mousePressEvent(QMouseEvent *event)
 void DragInfoGraphicsView::mouseReleaseEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::RightButton) {
+        qCDebug(dragInfoLog) << "Ignoring right button release event";
         return;
     }
     if (event->source() == Qt::MouseEventSynthesizedByQt) {
+        qCDebug(dragInfoLog) << "Processing synthesized mouse release event";
         //如果为触摸点击状态则调用左击事件处理
         if (m_touchState == TS_PRESS) {
             mousePress(m_TouchBeginPoint.toPoint());
@@ -139,7 +146,7 @@ void DragInfoGraphicsView::mouseReleaseEvent(QMouseEvent *event)
                     break;
                 }
                 default:
-
+                    qCDebug(dragInfoLog) << "Unknown touch moving direction";
                     break;
                 }
             }
@@ -367,22 +374,25 @@ void DragInfoGraphicsView::dragEnterEvent(QDragEnterEvent *event)
         DSchedule::fromJsonString(info, str);
 
         if (info.isNull()) {
+            qCWarning(dragInfoLog) << "Invalid schedule info in drag data";
             event->ignore();
         }
 
         //如果该日程是不能被拖拽的则忽略不接受
         //重复日程不能被切换全天和非全天
         if ((event->source() != this && info->recurs()) || !isCanDragge(info)) {
+            qCDebug(dragInfoLog) << "Schedule cannot be dragged - recurring or not draggable";
             event->ignore();
         } else {
+            qCDebug(dragInfoLog) << "Accepting drag event for schedule:" << info->summary();
             event->accept();
             //设置被修改的日程原始信息
             m_PressScheduleInfo = info;
         }
     } else {
+        qCDebug(dragInfoLog) << "Ignoring drag event - no Info format data";
         event->ignore();
     }
-
 }
 
 void DragInfoGraphicsView::dragLeaveEvent(QDragLeaveEvent *event)
@@ -512,9 +522,11 @@ void DragInfoGraphicsView::updateScheduleInfo(const DSchedule::Ptr &info)
     //设置父类为主窗口
     CScheduleOperation _scheduleOperation(info->scheduleTypeID(), qobject_cast<QWidget *>(parent));
     if (_scheduleOperation.changeSchedule(info, m_PressScheduleInfo)) {
+        qCInfo(dragInfoLog) << "Successfully updated schedule:" << info->summary();
         //如果日程修改成功则更新更新标志
         m_hasUpdateMark = true;
     } else {
+        qCWarning(dragInfoLog) << "Failed to update schedule:" << info->summary();
         //如果取消更新则主动更新显示
         updateInfo();
     }

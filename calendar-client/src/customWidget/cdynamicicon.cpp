@@ -4,12 +4,13 @@
 
 #include "cdynamicicon.h"
 
-
 #include <DAboutDialog>
 #include <DLog>
 
 #include <QSize>
 #include <QPainter>
+
+Q_LOGGING_CATEGORY(dynamicIconLog, "calendar.widget.dynamicicon")
 
 #define  BackgroundRatio     0.9394
 
@@ -39,6 +40,7 @@ CDynamicIcon::CDynamicIcon(int width, int height)
     , m_backgroundrenderer(new QSvgRenderer())
 
 {
+    qCDebug(dynamicIconLog) << "Initializing CDynamicIcon with size:" << width << "x" << height;
     m_pixmap->fill(Qt::transparent);
     m_Date = QDate::currentDate();
     setDate(m_Date);
@@ -46,6 +48,7 @@ CDynamicIcon::CDynamicIcon(int width, int height)
 
 CDynamicIcon::~CDynamicIcon()
 {
+    qCDebug(dynamicIconLog) << "Destroying CDynamicIcon instance";
     delete m_pixmap;
     m_pixmap = nullptr;
 
@@ -60,12 +63,12 @@ CDynamicIcon::~CDynamicIcon()
 
     delete  m_backgroundrenderer;
     m_backgroundrenderer = nullptr;
-
 }
 
 CDynamicIcon *CDynamicIcon::getInstance()
 {
     if (nullptr == m_Icon) {
+        qCDebug(dynamicIconLog) << "Creating new CDynamicIcon instance";
         m_Icon = new CDynamicIcon(512, 512);
     }
     return m_Icon;
@@ -81,33 +84,43 @@ void CDynamicIcon::releaseInstance()
 
 void CDynamicIcon::setDate(const QDate &date)
 {
+    qCDebug(dynamicIconLog) << "Setting date to:" << date.toString();
     m_Date = date;
     QString dayfile = QString(":/resources/DynamicIcon/day%1.svg").arg(date.day());
 
-    m_Dayrenderer->load(dayfile);
+    if (!m_Dayrenderer->load(dayfile)) {
+        qCWarning(dynamicIconLog) << "Failed to load day SVG file:" << dayfile;
+    }
 
     QString weekfile = QString(":/resources/DynamicIcon/week%1.svg").arg(date.dayOfWeek());
-    m_Weekrenderer->load(weekfile);
+    if (!m_Weekrenderer->load(weekfile)) {
+        qCWarning(dynamicIconLog) << "Failed to load week SVG file:" << weekfile;
+    }
 
     QString monthfile = QString(":/resources/DynamicIcon/month%1.svg").arg(date.month());
-    m_Monthrenderer->load(monthfile);
+    if (!m_Monthrenderer->load(monthfile)) {
+        qCWarning(dynamicIconLog) << "Failed to load month SVG file:" << monthfile;
+    }
 
     QString backgroundfile(":/resources/DynamicIcon/calendar_bg.svg");
-    m_backgroundrenderer->load(backgroundfile);
+    if (!m_backgroundrenderer->load(backgroundfile)) {
+        qCWarning(dynamicIconLog) << "Failed to load background SVG file:" << backgroundfile;
+    }
 
     //draw pixmap
     paintPixmap(m_pixmap);
-
 }
 
 void CDynamicIcon::setIcon()
 {
+    qCDebug(dynamicIconLog) << "Setting application icon";
     QIcon icon(this->getPixmap());
     qApp->setProductIcon(icon);
     qApp->setWindowIcon(icon);
 
-    if (qApp->aboutDialog() != nullptr)
+    if (qApp->aboutDialog() != nullptr) {
         qApp->aboutDialog()->setProductIcon(icon);
+    }
 
     m_Titlebar->setIcon(icon);
 }
@@ -119,6 +132,7 @@ void CDynamicIcon::setTitlebar(DTitlebar *titlebar)
 
 void CDynamicIcon::paintPixmap(QPixmap *pixmap)
 {
+    qCDebug(dynamicIconLog) << "Painting dynamic icon pixmap";
     QPainter painter(pixmap);
 
     //draw background

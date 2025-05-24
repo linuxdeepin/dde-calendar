@@ -12,6 +12,9 @@
 #include <QThread>
 #include <QDate>
 #include <QMutex>
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(scheduleDataLog)
 
 DGUI_USE_NAMESPACE
 struct CSchedulesColor {

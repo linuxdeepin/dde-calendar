@@ -6,21 +6,28 @@
 
 #include "graphicsItem/cweekdaybackgrounditem.h"
 #include "cgraphicsscene.h"
+#include <QLoggingCategory>
+
+Q_LOGGING_CATEGORY(allDayKeyRightLog, "calendar.keypress.alldayright")
 
 CAllDayKeyRightDeal::CAllDayKeyRightDeal(QGraphicsScene *scene)
     : CKeyPressDealBase(Qt::Key_Right, scene)
 {
+    qCDebug(allDayKeyRightLog) << "Created CAllDayKeyRightDeal instance";
 }
 
 bool CAllDayKeyRightDeal::focusItemDeal(CSceneBackgroundItem *item, CGraphicsScene *scene)
 {
+    qCDebug(allDayKeyRightLog) << "Processing right key press for all day item";
     CWeekDayBackgroundItem *backgroundItem = dynamic_cast<CWeekDayBackgroundItem *>(item);
     backgroundItem->initState();
     //如果没有下一个则切换时间
     scene->setActiveSwitching(true);
     if (backgroundItem->getRightItem() == nullptr) {
+        qCDebug(allDayKeyRightLog) << "No right item found, switching to next page" << item->getDate().addDays(1);
         scene->setNextPage(item->getDate().addDays(1), true);
     } else {
+        qCDebug(allDayKeyRightLog) << "Switching view to" << backgroundItem->getDate().addDays(1);
         scene->signalSwitchView(backgroundItem->getDate().addDays(1), true);
     }
     return true;

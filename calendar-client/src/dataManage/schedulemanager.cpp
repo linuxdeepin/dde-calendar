@@ -4,8 +4,11 @@
 
 #include "schedulemanager.h"
 
+Q_LOGGING_CATEGORY(scheduleLog, "calendar.schedule")
+
 ScheduleManager::ScheduleManager(QObject *parent) : QObject(parent)
 {
+    qCDebug(scheduleLog) << "Creating schedule manager";
     initconnect();
 }
 
@@ -28,6 +31,7 @@ void ScheduleManager::initconnect()
  */
 void ScheduleManager::resetSchedule(int year)
 {
+    qCInfo(scheduleLog) << "Resetting schedule for year:" << year;
     for (AccountItem::Ptr p : gAccountManager->getAccountList()) {
         p->querySchedulesWithParameter(year);
     }
@@ -35,6 +39,7 @@ void ScheduleManager::resetSchedule(int year)
 
 void ScheduleManager::resetSchedule(const QDateTime &start, const QDateTime &end)
 {
+    qCInfo(scheduleLog) << "Resetting schedule from" << start << "to" << end;
     for (AccountItem::Ptr p : gAccountManager->getAccountList()) {
         p->querySchedulesWithParameter(start, end);
     }
@@ -46,6 +51,7 @@ void ScheduleManager::resetSchedule(const QDateTime &start, const QDateTime &end
  */
 void ScheduleManager::updateSchedule()
 {
+    qCDebug(scheduleLog) << "Updating schedule data";
     m_scheduleMap.clear();
     if (nullptr != gAccountManager->getLocalAccountItem()) {
         m_scheduleMap = gAccountManager->getLocalAccountItem()->getScheduleMap();
@@ -65,6 +71,7 @@ void ScheduleManager::updateSchedule()
             }
         }
     }
+    qCInfo(scheduleLog) << "Schedule update completed, total dates:" << m_scheduleMap.size();
     emit signalScheduleUpdate();
 }
 
@@ -236,6 +243,7 @@ DScheduleType::Ptr ScheduleManager::getScheduleTypeByScheduleId(const QString &i
  */
 void ScheduleManager::searchSchedule(const QString &key, const QDateTime &startTime, const QDateTime &endTime)
 {
+    qCInfo(scheduleLog) << "Searching schedules with key:" << key << "from" << startTime << "to" << endTime;
     m_searchScheduleMap.clear();
     static int count = 0;
     count = 0;
@@ -249,6 +257,7 @@ void ScheduleManager::searchSchedule(const QString &key, const QDateTime &startT
         p->querySchedulesWithParameter(m_searchQuery, [&](CallMessge) {
             count--;
             if (count == 0) {
+                qCDebug(scheduleLog) << "Search completed for all accounts";
                 this->updateSearchSchedule();
             }
         });
@@ -261,6 +270,7 @@ void ScheduleManager::searchSchedule(const QString &key, const QDateTime &startT
  */
 void ScheduleManager::clearSearchSchedule()
 {
+    qCDebug(scheduleLog) << "Clearing search schedule data";
     m_searchScheduleMap.clear();
     m_searchQuery.reset(nullptr);
     emit signalSearchScheduleUpdate();

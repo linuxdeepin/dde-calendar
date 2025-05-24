@@ -6,6 +6,9 @@
 #define CWEEKDAYSCENETABKEYDEAL_H
 
 #include "cscenetabkeydeal.h"
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(weekDaySceneTabKeyLog)
 
 /**
  * @brief The CWeekDaySceneTabKeyDeal class

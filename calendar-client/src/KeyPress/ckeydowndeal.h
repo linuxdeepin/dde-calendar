@@ -6,6 +6,9 @@
 #define CKEYDOWNDEAL_H
 
 #include "ckeypressdealbase.h"
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(keyDownLog)
 
 /**
  * @brief The CKeyDownDeal class

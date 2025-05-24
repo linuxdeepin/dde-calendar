@@ -13,6 +13,9 @@
 
 #include <QGraphicsScene>
 #include <QMouseEvent>
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(allDayEventLog)
 
 DWIDGET_USE_NAMESPACE
 

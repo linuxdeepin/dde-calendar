@@ -9,6 +9,7 @@
 #include <QPaintEvent>
 #include <QSlider>
 
+Q_DECLARE_LOGGING_CATEGORY(colorSliderLog)
 
 class ColorSlider : public QSlider
 {

@@ -9,11 +9,14 @@
 #include <QPainter>
 #include <QStyle>
 
+Q_LOGGING_CATEGORY(colorSliderLog, "calendar.widget.colorslider")
+
 const int IMAGE_HEIGHT = 10;
 
 ColorSlider::ColorSlider(QWidget *parent)
     : QSlider(parent)
 {
+    qCDebug(colorSliderLog) << "Initializing ColorSlider";
     setMinimum(0);
     setMaximum(359);
     setOrientation(Qt::Horizontal);
@@ -26,21 +29,25 @@ ColorSlider::ColorSlider(QWidget *parent)
             QColor penColor = getColor(qreal(s / rect.width() * maximum()), 1, 1);
 
             if (!penColor.isValid()) {
+                qCWarning(colorSliderLog) << "Invalid color generated at position:" << s << v;
                 continue;
             }
 
             m_backgroundImage.setPixelColor(std::min(int(s), rect.width()), m_backgroundImage.height() - int(v), penColor);
         }
     }
+    qCDebug(colorSliderLog) << "ColorSlider initialized with dimensions:" << rect.width() << "x" << IMAGE_HEIGHT;
 }
 
 ColorSlider::~ColorSlider()
 {
+    qCDebug(colorSliderLog) << "ColorSlider destroyed";
 }
 
 //h∈(0, 360), s∈(0, 1), v∈(0, 1)
 QColor ColorSlider::getColor(qreal h, qreal s, qreal v)
 {
+    qCDebug(colorSliderLog) << "Getting color for HSV:" << h << s << v;
     int hi = int(h / 60) % 6;
     qreal f = h / 60 - hi;
 
@@ -49,17 +56,18 @@ QColor ColorSlider::getColor(qreal h, qreal s, qreal v)
     qreal t = v * (1 - (1 - f) * s);
 
     if (q < 0) {
+        qCWarning(colorSliderLog) << "Q value is negative, setting to 0";
         q = 0;
     }
 
     QColor color;
 
     if (hi == 0) {
-        color =  QColor(std::min(int(255 * p), 255), std::min(int(255 * q), 255), std::min(int(255 * v), 255));
+        color = QColor(std::min(int(255 * p), 255), std::min(int(255 * q), 255), std::min(int(255 * v), 255));
     } else if (hi == 1) {
-        color =  QColor(std::min(int(255 * t), 255), std::min(int(255 * p), 255), std::min(int(255 * v), 255));
+        color = QColor(std::min(int(255 * t), 255), std::min(int(255 * p), 255), std::min(int(255 * v), 255));
     } else if (hi == 2) {
-        color =  QColor(std::min(int(255 * v), 255), std::min(int(255 * p), 255), int(255 * q));
+        color = QColor(std::min(int(255 * v), 255), std::min(int(255 * p), 255), int(255 * q));
     } else if (hi == 3) {
         color = QColor(std::min(int(255 * v), 255), std::min(int(255 * t), 255), std::min(int(255 * p), 255));
     } else if (hi == 4) {
@@ -68,12 +76,14 @@ QColor ColorSlider::getColor(qreal h, qreal s, qreal v)
         color = QColor(std::min(int(255 * p), 255), std::min(int(255 * v), 255), std::min(int(255 * t), 255));
     }
 
+    qCDebug(colorSliderLog) << "Calculated color:" << color;
     return color;
 }
 
 void ColorSlider::paintEvent(QPaintEvent *ev)
 {
     Q_UNUSED(ev)
+    qCDebug(colorSliderLog) << "Paint event started";
 
     QRect rect = this->rect();
     QPainter painter(this);
@@ -92,4 +102,6 @@ void ColorSlider::paintEvent(QPaintEvent *ev)
     painter.setPen(pen);
     painter.setBrush(QBrush(Qt::white));
     painter.drawRect(QRectF(QPointF(x - offset, rect.top()), QPointF(x + offset, rect.bottom())));
+
+    qCDebug(colorSliderLog) << "Paint event completed, slider value:" << value();
 }

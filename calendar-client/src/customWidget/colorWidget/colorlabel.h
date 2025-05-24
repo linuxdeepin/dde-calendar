@@ -15,6 +15,8 @@
 
 DWIDGET_USE_NAMESPACE
 
+Q_DECLARE_LOGGING_CATEGORY(colorLabelLog)
+
 class ColorLabel : public DLabel
 {
     Q_OBJECT

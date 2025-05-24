@@ -10,19 +10,24 @@
 #include <DPaletteHelper>
 #include <QMouseEvent>
 
+Q_LOGGING_CATEGORY(sidebarCalendarLog, "calendar.widget.sidebarcalendar")
+
 QDate SidebarCalendarKeyButton::m_selectedData = QDate();
 QDate SidebarCalendarKeyButton::m_displayedMonth = QDate();
 
 
 SidebarCalendarWidget::SidebarCalendarWidget(QWidget *parent) : QWidget(parent)
 {
+    qCDebug(sidebarCalendarLog) << "Initializing SidebarCalendarWidget";
     initView();
     initConnection();
     initData();
+    qCDebug(sidebarCalendarLog) << "SidebarCalendarWidget initialization completed";
 }
 
 void SidebarCalendarWidget::initView()
 {
+    qCDebug(sidebarCalendarLog) << "Initializing view components";
     m_dateLabel = new QLabel();
     QFont font = m_dateLabel->font();
     font.setPixelSize(DDECalendar::FontSizeTwelve);
@@ -77,6 +82,7 @@ void SidebarCalendarWidget::initView()
     mainLayout->addWidget(m_headWidget);
     mainLayout->addWidget(m_weekWidget, 1);
     mainLayout->addWidget(m_keyWidget, 6);
+    qCDebug(sidebarCalendarLog) << "View initialization completed";
 }
 
 /**
@@ -108,6 +114,7 @@ void SidebarCalendarWidget::initData()
  */
 void SidebarCalendarWidget::setDate(QDate& date)
 {
+    qCDebug(sidebarCalendarLog) << "Setting date to:" << date.toString();
     SidebarCalendarKeyButton::setSelectedDate(date);
     setKeyDate(date);
 }
@@ -120,8 +127,10 @@ void SidebarCalendarWidget::setDate(QDate& date)
 void SidebarCalendarWidget::setKeyDate(QDate date)
 {
     if(!withinTimeFrame(date)){
+        qCWarning(sidebarCalendarLog) << "Date" << date.toString() << "is not within valid time frame";
         return;
     }
+    qCDebug(sidebarCalendarLog) << "Setting key date to:" << date.toString();
     QString fd = "";
     fd.append("yyyy").append(tr("Y")).append(" ").append("MM").append(tr("M"));
     m_dateLabel->setText(date.toString(fd));
@@ -149,8 +158,10 @@ void SidebarCalendarWidget::slotKeyButtonClicked(SidebarCalendarKeyButton* keyBu
 {
     QDate date = keyButton->getSelectedDate();
     if(!withinTimeFrame(date)){
+        qCWarning(sidebarCalendarLog) << "Selected date" << date.toString() << "is not within valid time frame";
         return;
     }
+    qCDebug(sidebarCalendarLog) << "Key button clicked for date:" << date.toString();
     if (date.year() ==keyButton->getDisplayedMonth().year() && date.month() == keyButton->getDisplayedMonth().month()) {
         //未切换月份，只刷新界面显示
         update();
@@ -167,9 +178,9 @@ void SidebarCalendarWidget::slotKeyButtonClicked(SidebarCalendarKeyButton* keyBu
  */
 void SidebarCalendarWidget::slotNextPageClicked()
 {
-    //设置显示月份日期
     QDate date = SidebarCalendarKeyButton::getDisplayedMonth().addMonths(+1);
-    //设置显示的日期范围
+    qCDebug(sidebarCalendarLog) << "Moving to next month:" << date.toString();
+    //设置显示月份日期
     setKeyDate(date);
 }
 
@@ -179,14 +190,15 @@ void SidebarCalendarWidget::slotNextPageClicked()
  */
 void SidebarCalendarWidget::slotPreviousPageClicked()
 {
-    //设置显示月份日期
     QDate date = SidebarCalendarKeyButton::getDisplayedMonth().addMonths(-1);
-    //设置显示的日期范围
+    qCDebug(sidebarCalendarLog) << "Moving to previous month:" << date.toString();
+    //设置显示月份日期
     setKeyDate(date);
 }
 
 void SidebarCalendarWidget::slotFirstDayChanged(int value)
 {
+    qCDebug(sidebarCalendarLog) << "First day of week changed to:" << value;
     m_firstday = value;
     setKeyDate(SidebarCalendarKeyButton::getSelectedDate());
 }

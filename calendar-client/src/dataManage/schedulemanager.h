@@ -8,6 +8,9 @@
 #include "accountmanager.h"
 #include "lunarmanager.h"
 #include <QObject>
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(scheduleLog)
 
 class ScheduleManager : public QObject
 {

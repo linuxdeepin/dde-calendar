@@ -8,6 +8,9 @@
 #include <QDate>
 #include <QDateTime>
 #include <QRect>
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(scheduleCoordLog)
 
 class CScheduleCoorManage
 {

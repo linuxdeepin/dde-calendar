@@ -4,10 +4,12 @@
 
 #include "lunarmanager.h"
 
+Q_LOGGING_CATEGORY(lunarLog, "calendar.lunar")
+
 LunarManager::LunarManager(QObject *parent) : QObject(parent)
   , m_dbusRequest(new DbusHuangLiRequest)
 {
-
+    qCDebug(lunarLog) << "Creating lunar manager";
 }
 
 LunarManager* LunarManager::getInstace()
@@ -26,7 +28,12 @@ LunarManager* LunarManager::getInstace()
  */
 bool LunarManager::getFestivalMonth(quint32 year, quint32 month, FestivalInfo& festivalInfo)
 {
-    return m_dbusRequest->getFestivalMonth(year, month, festivalInfo);
+    qCDebug(lunarLog) << "Getting festival info for year:" << year << "month:" << month;
+    bool success = m_dbusRequest->getFestivalMonth(year, month, festivalInfo);
+    if (!success) {
+        qCWarning(lunarLog) << "Failed to get festival info for year:" << year << "month:" << month;
+    }
+    return success;
 }
 
 /**
@@ -113,6 +120,7 @@ QString LunarManager::getHuangLiShortName(const QDate &date)
  */
 void LunarManager::queryLunarInfo(const QDate &startDate, const QDate &stopDate)
 {
+    qCInfo(lunarLog) << "Querying lunar info from" << startDate << "to" << stopDate;
     QMap<QDate, CaHuangLiDayInfo> lunarInfoMap;
     CaHuangLiMonthInfo monthInfo;
     const int offsetMonth = (stopDate.year() - startDate.year()) * 12 + stopDate.month() - startDate.month();
@@ -120,13 +128,18 @@ void LunarManager::queryLunarInfo(const QDate &startDate, const QDate &stopDate)
     for (int i = 0; i <= offsetMonth; ++i) {
         monthInfo.clear();
         QDate beginDate = startDate.addMonths(i);
-        getHuangLiMonth(beginDate, monthInfo);
+        if (!getHuangLiMonth(beginDate, monthInfo)) {
+            qCWarning(lunarLog) << "Failed to get lunar info for month:" << beginDate;
+            continue;
+        }
 
         QDate getDate(beginDate.year(), beginDate.month(), 1);
         for (int j = 0; j < monthInfo.mDays; ++j) {
             lunarInfoMap[getDate.addDays(j)] = monthInfo.mCaLunarDayInfo.at(j);
         }
     }
+    
+    qCDebug(lunarLog) << "Lunar info query completed, total dates:" << lunarInfoMap.size();
     m_lunarInfoMap = lunarInfoMap;
 }
 
@@ -138,6 +151,7 @@ void LunarManager::queryLunarInfo(const QDate &startDate, const QDate &stopDate)
  */
 void LunarManager::queryFestivalInfo(const QDate &startDate, const QDate &stopDate)
 {
+    qCInfo(lunarLog) << "Querying festival info from" << startDate << "to" << stopDate;
     QVector<FestivalInfo> festivallist{};
 
     const int offsetMonth = (stopDate.year() - startDate.year()) * 12 + stopDate.month() - startDate.month();
@@ -147,6 +161,8 @@ void LunarManager::queryFestivalInfo(const QDate &startDate, const QDate &stopDa
         QDate beginDate = startDate.addMonths(i);
         if (getFestivalMonth(beginDate, info)) {
             festivallist.push_back(info);
+        } else {
+            qCWarning(lunarLog) << "Failed to get festival info for month:" << beginDate;
         }
     }
 
@@ -156,6 +172,8 @@ void LunarManager::queryFestivalInfo(const QDate &startDate, const QDate &stopDa
             m_festivalDateMap[h.date] = h.status;
         }
     }
+    
+    qCDebug(lunarLog) << "Festival info query completed, total dates:" << m_festivalDateMap.size();
 }
 
 /**

@@ -10,8 +10,11 @@
 #include <QLineEdit>
 #include <QDebug>
 
+Q_LOGGING_CATEGORY(dateEditLog, "calendar.widget.dateedit")
+
 CDateEdit::CDateEdit(QWidget *parent) : QDateEdit(parent)
 {
+    qCDebug(dateEditLog) << "Initializing CDateEdit";
     connect(this, &QDateEdit::userDateChanged, this, &CDateEdit::slotDateEidtInfo);
     connect(lineEdit(), &QLineEdit::textChanged, this, &CDateEdit::slotRefreshLineEditTextFormat);
     connect(lineEdit(), &QLineEdit::cursorPositionChanged, this, &CDateEdit::slotCursorPositionChanged);
@@ -21,20 +24,22 @@ CDateEdit::CDateEdit(QWidget *parent) : QDateEdit(parent)
         //当非手动输入时间时不会触发文本改变信号
         slotRefreshLineEditTextFormat(text());
     });
+    qCDebug(dateEditLog) << "CDateEdit initialized";
 }
 
 void CDateEdit::setDate(QDate date)
 {
+    qCDebug(dateEditLog) << "Setting date to:" << date;
     QDateEdit::setDate(date);
-    //只有在农历日程时，才需要获取农历信息
     QString dtFormat = m_showLunarCalendar ? m_format + getLunarName(date) : m_format;
     m_strCurrrentDate = date.toString(dtFormat);
+    qCDebug(dateEditLog) << "Current date string set to:" << m_strCurrrentDate;
 }
 
 void CDateEdit::setDisplayFormat(QString format)
 {
+    qCDebug(dateEditLog) << "Setting display format to:" << format;
     this->m_format = format;
-    //刷新时间显示信息
     slotDateEidtInfo(date());
 }
 
@@ -45,17 +50,16 @@ QString CDateEdit::displayFormat()
 
 void CDateEdit::setLunarCalendarStatus(bool status)
 {
+    qCDebug(dateEditLog) << "Setting lunar calendar status to:" << status;
     m_showLunarCalendar = status;
-    //刷新时间显示信息
     slotDateEidtInfo(date());
-    //更新日历显示类型
     updateCalendarWidget();
 }
 
 void CDateEdit::setLunarTextFormat(QTextCharFormat format)
 {
+    qCDebug(dateEditLog) << "Setting lunar text format";
     m_lunarTextFormat = format;
-    //刷新文本样式
     slotRefreshLineEditTextFormat(text());
 }
 
@@ -66,6 +70,7 @@ QTextCharFormat CDateEdit::getsetLunarTextFormat()
 
 void CDateEdit::setCalendarPopup(bool enable)
 {
+    qCDebug(dateEditLog) << "Setting calendar popup to:" << enable;
     QDateEdit::setCalendarPopup(enable);
     //更新日历显示类型
     updateCalendarWidget();
@@ -73,8 +78,8 @@ void CDateEdit::setCalendarPopup(bool enable)
 
 void CDateEdit::slotDateEidtInfo(const QDate &date)
 {
+    qCDebug(dateEditLog) << "Updating date edit info for:" << date;
     QString format = m_format;
-
 
     if (m_showLunarCalendar) {
         if (!showGongli()) {
@@ -85,6 +90,7 @@ void CDateEdit::slotDateEidtInfo(const QDate &date)
     }
     //当当前显示格式与应该显示格式一致时不再重新设置
     if (QDateEdit::displayFormat() == format) {
+        qCDebug(dateEditLog) << "Display format unchanged, skipping update";
         return;
     }
 
@@ -113,6 +119,7 @@ void CDateEdit::slotDateEidtInfo(const QDate &date)
 
 void CDateEdit::slotRefreshLineEditTextFormat(const QString &text)
 {
+    qCDebug(dateEditLog) << "Refreshing line edit text format for:" << text;
     QFont font = lineEdit()->font();
     QFontMetrics fm(font);
     int textWidth = fm.horizontalAdvance(text);
@@ -129,7 +136,6 @@ void CDateEdit::slotRefreshLineEditTextFormat(const QString &text)
     }
 
     QList<QTextLayout::FormatRange> formats;
-
     QTextLayout::FormatRange fr_tracker;
 
     fr_tracker.start = text.size() - m_lunarName.size();    //样式起始位置
@@ -166,6 +172,7 @@ void CDateEdit::slotCursorPositionChanged(int oldPos, int newPos)
     } else {
         //非选择情况当新光标位置大于最大位置时设置到最大位置处，重新设置选中节位最后一节
         if (newPos > maxPos) {
+            qCDebug(dateEditLog) << "Cursor position exceeds max, adjusting to:" << maxPos;
             setCurrentSectionIndex(sectionCount() - 1);
             lineEdit()->setCursorPosition(maxPos);
         }
@@ -181,34 +188,36 @@ void CDateEdit::slotSelectionChanged()
     //全选时重新设置为只选择时间不选择农历
     if (lineEdit()->hasSelectedText() && lineEdit()->selectionEnd() == text().length()) {
         int startPos = lineEdit()->selectionStart();
+        qCDebug(dateEditLog) << "Adjusting full selection to exclude lunar info, new end:" << (text().length() - m_lunarName.length());
         lineEdit()->setSelection(startPos, text().length() - m_lunarName.length() - startPos);
     }
 }
 
 QString CDateEdit::getLunarName(const QDate &date)
 {
-    return gLunarManager->getHuangLiShortName(date);
+    QString lunarName = gLunarManager->getHuangLiShortName(date);
+    qCDebug(dateEditLog) << "Got lunar name for" << date << ":" << lunarName;
+    return lunarName;
 }
 
 void CDateEdit::setLineEditTextFormat(QLineEdit *lineEdit, const QList<QTextLayout::FormatRange> &formats)
 {
     if (!lineEdit) {
+        qCWarning(dateEditLog) << "Attempted to set format for null line edit";
         return;
     }
+    qCDebug(dateEditLog) << "Setting line edit text format with" << formats.size() << "format ranges";
     QList<QInputMethodEvent::Attribute> attributes;
 
     for (const QTextLayout::FormatRange &fr : formats) {
         QInputMethodEvent::AttributeType type = QInputMethodEvent::TextFormat;
-
         int start = fr.start - lineEdit->cursorPosition();
         int length = fr.length;
         QVariant value = fr.format;
-
         attributes.append(QInputMethodEvent::Attribute(type, start, length, value));
     }
 
     QInputMethodEvent event(QString(), attributes);
-
     QCoreApplication::sendEvent(lineEdit, &event);
 }
 
@@ -216,6 +225,7 @@ void CDateEdit::changeEvent(QEvent *e)
 {
     QDateEdit::changeEvent(e);
     if (e->type() == QEvent::FontChange && m_showLunarCalendar) {
+        qCDebug(dateEditLog) << "Font changed, updating date edit info";
         slotDateEidtInfo(date());
     }
 }
@@ -224,17 +234,15 @@ bool CDateEdit::showGongli()
 {
     QString str = m_strCurrrentDate;
     QFontMetrics fontMetrice(lineEdit()->font());
-    if (fontMetrice.horizontalAdvance(str) > lineEdit()->width() - 20) {
-        return false;
-    }
-    return true;
+    bool show = fontMetrice.horizontalAdvance(str) <= lineEdit()->width() - 20;
+    qCDebug(dateEditLog) << "Show Gongli:" << show;
+    return show;
 }
 
 void CDateEdit::updateCalendarWidget()
 {
+    qCDebug(dateEditLog) << "Updating calendar widget, lunar calendar:" << m_showLunarCalendar;
     if (calendarPopup()) {
-        //setCalendarWidget:
-        //The editor does not automatically take ownership of the calendar widget.
         if (m_showLunarCalendar) {
             setCalendarWidget(new LunarCalendarWidget(this));
         } else {
@@ -245,9 +253,12 @@ void CDateEdit::updateCalendarWidget()
 
 void CDateEdit::setEditCursorPos(int pos)
 {
+    qCDebug(dateEditLog) << "Setting edit cursor position to:" << pos;
     QLineEdit *edit = lineEdit();
     if (nullptr != edit) {
         edit->setCursorPosition(pos);
+    } else {
+        qCWarning(dateEditLog) << "Failed to set cursor position - null line edit";
     }
 }
 

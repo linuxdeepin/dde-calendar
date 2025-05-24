@@ -14,11 +14,15 @@
 
 #include <QMessageBox>
 #include <QPainter>
+#include <QLoggingCategory>
+
+Q_LOGGING_CATEGORY(monthWindowLog, "calendar.window.month")
 
 DGUI_USE_NAMESPACE
 CMonthWindow::CMonthWindow(QWidget *parent)
     : CScheduleBaseWidget(parent)
 {
+    qCDebug(monthWindowLog) << "Initializing CMonthWindow";
     initUI();
     initConnection();
     setLunarVisible(m_calendarManager->getShowLunar());
@@ -39,6 +43,7 @@ CMonthWindow::~CMonthWindow()
  */
 void CMonthWindow::setLunarVisible(bool state)
 {
+    qCDebug(monthWindowLog) << "Setting lunar visible:" << state;
     m_monthView->setLunarVisible(state);
     m_YearLunarLabel->setVisible(state);
 }
@@ -49,6 +54,7 @@ void CMonthWindow::setLunarVisible(bool state)
  */
 void CMonthWindow::setTheMe(int type)
 {
+    qCDebug(monthWindowLog) << "Setting theme type to:" << type;
     if (type == 0 || type == 1) {
 
 
@@ -107,6 +113,7 @@ void CMonthWindow::setYearData()
  */
 void CMonthWindow::updateShowDate(const bool isUpdateBar)
 {
+    qCDebug(monthWindowLog) << "Updating show date, update bar:" << isUpdateBar;
     setYearData();
     const QDate _selectDate = m_calendarManager->getSelectDate();
     Qt::DayOfWeek _firstWeek = m_calendarManager->getFirstDayOfWeek();
@@ -114,6 +121,7 @@ void CMonthWindow::updateShowDate(const bool isUpdateBar)
     QVector<QDate> _monthShowData = m_calendarManager->getMonthDate(_selectDate.year(), _selectDate.month());
     m_startDate = _monthShowData.first();
     m_stopDate = _monthShowData.last();
+    qCDebug(monthWindowLog) << "Show date range:" << m_startDate << "to" << m_stopDate;
     m_monthView->setShowDate(_monthShowData);
     m_monthView->setRemindWidgetTimeFormat((m_calendarManager->getTimeShowType() ? "AP " : "") + m_calendarManager->getTimeFormat());
     if (isUpdateBar)
@@ -132,6 +140,7 @@ void CMonthWindow::updateShowDate(const bool isUpdateBar)
  */
 void CMonthWindow::setCurrentDateTime(const QDateTime &currentDate)
 {
+    qCDebug(monthWindowLog) << "Setting current datetime to:" << currentDate;
     CScheduleBaseWidget::setCurrentDateTime(currentDate);
     //更新当前时间
     m_monthView->setCurrentDate(currentDate.date());
@@ -142,6 +151,7 @@ void CMonthWindow::setCurrentDateTime(const QDateTime &currentDate)
  */
 void CMonthWindow::updateShowSchedule()
 {
+    qCDebug(monthWindowLog) << "Updating schedule display";
     QMap<QDate, DSchedule::List> map = gScheduleManager->getScheduleMap(m_startDate, m_stopDate);
     //因获取的日程中只有有日程的项，数量不等于开始时间到结束时间的天数，
     //但是视图显示要求数量为开始时间到结束时间的天数，所以在没有日程的时间中添加空日期列表
@@ -161,6 +171,7 @@ void CMonthWindow::updateShowSchedule()
  */
 void CMonthWindow::updateShowLunar()
 {
+    qCDebug(monthWindowLog) << "Updating lunar display";
     getLunarInfo();
     m_YearLunarLabel->setText(m_lunarYear);
     QMap<QDate, int> _monthFestivalInfo = gLunarManager->getFestivalInfoDateMap(m_startDate, m_stopDate);
@@ -174,7 +185,7 @@ void CMonthWindow::updateShowLunar()
  */
 void CMonthWindow::updateSearchScheduleInfo()
 {
-    //获取搜索日程信息
+    qCDebug(monthWindowLog) << "Updating search schedule info";
     m_monthView->setSearchScheduleInfo(gScheduleManager->getAllSearchedScheduleList());
 }
 
@@ -184,6 +195,7 @@ void CMonthWindow::updateSearchScheduleInfo()
  */
 void CMonthWindow::setSelectSearchScheduleInfo(const DSchedule::Ptr &info)
 {
+    qCDebug(monthWindowLog) << "Setting select search schedule:" << info->summary();
     m_monthView->setSelectSchedule(info);
 }
 
@@ -193,6 +205,7 @@ void CMonthWindow::setSelectSearchScheduleInfo(const DSchedule::Ptr &info)
  */
 void CMonthWindow::setSearchWFlag(bool flag)
 {
+    qCDebug(monthWindowLog) << "Setting search flag:" << flag;
     m_searchFlag = flag;
     m_monthDayView->setSearchflag(flag);
 }
@@ -210,6 +223,7 @@ void CMonthWindow::deleteselectSchedule()
  */
 void CMonthWindow::previousMonth()
 {
+    qCDebug(monthWindowLog) << "Switching to previous month";
     slideMonth(false);
 }
 
@@ -218,6 +232,7 @@ void CMonthWindow::previousMonth()
  */
 void CMonthWindow::nextMonth()
 {
+    qCDebug(monthWindowLog) << "Switching to next month";
     slideMonth(true);
 }
 
@@ -335,10 +350,13 @@ void CMonthWindow::initConnection()
  */
 void CMonthWindow::slideMonth(bool next)
 {
+    qCDebug(monthWindowLog) << "Sliding month, next:" << next;
     slotScheduleHide();
 
-    if (m_isSwitchStatus)
+    if (m_isSwitchStatus) {
+        qCWarning(monthWindowLog) << "Month switch already in progress";
         return;
+    }
 
     m_isSwitchStatus = true;
 
@@ -360,6 +378,7 @@ void CMonthWindow::slideMonth(bool next)
  */
 void CMonthWindow::slotScheduleHide()
 {
+    qCDebug(monthWindowLog) << "Hiding schedule widget";
     m_monthView->slotScheduleRemindWidget(false);
 }
 
@@ -369,6 +388,7 @@ void CMonthWindow::slotScheduleHide()
  */
 void CMonthWindow::slotAngleDelta(int delta)
 {
+    qCDebug(monthWindowLog) << "Received angle delta:" << delta;
     //拖拽时禁用
     if (!m_monthView->isDragging()) {
         if (delta > 0) {
@@ -387,6 +407,7 @@ void CMonthWindow::slotAngleDelta(int delta)
  */
 void CMonthWindow::slotViewSelectDate(const QDate &date)
 {
+    qCDebug(monthWindowLog) << "View select date:" << date;
     slotScheduleHide();
     if (setSelectDate(date, true)) {
         //更新界面

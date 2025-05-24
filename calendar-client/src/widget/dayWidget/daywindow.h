@@ -11,11 +11,15 @@
 
 #include <DMainWindow>
 #include <DFrame>
+#include <QLoggingCategory>
 
 #include <QWidget>
 #include <QDate>
 #include <QLabel>
 DWIDGET_USE_NAMESPACE
+
+// Declare logging category
+Q_DECLARE_LOGGING_CATEGORY(dayWindowLog)
 
 class CDayMonthView;
 class CScheduleView;

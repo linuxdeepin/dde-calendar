@@ -12,7 +12,6 @@
 #include "myscheduleview.h"
 #include "constants.h"
 
-
 #include <DPalette>
 
 #include <QMimeData>
@@ -26,6 +25,9 @@
 #include <QScrollBar>
 #include <QtMath>
 #include <QDebug>
+
+// Add logging category
+Q_LOGGING_CATEGORY(graphicsViewLog, "calendar.view.graphics")
 
 DGUI_USE_NAMESPACE
 CGraphicsView::CGraphicsView(QWidget *parent, ViewPosition Type)
@@ -129,6 +131,7 @@ void CGraphicsView::setCurrentDate(const QDateTime &currentDate)
 
 void CGraphicsView::setInfo(const DSchedule::List &info)
 {
+    qCDebug(graphicsViewLog) << "Setting schedule info, count:" << info.size();
     m_scheduleInfo = info;
 }
 
@@ -198,7 +201,7 @@ void CGraphicsView::upDateInfoShow(const CGraphicsView::DragStatus &status, cons
                             addScheduleItem(info.at(m).vData.at(n), currentDate, n + 1,
                                             tNum, 0, m_viewType, m_sMaxNum);
                         }
-                        //添加“...”item
+                        //添加"..."item
                         int index = tNum - 2;
                         if (index < 0) {
                             qCWarning(ClientLogger) << "week view create error,tNum -2 :" << index;
@@ -297,6 +300,7 @@ void CGraphicsView::setSelectSearchSchedule(const DSchedule::Ptr &info)
 
 void CGraphicsView::clearSchedule()
 {
+    qCDebug(graphicsViewLog) << "Clearing all schedules";
     for (int i = 0; i < m_vScheduleItem.size(); i++) {
         m_Scene->removeItem(m_vScheduleItem.at(i));
         delete m_vScheduleItem[i];
@@ -370,6 +374,7 @@ void CGraphicsView::mouseDoubleClickEvent(QMouseEvent *event)
     CScheduleItem *item = dynamic_cast<CScheduleItem *>(itemAt(event->pos()));
 
     if (item == nullptr) {
+        qCDebug(graphicsViewLog) << "Double click on empty area, creating new schedule";
         QPointF scenePoss = mapToScene(event->pos());
         CScheduleDlg dlg(1, this);
         QDateTime tDatatime = m_coorManage->getDate(scenePoss);
@@ -381,11 +386,13 @@ void CGraphicsView::mouseDoubleClickEvent(QMouseEvent *event)
         return;
     }
     if (item->getType() == 1) {
+        qCDebug(graphicsViewLog) << "Double click on schedule date item";
         emit signalsCurrentScheduleDate(item->getDate());
         return;
     }
     m_updateDflag = false;
     //TODO: item->getData()中的scheduleType为""，不是正常日程，有崩溃风险，待分析解决
+    qCDebug(graphicsViewLog) << "Opening schedule view dialog for item:" << item->getData()->summary();
     CMyScheduleView dlg(item->getData(), this);
     connect(&dlg, &CMyScheduleView::signalsEditorDelete, this, &CGraphicsView::slotDoubleEvent);
     if (dlg.exec() == DDialog::Accepted) {
@@ -421,6 +428,7 @@ void CGraphicsView::mouseMoveEvent(QMouseEvent *event)
 }
 void CGraphicsView::slotDoubleEvent(int type)
 {
+    qCDebug(graphicsViewLog) << "Double event slot called with type:" << type;
     Q_UNUSED(type);
     m_updateDflag = true;
     emit signalsUpdateSchedule();
@@ -428,6 +436,7 @@ void CGraphicsView::slotDoubleEvent(int type)
 
 void CGraphicsView::slotScrollBar()
 {
+    qCDebug(graphicsViewLog) << "Scroll bar value changed";
     emit signalScheduleShow(false);
 }
 
@@ -438,6 +447,7 @@ void CGraphicsView::slotUpdateScene()
 
 void CGraphicsView::slotStateChange(bool bState)
 {
+    qCDebug(graphicsViewLog) << "State changed to:" << bState;
     if(bState) {
         for (int i = 0; i < m_vScheduleItem.size(); i++) {
             m_vScheduleItem[i]->setVisible(false);

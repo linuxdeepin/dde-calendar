@@ -12,6 +12,9 @@
 #include <QDateTime>
 #include <QRectF>
 #include <QPainterPath>
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(scheduleItemLog)
 
 class CScheduleCoorManage;
 class CScheduleItem : public DragInfoItem

@@ -6,6 +6,9 @@
 #define CSCENETABKEYDEAL_H
 
 #include "ckeypressdealbase.h"
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(sceneTabKeyLog)
 
 /**
  * @brief The CSceneTabKeyDeal class
