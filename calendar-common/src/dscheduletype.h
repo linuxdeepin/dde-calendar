@@ -12,6 +12,9 @@
 #include <QDateTime>
 #include <QMetaType>
 #include <QSharedPointer>
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(scheduleTypeLog)
 
 class DAccount;
 //日程类型

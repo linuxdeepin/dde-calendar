@@ -7,6 +7,9 @@
 
 #include <QVector>
 #include <QtCore/qmath.h>
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(celestialLog)
 
 //弧度
 typedef struct _MoonEclipticParameter {

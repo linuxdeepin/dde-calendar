@@ -4,6 +4,11 @@
 
 #ifndef LUNARMANAGER_H
 #define LUNARMANAGER_H
+
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(lunarManagerLog)
+
 #include "lunarandfestival.h"
 #include "method_interface.h"
 

@@ -7,6 +7,9 @@
 
 #include <QMap>
 #include <QVector>
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(pinyinDictLog)
 
 //获取拼音字典
 const QVector<QMap<int,QString> > getPinYinDictVector();

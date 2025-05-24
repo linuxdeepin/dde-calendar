@@ -8,8 +8,11 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 
+Q_LOGGING_CATEGORY(dbusDataStruct, "calendar.huangli.dbusstruct")
+
 void CaLunarDayInfo::registerMetaType()
 {
+    qCDebug(dbusDataStruct) << "Registering CaLunarDayInfo metatype";
     qRegisterMetaType<CaLunarDayInfo>();
     qDBusRegisterMetaType<CaLunarDayInfo>();
 }
@@ -56,6 +59,7 @@ const QDBusArgument &operator>>(const QDBusArgument &argument, CaLunarDayInfo &w
 
 void CaLunarMonthInfo::registerMetaType()
 {
+    qCDebug(dbusDataStruct) << "Registering CaLunarMonthInfo metatype";
     qRegisterMetaType<CaLunarMonthInfo>();
     qDBusRegisterMetaType<CaLunarMonthInfo>();
 }
@@ -90,12 +94,14 @@ const QDBusArgument &operator>>(const QDBusArgument &argument, CaLunarMonthInfo 
 
 void CaHuangLiDayInfo::registerMetaType()
 {
+    qCDebug(dbusDataStruct) << "Registering CaHuangLiDayInfo metatype";
     qRegisterMetaType<CaHuangLiDayInfo>();
     qDBusRegisterMetaType<CaHuangLiDayInfo>();
 }
 
 QString CaHuangLiDayInfo::toJson()
 {
+    qCDebug(dbusDataStruct) << "Converting CaHuangLiDayInfo to JSON";
     QJsonDocument doc;
     QJsonObject obj;
 
@@ -120,12 +126,14 @@ QString CaHuangLiDayInfo::toJson()
 
 void CaHuangLiDayInfo::strJsonToInfo(const QString &strJson, bool &isVaild)
 {
+    qCDebug(dbusDataStruct) << "Converting JSON string to CaHuangLiDayInfo";
     isVaild = true;
     QJsonParseError json_error;
     QJsonDocument jsonDoc(QJsonDocument::fromJson(strJson.toLocal8Bit(), &json_error));
     if (json_error.error != QJsonParseError::NoError) {
+        qCWarning(dbusDataStruct) << "Failed to parse JSON:" << json_error.errorString();
         isVaild = false;
-        return ;
+        return;
     }
     QJsonObject rootObj = jsonDoc.object();
     jsonObjectToInfo(rootObj);
@@ -133,6 +141,7 @@ void CaHuangLiDayInfo::strJsonToInfo(const QString &strJson, bool &isVaild)
 
 void CaHuangLiDayInfo::jsonObjectToInfo(const QJsonObject &jsonObject)
 {
+    qCDebug(dbusDataStruct) << "Parsing JSON object to CaHuangLiDayInfo";
     //因为是预先定义好的JSON数据格式，所以这里可以这样读取int
     if (jsonObject.contains("Suit")) {
         this->mSuit = jsonObject.value("Suit").toString();
@@ -217,12 +226,14 @@ const QDBusArgument &operator>>(const QDBusArgument &argument, CaHuangLiDayInfo 
 
 void CaHuangLiMonthInfo::registerMetaType()
 {
+    qCDebug(dbusDataStruct) << "Registering CaHuangLiMonthInfo metatype";
     qRegisterMetaType<CaHuangLiMonthInfo>();
     qDBusRegisterMetaType<CaHuangLiMonthInfo>();
 }
 
 QString CaHuangLiMonthInfo::toJson()
 {
+    qCDebug(dbusDataStruct) << "Converting CaHuangLiMonthInfo to JSON";
     QJsonArray daysarr;
     QJsonDocument doc;
     QJsonObject obj;
@@ -253,11 +264,13 @@ QString CaHuangLiMonthInfo::toJson()
 
 void CaHuangLiMonthInfo::strJsonToInfo(const QString &strJson, bool &isVaild)
 {
+    qCDebug(dbusDataStruct) << "Converting JSON string to CaHuangLiMonthInfo";
     isVaild = true;
     QJsonParseError json_error;
     QJsonDocument jsonDoc(QJsonDocument::fromJson(strJson.toLocal8Bit(), &json_error));
 
     if (json_error.error != QJsonParseError::NoError) {
+        qCWarning(dbusDataStruct) << "Failed to parse JSON:" << json_error.errorString();
         isVaild = false;
         return;
     }
@@ -284,6 +297,7 @@ void CaHuangLiMonthInfo::strJsonToInfo(const QString &strJson, bool &isVaild)
 
 void CaHuangLiMonthInfo::clear()
 {
+    qCDebug(dbusDataStruct) << "Clearing CaHuangLiMonthInfo data";
     this->mDays = 0;
     this->mCaLunarDayInfo.clear();
 }

@@ -13,6 +13,8 @@
 #include <QJsonArray>
 #include <QDebug>
 
+Q_LOGGING_CATEGORY(scheduleTypeLog, "calendar.scheduletype")
+
 DScheduleType::DScheduleType()
     : DScheduleType("")
 {
@@ -192,16 +194,18 @@ bool DScheduleType::fromJsonString(DScheduleType::Ptr &scheduleType, const QStri
     QJsonParseError jsonError;
     QJsonDocument jsonDoc(QJsonDocument::fromJson(jsonStr.toLocal8Bit(), &jsonError));
     if (jsonError.error != QJsonParseError::NoError) {
-        qCWarning(CommonLogger) << "error:" << jsonError.errorString();
+        qCWarning(scheduleTypeLog) << "Failed to parse schedule type JSON:" << jsonError.errorString();
         return false;
     }
     QJsonObject rootObj = jsonDoc.object();
     if (rootObj.contains("accountID")) {
         scheduleType->setAccountID(rootObj.value("accountID").toString());
+        qCDebug(scheduleTypeLog) << "Set account ID:" << rootObj.value("accountID").toString();
     }
 
     if (rootObj.contains("typeID")) {
         scheduleType->setTypeID(rootObj.value("typeID").toString());
+        qCDebug(scheduleTypeLog) << "Set type ID:" << rootObj.value("typeID").toString();
     }
 
     if (rootObj.contains("typeName")) {
@@ -221,12 +225,15 @@ bool DScheduleType::fromJsonString(DScheduleType::Ptr &scheduleType, const QStri
         DTypeColor typeColor;
         if (colorObject.contains("colorID")) {
             typeColor.setColorID(colorObject.value("colorID").toString());
+            qCDebug(scheduleTypeLog) << "Set color ID:" << colorObject.value("colorID").toString();
         }
         if (colorObject.contains("colorCode")) {
             typeColor.setColorCode(colorObject.value("colorCode").toString());
+            qCDebug(scheduleTypeLog) << "Set color code:" << colorObject.value("colorCode").toString();
         }
         if (colorObject.contains("privilege")) {
             typeColor.setPrivilege(static_cast<DTypeColor::Privilege>(colorObject.value("privilege").toInt()));
+            qCDebug(scheduleTypeLog) << "Set color privilege:" << colorObject.value("privilege").toInt();
         }
         scheduleType->setTypeColor(typeColor);
     }
@@ -258,13 +265,14 @@ bool DScheduleType::fromJsonString(DScheduleType::Ptr &scheduleType, const QStri
     if (rootObj.contains("isDeleted")) {
         scheduleType->setDeleted(rootObj.value("isDeleted").toInt());
     }
+    qCInfo(scheduleTypeLog) << "Successfully parsed schedule type from JSON";
     return true;
 }
 
 bool DScheduleType::toJsonString(const DScheduleType::Ptr &scheduleType, QString &jsonStr)
 {
     if (scheduleType.isNull()) {
-        qCWarning(CommonLogger) << "hold a reference to a null pointer.";
+        qCWarning(scheduleTypeLog) << "Attempt to serialize null schedule type pointer";
         return false;
     }
     //序列化
@@ -292,6 +300,7 @@ bool DScheduleType::toJsonString(const DScheduleType::Ptr &scheduleType, QString
     QJsonDocument jsonDoc;
     jsonDoc.setObject(rootObject);
     jsonStr = QString::fromUtf8(jsonDoc.toJson(QJsonDocument::Compact));
+    qCDebug(scheduleTypeLog) << "Schedule type serialized to JSON successfully";
     return true;
 }
 

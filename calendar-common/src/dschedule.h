@@ -11,6 +11,9 @@
 #include <QString>
 #include <QDebug>
 #include <QSharedPointer>
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(scheduleLog)
 
 //日程信息
 class DSchedule : public KCalendarCore::Event

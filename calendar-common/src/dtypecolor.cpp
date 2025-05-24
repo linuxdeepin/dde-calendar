@@ -12,6 +12,8 @@
 #include <QJsonArray>
 #include <QDebug>
 
+Q_LOGGING_CATEGORY(typeColorLog, "calendar.typecolor")
+
 DTypeColor::DTypeColor()
     : m_colorID("")
     , m_colorCode("")
@@ -73,7 +75,7 @@ DTypeColor::List DTypeColor::fromJsonString(const QString &colorJson)
     QJsonParseError jsonError;
     QJsonDocument jsonDoc(QJsonDocument::fromJson(colorJson.toLocal8Bit(), &jsonError));
     if (jsonError.error != QJsonParseError::NoError) {
-        qCWarning(CommonLogger) << "error:" << jsonError.errorString();
+        qCWarning(typeColorLog) << "Failed to parse type color JSON:" << jsonError.errorString();
         return colorList;
     }
     QJsonArray rootArr = jsonDoc.array();
@@ -82,18 +84,24 @@ DTypeColor::List DTypeColor::fromJsonString(const QString &colorJson)
         DTypeColor::Ptr typeColor = DTypeColor::Ptr(new DTypeColor);
         if (colorObj.contains("colorID")) {
             typeColor->setColorID(colorObj.value("colorID").toString());
+            qCDebug(typeColorLog) << "Set color ID:" << colorObj.value("colorID").toString();
         }
         if (colorObj.contains("colorCode")) {
             typeColor->setColorCode(colorObj.value("colorCode").toString());
+            qCDebug(typeColorLog) << "Set color code:" << colorObj.value("colorCode").toString();
         }
         if (colorObj.contains("privilege")) {
             typeColor->setPrivilege(static_cast<Privilege>(colorObj.value("privilege").toInt()));
+            qCDebug(typeColorLog) << "Set color privilege:" << colorObj.value("privilege").toInt();
         }
         if (colorObj.contains("dtCreate")) {
             typeColor->setDtCreate(dtFromString(colorObj.value("dtCreate").toString()));
+            qCDebug(typeColorLog) << "Set creation date:" << colorObj.value("dtCreate").toString();
         }
         colorList.append(typeColor);
+        qCDebug(typeColorLog) << "Added new type color to list";
     }
+    qCInfo(typeColorLog) << "Successfully parsed" << colorList.size() << "type colors from JSON";
     return colorList;
 }
 
@@ -107,9 +115,11 @@ QString DTypeColor::toJsonString(const DTypeColor::List &colorList)
         colorObj.insert("privilege", color->privilege());
         colorObj.insert("dtCreate", dtToString(color->dtCreate()));
         rootArr.append(colorObj);
+        qCDebug(typeColorLog) << "Added color to JSON array:" << color->colorID();
     }
     QJsonDocument jsonDoc;
     jsonDoc.setArray(rootArr);
+    qCDebug(typeColorLog) << "Serialized" << colorList.size() << "type colors to JSON";
     return QString::fromUtf8(jsonDoc.toJson(QJsonDocument::Compact));
 }
 

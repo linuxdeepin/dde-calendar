@@ -4,6 +4,11 @@
 
 #ifndef METHOD_INTERFACE_H
 #define METHOD_INTERFACE_H
+
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(methodLog)
+
 #include "celestialbodies.h"
 #include "lunarandfestival.h"
 

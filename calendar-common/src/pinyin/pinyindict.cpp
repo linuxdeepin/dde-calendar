@@ -4,6 +4,8 @@
 
 #include "pinyindict.h"
 
+Q_LOGGING_CATEGORY(pinyinDictLog, "calendar.pinyin.dict")
+
 /* 合法拼音列表 */
 QVector<QString> validPinyinList = {
     "a",

@@ -7,6 +7,9 @@
 #include <QString>
 #include <QVector>
 #include <QDate>
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(lunarDataStruct)
 
 typedef struct HuangLi {
     qint64 ID = 0; //  `json:"id"` // format: ("%s%02s%02s", year, month, day)

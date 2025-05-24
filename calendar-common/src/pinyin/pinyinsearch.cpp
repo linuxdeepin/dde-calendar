@@ -10,6 +10,8 @@
 #include <QTextStream>
 #include <QDebug>
 
+Q_LOGGING_CATEGORY(pinyinSearchLog, "calendar.pinyin.search")
+
 pinyinsearch *pinyinsearch::m_pinyinsearch = nullptr;
 QMap<int, QString> pinyinsearch::pinyinDictVector {};
 
@@ -20,6 +22,7 @@ const QString kDictFile = ":/pinyin.dict";
  */
 pinyinsearch::pinyinsearch()
 {
+    qCDebug(pinyinSearchLog) << "Initializing pinyin search";
     for (int i = 0; i < validPinyinList.size(); i++) {
         QString key = validPinyinList[i];
         validPinyinMap[key] = true;
@@ -27,11 +30,13 @@ pinyinsearch::pinyinsearch()
         if (key.size() > singlePinyinMaxLength)
             singlePinyinMaxLength = key.size();
     }
+    qCDebug(pinyinSearchLog) << "Pinyin search initialized with max length:" << singlePinyinMaxLength;
 }
 
 pinyinsearch *pinyinsearch::getPinPinSearch()
 {
     if (m_pinyinsearch == nullptr) {
+        qCDebug(pinyinSearchLog) << "Creating new pinyin search instance";
         //new pinyinsearch
         m_pinyinsearch = new pinyinsearch();
         //获取拼音字典
@@ -67,7 +72,7 @@ QString pinyinsearch::CreatePinyin(const QString &zh)
     QList<QStringList> pyList = Pinyin(zh);
     QString pinyinStr;
     for (int i = 0; i < pyList.count(); i++) {
-        //如果一个汉字有多个拼音，把“|”放在中间，以示区分
+        //如果一个汉字有多个拼音，把"|"放在中间，以示区分
         QString pyStr = pyList.at(i).join("|");
         //将每个汉字的拼音放在[]中
         if (!pyStr.isEmpty())
@@ -79,27 +84,32 @@ QString pinyinsearch::CreatePinyin(const QString &zh)
 void pinyinsearch::initDict()
 {
     if (!pinyinDictVector.isEmpty()) {
+        qCDebug(pinyinSearchLog) << "Dictionary already initialized";
         return;
     }
 
     QFile file(kDictFile);
 
     if (!file.open(QIODevice::ReadOnly)) {
-        qCWarning(ServiceLogger) << "open dictFile error :" << file.error();
+        qCCritical(pinyinSearchLog) << "Failed to open dictionary file:" << kDictFile << "Error:" << file.error();
         return;
     }
 
+    qCDebug(pinyinSearchLog) << "Loading pinyin dictionary from:" << kDictFile;
     QByteArray content = file.readAll();
     file.close();
     QTextStream stream(&content, QIODevice::ReadOnly);
+    int count = 0;
     while (!stream.atEnd()) {
         const QString line = stream.readLine();
         const QStringList items = line.split(QChar(':'));
 
         if (items.size() == 2) {
             pinyinDictVector.insert(items[0].toInt(nullptr, 16), items[1]);
+            count++;
         }
     }
+    qCInfo(pinyinSearchLog) << "Dictionary loaded with" << count << "entries";
 }
 
 /**
@@ -110,7 +120,7 @@ void pinyinsearch::initDict()
 QString pinyinsearch::CreatePinyinQuery(QString pinyin) const
 {
     QString expr;
-    //对传入的拼音进行划分，例如：“nihao”->"[%ni%][%hao%]"
+    //对传入的拼音进行划分，例如："nihao"->"[%ni%][%hao%]"
     while (pinyin.size() > 0) {
         //拼音最大长度
         int i = singlePinyinMaxLength;
@@ -170,6 +180,7 @@ QString pinyinsearch::CreatePinyinRegexp(QString pinyin) const
  */
 bool pinyinsearch::PinyinMatch(const QString &zh, const QString &py) const
 {
+    qCDebug(pinyinSearchLog) << "Matching pinyin for:" << zh << "with query:" << py;
     //获取汉字的拼音
     QString zhPinyin = CreatePinyin(zh);
     //获取拼音的正则表达式
@@ -179,7 +190,9 @@ bool pinyinsearch::PinyinMatch(const QString &zh, const QString &py) const
     //根据给定的主题字符串匹配正则表达式,返回的QRegularExpressionMatch对象包含匹配的结果。
     QRegularExpressionMatch match = regexp.match(zhPinyin);
     //拼音是否与正则表达式匹配
-    return match.hasMatch();
+    bool result = match.hasMatch();
+    qCDebug(pinyinSearchLog) << "Match result:" << result;
+    return result;
 }
 
 /**
@@ -216,6 +229,8 @@ QStringList pinyinsearch::SinglePinyin(QString index)
 
     if (pinyinDictVector.contains(unicode)) {
         value = pinyinDictVector[index.data()->unicode()];
+    } else {
+        qCWarning(pinyinSearchLog) << "No pinyin found for character with unicode:" << unicode;
     }
     QStringList pys {};
     pys = value.split(",");

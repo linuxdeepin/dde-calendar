@@ -8,10 +8,13 @@
 #include <QDateTime>
 #include <QDate>
 
+Q_LOGGING_CATEGORY(lunarCalendarLog, "calendar.lunar")
+
 QMap<int, LunarCalendar *> LunarCalendar::glYearCache;
 
 LunarCalendar *LunarCalendar::GetLunarCalendar(qint32 year)
 {
+    qCDebug(lunarCalendarLog) << "Getting lunar calendar for year:" << year;
     auto it = glYearCache.find(year);
     LunarCalendar *plcal = nullptr;
     if (it != glYearCache.end()) {
@@ -39,6 +42,7 @@ void LunarCalendar::LogOffEmptyData()
 //指定年份内公历日期转换为农历日
 lunarInfo LunarCalendar::SolarDayToLunarDay(qint32 month, qint32 day)
 {
+    qCDebug(lunarCalendarLog) << "Converting solar date to lunar date - Month:" << month << "Day:" << day;
     lunarInfo dayinfo;
     QDateTime dt(QDate(Year, month, day), QTime(0, 0, 0, 0), Qt::TimeSpec::UTC);
     int yd = dt.date().dayOfYear();
@@ -74,6 +78,7 @@ lunarInfo LunarCalendar::SolarDayToLunarDay(qint32 month, qint32 day)
 
 LunarCalendar::LunarCalendar(qint32 year)
 {
+    qCInfo(lunarCalendarLog) << "Initializing lunar calendar for year:" << year;
     Year = year;
     Months.reserve(13);
     calcProcData();
@@ -152,6 +157,7 @@ void LunarCalendar::calcLeapMonth()
 
 qint32 LunarCalendar::getSolarTermInfo(qint32 month, qint32 day) const
 {
+    qCDebug(lunarCalendarLog) << "Getting solar term info for Month:" << month << "Day:" << day;
     int index = 2 * month - 1;
     qint32 SolarTerm = -1;
     QDateTime dt1 = SolarTermTimes[index];
