@@ -12,20 +12,26 @@
 #include <QSqlError>
 #include <QFile>
 
+// Add logging category
+Q_LOGGING_CATEGORY(accountManagerDBLog, "calendar.db.accountmanager")
+
 DAccountManagerDataBase::DAccountManagerDataBase(QObject *parent)
     : DDataBase(parent)
 {
+    qCDebug(accountManagerDBLog) << "Creating account manager database";
     setConnectionName(NameAccountManager);
 }
 
 void DAccountManagerDataBase::initDBData()
 {
+    qCDebug(accountManagerDBLog) << "Initializing account manager database data";
     createDB();
     initAccountManagerDB();
 }
 
 DAccount::List DAccountManagerDataBase::getAccountList()
 {
+    qCDebug(accountManagerDBLog) << "Retrieving account list";
     DAccount::List accountList;
     QString strSql("SELECT accountID,accountName, displayName, accountState, accountAvatar,               \
                    accountDescription, accountType, dbName,dBusPath,dBusInterface, dtCreate, expandStatus, dtDelete, dtUpdate, isDeleted         \
@@ -48,14 +54,16 @@ DAccount::List DAccountManagerDataBase::getAccountList()
             account->setDtCreate(QDateTime::fromString(query.value("dtCreate").toString(), Qt::ISODate));
             accountList.append(account);
         }
+        qCDebug(accountManagerDBLog) << "Retrieved" << accountList.size() << "accounts";
     } else {
-        qCWarning(ServiceLogger) << "getAccountList error:" << query.lastError();
+        qCWarning(accountManagerDBLog) << "Failed to retrieve account list:" << query.lastError().text();
     }
     return accountList;
 }
 
 DAccount::Ptr DAccountManagerDataBase::getAccountByID(const QString &accountID)
 {
+    qCDebug(accountManagerDBLog) << "Retrieving account with ID:" << accountID;
     QString strSql("SELECT accountName, displayName, accountState, accountAvatar,               \
                    accountDescription, accountType, dbName,dBusPath,dBusInterface, dtCreate, dtDelete, dtUpdate, expandStatus, isDeleted         \
                    FROM accountManager WHERE accountID = ?");
@@ -76,12 +84,13 @@ DAccount::Ptr DAccountManagerDataBase::getAccountByID(const QString &accountID)
             account->setDbusInterface(query.value("dBusInterface").toString());
             account->setIsExpandDisplay(query.value("expandStatus").toBool());
             account->setDtCreate(QDateTime::fromString(query.value("dtCreate").toString(), Qt::ISODate));
+            qCDebug(accountManagerDBLog) << "Successfully retrieved account:" << account->accountName();
             return account;
         } else {
-            qCWarning(ServiceLogger) << "getAccountByID error:" << query.lastError();
+            qCWarning(accountManagerDBLog) << "Failed to find account with ID:" << accountID;
         }
     } else {
-        qCWarning(ServiceLogger) << "getAccountByID error:" << query.lastError();
+        qCWarning(accountManagerDBLog) << "Failed to prepare account query:" << query.lastError().text();
     }
 
     return nullptr;

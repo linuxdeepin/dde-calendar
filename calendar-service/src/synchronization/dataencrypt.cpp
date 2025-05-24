@@ -5,6 +5,8 @@
 #include "dataencrypt.h"
 #include <QtDebug>
 
+Q_LOGGING_CATEGORY(DataEncryptLog, "calendar.sync.encrypt")
+
 //暂时加解密不适用，待后续补充
 //QByteArray DataEncrypt::aesCbcEncrypt(const QByteArray &data, const QByteArray &key,
 //                                      const QByteArray &initialVector)

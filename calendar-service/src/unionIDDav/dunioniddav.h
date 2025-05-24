@@ -6,6 +6,9 @@
 #define DUNIONIDDAV_H
 
 #include "ddatasyncbase.h"
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(unionIDDavLog)
 
 /**
  * @brief The DUnionIDDav class

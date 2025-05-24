@@ -7,6 +7,8 @@
 #include "commondef.h"
 #include <QtDBus/QtDBus>
 
+Q_DECLARE_LOGGING_CATEGORY(dbusNotifyLog)
+
 class DBusNotify : public QDBusAbstractInterface
 {
     Q_OBJECT

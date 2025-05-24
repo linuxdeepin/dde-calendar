@@ -9,6 +9,9 @@
 #include <qstandardpaths.h>
 #include <DSysInfo>
 
+// Add logging category
+Q_LOGGING_CATEGORY(accountManageLog, "calendar.account.manage")
+
 const QString firstDayOfWeek_key = "firstDayOfWeek";
 const QString shortTimeFormat_key = "shortTimeFormat";
 const QString firstDayOfWeekSource_key = "firstDayOfWeekSource";
@@ -21,6 +24,8 @@ DAccountManageModule::DAccountManageModule(QObject *parent)
     , m_reginFormatConfig(DTK_CORE_NAMESPACE::DConfig::createGeneric("org.deepin.region-format", QString(), this))
     , m_settings( getAppConfigDir().filePath( "config.ini"), QSettings::IniFormat)
 {
+    qCDebug(accountManageLog) << "Initializing account manage module";
+    
     if (m_reginFormatConfig->isValid()) {
         connect(m_reginFormatConfig,
                 &DTK_CORE_NAMESPACE::DConfig::valueChanged,
@@ -48,11 +53,13 @@ DAccountManageModule::DAccountManageModule(QObject *parent)
 
     //将云端帐户信息基本数据与本地数据合并
     unionIDDataMerging();
+    qCInfo(accountManageLog) << "Account data merged with cloud data";
 
     //根据获取到的帐户信息创建对应的帐户服务
     foreach (auto account, m_accountList) {
         //如果不支持云同步且帐户类型为UID则过滤
         if (!m_isSupportUid && account->accountType() == DAccount::Account_UnionID) {
+            qCDebug(accountManageLog) << "Skip UID account due to cloud sync not supported";
             continue;
         }
         DAccountModule::Ptr accountModule = DAccountModule::Ptr(new DAccountModule(account));
@@ -217,10 +224,12 @@ void DAccountManageModule::calendarOpen(bool isOpen)
 
 void DAccountManageModule::unionIDDataMerging()
 {
+    qCDebug(accountManageLog) << "Starting unionID data merging";
     m_accountList = m_accountManagerDB->getAccountList();
 
     //如果不支持云同步
     if (!m_isSupportUid) {
+        qCInfo(accountManageLog) << "Cloud sync not supported, checking for unionid accounts";
         DAccount::Ptr unionidDB;
         auto hasUnionid = [ =, &unionidDB](const DAccount::Ptr & account) {
             if (account->accountType() == DAccount::Account_UnionID) {
@@ -250,11 +259,13 @@ void DAccountManageModule::unionIDDataMerging()
     //如果unionid帐户不存在，则判断数据库中是否有登陆前的信息
     //若有则移除
     if (accountUnionid.isNull() || accountUnionid->accountID().isEmpty()) {
+        qCInfo(accountManageLog) << "No valid unionid account found";
         //如果数据库中有unionid帐户
         if (std::any_of(m_accountList.begin(), m_accountList.end(), hasUnionid)) {
             removeUIdAccount(unionidDB);
         }
     } else {
+        qCInfo(accountManageLog) << "Processing unionID account:" << accountUnionid->accountName();
         //如果unionID登陆了
 
         //如果数据库中有unionid帐户
@@ -300,6 +311,7 @@ void DAccountManageModule::initAccountDBusInfo(const DAccount::Ptr &account)
 
 void DAccountManageModule::removeUIdAccount(const DAccount::Ptr &uidAccount)
 {
+    qCInfo(accountManageLog) << "Removing UID account:" << uidAccount->accountName();
     //帐户列表移除uid帐户
     m_accountList.removeOne(uidAccount);
     //移除对应的数据库 ，停止对应的定时器
@@ -312,6 +324,7 @@ void DAccountManageModule::removeUIdAccount(const DAccount::Ptr &uidAccount)
 
 void DAccountManageModule::addUIdAccount(const DAccount::Ptr &uidAccount)
 {
+    qCInfo(accountManageLog) << "Adding UID account:" << uidAccount->accountName();
     //帐户管理数据库中添加uid帐户
     initAccountDBusInfo(uidAccount);
     m_accountManagerDB->addAccountInfo(uidAccount);
@@ -320,6 +333,7 @@ void DAccountManageModule::addUIdAccount(const DAccount::Ptr &uidAccount)
 
 void DAccountManageModule::updateUIdAccount(const DAccount::Ptr &oldAccount, const DAccount::Ptr &uidAccount)
 {
+    qCInfo(accountManageLog) << "Updating UID account from" << oldAccount->accountName() << "to" << uidAccount->accountName();
     oldAccount->avatar() = uidAccount->avatar();
     oldAccount->displayName() = uidAccount->displayName();
     setUidSwitchStatus(oldAccount);
@@ -427,6 +441,7 @@ void DAccountManageModule::setTimeFormatTypeSource(const DCalendarGeneralSetting
 
 void DAccountManageModule::slotUidLoginStatueChange(const int status)
 {
+    qCDebug(accountManageLog) << "UID login status changed to:" << status;
     //因为有时登录成功会触发2次
     static QList<int> oldStatus{};
     //登录成功后会触发多次，状态也不一致。比如登录后会连续触发 1 -- 4 -- 1 信号
@@ -500,6 +515,7 @@ void DAccountManageModule::slotUidLoginStatueChange(const int status)
 
 void DAccountManageModule::slotSwitcherChange(const bool state)
 {
+    qCInfo(accountManageLog) << "Account switcher state changed to:" << state;
     foreach (auto schedule, m_accountList) {
         if (schedule->accountType() == DAccount::Account_UnionID) {
             if (state) {
@@ -520,6 +536,7 @@ void DAccountManageModule::slotSwitcherChange(const bool state)
 
 void DAccountManageModule::slotSettingChange()
 {
+    qCDebug(accountManageLog) << "Settings changed, updating configurations";
     DCalendarGeneralSettings::Ptr newSetting = getGeneralSettings();
     if (newSetting->firstDayOfWeek() != m_generalSetting->firstDayOfWeek()) {
         m_generalSetting->setFirstDayOfWeek(newSetting->firstDayOfWeek());

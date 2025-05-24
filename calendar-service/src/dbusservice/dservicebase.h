@@ -7,6 +7,9 @@
 
 #include <QObject>
 #include <QDBusContext>
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(serviceBase)
 
 /**
  * @brief The serviceBase class     服务基类

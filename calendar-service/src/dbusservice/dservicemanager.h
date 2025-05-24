@@ -6,6 +6,9 @@
 #define SERVICEMANAGER_H
 
 #include "daccountmanagerservice.h"
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(serviceManager)
 
 /**
  * @brief The DServiceManager class  服务管理类

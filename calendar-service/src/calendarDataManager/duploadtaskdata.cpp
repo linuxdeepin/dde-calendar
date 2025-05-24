@@ -4,30 +4,49 @@
 
 #include "duploadtaskdata.h"
 
+// Add logging category
+Q_LOGGING_CATEGORY(uploadTaskLog, "calendar.upload.task")
+
 QString DUploadTaskData::sql_table_name(int task_obj)
 {
+    QString tableName;
     switch(task_obj) {
     case DUploadTaskData::Task_ScheduleType:
-        return "scheduleType";
+        tableName = "scheduleType";
+        break;
     case DUploadTaskData::Task_Schedule:
-        return "schedules";
+        tableName = "schedules";
+        break;
     case DUploadTaskData::Task_Color:
-        return "typeColor";
+        tableName = "typeColor";
+        break;
+    default:
+        qCWarning(uploadTaskLog) << "Unknown task object type:" << task_obj;
+        break;
     }
-    return "";
+    qCDebug(uploadTaskLog) << "Getting table name for task object:" << task_obj << "=" << tableName;
+    return tableName;
 }
 
 QString DUploadTaskData::sql_table_primary_key(int task_obj)
 {
+    QString primaryKey;
     switch(task_obj) {
     case DUploadTaskData::Task_ScheduleType:
-        return "typeID";
+        primaryKey = "typeID";
+        break;
     case DUploadTaskData::Task_Schedule:
-        return "scheduleID";
+        primaryKey = "scheduleID";
+        break;
     case DUploadTaskData::Task_Color:
-        return "colorID";
+        primaryKey = "colorID";
+        break;
+    default:
+        qCWarning(uploadTaskLog) << "Unknown task object type for primary key:" << task_obj;
+        break;
     }
-    return "";
+    qCDebug(uploadTaskLog) << "Getting primary key for task object:" << task_obj << "=" << primaryKey;
+    return primaryKey;
 }
 
 DUploadTaskData::DUploadTaskData()
@@ -45,6 +64,7 @@ DUploadTaskData::TaskType DUploadTaskData::taskType() const
 
 void DUploadTaskData::setTaskType(const TaskType &taskType)
 {
+    qCDebug(uploadTaskLog) << "Setting task type to:" << taskType;
     m_taskType = taskType;
 }
 
@@ -55,6 +75,7 @@ DUploadTaskData::TaskObject DUploadTaskData::taskObject() const
 
 void DUploadTaskData::setTaskObject(const TaskObject &taskObject)
 {
+    qCDebug(uploadTaskLog) << "Setting task object to:" << taskObject;
     m_taskObject = taskObject;
 }
 
@@ -65,6 +86,7 @@ QString DUploadTaskData::objectId() const
 
 void DUploadTaskData::setObjectId(const QString &objectId)
 {
+    qCDebug(uploadTaskLog) << "Setting object ID to:" << objectId;
     m_objectId = objectId;
 }
 
@@ -75,6 +97,7 @@ QString DUploadTaskData::taskID() const
 
 void DUploadTaskData::setTaskID(const QString &taskID)
 {
+    qCDebug(uploadTaskLog) << "Setting task ID to:" << taskID;
     m_taskID = taskID;
 }
 
@@ -85,5 +108,6 @@ QDateTime DUploadTaskData::dtCreate() const
 
 void DUploadTaskData::setDtCreate(const QDateTime &dtCreate)
 {
+    qCDebug(uploadTaskLog) << "Setting creation datetime to:" << dtCreate;
     m_dtCreate = dtCreate;
 }

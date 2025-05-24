@@ -9,6 +9,9 @@
 #include <QFile>
 #include <QDebug>
 
+// Add logging category
+Q_LOGGING_CATEGORY(baseDBLog, "calendar.db.base")
+
 static QMap<QString, SqliteMutex> DbpathMutexMap;//记录所有用到的数据库文件锁
 static QMutex DbpathMutexMapMutex;               //DbpathMutexMap的锁
 
@@ -20,6 +23,7 @@ SqliteMutex &getDbMutexRef(const QString &dbpath)
     QMutexLocker locker(&DbpathMutexMapMutex);
 
     if (!DbpathMutexMap.contains(dbpath)) {
+        qCDebug(baseDBLog) << "Creating new mutex for database:" << dbpath;
         DbpathMutexMap.insert(dbpath, SqliteMutex());
     }
     return DbpathMutexMap[dbpath];
@@ -146,10 +150,12 @@ DDataBase::DDataBase(QObject *parent)
     , m_DBPath("")
     , m_connectionName("")
 {
+    qCDebug(baseDBLog) << "Creating base database instance";
 }
 
 DDataBase::~DDataBase()
 {
+    qCDebug(baseDBLog) << "Destroying base database instance for connection:" << m_connectionName;
 }
 
 QString DDataBase::getDBPath() const
@@ -159,12 +165,15 @@ QString DDataBase::getDBPath() const
 
 void DDataBase::setDBPath(const QString &DBPath)
 {
+    qCDebug(baseDBLog) << "Setting database path to:" << DBPath;
     m_DBPath = DBPath;
 }
 
 QString DDataBase::createUuid()
 {
-    return QUuid::createUuid().toString(QUuid::WithoutBraces);
+    QString uuid = QUuid::createUuid().toString(QUuid::WithoutBraces);
+    qCDebug(baseDBLog) << "Generated new UUID:" << uuid;
+    return uuid;
 }
 
 QString DDataBase::getConnectionName() const
@@ -174,27 +183,34 @@ QString DDataBase::getConnectionName() const
 
 void DDataBase::setConnectionName(const QString &connectionName)
 {
+    qCDebug(baseDBLog) << "Setting connection name to:" << connectionName;
     m_connectionName = connectionName;
 }
 
 void DDataBase::initDBData()
 {
+    qCDebug(baseDBLog) << "Initializing database data for connection:" << m_connectionName;
     createDB();
 }
 
 void DDataBase::dbOpen()
 {
+    qCDebug(baseDBLog) << "Opening database connection" << m_connectionName << "at path:" << m_DBPath;
     QStringList cntNames = QSqlDatabase::connectionNames();
     if (cntNames.contains(getConnectionName())) {
         m_database = QSqlDatabase::database(getConnectionName());
         //如果数据库不一致则设置新的数据库
         if (m_database.databaseName() != getDBPath()) {
+            qCDebug(baseDBLog) << "Database path mismatch, updating to:" << m_DBPath;
             m_database.setDatabaseName(getDBPath());
         }
     } else {
+        qCDebug(baseDBLog) << "Creating new database connection:" << m_connectionName;
         m_database = QSqlDatabase::addDatabase("QSQLITE", getConnectionName());
         m_database.setDatabaseName(getDBPath());
-        m_database.open();
+        if (!m_database.open()) {
+            qCWarning(baseDBLog) << "Failed to open database connection:" << m_database.lastError().text();
+        }
     }
 }
 
@@ -202,12 +218,17 @@ bool DDataBase::dbFileExists()
 {
     QFile file;
     file.setFileName(getDBPath());
-    return file.exists();
+    bool exists = file.exists();
+    qCDebug(baseDBLog) << "Checking if database file exists at" << getDBPath() << ":" << exists;
+    return exists;
 }
 
 void DDataBase::removeDB()
 {
-    QFile::remove(getDBPath());
+    qCInfo(baseDBLog) << "Removing database file at:" << getDBPath();
+    if (!QFile::remove(getDBPath())) {
+        qCWarning(baseDBLog) << "Failed to remove database file at:" << getDBPath();
+    }
 }
 
 void SqliteMutex::lock()

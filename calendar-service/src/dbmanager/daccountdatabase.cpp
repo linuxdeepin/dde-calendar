@@ -15,16 +15,21 @@
 #include <QSqlError>
 #include <QFile>
 
+// Add logging category
+Q_LOGGING_CATEGORY(accountDBLog, "calendar.db.account")
+
 DAccountDataBase::DAccountDataBase(const DAccount::Ptr &account, QObject *parent)
     : DDataBase(parent)
     , m_account(account)
 {
+    qCDebug(accountDBLog) << "Creating account database for account:" << m_account->accountName();
     setConnectionName(m_account->accountName());
 }
 
 QString DAccountDataBase::createSchedule(const DSchedule::Ptr &schedule)
 {
     if (!schedule.isNull()) {
+        qCDebug(accountDBLog) << "Creating new schedule with summary:" << schedule->summary();
         SqliteQuery query(m_database);
         schedule->setUid(DDataBase::createUuid());
 
@@ -49,18 +54,21 @@ QString DAccountDataBase::createSchedule(const DSchedule::Ptr &schedule)
             query.addBindValue(0);
             if (!query.exec()) {
                 schedule->setUid("");
-                qCWarning(ServiceLogger) << "createSchedule error:" << query.lastError();
+                qCWarning(accountDBLog) << "Failed to create schedule:" << query.lastError().text() 
+                                      << "Summary:" << schedule->summary();
+            } else {
+                qCDebug(accountDBLog) << "Successfully created schedule with ID:" << schedule->uid();
             }
             if (query.isActive()) {
                 query.finish();
             }
         } else {
             schedule->setUid("");
-            qCWarning(ServiceLogger) << "createSchedule error:" << query.lastError();
+            qCWarning(accountDBLog) << "Failed to prepare schedule creation query:" << query.lastError().text();
         }
 
     } else {
-        qCWarning(ServiceLogger) << "schedule is null";
+        qCWarning(accountDBLog) << "Attempted to create schedule with null pointer";
     }
 
     return schedule->uid();
@@ -335,14 +343,17 @@ DSchedule::List DAccountDataBase::getRemindSchedule()
 
 void DAccountDataBase::initDBData()
 {
+    qCDebug(accountDBLog) << "Initializing account database data";
     //如果不存在对应的数据库则创建
     if (!dbFileExists()) {
+        qCInfo(accountDBLog) << "Database does not exist, creating new database";
         createDB();
         initTypeColor();
         initScheduleDB();
         initScheduleType();
         initAccountDB();
     } else {
+        qCDebug(accountDBLog) << "Database exists, opening connection";
         //如果存在则连接数据库
         dbOpen();
     }

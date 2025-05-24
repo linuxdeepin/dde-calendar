@@ -10,6 +10,8 @@
 #include <QtDBus/QtDBus>
 #include <QSharedPointer>
 
+Q_DECLARE_LOGGING_CATEGORY(dunionIDDbusLog)
+
 class DUnionIDDbus : public QDBusAbstractInterface
 {
     Q_OBJECT
