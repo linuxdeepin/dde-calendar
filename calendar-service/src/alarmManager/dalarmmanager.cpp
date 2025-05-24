@@ -9,6 +9,9 @@
 #include "dbus/dbusnotify.h"
 #include <QLoggingCategory>
 
+// Add logging category
+Q_LOGGING_CATEGORY(alarmLog, "dde.calendar.alarm")
+
 #define Millisecond 1
 #define Second 1000 * Millisecond
 #define Minute 60 * Second
@@ -27,33 +30,47 @@ static QString layoutHM("15:04");
 DAlarmManager::DAlarmManager(QObject *parent)
     : QObject(parent)
 {
+    qCDebug(alarmLog) << "Initializing DAlarmManager";
     m_dbusnotify = new DBusNotify("org.deepin.dde.Notification1",
                                   "/org/deepin/dde/Notification1",
                                   "org.deepin.dde.Notification1",
                                   QDBusConnection::sessionBus(),
                                   this);
     if (!m_dbusnotify->isValid()) {
+        qCWarning(alarmLog) << "Failed to initialize DBusNotify with org.deepin.dde.Notification1, trying fallback";
         delete m_dbusnotify;
         m_dbusnotify = new DBusNotify("com.deepin.dde.Notification",
                                       "/com/deepin/dde/Notification",
                                       "com.deepin.dde.Notification",
                                       QDBusConnection::sessionBus(),
                                       this);
+        if (!m_dbusnotify->isValid()) {
+            qCCritical(alarmLog) << "Failed to initialize DBusNotify with fallback path";
+        } else {
+            qCInfo(alarmLog) << "Successfully initialized DBusNotify with fallback path";
+        }
+    } else {
+        qCInfo(alarmLog) << "Successfully initialized DBusNotify";
     }
 
     //若没开启定时任务则开启定时任务
     CSystemdTimerControl systemdTimer;
+    qCDebug(alarmLog) << "Starting calendar service systemd timer";
     systemdTimer.startCalendarServiceSystemdTimer();
 }
 
 void DAlarmManager::updateRemind(const DRemindData::List &remindList)
 {
-    qCDebug(ServiceLogger) << "updateRemind" << "list size:" << remindList.size();
-    if (remindList.size() == 0)
+    qCDebug(alarmLog) << "Updating remind list, size:" << remindList.size();
+    if (remindList.size() == 0) {
+        qCDebug(alarmLog) << "Empty remind list, skipping update";
         return;
+    }
     QString &&accountID = remindList.at(0)->accountID();
+    qCDebug(alarmLog) << "Processing reminders for account:" << accountID;
+    
     CSystemdTimerControl systemdTimerControl;
-    //清空该帐户下日程提醒
+    qCDebug(alarmLog) << "Stopping all remind systemd timers for account:" << accountID;
     systemdTimerControl.stopAllRemindSystemdTimer(accountID);
     systemdTimerControl.removeRemindFile(accountID);
 
@@ -66,13 +83,17 @@ void DAlarmManager::updateRemind(const DRemindData::List &remindList)
         info.triggerTimer = remind->dtRemind();
         infoVector.append(info);
     }
+    qCDebug(alarmLog) << "Building configuration for" << infoVector.size() << "reminders";
     systemdTimerControl.buildingConfiggure(infoVector);
 }
 
 void DAlarmManager::notifyJobsChanged(const DRemindData::List &remindList)
 {
-    if (remindList.size() == 0)
+    qCDebug(alarmLog) << "Notify jobs changed, list size:" << remindList.size();
+    if (remindList.size() == 0) {
+        qCDebug(alarmLog) << "Empty remind list, skipping notification";
         return;
+    }
     CSystemdTimerControl systemdTimerControl;
 
     QVector<SystemDInfo> infoVector {};
@@ -84,14 +105,17 @@ void DAlarmManager::notifyJobsChanged(const DRemindData::List &remindList)
         info.triggerTimer = remind->dtRemind();
         infoVector.append(info);
     }
+    qCDebug(alarmLog) << "Stopping systemd timers for" << infoVector.size() << "jobs";
     systemdTimerControl.stopSystemdTimerByJobInfos(infoVector);
 }
 
 void DAlarmManager::notifyMsgHanding(const DRemindData::Ptr &remindData, const int operationNum)
 {
+    qCDebug(alarmLog) << "Handling notification message for alarm:" << remindData->alarmID() << "operation:" << operationNum;
     switch (operationNum) {
     case 1:
         //打开日历
+        qCDebug(alarmLog) << "Opening calendar UI for alarm:" << remindData->alarmID();
         emit signalCallOpenCalendarUI(remindData->alarmID());
         break;
     case 2: //稍后提醒
@@ -100,15 +124,18 @@ void DAlarmManager::notifyMsgHanding(const DRemindData::Ptr &remindData, const i
     case 23: //四个小时后提醒
     case 3: //明天提醒
     case 4: //提前一天提醒
+        qCDebug(alarmLog) << "Setting reminder for later, operation:" << operationNum;
         remindLater(remindData, operationNum);
         break;
     default:
+        qCWarning(alarmLog) << "Unknown operation number:" << operationNum;
         break;
     }
 }
 
 void DAlarmManager::remindLater(const DRemindData::Ptr &remindData, const int operationNum)
 {
+    qCDebug(alarmLog) << "Setting reminder for later, alarm:" << remindData->alarmID() << "operation:" << operationNum;
     CSystemdTimerControl systemdTimerControl;
     SystemDInfo info;
     info.accountID = remindData->accountID();
@@ -122,6 +149,7 @@ void DAlarmManager::remindLater(const DRemindData::Ptr &remindData, const int op
     }
     info.triggerTimer = remindData->dtRemind();
     //停止相应的任务
+    qCDebug(alarmLog) << "Stopping systemd timer for job:" << info.alarmID;
     systemdTimerControl.stopSystemdTimerByJobInfo(info);
 
     if (operationNum != 2) {
@@ -131,6 +159,7 @@ void DAlarmManager::remindLater(const DRemindData::Ptr &remindData, const int op
     QVector<SystemDInfo> infoVector;
     infoVector.append(info);
     //开启新任务
+    qCDebug(alarmLog) << "Building new configuration for reminder";
     systemdTimerControl.buildingConfiggure(infoVector);
 }
 
@@ -138,11 +167,12 @@ int DAlarmManager::remindJob(const DRemindData::Ptr &remindData, const DSchedule
 {
     //如果没有提醒
     if (schedule->alarms().size() == 0) {
-        qCWarning(ServiceLogger) << "remind job failed id=%1" << schedule->uid();
+        qCWarning(alarmLog) << "Remind job failed, no alarms found for schedule:" << schedule->uid();
         return 0;
     }
 
     KCalendarCore::Alarm::Ptr alarm = schedule->alarms().at(0);
+    qCDebug(alarmLog) << "Processing remind job for alarm:" << remindData->alarmID();
 
     int nDays = -(alarm->startOffset().asDays());
 
@@ -164,6 +194,7 @@ int DAlarmManager::remindJob(const DRemindData::Ptr &remindData, const DSchedule
     if (tm < schedule->dtStart()) {
         //如果提醒规则大于3天且是第二次提醒
         if (nDays >= 3 && remindData->remindCount() == 1) {
+            qCDebug(alarmLog) << "Setting up notification for multi-day reminder";
             //default对应的是默认操作，也就是在点击空白区域会出发的操作
             argMake(1, notifyActKeyDefault, "");
             argMake(5, notifyActKeyClose, tr("Close", "button"));
@@ -172,11 +203,13 @@ int DAlarmManager::remindJob(const DRemindData::Ptr &remindData, const DSchedule
                 argMake(4, notifyActKeyRemind1DayBefore, tr("One day before start"));
 
         } else if ((nDays == 1 || nDays == 2) && bmax) {
+            qCDebug(alarmLog) << "Setting up notification for 1-2 day reminder";
             argMake(1, notifyActKeyDefault, "");
             argMake(5, notifyActKeyClose, tr("Close", "button"));
             argMake(3, notifyActKeyRemindTomorrow, tr("Remind me tomorrow"));
 
         } else {
+            qCDebug(alarmLog) << "Setting up notification with multiple remind options";
             argMake(1, notifyActKeyDefault, "");
             argMake(5, notifyActKeyClose, tr("Close", "button"));
             argMake(2, notifyActKeyRemindLater, tr("Remind me later"));
@@ -187,6 +220,7 @@ int DAlarmManager::remindJob(const DRemindData::Ptr &remindData, const DSchedule
             argMake(3, notifyActKeyRemindTomorrow, tr("Tomorrow"));
         }
     } else {
+        qCDebug(alarmLog) << "Setting up basic notification options";
         argMake(1, notifyActKeyDefault, "");
         argMake(5, notifyActKeyClose, tr("Close", "button"));
     }
@@ -199,12 +233,10 @@ int DAlarmManager::remindJob(const DRemindData::Ptr &remindData, const DSchedule
     qint32 timeout = 0;
     QList<QVariant> argumentList;
     argumentList << appname << replaces_id << appicon << title << body << actionlist << hints << timeout;
-    qCDebug(ServiceLogger) << __FUNCTION__ << QString("remind now: %1, title:"
-                                        " %2, body: %3")
-             .arg(QDateTime::currentDateTime().toString())
-             .arg(title)
-             .arg(body);
+    qCDebug(alarmLog) << "Sending notification for schedule:" << schedule->uid() 
+                      << "at:" << QDateTime::currentDateTime().toString();
     int notifyid = m_dbusnotify->Notify(argumentList);
+    qCDebug(alarmLog) << "Notification sent with ID:" << notifyid;
     return notifyid;
 }
 

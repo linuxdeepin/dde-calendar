@@ -17,8 +17,11 @@
 #include <QHBoxLayout>
 #include <QTreeWidgetItem>
 #include "doanetworkdbus.h"
+#include <QLoggingCategory>
 
 DWIDGET_USE_NAMESPACE
+
+Q_DECLARE_LOGGING_CATEGORY(sidebarItemLog)
 
 class SidebarItemWidget : public QWidget
 {

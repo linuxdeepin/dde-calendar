@@ -11,8 +11,12 @@
 #include <QHBoxLayout>
 #include <QDebug>
 
+// Add logging category
+Q_LOGGING_CATEGORY(cpushbuttonLog, "calendar.widget.cpushbutton")
+
 CPushButton::CPushButton(QWidget *parent) : QWidget(parent)
 {
+    qCDebug(cpushbuttonLog) << "Constructing CPushButton";
     QHBoxLayout *layoutAddType = new QHBoxLayout();
     m_textLabel = new QLabel(tr("New event type"));
 
@@ -49,7 +53,9 @@ CPushButton::CPushButton(QWidget *parent) : QWidget(parent)
 
 void CPushButton::setHighlight(bool status)
 {
+    qCDebug(cpushbuttonLog) << "Setting highlight status to:" << status;
     if (status == m_Highlighted) {
+        qCDebug(cpushbuttonLog) << "Highlight status unchanged, returning";
         return;
     }
     m_Highlighted = status;
@@ -63,13 +69,16 @@ bool CPushButton::isHighlight()
 
 void CPushButton::mousePressEvent(QMouseEvent *event)
 {
+    qCDebug(cpushbuttonLog) << "Mouse press event at:" << event->pos();
     Q_UNUSED(event);
     m_pressed = true;
 }
 
 void CPushButton::mouseReleaseEvent(QMouseEvent *event)
 {
+    qCDebug(cpushbuttonLog) << "Mouse release event at:" << event->pos();
     if (m_pressed && rect().contains(event->pos())){
+        qCDebug(cpushbuttonLog) << "Click event emitted";
         emit clicked();
     }
     m_pressed = false;
@@ -77,6 +86,7 @@ void CPushButton::mouseReleaseEvent(QMouseEvent *event)
 
 void CPushButton::paintEvent(QPaintEvent *event)
 {
+    qCDebug(cpushbuttonLog) << "Paint event triggered, highlighted:" << m_Highlighted;
     QWidget::paintEvent(event);
     DPalette palette = DPaletteHelper::instance()->palette(this);
     QPainter painter(this);

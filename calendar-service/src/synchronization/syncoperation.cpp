@@ -6,23 +6,25 @@
 #include "commondef.h"
 #include <QLoggingCategory>
 
+Q_LOGGING_CATEGORY(SyncOperationLog, "calendar.sync.operation")
 
 Syncoperation::Syncoperation(QObject *parent)
     : QObject(parent)
     , m_syncInter(new SyncInter(SYNC_DBUS_PATH, SYNC_DBUS_INTERFACE, QDBusConnection::sessionBus(), this))
 {
+    qCDebug(SyncOperationLog) << "Initializing sync operation with DBus path:" << SYNC_DBUS_PATH;
 
     if (!QDBusConnection::sessionBus().connect(SYNC_DBUS_PATH,
                                                SYNC_DBUS_INTERFACE,
                                                "org.freedesktop.DBus.Properties",
                                                QLatin1String("PropertiesChanged"), this,
                                                SLOT(onPropertiesChanged(QString, QVariantMap, QStringList)))) {
-        qCWarning(ServiceLogger) << "the PropertiesChanged was fail!";
+        qCWarning(ServiceLogger) << "Failed to connect to PropertiesChanged signal";
     }
 
     if (!QDBusConnection::sessionBus().connect(m_syncInter->service(), m_syncInter->path(), m_syncInter->interface(),
                                                "", this, SLOT(slotDbusCall(QDBusMessage)))) {
-        qCWarning(ServiceLogger) << "the connection was fail!" << "path: " << m_syncInter->path() << "interface: " << m_syncInter->interface();
+        qCWarning(ServiceLogger) << "Failed to connect to DBus service:" << m_syncInter->service() << "path:" << m_syncInter->path() << "interface:" << m_syncInter->interface();
     };
 }
 
@@ -33,44 +35,38 @@ Syncoperation::~Syncoperation()
 
 void Syncoperation::optlogin()
 {
+    qCDebug(SyncOperationLog) << "Initiating login operation";
     //异步调用无需等待结果,由后续LoginStatus触发处理
     m_syncInter->login();
 }
 
 void Syncoperation::optlogout()
 {
+    qCDebug(SyncOperationLog) << "Initiating logout operation";
     //异步调用无需等待结果,由后续LoginStatus触发处理
     m_syncInter->logout();
 }
 
 SyncoptResult Syncoperation::optUpload(const QString &key)
 {
+    qCDebug(SyncOperationLog) << "Starting upload operation for key:" << key;
     SyncoptResult result;
     QDBusPendingReply<QByteArray> reply = m_syncInter->Upload(key);
     qCInfo(ServiceLogger) << "Upload key:" << key;
     reply.waitForFinished();
     if (reply.error().message().isEmpty()) {
-        qCInfo(ServiceLogger) << "Upload success!";
-        //解析上传成功数据的元信息ID值 ,这个ID值暂时没用，不解析出来
-//        QJsonObject json;
-//        json = QJsonDocument::fromJson(reply).object();
-//        if (json.contains(QString("data"))) {
-//            QJsonObject subJsonObject = json.value(QString("data")).toObject();
-//            if (subJsonObject.contains(QString("id"))) {
-//                result.data = subJsonObject.value(QString("id")).toString();
-//                qCInfo(ServiceLogger) << result.data;
-//            }
-//        }
+        qCInfo(ServiceLogger) << "Upload operation completed successfully";
         result.data = reply.value();
         result.ret = true;
         result.error_code = SYNC_No_Error;
     } else {
-        qCWarning(ServiceLogger) << "Upload failed:" << reply.error().message();
+        qCWarning(ServiceLogger) << "Upload operation failed:" << reply.error().message();
         result.ret = false;
         QJsonDocument jsonDocument = QJsonDocument::fromJson(reply.error().message().toLocal8Bit().data());
         QJsonObject obj = jsonDocument.object();
         if (obj.contains(QString("code"))) {
             result.error_code = obj.value(QString("code")).toInt();
+            qCWarning(SyncOperationLog) << "Upload error code:" << result.error_code;
         }
     }
 
@@ -79,23 +75,23 @@ SyncoptResult Syncoperation::optUpload(const QString &key)
 
 SyncoptResult Syncoperation::optDownload(const QString &key, const QString &path)
 {
-    qCDebug(ServiceLogger) << "download" << key << path;
+    qCDebug(SyncOperationLog) << "Starting download operation for key:" << key << "to path:" << path;
     SyncoptResult result;
     QDBusPendingReply<QString> reply = m_syncInter->Download(key, path);
     reply.waitForFinished();
     if (reply.error().message().isEmpty()) {
-        qCInfo(ServiceLogger) << "Download success!";
+        qCInfo(ServiceLogger) << "Download operation completed successfully";
         result.data = reply.value();
         result.ret = true;
         result.error_code = SYNC_No_Error;
     } else {
-        qCWarning(ServiceLogger) << "Download failed:" << reply.error().message();
+        qCWarning(ServiceLogger) << "Download operation failed:" << reply.error().message();
         result.ret = false;
         QJsonDocument jsonDocument = QJsonDocument::fromJson(reply.error().message().toLocal8Bit().data());
         QJsonObject obj = jsonDocument.object();
         if (obj.contains(QString("code"))) {
             result.error_code = obj.value(QString("code")).toInt();
-            qCWarning(ServiceLogger) << result.error_code;
+            qCWarning(SyncOperationLog) << "Download error code:" << result.error_code;
         }
     }
 
@@ -238,13 +234,16 @@ SyncoptResult Syncoperation::optGetCalendarSwitcher()
 
 void Syncoperation::slotDbusCall(const QDBusMessage &msg)
 {
+    qCDebug(SyncOperationLog) << "Received DBus call with member:" << msg.member();
     if (msg.member() == "SwitcherChange") {
         SyncoptResult result;
         //获取总开关状态
         result = optGetCalendarSwitcher();
         if (result.ret) {
+            qCDebug(SyncOperationLog) << "Calendar switcher state changed to:" << result.switch_state;
             Q_EMIT SwitcherChange(result.switch_state);
         } else {
+            qCWarning(SyncOperationLog) << "Failed to get calendar switcher state";
             Q_EMIT SwitcherChange(false);
         }
     } else if (msg.member() == "LoginStatus") {
@@ -259,18 +258,21 @@ void Syncoperation::slotDbusCall(const QDBusMessage &msg)
         }
         tmp.endArray();
         if (loginStatus.size() > 0) {
+            qCDebug(SyncOperationLog) << "Login status changed to:" << loginStatus.first();
             emit signalLoginStatusChange(loginStatus.first());
         } else {
-            qCWarning(ServiceLogger) << "get loginStatus error";
+            qCWarning(ServiceLogger) << "Failed to get login status from DBus message";
         }
     }
 }
-
 
 void Syncoperation::onPropertiesChanged(const QString &interfaceName, const QVariantMap &changedProperties, const QStringList &invalidatedProperties)
 {
     Q_UNUSED(interfaceName);
     Q_UNUSED(invalidatedProperties);
-    if (!changedProperties.contains("UserData"))
+    if (!changedProperties.contains("UserData")) {
+        qCDebug(SyncOperationLog) << "Properties changed but UserData not affected";
         return;
+    }
+    qCDebug(SyncOperationLog) << "UserData property changed";
 }

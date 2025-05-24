@@ -7,6 +7,9 @@
 
 #include "dservicebase.h"
 #include "daccountmanagemodule.h"
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(accountManagerService)
 
 #include <QString>
 

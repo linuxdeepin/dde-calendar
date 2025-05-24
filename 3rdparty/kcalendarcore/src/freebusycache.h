@@ -17,6 +17,9 @@
 #define KCALCORE_FREEBUSYCACHE_H
 
 #include "freebusy.h"
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(freeBusyCacheLog)
 
 class QString;
 

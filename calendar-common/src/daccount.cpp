@@ -11,6 +11,7 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QDebug>
+#include <QDBusConnection>
 
 DAccount::DAccount(DAccount::Type type)
     : m_displayName("")
@@ -28,6 +29,17 @@ DAccount::DAccount(DAccount::Type type)
     , m_intervalTime(0)
     , m_isExpandDisplay(true)
 {
+    if (!QDBusConnection::sessionBus().connect(NETWORK_DBUS_NAME,
+                                               NETWORK_DBUS_PATH,
+                                               "org.freedesktop.DBus.Properties",
+                                               QLatin1String("PropertiesChanged"), this,
+                                               SLOT(propertiesChanged(QDBusMessage)))) {
+        qCWarning(ClientLogger) << "Failed to connect to PropertiesChanged signal";
+        qCWarning(ClientLogger) << "Last error:" << this->lastError().message();
+    }
+
+    m_hasDateTimeFormat = getHasDateTimeFormat();
+    qCDebug(ClientLogger) << "DAccount initialized with hasDateTimeFormat:" << m_hasDateTimeFormat;
 }
 
 QString DAccount::displayName() const
@@ -168,7 +180,7 @@ void DAccount::setDtUpdate(const QDateTime &dtUpdate)
 bool DAccount::toJsonString(const DAccount::Ptr &account, QString &jsonStr)
 {
     if (account.isNull()) {
-        qCWarning(CommonLogger) << "hold a reference to a null pointer.";
+        qCWarning(ClientLogger) << "Failed to convert account to JSON: null pointer received";
         return false;
     }
     QJsonObject rootObj;
@@ -191,6 +203,7 @@ bool DAccount::toJsonString(const DAccount::Ptr &account, QString &jsonStr)
     QJsonDocument jsonDoc;
     jsonDoc.setObject(rootObj);
     jsonStr = QString::fromUtf8(jsonDoc.toJson(QJsonDocument::Compact));
+    qCDebug(ClientLogger) << "Account successfully converted to JSON string";
     return true;
 }
 
@@ -198,12 +211,13 @@ bool DAccount::fromJsonString(Ptr &account, const QString &jsonStr)
 {
     if (account.isNull()) {
         account = DAccount::Ptr(new DAccount);
+        qCDebug(ClientLogger) << "Created new DAccount instance for JSON parsing";
     }
 
     QJsonParseError jsonError;
     QJsonDocument jsonDoc(QJsonDocument::fromJson(jsonStr.toLocal8Bit(), &jsonError));
     if (jsonError.error != QJsonParseError::NoError) {
-        qCWarning(CommonLogger) << "error:" << jsonError.errorString();
+        qCWarning(ClientLogger) << "Failed to parse JSON string:" << jsonError.errorString();
         return false;
     }
     QJsonObject rootObj = jsonDoc.object();
@@ -258,11 +272,13 @@ bool DAccount::fromJsonString(Ptr &account, const QString &jsonStr)
         syncFreqFromJsonString(account, rootObj.value("syncFreq").toString());
     }
 
+    qCDebug(ClientLogger) << "Successfully parsed account from JSON string";
     return true;
 }
 
 bool DAccount::toJsonListString(const DAccount::List &accountList, QString &jsonStr)
 {
+    qCDebug(ClientLogger) << "Converting" << accountList.size() << "accounts to JSON list string";
     QJsonArray jsArr;
     foreach (auto account, accountList) {
         QJsonObject jsonAccount;
@@ -284,7 +300,7 @@ bool DAccount::fromJsonListString(List &accountList, const QString &jsonStr)
     QJsonParseError jsonError;
     QJsonDocument jsonDoc(QJsonDocument::fromJson(jsonStr.toLocal8Bit(), &jsonError));
     if (jsonError.error != QJsonParseError::NoError) {
-        qCWarning(CommonLogger) << "error:" << jsonError.errorString();
+        qCWarning(ClientLogger) << "Failed to parse JSON list string:" << jsonError.errorString();
         return false;
     }
     QJsonObject rootObj = jsonDoc.object();
@@ -301,6 +317,7 @@ bool DAccount::fromJsonListString(List &accountList, const QString &jsonStr)
             }
         }
     }
+    qCDebug(ClientLogger) << "Successfully parsed" << accountList.size() << "accounts from JSON list string";
     return true;
 }
 

@@ -8,6 +8,9 @@
 #include "dservicebase.h"
 #include "huangliData/dbusdatastruct.h"
 #include "calendarhuangli.h"
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(huangliService)
 
 /**
  * @brief The DHuangliService class      黄历服务

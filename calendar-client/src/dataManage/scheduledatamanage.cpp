@@ -10,19 +10,25 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 
+Q_LOGGING_CATEGORY(scheduleDataLog, "calendar.schedule.data")
+
 CScheduleDataManage *CScheduleDataManage::m_vscheduleDataManage = nullptr;
 
 //
 CSchedulesColor CScheduleDataManage::getScheduleColorByType(const QString &typeId)
 {
+    qCDebug(scheduleDataLog) << "Getting schedule color for type ID:" << typeId;
     CSchedulesColor color;
     DScheduleType::Ptr type = gAccountManager->getScheduleTypeByScheduleTypeId(typeId);
     QColor typeColor;
     if (nullptr != type) {
         typeColor = type->typeColor().colorCode();
-    } else if (typeId =="other"){
-            //如果类型不存在则设置一个默认颜色
-            typeColor = QColor("#BA60FA");
+    } else if (typeId =="other") {
+        qCInfo(scheduleDataLog) << "Using default color for 'other' type";
+        //如果类型不存在则设置一个默认颜色
+        typeColor = QColor("#BA60FA");
+    } else {
+        qCWarning(scheduleDataLog) << "Schedule type not found:" << typeId;
     }
 
     color.orginalColor = typeColor;
@@ -42,22 +48,28 @@ CSchedulesColor CScheduleDataManage::getScheduleColorByType(const QString &typeI
 
 QColor CScheduleDataManage::getSystemActiveColor()
 {
-    return DGuiApplicationHelper::instance()->applicationPalette().highlight().color();
+    QColor color = DGuiApplicationHelper::instance()->applicationPalette().highlight().color();
+    qCDebug(scheduleDataLog) << "System active color:" << color;
+    return color;
 }
 
 QColor CScheduleDataManage::getTextColor()
 {
-    return DGuiApplicationHelper::instance()->applicationPalette().text().color();
+    QColor color = DGuiApplicationHelper::instance()->applicationPalette().text().color();
+    qCDebug(scheduleDataLog) << "Text color:" << color;
+    return color;
 }
 
 void CScheduleDataManage::setTheMe(int type)
 {
+    qCInfo(scheduleDataLog) << "Setting theme to:" << type;
     m_theme = type;
 }
 
 CScheduleDataManage *CScheduleDataManage::getScheduleDataManage()
 {
     if (nullptr == m_vscheduleDataManage) {
+        qCDebug(scheduleDataLog) << "Creating schedule data manager instance";
         m_vscheduleDataManage = new CScheduleDataManage();
     }
     return m_vscheduleDataManage;
@@ -66,6 +78,7 @@ CScheduleDataManage *CScheduleDataManage::getScheduleDataManage()
 CScheduleDataManage::CScheduleDataManage(QObject *parent)
     : QObject(parent)
 {
+    qCDebug(scheduleDataLog) << "Initializing schedule data manager";
 }
 
 CScheduleDataManage::~CScheduleDataManage()

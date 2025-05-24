@@ -21,11 +21,14 @@
 
 #include <QDebug>
 
+Q_LOGGING_CATEGORY(journalLog, "calendar.journal")
+
 using namespace KCalendarCore;
 
 Journal::Journal()
     : d(nullptr)
 {
+    qCDebug(journalLog) << "Creating new journal";
 }
 
 Journal::Journal(const Journal &) = default;
@@ -43,6 +46,7 @@ QByteArray Journal::typeStr() const
 
 Journal *Journal::clone() const
 {
+    qCDebug(journalLog) << "Cloning journal with UID:" << uid();
     return new Journal(*this);
 }
 
@@ -80,10 +84,12 @@ void Journal::setDateTime(const QDateTime &dateTime, DateTimeRole role)
 {
     switch (role) {
     case RoleDnD: {
+        qCDebug(journalLog) << "Setting journal datetime for DnD:" << dateTime;
         setDtStart(dateTime);
         break;
     }
     default:
+        qCWarning(journalLog) << "Unhandled datetime role:" << role;
         qDebug() << "Unhandled role" << role;
     }
 }

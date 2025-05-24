@@ -6,6 +6,9 @@
 #define TABLETCONFIG_H
 
 #include <QObject>
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(tabletConfig)
 
 /**
  * @brief The TabletConfig class

@@ -17,6 +17,9 @@
 #include <QToolButton>
 #include <QHeaderView>
 
+// Add logging category
+Q_LOGGING_CATEGORY(lunarCalendarLog, "calendar.widget.lunar")
+
 /**
  * 实现的效果：保证原本日历不变的前提下，1.增加阴历年、2.增加阴历日、3.增加控件底部留白
  * 1.增加阴历年
@@ -339,9 +342,14 @@ LunarCalendarWidget::LunarCalendarWidget(QWidget *parent)
     : QCalendarWidget(parent)
     , m_style(new CalenderStyle)
 {
+    qCDebug(lunarCalendarLog) << "Initializing LunarCalendarWidget";
+    
     QWidget *w = findChild<QTableView *>("qt_calendar_calendarview");
-    if (w)
+    if (w) {
         w->setStyle(m_style);
+    } else {
+        qCWarning(lunarCalendarLog) << "Failed to find calendar view widget";
+    }
 
     QVBoxLayout *layoutV = qobject_cast<QVBoxLayout *>(layout());
     m_lunarLabel = new QLabel(this);
@@ -358,10 +366,13 @@ LunarCalendarWidget::LunarCalendarWidget(QWidget *parent)
     label->setBackgroundRole(QPalette::Base);
     label->setFixedHeight(BottomSpacing);
     layoutV->insertWidget(3, label);
+    
+    qCDebug(lunarCalendarLog) << "LunarCalendarWidget initialization completed";
 }
 
 LunarCalendarWidget::~LunarCalendarWidget()
 {
+    qCDebug(lunarCalendarLog) << "Destroying LunarCalendarWidget";
     //Sets the widget's GUI style to style. The ownership of the style object is not transferred.
     //需手动删除
     delete m_style;
@@ -369,8 +380,10 @@ LunarCalendarWidget::~LunarCalendarWidget()
 
 void LunarCalendarWidget::setLunarYearText(const QString &text)
 {
-    if (m_lunarLabel->text() != text)
+    if (m_lunarLabel->text() != text) {
+        qCDebug(lunarCalendarLog) << "Setting lunar year text:" << text;
         m_lunarLabel->setText(text);
+    }
 }
 
 QString LunarCalendarWidget::lunarYearText()
@@ -381,15 +394,22 @@ QString LunarCalendarWidget::lunarYearText()
 QSize LunarCalendarWidget::minimumSizeHint() const
 {
     QTableView *view = findChild<QTableView *>("qt_calendar_calendarview");
-    if (!view)
+    if (!view) {
+        qCWarning(lunarCalendarLog) << "Failed to find calendar view widget for size calculation";
         return QSize();
+    }
+    
     QAbstractItemModel *model = view->model();
-    if (!model)
+    if (!model) {
+        qCWarning(lunarCalendarLog) << "Calendar view has no model";
         return QSize();
+    }
 
     QWidget *navigationbar = findChild<QWidget *>("qt_calendar_navigationbar");
-    if (!navigationbar)
+    if (!navigationbar) {
+        qCWarning(lunarCalendarLog) << "Failed to find navigation bar widget";
         return QSize();
+    }
 
     int rowcount = model->rowCount();
     int hf = QFontMetrics(this->font()).height();
@@ -407,5 +427,6 @@ QSize LunarCalendarWidget::minimumSizeHint() const
     //底部留空
     h += BottomSpacing;
 
+    qCDebug(lunarCalendarLog) << "Calculated minimum size:" << QSize(w, h);
     return QSize(w, h);
 }

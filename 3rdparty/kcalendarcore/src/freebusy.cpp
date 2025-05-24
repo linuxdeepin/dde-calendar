@@ -28,6 +28,8 @@
 
 using namespace KCalendarCore;
 
+Q_LOGGING_CATEGORY(freeBusyLog, "calendar.freebusy")
+
 //@cond PRIVATE
 class Q_DECL_HIDDEN KCalendarCore::FreeBusy::Private
 {
@@ -104,6 +106,8 @@ void FreeBusy::Private::init(const Event::List &eventList, const QDateTime &star
     QDateTime tmpStart;
     QDateTime tmpEnd;
 
+    qCDebug(freeBusyLog) << "Initializing freebusy from" << start << "to" << end << "with" << eventList.count() << "events";
+
     // Loops through every event in the calendar
     Event::List::ConstIterator it;
     for (it = eventList.constBegin(); it != eventList.constEnd(); ++it) {
@@ -111,6 +115,7 @@ void FreeBusy::Private::init(const Event::List &eventList, const QDateTime &star
 
         // If this event is transparent it shouldn't be in the freebusy list.
         if (event->transparency() == Event::Transparent) {
+            qCDebug(freeBusyLog) << "Skipping transparent event:" << event->summary();
             continue;
         }
 
@@ -121,7 +126,7 @@ void FreeBusy::Private::init(const Event::List &eventList, const QDateTime &star
         Event::Ptr allDayEvent;
         if (event->allDay()) {
             // addDay event. Do the hack
-            qDebug() << "All-day event";
+            qCDebug(freeBusyLog) << "Processing all-day event:" << event->summary();
             allDayEvent = Event::Ptr(new Event(*event));
 
             // Set the start and end times to be on midnight
@@ -133,14 +138,13 @@ void FreeBusy::Private::init(const Event::List &eventList, const QDateTime &star
             allDayEvent->setDtStart(st);
             allDayEvent->setDtEnd(nd);
 
-            qDebug() << "Use:" << st.toString() << "to" << nd.toString();
+            qCDebug(freeBusyLog) << "Adjusted all-day event time to:" << st.toString() << "to" << nd.toString();
             // Finally, use this event for the setting below
             event = allDayEvent;
         }
 
         // This whole for loop is for recurring events, it loops through
         // each of the days of the freebusy request
-
         for (qint64 i = 0; i <= duration; ++i) {
             day = start.addDays(i).date();
             tmpStart.setDate(day);
@@ -158,6 +162,7 @@ void FreeBusy::Private::init(const Event::List &eventList, const QDateTime &star
                             tmpEnd = event->duration().end(tmpStart);
 
                             addLocalPeriod(q, tmpStart, tmpEnd);
+                            qCDebug(freeBusyLog) << "Added recurring multi-day period:" << tmpStart << "to" << tmpEnd;
                             break;
                         }
                     }
@@ -167,6 +172,7 @@ void FreeBusy::Private::init(const Event::List &eventList, const QDateTime &star
                         tmpEnd.setTime(event->dtEnd().time());
 
                         addLocalPeriod(q, tmpStart, tmpEnd);
+                        qCDebug(freeBusyLog) << "Added recurring single-day period:" << tmpStart << "to" << tmpEnd;
                     }
                 }
             }
@@ -174,9 +180,11 @@ void FreeBusy::Private::init(const Event::List &eventList, const QDateTime &star
 
         // Non-recurring events
         addLocalPeriod(q, event->dtStart(), event->dtEnd());
+        qCDebug(freeBusyLog) << "Added non-recurring period:" << event->dtStart() << "to" << event->dtEnd();
     }
 
     q->sortList();
+    qCDebug(freeBusyLog) << "Freebusy initialization completed with" << q->busyPeriods().count() << "periods";
 }
 //@endcond
 
@@ -406,8 +414,8 @@ QDataStream &KCalendarCore::operator>>(QDataStream &stream, KCalendarCore::FreeB
     freebusy = format.parseFreeBusy(freeBusyVCal);
 
     if (!freebusy) {
-        qDebug() << "Error parsing free/busy";
-        qDebug() << freeBusyVCal;
+        qCCritical(freeBusyLog) << "Error parsing free/busy data";
+        qCDebug(freeBusyLog) << "Failed free/busy data:" << freeBusyVCal;
     }
 
     return stream;

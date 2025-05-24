@@ -8,6 +8,9 @@
 #include "ckeypressprxy.h"
 
 #include <QGraphicsScene>
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(sceneLog)
 
 /**
  * @brief The CGraphicsScene class

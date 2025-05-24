@@ -3,3 +3,5 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "lunardatastruct.h"
+
+Q_LOGGING_CATEGORY(lunarDataStruct, "calendar.huangli.lunarstruct")

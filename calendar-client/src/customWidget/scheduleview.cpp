@@ -24,6 +24,9 @@
 #include <QDesktopWidget>
 #endif
 
+// Add logging category
+Q_LOGGING_CATEGORY(scheduleViewLog, "calendar.widget.scheduleview")
+
 DGUI_USE_NAMESPACE
 
 static int hourTextWidth = 50;
@@ -34,6 +37,7 @@ CScheduleView::CScheduleView(QWidget *parent, ScheduleViewPos viewType)
     , m_touchGesture(this)
     , m_timeFormat(CalendarManager::getInstance()->getTimeFormat())
 {
+    qCDebug(scheduleViewLog) << "Initializing CScheduleView with view type:" << viewType;
     initUI();
     initConnection();
     setLineWidth(0);
@@ -42,10 +46,12 @@ CScheduleView::CScheduleView(QWidget *parent, ScheduleViewPos viewType)
 
 CScheduleView::~CScheduleView()
 {
+    qCDebug(scheduleViewLog) << "Destroying CScheduleView";
 }
 
 void CScheduleView::setviewMargin(int left, int top, int right, int bottom)
 {
+    qCDebug(scheduleViewLog) << "Setting view margins - left:" << left << "top:" << top << "right:" << right << "bottom:" << bottom;
     m_leftMargin = left;
     m_topMargin = top;
     m_rightMargin = right;
@@ -59,8 +65,10 @@ void CScheduleView::setRange(int w, int h, QDate begin, QDate end)
     Q_UNUSED(h);
 
     if (!(w > 0)) {
+        qCWarning(scheduleViewLog) << "Invalid width for setRange:" << w;
         return;
     }
+    qCDebug(scheduleViewLog) << "Setting range - width:" << w << "begin:" << begin << "end:" << end;
     m_beginDate = begin;
     m_endDate = end;
     m_TotalDay = begin.daysTo(end) + 1;
@@ -74,6 +82,7 @@ void CScheduleView::setRange(int w, int h, QDate begin, QDate end)
 
 void CScheduleView::setRange(QDate begin, QDate end)
 {
+    qCDebug(scheduleViewLog) << "Setting date range - begin:" << begin << "end:" << end;
     m_TotalDay = begin.daysTo(end) + 1;
     m_graphicsView->setRange(begin, end);
     m_alldaylist->setRange(begin, end);
@@ -84,6 +93,7 @@ void CScheduleView::setRange(QDate begin, QDate end)
 
 void CScheduleView::setTheMe(int type)
 {
+    qCDebug(scheduleViewLog) << "Setting theme type:" << type;
     if (type == 0 || type == 1) {
         m_linecolor = "#000000";
         m_linecolor.setAlphaF(0.1);
@@ -105,16 +115,19 @@ void CScheduleView::setTheMe(int type)
 
 void CScheduleView::setLunarVisible(bool state)
 {
+    qCDebug(scheduleViewLog) << "Setting lunar visibility:" << state;
     Q_UNUSED(state);
 }
 
 void CScheduleView::setTime(QTime time)
 {
+    qCDebug(scheduleViewLog) << "Setting time:" << time.toString();
     m_graphicsView->setTime(time);
 }
 
 void CScheduleView::setSelectSchedule(const DSchedule::Ptr &scheduleInfo)
 {
+    qCDebug(scheduleViewLog) << "Setting selected schedule:" << scheduleInfo->summary();
     if (scheduleInfo->allDay()) {
         m_alldaylist->setSelectSearchSchedule(scheduleInfo);
     } else {
@@ -124,17 +137,21 @@ void CScheduleView::setSelectSchedule(const DSchedule::Ptr &scheduleInfo)
 
 void CScheduleView::updateHeight()
 {
+    qCDebug(scheduleViewLog) << "Updating view heights";
     m_graphicsView->updateHeight();
     m_alldaylist->updateHeight();
 }
 
 bool CScheduleView::IsDragging()
 {
-    return (m_graphicsView->getDragStatus() != 4) || (m_alldaylist->getDragStatus() != 4);
+    bool isDragging = (m_graphicsView->getDragStatus() != 4) || (m_alldaylist->getDragStatus() != 4);
+    qCDebug(scheduleViewLog) << "Checking drag status:" << isDragging;
+    return isDragging;
 }
 
 void CScheduleView::setCurrentDate(const QDateTime &currentDate)
 {
+    qCDebug(scheduleViewLog) << "Setting current date:" << currentDate.toString();
     m_graphicsView->setCurrentDate(currentDate);
 }
 
@@ -144,6 +161,7 @@ void CScheduleView::setCurrentDate(const QDateTime &currentDate)
  */
 void CScheduleView::setShowScheduleInfo(const QMap<QDate, DSchedule::List> &scheduleInfo)
 {
+    qCDebug(scheduleViewLog) << "Setting show schedule info with" << scheduleInfo.size() << "dates";
     m_showSchedule = scheduleInfo;
     updateSchedule();
 }
@@ -154,23 +172,27 @@ void CScheduleView::setShowScheduleInfo(const QMap<QDate, DSchedule::List> &sche
  */
 void CScheduleView::setTimeFormat(QString timeformat)
 {
+    qCDebug(scheduleViewLog) << "Setting time format:" << timeformat;
     m_timeFormat = timeformat;
     m_ScheduleRemindWidget->setTimeFormat(timeformat);
 }
 
 void CScheduleView::setDate(QDate date)
 {
+    qCDebug(scheduleViewLog) << "Setting date:" << date.toString();
     m_currteDate = date;
     updateAllday();
 }
 
 void CScheduleView::slotupdateSchedule()
 {
+    qCDebug(scheduleViewLog) << "Updating schedule";
     updateSchedule();
 }
 
 void CScheduleView::slotPosHours(QVector<int> vPos, QVector<int> vHours, int currentTimeType)
 {
+    qCDebug(scheduleViewLog) << "Setting position hours - type:" << currentTimeType;
     m_vHours = vHours;
     m_vPos = vPos;
     m_currentTimeType = currentTimeType;
@@ -463,6 +485,7 @@ void CScheduleView::initConnection()
  */
 void CScheduleView::slotDeleteitem()
 {
+    qCDebug(scheduleViewLog) << "Deleting selected items";
     //"delete"快捷键删除日程，因为只有一个点击选中日程所以全天或非全天只需要有一个删除就可以了
     m_graphicsView->slotDeleteItem();
     //因添加了对焦点选中item的快捷删除，添加对全天选中日程的删除
@@ -473,11 +496,13 @@ void CScheduleView::slotCurrentScheduleDate(QDate date)
 {
     if (m_viewPos == ScheduleViewPos::DayPos)
         return;
+    qCDebug(scheduleViewLog) << "Current schedule date changed to:" << date.toString();
     emit signalsCurrentScheduleDate(date);
 }
 
 void CScheduleView::slotScheduleShow(const bool isShow, const DSchedule::Ptr &out)
 {
+    qCDebug(scheduleViewLog) << "Schedule show state changed - show:" << isShow;
     if (isShow) {
         QVariant variant;
         CalendarGlobalEnv::getGlobalEnv()->getValueByKey(DDECalendar::CursorPointKey, variant);
@@ -509,12 +534,14 @@ void CScheduleView::slotScheduleShow(const bool isShow, const DSchedule::Ptr &ou
 
 void CScheduleView::slotUpdatePaint(const int topM)
 {
+    qCDebug(scheduleViewLog) << "Updating paint with top margin:" << topM;
     m_topMargin = topM;
     update();
 }
 
 void CScheduleView::slotUpdateScene()
 {
+    qCDebug(scheduleViewLog) << "Updating scene";
     m_graphicsView->slotUpdateScene();
     m_alldaylist->slotUpdateScene();
 }
@@ -525,6 +552,7 @@ void CScheduleView::slotUpdateScene()
  */
 void CScheduleView::slotSwitchView(const QDate &focusDate, CWeekDayGraphicsview::ViewType viewtype, bool setItemFocus)
 {
+    qCDebug(scheduleViewLog) << "Switching view - date:" << focusDate << "type:" << viewtype << "focus:" << setItemFocus;
     if (viewtype == CWeekDayGraphicsview::ALLDayView) {
         m_alldaylist->setCurrentFocusItem(focusDate, setItemFocus);
         m_alldaylist->setFocus(Qt::TabFocusReason);
@@ -539,6 +567,7 @@ void CScheduleView::slotSwitchView(const QDate &focusDate, CWeekDayGraphicsview:
  */
 void CScheduleView::updateSchedule()
 {
+    qCDebug(scheduleViewLog) << "Updating schedule display";
     //获取一个月的日程信息
     m_graphicsView->clearSchedule();
     DSchedule::List allInfo;
@@ -560,6 +589,7 @@ void CScheduleView::updateSchedule()
             }
         }
     }
+    qCDebug(scheduleViewLog) << "Found" << allInfo.size() << "all-day events and" << nonAllInfo.size() << "non-all-day events";
     m_alldaylist->setInfo(allInfo);
     m_graphicsView->setInfo(nonAllInfo);
     updateAllday();
@@ -570,6 +600,7 @@ void CScheduleView::updateSchedule()
 
 void CScheduleView::updateAllday()
 {
+    qCDebug(scheduleViewLog) << "Updating all-day view";
     m_alldaylist->updateInfo();
     update();
     m_graphicsView->resize(m_graphicsView->width(), this->height() - m_alldaylist->height());
@@ -588,5 +619,6 @@ int CScheduleView::scheduleViewHeight()
     mHeight = mHeight < 500 ? 1035 : mHeight;
     int m_minTime = qRound((20.0 / mHeight) * 86400);
     m_graphicsView->setMinTime(m_minTime);
+    qCDebug(scheduleViewLog) << "Calculated schedule view height:" << qRound(mHeight);
     return qRound(mHeight);
 }

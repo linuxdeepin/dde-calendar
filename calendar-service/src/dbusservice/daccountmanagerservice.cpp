@@ -10,45 +10,56 @@
 #include <QDBusMetaType>
 #include <QDebug>
 
+Q_LOGGING_CATEGORY(accountManagerService, "calendar.service.accountmanager")
+
 DAccountManagerService::DAccountManagerService(QObject *parent)
     : DServiceBase(serviceBasePath + "/AccountManager", serviceBaseName + ".AccountManager", parent)
     , m_accountManager(new DAccountManageModule(this))
 {
+    qCDebug(accountManagerService) << "Initializing AccountManagerService";
     //自动退出
     DServiceExitControl exitControl;
     connect(m_accountManager.data(), &DAccountManageModule::signalLoginStatusChange, this, &DAccountManagerService::accountUpdate);
 
     connect(m_accountManager.data(), &DAccountManageModule::firstDayOfWeekChange, this, [&]() {
+        qCDebug(accountManagerService) << "First day of week changed";
         notifyPropertyChanged(getInterface(), "firstDayOfWeek");
     });
     connect(m_accountManager.data(), &DAccountManageModule::timeFormatTypeChange, this, [&]() {
+        qCDebug(accountManagerService) << "Time format type changed";
         notifyPropertyChanged(getInterface(), "timeFormatType");
     });
+    qCInfo(accountManagerService) << "AccountManagerService initialized successfully";
 }
 
 QString DAccountManagerService::getAccountList()
 {
     DServiceExitControl exitControl;
     if (!clientWhite(0)) {
+        qCWarning(accountManagerService) << "Client not in whitelist, access denied";
         return QString();
     }
+    qCDebug(accountManagerService) << "Getting account list";
     return m_accountManager->getAccountList();
 }
 
 void DAccountManagerService::remindJob(const QString &accountID, const QString &alarmID)
 {
+    qCDebug(accountManagerService) << "Processing remind job for account:" << accountID << "alarm:" << alarmID;
     DServiceExitControl exitControl;
     m_accountManager->remindJob(accountID, alarmID);
 }
 
 void DAccountManagerService::updateRemindJob(bool isClear)
 {
+    qCDebug(accountManagerService) << "Updating remind job, clear flag:" << isClear;
     DServiceExitControl exitControl;
     m_accountManager->updateRemindSchedules(isClear);
 }
 
 void DAccountManagerService::notifyMsgHanding(const QString &accountID, const QString &alarmID, const qint32 operationNum)
 {
+    qCDebug(accountManagerService) << "Handling notification message for account:" << accountID << "alarm:" << alarmID << "operation:" << operationNum;
     DServiceExitControl exitControl;
     m_accountManager->notifyMsgHanding(accountID, alarmID, operationNum);
 }
@@ -56,6 +67,7 @@ void DAccountManagerService::notifyMsgHanding(const QString &accountID, const QS
 void DAccountManagerService::downloadByAccountID(const QString &accountID)
 {
     //TODO:云同步获取数据
+    qCDebug(accountManagerService) << "Starting download for account:" << accountID;
     DServiceExitControl exitControl;
     m_accountManager->downloadByAccountID(accountID);
 }
@@ -63,6 +75,7 @@ void DAccountManagerService::downloadByAccountID(const QString &accountID)
 void DAccountManagerService::uploadNetWorkAccountData()
 {
     //TODO:云同步上传数据
+    qCDebug(accountManagerService) << "Starting network account data upload";
     DServiceExitControl exitControl;
     m_accountManager->uploadNetWorkAccountData();
 }
@@ -71,15 +84,19 @@ QString DAccountManagerService::getCalendarGeneralSettings()
 {
     DServiceExitControl exitControl;
     if (!clientWhite(0)) {
+        qCWarning(accountManagerService) << "Client not in whitelist, access denied for general settings";
         return QString();
     }
+    qCDebug(accountManagerService) << "Getting calendar general settings";
     return m_accountManager->getCalendarGeneralSettings();
 }
 
 void DAccountManagerService::setCalendarGeneralSettings(const QString &cgSet)
 {
+    qCDebug(accountManagerService) << "Setting calendar general settings";
     DServiceExitControl exitControl;
     if (!clientWhite(0)) {
+        qCWarning(accountManagerService) << "Client not in whitelist, cannot set general settings";
         return;
     }
     m_accountManager->setFirstDayOfWeekSource(DCalendarGeneralSettings::Source_Database);

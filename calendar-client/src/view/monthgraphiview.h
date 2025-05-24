@@ -18,8 +18,11 @@
 #include <QGraphicsScene>
 #include <QDate>
 #include <QDrag>
+#include <QLoggingCategory>
 
 #include <dtkwidget_global.h>
+
+Q_DECLARE_LOGGING_CATEGORY(monthGraphicsLog)
 
 DWIDGET_USE_NAMESPACE
 

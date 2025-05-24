@@ -8,7 +8,6 @@
 
 #include <DPalette>
 
-
 #include <QHBoxLayout>
 #include <QPainter>
 #include <QEvent>
@@ -20,12 +19,17 @@
 #include <QPainterPath>
 #include <QMouseEvent>
 #include <QPushButton>
+#include <QLoggingCategory>
+
+// Add logging category
+Q_LOGGING_CATEGORY(weekHeadLog, "calendar.week.head")
 
 DGUI_USE_NAMESPACE
 CWeekHeadView::CWeekHeadView(QWidget *parent)
     : DWidget(parent)
     , m_touchGesture(this)
 {
+    qCDebug(weekHeadLog) << "Initializing CWeekHeadView";
     setContentsMargins(0, 0, 0, 0);
 
     m_dayNumFont.setWeight(QFont::Medium);
@@ -71,6 +75,7 @@ CWeekHeadView::~CWeekHeadView()
  */
 void CWeekHeadView::setTheMe(int type)
 {
+    qCDebug(weekHeadLog) << "Setting theme type:" << type;
     m_themetype = type;
 
     if (type == 0 || type == 1) {
@@ -121,8 +126,11 @@ void CWeekHeadView::setTheMe(int type)
  */
 void CWeekHeadView::setWeekDay(QVector<QDate> vDays, const QDate &selectDate)
 {
-    if (vDays.count() != DDEWeekCalendar::AFewDaysofWeek)
+    if (vDays.count() != DDEWeekCalendar::AFewDaysofWeek) {
+        qCWarning(weekHeadLog) << "Invalid number of days provided:" << vDays.count();
         return;
+    }
+    qCDebug(weekHeadLog) << "Setting week days for date:" << selectDate;
     m_days = vDays;
     QLocale locale;
     m_monthLabel->setTextStr(locale.monthName(selectDate.month(), QLocale::ShortFormat));
@@ -134,6 +142,7 @@ void CWeekHeadView::setWeekDay(QVector<QDate> vDays, const QDate &selectDate)
  */
 void CWeekHeadView::setHunagLiInfo(const QMap<QDate, CaHuangLiDayInfo> &huangLiInfo)
 {
+    qCDebug(weekHeadLog) << "Setting HuangLi info for" << huangLiInfo.size() << "days";
     m_huangLiInfo = huangLiInfo;
     update();
 }
@@ -144,6 +153,7 @@ void CWeekHeadView::setHunagLiInfo(const QMap<QDate, CaHuangLiDayInfo> &huangLiI
  */
 void CWeekHeadView::setLunarVisible(bool visible)
 {
+    qCDebug(weekHeadLog) << "Setting lunar visibility:" << visible;
     int state = int(m_showState);
 
     if (visible)
@@ -170,6 +180,7 @@ bool CWeekHeadView::eventFilter(QObject *o, QEvent *e)
             paintCell(cell);
         }  else if (e->type() == QEvent::MouseButtonDblClick) {
             const int pos = m_cellList.indexOf(cell);
+            qCDebug(weekHeadLog) << "Double click on cell at position:" << pos << "date:" << m_days[pos];
             emit signalsViewSelectDate(m_days[pos]);
         }
     }
@@ -363,8 +374,8 @@ void CWeekHeadView::paintCell(QWidget *cell)
 
 void CWeekHeadView::wheelEvent(QWheelEvent *e)
 {
-    //如果滚轮为左右方向则触发信号
     if (e->angleDelta().x() != 0) {
+        qCDebug(weekHeadLog) << "Wheel event with delta x:" << e->angleDelta().x();
         emit signalAngleDelta(e->angleDelta().x());
     }
 }
@@ -372,17 +383,17 @@ void CWeekHeadView::wheelEvent(QWheelEvent *e)
 bool CWeekHeadView::event(QEvent *e)
 {
     if (m_touchGesture.event(e)) {
-        //获取触摸状态
         switch (m_touchGesture.getTouchState()) {
         case touchGestureOperation::T_SLIDE: {
-            //在滑动状态如果可以更新数据则切换月份
             if (m_touchGesture.isUpdate()) {
                 m_touchGesture.setUpdate(false);
                 switch (m_touchGesture.getMovingDir()) {
                 case touchGestureOperation::T_LEFT:
+                    qCDebug(weekHeadLog) << "Touch gesture slide left";
                     emit signalAngleDelta(-1);
                     break;
                 case touchGestureOperation::T_RIGHT:
+                    qCDebug(weekHeadLog) << "Touch gesture slide right";
                     emit signalAngleDelta(1);
                     break;
                 default:

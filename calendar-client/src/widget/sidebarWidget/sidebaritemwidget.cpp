@@ -10,9 +10,12 @@
 #include <QApplication>
 #include <QSizePolicy>
 
+Q_LOGGING_CATEGORY(sidebarItemLog, "calendar.widget.sidebaritem")
+
 SidebarItemWidget::SidebarItemWidget(QWidget *parent)
     : QWidget(parent)
 {
+    qCDebug(sidebarItemLog) << "Creating new SidebarItemWidget";
     setFixedWidth(170);
 }
 
@@ -42,6 +45,7 @@ void SidebarItemWidget::setSelectStatus(bool status)
     if (status == m_selectStatus && m_item && status == m_item->isExpanded()) {
         return;
     }
+    qCDebug(sidebarItemLog) << "Setting select status to:" << status << "for item ID:" << m_id;
     m_selectStatus = status;
     //根据控件类型设置响应控件状态
     updateStatus();
@@ -102,6 +106,7 @@ SidebarTypeItemWidget::SidebarTypeItemWidget(DScheduleType::Ptr ptr, QWidget *pa
     : SidebarItemWidget(parent)
     , m_scheduleType(ptr)
 {
+    qCDebug(sidebarItemLog) << "Creating new SidebarTypeItemWidget for schedule type:" << ptr->displayName();
     initView();
     m_id = m_scheduleType->accountID();
 }
@@ -147,6 +152,8 @@ void SidebarTypeItemWidget::updateStatus()
     AccountItem::Ptr account = gAccountManager->getAccountItemByAccountId(m_scheduleType->accountID());
     if (account) {
         if (m_selectStatus != (m_scheduleType->showState() == DScheduleType::Show)) {
+            qCDebug(sidebarItemLog) << "Updating schedule type show state to:" << (m_selectStatus ? "Show" : "Hide") 
+                                   << "for type:" << m_scheduleType->displayName();
             m_scheduleType->setShowState(m_selectStatus ? DScheduleType::Show : DScheduleType::Hide);
             account->updateScheduleTypeShowState(m_scheduleType);
         }
@@ -158,6 +165,7 @@ SidebarAccountItemWidget::SidebarAccountItemWidget(AccountItem::Ptr ptr, QWidget
     : SidebarItemWidget(parent)
     , m_accountItem(ptr)
 {
+    qCDebug(sidebarItemLog) << "Creating new SidebarAccountItemWidget for account:" << ptr->getAccount()->accountName();
     initView();
     initConnect();
 }
@@ -237,12 +245,15 @@ void SidebarAccountItemWidget::slotNetworkStateChange(DOANetWorkDBus::NetWorkSta
     if (!m_accountItem || m_accountItem->getAccount()->accountType() != DAccount::Account_UnionID) {
         return;
     }
+    qCInfo(sidebarItemLog) << "Network state changed to:" << state;
     if (DOANetWorkDBus::NetWorkState::Disconnect == state) {
+        qCWarning(sidebarItemLog) << "Network disconnected, showing warning icon";
         m_syncIconButton->hide();
         m_warningLabel->show();
         QString msg = m_accountItem->getSyncMsg(DAccount::AccountSyncState::Sync_NetworkAnomaly);
         m_warningLabel->setToolTip(msg);
     } else if (DOANetWorkDBus::NetWorkState::Active == state) {
+        qCInfo(sidebarItemLog) << "Network connected, updating sync button visibility";
         m_warningLabel->hide();
         if (m_accountItem->isCanSyncSetting() || m_accountItem->isCanSyncShedule()) {
             m_syncIconButton->show();
@@ -294,12 +305,14 @@ void SidebarAccountItemWidget::updateStatus()
 //尾部图标控件点击事件
 void SidebarAccountItemWidget::slotRearIconClicked()
 {
+    qCInfo(sidebarItemLog) << "Rear icon clicked for account:" << m_accountItem->getAccount()->accountName();
     gAccountManager->downloadByAccountID(m_accountItem->getAccount()->accountID());
 }
 
 //同步状态改变事件
 void SidebarAccountItemWidget::slotSyncStatusChange(DAccount::AccountSyncState state)
 {
+    qCInfo(sidebarItemLog) << "Sync status changed to:" << state << "for account:" << m_accountItem->getAccount()->accountName();
     m_accountItem->getAccount()->setSyncState(state);
     resetRearIconButton();
 }

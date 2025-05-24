@@ -21,6 +21,9 @@
 */
 
 #include "calfilter.h"
+#include <QLoggingCategory>
+
+Q_LOGGING_CATEGORY(calFilterLog, "calendar.filter")
 
 using namespace KCalendarCore;
 
@@ -68,56 +71,74 @@ bool KCalendarCore::CalFilter::operator==(const CalFilter &filter) const
 
 void CalFilter::apply(Event::List *eventList) const
 {
+    qCDebug(calFilterLog) << "Applying filter to event list, size:" << eventList->size();
     if (!d->mEnabled) {
+        qCDebug(calFilterLog) << "Filter disabled, skipping";
         return;
     }
 
     Event::List::Iterator it = eventList->begin();
+    int removedCount = 0;
     while (it != eventList->end()) {
         if (!filterIncidence(*it)) {
             it = eventList->erase(it);
+            removedCount++;
         } else {
             ++it;
         }
     }
+    qCDebug(calFilterLog) << "Filter applied, removed" << removedCount << "events";
 }
 
 // TODO: avoid duplicating apply() code
 void CalFilter::apply(Todo::List *todoList) const
 {
+    qCDebug(calFilterLog) << "Applying filter to todo list, size:" << todoList->size();
     if (!d->mEnabled) {
+        qCDebug(calFilterLog) << "Filter disabled, skipping";
         return;
     }
 
     Todo::List::Iterator it = todoList->begin();
+    int removedCount = 0;
     while (it != todoList->end()) {
         if (!filterIncidence(*it)) {
             it = todoList->erase(it);
+            removedCount++;
         } else {
             ++it;
         }
     }
+    qCDebug(calFilterLog) << "Filter applied, removed" << removedCount << "todos";
 }
 
 void CalFilter::apply(Journal::List *journalList) const
 {
+    qCDebug(calFilterLog) << "Applying filter to journal list, size:" << journalList->size();
     if (!d->mEnabled) {
+        qCDebug(calFilterLog) << "Filter disabled, skipping";
         return;
     }
 
     Journal::List::Iterator it = journalList->begin();
+    int removedCount = 0;
     while (it != journalList->end()) {
         if (!filterIncidence(*it)) {
             it = journalList->erase(it);
+            removedCount++;
         } else {
             ++it;
         }
     }
+    qCDebug(calFilterLog) << "Filter applied, removed" << removedCount << "journals";
 }
 
 bool CalFilter::filterIncidence(const Incidence::Ptr &incidence) const
 {
+    qCDebug(calFilterLog) << "Filtering incidence:" << incidence->uid();
+    
     if (!d->mEnabled) {
+        qCDebug(calFilterLog) << "Filter disabled, accepting incidence";
         return true;
     }
 
@@ -162,24 +183,30 @@ bool CalFilter::filterIncidence(const Incidence::Ptr &incidence) const
     }
 
     if (d->mCriteria & ShowCategories) {
+        qCDebug(calFilterLog) << "Checking categories for inclusion";
         for (QStringList::ConstIterator it = d->mCategoryList.constBegin(); it != d->mCategoryList.constEnd(); ++it) {
             QStringList incidenceCategories = incidence->categories();
             for (QStringList::ConstIterator it2 = incidenceCategories.constBegin(); it2 != incidenceCategories.constEnd(); ++it2) {
                 if ((*it) == (*it2)) {
+                    qCDebug(calFilterLog) << "Category match found:" << (*it);
                     return true;
                 }
             }
         }
+        qCDebug(calFilterLog) << "No matching categories found, filtering out";
         return false;
     } else {
+        qCDebug(calFilterLog) << "Checking categories for exclusion";
         for (QStringList::ConstIterator it = d->mCategoryList.constBegin(); it != d->mCategoryList.constEnd(); ++it) {
             QStringList incidenceCategories = incidence->categories();
             for (QStringList::ConstIterator it2 = incidenceCategories.constBegin(); it2 != incidenceCategories.constEnd(); ++it2) {
                 if ((*it) == (*it2)) {
+                    qCDebug(calFilterLog) << "Category match found:" << (*it) << ", filtering out";
                     return false;
                 }
             }
         }
+        qCDebug(calFilterLog) << "No matching categories found, accepting";
         return true;
     }
 }

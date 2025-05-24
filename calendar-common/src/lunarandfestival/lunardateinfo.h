@@ -5,6 +5,10 @@
 #ifndef LUNARDATEINFO_H
 #define LUNARDATEINFO_H
 
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(lunarDateLog)
+
 #include "lunarandfestival.h"
 #include "method_interface.h"
 #include "recurrencerule.h"

@@ -11,7 +11,6 @@
 #include "icalformat.h"
 #include "memorycalendar.h"
 
-
 #include <DStyle>
 #include <DIcon>
 #include <DIconButton>
@@ -24,6 +23,8 @@
 #include <QStandardPaths>
 #include <QRandomGenerator>
 
+Q_LOGGING_CATEGORY(JobTypeListViewLog, "calendar.widget.jobtypelistview")
+
 //Qt::UserRole + 1,会影响item的高度
 static const int RoleJobTypeInfo = Qt::UserRole + 2;
 static const int RoleJobTypeEditable = Qt::UserRole + 3;
@@ -31,16 +32,19 @@ static const int RoleJobTypeLine = Qt::UserRole + 4;
 
 JobTypeListView::JobTypeListView(QWidget *parent) : QTableView(parent)
 {
+    qCDebug(JobTypeListViewLog) << "Creating JobTypeListView widget";
     initUI();
 }
 
 JobTypeListView::~JobTypeListView()
 {
+    qCDebug(JobTypeListViewLog) << "Destroying JobTypeListView widget";
 //    JobTypeInfoManager::instance()->removeFromNoticeBill(this);
 }
 
 void JobTypeListView::initUI()
 {
+    qCDebug(JobTypeListViewLog) << "Initializing UI components";
     m_modelJobType = new QStandardItemModel(this);
     setModel(m_modelJobType);
     setFrameStyle(QFrame::NoFrame);
@@ -80,6 +84,9 @@ void JobTypeListView::initUI()
 
 bool JobTypeListView::viewportEvent(QEvent *event)
 {
+    if (event->type() == QEvent::HoverLeave || event->type() == QEvent::HoverEnter || event->type() == QEvent::HoverMove) {
+        qCDebug(JobTypeListViewLog) << "Viewport event:" << event->type();
+    }
     QTableView::viewportEvent(event);
 
     int indexCurrentHover;
@@ -168,9 +175,12 @@ bool JobTypeListView::viewportEvent(QEvent *event)
 }
 bool JobTypeListView::updateJobType()
 {
+    qCDebug(JobTypeListViewLog) << "Updating job types for account:" << m_account_id;
     AccountItem::Ptr account = gAccountManager->getAccountItemByAccountId(m_account_id);
-    if (!account)
+    if (!account) {
+        qCWarning(JobTypeListViewLog) << "Failed to get account for ID:" << m_account_id;
         return false;
+    }
     m_modelJobType->removeRows(0, m_modelJobType->rowCount());//先清理
     m_iIndexCurrentHover = -1;
 
@@ -187,15 +197,19 @@ bool JobTypeListView::updateJobType()
 
 void JobTypeListView::updateCalendarAccount(QString account_id)
 {
+    qCDebug(JobTypeListViewLog) << "Updating calendar account to:" << account_id;
     m_account_id = account_id;
     updateJobType();
 }
 
 void JobTypeListView::slotAddScheduleType()
 {
+    qCDebug(JobTypeListViewLog) << "Adding new schedule type";
     AccountItem::Ptr account = gAccountManager->getAccountItemByAccountId(m_account_id);
-    if (!account)
+    if (!account) {
+        qCWarning(JobTypeListViewLog) << "Failed to get account for adding schedule type";
         return;
+    }
 
     ScheduleTypeEditDlg dialog(this);
     dialog.setAccount(account);
@@ -208,6 +222,7 @@ void JobTypeListView::slotAddScheduleType()
 
 void JobTypeListView::slotImportScheduleType()
 {
+    qCDebug(JobTypeListViewLog) << "Starting schedule type import";
     // 选择ICS文件
     auto docDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
     auto filename =
@@ -281,9 +296,12 @@ void JobTypeListView::slotImportScheduleType()
 
 void JobTypeListView::slotExportScheduleType()
 {
+    qCDebug(JobTypeListViewLog) << "Starting schedule type export";
     DStandardItem *item = dynamic_cast<DStandardItem *>(m_modelJobType->item(m_iIndexCurrentHover));
-    if (!item)
+    if (!item) {
+        qCWarning(JobTypeListViewLog) << "Failed to get item for export";
         return;
+    }
     AccountItem::Ptr account = gAccountManager->getAccountItemByAccountId(m_account_id);
     if (!account)
         return;
@@ -312,15 +330,18 @@ void JobTypeListView::slotExportScheduleType()
 bool JobTypeListView::canAdd()
 {
     AccountItem::Ptr account = gAccountManager->getAccountItemByAccountId(m_account_id);
-    if (!account)
+    if (!account) {
+        qCWarning(JobTypeListViewLog) << "Failed to get account for checking add permission";
         return false;
-
-    //最多20个类型
-    return account->getScheduleTypeList().count() < 20;
+    }
+    bool canAdd = account->getScheduleTypeList().count() < 20;
+    qCDebug(JobTypeListViewLog) << "Can add new schedule type:" << canAdd;
+    return canAdd;
 }
 
 void JobTypeListView::setItemEnabled(bool b)
 {
+    qCDebug(JobTypeListViewLog) << "Setting items enabled:" << b;
     if (!m_modelJobType) return;
 
     for (int i = 0; i < m_modelJobType->rowCount(); ++i) {
@@ -331,6 +352,7 @@ void JobTypeListView::setItemEnabled(bool b)
 
 int JobTypeListView::addJobTypeItem(const DScheduleType &info)
 {
+    qCDebug(JobTypeListViewLog) << "Adding job type item:" << info.displayName();
     int itemHeight = 0;
     DStandardItem *item = new DStandardItem;
     item->setData(QVariant::fromValue(info), RoleJobTypeInfo);
@@ -359,9 +381,12 @@ int JobTypeListView::addJobTypeItem(const DScheduleType &info)
 
 void JobTypeListView::slotUpdateJobType()
 {
-    int index =  indexAt(mapFromGlobal(QCursor::pos())).row();
-    if (index < 0 || index >= m_modelJobType->rowCount())
+    qCDebug(JobTypeListViewLog) << "Updating job type";
+    int index = indexAt(mapFromGlobal(QCursor::pos())).row();
+    if (index < 0 || index >= m_modelJobType->rowCount()) {
+        qCWarning(JobTypeListViewLog) << "Invalid index for update:" << index;
         return;
+    }
     QStandardItem *item = m_modelJobType->item(index);
     if (!item)
         return;
@@ -384,9 +409,12 @@ void JobTypeListView::slotUpdateJobType()
 
 void JobTypeListView::slotDeleteJobType()
 {
+    qCDebug(JobTypeListViewLog) << "Deleting job type";
     DStandardItem *item = dynamic_cast<DStandardItem *>(m_modelJobType->item(m_iIndexCurrentHover));
-    if (!item)
+    if (!item) {
+        qCWarning(JobTypeListViewLog) << "Failed to get item for deletion";
         return;
+    }
     AccountItem::Ptr account = gAccountManager->getAccountItemByAccountId(m_account_id);
     if (!account)
         return;
@@ -417,21 +445,25 @@ void JobTypeListView::slotDeleteJobType()
 
 void JobTypeListViewStyle::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
+    qCDebug(JobTypeListViewLog) << "Painting item at index:" << index.row();
     QStyleOptionViewItem opt = option;
 
     //draw line
     bool isDrawLine = index.data(RoleJobTypeLine).toBool();
     if (isDrawLine) {
+        qCDebug(JobTypeListViewLog) << "Drawing separator line";
         int y = opt.rect.y() + opt.rect.height() / 2;
         int x = opt.rect.x();
         int w = x + opt.rect.width();
         painter->fillRect(x, y, w, 1, qApp->palette().color(QPalette::Button));
         return;
     }
+
     opt.rect.adjust(0, 5, 0, -5);
     DStyledItemDelegate::paint(painter, opt, index);
     DScheduleType info = index.data(RoleJobTypeInfo).value<DScheduleType>();
 
+    qCDebug(JobTypeListViewLog) << "Drawing job type item:" << info.displayName();
     //draw icon
     painter->save();
     painter->setPen(QPen(QColor(0, 0, 0, int(255 * 0.1)), 2));
@@ -439,12 +471,12 @@ void JobTypeListViewStyle::paint(QPainter *painter, const QStyleOptionViewItem &
     painter->drawEllipse(QRect(opt.rect.x() + 12, opt.rect.y() + 10, 16, 16));
 
     //draw text
-
     painter->setPen(qApp->palette().color(QPalette::Text));
     QFontMetrics fontMetr(painter->font());
 
     //如果为焦点,且不为系统自带颜色
     if (opt.state & QStyle::State_HasFocus && !info.typeColor().isSysColorInfo()) {
+        qCDebug(JobTypeListViewLog) << "Item has focus and is not system color";
     }
 
     JobTypeListView *view = qobject_cast<JobTypeListView *>(parent());
@@ -454,9 +486,11 @@ void JobTypeListViewStyle::paint(QPainter *painter, const QStyleOptionViewItem &
     QFontMetrics fontMetrics(opt.font);
     // 当前文字长度是否大于显示框长度
     if (fontMetrics.horizontalAdvance(displayName) > (opt.rect.width() - 90)) {
+        qCDebug(JobTypeListViewLog) << "Text too long, eliding:" << displayName;
         displayName = fontMetrics.elidedText(displayName, Qt::ElideRight, opt.rect.width() - 90); // 截取字符串长度用...代替
     }
     if (view && view->m_iIndexCurrentHover == index.row()) {
+        qCDebug(JobTypeListViewLog) << "Drawing hovered item text";
         painter->drawText(opt.rect.adjusted(38, 0, -10, 0), Qt::AlignVCenter | Qt::AlignLeft, displayName);
     } else {
         painter->drawText(opt.rect.adjusted(38, 0, -10, 0), Qt::AlignVCenter | Qt::AlignLeft, displayName);

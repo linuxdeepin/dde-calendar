@@ -23,6 +23,9 @@
 
 #define UPDATEREMINDJOBTIMEINTERVAL 1000 * 60 * 10 //提醒任务更新时间间隔毫秒数（10分钟）
 
+// Add logging category
+Q_LOGGING_CATEGORY(accountModuleLog, "calendar.account.module")
+
 DAccountModule::DAccountModule(const DAccount::Ptr &account, QObject *parent)
     : QObject(parent)
     , m_account(account)
@@ -30,10 +33,13 @@ DAccountModule::DAccountModule(const DAccount::Ptr &account, QObject *parent)
     , m_alarm(new DAlarmManager)
     , m_dataSync(DSyncDataFactory::createDataSync(m_account))
 {
+    qCDebug(accountModuleLog) << "Initializing account module for account:" << account->accountName();
+    
     QString newDbPath = getDBPath();
     m_accountDB->setDBPath(newDbPath + "/" + account->dbName());
     m_accountDB->initDBData();
     m_accountDB->getAccountInfo(m_account);
+    qCInfo(accountModuleLog) << "Account database initialized at:" << newDbPath + "/" + account->dbName();
 
     //关联打开日历界面
     connect(m_alarm.data(), &DAlarmManager::signalCallOpenCalendarUI, this, &DAccountModule::slotOpenCalendar);
@@ -127,6 +133,7 @@ QString DAccountModule::getScheduleTypeByID(const QString &typeID)
 
 QString DAccountModule::createScheduleType(const QString &typeInfo)
 {
+    qCDebug(accountModuleLog) << "Creating new schedule type";
     DScheduleType::Ptr scheduleType;
     DScheduleType::fromJsonString(scheduleType, typeInfo);
     //如果颜色为用户自定义则需要在数据库中记录
@@ -147,6 +154,7 @@ QString DAccountModule::createScheduleType(const QString &typeInfo)
     //设置创建时间
     scheduleType->setDtCreate(QDateTime::currentDateTime());
     QString scheduleTypeID = m_accountDB->createScheduleType(scheduleType);
+    qCInfo(accountModuleLog) << "Created schedule type with ID:" << scheduleTypeID;
     //如果为网络日程则需要上传任务
     if (m_account->isNetWorkAccount()) {
         DUploadTaskData::Ptr uploadTask(new DUploadTaskData);
@@ -163,9 +171,11 @@ QString DAccountModule::createScheduleType(const QString &typeInfo)
 
 bool DAccountModule::deleteScheduleTypeByID(const QString &typeID)
 {
+    qCDebug(accountModuleLog) << "Deleting schedule type with ID:" << typeID;
     //如果日程类型被使用需要删除对应到日程信息
     if (m_accountDB->scheduleTypeByUsed(typeID)) {
         QStringList scheduleIDList = m_accountDB->getScheduleIDListByTypeID(typeID);
+        qCInfo(accountModuleLog) << "Schedule type is in use, deleting" << scheduleIDList.size() << "related schedules";
         foreach (auto scheduleID, scheduleIDList) {
             closeNotification(scheduleID);
             //添加删除日程任务
@@ -615,7 +625,7 @@ void DAccountModule::remindJob(const QString &alarmID)
 void DAccountModule::accountDownload()
 {
     if (m_dataSync != nullptr) {
-        qCInfo(ServiceLogger) << "开始下载数据";
+        qCInfo(accountModuleLog) << "Starting data download for account:" << this->account()->accountName();
         m_dataSync->syncData(this->account()->accountID(), this->account()->accountName(), (int)this->account()->accountState(), DDataSyncBase::Sync_Upload | DDataSyncBase::Sync_Download);
     }
 }
@@ -623,7 +633,7 @@ void DAccountModule::accountDownload()
 void DAccountModule::uploadNetWorkAccountData()
 {
     if (m_dataSync != nullptr) {
-        qCInfo(ServiceLogger) << "开始上传数据";
+        qCInfo(accountModuleLog) << "Starting data upload for account:" << this->account()->accountName();
         m_dataSync->syncData(this->account()->accountID(), this->account()->accountName(), (int)this->account()->accountState(), DDataSyncBase::Sync_Upload);
     }
 }
@@ -635,11 +645,13 @@ QString DAccountModule::getDtLastUpdate()
 
 void DAccountModule::removeDB()
 {
+    qCInfo(accountModuleLog) << "Removing database for account:" << account()->accountName();
     m_accountDB->removeDB();
     //如果为uid帐户退出则清空目录下所有关于uid的数据库文件
     //解决在某些条件下数据库没有被移除的问题（自测未发现）
     if(account()->accountType() == DAccount::Type::Account_UnionID){
         QString dbPatch = getHomeConfigPath().append(QString("/deepin/dde-calendar-service/"));
+        qCDebug(accountModuleLog) << "Cleaning up UID account databases in:" << dbPatch;
         QDir dir(dbPatch);
         if (dir.exists()) {
             QStringList filters;
@@ -892,9 +904,11 @@ void DAccountModule::slotOpenCalendar(const QString &alarmID)
 
 void DAccountModule::slotSyncState(const int syncState)
 {
+    qCDebug(accountModuleLog) << "Sync state changed to:" << syncState;
     m_account->setDtLastSync(QDateTime::currentDateTime());
     switch (syncState) {
     case 0:
+        qCInfo(accountModuleLog) << "Sync completed successfully";
         //执行正常
         m_account->setSyncState(DAccount::Sync_Normal);
         m_accountDB->updateAccountInfo();
@@ -902,15 +916,17 @@ void DAccountModule::slotSyncState(const int syncState)
         updateRemindSchedules(false);
         break;
     case 7506:
+        qCWarning(accountModuleLog) << "Network anomaly during sync";
         //网络异常
         m_account->setSyncState(DAccount::Sync_NetworkAnomaly);
         break;
     case 7508:
+        qCWarning(accountModuleLog) << "Storage full during sync";
         //存储已满
         m_account->setSyncState(DAccount::Sync_StorageFull);
         break;
     default:
-        qCWarning(ServiceLogger)<<"syncState:"<<syncState<<"fun:"<<__FUNCTION__<<" line:"<<__LINE__;
+        qCWarning(accountModuleLog) << "Server exception during sync, state:" << syncState;
         //默认服务器异常
         m_account->setSyncState(DAccount::Sync_ServerException);
         break;
@@ -944,19 +960,20 @@ void DAccountModule::slotDateUpdate(const DDataSyncBase::UpdateTypes updateType)
 // 导入日程
 bool DAccountModule::importSchedule(const QString &icsFilePath, const QString &typeID, const bool cleanExists)
 {
+    qCInfo(accountModuleLog) << "Importing schedule from:" << icsFilePath << "for type:" << typeID;
     KCalendarCore::ICalFormat icalformat;
     QTimeZone timezone = QDateTime::currentDateTime().timeZone();
     KCalendarCore::MemoryCalendar::Ptr cal(new KCalendarCore::MemoryCalendar(timezone));
     auto ok = icalformat.load(cal, icsFilePath);
     if (!ok) {
-        qCWarning(ServiceLogger) << "can not load ics file from" << icsFilePath;
+        qCWarning(accountModuleLog) << "Failed to load ICS file from:" << icsFilePath;
         return false;
     }
     auto events = cal->events();
     if (cleanExists) {
         ok = m_accountDB->deleteSchedulesByScheduleTypeID(typeID, true);
         if (!ok) {
-            qCWarning(ServiceLogger) << "can not clean schedules from" << typeID;
+            qCWarning(accountModuleLog) << "Failed to clean existing schedules for type:" << typeID;
             return false;
         }
     };
@@ -975,6 +992,7 @@ bool DAccountModule::importSchedule(const QString &icsFilePath, const QString &t
 // 导出日程
 bool DAccountModule::exportSchedule(const QString &icsFilePath, const QString &typeID)
 {
+    qCInfo(accountModuleLog) << "Exporting schedule to:" << icsFilePath << "for type:" << typeID;
     auto typeInfo = m_accountDB->getScheduleTypeByID(typeID);
     KCalendarCore::MemoryCalendar::Ptr cal(new KCalendarCore::MemoryCalendar(nullptr));
     // 附加扩展信息

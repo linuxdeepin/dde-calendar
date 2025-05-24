@@ -11,13 +11,17 @@
 #include <QPainterPath>
 #include <QNetworkReply>
 
+Q_LOGGING_CATEGORY(userLoginLog, "calendar.widget.userlogin")
+
 UserloginWidget::UserloginWidget(QWidget *parent)
     : QWidget(parent)
     , m_loginStatus(false)
 {
+    qCDebug(userLoginLog) << "Initializing UserloginWidget";
     initView();
     initConnect();
     slotAccountUpdate();
+    qCDebug(userLoginLog) << "UserloginWidget initialization completed";
 }
 
 UserloginWidget::~UserloginWidget()
@@ -27,6 +31,7 @@ UserloginWidget::~UserloginWidget()
 
 void UserloginWidget::initView()
 {
+    qCDebug(userLoginLog) << "Initializing UserloginWidget view";
     m_userNameLabel = new DLabel();
     m_userNameLabel->setElideMode(Qt::ElideMiddle);
     m_userNameLabel->setTextFormat(Qt::PlainText);
@@ -53,14 +58,17 @@ void UserloginWidget::initView()
     this->layout()->setAlignment(Qt::AlignLeft);
     m_ptrDoaNetwork = new DOANetWorkDBus(this);
     if (m_ptrDoaNetwork->getNetWorkState() == DOANetWorkDBus::NetWorkState::Active) {
+        qCDebug(userLoginLog) << "Network is active, enabling login/logout buttons";
         m_buttonLoginOut->setEnabled(true);
         m_buttonLogin->setEnabled(true);
     } else {
+        qCWarning(userLoginLog) << "Network is not active, disabling login/logout buttons";
         m_buttonLogin->setEnabled(false);
         m_buttonLoginOut->setEnabled(false);
     }
 
     m_networkManager = new QNetworkAccessManager(this);
+    qCDebug(userLoginLog) << "UserloginWidget view initialization completed";
 }
 
 void UserloginWidget::initConnect()
@@ -94,9 +102,11 @@ QPixmap UserloginWidget::pixmapToRound(const QPixmap &src, int radius)
 void UserloginWidget::slotNetworkStateChange(DOANetWorkDBus::NetWorkState state)
 {
     if (DOANetWorkDBus::NetWorkState::Disconnect == state)  {
+        qCWarning(userLoginLog) << "Network disconnected, disabling login/logout buttons";
         m_buttonLogin->setEnabled(false);
         m_buttonLoginOut->setEnabled(false);
     } else if (DOANetWorkDBus::NetWorkState::Active == state) {
+        qCInfo(userLoginLog) << "Network connected, enabling login/logout buttons";
         m_buttonLoginOut->setEnabled(true);
         m_buttonLogin->setEnabled(true);
     }
@@ -104,26 +114,31 @@ void UserloginWidget::slotNetworkStateChange(DOANetWorkDBus::NetWorkState state)
 
 void UserloginWidget::slotLoginBtnClicked()
 {
+    qCInfo(userLoginLog) << "Login button clicked, initiating login process";
     gAccountManager->login();
 }
 
 void UserloginWidget::slotLogoutBtnClicked()
 {
+    qCInfo(userLoginLog) << "Logout button clicked, initiating logout process";
     gAccountManager->loginout();
 }
 
 void UserloginWidget::slotAccountUpdate()
 {
     if (gUosAccountItem) {
+        qCInfo(userLoginLog) << "Account logged in, updating UI for account:" << gUosAccountItem->getAccount()->accountName();
         //账户为登录状态
         m_buttonLogin->hide();
         m_buttonLoginOut->show();
         DAccount::Ptr account = gUosAccountItem->getAccount();
         m_userNameLabel->setText(account->accountName());
         m_userNameLabel->setToolTip("<p style='white-space:pre;'>" + account->accountName().toHtmlEscaped());
+        qCDebug(userLoginLog) << "Requesting avatar for account:" << account->accountName();
         // 这里的url一定要带上http://头的， 跟在浏览器里输入其它链接不太一样，浏览器里面会自动转的，这里需要手动加上。
         m_networkManager->get(QNetworkRequest(account->avatar()));
     } else {
+        qCInfo(userLoginLog) << "Account logged out, resetting UI";
         //账户为未登录状态
         m_buttonLoginOut->hide();
         m_buttonLogin->show();
@@ -139,13 +154,18 @@ void UserloginWidget::slotReplyPixmapLoad(QNetworkReply *reply)
     //因自定义头像路径拿到的不是真实路径，需要从请求头中拿取到真实路径再次发起请求
     QUrl url = reply->header(QNetworkRequest::LocationHeader).toUrl();
     if (url.url().isEmpty()) {
+        qCDebug(userLoginLog) << "Loading avatar from direct response";
         pixmap.loadFromData(reply->readAll());
     } else {
+        qCDebug(userLoginLog) << "Redirecting avatar request to:" << url.url();
         m_networkManager->get(QNetworkRequest(url.url()));
     }
 
     if (!pixmap.isNull()) {
+        qCDebug(userLoginLog) << "Successfully loaded avatar image";
         m_buttonImg->setIcon(pixmapToRound(pixmap, 32));
+    } else {
+        qCWarning(userLoginLog) << "Failed to load avatar image";
     }
 }
 

@@ -16,11 +16,15 @@
 #include <QRadioButton>
 #include <QFormLayout>
 
+// Add logging category
+Q_LOGGING_CATEGORY(scheduleTypeEditLog, "calendar.dialog.scheduletypeedit")
+
 ScheduleTypeEditDlg::ScheduleTypeEditDlg(QWidget *parent)
     : DDialog(parent)
     , m_title(tr("New event type"))
     , m_dialogType(DialogNewType)
 {
+    qCDebug(scheduleTypeEditLog) << "Creating new event type dialog";
     init();
 }
 
@@ -32,6 +36,7 @@ ScheduleTypeEditDlg::ScheduleTypeEditDlg(const DScheduleType &jobTypeOld, QWidge
     , m_dialogType(DialogEditType)
 
 {
+    qCDebug(scheduleTypeEditLog) << "Creating edit event type dialog for type:" << jobTypeOld.displayName();
     init();
 }
 
@@ -42,10 +47,12 @@ ScheduleTypeEditDlg::ScheduleTypeEditDlg(const DialogType &type, QWidget *parent
     case DialogImportType:
         m_title = tr("Import ICS file");
         m_dialogType = DialogImportType;
+        qCDebug(scheduleTypeEditLog) << "Creating import ICS file dialog";
         break;
     default:
         m_title = tr("New event type");
         m_dialogType = DialogNewType;
+        qCDebug(scheduleTypeEditLog) << "Creating new event type dialog";
         break;
     }
     init();
@@ -53,17 +60,20 @@ ScheduleTypeEditDlg::ScheduleTypeEditDlg(const DialogType &type, QWidget *parent
 
 DScheduleType ScheduleTypeEditDlg::newJsonType()
 {
+    qCDebug(scheduleTypeEditLog) << "Creating new JSON type";
     m_jobTypeNew.setTypeColor(*m_colorSeletor->getSelectedColorInfo());
     return m_jobTypeNew;
 }
 
 void ScheduleTypeEditDlg::setAccount(AccountItem::Ptr account)
 {
+    qCDebug(scheduleTypeEditLog) << "Setting account:" << account->getAccount()->accountName();
     m_colorSeletor->resetColorButton(account);
 
     //将用户上一次选择的自定义颜色添加进去
     QString colorName = CConfigSettings::getInstance()->value("LastUserColor", "").toString();
     if (!colorName.isEmpty()) {
+        qCDebug(scheduleTypeEditLog) << "Setting last used custom color:" << colorName;
         //设置颜色
         DTypeColor::Ptr typeColor;
         typeColor.reset(new DTypeColor);
@@ -76,6 +86,7 @@ void ScheduleTypeEditDlg::setAccount(AccountItem::Ptr account)
     case DialogEditType: {
         //编辑日程类型
         //设置颜色
+        qCDebug(scheduleTypeEditLog) << "Setting color for edit mode";
         m_colorSeletor->setSelectedColor(m_jobTypeOld.typeColor());
     } break;
     default: {
@@ -96,6 +107,7 @@ void ScheduleTypeEditDlg::setAccount(AccountItem::Ptr account)
                 colorNum = 9;
             }
         }
+        qCDebug(scheduleTypeEditLog) << "Setting default color number:" << colorNum;
         m_colorSeletor->setSelectedColorById(colorNum);
     } break;
     }
@@ -103,6 +115,7 @@ void ScheduleTypeEditDlg::setAccount(AccountItem::Ptr account)
 
 void ScheduleTypeEditDlg::init()
 {
+    qCDebug(scheduleTypeEditLog) << "Initializing dialog";
     initView();
     initData();
     //默认焦点在日程名称输入框中
@@ -118,6 +131,7 @@ void ScheduleTypeEditDlg::init()
 
 void ScheduleTypeEditDlg::initView()
 {
+    qCDebug(scheduleTypeEditLog) << "Initializing view";
     setFixedSize(QSize(400, 220));
 
     m_titleLabel = new QLabel(this);
@@ -165,6 +179,7 @@ void ScheduleTypeEditDlg::initView()
 
 void ScheduleTypeEditDlg::initData()
 {
+    qCDebug(scheduleTypeEditLog) << "Initializing data";
     m_titleLabel->setText(m_title);
     m_lineEdit->setText(m_jobTypeOld.displayName());
     m_typeText = m_jobTypeOld.displayName(); //编辑时要初始化数据
@@ -176,6 +191,7 @@ void ScheduleTypeEditDlg::slotEditTextChanged(const QString &strName)
     QString tStitlename = strName;
     //去除回车字符
     if (tStitlename.contains("\n")) {
+        qCDebug(scheduleTypeEditLog) << "Removing newline characters from input";
         //设置纯文本显示原始内容
         tStitlename.replace("\n", "");
         m_lineEdit->setText(tStitlename);
@@ -183,6 +199,7 @@ void ScheduleTypeEditDlg::slotEditTextChanged(const QString &strName)
     }
     //最大限制20个字符，超出后过滤掉
     if (tStitlename.length() > 20) {
+        qCWarning(scheduleTypeEditLog) << "Input text exceeds 20 characters limit";
         m_lineEdit->setText(m_typeText);
         return;
     } else {
@@ -193,6 +210,7 @@ void ScheduleTypeEditDlg::slotEditTextChanged(const QString &strName)
     //1不能为空，2不能全空格，3不能重名
 
     if (m_lineEdit->text().isEmpty()) {
+        qCDebug(scheduleTypeEditLog) << "Input text is empty";
         //名称为空，返回
         //内容清空时，消除警告色和提示信息
         m_lineEdit->setAlert(false);
@@ -201,6 +219,7 @@ void ScheduleTypeEditDlg::slotEditTextChanged(const QString &strName)
         return;
     }
     if (tStitlename.trimmed().isEmpty()) {
+        qCWarning(scheduleTypeEditLog) << "Input text contains only whitespace";
         //名称为全空格，返回
         m_lineEdit->showAlertMessage(tr("The name can not only contain whitespaces"));
         m_lineEdit->setAlert(true);
@@ -215,6 +234,7 @@ void ScheduleTypeEditDlg::slotEditTextChanged(const QString &strName)
 
 void ScheduleTypeEditDlg::slotFocusChanged(bool onFocus)
 {
+    qCDebug(scheduleTypeEditLog) << "Focus changed:" << onFocus;
     //如果焦点移出,且输入内容为空
     if (!onFocus && m_lineEdit->text().isEmpty()) {
 //        emit m_lineEdit->textChanged("");
@@ -224,19 +244,23 @@ void ScheduleTypeEditDlg::slotFocusChanged(bool onFocus)
 
 void ScheduleTypeEditDlg::slotBtnCancel()
 {
+    qCDebug(scheduleTypeEditLog) << "Cancel button clicked";
     this->reject();
 }
 
 void ScheduleTypeEditDlg::slotBtnNext()
 {
+    qCDebug(scheduleTypeEditLog) << "Save button clicked";
     m_jobTypeNew.setTypeColor(*m_colorSeletor->getSelectedColorInfo());
     this->accept();
 }
 
 void ScheduleTypeEditDlg::slotEditingFinished()
 {
+    qCDebug(scheduleTypeEditLog) << "Editing finished";
     //如果编辑结束后内容为空则提示
     if (m_lineEdit->text().isEmpty()) {
+        qCWarning(scheduleTypeEditLog) << "Empty input after editing finished";
         //名称为空，返回
         m_lineEdit->showAlertMessage(tr("Enter a name please"));
         m_lineEdit->setAlert(true);
@@ -246,16 +270,19 @@ void ScheduleTypeEditDlg::slotEditingFinished()
 // 获取ICS文件路径
 QString ScheduleTypeEditDlg::getIcsFile()
 {
-    return m_fileEdit->text();
+    QString path = m_fileEdit->text();
+    qCDebug(scheduleTypeEditLog) << "Getting ICS file path:" << path;
+    return path;
 }
 
-// 检查并设置‘确认按钮’的状态
+// 检查并设置'确认按钮'的状态
 void ScheduleTypeEditDlg::slotCheckConfirmBtn()
 {
     auto confirmBtn = this->getButton(1);
 
     if (m_lineEdit->text().isEmpty() || m_lineEdit->isAlert())
     {
+        qCDebug(scheduleTypeEditLog) << "Disabling confirm button due to invalid input";
         confirmBtn->setEnabled(false);
         return;
     }
@@ -263,9 +290,11 @@ void ScheduleTypeEditDlg::slotCheckConfirmBtn()
     {
         if (m_fileEdit->text().isEmpty() || m_fileEdit->isAlert())
         {
+            qCDebug(scheduleTypeEditLog) << "Disabling confirm button due to invalid file path";
             confirmBtn->setEnabled(false);
             return;
         }
     }
+    qCDebug(scheduleTypeEditLog) << "Enabling confirm button";
     confirmBtn->setEnabled(true);
 }

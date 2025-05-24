@@ -4,12 +4,17 @@
 
 #include "cdbuspendingcallwatcher.h"
 
+// Add logging category
+Q_LOGGING_CATEGORY(dbusCallWatcher, "calendar.dbus.callwatcher")
+
 CDBusPendingCallWatcher::CDBusPendingCallWatcher(const QDBusPendingCall &call, QString member, QObject *parent)
     : QDBusPendingCallWatcher(call, parent)
     , m_member(member)
 {
+    qCDebug(dbusCallWatcher) << "Creating DBus pending call watcher for member:" << member;
     connect(this, &QDBusPendingCallWatcher::finished, this, [this](){
         //转发调用完成事件
+        qCDebug(dbusCallWatcher) << "DBus call finished for member:" << m_member;
         emit this->signalCallFinished(this);
     });
 }

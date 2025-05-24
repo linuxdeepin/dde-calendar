@@ -14,18 +14,22 @@
 
 #include <DPalette>
 
-
 #include <QMessageBox>
 #include <QDate>
 #include <QHBoxLayout>
 #include <QMouseEvent>
 #include <QShortcut>
+#include <QLoggingCategory>
+
+// Add logging category
+Q_LOGGING_CATEGORY(weekWindowLog, "calendar.week.window")
 
 DGUI_USE_NAMESPACE
 CWeekWindow::CWeekWindow(QWidget *parent)
     : CScheduleBaseWidget(parent)
     , m_today(new CTodayButton)
 {
+    qCDebug(weekWindowLog) << "Initializing CWeekWindow";
     setContentsMargins(0, 0, 0, 0);
     initUI();
     initConnection();
@@ -43,6 +47,7 @@ CWeekWindow::~CWeekWindow()
  */
 void CWeekWindow::setLunarVisible(bool state)
 {
+    qCDebug(weekWindowLog) << "Setting lunar visibility:" << state;
     m_weekHeadView->setLunarVisible(state);
     m_YearLunarLabel->setVisible(state);
     m_scheduleView->setLunarVisible(state);
@@ -193,6 +198,7 @@ void CWeekWindow::initConnection()
  */
 void CWeekWindow::setTheMe(int type)
 {
+    qCDebug(weekWindowLog) << "Setting theme type:" << type;
     if (type == 0 || type == 1) {
 
         //返回今天按钮的背景色
@@ -241,6 +247,7 @@ void CWeekWindow::setTheMe(int type)
  */
 void CWeekWindow::setTime(QTime time)
 {
+    qCDebug(weekWindowLog) << "Setting time:" << time;
     m_scheduleView->setTime(time);
 }
 
@@ -250,6 +257,7 @@ void CWeekWindow::setTime(QTime time)
  */
 void CWeekWindow::setSearchWFlag(bool flag)
 {
+    qCDebug(weekWindowLog) << "Setting search flag:" << flag;
     m_searchFlag = flag;
     update();
 }
@@ -259,6 +267,7 @@ void CWeekWindow::setSearchWFlag(bool flag)
  */
 void CWeekWindow::updateHeight()
 {
+    qCDebug(weekWindowLog) << "Updating schedule view height";
     m_scheduleView->updateHeight();
 }
 
@@ -267,6 +276,7 @@ void CWeekWindow::updateHeight()
  */
 void CWeekWindow::setYearData()
 {
+    qCDebug(weekWindowLog) << "Setting year data for date:" << getSelectDate();
     if (getSelectDate() == getCurrendDateTime().date()) {
         m_today->setText(QCoreApplication::translate("today", "Today", "Today"));
     } else {
@@ -285,6 +295,7 @@ void CWeekWindow::setYearData()
  */
 void CWeekWindow::updateShowDate(const bool isUpdateBar)
 {
+    qCDebug(weekWindowLog) << "Updating show date, isUpdateBar:" << isUpdateBar;
     setYearData();
     QVector<QDate> _weekShowData = m_calendarManager->getWeekDate(getSelectDate());
     m_weekHeadView->setWeekDay(_weekShowData, getSelectDate());
@@ -293,7 +304,7 @@ void CWeekWindow::updateShowDate(const bool isUpdateBar)
     m_stopDate = _weekShowData.last();
     //如果时间无效则打印log
     if (m_startDate.isNull() || m_stopDate.isNull()) {
-        qCWarning(ClientLogger) << "week start or stop date error";
+        qCWarning(weekWindowLog) << "Week start or stop date is invalid";
     }
     //设置全天和非全天显示时间范围
     m_scheduleView->setRange(m_startDate, m_stopDate);
@@ -314,6 +325,7 @@ void CWeekWindow::updateShowDate(const bool isUpdateBar)
  */
 void CWeekWindow::updateShowSchedule()
 {
+    qCDebug(weekWindowLog) << "Updating schedule display for dates:" << m_startDate << "to" << m_stopDate;
     m_scheduleView->setShowScheduleInfo(gScheduleManager->getScheduleMap(m_startDate, m_stopDate));
 }
 
@@ -322,6 +334,7 @@ void CWeekWindow::updateShowSchedule()
  */
 void CWeekWindow::updateShowLunar()
 {
+    qCDebug(weekWindowLog) << "Updating lunar display";
     getLunarInfo();
     m_YearLunarLabel->setText(m_lunarYear);
     QMap<QDate, CaHuangLiDayInfo> weekHuangLiInfo = gLunarManager->getHuangLiDayMap(m_startDate, m_stopDate);
@@ -357,6 +370,7 @@ void CWeekWindow::deleteselectSchedule()
 void CWeekWindow::slotIsDragging(bool &isDragging)
 {
     isDragging = m_scheduleView->IsDragging();
+    qCDebug(weekWindowLog) << "Checking drag status:" << isDragging;
 }
 
 /**
@@ -365,6 +379,7 @@ void CWeekWindow::slotIsDragging(bool &isDragging)
  */
 void CWeekWindow::slotViewSelectDate(const QDate &date)
 {
+    qCDebug(weekWindowLog) << "View select date:" << date;
     if (setSelectDate(date)) {
         //更加界面
         updateData();
@@ -387,9 +402,12 @@ void CWeekWindow::slotSwitchNextPage()
  */
 void CWeekWindow::slotprev()
 {
-    if (m_isSwitchStatus)
+    if (m_isSwitchStatus) {
+        qCDebug(weekWindowLog) << "Switch in progress, ignoring prev request";
         return;
+    }
 
+    qCDebug(weekWindowLog) << "Switching to previous week";
     m_isSwitchStatus = true;
 
     QTimer::singleShot(5, [this]() {
@@ -403,9 +421,12 @@ void CWeekWindow::slotprev()
  */
 void CWeekWindow::slotnext()
 {
-    if (m_isSwitchStatus)
+    if (m_isSwitchStatus) {
+        qCDebug(weekWindowLog) << "Switch in progress, ignoring next request";
         return;
+    }
 
+    qCDebug(weekWindowLog) << "Switching to next week";
     m_isSwitchStatus = true;
 
     QTimer::singleShot(5, [this]() {
@@ -419,6 +440,7 @@ void CWeekWindow::slotnext()
  */
 void CWeekWindow::slottoday()
 {
+    qCDebug(weekWindowLog) << "Switching to today";
     switchDate(getCurrendDateTime().date());
 }
 
@@ -428,6 +450,7 @@ void CWeekWindow::slottoday()
  */
 void CWeekWindow::slotSelectDate(const QDate &date)
 {
+    qCDebug(weekWindowLog) << "Select date:" << date;
     //更新选择时间
     setSelectDate(date);
     updateShowDate(false);
@@ -439,8 +462,8 @@ void CWeekWindow::slotSelectDate(const QDate &date)
  */
 void CWeekWindow::slotAngleDelta(int delta)
 {
-    //如果为拖拽状态则退出
     if (!m_scheduleView->IsDragging()) {
+        qCDebug(weekWindowLog) << "Processing angle delta:" << delta;
         if (delta > 0) {
             slotprev();
         } else if (delta < 0) {
@@ -455,6 +478,7 @@ void CWeekWindow::slotAngleDelta(int delta)
  */
 void CWeekWindow::switchDate(const QDate &date)
 {
+    qCDebug(weekWindowLog) << "Switching to date:" << date;
     //隐藏提示框
     slotScheduleHide();
     //设置选择时间

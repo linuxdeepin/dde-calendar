@@ -5,19 +5,25 @@
 #include "calldayscheduleitem.h"
 
 #include <QPainter>
+#include <QLoggingCategory>
+
+Q_LOGGING_CATEGORY(allDayScheduleLog, "calendar.view.alldayschedule")
 
 CAllDayScheduleItem::CAllDayScheduleItem(QRectF rect, QGraphicsItem *parent)
     : DragInfoItem(rect, parent)
 {
+    qCDebug(allDayScheduleLog) << "Create all day schedule item with rect:" << rect;
 }
 
 bool CAllDayScheduleItem::hasSelectSchedule(const DSchedule::Ptr &info)
 {
+    qCDebug(allDayScheduleLog) << "Check if schedule is selected:" << info->summary();
     return info == m_vScheduleInfo;
 }
 
 void CAllDayScheduleItem::paintBackground(QPainter *painter, const QRectF &rect, const bool isPixMap)
 {
+    qCDebug(allDayScheduleLog) << "Paint background with rect:" << rect << "isPixMap:" << isPixMap;
     Q_UNUSED(isPixMap);
     m_font = DFontSizeManager::instance()->get(m_sizeType, m_font);
     painter->setRenderHints(QPainter::Antialiasing);
@@ -31,8 +37,10 @@ void CAllDayScheduleItem::paintBackground(QPainter *painter, const QRectF &rect,
     if (m_vScheduleInfo == m_pressInfo) {
         //判断当前日程是否为拖拽移动日程
         if (m_vScheduleInfo->isMoved() == m_pressInfo->isMoved()) {
+            qCDebug(allDayScheduleLog) << "Schedule is highlighted";
             m_vHighflag = true;
         } else {
+            qCDebug(allDayScheduleLog) << "Schedule is being dragged, setting opacity";
             painter->setOpacity(0.4);
             textcolor.setAlphaF(0.4);
         }
@@ -76,6 +84,7 @@ void CAllDayScheduleItem::paintBackground(QPainter *painter, const QRectF &rect,
     qreal _showWidth = fillRect.width() - 13 - 8 - m_offset * 2;
     //如果标题总长度大于显示长度则显示长度须减去"..."的长度
     if (fm.horizontalAdvance(str) > _showWidth) {
+        qCDebug(allDayScheduleLog) << "Title text needs truncation, original length:" << str.length();
         _showWidth -= _rightOffset;
         for (int i = 0; i < str.count(); i++) {
             tStr.append(str.at(i));

@@ -7,6 +7,9 @@
 
 #include <QtCore/QDebug>
 #include <QtDBus/QtDBus>
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(dbusDataStruct)
 
 class CaLunarDayInfo
 {

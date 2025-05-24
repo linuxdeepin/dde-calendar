@@ -15,14 +15,20 @@
 #include <QJsonObject>
 #include <QJsonArray>
 
+// Add logging category
+Q_LOGGING_CATEGORY(exportedInterface, "calendar.dbus.exported")
+
 ExportedInterface::ExportedInterface(QObject *parent)
     : Dtk::Core::DUtil::DExportedInterface(parent)
 {
+    qCDebug(exportedInterface) << "Initializing Exported Interface";
     m_object = parent;
 }
 
 QVariant ExportedInterface::invoke(const QString &action, const QString &parameters) const
 {
+    qCDebug(exportedInterface) << "Invoking action:" << action << "with parameters:" << parameters;
+    
     //对外接口数据设置
     DSchedule::Ptr info;
     Exportpara para;
@@ -30,27 +36,36 @@ QVariant ExportedInterface::invoke(const QString &action, const QString &paramet
     CScheduleOperation _scheduleOperation;
 
     if (!analysispara(tstr, info, para)) {
+        qCWarning(exportedInterface) << "Failed to analyze parameters";
         return QVariant(false);
     }
 
     if (action == "CREATE") {
+        qCDebug(exportedInterface) << "Processing CREATE action";
         // 创建日程
         if (info.isNull()) {
+            qCWarning(exportedInterface) << "Schedule info is null";
             return QVariant(false);
         }
         bool _createSucc = _scheduleOperation.createSchedule(info);
         //如果创建失败
         if (!_createSucc) {
+            qCWarning(exportedInterface) << "Failed to create schedule";
             return QVariant(false);
         }
+        qCDebug(exportedInterface) << "Successfully created schedule";
     } else if (action == "VIEW") {
+        qCDebug(exportedInterface) << "Processing VIEW action with type:" << para.viewType;
         dynamic_cast<Calendarmainwindow *>(m_object)->viewWindow(para.viewType);
     } else if (action == "QUERY") {
+        qCDebug(exportedInterface) << "Processing QUERY action";
         if (gLocalAccountItem) {
             DSchedule::Map scheduleMap = DSchedule::fromMapString(gLocalAccountItem->querySchedulesByExternal(para.ADTitleName, para.ADStartTime, para.ADEndTime));
             QString qstr = DDE_Calendar::getExternalSchedule(scheduleMap);
+            qCDebug(exportedInterface) << "Query completed with results";
             return QVariant(qstr);
         } else {
+            qCWarning(exportedInterface) << "Local account item not available for query";
             return "";
         }
     } else if (action == "CANCEL") {
@@ -80,6 +95,7 @@ bool ExportedInterface::analysispara(QString &parameters, DSchedule::Ptr &info, 
     QJsonDocument jsonDoc(QJsonDocument::fromJson(parameters.toLocal8Bit(), &json_error));
 
     if (json_error.error != QJsonParseError::NoError) {
+        qCWarning(exportedInterface) << "Failed to parse JSON parameters:" << json_error.errorString();
         return false;
     }
     QJsonObject rootObj = jsonDoc.object();

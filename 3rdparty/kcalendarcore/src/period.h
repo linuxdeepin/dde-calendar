@@ -24,10 +24,14 @@
 #include <QDateTime>
 #include <QMetaType>
 #include <QVector>
+#include <QLoggingCategory>
 
 class QTimeZone;
 
 namespace KCalendarCore {
+
+Q_DECLARE_LOGGING_CATEGORY(periodLog)
+
 /**
   The period can be defined by either a start time and an end time or
   by a start time and a duration.

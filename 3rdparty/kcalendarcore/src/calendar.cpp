@@ -38,6 +38,9 @@
 
 using namespace KCalendarCore;
 
+// Define logging category
+Q_LOGGING_CATEGORY(calendarLog, "calendar.core")
+
 /**
   Make a QHash::value that returns a QVector.
 */
@@ -140,9 +143,11 @@ private:
 Calendar::Calendar(const QTimeZone &timeZone)
     : d(new KCalendarCore::Calendar::Private)
 {
+    qCDebug(calendarLog) << "Creating calendar with timezone:" << timeZone.id();
     if (timeZone.isValid()) {
         d->mTimeZone = timeZone;
     } else {
+        qCWarning(calendarLog) << "Invalid timezone provided, using system timezone";
         d->mTimeZone = QTimeZone::systemTimeZone();
     }
 }
@@ -174,9 +179,11 @@ void Calendar::setOwner(const Person &owner)
 
 void Calendar::setTimeZone(const QTimeZone &timeZone)
 {
+    qCDebug(calendarLog) << "Setting calendar timezone to:" << timeZone.id();
     if (timeZone.isValid()) {
         d->mTimeZone = timeZone;
     } else {
+        qCWarning(calendarLog) << "Invalid timezone provided, using system timezone";
         d->mTimeZone = QTimeZone::systemTimeZone();
     }
 
@@ -237,9 +244,11 @@ void Calendar::shiftTimes(const QTimeZone &oldZone, const QTimeZone &newZone)
 
 void Calendar::setFilter(CalFilter *filter)
 {
+    qCDebug(calendarLog) << "Setting calendar filter";
     if (filter) {
         d->mFilter = filter;
     } else {
+        qCDebug(calendarLog) << "Using default filter";
         d->mFilter = d->mDefaultFilter;
     }
     Q_EMIT filterChanged();
@@ -548,9 +557,11 @@ Event::List Calendar::events(EventSortField sortField, SortDirection sortDirecti
 bool Calendar::addIncidence(const Incidence::Ptr &incidence)
 {
     if (!incidence) {
+        qCWarning(calendarLog) << "Attempting to add null incidence";
         return false;
     }
 
+    qCDebug(calendarLog) << "Adding incidence:" << incidence->uid();
     AddVisitor<Calendar> v(this);
     return incidence->accept(v, incidence);
 }
@@ -558,15 +569,18 @@ bool Calendar::addIncidence(const Incidence::Ptr &incidence)
 bool Calendar::deleteIncidence(const Incidence::Ptr &incidence)
 {
     if (!incidence) {
+        qCWarning(calendarLog) << "Attempting to delete null incidence";
         return false;
     }
 
+    qCDebug(calendarLog) << "Deleting incidence:" << incidence->uid();
     if (beginChange(incidence)) {
         DeleteVisitor<Calendar> v(this);
         const bool result = incidence->accept(v, incidence);
         endChange(incidence);
         return result;
     } else {
+        qCWarning(calendarLog) << "Failed to begin change for incidence:" << incidence->uid();
         return false;
     }
 }
@@ -815,9 +829,11 @@ Journal::List Calendar::journals(const QDate &date) const
 void Calendar::setupRelations(const Incidence::Ptr &forincidence)
 {
     if (!forincidence) {
+        qCWarning(calendarLog) << "Attempting to setup relations for null incidence";
         return;
     }
 
+    qCDebug(calendarLog) << "Setting up relations for incidence:" << forincidence->uid();
     const QString uid = forincidence->uid();
 
     // First, go over the list of orphans and see if this is their parent
@@ -862,10 +878,11 @@ void Calendar::setupRelations(const Incidence::Ptr &forincidence)
 void Calendar::removeRelations(const Incidence::Ptr &incidence)
 {
     if (!incidence) {
-        qWarning() << "Warning: incidence is 0";
+        qCWarning(calendarLog) << "Warning: incidence is null";
         return;
     }
 
+    qCDebug(calendarLog) << "Removing relations for incidence:" << incidence->uid();
     const QString uid = incidence->uid();
 
     for (const Incidence::Ptr &i : qAsConst(d->mIncidenceRelations[uid])) {
@@ -1018,6 +1035,7 @@ bool Calendar::isSaving() const
 
 void Calendar::setModified(bool modified)
 {
+    qCDebug(calendarLog) << "Setting calendar modified state to:" << modified;
     if (modified != d->mModified || d->mNewObserver) {
         d->mNewObserver = false;
         for (CalendarObserver *observer : qAsConst(d->mObservers)) {

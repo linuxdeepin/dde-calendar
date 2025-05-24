@@ -6,21 +6,24 @@
 #include "commondef.h"
 #include <QLoggingCategory>
 
+Q_LOGGING_CATEGORY(dunionIDDbusLog, "calendar.dbus.unionid")
+
 DUnionIDDbus::DUnionIDDbus(const QString &service, const QString &path, const QDBusConnection &connection, QObject *parent)
     : QDBusAbstractInterface(service, path, staticInterfaceName(), connection, parent)
 {
+    qCDebug(dunionIDDbusLog) << "DUnionIDDbus initialized with service:" << service << "path:" << path;
     auto reply = this->SwitcherDump();
     reply.waitForFinished();
     if (!reply.isValid()) {
-        qCWarning(ServiceLogger) << "Error connecting remote object, service:" << this->service() << ",path:" << this->path() << ",interface" << this->interface();
-        qCWarning(ServiceLogger) << reply.error();
+        qCWarning(dunionIDDbusLog) << "Error connecting remote object, service:" << this->service() << ",path:" << this->path() << ",interface" << this->interface();
+        qCWarning(dunionIDDbusLog) << reply.error();
     } else {
-        qCInfo(ServiceLogger) << "connected remote object, service:" << this->service() << ",path:" << this->path() << ",interface" << this->interface();
-        qCInfo(ServiceLogger) << "switcher dump" << reply.value();
+        qCInfo(dunionIDDbusLog) << "Connected remote object, service:" << this->service() << ",path:" << this->path() << ",interface" << this->interface();
+        qCInfo(dunionIDDbusLog) << "Switcher dump" << reply.value();
     }
 }
 
 DUnionIDDbus::~DUnionIDDbus()
 {
-
+    qCDebug(dunionIDDbusLog) << "DUnionIDDbus destroyed";
 }

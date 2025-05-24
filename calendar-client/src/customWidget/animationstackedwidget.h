@@ -9,6 +9,8 @@
 #include <QStackedLayout>
 #include <QPropertyAnimation>
 
+Q_DECLARE_LOGGING_CATEGORY(animationStackLog)
+
 /**
  * @brief The AnimationStackedWidget class
  * 动画切换界面

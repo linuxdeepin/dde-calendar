@@ -7,9 +7,12 @@
 #include "scheduledatamanage.h"
 
 #include <DIcon>
+#include <QLoggingCategory>
 
 #include <QPainter>
 #include <QPainterPath>
+
+Q_LOGGING_CATEGORY(monthDayLog, "calendar.view.monthday")
 
 bool CMonthDayItem::m_LunarVisible = false;
 CMonthDayItem::CMonthDayItem(QGraphicsItem *parent)
@@ -17,6 +20,7 @@ CMonthDayItem::CMonthDayItem(QGraphicsItem *parent)
     , m_DayLunar("")
     , m_DayStatus(H_NONE)
 {
+    qCDebug(monthDayLog) << "Create month day item";
     //设置字体
     m_dayNumFont.setPixelSize(DDECalendar::FontSizeTwentyfour);
     m_dayNumFont.setWeight(QFont::Light);
@@ -27,6 +31,7 @@ CMonthDayItem::CMonthDayItem(QGraphicsItem *parent)
 
 CMonthDayItem::~CMonthDayItem()
 {
+    qCDebug(monthDayLog) << "Destroy month day item";
 }
 
 /**
@@ -35,6 +40,7 @@ CMonthDayItem::~CMonthDayItem()
  */
 void CMonthDayItem::setLunar(const QString &lunar)
 {
+    qCDebug(monthDayLog) << "Set lunar text:" << lunar;
     m_DayLunar = lunar;
 }
 
@@ -44,6 +50,7 @@ void CMonthDayItem::setLunar(const QString &lunar)
  */
 void CMonthDayItem::setStatus(const CMonthDayItem::HolidayStatus &status)
 {
+    qCDebug(monthDayLog) << "Set holiday status:" << status;
     m_DayStatus = status;
 }
 
@@ -53,6 +60,7 @@ void CMonthDayItem::setStatus(const CMonthDayItem::HolidayStatus &status)
  */
 void CMonthDayItem::setTheMe(int type)
 {
+    qCDebug(monthDayLog) << "Set theme type:" << type;
     m_themetype = type;
 
     if (type == 0 || type == 1) {
@@ -92,6 +100,7 @@ void CMonthDayItem::setTheMe(int type)
 
 void CMonthDayItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
+    qCDebug(monthDayLog) << "Paint month day item, date:" << m_Date;
     Q_UNUSED(option)
     Q_UNUSED(widget)
     const int hh = 36;
@@ -133,6 +142,7 @@ void CMonthDayItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
     }
     //如果为当前时间
     if (m_Date == QDate::currentDate()) {
+        qCDebug(monthDayLog) << "Painting current date indicator";
         //设置不透明度为1
         painter->setOpacity(1);
         QFont tFont = m_dayNumFont;
@@ -159,6 +169,7 @@ void CMonthDayItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
     painter->restore();
     //绘制农历
     if (m_LunarVisible) {
+        qCDebug(monthDayLog) << "Drawing lunar info:" << m_DayLunar;
         QFontMetrics metrics(m_LunerFont);
         int Lunarwidth = metrics.horizontalAdvance(m_DayLunar);
         qreal filleRectX = this->rect().width() - 12 - 3 - (58 + Lunarwidth) / 2;

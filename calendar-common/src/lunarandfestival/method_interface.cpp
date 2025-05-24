@@ -7,6 +7,8 @@
 #include <QtMath>
 #include <QDebug>
 
+Q_LOGGING_CATEGORY(methodLog, "calendar.method")
+
 /**
  * @brief GetLunarMonthName 获取当天的农历月名称
  * @param lunarmonthname 阴历月份
@@ -15,6 +17,7 @@
  */
 QString GetLunarMonthName(int lunarmonthname, bool isleap)
 {
+    qCDebug(methodLog) << "Getting lunar month name - Month:" << lunarmonthname << "IsLeap:" << isleap;
     QString monthname = lunarMonthNames[lunarmonthname - 1];
     if (isleap) {
         return "闰" + monthname + "月";
@@ -29,6 +32,7 @@ QString GetLunarMonthName(int lunarmonthname, bool isleap)
  */
 QString GetLunarDayName(int lundayname)
 {
+    qCDebug(methodLog) << "Getting lunar day name for day:" << lundayname;
     return lunarDayNames[lundayname - 1];
 }
 
@@ -42,6 +46,8 @@ QString GetLunarDayName(int lundayname)
  */
 QString GetLunarDayFestival(int monthname, int lunarday, int lunarmonthdays, int solarterm)
 {
+    qCDebug(methodLog) << "Getting lunar day festival - Month:" << monthname << "Day:" << lunarday 
+                       << "MonthDays:" << lunarmonthdays << "SolarTerm:" << solarterm;
     int key = monthname * 100 + lunarday;
     if (lunarFestival.contains(key)) {
         return lunarFestival[key];
@@ -63,6 +69,7 @@ QString GetLunarDayFestival(int monthname, int lunarday, int lunarmonthdays, int
  */
 QString GetSolarTermName(int order)
 {
+    qCDebug(methodLog) << "Getting solar term name for order:" << order;
     if (0 <= order && order <= 23) {
         return SolarTermNames[order];
     }
@@ -185,6 +192,7 @@ double GetSunEclipticLongitudeForEarth(double jd)
 
 double GetJulianThousandYears(double jd)
 {
+    qCDebug(methodLog) << "Converting Julian Day to thousand years:" << jd;
     //1000年的日数
     const double  DaysOf1000Years = 365250.0;
     return (jd - J2000) / DaysOf1000Years;
@@ -387,7 +395,7 @@ double GetDeltaT(int year, int month)
         double u4 = u3 * u;
         double u5 = u4 * u;
         double u6 = u5 * u;
-        return 10583.6 - 1014.41 * u + 33.78311 * u2 - 5.952053 * u3 - 0.1798452 * u4 + 0.022174192 * u5 + 0.0090316521 * u6;
+        return 10583.6 - 1014.41 * u + 71.23472 * u2 + 0.319781 * u3 - 0.8503463 * u4 - 0.005050998 * u5 + 0.0083572073 * u6;
     } else if (year < 1600) {
         double u = (y - 1000) / 100;
         double u2 = u * u;
@@ -531,6 +539,7 @@ void GetTimeFromJulianDay(double jd, int &hour, int &minute, int &second)
 // 其中包含了 TT 到 UTC 的转换
 QDateTime GetDateTimeFromJulianDay(double jd)
 {
+    qCDebug(methodLog) << "Converting Julian Day to DateTime:" << jd;
     int year, month, day;
     GetDateFromJulianDay(jd, year, month, day);
     //  TT -> UTC

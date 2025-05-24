@@ -7,17 +7,22 @@
 #include <QPainter>
 #include <QMouseEvent>
 
+Q_LOGGING_CATEGORY(animationStackLog, "calendar.widget.animationstack")
+
 AnimationStackedWidget::AnimationStackedWidget(const AnimationOri ori, QWidget *parent)
     : QStackedWidget(parent)
     , m_animationOri(ori)
     , m_Animation(new QPropertyAnimation(this, "offset", this))
 {
+    qCDebug(animationStackLog) << "Initializing AnimationStackedWidget with orientation:" << ori;
     setDuration(1000);
     connect(m_Animation, &QPropertyAnimation::finished, this, &AnimationStackedWidget::animationFinished);
+    qCDebug(animationStackLog) << "AnimationStackedWidget initialized";
 }
 
 AnimationStackedWidget::~AnimationStackedWidget()
 {
+    qCDebug(animationStackLog) << "Destroying AnimationStackedWidget";
     delete m_Animation;
 }
 
@@ -27,6 +32,7 @@ AnimationStackedWidget::~AnimationStackedWidget()
  */
 void AnimationStackedWidget::setDuration(int duration)
 {
+    qCDebug(animationStackLog) << "Setting animation duration to:" << duration;
     m_Duration = duration;
     m_Animation->setEasingCurve(QEasingCurve::InOutQuad);
 }
@@ -39,6 +45,7 @@ void AnimationStackedWidget::paintEvent(QPaintEvent *e)
 {
     Q_UNUSED(e);
     if (m_IsAnimation) {
+        qCDebug(animationStackLog) << "Painting animation frame";
         QPainter paint(this);
         paintCurrentWidget(paint, currentIndex());
         paintNextWidget(paint, m_NextIndex);
@@ -55,10 +62,12 @@ void AnimationStackedWidget::mouseMoveEvent(QMouseEvent *e)
  */
 void AnimationStackedWidget::animationFinished()
 {
+    qCDebug(animationStackLog) << "Animation finished";
     m_IsAnimation = false;
     setCurrentIndex(m_NextIndex);
     //如果有需要跳转的页面
     if (m_nextGotoIndex != -1) {
+        qCDebug(animationStackLog) << "Processing queued goto index:" << m_nextGotoIndex;
         setCurrent(m_nextGotoIndex);
         //
         m_nextGotoIndex = -1;
@@ -73,6 +82,7 @@ void AnimationStackedWidget::animationFinished()
  */
 void AnimationStackedWidget::setCurrent(int index)
 {
+    qCDebug(animationStackLog) << "Setting current index to:" << index;
     //设置移动方向
     m_moveOri = getMoveOrientation(currentIndex(), index);
     setCurrentWidget(index, getBeginValue());
@@ -83,6 +93,7 @@ void AnimationStackedWidget::setCurrent(int index)
  */
 void AnimationStackedWidget::setPre()
 {
+    qCDebug(animationStackLog) << "Setting to previous widget";
     //获取堆窗口数
     const int count = this->count();
     switch (m_animationOri) {
@@ -100,6 +111,7 @@ void AnimationStackedWidget::setPre()
     if (nextIndex < 0) {
         nextIndex = nextIndex + count;
     }
+    qCDebug(animationStackLog) << "Previous index calculated:" << nextIndex;
     setCurrentWidget(nextIndex, getBeginValue());
 }
 
@@ -108,6 +120,7 @@ void AnimationStackedWidget::setPre()
  */
 void AnimationStackedWidget::setNext()
 {
+    qCDebug(animationStackLog) << "Setting to next widget";
     //获取堆窗口数
     const int count = this->count();
     switch (m_animationOri) {
@@ -122,6 +135,7 @@ void AnimationStackedWidget::setNext()
     }
     //获取下一个窗口编号
     int nextIndex = (currentIndex() + 1) % count;
+    qCDebug(animationStackLog) << "Next index calculated:" << nextIndex;
     setCurrentWidget(nextIndex, getBeginValue());
 }
 
@@ -132,13 +146,16 @@ void AnimationStackedWidget::setNext()
  */
 void AnimationStackedWidget::setCurrentWidget(int &index, int beginWidth)
 {
+    qCDebug(animationStackLog) << "Setting current widget - index:" << index << "begin width:" << beginWidth;
     //如果正在动画，那么退出
     if (m_IsAnimation) {
+        qCDebug(animationStackLog) << "Animation in progress, queueing index:" << index;
         m_nextGotoIndex = index;
         return;
     }
     //如果索引为当前索引则退出
     if (index == currentIndex()) {
+        qCDebug(animationStackLog) << "Index unchanged, emitting finished signal";
         emit signalIsFinished();
         return;
     }
@@ -150,6 +167,7 @@ void AnimationStackedWidget::setCurrentWidget(int &index, int beginWidth)
     m_Animation->setEndValue(0);
     m_Animation->setDuration(m_Duration);
     m_Animation->start();
+    qCDebug(animationStackLog) << "Animation started with duration:" << m_Duration;
 }
 
 /**
@@ -171,6 +189,7 @@ int AnimationStackedWidget::getBeginValue()
         value = widgetRect.height();
     }
     }
+    qCDebug(animationStackLog) << "Begin value calculated:" << value;
     return value;
 }
 
@@ -182,6 +201,7 @@ int AnimationStackedWidget::getBeginValue()
  */
 AnimationStackedWidget::MoveOrientation AnimationStackedWidget::getMoveOrientation(const int currIndex, const int nextIndex)
 {
+    qCDebug(animationStackLog) << "Calculating move orientation - current:" << currIndex << "next:" << nextIndex;
     MoveOrientation moveOri{LeftToRight};
     if (nextIndex < currIndex) {
         switch (m_animationOri) {
@@ -206,6 +226,7 @@ AnimationStackedWidget::MoveOrientation AnimationStackedWidget::getMoveOrientati
         break;
         }
     }
+    qCDebug(animationStackLog) << "Move orientation determined:" << moveOri;
     return moveOri;
 }
 
@@ -216,6 +237,7 @@ AnimationStackedWidget::MoveOrientation AnimationStackedWidget::getMoveOrientati
  */
 void AnimationStackedWidget::paintCurrentWidget(QPainter &paint, int currentIndex)
 {
+    qCDebug(animationStackLog) << "Painting current widget - index:" << currentIndex;
     //获得当前页面的Widget
     QWidget *currentWidget = widget(currentIndex);
     QPixmap currentPixmap(currentWidget->size());
@@ -261,6 +283,7 @@ void AnimationStackedWidget::paintCurrentWidget(QPainter &paint, int currentInde
  */
 void AnimationStackedWidget::paintNextWidget(QPainter &paint, int nextIndex)
 {
+    qCDebug(animationStackLog) << "Painting next widget - index:" << nextIndex;
     QWidget *nextWidget = widget(nextIndex);
     QRect widgetRect = this->rect();
     //设置下一个窗口的大小
@@ -313,6 +336,7 @@ double AnimationStackedWidget::offset() const
  */
 void AnimationStackedWidget::setOffset(double offset)
 {
+    qCDebug(animationStackLog) << "Setting offset to:" << offset;
     m_offset = offset;
     update();
 }

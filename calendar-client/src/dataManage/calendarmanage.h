@@ -9,6 +9,9 @@
 #include "dbustimedate.h"
 
 #include <QObject>
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(calendarLog)
 
 struct ShowDateRange {
     int showYear{0};

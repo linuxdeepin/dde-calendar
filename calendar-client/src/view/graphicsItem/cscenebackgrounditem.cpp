@@ -9,6 +9,8 @@
 #include <QMarginsF>
 #include <algorithm>
 
+Q_LOGGING_CATEGORY(sceneBackgroundLog, "calendar.view.scenebackground")
+
 CSceneBackgroundItem::CSceneBackgroundItem(ItemOnView view, QGraphicsItem *parent)
     : CFocusItem(parent)
     , m_backgroundNum(0)
@@ -19,6 +21,7 @@ CSceneBackgroundItem::CSceneBackgroundItem(ItemOnView view, QGraphicsItem *paren
     , m_showItemIndex(-1)
     , m_itemOfView(view)
 {
+    qCDebug(sceneBackgroundLog) << "Creating scene background item with view type:" << view;
     //设置item类型为背景显示
     setItemType(CBACK);
 }
@@ -29,16 +32,20 @@ CSceneBackgroundItem::CSceneBackgroundItem(ItemOnView view, QGraphicsItem *paren
  */
 CFocusItem *CSceneBackgroundItem::setNextItemFocusAndGetNextItem()
 {
+    qCDebug(sceneBackgroundLog) << "Setting next item focus, current show index:" << m_showItemIndex << "item count:" << m_item.size();
     CFocusItem *NextFocus = this;
     //若该区域没有item
     if (m_showItemIndex < 0 && m_item.size() == 0) {
+        qCDebug(sceneBackgroundLog) << "No items in area, getting next focus item";
         NextFocus = CFocusItem::setNextItemFocusAndGetNextItem();
     } else if (m_showItemIndex == m_item.size() - 1) {
+        qCDebug(sceneBackgroundLog) << "Reached last item, resetting focus";
         //若切换到最后一个item
         m_item.at(m_showItemIndex)->setItemFocus(false);
         m_showItemIndex = -1;
         NextFocus = CFocusItem::setNextItemFocusAndGetNextItem();
     } else {
+        qCDebug(sceneBackgroundLog) << "Moving to next item";
         //若该背景上有显示的item
         //若显示的item未设置focus则取消背景focus效果
         if (m_showItemIndex == -1 && getItemFocus()) {
@@ -84,6 +91,7 @@ bool compareItemData(const CFocusItem *itemfirst, const CFocusItem *itemsecond)
  */
 void CSceneBackgroundItem::updateShowItem()
 {
+    qCDebug(sceneBackgroundLog) << "Updating show items";
     m_item.clear();
     //缩小背景矩阵,防止获取到其他背景上的item
     QRectF offsetRect = this->rect().marginsRemoved(QMarginsF(1, 1, 1, 1));
@@ -95,6 +103,7 @@ void CSceneBackgroundItem::updateShowItem()
         }
     }
     std::sort(m_item.begin(), m_item.end(), compareItemData);
+    qCDebug(sceneBackgroundLog) << "Updated show items count:" << m_item.size();
     updateCurrentItemShow();
 }
 
@@ -127,11 +136,14 @@ int CSceneBackgroundItem::getBackgroundNum() const
  */
 void CSceneBackgroundItem::setItemFocus(bool isFocus)
 {
+    qCDebug(sceneBackgroundLog) << "Setting item focus:" << isFocus << "show index:" << m_showItemIndex;
     if (m_showItemIndex < 0) {
         CFocusItem::setItemFocus(isFocus);
     } else {
         if (m_showItemIndex < m_item.size()) {
             m_item.at(m_showItemIndex)->setItemFocus(isFocus);
+        } else {
+            qCWarning(sceneBackgroundLog) << "Invalid show index when setting focus:" << m_showItemIndex;
         }
     }
 }

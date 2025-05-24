@@ -5,16 +5,21 @@
 #include "accountitem.h"
 #include "doanetworkdbus.h"
 
+// Add logging category
+Q_LOGGING_CATEGORY(accountLog, "calendar.account")
+
 AccountItem::AccountItem(const DAccount::Ptr &account, QObject *parent)
     : QObject(parent)
     , m_account(account)
     , m_dbusRequest(new DbusAccountRequest(account->dbusPath(), account->dbusInterface(), this))
 {
+    qCDebug(accountLog) << "Creating account item for account ID:" << account->accountID();
     initConnect();
 }
 
 void AccountItem::initConnect()
 {
+    qCDebug(accountLog) << "Initializing account connections";
     connect(m_dbusRequest, &DbusAccountRequest::signalGetAccountInfoFinish, this, &AccountItem::slotGetAccountInfoFinish);
     connect(m_dbusRequest, &DbusAccountRequest::signalGetScheduleTypeListFinish, this, &AccountItem::slotGetScheduleTypeListFinish);
     connect(m_dbusRequest, &DbusAccountRequest::signalGetScheduleListFinish, this, &AccountItem::slotGetScheduleListFinish);
@@ -42,6 +47,7 @@ QString AccountItem::getSyncMsg(DAccount::AccountSyncState code)
     case DAccount::Sync_ServerException: msg = tr("Server exception"); break;
     case DAccount::Sync_StorageFull: msg = tr("Storage full"); break;
     }
+    qCInfo(accountLog) << "Sync state message:" << msg << "for code:" << code;
     return msg;
 }
 
@@ -51,6 +57,7 @@ QString AccountItem::getSyncMsg(DAccount::AccountSyncState code)
  */
 void AccountItem::resetAccount()
 {
+    qCInfo(accountLog) << "Resetting account data for account ID:" << m_account->accountID();
     querySchedulesWithParameter(QDate().currentDate().year());
     m_dbusRequest->getScheduleTypeList();
     m_dbusRequest->getSysColors();
@@ -382,6 +389,7 @@ bool AccountItem::querySchedulesByExternal(const QString &key, const QDateTime &
  */
 void AccountItem::slotGetAccountInfoFinish(DAccount::Ptr account)
 {
+    qCDebug(accountLog) << "Account info update received for account ID:" << account->accountID();
     m_account = account;
     emit signalAccountDataUpdate();
 }
@@ -393,6 +401,7 @@ void AccountItem::slotGetAccountInfoFinish(DAccount::Ptr account)
  */
 void AccountItem::slotGetScheduleTypeListFinish(DScheduleType::List scheduleTypeList)
 {
+    qCDebug(accountLog) << "Schedule type list updated, count:" << scheduleTypeList.size();
     m_scheduleTypeList = scheduleTypeList;
     emit signalScheduleTypeUpdate();
 }
@@ -404,6 +413,7 @@ void AccountItem::slotGetScheduleTypeListFinish(DScheduleType::List scheduleType
  */
 void AccountItem::slotGetScheduleListFinish(QMap<QDate, DSchedule::List> map)
 {
+    qCDebug(accountLog) << "Schedule list updated, date count:" << map.size();
     m_scheduleMap = map;
     emit signalScheduleUpdate();
 }
@@ -415,6 +425,7 @@ void AccountItem::slotGetScheduleListFinish(QMap<QDate, DSchedule::List> map)
  */
 void AccountItem::slotSearchScheduleListFinish(QMap<QDate, DSchedule::List> map)
 {
+    qCDebug(accountLog) << "Search schedule list updated, date count:" << map.size();
     m_searchedScheduleMap = map;
     emit signalSearchScheduleUpdate();
 }
@@ -430,12 +441,14 @@ void AccountItem::slotGetSysColorsFinish(DTypeColor::List typeColorList)
 
 void AccountItem::slotAccountStateChange(DAccount::AccountStates state)
 {
+    qCInfo(accountLog) << "Account state changed to:" << state << "for account ID:" << getAccount()->accountID();
     getAccount()->setAccountState(state);
     emit signalAccountStateChange();
 }
 
 void AccountItem::slotSyncStateChange(DAccount::AccountSyncState state)
 {
+    qCInfo(accountLog) << "Sync state changed to:" << state << "for account ID:" << getAccount()->accountID();
     getAccount()->setSyncState(state);
     emit signalSyncStateChange(state);
 }

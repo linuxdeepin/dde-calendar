@@ -11,10 +11,13 @@
 #include <QPainterPath>
 #include <QFontMetrics>
 
+Q_LOGGING_CATEGORY(CustomFrameLog, "calendar.widget.customframe")
+
 DGUI_USE_NAMESPACE
 CustomFrame::CustomFrame(QWidget *parent)
     : QFrame(parent)
 {
+    qCDebug(CustomFrameLog) << "Creating CustomFrame widget";
     m_font.setWeight(QFont::Medium);
     m_font.setPixelSize(DDECalendar::FontSizeFourteen);
     this->setAttribute(Qt::WA_TranslucentBackground);//设置窗口背景透明
@@ -24,6 +27,7 @@ CustomFrame::CustomFrame(QWidget *parent)
 
 void CustomFrame::setBColor(QColor normalC)
 {
+    qCDebug(CustomFrameLog) << "Setting background color:" << normalC;
     m_bnormalColor = normalC;
     m_bflag = true;
     update();
@@ -31,6 +35,7 @@ void CustomFrame::setBColor(QColor normalC)
 
 void CustomFrame::setRoundState(bool lstate, bool tstate, bool rstate, bool bstate)
 {
+    qCDebug(CustomFrameLog) << "Setting round state - left:" << lstate << "top:" << tstate << "right:" << rstate << "bottom:" << bstate;
     m_lstate = lstate;
     m_tstate = tstate;
     m_rstate = rstate;
@@ -39,6 +44,7 @@ void CustomFrame::setRoundState(bool lstate, bool tstate, bool rstate, bool bsta
 
 void CustomFrame::setTextStr(const QFont &font, const QColor &tc, const QString &strc, int flag)
 {
+    qCDebug(CustomFrameLog) << "Setting text with font, color:" << tc << "text:" << strc << "flag:" << flag;
     m_font = font;
     m_tnormalColor = tc;
     m_text = strc;
@@ -47,6 +53,7 @@ void CustomFrame::setTextStr(const QFont &font, const QColor &tc, const QString 
 
 void CustomFrame::setTextStr(const QString &strc)
 {
+    qCDebug(CustomFrameLog) << "Setting text string:" << strc;
     m_text = strc;
 
     if (!m_fixsizeflag) {
@@ -59,12 +66,14 @@ void CustomFrame::setTextStr(const QString &strc)
 
 void CustomFrame::setTextColor(QColor tc)
 {
+    qCDebug(CustomFrameLog) << "Setting text color:" << tc;
     m_tnormalColor = tc;
     update();
 }
 
 void CustomFrame::setTextFont(const QFont &font)
 {
+    qCDebug(CustomFrameLog) << "Setting text font:" << font.toString();
     m_font = font;
 
     if (!m_fixsizeflag) {
@@ -76,21 +85,25 @@ void CustomFrame::setTextFont(const QFont &font)
 
 void CustomFrame::setTextAlign(int flag)
 {
+    qCDebug(CustomFrameLog) << "Setting text alignment flag:" << flag;
     m_textflag = flag;
 }
 
 void CustomFrame::setRadius(int radius)
 {
+    qCDebug(CustomFrameLog) << "Setting radius:" << radius;
     m_radius = radius;
 }
 
 void CustomFrame::setboreder(int framew)
 {
+    qCDebug(CustomFrameLog) << "Setting border width:" << framew;
     m_borderframew = framew;
 }
 
 void CustomFrame::setFixedSize(int w, int h)
 {
+    qCDebug(CustomFrameLog) << "Setting fixed size - width:" << w << "height:" << h;
     m_fixsizeflag = true;
     QFrame::setFixedSize(w, h);
 }

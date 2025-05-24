@@ -6,6 +6,9 @@
 #define CustomFrame_H
 
 #include <QFrame>
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(CustomFrameLog)
 
 class CustomFrame : public QFrame
 {

@@ -16,6 +16,9 @@
 #include <QAction>
 #include <QMutex>
 #include <QDrag>
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(graphicsViewLog)
 
 DWIDGET_USE_NAMESPACE
 

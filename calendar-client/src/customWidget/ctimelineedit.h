@@ -6,8 +6,11 @@
 #define CTIMELINEEDIT_H
 
 #include <DSpinBox>
+#include <QLoggingCategory>
 
 DWIDGET_USE_NAMESPACE
+
+Q_DECLARE_LOGGING_CATEGORY(ctimelineeditLog)
 
 //时间数字编辑器
 class CTimeLineEdit : public DSpinBox

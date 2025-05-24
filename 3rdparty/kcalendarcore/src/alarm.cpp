@@ -26,6 +26,9 @@
 
 using namespace KCalendarCore;
 
+// Define logging category
+Q_LOGGING_CATEGORY(alarmLog, "calendar.alarm")
+
 /**
   Private class that helps to provide binary compatibility between releases.
   @internal
@@ -184,28 +187,37 @@ void Alarm::setType(Alarm::Type type)
     if (d->mParent) {
         d->mParent->update();
     }
+    
+    qCDebug(alarmLog) << "Setting alarm type to:" << type;
+    
     switch (type) {
     case Display:
         d->mDescription.clear();
+        qCDebug(alarmLog) << "Cleared display alarm description";
         break;
     case Procedure:
         d->mFile.clear();
         d->mDescription.clear();
+        qCDebug(alarmLog) << "Cleared procedure alarm file and description";
         break;
     case Audio:
         d->mFile.clear();
+        qCDebug(alarmLog) << "Cleared audio alarm file";
         break;
     case Email:
         d->mMailSubject.clear();
         d->mDescription.clear();
         d->mMailAddresses.clear();
         d->mMailAttachFiles.clear();
+        qCDebug(alarmLog) << "Cleared email alarm properties";
         break;
     case Invalid:
+        qCWarning(alarmLog) << "Setting alarm type to Invalid";
         break;
     default:
+        qCWarning(alarmLog) << "Unknown alarm type:" << type;
         if (d->mParent) {
-            d->mParent->updated(); // not really
+            d->mParent->updated();
         }
         return;
     }
@@ -477,6 +489,7 @@ void Alarm::setTime(const QDateTime &alarmTime)
     if (d->mParent) {
         d->mParent->update();
     }
+    qCDebug(alarmLog) << "Setting alarm time to:" << alarmTime;
     d->mAlarmTime = alarmTime;
     d->mHasTime = true;
 
@@ -504,6 +517,8 @@ QDateTime Alarm::time() const
 
 QDateTime Alarm::nextTime(const QDateTime &preTime, bool ignoreRepetitions) const
 {
+    qCDebug(alarmLog) << "Calculating next alarm time after:" << preTime << "ignoreRepetitions:" << ignoreRepetitions;
+    
     if (d->mParent && d->mParent->recurs()) {
         QDateTime dtEnd = d->mParent->dateTime(Incidence::RoleAlarmEndOffset);
 
@@ -522,7 +537,7 @@ QDateTime Alarm::nextTime(const QDateTime &preTime, bool ignoreRepetitions) cons
         qDebug() << "preTime       " << preTime;
         */
         if (alarmStart > preTime) {
-            // No need to go further.
+            qCDebug(alarmLog) << "Next alarm time is the initial alarm time:" << alarmStart;
             return alarmStart;
         }
         if (d->mAlarmRepeatCount && !ignoreRepetitions) {
@@ -558,9 +573,12 @@ QDateTime Alarm::nextTime(const QDateTime &preTime, bool ignoreRepetitions) cons
         // Not recurring.
         QDateTime alarmTime = time();
         if (alarmTime > preTime) {
+            qCDebug(alarmLog) << "Next alarm time found:" << alarmTime;
             return alarmTime;
         }
     }
+    
+    qCDebug(alarmLog) << "No next alarm time found after:" << preTime;
     return QDateTime();
 }
 
@@ -705,6 +723,7 @@ void Alarm::setEnabled(bool enable)
     if (d->mParent) {
         d->mParent->update();
     }
+    qCDebug(alarmLog) << "Setting alarm enabled state to:" << enable;
     d->mAlarmEnabled = enable;
     if (d->mParent) {
         d->mParent->updated();

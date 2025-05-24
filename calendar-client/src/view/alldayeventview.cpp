@@ -11,7 +11,6 @@
 #include "constants.h"
 #include "scheduledaterangeinfo.h"
 
-
 #include <DPalette>
 #include <DMenu>
 
@@ -26,18 +25,23 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QGraphicsOpacityEffect>
+#include <QLoggingCategory>
+
+Q_LOGGING_CATEGORY(allDayEventLog, "calendar.view.alldayevent")
 
 DGUI_USE_NAMESPACE
 DWIDGET_USE_NAMESPACE
 
 void CAllDayEventWeekView::setTheMe(int type)
 {
+    qCDebug(allDayEventLog) << "Setting theme type:" << type;
     CWeekDayGraphicsview::setTheMe(type);
 }
 
 void CAllDayEventWeekView::changeEvent(QEvent *event)
 {
     if (event->type() == QEvent::FontChange) {
+        qCDebug(allDayEventLog) << "Font changed, updating item height and info";
         updateItemHeightByFontSize();
         updateInfo();
     }
@@ -45,17 +49,23 @@ void CAllDayEventWeekView::changeEvent(QEvent *event)
 
 bool CAllDayEventWeekView::MeetCreationConditions(const QDateTime &date)
 {
-    return qAbs(date.daysTo(m_PressDate)) < 7;
+    bool result = qAbs(date.daysTo(m_PressDate)) < 7;
+    qCDebug(allDayEventLog) << "Check creation conditions for date:" << date << "result:" << result;
+    return result;
 }
 
 void CAllDayEventWeekView::slotCreate(const QDateTime &date)
 {
+    qCDebug(allDayEventLog) << "Creating new schedule at date:" << date;
     CScheduleDlg dlg(1, this);
     dlg.setDate(date);
     dlg.setAllDay(true);
     if (dlg.exec() == DDialog::Accepted) {
+        qCInfo(allDayEventLog) << "New schedule created successfully";
         emit signalsUpdateSchedule();
         slotStateChange(true);
+    } else {
+        qCDebug(allDayEventLog) << "Schedule creation cancelled";
     }
 }
 
@@ -66,12 +76,15 @@ bool CAllDayEventWeekView::IsEqualtime(const QDateTime &timeFirst, const QDateTi
 
 bool CAllDayEventWeekView::JudgeIsCreate(const QPointF &pos)
 {
-    return qAbs(pos.x() - m_PressPos.x()) > 20 || qAbs(m_PressDate.date().daysTo(m_coorManage->getsDate(mapFrom(this, pos.toPoint())))) > 0;
+    bool result = qAbs(pos.x() - m_PressPos.x()) > 20 || qAbs(m_PressDate.date().daysTo(m_coorManage->getsDate(mapFrom(this, pos.toPoint())))) > 0;
+    qCDebug(allDayEventLog) << "Judge is create at pos:" << pos << "result:" << result;
+    return result;
 }
 
 void CAllDayEventWeekView::RightClickToCreate(QGraphicsItem *listItem, const QPoint &pos)
 {
     Q_UNUSED(listItem);
+    qCDebug(allDayEventLog) << "Right click to create at pos:" << pos;
     m_rightMenu->clear();
     m_rightMenu->addAction(m_createAction);
 
@@ -83,6 +96,7 @@ void CAllDayEventWeekView::RightClickToCreate(QGraphicsItem *listItem, const QPo
 void CAllDayEventWeekView::MoveInfoProcess(DSchedule::Ptr &info, const QPointF &pos)
 {
     Q_UNUSED(pos);
+    qCDebug(allDayEventLog) << "Processing move info for schedule:" << info->summary();
     if (info->allDay()) {
         qint64 offset = m_PressDate.daysTo(m_MoveDate);
         info->setDtStart(info->dtStart().addDays(offset));
@@ -99,16 +113,21 @@ void CAllDayEventWeekView::MoveInfoProcess(DSchedule::Ptr &info, const QPointF &
 
 QDateTime CAllDayEventWeekView::getDragScheduleInfoBeginTime(const QDateTime &moveDateTime)
 {
-    return moveDateTime.daysTo(m_InfoEndTime) < 0 ? QDateTime(m_InfoEndTime.date(), QTime(0, 0, 0)) : QDateTime(moveDateTime.date(), QTime(0, 0, 0));
+    QDateTime result = moveDateTime.daysTo(m_InfoEndTime) < 0 ? QDateTime(m_InfoEndTime.date(), QTime(0, 0, 0)) : QDateTime(moveDateTime.date(), QTime(0, 0, 0));
+    qCDebug(allDayEventLog) << "Get drag schedule begin time for:" << moveDateTime << "result:" << result;
+    return result;
 }
 
 QDateTime CAllDayEventWeekView::getDragScheduleInfoEndTime(const QDateTime &moveDateTime)
 {
-    return m_InfoBeginTime.daysTo(m_MoveDate) < 0 ? QDateTime(m_InfoBeginTime.date(), QTime(23, 59, 0)) : QDateTime(moveDateTime.date(), QTime(23, 59, 0));
+    QDateTime result = m_InfoBeginTime.daysTo(m_MoveDate) < 0 ? QDateTime(m_InfoBeginTime.date(), QTime(23, 59, 0)) : QDateTime(moveDateTime.date(), QTime(23, 59, 0));
+    qCDebug(allDayEventLog) << "Get drag schedule end time for:" << moveDateTime << "result:" << result;
+    return result;
 }
 
 void CAllDayEventWeekView::updateHeight()
 {
+    qCDebug(allDayEventLog) << "Updating item heights";
     for (int i = 0; i < m_baseShowItem.count(); i++) {
         m_baseShowItem.at(i)->update();
     }
@@ -120,6 +139,7 @@ void CAllDayEventWeekView::updateHeight()
  */
 void CAllDayEventWeekView::setSelectSearchSchedule(const DSchedule::Ptr &info)
 {
+    qCDebug(allDayEventLog) << "Setting select search schedule:" << info->summary();
     DragInfoGraphicsView::setSelectSearchSchedule(info);
     for (int i = 0; i < m_baseShowItem.size(); ++i) {
         CAllDayScheduleItem *item = m_baseShowItem.at(i);
@@ -136,6 +156,7 @@ void CAllDayEventWeekView::setSelectSearchSchedule(const DSchedule::Ptr &info)
 
 void CAllDayEventWeekView::setMargins(int left, int top, int right, int bottom)
 {
+    qCDebug(allDayEventLog) << "Setting margins - left:" << left << "top:" << top << "right:" << right << "bottom:" << bottom;
     setViewportMargins(QMargins(left, top, right, bottom));
 }
 
@@ -144,6 +165,7 @@ void CAllDayEventWeekView::setMargins(int left, int top, int right, int bottom)
  */
 void CAllDayEventWeekView::updateInfo()
 {
+    qCDebug(allDayEventLog) << "Updating schedule info display";
     DragInfoGraphicsView::updateInfo();
     switch (m_DragStatus) {
     case IsCreate:
@@ -157,6 +179,7 @@ void CAllDayEventWeekView::updateInfo()
 
 void CAllDayEventWeekView::upDateInfoShow(const DragStatus &status, const DSchedule::Ptr &info)
 {
+    qCDebug(allDayEventLog) << "Updating info show with status:" << status;
     DSchedule::List vListData;
     vListData = m_scheduleInfo;
     switch (status) {
@@ -166,13 +189,17 @@ void CAllDayEventWeekView::upDateInfoShow(const DragStatus &status, const DSched
     case ChangeBegin:
     case ChangeEnd: {
         int index = vListData.indexOf(info);
-        if (index >= 0)
+        if (index >= 0) {
+            qCDebug(allDayEventLog) << "Updating schedule at index:" << index;
             vListData[index] = info;
+        }
     } break;
     case ChangeWhole:
+        qCDebug(allDayEventLog) << "Adding schedule for ChangeWhole status";
         vListData.append(info);
         break;
     case IsCreate:
+        qCDebug(allDayEventLog) << "Adding schedule for IsCreate status";
         vListData.append(info);
         break;
     }
@@ -183,6 +210,7 @@ void CAllDayEventWeekView::upDateInfoShow(const DragStatus &status, const DSched
     for (int i = 0; i < vListData.count(); i++) {
         DSchedule::Ptr ptr = vListData.at(i);
         if (ptr.isNull()) {
+            qCWarning(allDayEventLog) << "Null schedule pointer at index:" << i;
             continue;
         }
 
@@ -199,6 +227,7 @@ void CAllDayEventWeekView::upDateInfoShow(const DragStatus &status, const DSched
         sinfo.state = false;
         vMDaySchedule.append(sinfo);
     }
+
     QVector<QVector<int>> vCfillSchedule;
     vCfillSchedule.resize(vListData.count());
     int tNum = static_cast<int>(m_beginDate.daysTo(m_endDate) + 1);
@@ -206,6 +235,7 @@ void CAllDayEventWeekView::upDateInfoShow(const DragStatus &status, const DSched
         vCfillSchedule[i].resize(tNum);
         vCfillSchedule[i].fill(-1);
     }
+
     //首先填充跨天日程
     for (int i = 0; i < vMDaySchedule.count(); i++) {
         if (vMDaySchedule[i].state)
@@ -225,8 +255,10 @@ void CAllDayEventWeekView::upDateInfoShow(const DragStatus &status, const DSched
                 break;
             }
         }
-        if (c == -1)
+        if (c == -1) {
+            qCWarning(allDayEventLog) << "Failed to find position for schedule at index:" << i;
             continue;
+        }
 
         bool flag = false;
         for (int sd = bindex; sd <= eindex; sd++) {
@@ -238,6 +270,7 @@ void CAllDayEventWeekView::upDateInfoShow(const DragStatus &status, const DSched
         if (flag)
             vMDaySchedule[i].state = true;
     }
+
     QVector<DSchedule::List> vResultData;
     for (int i = 0; i < vListData.count(); i++) {
         QVector<int> vId;
@@ -268,6 +301,7 @@ void CAllDayEventWeekView::upDateInfoShow(const DragStatus &status, const DSched
     } else {
         m_topMagin = 123;
     }
+    qCDebug(allDayEventLog) << "Setting top margin:" << m_topMagin << "for" << vResultData.count() << "schedules";
     setFixedHeight(m_topMagin - 3);
     setDayData(vResultData);
     update();
@@ -277,6 +311,7 @@ void CAllDayEventWeekView::upDateInfoShow(const DragStatus &status, const DSched
 CAllDayEventWeekView::CAllDayEventWeekView(QWidget *parent, ViewPosition type)
     : CWeekDayGraphicsview(parent, type, ViewType::ALLDayView)
 {
+    qCDebug(allDayEventLog) << "Creating AllDayEventWeekView with type:" << type;
     updateItemHeightByFontSize();
     connect(this, &CAllDayEventWeekView::sigStateChange, this, &CAllDayEventWeekView::slotStateChange, Qt::DirectConnection);
 }
@@ -305,16 +340,19 @@ void CAllDayEventWeekView::slotDoubleEvent()
 void CAllDayEventWeekView::mouseDoubleClickEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::RightButton) {
+        qCDebug(allDayEventLog) << "Ignoring right button double click";
         return;
     }
     emit signalScheduleShow(false);
     DGraphicsView::mouseDoubleClickEvent(event);
     CAllDayScheduleItem *item = dynamic_cast<CAllDayScheduleItem *>(itemAt(event->pos()));
     if (item == nullptr) {
+        qCDebug(allDayEventLog) << "Double click on empty area, creating new schedule";
         m_createDate.setDate(m_coorManage->getsDate(mapFrom(this, event->pos())));
         m_createDate.setTime(QTime::currentTime());
         slotCreate(m_createDate);
     } else {
+        qCDebug(allDayEventLog) << "Double click on schedule item";
         m_updateDflag = false;
         CMyScheduleView dlg(item->getData(), this);
         connect(&dlg, &CMyScheduleView::signalsEditorDelete, this, &CAllDayEventWeekView::slotDoubleEvent);
@@ -329,6 +367,7 @@ void CAllDayEventWeekView::wheelEvent(QWheelEvent *event)
 {
     //若滚轮事件为左右方向则退出
     if (event->angleDelta().x() != 0 ) {
+        qCDebug(allDayEventLog) << "Ignoring horizontal wheel event";
         return;
     }
     emit signalScheduleShow(false);
@@ -337,6 +376,7 @@ void CAllDayEventWeekView::wheelEvent(QWheelEvent *event)
 
 void CAllDayEventWeekView::updateDateShow()
 {
+    qCDebug(allDayEventLog) << "Updating date display";
     qreal sceneHeight;
     qreal itemsHeight = (itemHeight + 1) * m_vlistData.size();
     if (itemsHeight < 32) {
@@ -377,6 +417,7 @@ void CAllDayEventWeekView::createItemWidget(int index, bool average)
 
 void CAllDayEventWeekView::slotStateChange(bool bState)
 {
+    qCDebug(allDayEventLog) << "State changed:" << bState;
     if(bState) {
         for (int i = 0; i < m_baseShowItem.count(); i++) {
             m_baseShowItem[i]->setVisible(false);

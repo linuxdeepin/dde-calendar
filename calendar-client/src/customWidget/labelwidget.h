@@ -6,6 +6,9 @@
 #define LABELWIDGET_H
 
 #include <QLabel>
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(LabelWidgetLog)
 
 class LabelWidget : public QLabel
 {

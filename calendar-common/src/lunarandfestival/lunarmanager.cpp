@@ -9,8 +9,11 @@
 
 #include <QDebug>
 
+Q_LOGGING_CATEGORY(lunarManagerLog, "calendar.manager")
+
 stLunarDayInfo SolarToLunar(qint32 year, qint32 month, qint32 day)
 {
+    qCDebug(lunarManagerLog) << "Converting solar date to lunar - Year:" << year << "Month:" << month << "Day:" << day;
     stLunarDayInfo info;
     LunarCalendar *pcalendar = LunarCalendar::GetLunarCalendar(year);
     lunarInfo lday = pcalendar->SolarDayToLunarDay(month, day);
@@ -33,6 +36,7 @@ stLunarDayInfo SolarToLunar(qint32 year, qint32 month, qint32 day)
  */
 LunarMonthInfo GetLunarMonthCalendar(qint32 year, qint32 month, bool fill)
 {
+    qCDebug(lunarManagerLog) << "Getting lunar month calendar - Year:" << year << "Month:" << month << "Fill:" << fill;
     SolarMonthInfo solarMonth = GetSolarMonthCalendar(year, month, fill);
     return GetLunarMonthCalendar(solarMonth);
 }
@@ -56,6 +60,7 @@ LunarMonthInfo GetLunarMonthCalendar(const SolarMonthInfo &solarMonth)
  */
 SolarMonthInfo GetSolarMonthCalendar(qint32 year, qint32 month, bool fill)
 {
+    qCDebug(lunarManagerLog) << "Getting solar month calendar - Year:" << year << "Month:" << month << "Fill:" << fill;
     SolarMonthInfo solarMonth;
     int weekday = GetWeekday(year, month);
     int daycount = GetSolarMonthDays(year, month);
@@ -139,6 +144,7 @@ QList<int> GetNextMonth(qint32 year, qint32 month)
  */
 QList<stDayFestival> GetFestivalsInRange(const QDateTime &start, const QDateTime &end)
 {
+    qCDebug(lunarManagerLog) << "Getting festivals between" << start << "and" << end;
     QList<stDayFestival> festivaldays;
     if (start <= end) {
         //days为需要查询的天数,而不是两个时间的差值
@@ -159,7 +165,7 @@ QList<stDayFestival> GetFestivalsInRange(const QDateTime &start, const QDateTime
             festivaldays.append(stdayfestival);
         }
     } else {
-        qCDebug(ServiceLogger) << __FUNCTION__ << "start day later than  end day";
+        qCDebug(lunarManagerLog) << __FUNCTION__ << "start day later than  end day";
     }
 
     return festivaldays;
@@ -199,5 +205,6 @@ QList<stDayFestival> FilterDayFestival(QList<stDayFestival> &festivaldays, const
 
 void logOffEmptyData()
 {
+    qCInfo(lunarManagerLog) << "Logging off empty data";
     LunarCalendar::LogOffEmptyData();
 }

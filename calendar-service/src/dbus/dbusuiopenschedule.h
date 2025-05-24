@@ -6,6 +6,8 @@
 #define DBUSUIOPENSCHEDULE_H
 #include <QtDBus/QtDBus>
 
+Q_DECLARE_LOGGING_CATEGORY(dbusUIOpenScheduleLog)
+
 class DbusUIOpenSchedule : public QDBusAbstractInterface
 {
     Q_OBJECT

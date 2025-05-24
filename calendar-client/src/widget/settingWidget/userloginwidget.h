@@ -11,7 +11,11 @@
 #include <DIconButton>
 #include <DPushButton>
 #include <QNetworkAccessManager>
+#include <QLoggingCategory>
+
 DWIDGET_USE_NAMESPACE
+
+Q_DECLARE_LOGGING_CATEGORY(userLoginLog)
 
 //配置界面账户登录部件
 class UserloginWidget: public QWidget

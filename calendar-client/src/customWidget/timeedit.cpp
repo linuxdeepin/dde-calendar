@@ -11,6 +11,9 @@
 #include <QVBoxLayout>
 #include "calendarmanage.h"
 
+// Add logging category
+Q_LOGGING_CATEGORY(timeEditLog, "calendar.widget.timeedit")
+
 //视图容器最大高度
 const int viewContainerMaxHeight = 305;
 
@@ -21,22 +24,26 @@ CTimeEdit::CTimeEdit(QWidget *parent)
     , m_hasFocus(false)
     , m_miniTime(QTime(0, 0, 0))
 {
+    qCDebug(timeEditLog) << "Initializing CTimeEdit with time format:" << m_timeFormat;
     initUI();
     initConnection();
 }
 
 CTimeEdit::~CTimeEdit()
 {
+    qCDebug(timeEditLog) << "Destroying CTimeEdit";
     delete m_timeEdit;
 }
 
 void CTimeEdit::setMineTime(const QTime &mineTime)
 {
+    qCDebug(timeEditLog) << "Setting minimum time to:" << mineTime.toString();
     m_miniTime = mineTime;
 }
 
 void CTimeEdit::setTime(const QTime &time)
 {
+    qCDebug(timeEditLog) << "Setting time to:" << time.toString();
     m_time = time;
     setSelectItem(m_time);
     m_timeEdit->getLineEdit()->setText(time.toString(m_timeFormat));
@@ -48,11 +55,13 @@ QTime CTimeEdit::getTime()
     QString timetext = m_timeEdit->getLineEdit()->displayText();
     //将text转换为时间
     m_time = QTime::fromString(timetext, m_timeFormat);
+    qCDebug(timeEditLog) << "Getting time:" << m_time.toString();
     return m_time;
 }
 
 void CTimeEdit::updateListItem(bool isShowTimeInterval)
 {
+    qCDebug(timeEditLog) << "Updating list items, show time interval:" << isShowTimeInterval;
     m_isShowTimeInterval = isShowTimeInterval;
     QTime topTimer(m_miniTime);
     if (!m_isShowTimeInterval) {
@@ -81,10 +90,12 @@ void CTimeEdit::updateListItem(bool isShowTimeInterval)
         QString showStr = userData + timeIntervalStr;
         addItem(showStr, userData);
     }
+    qCDebug(timeEditLog) << "List items updated with" << count() << "items";
 }
 
 void CTimeEdit::setTimeFormat(int value)
 {
+    qCDebug(timeEditLog) << "Setting time format value:" << value;
     //获取edit的当前时间
     QTime editCurrentTime = getTime();
     //根据value值,设置时间显示格式
@@ -102,12 +113,14 @@ void CTimeEdit::setTimeFormat(int value)
 
 void CTimeEdit::slotFocusDraw(bool showFocus)
 {
+    qCDebug(timeEditLog) << "Setting focus draw state:" << showFocus;
     m_hasFocus = showFocus;
     update();
 }
 
 void CTimeEdit::setSelectItem(const QTime &time)
 {
+    qCDebug(timeEditLog) << "Setting select item for time:" << time.toString();
     //若有则设置选中，若没有则取消选中设置定位到相近值附近
     int similarNumber = -1;
     int diff = 24 * 60 * 60 * 1000;
@@ -129,10 +142,12 @@ void CTimeEdit::setSelectItem(const QTime &time)
         setCurrentIndex(-1);
     }
     scrollPosition = this->model()->index(similarNumber, 0);
+    qCDebug(timeEditLog) << "Selected item index:" << similarNumber;
 }
 
 void CTimeEdit::slotSetPlainText(const QString &arg)
 {
+    qCDebug(timeEditLog) << "Setting plain text:" << arg;
     QString userData = currentData().toString();
     if (userData.isEmpty()) {
         this->lineEdit()->setText(arg);
@@ -143,12 +158,14 @@ void CTimeEdit::slotSetPlainText(const QString &arg)
 
 void CTimeEdit::slotActivated(const QString &arg)
 {
+    qCDebug(timeEditLog) << "Item activated:" << arg;
     slotSetPlainText(arg);
     emit signaleditingFinished();
 }
 
 void CTimeEdit::slotEditingFinished()
 {
+    qCDebug(timeEditLog) << "Editing finished, current time:" << m_timeEdit->time().toString();
     setTime(m_timeEdit->time());
     emit signaleditingFinished();
 }
@@ -179,6 +196,7 @@ void CTimeEdit::initConnection()
 
 void CTimeEdit::showPopup()
 {
+    qCDebug(timeEditLog) << "Showing popup";
     DComboBox::showPopup();
     //获取下拉视图容器
     QFrame *viewContainer = this->findChild<QFrame *>();
@@ -206,6 +224,8 @@ void CTimeEdit::showPopup()
         viewContainer->move(showPoint.x(), showPoint.y());
         //显示
         viewContainer->show();
+    } else {
+        qCWarning(timeEditLog) << "Failed to find view container";
     }
     //因改变了容器的高度，所以需要重新定位当前位置
     if (this->view()->currentIndex() == scrollPosition) {
@@ -213,7 +233,6 @@ void CTimeEdit::showPopup()
     } else {
         this->view()->scrollTo(scrollPosition, QAbstractItemView::PositionAtTop);
     }
-
 }
 
 void CTimeEdit::focusInEvent(QFocusEvent *event)

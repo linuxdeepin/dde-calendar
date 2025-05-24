@@ -9,6 +9,9 @@
 #include "huangliData/dbusdatastruct.h"
 #include "huangliData/lunardatastruct.h"
 #include <QObject>
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(lunarLog)
 
 class LunarManager : public QObject
 {

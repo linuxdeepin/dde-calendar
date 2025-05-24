@@ -15,25 +15,32 @@
 #include <QStylePainter>
 #include <QRect>
 
+// Add logging category
+Q_LOGGING_CATEGORY(dayHuangLiLog, "calendar.widget.dayhuangli")
+
 CDayHuangLiLabel::CDayHuangLiLabel(QWidget *parent)
     : DLabel(parent)
 {
+    qCDebug(dayHuangLiLog) << "Creating CDayHuangLiLabel instance";
     setContentsMargins(0, 0, 0, 0);
 }
 
 void CDayHuangLiLabel::setbackgroundColor(QColor backgroundColor)
 {
+    qCDebug(dayHuangLiLog) << "Setting background color:" << backgroundColor;
     m_backgroundColor = backgroundColor;
 }
 
 void CDayHuangLiLabel::setTextInfo(QColor tcolor, QFont font)
 {
+    qCDebug(dayHuangLiLog) << "Setting text info - color:" << tcolor << "font:" << font.toString();
     m_textcolor = tcolor;
     m_font = font;
 }
 
 void CDayHuangLiLabel::setHuangLiText(QStringList vhuangli, int type)
 {
+    qCDebug(dayHuangLiLog) << "Setting HuangLi text - type:" << type << "text:" << vhuangli;
     m_vHuangli = vhuangli;
     m_type = type;
     if (!vhuangli.isEmpty()) {
@@ -47,9 +54,11 @@ void CDayHuangLiLabel::setHuangLiText(QStringList vhuangli, int type)
     }
     update();
 }
+
 void CDayHuangLiLabel::paintEvent(QPaintEvent *e)
 {
     Q_UNUSED(e);
+    qCDebug(dayHuangLiLog) << "Paint event triggered";
     int labelwidth = width();
     int labelheight = height();
     const QSize iconSize = QSize(22, 22);
@@ -95,6 +104,7 @@ void CDayHuangLiLabel::paintEvent(QPaintEvent *e)
 
 void CDayHuangLiLabel::resizeEvent(QResizeEvent *event)
 {
+    qCDebug(dayHuangLiLog) << "Resize event - new size:" << event->size();
     m_leftMagin = static_cast<int>(0.0424 * width() + 0.5);
     m_topMagin = (height() - 20) / 2;
     DLabel::resizeEvent(event);

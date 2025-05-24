@@ -10,11 +10,16 @@
 #include <QPainter>
 #include <QtMath>
 
+// Add logging category
+Q_LOGGING_CATEGORY(scheduleRemindLog, "calendar.widget.scheduleremind")
+
 DGUI_USE_NAMESPACE
 ScheduleRemindWidget::ScheduleRemindWidget(QWidget *parent)
     : DArrowRectangle(DArrowRectangle::ArrowLeft, DArrowRectangle::FloatWidget, parent)
     , m_centerWidget(new CenterWidget(this))
 {
+    qCDebug(scheduleRemindLog) << "Initializing ScheduleRemindWidget";
+    
     //如果dtk版本为5.3以上则使用新接口
 #if (DTK_VERSION > DTK_VERSION_CHECK(5, 3, 0, 0))
     //设置显示圆角
@@ -30,15 +35,18 @@ ScheduleRemindWidget::ScheduleRemindWidget(QWidget *parent)
                      m_centerWidget,
                      &CenterWidget::setTheMe);
     m_centerWidget->setTheMe(DGuiApplicationHelper::instance()->themeType());
+    
+    qCDebug(scheduleRemindLog) << "ScheduleRemindWidget initialization completed";
 }
 
 ScheduleRemindWidget::~ScheduleRemindWidget()
 {
-
+    qCDebug(scheduleRemindLog) << "Destroying ScheduleRemindWidget";
 }
 
 void ScheduleRemindWidget::setData(const DSchedule::Ptr &vScheduleInfo, const CSchedulesColor &gcolor)
 {
+    qCDebug(scheduleRemindLog) << "Setting schedule data for schedule:" << vScheduleInfo->summary();
     m_centerWidget->setData(vScheduleInfo, gcolor);
     m_ScheduleInfo = vScheduleInfo;
     gdcolor = gcolor;
@@ -51,6 +59,7 @@ void ScheduleRemindWidget::setData(const DSchedule::Ptr &vScheduleInfo, const CS
  */
 void ScheduleRemindWidget::setDirection(DArrowRectangle::ArrowDirection value)
 {
+    qCDebug(scheduleRemindLog) << "Setting arrow direction to:" << value;
     //设置箭头方向
     this->setArrowDirection(value);
     //设置内容窗口
@@ -63,6 +72,7 @@ void ScheduleRemindWidget::setDirection(DArrowRectangle::ArrowDirection value)
  */
 void ScheduleRemindWidget::setTimeFormat(QString timeformat)
 {
+    qCDebug(scheduleRemindLog) << "Setting time format to:" << timeformat;
     m_centerWidget->setTimeFormat(timeformat);
 }
 
@@ -71,16 +81,18 @@ CenterWidget::CenterWidget(DWidget *parent)
     , textwidth(0)
     , textheight(0)
 {
+    qCDebug(scheduleRemindLog) << "Initializing CenterWidget";
     textfont.setWeight(QFont::Medium);
 }
 
 CenterWidget::~CenterWidget()
 {
-
+    qCDebug(scheduleRemindLog) << "Destroying CenterWidget";
 }
 
 void CenterWidget::setData(const DSchedule::Ptr &vScheduleInfo, const CSchedulesColor &gcolor)
 {
+    qCDebug(scheduleRemindLog) << "Setting center widget data for schedule:" << vScheduleInfo->summary();
     m_ScheduleInfo = vScheduleInfo;
     gdcolor = gcolor;
     textfont.setPixelSize(DDECalendar::FontSizeTwelve);
@@ -90,6 +102,7 @@ void CenterWidget::setData(const DSchedule::Ptr &vScheduleInfo, const CSchedules
 
 void CenterWidget::setTheMe(const int type)
 {
+    qCDebug(scheduleRemindLog) << "Setting theme type:" << type;
     if (type == 2) {
         timeColor = QColor("#C0C6D4");
         timeColor.setAlphaF(0.7);
@@ -110,12 +123,14 @@ void CenterWidget::setTheMe(const int type)
  */
 void CenterWidget::setTimeFormat(QString timeFormat)
 {
+    qCDebug(scheduleRemindLog) << "Setting time format to:" << timeFormat;
     m_timeFormat = timeFormat;
     update();
 }
 
 void CenterWidget::UpdateTextList()
 {
+    qCDebug(scheduleRemindLog) << "Updating text list";
     testList.clear();
     QFontMetrics metrics(textfont);
     textwidth = metrics.horizontalAdvance(m_ScheduleInfo->summary());
@@ -151,6 +166,7 @@ void CenterWidget::UpdateTextList()
     }
 
     this->setFixedHeight(testList.count() * textheight + 30 + 8);
+    qCDebug(scheduleRemindLog) << "Text list updated with" << testList.count() << "items";
 }
 
 void CenterWidget::paintEvent(QPaintEvent *e)

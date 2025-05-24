@@ -8,6 +8,9 @@
 #include "cfocusitem.h"
 
 #include <QDate>
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(sceneBackgroundLog)
 
 class CSceneBackgroundItem : public CFocusItem
 {

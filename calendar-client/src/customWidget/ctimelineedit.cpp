@@ -6,9 +6,13 @@
 #include <QLineEdit>
 #include <QDebug>
 
+// Add logging category
+Q_LOGGING_CATEGORY(ctimelineeditLog, "calendar.widget.ctimelineedit")
+
 CTimeLineEdit::CTimeLineEdit(int id, QWidget *parent) : DSpinBox(parent)
   , m_id(id)
 {
+    qCDebug(ctimelineeditLog) << "Constructing CTimeLineEdit with id:" << id;
     initView();
     connect(this, &CTimeLineEdit::editingFinished, this, &CTimeLineEdit::slotEditingFinished);
     connect(this->lineEdit(), &QLineEdit::textEdited, this, &CTimeLineEdit::slotTextEdited);
@@ -16,6 +20,7 @@ CTimeLineEdit::CTimeLineEdit(int id, QWidget *parent) : DSpinBox(parent)
 
 void CTimeLineEdit::initView()
 {
+    qCDebug(ctimelineeditLog) << "Initializing view";
     //启用嵌入式的样式
     setEnabledEmbedStyle(true);
    // QString str = this->styleSheet();
@@ -33,6 +38,7 @@ void CTimeLineEdit::initView()
  */
 void CTimeLineEdit::setRange(int min, int max)
 {
+    qCDebug(ctimelineeditLog) << "Setting range:" << min << "to" << max;
     DSpinBox::setRange(min, max);
 }
 
@@ -43,6 +49,7 @@ void CTimeLineEdit::setRange(int min, int max)
  */
 void CTimeLineEdit::setStepEnabled(CTimeLineEdit::StepEnabled enable)
 {
+    qCDebug(ctimelineeditLog) << "Setting step enabled:" << enable;
     m_stepEnable = enable;
 }
 
@@ -53,6 +60,7 @@ void CTimeLineEdit::setStepEnabled(CTimeLineEdit::StepEnabled enable)
  */
 void CTimeLineEdit::setNum(int num)
 {
+    qCDebug(ctimelineeditLog) << "Setting number to:" << num;
     m_num = num;
     m_num = m_num > minimum()? m_num:minimum();
     m_num = m_num < maximum()? m_num:maximum();
@@ -68,6 +76,7 @@ void CTimeLineEdit::setNum(int num)
  */
 void CTimeLineEdit::setNum(int num, bool canCarry)
 {
+    qCDebug(ctimelineeditLog) << "Setting number to:" << num << "with canCarry:" << canCarry;
     if (!canCarry) {
         setNum(num);
         return;
@@ -75,23 +84,27 @@ void CTimeLineEdit::setNum(int num, bool canCarry)
 
     //若没有超过限制范围则不必发送时间跳转事件
     if (num >= minimum() && num <= maximum()) {
+        qCDebug(ctimelineeditLog) << "Number within range, setting value";
         m_num = num;
         setValue(m_num);
         emit signalNumChange(m_id, m_num);
         return;
     }
 
+    qCDebug(ctimelineeditLog) << "Number out of range, emitting date jump signal";
     //发送时间跳转信号， num-m_num: 时间差
     emit signalDateJump(m_id, num - m_num);
 }
 
 void CTimeLineEdit::slotEditingFinished()
 {
+    qCDebug(ctimelineeditLog) << "Editing finished, current value:" << value();
     setNum(value());
 }
 
 void CTimeLineEdit::slotTextEdited(const QString &text)
 {
+    qCDebug(ctimelineeditLog) << "Text edited:" << text;
     //过滤掉非数字字符
     QString value = "";
     for (QChar c : text) {
@@ -126,6 +139,7 @@ CTimeLineEdit::StepEnabled CTimeLineEdit::stepEnabled() const
  */
 void CTimeLineEdit::stepBy(int steps)
 {
+    qCDebug(ctimelineeditLog) << "Stepping by:" << steps;
     setNum(value() + steps, true);
     //因为已自定义处理步长，因此再次调用父类的方法实现默认效果，并将其步长传入0
     DSpinBox::stepBy(0);

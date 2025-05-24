@@ -24,6 +24,8 @@
 
 using namespace KCalendarCore;
 
+Q_LOGGING_CATEGORY(occurrenceLog, "calendar.occurrence")
+
 /**
   Private class that helps to provide binary compatibility between releases.
   @internal
@@ -87,21 +89,25 @@ public:
 
     void setupIterator(const Calendar &calendar, const Incidence::List &incidences)
     {
+        qCDebug(occurrenceLog) << "Setting up iterator with" << incidences.size() << "incidences";
         for (const Incidence::Ptr &inc : qAsConst(incidences)) {
             if (inc->hasRecurrenceId()) {
+                qCDebug(occurrenceLog) << "Skipping incidence with recurrence ID" << inc->uid();
                 continue;
             }
             if (inc->recurs()) {
+                qCDebug(occurrenceLog) << "Processing recurring incidence" << inc->uid();
                 QHash<QDateTime, Incidence::Ptr> recurrenceIds;
                 QDateTime incidenceRecStart = inc->dateTime(Incidence::RoleRecurrenceStart);
-                // const bool isAllDay = inc->allDay();
                 const auto lstInstances = calendar.instances(inc);
                 for (const Incidence::Ptr &exception : lstInstances) {
                     if (incidenceRecStart.isValid()) {
                         recurrenceIds.insert(exception->recurrenceId().toTimeZone(incidenceRecStart.timeZone()), exception);
+                        qCDebug(occurrenceLog) << "Added exception for" << exception->uid() << "at" << exception->recurrenceId();
                     }
                 }
                 const auto occurrences = inc->recurrence()->timesInInterval(start, end);
+                qCDebug(occurrenceLog) << "Found" << occurrences.size() << "occurrences in interval";
                 Incidence::Ptr incidence(inc), lastInc(inc);
                 qint64 offset(0), lastOffset(0);
                 QDateTime occurrenceStartDate;
@@ -110,9 +116,9 @@ public:
 
                     bool resetIncidence = false;
                     if (recurrenceIds.contains(recurrenceId)) {
-                        // TODO: exclude exceptions where the start/end is not within
-                        // (so the occurrence of the recurrence is omitted, but no exception is added)
+                        qCDebug(occurrenceLog) << "Found exception for occurrence at" << recurrenceId;
                         if (recurrenceIds.value(recurrenceId)->status() == Incidence::StatusCanceled) {
+                            qCDebug(occurrenceLog) << "Skipping canceled occurrence";
                             continue;
                         }
 
@@ -129,7 +135,10 @@ public:
                     }
 
                     if (!occurrenceIsHidden(calendar, incidence, occurrenceStartDate)) {
+                        qCDebug(occurrenceLog) << "Adding occurrence at" << occurrenceStartDate;
                         occurrenceList << Private::Occurrence(incidence, recurrenceId, occurrenceStartDate);
+                    } else {
+                        qCDebug(occurrenceLog) << "Occurrence hidden at" << occurrenceStartDate;
                     }
 
                     if (resetIncidence) {
@@ -138,9 +147,11 @@ public:
                     }
                 }
             } else {
+                qCDebug(occurrenceLog) << "Adding non-recurring incidence" << inc->uid();
                 occurrenceList << Private::Occurrence(inc, {}, inc->dtStart());
             }
         }
+        qCDebug(occurrenceLog) << "Iterator setup complete with" << occurrenceList.size() << "total occurrences";
         occurrenceIt = QListIterator<Private::Occurrence>(occurrenceList);
     }
 };

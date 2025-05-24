@@ -5,16 +5,21 @@
 #include "cmonthschedulenumitem.h"
 
 #include <QPainter>
+#include <QLoggingCategory>
+
+Q_LOGGING_CATEGORY(monthScheduleNumLog, "calendar.view.monthschedulenum")
 
 CMonthScheduleNumItem::CMonthScheduleNumItem(QGraphicsItem *parent)
     : CFocusItem(parent)
     , m_num(0)
 {
+    qCDebug(monthScheduleNumLog) << "Create month schedule num item";
     setItemType(COTHER);
 }
 
 CMonthScheduleNumItem::~CMonthScheduleNumItem()
 {
+    qCDebug(monthScheduleNumLog) << "Destroy month schedule num item";
 }
 
 /**
@@ -24,6 +29,7 @@ CMonthScheduleNumItem::~CMonthScheduleNumItem()
  */
 void CMonthScheduleNumItem::setColor(QColor color1, QColor color2)
 {
+    qCDebug(monthScheduleNumLog) << "Set colors - color1:" << color1 << "color2:" << color2;
     m_color1 = color1;
     m_color2 = color2;
 }
@@ -35,6 +41,7 @@ void CMonthScheduleNumItem::setColor(QColor color1, QColor color2)
  */
 void CMonthScheduleNumItem::setText(QColor tColor, QFont font)
 {
+    qCDebug(monthScheduleNumLog) << "Set text color:" << tColor << "font family:" << font.family();
     m_textcolor = tColor;
     m_font = font;
 }
@@ -45,11 +52,13 @@ void CMonthScheduleNumItem::setText(QColor tColor, QFont font)
  */
 void CMonthScheduleNumItem::setSizeType(DFontSizeManager::SizeType sizeType)
 {
+    qCDebug(monthScheduleNumLog) << "Set font size type:" << sizeType;
     m_SizeType = sizeType;
 }
 
 void CMonthScheduleNumItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
+    qCDebug(monthScheduleNumLog) << "Paint schedule num item, number:" << m_num;
     Q_UNUSED(option);
     Q_UNUSED(widget);
     qreal labelwidth = this->rect().width();
@@ -66,6 +75,7 @@ void CMonthScheduleNumItem::paint(QPainter *painter, const QStyleOptionGraphicsI
     painter->setRenderHints(QPainter::Antialiasing);
     painter->setBrush(linearGradient);
     if (getItemFocus()) {
+        qCDebug(monthScheduleNumLog) << "Item has focus, drawing focus frame";
         QPen framePen;
         framePen.setWidth(2);
         framePen.setColor(getSystemActiveColor());
@@ -89,6 +99,7 @@ void CMonthScheduleNumItem::paint(QPainter *painter, const QStyleOptionGraphicsI
         }
     }
     if (tStr != str) {
+        qCDebug(monthScheduleNumLog) << "Text truncated due to width limit";
         tStr = tStr + "...";
     }
     painter->drawText(QRectF(rectX, rectY, labelwidth, labelheight + 4), Qt::AlignCenter, tStr);

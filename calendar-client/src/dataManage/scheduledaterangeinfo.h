@@ -5,6 +5,10 @@
 #ifndef SCHEDULEDATERANGEINFO_H
 #define SCHEDULEDATERANGEINFO_H
 #include "dschedule.h"
+#include <QLoggingCategory>
+#include <QDebug>
+
+Q_DECLARE_LOGGING_CATEGORY(scheduleDateRangeLog)
 
 typedef struct _tagMScheduleDateRangeInfo {
     QDate bdate;
@@ -34,5 +38,20 @@ typedef struct _tagMScheduleDateRangeInfo {
                state == info.state &&
                num == info.num;
     }
+
+    // Add debug output operator for better logging
+    friend QDebug operator<<(QDebug debug, const _tagMScheduleDateRangeInfo &info)
+    {
+        QDebugStateSaver saver(debug);
+        debug.nospace() << "ScheduleDateRange("
+                       << "begin:" << info.bdate
+                       << " end:" << info.edate
+                       << " state:" << info.state
+                       << " num:" << info.num
+                       << " hasData:" << !info.tData.isNull()
+                       << ")";
+        return debug;
+    }
 } MScheduleDateRangeInfo;
+
 #endif // SCHEDULEDATERANGEINFO_H

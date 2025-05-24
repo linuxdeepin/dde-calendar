@@ -13,6 +13,8 @@
 
 #include <QtDBus/QtDBus>
 
+Q_LOGGING_CATEGORY(scheduleLog, "calendar.schedule")
+
 #define Duration_Min 60
 #define Duration_Hour 60 * 60
 #define Duration_Day 24 * 60 * 60
@@ -234,7 +236,7 @@ bool DSchedule::fromJsonString(DSchedule::Ptr &schedule, const QString &json)
     QJsonParseError jsonError;
     QJsonDocument jsonDoc(QJsonDocument::fromJson(json.toLocal8Bit(), &jsonError));
     if (jsonError.error != QJsonParseError::NoError) {
-        qCWarning(CommonLogger) << "error:" << jsonError.errorString();
+        qCWarning(scheduleLog) << "Failed to parse schedule JSON:" << jsonError.errorString();
         return false;
     }
     bool resBool = false;
@@ -244,12 +246,19 @@ bool DSchedule::fromJsonString(DSchedule::Ptr &schedule, const QString &json)
         if (fromIcsString(schedule, str)) {
             if (rootObj.contains("type")) {
                 schedule->setScheduleTypeID(rootObj.value("type").toString());
+                qCDebug(scheduleLog) << "Set schedule type ID:" << rootObj.value("type").toString();
             }
             if (rootObj.contains("compatibleID")) {
                 schedule->setcompatibleID(rootObj.value("compatibleID").toInt());
+                qCDebug(scheduleLog) << "Set compatible ID:" << rootObj.value("compatibleID").toInt();
             }
             resBool = true;
+            qCInfo(scheduleLog) << "Successfully parsed schedule from JSON";
+        } else {
+            qCWarning(scheduleLog) << "Failed to parse ICS string from schedule JSON";
         }
+    } else {
+        qCWarning(scheduleLog) << "Schedule JSON missing required 'schedule' field";
     }
     return resBool;
 }
@@ -257,7 +266,7 @@ bool DSchedule::fromJsonString(DSchedule::Ptr &schedule, const QString &json)
 bool DSchedule::toJsonString(const DSchedule::Ptr &schedule, QString &json)
 {
     if (schedule.isNull()) {
-        qCWarning(CommonLogger) << "hold a reference to a null pointer.";
+        qCWarning(scheduleLog) << "Attempt to serialize null schedule pointer";
         return false;
     }
     QJsonObject rootObject;
@@ -267,6 +276,7 @@ bool DSchedule::toJsonString(const DSchedule::Ptr &schedule, QString &json)
     QJsonDocument jsonDoc;
     jsonDoc.setObject(rootObject);
     json = QString::fromUtf8(jsonDoc.toJson(QJsonDocument::Compact));
+    qCDebug(scheduleLog) << "Schedule serialized to JSON successfully";
     return true;
 }
 
@@ -279,9 +289,14 @@ bool DSchedule::fromIcsString(Ptr &schedule, const QString &string)
     if (icalformat.fromString(_cal, string)) {
         KCalendarCore::Event::List eventList = _cal->events();
         if (eventList.size() > 0) {
-            schedule = DSchedule::Ptr(new DSchedule(*eventList.at(0).data())); // eventList.at(0).staticCast<DSchedule>();
+            schedule = DSchedule::Ptr(new DSchedule(*eventList.at(0).data()));
             resBool = true;
+            qCDebug(scheduleLog) << "Successfully parsed ICS string to schedule";
+        } else {
+            qCWarning(scheduleLog) << "No events found in ICS string";
         }
+    } else {
+        qCWarning(scheduleLog) << "Failed to parse ICS string";
     }
     return resBool;
 }
@@ -397,9 +412,11 @@ void DSchedule::expendRecurrence(DSchedule::Map &scheduleMap, const DSchedule::P
     //如果日程为全天日程，则查询的开始时间设置为0点，因为全天日程的开始和结束时间都是0点
     if(schedule->allDay()){
         queryDtStart.setTime(QTime(0,0,0));
+        qCDebug(scheduleLog) << "Adjusting query start time for all-day schedule to midnight";
     }
     if (schedule->recurs()) {
         //获取日程的开始结束时间差
+        qCDebug(scheduleLog) << "Processing recurring schedule from" << dtStart << "to" << dtEnd;
         qint64 interval = schedule->dtStart().secsTo(schedule->dtEnd());
         QList<QDateTime> dtList = schedule->recurrence()->timesInInterval(queryDtStart, dtEnd);
         foreach (auto &dt, dtList) {
@@ -411,12 +428,16 @@ void DSchedule::expendRecurrence(DSchedule::Map &scheduleMap, const DSchedule::P
             //只有重复日程设置RecurrenceId
             if (schedule->dtStart() != dt) {
                 newSchedule->setRecurrenceId(dt);
+                qCDebug(scheduleLog) << "Created recurring instance at" << dt;
             }
             scheduleMap[dt.date()].append(newSchedule);
         }
     } else {
         if (!(schedule->dtStart() > dtEnd || schedule->dtEnd() < queryDtStart)) {
             scheduleMap[schedule->dtStart().date()].append(schedule);
+            qCDebug(scheduleLog) << "Added non-recurring schedule for date" << schedule->dtStart().date();
+        } else {
+            qCDebug(scheduleLog) << "Schedule outside query range, skipping";
         }
     }
 }

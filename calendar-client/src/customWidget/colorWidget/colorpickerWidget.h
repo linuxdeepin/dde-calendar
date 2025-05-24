@@ -14,6 +14,9 @@
 #include <QLabel>
 
 DWIDGET_USE_NAMESPACE
+
+Q_DECLARE_LOGGING_CATEGORY(colorPickerLog)
+
 class CColorPickerWidget : public DAbstractDialog
 {
     Q_OBJECT

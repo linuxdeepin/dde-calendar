@@ -18,8 +18,10 @@
 
 #include "calformat.h"
 #include "exceptions.h"
-
+#include <QLoggingCategory>
 #include <QUuid>
+
+Q_LOGGING_CATEGORY(calFormatLog, "calendar.format")
 
 using namespace KCalendarCore;
 
@@ -61,12 +63,14 @@ CalFormat::~CalFormat()
 
 void CalFormat::clearException()
 {
+    qCDebug(calFormatLog) << "Clearing exception";
     delete d->mException;
     d->mException = nullptr;
 }
 
 void CalFormat::setException(Exception *exception)
 {
+    qCWarning(calFormatLog) << "Setting exception:" << (exception ? exception->message() : "null");
     delete d->mException;
     d->mException = exception;
 }
@@ -78,6 +82,7 @@ Exception *CalFormat::exception() const
 
 void CalFormat::setApplication(const QString &application, const QString &productID)
 {
+    qCInfo(calFormatLog) << "Setting application:" << application << "with product ID:" << productID;
     Private::mApplication = application;
     Private::mProductId = productID;
 }
@@ -94,21 +99,26 @@ const QString &CalFormat::productId()
 
 QString CalFormat::loadedProductId()
 {
+    qCDebug(calFormatLog) << "Getting loaded product ID:" << d->mLoadedProductId;
     return d->mLoadedProductId;
 }
 
 void CalFormat::setLoadedProductId(const QString &id)
 {
+    qCDebug(calFormatLog) << "Setting loaded product ID:" << id;
     d->mLoadedProductId = id;
 }
 
 QString CalFormat::createUniqueId()
 {
-    return QUuid::createUuid().toString().mid(1, 36);
+    QString id = QUuid::createUuid().toString().mid(1, 36);
+    qCDebug(calFormatLog) << "Created unique ID:" << id;
+    return id;
 }
 
 void CalFormat::virtual_hook(int id, void *data)
 {
+    qCWarning(calFormatLog) << "Virtual hook called with id:" << id << "- Not implemented";
     Q_UNUSED(id);
     Q_UNUSED(data);
     Q_ASSERT(false);

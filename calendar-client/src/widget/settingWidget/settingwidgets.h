@@ -18,9 +18,11 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QJsonDocument>
+#include <QLoggingCategory>
 
 DWIDGET_USE_NAMESPACE
 
+Q_DECLARE_LOGGING_CATEGORY(settingWidgetsLog)
 
 namespace  SettingWidget{
     struct CalendarSettingOption{

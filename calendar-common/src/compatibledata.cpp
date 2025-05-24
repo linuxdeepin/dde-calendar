@@ -22,6 +22,7 @@ const QMap<int, QString> mTypeMap {{1, "107c369e-b13a-4d45-9ff3-de4eb3c0475b"}, 
  */
 QJsonObject JobToObject(const DSchedule::Ptr &job)
 {
+    qCDebug(CommonLogger) << "Converting schedule to JSON object, ID:" << job->compatibleID();
     QJsonObject obj;
 
     obj.insert("ID", job->compatibleID());
@@ -48,11 +49,9 @@ QJsonObject JobToObject(const DSchedule::Ptr &job)
 
 QString DDE_Calendar::getNewTypeIDByOldTypeID(int oldTypeID)
 {
-    if (mTypeMap.contains(oldTypeID)) {
-        return mTypeMap.value(oldTypeID);
-    } else {
-        return mTypeMap.value(3);
-    }
+    QString newTypeID = mTypeMap.contains(oldTypeID) ? mTypeMap.value(oldTypeID) : mTypeMap.value(3);
+    qCDebug(CommonLogger) << "Converting old type ID" << oldTypeID << "to new type ID:" << newTypeID;
+    return newTypeID;
 }
 
 int DDE_Calendar::getOldTypeIDByNewTypeID(const QString &newTypeID)
@@ -66,11 +65,14 @@ int DDE_Calendar::getOldTypeIDByNewTypeID(const QString &newTypeID)
             break;
         }
     }
-    return oldTypeID == 0 ? 3 : oldTypeID;
+    oldTypeID = oldTypeID == 0 ? 3 : oldTypeID;
+    qCDebug(CommonLogger) << "Converting new type ID" << newTypeID << "to old type ID:" << oldTypeID;
+    return oldTypeID;
 }
 
 QString DDE_Calendar::getExternalSchedule(const DSchedule::Map &scheduleMap)
 {
+    qCDebug(CommonLogger) << "Converting schedule map to external format, size:" << scheduleMap.size();
     QString strJson;
     QJsonDocument doc;
     QJsonArray jsonarr;
@@ -94,6 +96,7 @@ QString DDE_Calendar::getExternalSchedule(const DSchedule::Map &scheduleMap)
 
 void DDE_Calendar::setAlarmByOldRemind(const DSchedule::Ptr &schedule, const QString &remind)
 {
+    qCDebug(CommonLogger) << "Setting alarm from old remind format:" << remind;
     //提醒规则
     QStringList strList = remind.split(";", Qt::SkipEmptyParts);
 
@@ -119,6 +122,9 @@ void DDE_Calendar::setAlarmByOldRemind(const DSchedule::Ptr &schedule, const QSt
             alarm->setStartOffset(duration);
         }
         schedule->addAlarm(alarm);
+        qCDebug(CommonLogger) << "Alarm set successfully with remind number:" << remindNum;
+    } else {
+        qCDebug(CommonLogger) << "No alarm set (remind number < 0)";
     }
 }
 
@@ -166,6 +172,7 @@ QString DDE_Calendar::getOldRemindByAlarm(const DSchedule::AlarmType &alarmType)
     default:
         break;
     }
+    qCDebug(CommonLogger) << "Converting alarm type" << alarmType << "to old remind format:" << _resultStr;
     return _resultStr;
 }
 
@@ -175,8 +182,11 @@ DSchedule::Ptr DDE_Calendar::getScheduleByExported(const QString &scheduleStr)
     QJsonDocument jsonDoc(QJsonDocument::fromJson(scheduleStr.toLocal8Bit(), &json_error));
 
     if (json_error.error != QJsonParseError::NoError) {
+        qCWarning(CommonLogger) << "Failed to parse exported schedule JSON:" << json_error.errorString();
         return nullptr;
     }
+    
+    qCDebug(CommonLogger) << "Creating schedule from exported data";
     QJsonObject rootObj = jsonDoc.object();
     DSchedule::Ptr schedule(new DSchedule);
 
@@ -220,11 +230,13 @@ DSchedule::Ptr DDE_Calendar::getScheduleByExported(const QString &scheduleStr)
     if (rootObj.contains("Ignore")) {
         DDE_Calendar::setExDate(schedule, rootObj.value("Ignore").toArray());
     }
+    qCDebug(CommonLogger) << "Schedule successfully created from exported data";
     return schedule;
 }
 
 void DDE_Calendar::setRRuleByOldRRule(const DSchedule::Ptr &schedule, const QString &rrule)
 {
+    qCDebug(CommonLogger) << "Setting recurrence rule from old format:" << rrule;
     //重复规则
     KCalendarCore::Recurrence *recurrence = schedule->recurrence();
     KCalendarCore::ICalFormat ical;
@@ -232,11 +244,15 @@ void DDE_Calendar::setRRuleByOldRRule(const DSchedule::Ptr &schedule, const QStr
 
     if (ical.fromString(rule, rrule)) {
         recurrence->addRRule(rule);
+        qCDebug(CommonLogger) << "Recurrence rule set successfully";
+    } else {
+        qCWarning(CommonLogger) << "Failed to parse recurrence rule from string";
     }
 }
 
 void DDE_Calendar::setExDate(const DSchedule::Ptr &schedule, const QJsonArray &ignore)
 {
+    qCDebug(CommonLogger) << "Setting excluded dates, count:" << ignore.size();
     KCalendarCore::Recurrence *recurrence = schedule->recurrence();
 
     foreach (auto ignoreTime, ignore) {
@@ -246,4 +262,5 @@ void DDE_Calendar::setExDate(const DSchedule::Ptr &schedule, const QJsonArray &i
             recurrence->addExDateTime(dtFromString(ignoreTime.toString()));
         }
     }
+    qCDebug(CommonLogger) << "Excluded dates set successfully";
 }

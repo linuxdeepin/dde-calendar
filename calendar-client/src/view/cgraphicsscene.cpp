@@ -10,6 +10,9 @@
 #include <QKeyEvent>
 #include <QDebug>
 #include <QShortcut>
+#include <QLoggingCategory>
+
+Q_LOGGING_CATEGORY(sceneLog, "calendar.view.scene")
 
 CGraphicsScene::CGraphicsScene(QObject *parent)
     : QGraphicsScene(parent)
@@ -20,16 +23,20 @@ CGraphicsScene::CGraphicsScene(QObject *parent)
     , m_isContextMenu(false)
     , m_isShowCurrentItem(false)
 {
+    qCDebug(sceneLog) << "Creating graphics scene";
 }
 
 CGraphicsScene::~CGraphicsScene()
 {
-    if (m_keyPrxy != nullptr)
+    if (m_keyPrxy != nullptr) {
+        qCDebug(sceneLog) << "Deleting key proxy";
         delete m_keyPrxy;
+    }
 }
 
 void CGraphicsScene::setFirstFocusItem(QGraphicsItem *item)
 {
+    qCDebug(sceneLog) << "Setting first focus item";
     firstfocusItem = item;
 }
 
@@ -40,6 +47,7 @@ QGraphicsItem *CGraphicsScene::getFirstFocusItem() const
 
 void CGraphicsScene::setCurrentFocusItem(QGraphicsItem *item)
 {
+    qCDebug(sceneLog) << "Setting current focus item";
     currentFocusItem = item;
 }
 
@@ -50,12 +58,14 @@ QGraphicsItem *CGraphicsScene::getCurrentFocusItem() const
 
 void CGraphicsScene::setKeyPressPrxy(CKeyPressPrxy *keyPrxy)
 {
+    qCDebug(sceneLog) << "Setting key press proxy";
     m_keyPrxy = keyPrxy;
 }
 
 void CGraphicsScene::currentFocusItemUpdate()
 {
     if (currentFocusItem != nullptr) {
+        qCDebug(sceneLog) << "Updating current focus item";
         CFocusItem *item = dynamic_cast<CFocusItem *>(currentFocusItem);
         item->setItemFocus(true);
     }
@@ -68,6 +78,7 @@ void CGraphicsScene::currentFocusItemUpdate()
  */
 void CGraphicsScene::setPrePage(const QDate &focusDate, bool isSwitchView)
 {
+    qCDebug(sceneLog) << "Switching to previous page, date:" << focusDate << "switch view:" << isSwitchView;
     emit signalSwitchPrePage(focusDate, isSwitchView);
 }
 
@@ -78,6 +89,7 @@ void CGraphicsScene::setPrePage(const QDate &focusDate, bool isSwitchView)
  */
 void CGraphicsScene::setNextPage(const QDate &focusDate, bool isSwitchView)
 {
+    qCDebug(sceneLog) << "Switching to next page, date:" << focusDate << "switch view:" << isSwitchView;
     emit signalSwitchNextPage(focusDate, isSwitchView);
 }
 
@@ -87,6 +99,7 @@ bool CGraphicsScene::event(QEvent *event)
     if (event->type() == QEvent::KeyPress) {
         QKeyEvent *keyEvent = dynamic_cast<QKeyEvent *>(event);
         if (m_keyPrxy != nullptr && m_keyPrxy->keyPressDeal(keyEvent->key())) {
+            qCDebug(sceneLog) << "Key press handled by proxy, key:" << keyEvent->key();
             dealResult = true;
         }
         //如果为左右键处理则设置为true
@@ -114,6 +127,7 @@ bool CGraphicsScene::event(QEvent *event)
 
 bool CGraphicsScene::focusInDeal(QEvent *event)
 {
+    qCDebug(sceneLog) << "Handling focus in event";
     bool dealResult = true;
     QFocusEvent *focusEvent = dynamic_cast<QFocusEvent *>(event);
     if (firstfocusItem != nullptr && (Qt::TabFocusReason == focusEvent->reason() || Qt::BacktabFocusReason == focusEvent->reason())) {
@@ -140,6 +154,7 @@ bool CGraphicsScene::focusInDeal(QEvent *event)
 
 bool CGraphicsScene::focusOutDeal(QEvent *event)
 {
+    qCDebug(sceneLog) << "Handling focus out event";
     QFocusEvent *focusEvent = dynamic_cast<QFocusEvent *>(event);
     if (currentFocusItem != nullptr) {
         CSceneBackgroundItem *item = dynamic_cast<CSceneBackgroundItem *>(currentFocusItem);
@@ -167,16 +182,19 @@ bool CGraphicsScene::focusOutDeal(QEvent *event)
 
 void CGraphicsScene::setIsContextMenu(bool isContextMenu)
 {
+    qCDebug(sceneLog) << "Setting context menu state:" << isContextMenu;
     m_isContextMenu = isContextMenu;
 }
 
 void CGraphicsScene::setIsShowCurrentItem(bool isShowCurrentItem)
 {
+    qCDebug(sceneLog) << "Setting show current item:" << isShowCurrentItem;
     m_isShowCurrentItem = isShowCurrentItem;
 }
 
 void CGraphicsScene::currentItemInit()
 {
+    qCDebug(sceneLog) << "Initializing current item";
     if (currentFocusItem != nullptr) {
         CSceneBackgroundItem *item = dynamic_cast<CSceneBackgroundItem *>(currentFocusItem);
         if (item != nullptr) {
@@ -193,5 +211,6 @@ bool CGraphicsScene::getActiveSwitching() const
 
 void CGraphicsScene::setActiveSwitching(bool activeSwitching)
 {
+    qCDebug(sceneLog) << "Setting active switching:" << activeSwitching;
     m_activeSwitching = activeSwitching;
 }

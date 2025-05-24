@@ -42,6 +42,9 @@
 DWIDGET_USE_NAMESPACE
 //using namespace DCC_NAMESPACE;
 
+// Declare logging category for accessibility
+Q_DECLARE_LOGGING_CATEGORY(accessibilityLog)
+
 SET_FORM_ACCESSIBLE(CYearWindow, "YearWidget");
 SET_FORM_ACCESSIBLE(CMonthWindow, "MonthWidget");
 SET_FORM_ACCESSIBLE(CWeekWindow, "WeekWidget");

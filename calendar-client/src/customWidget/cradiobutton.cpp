@@ -7,14 +7,19 @@
 #include <QPainterPath>
 #include <QPainter>
 
+// Add logging category
+Q_LOGGING_CATEGORY(cradiobuttonLog, "calendar.widget.cradiobutton")
+
 DWIDGET_USE_NAMESPACE
 
 CRadioButton::CRadioButton(QWidget *parent) : QRadioButton(parent)
 {
+    qCDebug(cradiobuttonLog) << "Constructing CRadioButton";
 }
 
 void CRadioButton::setColor(const QColor &color)
 {
+    qCDebug(cradiobuttonLog) << "Setting color to:" << color;
     m_color = color;
 }
 
@@ -25,6 +30,7 @@ QColor CRadioButton::getColor()
 
 void CRadioButton::paintEvent(QPaintEvent *event)
 {
+    qCDebug(cradiobuttonLog) << "Paint event triggered, checked:" << isChecked();
     Q_UNUSED(event);
 
     QPainter painter(this);

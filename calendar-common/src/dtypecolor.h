@@ -9,6 +9,9 @@
 #include <QSharedPointer>
 #include <QVector>
 #include <QDateTime>
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(typeColorLog)
 
 /**
  * @brief The DTypeColor class

@@ -10,9 +10,13 @@
 #include <QDBusInterface>
 #include <QtDebug>
 
+// Add logging category
+Q_LOGGING_CATEGORY(accountRequest, "calendar.dbus.account")
+
 DbusAccountRequest::DbusAccountRequest(const QString &path, const QString &interface, QObject *parent)
     : DbusRequestBase(path, interface, QDBusConnection::sessionBus(), parent)
 {
+    qCDebug(accountRequest) << "Initializing DBus Account Request with path:" << path << "interface:" << interface;
 }
 
 /**
@@ -21,6 +25,7 @@ DbusAccountRequest::DbusAccountRequest(const QString &path, const QString &inter
  */
 void DbusAccountRequest::getAccountInfo()
 {
+    qCDebug(accountRequest) << "Getting account info";
     asyncCall("getAccountInfo");
 }
 
@@ -31,18 +36,21 @@ void DbusAccountRequest::getAccountInfo()
  */
 void DbusAccountRequest::setAccountExpandStatus(bool expandStatus)
 {
+    qCDebug(accountRequest) << "Setting account expand status to:" << expandStatus;
     QDBusInterface interface(this->service(), this->path(), this->interface(), QDBusConnection::sessionBus(), this);
     interface.setProperty("isExpand", QVariant(expandStatus));
 }
 
 void DbusAccountRequest::setAccountState(DAccount::AccountStates state)
 {
+    qCDebug(accountRequest) << "Setting account state to:" << state;
     QDBusInterface interface(this->service(), this->path(), this->interface(), QDBusConnection::sessionBus(), this);
     interface.setProperty("accountState", QVariant(state));
 }
 
 void DbusAccountRequest::setSyncFreq(const QString &freq)
 {
+    qCDebug(accountRequest) << "Setting sync frequency to:" << freq;
     QDBusInterface interface(this->service(), this->path(), this->interface(), QDBusConnection::sessionBus(), this);
     interface.setProperty("syncFreq", QVariant(freq));
 }
@@ -50,19 +58,25 @@ void DbusAccountRequest::setSyncFreq(const QString &freq)
 DAccount::AccountStates DbusAccountRequest::getAccountState()
 {
     QDBusInterface interface(this->service(), this->path(), this->interface(), QDBusConnection::sessionBus(), this);
-    return static_cast<DAccount::AccountStates>(interface.property("accountState").toInt());
+    auto state = static_cast<DAccount::AccountStates>(interface.property("accountState").toInt());
+    qCDebug(accountRequest) << "Current account state:" << state;
+    return state;
 }
 
 DAccount::AccountSyncState DbusAccountRequest::getSyncState()
 {
     QDBusInterface interface(this->service(), this->path(), this->interface(), QDBusConnection::sessionBus(), this);
-    return static_cast<DAccount::AccountSyncState>(interface.property("syncState").toInt()) ;
+    auto state = static_cast<DAccount::AccountSyncState>(interface.property("syncState").toInt());
+    qCDebug(accountRequest) << "Current sync state:" << state;
+    return state;
 }
 
 QString DbusAccountRequest::getSyncFreq()
 {
     QDBusInterface interface(this->service(), this->path(), this->interface(), QDBusConnection::sessionBus(), this);
-    return interface.property("syncFreq").toString();
+    QString freq = interface.property("syncFreq").toString();
+    qCDebug(accountRequest) << "Current sync frequency:" << freq;
+    return freq;
 }
 
 /**
@@ -71,6 +85,7 @@ QString DbusAccountRequest::getSyncFreq()
  */
 void DbusAccountRequest::getScheduleTypeList()
 {
+    qCDebug(accountRequest) << "Getting schedule type list";
     asyncCall("getScheduleTypeList");
 }
 
@@ -81,6 +96,7 @@ void DbusAccountRequest::getScheduleTypeList()
  */
 void DbusAccountRequest::getScheduleTypeByID(const QString &typeID)
 {
+    qCDebug(accountRequest) << "Getting schedule type by ID:" << typeID;
     asyncCall("getScheduleTypeByID", {QVariant(typeID)});
 }
 
@@ -91,6 +107,7 @@ void DbusAccountRequest::getScheduleTypeByID(const QString &typeID)
  */
 void DbusAccountRequest::createScheduleType(const DScheduleType::Ptr &typeInfo)
 {
+    qCDebug(accountRequest) << "Creating new schedule type";
     QString jsonStr;
     DScheduleType::toJsonString(typeInfo, jsonStr);
     asyncCall("createScheduleType", {QVariant(jsonStr)});
@@ -103,6 +120,7 @@ void DbusAccountRequest::createScheduleType(const DScheduleType::Ptr &typeInfo)
  */
 void DbusAccountRequest::updateScheduleType(const DScheduleType::Ptr &typeInfo)
 {
+    qCDebug(accountRequest) << "Updating schedule type";
     QString jsonStr;
     DScheduleType::toJsonString(typeInfo, jsonStr);
     asyncCall("updateScheduleType", {QVariant(jsonStr)});
@@ -115,6 +133,7 @@ void DbusAccountRequest::updateScheduleType(const DScheduleType::Ptr &typeInfo)
  */
 void DbusAccountRequest::updateScheduleTypeShowState(const DScheduleType::Ptr &typeInfo)
 {
+    qCDebug(accountRequest) << "Updating schedule type show state";
     QString jsonStr;
     DScheduleType::toJsonString(typeInfo, jsonStr);
     QString callName = "updateScheduleTypeShowState";
@@ -128,6 +147,7 @@ void DbusAccountRequest::updateScheduleTypeShowState(const DScheduleType::Ptr &t
  */
 void DbusAccountRequest::deleteScheduleTypeByID(const QString &typeID)
 {
+    qCDebug(accountRequest) << "Deleting schedule type with ID:" << typeID;
     QList<QVariant> argumentList;
     asyncCall("deleteScheduleTypeByID", {QVariant(typeID)});
 }
@@ -139,8 +159,11 @@ void DbusAccountRequest::deleteScheduleTypeByID(const QString &typeID)
  */
 bool DbusAccountRequest::scheduleTypeByUsed(const QString &typeID)
 {
+    qCDebug(accountRequest) << "Checking if schedule type is used:" << typeID;
     QDBusMessage ret = call("scheduleTypeByUsed", QVariant(typeID));
-    return ret.arguments().value(0).toBool();
+    bool used = ret.arguments().value(0).toBool();
+    qCDebug(accountRequest) << "Schedule type used status:" << used;
+    return used;
 }
 
 /**
@@ -150,6 +173,7 @@ bool DbusAccountRequest::scheduleTypeByUsed(const QString &typeID)
  */
 void DbusAccountRequest::createSchedule(const DSchedule::Ptr &scheduleInfo)
 {
+    qCDebug(accountRequest) << "Creating new schedule";
     QString jsonStr;
     DSchedule::toJsonString(scheduleInfo, jsonStr);
     asyncCall("createSchedule", {QVariant(jsonStr)});
@@ -162,6 +186,7 @@ void DbusAccountRequest::createSchedule(const DSchedule::Ptr &scheduleInfo)
  */
 void DbusAccountRequest::updateSchedule(const DSchedule::Ptr &scheduleInfo)
 {
+    qCDebug(accountRequest) << "Updating schedule";
     QString jsonStr;
     DSchedule::toJsonString(scheduleInfo, jsonStr);
     asyncCall("updateSchedule", {QVariant(jsonStr)});
@@ -169,13 +194,14 @@ void DbusAccountRequest::updateSchedule(const DSchedule::Ptr &scheduleInfo)
 
 DSchedule::Ptr DbusAccountRequest::getScheduleByScheduleID(const QString &scheduleID)
 {
+    qCDebug(accountRequest) << "Getting schedule by ID:" << scheduleID;
     QList<QVariant> argumentList;
     argumentList << QVariant::fromValue(scheduleID);
     QDBusPendingCall pCall = asyncCallWithArgumentList(QStringLiteral("getScheduleByScheduleID"), argumentList);
     pCall.waitForFinished();
     QDBusMessage reply = pCall.reply();
     if (reply.type() != QDBusMessage::ReplyMessage) {
-        qCWarning(ClientLogger) << "getScheduleTypeByID error ," << reply;
+        qCWarning(accountRequest) << "Failed to get schedule by ID:" << scheduleID << "Error:" << reply;
         return nullptr;
     }
     QDBusReply<QString> scheduleReply = reply;
@@ -183,6 +209,7 @@ DSchedule::Ptr DbusAccountRequest::getScheduleByScheduleID(const QString &schedu
     QString scheduleStr = scheduleReply.value();
     DSchedule::Ptr schedule;
     DSchedule::fromJsonString(schedule, scheduleStr);
+    qCDebug(accountRequest) << "Successfully retrieved schedule";
     return schedule;
 }
 
@@ -193,6 +220,7 @@ DSchedule::Ptr DbusAccountRequest::getScheduleByScheduleID(const QString &schedu
  */
 void DbusAccountRequest::deleteScheduleByScheduleID(const QString &scheduleID)
 {
+    qCDebug(accountRequest) << "Deleting schedule with ID:" << scheduleID;
     QList<QVariant> argumentList;
     asyncCall("deleteScheduleByScheduleID", {QVariant(scheduleID)});
 }
@@ -204,6 +232,7 @@ void DbusAccountRequest::deleteScheduleByScheduleID(const QString &scheduleID)
  */
 void DbusAccountRequest::deleteSchedulesByScheduleTypeID(const QString &typeID)
 {
+    qCDebug(accountRequest) << "Deleting schedules by type ID:" << typeID;
     QList<QVariant> argumentList;
     asyncCall("deleteSchedulesByScheduleTypeID", {QVariant(typeID)});
 }
@@ -215,6 +244,7 @@ void DbusAccountRequest::deleteSchedulesByScheduleTypeID(const QString &typeID)
  */
 void DbusAccountRequest::querySchedulesWithParameter(const DScheduleQueryPar::Ptr &params)
 {
+    qCDebug(accountRequest) << "Querying schedules with parameters";
     //key为空为正常日程获取，不为空则为搜索日程
     QString callName = "searchSchedulesWithParameter";
     if (params->key().isEmpty()) {
@@ -227,17 +257,20 @@ void DbusAccountRequest::querySchedulesWithParameter(const DScheduleQueryPar::Pt
 
 bool DbusAccountRequest::querySchedulesByExternal(const DScheduleQueryPar::Ptr &params, QString &json)
 {
+    qCDebug(accountRequest) << "Querying schedules by external parameters";
     QDBusPendingReply<QString> reply = call("querySchedulesWithParameter", QVariant::fromValue(params));
     if (reply.isError()) {
-        qCWarning(ClientLogger) << reply.error().message();
+        qCWarning(accountRequest) << "Failed to query schedules:" << reply.error().message();
         return false;
     }
     json = reply.argumentAt<0>();
+    qCDebug(accountRequest) << "Successfully queried schedules";
     return true;
 }
 
 void DbusAccountRequest::getSysColors()
 {
+    qCDebug(accountRequest) << "Getting system colors";
     asyncCall("getSysColors");
 }
 
@@ -245,6 +278,7 @@ QString DbusAccountRequest::getDtLastUpdate()
 {
     QDBusInterface interface(this->service(), this->path(), this->interface(), QDBusConnection::sessionBus(), this);
     QString datetime = interface.property("dtLastUpdate").toString();
+    qCDebug(accountRequest) << "Last update time:" << datetime;
     return datetime;
 }
 
@@ -255,28 +289,32 @@ void DbusAccountRequest::slotCallFinished(CDBusPendingCallWatcher *call)
     QVariant msg;
 
     if (call->isError()) {
-        qCWarning(ClientLogger) << call->reply().member() << call->error().message();
+        qCWarning(accountRequest) << "DBus call error for member:" << call->getmember() << "Error:" << call->error().message();
         ret = 1;
     } else {
         if (call->getmember() == "getAccountInfo") {
+            qCDebug(accountRequest) << "Processing getAccountInfo response";
             QDBusPendingReply<QString> reply = *call;
             QString str = reply.argumentAt<0>();
             DAccount::Ptr ptr;
             ptr.reset(new DAccount());
             if (DAccount::fromJsonString(ptr, str)) {
+                qCDebug(accountRequest) << "Successfully parsed account info";
                 emit signalGetAccountInfoFinish(ptr);
             } else {
-                qCWarning(ClientLogger) << "AccountInfo Parsing failed!";
+                qCWarning(accountRequest) << "Failed to parse account info";
                 ret = 2;
             }
         } else if (call->getmember() == "getScheduleTypeList") {
+            qCDebug(accountRequest) << "Processing getScheduleTypeList response";
             QDBusPendingReply<QString> reply = *call;
             QString str = reply.argumentAt<0>();
             DScheduleType::List stList;
             if (DScheduleType::fromJsonListString(stList, str)) {
+                qCDebug(accountRequest) << "Successfully parsed schedule type list with" << stList.size() << "items";
                 emit signalGetScheduleTypeListFinish(stList);
             } else {
-                qCWarning(ClientLogger) << "ScheduleTypeList Parsing failed!";
+                qCWarning(accountRequest) << "Failed to parse schedule type list";
                 ret = 2;
             }
         } else if (call->getmember() == "querySchedulesWithParameter") {
@@ -315,7 +353,11 @@ void DbusAccountRequest::slotCallFinished(CDBusPendingCallWatcher *call)
 
 void DbusAccountRequest::slotDbusCall(const QDBusMessage &msg)
 {
-    if (msg.member() == "PropertiesChanged") {
+    if (msg.member() == "accountUpdate") {
+        qCDebug(accountRequest) << "Received account update signal";
+        getAccountList();
+    } else if (msg.member() == "PropertiesChanged") {
+        qCDebug(accountRequest) << "Received properties changed signal";
         QDBusPendingReply<QString, QVariantMap, QStringList> reply = msg;
         onPropertiesChanged(reply.argumentAt<0>(), reply.argumentAt<1>(), reply.argumentAt<2>());
     } else if (msg.member() == "scheduleTypeUpdate") {
@@ -328,8 +370,9 @@ void DbusAccountRequest::slotDbusCall(const QDBusMessage &msg)
     }
 }
 
-void DbusAccountRequest::onPropertiesChanged(const QString &, const QVariantMap &changedProperties, const QStringList &)
+void DbusAccountRequest::onPropertiesChanged(const QString &interfaceName, const QVariantMap &changedProperties, const QStringList &invalidatedProperties)
 {
+    qCDebug(accountRequest) << "Processing properties changed for interface:" << interfaceName;
     for (QVariantMap::const_iterator it = changedProperties.cbegin(), end = changedProperties.cend(); it != end; ++it) {
         if (it.key() == "syncState") {
             int state = it.value().toInt();
@@ -350,15 +393,24 @@ void DbusAccountRequest::onPropertiesChanged(const QString &, const QVariantMap 
         if (it.key() == "accountState") {
             emit signalAccountStateChange(getAccountState());
         }
+        if (it.key() == "firstDayOfWeek") {
+            qCDebug(accountRequest) << "First day of week property changed";
+            getCalendarGeneralSettings();
+        } else if (it.key() == "timeFormatType") {
+            qCDebug(accountRequest) << "Time format type property changed";
+            getCalendarGeneralSettings();
+        }
     }
 }
 
 void DbusAccountRequest::importSchedule(QString icsFilePath, QString typeID, bool cleanExists)
 {
+    qCDebug(accountRequest) << "Importing schedule from:" << icsFilePath << "Type ID:" << typeID << "Clean exists:" << cleanExists;
     asyncCall("importSchedule", {QVariant(icsFilePath), QVariant(typeID), QVariant(cleanExists)});
 }
 
 void DbusAccountRequest::exportSchedule(QString icsFilePath, QString typeID)
 {
+    qCDebug(accountRequest) << "Exporting schedule to:" << icsFilePath << "Type ID:" << typeID;
     asyncCall("exportSchedule", {QVariant(icsFilePath), QVariant(typeID)});
 }

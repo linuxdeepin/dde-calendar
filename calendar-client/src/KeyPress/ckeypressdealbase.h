@@ -6,6 +6,9 @@
 #define CKEYPRESSDEALBASE_H
 
 #include <qnamespace.h>
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(keyPressBaseLog)
 
 class QGraphicsScene;
 class CSceneBackgroundItem;

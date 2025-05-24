@@ -7,6 +7,7 @@
 
 #include <DApplication>
 #include <DTitlebar>
+#include <QLoggingCategory>
 
 #include <QPixmap>
 #include <QDate>
@@ -15,6 +16,8 @@
 
 DWIDGET_USE_NAMESPACE
 DCORE_USE_NAMESPACE
+
+Q_DECLARE_LOGGING_CATEGORY(dynamicIconLog)
 
 class CDynamicIcon
 {

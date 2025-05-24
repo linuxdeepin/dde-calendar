@@ -22,6 +22,8 @@
 
 #include <unistd.h>
 
+Q_LOGGING_CATEGORY(unionIDDavLog, "calendar.sync.unioniddav")
+
 /**
  * @brief The SqlTransactionLocker class 用于数据库事务相关
  */
@@ -145,6 +147,7 @@ bool SyncAccount::insertToTypeColor(const DTypeColor &typeColor)
 
 void DUIDSynDataWorker::syncData(SyncStack syncType)
 {
+    qCDebug(unionIDDavLog) << "Starting sync data with account:" << syncType.accountId;
     if (nullptr == mSyncTimer) {
         mSyncTimer = new QTimer(this);
         mSyncTimer->setSingleShot(true);
@@ -153,10 +156,12 @@ void DUIDSynDataWorker::syncData(SyncStack syncType)
     mSyncTimer->start(200);
 
     mSyncList.append(syncType);
+    qCDebug(unionIDDavLog) << "Sync data queued for processing";
 }
 
 void DUIDSynDataWorker::slotSync()
 {
+    qCDebug(unionIDDavLog) << "Processing sync queue with" << mSyncList.count() << "items";
     bool next = false;
     for (int k = mSyncList.count() - 1; k >= 0; k--) {
         if (k == mSyncList.count() - 1) {
@@ -172,9 +177,10 @@ void DUIDSynDataWorker::slotSync()
 
     mSyncList.clear();
 
-    if (next)
+    if (next) {
+        qCDebug(unionIDDavLog) << "Starting sync process with type:" << mSync.syncType;
         startUpdate();
-
+    }
 }
 
 void DUIDSynDataWorker::startUpdate()
@@ -200,6 +206,7 @@ void DUIDSynDataWorker::startUpdate()
     //如果下载失败
     if(errCode != 0){
         //发送同步状态
+        qCCritical(unionIDDavLog) << "Failed to download cloud data, error code:" << errCode;
         emit signalSyncState(errCode);
         return;
     }
@@ -207,29 +214,47 @@ void DUIDSynDataWorker::startUpdate()
     SqlTransactionLocker transactionLocker({mSync.dbname_account_thread, mSync.dbname_manager_thread, mSync.dbname_sync_thread});
     //本地数据迁移到临时文件中
     if (errCode == 0) {
-        errCode =  mSync.loadToTmp();
+        qCDebug(unionIDDavLog) << "Moving local data to temporary storage";
+        errCode = mSync.loadToTmp();
+        if(errCode != 0) {
+            qCWarning(unionIDDavLog) << "Failed to move local data to temp, error code:" << errCode;
+        }
     }
 
-    //将临时文件数据迁移到本地中
+    //如果下载成功
     if (errCode == 0 && mSync.syncType.testFlag(DDataSyncBase::SyncType::Sync_Download)) {
-        errCode =  mSync.tmpToLoad(updateType);
+        //将临时文件中的数据迁移到本地
+        qCDebug(unionIDDavLog) << "Moving temporary data to local storage";
+        errCode = mSync.tmpToLoad(updateType);
+        if(errCode != 0) {
+            qCWarning(unionIDDavLog) << "Failed to move temp data to local, error code:" << errCode;
+        }
     }
 
     if (errCode == 0) {
+        qCDebug(unionIDDavLog) << "Committing transaction";
         transactionLocker.commit();
     } else {
+        qCWarning(unionIDDavLog) << "Rolling back transaction due to error:" << errCode;
         transactionLocker.rollback();
     }
+    
     QSqlDatabase::removeDatabase(mSync.dbname_account_thread);
     QSqlDatabase::removeDatabase(mSync.dbname_manager_thread);
     QSqlDatabase::removeDatabase(mSync.dbname_sync_thread);
 
-    //如果为上传需要上传数据
+    //如果下载成功，并且是初始化同步或者上传同步
     if (errCode == 0 && (isInitSyncData || mSync.syncType.testFlag(DDataSyncBase::SyncType::Sync_Upload))) {
+        qCDebug(unionIDDavLog) << "Uploading temporary data to cloud";
         errCode = mSync.uploadTmpData(fileManger);
-    }
     //删除临时文件
+        if(errCode != 0) {
+            qCWarning(unionIDDavLog) << "Failed to upload temp data, error code:" << errCode;
+        }
+    }
+    
     mSync.deleteTmpData(fileManger);
+    qCInfo(unionIDDavLog) << "Sync process completed with error code:" << errCode;
 
     qCInfo(ServiceLogger) << "同步完成";
     if (errCode == 0) {
@@ -244,49 +269,62 @@ DUnionIDDav::DUnionIDDav()
     : DDataSyncBase()
     , d(new DUIDSynDataPrivate())
 {
+    qCDebug(unionIDDavLog) << "Initializing DUnionIDDav";
     connect(d, &DUIDSynDataPrivate::signalUpdate, this, &DUnionIDDav::signalUpdate);
     connect(d, &DUIDSynDataPrivate::signalSyncState, this, &DUnionIDDav::signalSyncState);
+    qCDebug(unionIDDavLog) << "DUnionIDDav initialization completed";
 }
 
 DUnionIDDav::~DUnionIDDav()
 {
+    qCDebug(unionIDDavLog) << "DUnionIDDav destroyed";
     delete d;
 }
 
 void DUnionIDDav::syncData(QString accountId, QString accountName, int accountState, DDataSyncBase::SyncTypes syncType)
 {
-    qCInfo(ServiceLogger) << "DUnionIDDav 同步数据";
-
+    qCInfo(unionIDDavLog) << "Starting sync for account:" << accountId << "name:" << accountName << "state:" << accountState << "type:" << syncType;
     d->syncData(accountId, accountName, accountState, syncType);
 }
 
 
 int SyncStack::downloadUidData(bool &isInitSyncData, SyncFileManage &fileManger)
 {
+    qCDebug(unionIDDavLog) << "Downloading cloud data for account:" << accountId;
     int errCode = 0;
     isInitSyncData = false;
     //下载数据库sync
     if (!fileManger.SyncDataDownload(accountId, dbpath_sync, errCode)) {
+        qCWarning(unionIDDavLog) << "Failed to download sync data, error code:" << errCode;
         return errCode;
     }
 
     QSqlDatabase db_sync = QSqlDatabase::addDatabase("QSQLITE", dbname_sync_thread);
     db_sync.setDatabaseName(dbpath_sync);
     if (!db_sync.open()) {
+        qCCritical(unionIDDavLog) << "Failed to open sync database:" << db_sync.lastError().text();
         return -1;
     }
-    qCInfo(ServiceLogger) << "初始化表结构";
-
+    qCInfo(unionIDDavLog) << "初始化表结构";
+    qCDebug(unionIDDavLog) << "Initializing database tables";
     SqliteQuery query(dbname_sync_thread);
 
-    if (!query.exec(DAccountDataBase::sql_create_schedules))
+    if (!query.exec(DAccountDataBase::sql_create_schedules)) {
+        qCWarning(unionIDDavLog) << "Failed to create schedules table:" << query.lastError().text();
         return -1;
-    if (!query.exec(DAccountDataBase::sql_create_scheduleType))
+    }
+    if (!query.exec(DAccountDataBase::sql_create_scheduleType)) {
+        qCWarning(unionIDDavLog) << "Failed to create scheduleType table:" << query.lastError().text();
         return -1;
-    if (!query.exec(DAccountDataBase::sql_create_typeColor))
+    }
+    if (!query.exec(DAccountDataBase::sql_create_typeColor)) {
+        qCWarning(unionIDDavLog) << "Failed to create typeColor table:" << query.lastError().text();
         return -1;
-    if (!query.exec(DAccountDataBase::sql_create_calendargeneralsettings))
+    }
+    if (!query.exec(DAccountDataBase::sql_create_calendargeneralsettings)) {
+        qCWarning(unionIDDavLog) << "Failed to create calendargeneralsettings table:" << query.lastError().text();
         return -1;
+    }
 
 //    if(!repairTable("schedules", dbname_account_thread, dbname_sync_thread)) {
 //        return -1;
@@ -300,19 +338,19 @@ int SyncStack::downloadUidData(bool &isInitSyncData, SyncFileManage &fileManger)
 
     query.exec("select count(0) from scheduleType");
     if (query.next() && query.value(0).toInt() == 0) {
-        qCInfo(ServiceLogger) << "没有数据则设置：默认日程类型、颜色、默认通用设置";
+        qCInfo(unionIDDavLog) << "没有数据则设置：默认日程类型、颜色、默认通用设置";
         SyncAccount accountDb(dbname_sync_thread, accountId);
 
-        qCInfo(ServiceLogger) << "默认日程类型";
+        qCInfo(unionIDDavLog) << "默认日程类型";
         if (!accountDb.defaultScheduleType())
             return -1;
 
-        qCInfo(ServiceLogger) << "默认颜色";
+        qCInfo(unionIDDavLog) << "默认颜色";
         if (!accountDb.defaultTypeColor())
             return -1;
 
         if (accountState & DAccount::Account_Setting) {
-            qCInfo(ServiceLogger) << "默认通用设置";
+            qCInfo(unionIDDavLog) << "默认通用设置";
             if(needUpdateSettingValue()) {
                 if (!syncIntoTable("calendargeneralsettings", dbname_manager_thread, dbname_sync_thread))
                     return -1;
@@ -327,7 +365,7 @@ int SyncStack::downloadUidData(bool &isInitSyncData, SyncFileManage &fileManger)
 
 int SyncStack::loadToTmp()
 {
-    qCInfo(ServiceLogger) << "将本地A的uploadTask同步到刚刚下载的B里";
+    qCInfo(unionIDDavLog) << "将本地A的uploadTask同步到刚刚下载的B里";
     if(accountState & DAccount::Account_Calendar) {
         SqliteQuery query(dbname_account_thread);
         query.exec("select taskID,uploadType,uploadObject,objectID  from uploadTask");
@@ -342,40 +380,40 @@ int SyncStack::loadToTmp()
             case DUploadTaskData::Create:
             case DUploadTaskData::Modify:
                 if (!replaceIntoRecord(table_name, selectRecord(table_name, key_name, key_value, dbname_account_thread), dbname_sync_thread)){
-                    qCWarning(ServiceLogger)<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
+                    qCWarning(unionIDDavLog)<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
                     return -1;
                 }
                 break;
             case DUploadTaskData::Delete:
                 if (!deleteTableLine(table_name, key_name, key_value, dbname_sync_thread)){
-                    qCWarning(ServiceLogger)<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
+                    qCWarning(unionIDDavLog)<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
                     return -1;
                 }
                 break;
             }
         }
 
-        qCInfo(ServiceLogger) << "清空uploadTask";
+        qCInfo(unionIDDavLog) << "清空uploadTask";
         if (!deleteTable("uploadTask", dbname_account_thread)){
-            qCWarning(ServiceLogger)<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
+            qCWarning(unionIDDavLog)<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
             return -1;
         }
     }
 
     if (accountState & DAccount::Account_Setting) {
 
-        qCInfo(ServiceLogger) << "同步通用设置";
+        qCInfo(unionIDDavLog) << "同步通用设置";
         if(needUpdateSettingValue()) {
             QDateTime managerDate = selectValue("vch_value", "calendargeneralsettings", "vch_key", "dt_update", dbname_manager_thread).toDateTime();
             QDateTime syncDate = selectValue("vch_value", "calendargeneralsettings", "vch_key", "dt_update", dbname_sync_thread).toDateTime();
             if (managerDate > syncDate)
                 if (!syncIntoTable("calendargeneralsettings", dbname_manager_thread, dbname_sync_thread)){
-                    qCWarning(ServiceLogger)<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
+                    qCWarning(unionIDDavLog)<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
                     return -1;
                 }
             if (syncDate > managerDate)
                 if (!syncIntoTable("calendargeneralsettings", dbname_sync_thread, dbname_manager_thread)){
-                    qCWarning(ServiceLogger)<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
+                    qCWarning(unionIDDavLog)<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
                     return -1;
                 }
         }
@@ -404,27 +442,27 @@ bool SyncStack::needUpdateSettingValue() {
 int SyncStack::tmpToLoad(DDataSyncBase::UpdateTypes &updateType)
 {
     if (accountState & DAccount::Account_Calendar) {
-        qCInfo(ServiceLogger) << "更新schedules、schedules、typeColor";
+        qCInfo(unionIDDavLog) << "更新schedules、schedules、typeColor";
         if (!syncIntoTable("schedules", dbname_sync_thread, dbname_account_thread)){
-            qCWarning(ServiceLogger)<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
+            qCWarning(unionIDDavLog)<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
             return -1;
         }
         if (!syncIntoTable("scheduleType", dbname_sync_thread, dbname_account_thread)){
-            qCWarning(ServiceLogger)<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
+            qCWarning(unionIDDavLog)<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
             return -1;
         }
         if (!syncIntoTable("typeColor", dbname_sync_thread, dbname_account_thread)){
-            qCWarning(ServiceLogger)<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
+            qCWarning(unionIDDavLog)<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
             return -1;
         }
         updateType = DUnionIDDav::Update_Schedule | DUnionIDDav::Update_ScheduleType;
     }
 
     if (accountState & DAccount::Account_Setting) {
-        qCInfo(ServiceLogger) << "更新通用设置";
+        qCInfo(unionIDDavLog) << "更新通用设置";
         if(needUpdateSettingValue()) {
             if (!syncIntoTable("calendargeneralsettings", dbname_sync_thread, dbname_manager_thread)){
-                qCWarning(ServiceLogger)<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
+                qCWarning(unionIDDavLog)<<"faild:" <<__FUNCTION__ <<" : "<<__LINE__;
                 return -1;
             }
         }
@@ -468,7 +506,7 @@ bool SyncStack::syncIntoTable(const QString &table_name, const QString &connecti
     SqliteQuery source(QSqlDatabase::database(connection_name_source));
     SqliteQuery target(QSqlDatabase::database(connection_name_target));
     if (!target.exec(" delete from " + table_name)){
-        qCWarning(ServiceLogger) << target.lastError() <<"table_name:"<<table_name;
+        qCWarning(unionIDDavLog) << target.lastError() <<"table_name:"<<table_name;
         return false;
     }
     source.exec(" select * from " + table_name);
@@ -476,7 +514,7 @@ bool SyncStack::syncIntoTable(const QString &table_name, const QString &connecti
         target.prepare("replace into " + table_name + " values(" + prepareQuest(source.record().count()) + ")");
         prepareBinds(target, source.record());
         if (!target.exec()) {
-            qCWarning(ServiceLogger) << target.lastError();
+            qCWarning(unionIDDavLog) << target.lastError();
             return false;
         }
     }
@@ -534,7 +572,7 @@ bool SyncStack::deleteTable(const QString &table_name, const QString &connection
 {
     SqliteQuery query(connection_name);
     if (!query.exec("delete from " + table_name)) {
-        qCInfo(ServiceLogger) << query.lastError();
+        qCInfo(unionIDDavLog) << query.lastError();
         return false;
     }
     return true;
@@ -588,7 +626,7 @@ bool SyncStack::repairTable(const QString &table_name, const QString &connection
                                 .arg(sql_type)
                                 .arg(default_value);
         if (!query_server.exec(alter_sql)) {
-            qCInfo(ServiceLogger) << query_server.lastError();
+            qCInfo(unionIDDavLog) << query_server.lastError();
             return false;
         }
     }

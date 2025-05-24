@@ -7,8 +7,10 @@
 */
 
 #include "conference.h"
-
 #include <QDataStream>
+#include <QLoggingCategory>
+
+Q_LOGGING_CATEGORY(conferenceLog, "calendar.conference")
 
 using namespace KCalendarCore;
 
@@ -31,11 +33,13 @@ public:
 Conference::Conference()
     : d(new Conference::Private)
 {
+    qCDebug(conferenceLog) << "Creating empty Conference";
 }
 
 Conference::Conference(const QUrl &uri, const QString &label, const QStringList &features, const QString &language)
     : d(new Conference::Private)
 {
+    qCDebug(conferenceLog) << "Creating Conference with uri:" << uri << "label:" << label << "features:" << features << "language:" << language;
     setUri(uri);
     setLabel(label);
     setFeatures(features);
@@ -48,13 +52,16 @@ Conference::~Conference() = default;
 
 bool Conference::isNull() const
 {
-    // isNull rather than isEmpty, as user code is actually creating empty but non-null conferences...
-    return !d->uri.isValid() && d->label.isNull();
+    bool result = !d->uri.isValid() && d->label.isNull();
+    qCDebug(conferenceLog) << "Conference isNull:" << result;
+    return result;
 }
 
 bool KCalendarCore::Conference::operator==(const Conference &other) const
 {
-    return std::tie(d->label, d->language, d->features, d->uri) == std::tie(other.d->label, other.d->language, other.d->features, other.d->uri);
+    bool result = std::tie(d->label, d->language, d->features, d->uri) == std::tie(other.d->label, other.d->language, other.d->features, other.d->uri);
+    qCDebug(conferenceLog) << "Conference equality check result:" << result;
+    return result;
 }
 
 bool KCalendarCore::Conference::operator!=(const Conference &other) const
@@ -71,6 +78,7 @@ QUrl Conference::uri() const
 
 void Conference::setUri(const QUrl &uri)
 {
+    qCDebug(conferenceLog) << "Setting Conference uri to:" << uri;
     d->uri = uri;
 }
 
@@ -81,6 +89,7 @@ QString Conference::label() const
 
 void Conference::setLabel(const QString &label)
 {
+    qCDebug(conferenceLog) << "Setting Conference label to:" << label;
     d->label = label;
 }
 
@@ -91,16 +100,19 @@ QStringList Conference::features() const
 
 void Conference::addFeature(const QString &feature)
 {
+    qCDebug(conferenceLog) << "Adding Conference feature:" << feature;
     d->features.push_back(feature);
 }
 
 void Conference::removeFeature(const QString &feature)
 {
+    qCDebug(conferenceLog) << "Removing Conference feature:" << feature;
     d->features.removeAll(feature);
 }
 
 void Conference::setFeatures(const QStringList &features)
 {
+    qCDebug(conferenceLog) << "Setting Conference features to:" << features;
     d->features = features;
 }
 
@@ -111,11 +123,13 @@ QString Conference::language() const
 
 void Conference::setLanguage(const QString &language)
 {
+    qCDebug(conferenceLog) << "Setting Conference language to:" << language;
     d->language = language;
 }
 
 void Conference::setCustomProperty(const QByteArray &xname, const QString &xvalue)
 {
+    qCDebug(conferenceLog) << "Setting custom property" << xname << "to:" << xvalue;
     d->customProperties.setNonKDECustomProperty(xname, xvalue);
 }
 

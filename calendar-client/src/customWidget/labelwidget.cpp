@@ -6,22 +6,26 @@
 #include <QPainter>
 #include <QStyleOptionFocusRect>
 
+Q_LOGGING_CATEGORY(LabelWidgetLog, "calendar.widget.labelwidget")
+
 LabelWidget::LabelWidget(QWidget *parent)
     : QLabel(parent)
 {
+    qCDebug(LabelWidgetLog) << "Creating LabelWidget";
     //设置焦点选中类型
     setFocusPolicy(Qt::FocusPolicy::TabFocus);
 }
 
 LabelWidget::~LabelWidget()
 {
-
+    qCDebug(LabelWidgetLog) << "Destroying LabelWidget";
 }
 
 void LabelWidget::paintEvent(QPaintEvent *ev)
 {
     QPainter painter(this);
     if (hasFocus()) {
+        qCDebug(LabelWidgetLog) << "Painting focus rectangle";
         //有焦点，绘制焦点
         QStyleOptionFocusRect option;
         option.initFrom(this);

@@ -14,6 +14,9 @@
 #include <QSqlRecord>
 #include <QSqlError>
 #include <QFlags>
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(syncBaseLog)
 
 #ifndef Q_MOC_RUN
 #define Q_DECLARE_FLAGS(Flags, Enum)\

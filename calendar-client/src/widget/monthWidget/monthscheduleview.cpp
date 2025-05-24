@@ -9,14 +9,15 @@
 #include "myscheduleview.h"
 #include "graphicsItem/cmonthschedulenumitem.h"
 
-
-
 #include <QPainter>
 #include <QHBoxLayout>
 #include <QStylePainter>
 #include <QRect>
 #include <QPropertyAnimation>
 #include <QDebug>
+#include <QLoggingCategory>
+
+Q_LOGGING_CATEGORY(monthScheduleViewLog, "calendar.view.monthschedule")
 
 DGUI_USE_NAMESPACE
 
@@ -26,6 +27,7 @@ CMonthScheduleView::CMonthScheduleView(QWidget *parent, QGraphicsScene *scene)
     : QObject(parent)
     , m_Scene(scene)
 {
+    qCDebug(monthScheduleViewLog) << "Initializing CMonthScheduleView";
     for (int i = 0; i < 6; ++i) {
         CWeekScheduleView *weekSchedule = new CWeekScheduleView(this);
         m_weekSchedule.append(weekSchedule);
@@ -39,6 +41,7 @@ CMonthScheduleView::~CMonthScheduleView()
 
 void CMonthScheduleView::setallsize(int w, int h, int left, int top, int buttom, int itemHeight)
 {
+    qCDebug(monthScheduleViewLog) << "Setting view size:" << w << h << "margins:" << left << top << buttom << "item height:" << itemHeight;
     m_width = w;
     m_height = h;
     m_bottomMargin = buttom;
@@ -49,6 +52,7 @@ void CMonthScheduleView::setallsize(int w, int h, int left, int top, int buttom,
 
 void CMonthScheduleView::setData(QMap<QDate, DSchedule::List> &data, int currentMonth)
 {
+    qCDebug(monthScheduleViewLog) << "Setting schedule data for month:" << currentMonth << "data size:" << data.size();
     m_data = data;
     m_currentMonth = currentMonth;
     updateData();
@@ -85,13 +89,16 @@ void CMonthScheduleView::slotStateChange(bool bState)
  */
 void CMonthScheduleView::updateData()
 {
+    qCDebug(monthScheduleViewLog) << "Updating schedule data";
     //清空日程显示
     for (int i = 0; i < m_weekSchedule.size(); ++i) {
         m_weekSchedule[i]->clearItem();
     }
     //保护数据防止越界
-    if (m_data.count() != DDEMonthCalendar::ItemSizeOfMonthDay || m_cNum < 1)
+    if (m_data.count() != DDEMonthCalendar::ItemSizeOfMonthDay || m_cNum < 1) {
+        qCWarning(monthScheduleViewLog) << "Invalid data count or cNum:" << m_data.count() << m_cNum;
         return;
+    }
     //开始结束时间
     QMap<QDate, DSchedule::List>::iterator _iter = m_data.begin();
     QDate begindate = _iter.key();
@@ -131,6 +138,7 @@ QVector<QGraphicsRectItem *> CMonthScheduleView::getScheduleShowItem() const
 
 void CMonthScheduleView::updateDate(const DSchedule::Ptr &info)
 {
+    qCDebug(monthScheduleViewLog) << "Updating schedule:" << info->summary();
     for (int i = 0; i < m_weekSchedule.size(); ++i) {
         if (m_weekSchedule.at(i)->addData(info)) {
         } else {
@@ -144,6 +152,7 @@ void CMonthScheduleView::updateDate(const DSchedule::Ptr &info)
 
 void CMonthScheduleView::changeDate(const DSchedule::Ptr &info)
 {
+    qCDebug(monthScheduleViewLog) << "Changing schedule date:" << info->summary();
     for (int i = 0; i < m_weekSchedule.size(); ++i) {
         m_weekSchedule.at(i)->changeDate(info);
         QVector<QVector<MScheduleDateRangeInfo>> mSchedule = m_weekSchedule[i]->getMScheduleInfo();
@@ -243,6 +252,7 @@ CWeekScheduleView::CWeekScheduleView(QObject *parent)
     , m_ScheduleHeight(22)
     , m_DayHeight(47)
 {
+    qCDebug(monthScheduleViewLog) << "Initializing CWeekScheduleView";
     setMaxNum();
 }
 
@@ -252,6 +262,7 @@ CWeekScheduleView::~CWeekScheduleView()
 
 void CWeekScheduleView::setData(QMap<QDate, DSchedule::List> &data, const QDate &startDate, const QDate &stopDate)
 {
+    qCDebug(monthScheduleViewLog) << "Setting week schedule data from" << startDate << "to" << stopDate;
     //显示一周的日程
     Q_ASSERT(startDate.daysTo(stopDate) == 6);
     m_ScheduleInfo.clear();
@@ -280,7 +291,11 @@ void CWeekScheduleView::setData(QMap<QDate, DSchedule::List> &data, const QDate 
 
 bool CWeekScheduleView::addData(const DSchedule::Ptr &info)
 {
-    if(info.isNull()) return false;
+    if(info.isNull()) {
+        qCWarning(monthScheduleViewLog) << "Attempt to add null schedule data";
+        return false;
+    }
+    qCDebug(monthScheduleViewLog) << "Adding schedule data:" << info->summary();
     if (info->dtStart().date().daysTo(endDate) >= 0 && beginDate.daysTo(info->dtEnd().date()) >= 0) {
         clearItem();
         updateSchedule(false, info);
@@ -312,6 +327,7 @@ void CWeekScheduleView::setHeight(const int ScheduleHeight, const int dayHeight)
 
 void CWeekScheduleView::updateSchedule(const bool isNormalDisplay, const DSchedule::Ptr &info)
 {
+    qCDebug(monthScheduleViewLog) << "Updating schedule display, normal mode:" << isNormalDisplay;
     DSchedule::List schedulev;
     schedulev.clear();
     schedulev = m_ScheduleInfo;

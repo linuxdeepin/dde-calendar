@@ -7,6 +7,9 @@
 
 #include "dbus/dbusaccountrequest.h"
 #include <QObject>
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(accountLog)
 
 //单项帐户信息管理类
 class AccountItem : public QObject

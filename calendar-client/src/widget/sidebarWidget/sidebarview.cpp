@@ -9,12 +9,16 @@
 #include <QVBoxLayout>
 #include <QPixmap>
 
+Q_LOGGING_CATEGORY(sidebarViewLog, "calendar.widget.sidebarview")
+
 SidebarView::SidebarView(QWidget *parent) : QWidget(parent)
 {
+    qCDebug(sidebarViewLog) << "Initializing SidebarView";
     initView();
     initConnection();
     //初始化数据
     initData();
+    qCDebug(sidebarViewLog) << "SidebarView initialization completed";
 }
 
 /**
@@ -23,6 +27,7 @@ SidebarView::SidebarView(QWidget *parent) : QWidget(parent)
  */
 void SidebarView::initView()
 {
+    qCDebug(sidebarViewLog) << "Initializing view components";
     QVBoxLayout *vLayout = new QVBoxLayout(this);
     vLayout->setContentsMargins(0, 8, 0, 10);
     vLayout->setSpacing(0);
@@ -56,6 +61,7 @@ void SidebarView::initView()
 
     setLayout(vLayout);
     setFixedWidth(180);
+    qCDebug(sidebarViewLog) << "View initialization completed";
 }
 
 void SidebarView::initConnection()
@@ -72,12 +78,14 @@ void SidebarView::initConnection()
  */
 void SidebarView::initData()
 {
+    qCDebug(sidebarViewLog) << "Initializing data";
     m_treeWidget->clear();
 
     initLocalAccountItem();
     initUnionAccountItem();
     //刷新列表展开状态
     initExpandStatus();
+    qCDebug(sidebarViewLog) << "Data initialization completed";
 }
 
 /**
@@ -105,13 +113,15 @@ void SidebarView::initExpandStatus()
  */
 void SidebarView::initLocalAccountItem()
 {
+    qCDebug(sidebarViewLog) << "Initializing local account item";
     if (nullptr != m_localItemWidget) {
-//        m_localItemWidget->deleteLater();
+        qCDebug(sidebarViewLog) << "Deleting existing local item widget";
         delete m_localItemWidget;
         m_localItemWidget = nullptr;
     }
     QSharedPointer<AccountItem> localAccount = gAccountManager->getLocalAccountItem();
     if (nullptr == localAccount) {
+        qCWarning(sidebarViewLog) << "Failed to get local account item";
         return;
     }
     QTreeWidgetItem *localItem = new QTreeWidgetItem();
@@ -129,8 +139,10 @@ void SidebarView::initLocalAccountItem()
  */
 void SidebarView::initUnionAccountItem()
 {
+    qCDebug(sidebarViewLog) << "Initializing union account item";
     QSharedPointer<AccountItem> unionAccount = gAccountManager->getUnionAccountItem();
     if (nullptr == unionAccount) {
+        qCWarning(sidebarViewLog) << "Failed to get union account item";
         return;
     }
 
@@ -151,8 +163,10 @@ void SidebarView::initUnionAccountItem()
 void SidebarView::resetJobTypeChildItem(SidebarAccountItemWidget *parentItemWidget)
 {
     if (nullptr == parentItemWidget) {
+        qCWarning(sidebarViewLog) << "Parent item widget is null";
         return;
     }
+    qCDebug(sidebarViewLog) << "Resetting job type child items for account:" << parentItemWidget->getAccountItem()->getAccount()->accountName();
     QTreeWidgetItem *parentItem = parentItemWidget->getTreeItem();
     int itemChildrenCounts = parentItem->childCount();
     while(itemChildrenCounts--)
@@ -211,6 +225,7 @@ void SidebarView::resetTreeItemPos(QTreeWidgetItem *item)
  */
 void SidebarView::slotAccountUpdate()
 {
+    qCInfo(sidebarViewLog) << "Account update received, reinitializing data";
     initData();
 }
 
@@ -220,6 +235,7 @@ void SidebarView::slotAccountUpdate()
  */
 void SidebarView::slotScheduleTypeUpdate()
 {
+    qCInfo(sidebarViewLog) << "Schedule type update received, resetting items";
     //初始化列表数据
     resetJobTypeChildItem(m_localItemWidget);
     resetJobTypeChildItem(m_unionItemWidget);
@@ -234,16 +250,19 @@ void SidebarView::slotScheduleTypeUpdate()
  */
 void SidebarView::signalLogout(DAccount::Type accountType)
 {
+    qCInfo(sidebarViewLog) << "Account logout received for type:" << accountType;
     //先清空列表
     m_treeWidget->clear();
     if (DAccount::Account_UnionID == accountType){
         if (m_unionItemWidget) {
+            qCDebug(sidebarViewLog) << "Cleaning up union account widget";
             //清空数据
             m_unionItemWidget->getAccountItem().reset(nullptr);
             m_unionItemWidget->deleteLater();
             m_unionItemWidget = nullptr;
         }
         //重新加载另一个帐户的数据
+        qCDebug(sidebarViewLog) << "Reloading local account data";
         initLocalAccountItem();
         resetJobTypeChildItem(m_localItemWidget);
     }

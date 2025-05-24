@@ -8,6 +8,7 @@
 #include "scheduledatamanage.h"
 #include "daccount.h"
 #include "accountitem.h"
+#include <QLoggingCategory>
 
 #include <DListView>
 #include <DIconButton>
@@ -18,6 +19,8 @@
 #include <DDialog>
 
 DWIDGET_USE_NAMESPACE
+
+Q_DECLARE_LOGGING_CATEGORY(JobTypeListViewLog)
 
 class JobTypeListViewStyle;
 class JobTypeListView : public QTableView

@@ -12,10 +12,13 @@
 //农历一年最少有363天
 const int LunarYearMiniDays = 353;
 
+Q_LOGGING_CATEGORY(lunarDateLog, "calendar.date")
+
 LunarDateInfo::LunarDateInfo(KCalendarCore::RecurrenceRule *rruleStr, const qint64 interval)
     : m_recurenceRule(rruleStr)
     , m_dateInterval(interval)
 {
+    qCInfo(lunarDateLog) << "Initializing lunar date info with interval:" << interval;
     m_rruleType = ParseRRule(m_recurenceRule->rrule());
 }
 
@@ -165,6 +168,7 @@ QMap<int, QDate> LunarDateInfo::getAllNextYearLunarDayBySolar(const QDate &solar
 
 lunarInfo LunarDateInfo::getNextMonthLunarDay(QDate &nextDate, const lunarInfo &info)
 {
+    qCDebug(lunarDateLog) << "Getting next month lunar day for date:" << nextDate;
     LunarCalendar *lunc = LunarCalendar::GetLunarCalendar(nextDate.year());
     lunarInfo nextinfo = lunc->SolarDayToLunarDay(nextDate.month(), nextDate.day());
     //判断农历的天是否为重复的天，比如一月初一，加上一月份的天数应该为二月初一
@@ -183,6 +187,7 @@ lunarInfo LunarDateInfo::getNextMonthLunarDay(QDate &nextDate, const lunarInfo &
  */
 LunarDateInfo::LunnarRRule LunarDateInfo::ParseRRule(const QString &rule)
 {
+    qCDebug(lunarDateLog) << "Parsing recurrence rule:" << rule;
     //无规则的不走这里判断所以此处默认rule不为空
     //局部变量初始化
     LunnarRRule options = RRule_None;
@@ -199,6 +204,7 @@ LunarDateInfo::LunnarRRule LunarDateInfo::ParseRRule(const QString &rule)
 
 bool LunarDateInfo::isWithinTimeFrame(const QDate &solarDate)
 {
+    qCDebug(lunarDateLog) << "Checking if date is within time frame:" << solarDate;
     QDate endDate = solarDate.addDays(m_dateInterval);
     //如果日程结束时间在查询起始时间之前，或者日程开始时间在查询截止时间之后，说明不在获取范围内
     return !(endDate < m_queryStartDate || solarDate > m_queryEndDate);
@@ -206,6 +212,7 @@ bool LunarDateInfo::isWithinTimeFrame(const QDate &solarDate)
 
 bool LunarDateInfo::addSolarMap(QMap<int, QDate> &solarMap, QDate &nextDate, int &count, const int addDays)
 {
+    qCDebug(lunarDateLog) << "Adding solar map - NextDate:" << nextDate << "Count:" << count << "AddDays:" << addDays;
     //如果获取到的时间在查询范围内
     if (isWithinTimeFrame(nextDate)) {
         solarMap[count] = nextDate;

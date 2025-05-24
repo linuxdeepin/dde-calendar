@@ -16,18 +16,27 @@
 #include <QDrag>
 #include <QMimeData>
 
+// Add logging category
+Q_LOGGING_CATEGORY(dayWindowLog, "calendar.widget.daywindow")
+
 DGUI_USE_NAMESPACE
 CDayWindow::CDayWindow(QWidget *parent)
     : CScheduleBaseWidget(parent)
 {
+    qCDebug(dayWindowLog) << "Creating CDayWindow instance";
     initUI();
     initConnection();
     setLunarVisible(m_calendarManager->getShowLunar());
 }
 
-CDayWindow::~CDayWindow() {}
+CDayWindow::~CDayWindow() 
+{
+    qCDebug(dayWindowLog) << "Destroying CDayWindow instance";
+}
+
 void CDayWindow::setTheMe(int type)
 {
+    qCDebug(dayWindowLog) << "Setting theme type:" << type;
     if (type == 0 || type == 1) {
         m_leftground->setBColor("#FFFFFF");
 
@@ -69,6 +78,7 @@ void CDayWindow::setTheMe(int type)
  */
 void CDayWindow::setTime(const QTime time)
 {
+    qCDebug(dayWindowLog) << "Setting time:" << time;
     if (time.isValid()) {
         //如果时间有效
         m_scheduleView->setTime(time);
@@ -86,6 +96,7 @@ void CDayWindow::setTime(const QTime time)
  */
 void CDayWindow::updateHeight()
 {
+    qCDebug(dayWindowLog) << "Updating height";
     m_scheduleView->updateHeight();
 }
 
@@ -95,6 +106,7 @@ void CDayWindow::updateHeight()
  */
 void CDayWindow::setCurrentDateTime(const QDateTime &currentDate)
 {
+    qCDebug(dayWindowLog) << "Setting current datetime:" << currentDate;
     //设置当前时间
     CScheduleBaseWidget::setCurrentDateTime(currentDate);
     //更新当前时间
@@ -106,6 +118,7 @@ void CDayWindow::setCurrentDateTime(const QDateTime &currentDate)
  */
 void CDayWindow::setYearData()
 {
+    qCDebug(dayWindowLog) << "Setting year data for date:" << getSelectDate();
     QLocale locale;
     //判断是否为中文环境
     if (getShowLunar()) {
@@ -123,7 +136,7 @@ void CDayWindow::setYearData()
  */
 void CDayWindow::updateShowDate(const bool isUpdateBar)
 {
-    Q_UNUSED(isUpdateBar)
+    qCDebug(dayWindowLog) << "Updating show date, isUpdateBar:" << isUpdateBar;
     setYearData();
     int w = m_scheduleView->width() - 72;
     m_scheduleView->setRange(w, 1032, getSelectDate(), getSelectDate());
@@ -143,6 +156,7 @@ void CDayWindow::updateShowDate(const bool isUpdateBar)
  */
 void CDayWindow::updateShowSchedule()
 {
+    qCDebug(dayWindowLog) << "Updating show schedule for date:" << getSelectDate();
     //获取一天的日程信息
     QMap<QDate, DSchedule::List> _weekScheduleInfo = gScheduleManager->getScheduleMap(getSelectDate(), getSelectDate());
     //设置显示日程信息
@@ -166,6 +180,7 @@ void CDayWindow::updateShowSchedule()
  */
 void CDayWindow::updateShowLunar()
 {
+    qCDebug(dayWindowLog) << "Updating show lunar info";
     CaHuangLiDayInfo _huangLiInfo = getLunarInfo();
     m_LunarLabel->setText(tr("Lunar") + _huangLiInfo.mLunarMonthName + _huangLiInfo.mLunarDayName);
     m_daymonthView->setHuangLiInfo(_huangLiInfo);
@@ -173,6 +188,7 @@ void CDayWindow::updateShowLunar()
 
 void CDayWindow::updateSearchScheduleInfo()
 {
+    qCDebug(dayWindowLog) << "Updating search schedule info";
     m_scheduleView->slotUpdateScene();
 }
 
@@ -182,6 +198,7 @@ void CDayWindow::updateSearchScheduleInfo()
  */
 void CDayWindow::setSelectSearchScheduleInfo(const DSchedule::Ptr &info)
 {
+    qCDebug(dayWindowLog) << "Setting select search schedule info:" << info->summary();
     if (info->allDay()) {
         setTime();
     } else {
@@ -196,17 +213,20 @@ void CDayWindow::setSelectSearchScheduleInfo(const DSchedule::Ptr &info)
  */
 void CDayWindow::deleteselectSchedule()
 {
+    qCDebug(dayWindowLog) << "Deleting selected schedule";
     m_scheduleView->slotDeleteitem();
 }
 
 void CDayWindow::setSearchWFlag(bool flag)
 {
+    qCDebug(dayWindowLog) << "Setting search flag:" << flag;
     m_searchFlag = flag;
     m_daymonthView->setSearchFlag(flag);
 }
 
 void CDayWindow::setLunarVisible(bool state)
 {
+    qCDebug(dayWindowLog) << "Setting lunar visible:" << state;
     m_LunarLabel->setVisible(state);
     m_SolarDay->setVisible(state);
     m_scheduleView->setLunarVisible(state);

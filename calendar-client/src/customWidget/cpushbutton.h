@@ -6,10 +6,12 @@
 #define CPUSHBUTTON_H
 
 #include <DIconButton>
-
+#include <QLoggingCategory>
 #include <QLabel>
 
 DWIDGET_USE_NAMESPACE
+
+Q_DECLARE_LOGGING_CATEGORY(cpushbuttonLog)
 
 class CPushButton : public QWidget
 {
