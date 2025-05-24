@@ -28,6 +28,8 @@
 
 using namespace KCalendarCore;
 
+Q_LOGGING_CATEGORY(personLog, "calendar.person")
+
 /**
   Private class that helps to provide binary compatibility between releases.
   @internal
@@ -49,6 +51,7 @@ Person::Person()
 Person::Person(const QString &name, const QString &email)
     : d(new KCalendarCore::Person::Private)
 {
+    qCDebug(personLog) << "Creating person with name:" << name << "email:" << email;
     d->mName = name;
     d->mEmail = email;
 }
@@ -132,16 +135,22 @@ void Person::setName(const QString &name)
 void Person::setEmail(const QString &email)
 {
     if (email.startsWith(QLatin1String("mailto:"), Qt::CaseInsensitive)) {
+        qCDebug(personLog) << "Removing 'mailto:' prefix from email:" << email;
         d->mEmail = email.mid(7);
     } else {
         d->mEmail = email;
     }
+    qCDebug(personLog) << "Email set to:" << d->mEmail;
 }
 
 bool Person::isValidEmail(const QString &email)
 {
     const int pos = email.lastIndexOf(QLatin1Char('@'));
-    return (pos > 0) && (email.lastIndexOf(QLatin1Char('.')) > pos) && ((email.length() - pos) > 4);
+    bool isValid = (pos > 0) && (email.lastIndexOf(QLatin1Char('.')) > pos) && ((email.length() - pos) > 4);
+    if (!isValid) {
+        qCWarning(personLog) << "Invalid email format:" << email;
+    }
+    return isValid;
 }
 
 uint KCalendarCore::qHash(const KCalendarCore::Person &key)
@@ -359,6 +368,12 @@ static bool extractEmailAddressAndName(const QString &aStr, QString &mail, QStri
 Person Person::fromFullName(const QString &fullName)
 {
     QString email, name;
-    extractEmailAddressAndName(fullName, email, name);
+    qCDebug(personLog) << "Parsing full name:" << fullName;
+    bool success = extractEmailAddressAndName(fullName, email, name);
+    if (!success) {
+        qCWarning(personLog) << "Failed to extract email and name from:" << fullName;
+    } else {
+        qCDebug(personLog) << "Successfully extracted - name:" << name << "email:" << email;
+    }
     return Person(name, email);
 }

@@ -53,10 +53,13 @@
 #include <QSet>
 #include <QSharedPointer>
 #include <QUrl>
+#include <QLoggingCategory>
 
 class QUrl;
 class QDate;
 class QTimeZone;
+
+Q_DECLARE_LOGGING_CATEGORY(incidenceLog)
 
 namespace KCalendarCore {
 /** List of dates */

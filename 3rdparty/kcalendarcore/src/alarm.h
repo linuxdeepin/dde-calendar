@@ -30,6 +30,9 @@
 #include <QStringList>
 #include <QVector>
 
+// Logging category for alarm related operations
+Q_DECLARE_LOGGING_CATEGORY(alarmLog)
+
 class QTimeZone;
 
 namespace KCalendarCore {

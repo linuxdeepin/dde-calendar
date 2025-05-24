@@ -24,24 +24,28 @@ Visitor::~Visitor()
 
 bool Visitor::visit(const Event::Ptr &event)
 {
+    qCDebug(moduleLog) << "Visiting Event object:" << event->uid();
     Q_UNUSED(event);
     return false;
 }
 
 bool Visitor::visit(const Todo::Ptr &todo)
 {
+    qCDebug(moduleLog) << "Visiting Todo object:" << todo->uid();
     Q_UNUSED(todo);
     return false;
 }
 
 bool Visitor::visit(const Journal::Ptr &journal)
 {
+    qCDebug(moduleLog) << "Visiting Journal object:" << journal->uid();
     Q_UNUSED(journal);
     return false;
 }
 
 bool Visitor::visit(const FreeBusy::Ptr &freebusy)
 {
+    qCDebug(moduleLog) << "Visiting FreeBusy object:" << freebusy->uid();
     Q_UNUSED(freebusy);
     return false;
 }

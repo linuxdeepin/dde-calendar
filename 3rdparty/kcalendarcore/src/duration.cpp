@@ -24,6 +24,8 @@
 
 using namespace KCalendarCore;
 
+Q_LOGGING_CATEGORY(lcDuration, "kcalendarcore.duration")
+
 /**
   Private class that helps to provide binary compatibility between releases.
   @internal
@@ -44,23 +46,28 @@ public:
 Duration::Duration()
     : d(new KCalendarCore::Duration::Private())
 {
+    qCDebug(lcDuration) << "Creating empty duration";
 }
 
 Duration::Duration(const QDateTime &start, const QDateTime &end)
     : d(new KCalendarCore::Duration::Private())
 {
+    qCDebug(lcDuration) << "Creating duration from" << start << "to" << end;
     if (start.time() == end.time() && start.timeZone() == end.timeZone()) {
         d->mDuration = start.daysTo(end);
         d->mDaily = true;
+        qCDebug(lcDuration) << "Daily duration:" << d->mDuration << "days";
     } else {
         d->mDuration = start.secsTo(end);
         d->mDaily = false;
+        qCDebug(lcDuration) << "Second duration:" << d->mDuration << "seconds";
     }
 }
 
 Duration::Duration(const QDateTime &start, const QDateTime &end, Type type)
     : d(new KCalendarCore::Duration::Private())
 {
+    qCDebug(lcDuration) << "Creating duration from" << start << "to" << end << "with type" << type;
     if (type == Days) {
         QDateTime endSt(end.toTimeZone(start.timeZone()));
         d->mDuration = start.daysTo(endSt);
@@ -69,17 +76,21 @@ Duration::Duration(const QDateTime &start, const QDateTime &end, Type type)
             if (start < endSt) {
                 if (endSt.time() < start.time()) {
                     --d->mDuration;
+                    qCDebug(lcDuration) << "Adjusted duration down by 1 day";
                 }
             } else {
                 if (endSt.time() > start.time()) {
                     ++d->mDuration;
+                    qCDebug(lcDuration) << "Adjusted duration up by 1 day";
                 }
             }
         }
         d->mDaily = true;
+        qCDebug(lcDuration) << "Final daily duration:" << d->mDuration << "days";
     } else {
         d->mDuration = start.secsTo(end);
         d->mDaily = false;
+        qCDebug(lcDuration) << "Final second duration:" << d->mDuration << "seconds";
     }
 }
 
@@ -213,4 +224,30 @@ QDataStream &KCalendarCore::operator>>(QDataStream &in, KCalendarCore::Duration 
 {
     in >> duration.d->mDuration >> duration.d->mDaily;
     return in;
+}
+
+void Duration::setDtStart(const QDateTime &dt)
+{
+    qCDebug(lcDuration) << "Setting start date/time to" << dt;
+    d->mMultiDayValid = false;
+    Incidence::setDtStart(dt);
+}
+
+void Duration::setDtEnd(const QDateTime &dtEnd)
+{
+    if (mReadOnly) {
+        qCWarning(lcDuration) << "Cannot set end date/time - duration is read-only";
+        return;
+    }
+
+    qCDebug(lcDuration) << "Setting end date/time to" << dtEnd;
+    if (d->mDtEnd != dtEnd || hasDuration() == dtEnd.isValid()) {
+        update();
+        d->mDtEnd = dtEnd;
+        d->mMultiDayValid = false;
+        setHasDuration(!dtEnd.isValid());
+        setFieldDirty(FieldDtEnd);
+        updated();
+        qCDebug(lcDuration) << "End date/time updated successfully";
+    }
 }

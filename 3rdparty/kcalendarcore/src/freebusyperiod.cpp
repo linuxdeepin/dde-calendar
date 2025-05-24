@@ -18,8 +18,11 @@
 */
 
 #include "freebusyperiod.h"
+#include <QDebug>
 
 using namespace KCalendarCore;
+
+Q_LOGGING_CATEGORY(freeBusyPeriodLog, "calendar.freebusy.period")
 
 //@cond PRIVATE
 class Q_DECL_HIDDEN KCalendarCore::FreeBusyPeriod::Private
@@ -40,34 +43,40 @@ FreeBusyPeriod::FreeBusyPeriod()
     : Period()
     , d(new KCalendarCore::FreeBusyPeriod::Private())
 {
+    qCDebug(freeBusyPeriodLog) << "Created empty FreeBusyPeriod";
 }
 
 FreeBusyPeriod::FreeBusyPeriod(const QDateTime &start, const QDateTime &end)
     : Period(start, end)
     , d(new KCalendarCore::FreeBusyPeriod::Private())
 {
+    qCDebug(freeBusyPeriodLog) << "Created FreeBusyPeriod from" << start << "to" << end;
 }
 
 FreeBusyPeriod::FreeBusyPeriod(const QDateTime &start, const Duration &duration)
     : Period(start, duration)
     , d(new KCalendarCore::FreeBusyPeriod::Private())
 {
+    qCDebug(freeBusyPeriodLog) << "Created FreeBusyPeriod from" << start << "with duration" << duration.asSeconds() << "seconds";
 }
 
 FreeBusyPeriod::FreeBusyPeriod(const FreeBusyPeriod &period)
     : Period(period)
     , d(new KCalendarCore::FreeBusyPeriod::Private(*period.d))
 {
+    qCDebug(freeBusyPeriodLog) << "Created FreeBusyPeriod by copying period from" << period.start() << "to" << period.end();
 }
 
 FreeBusyPeriod::FreeBusyPeriod(const Period &period)
     : Period(period)
     , d(new KCalendarCore::FreeBusyPeriod::Private())
 {
+    qCDebug(freeBusyPeriodLog) << "Created FreeBusyPeriod from Period" << period.start() << "to" << period.end();
 }
 
 FreeBusyPeriod::~FreeBusyPeriod()
 {
+    qCDebug(freeBusyPeriodLog) << "FreeBusyPeriod destroyed";
     delete d;
 }
 
@@ -75,11 +84,13 @@ FreeBusyPeriod &FreeBusyPeriod::operator=(const FreeBusyPeriod &other)
 {
     // check for self assignment
     if (&other == this) {
+        qCDebug(freeBusyPeriodLog) << "Self assignment detected";
         return *this;
     }
 
     Period::operator=(other);
     *d = *other.d;
+    qCDebug(freeBusyPeriodLog) << "FreeBusyPeriod assigned from" << other.start() << "to" << other.end();
     return *this;
 }
 
@@ -110,6 +121,7 @@ FreeBusyPeriod::FreeBusyType FreeBusyPeriod::type() const
 
 void FreeBusyPeriod::setType(FreeBusyPeriod::FreeBusyType type)
 {
+    qCDebug(freeBusyPeriodLog) << "Setting FreeBusyPeriod type to:" << type;
     d->mType = type;
 }
 
@@ -118,6 +130,7 @@ QDataStream &KCalendarCore::operator<<(QDataStream &stream, const KCalendarCore:
     KCalendarCore::Period periodParent = static_cast<KCalendarCore::Period>(period);
     stream << periodParent;
     stream << period.summary() << period.location() << static_cast<int>(period.type());
+    qCDebug(freeBusyPeriodLog) << "Serialized FreeBusyPeriod to stream";
     return stream;
 }
 
@@ -133,5 +146,6 @@ QDataStream &KCalendarCore::operator>>(QDataStream &stream, FreeBusyPeriod &peri
     period.setLocation(location);
     period.setSummary(summary);
     period.setType(static_cast<FreeBusyPeriod::FreeBusyType>(type));
+    qCDebug(freeBusyPeriodLog) << "Deserialized FreeBusyPeriod from stream with summary:" << summary;
     return stream;
 }

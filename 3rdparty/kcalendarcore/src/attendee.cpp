@@ -26,6 +26,9 @@
 
 using namespace KCalendarCore;
 
+// Define logging category
+Q_LOGGING_CATEGORY(attendeeLog, "calendar.attendee")
+
 /**
   Private class that helps to provide binary compatibility between releases.
   @internal
@@ -64,6 +67,8 @@ void KCalendarCore::Attendee::Private::setCuType(Attendee::CuType cuType)
 void KCalendarCore::Attendee::Private::setCuType(const QString &cuType)
 {
     const QString upper = cuType.toUpper();
+    qCDebug(attendeeLog) << "Setting attendee CuType to:" << upper;
+    
     if (upper == QLatin1String("INDIVIDUAL")) {
         setCuType(Attendee::Individual);
     } else if (upper == QLatin1String("GROUP")) {
@@ -76,6 +81,9 @@ void KCalendarCore::Attendee::Private::setCuType(const QString &cuType)
         setCuType(Attendee::Unknown);
         if (upper.startsWith(QLatin1String("X-")) || upper.startsWith(QLatin1String("IANA-"))) {
             sCuType = upper;
+            qCDebug(attendeeLog) << "Set custom CuType:" << upper;
+        } else {
+            qCWarning(attendeeLog) << "Invalid CuType:" << upper;
         }
     }
 }
@@ -166,8 +174,10 @@ QString Attendee::name() const
 
 void Attendee::setName(const QString &name)
 {
+    qCDebug(attendeeLog) << "Setting attendee name to:" << name;
     if (name.startsWith(QLatin1String("mailto:"), Qt::CaseInsensitive)) {
         d->mName = name.mid(7);
+        qCDebug(attendeeLog) << "Stripped 'mailto:' prefix, name set to:" << d->mName;
     } else {
         d->mName = name;
     }
@@ -185,8 +195,10 @@ QString Attendee::email() const
 
 void Attendee::setEmail(const QString &email)
 {
+    qCDebug(attendeeLog) << "Setting attendee email to:" << email;
     if (email.startsWith(QLatin1String("mailto:"), Qt::CaseInsensitive)) {
         d->mEmail = email.mid(7);
+        qCDebug(attendeeLog) << "Stripped 'mailto:' prefix, email set to:" << d->mEmail;
     } else {
         d->mEmail = email;
     }
@@ -194,6 +206,7 @@ void Attendee::setEmail(const QString &email)
 
 void Attendee::setRSVP(bool r)
 {
+    qCDebug(attendeeLog) << "Setting attendee RSVP to:" << r;
     d->mRSVP = r;
 }
 
@@ -204,6 +217,7 @@ bool Attendee::RSVP() const
 
 void Attendee::setStatus(Attendee::PartStat status)
 {
+    qCDebug(attendeeLog) << "Setting attendee status to:" << static_cast<int>(status);
     d->mStatus = status;
 }
 
@@ -234,6 +248,7 @@ QString Attendee::cuTypeStr() const
 
 void Attendee::setRole(Attendee::Role role)
 {
+    qCDebug(attendeeLog) << "Setting attendee role to:" << static_cast<int>(role);
     d->mRole = role;
 }
 
@@ -266,6 +281,7 @@ QString Attendee::uid() const
 
 void Attendee::setDelegate(const QString &delegate)
 {
+    qCDebug(attendeeLog) << "Setting attendee delegate to:" << delegate;
     d->mDelegate = delegate;
 }
 
@@ -276,6 +292,7 @@ QString Attendee::delegate() const
 
 void Attendee::setDelegator(const QString &delegator)
 {
+    qCDebug(attendeeLog) << "Setting attendee delegator to:" << delegator;
     d->mDelegator = delegator;
 }
 

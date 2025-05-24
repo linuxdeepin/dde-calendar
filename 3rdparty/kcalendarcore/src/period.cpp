@@ -25,6 +25,8 @@
 
 using namespace KCalendarCore;
 
+Q_LOGGING_CATEGORY(periodLog, "calendar.period")
+
 //@cond PRIVATE
 class Q_DECL_HIDDEN KCalendarCore::Period::Private
 {
@@ -56,11 +58,13 @@ Period::Period()
 Period::Period(const QDateTime &start, const QDateTime &end)
     : d(new KCalendarCore::Period::Private(start, end, false))
 {
+    qCDebug(periodLog) << "Creating period from" << start << "to" << end;
 }
 
 Period::Period(const QDateTime &start, const Duration &duration)
     : d(new KCalendarCore::Period::Private(start, duration.end(start), true))
 {
+    qCDebug(periodLog) << "Creating period from" << start << "with duration" << duration.asSeconds() << "seconds";
     d->mDailyDuration = duration.isDaily();
 }
 
@@ -128,10 +132,14 @@ bool Period::hasDuration() const
 void Period::shiftTimes(const QTimeZone &oldZone, const QTimeZone &newZone)
 {
     if (oldZone.isValid() && newZone.isValid() && oldZone != newZone) {
+        qCDebug(periodLog) << "Shifting times from" << oldZone.id() << "to" << newZone.id();
         d->mStart = d->mStart.toTimeZone(oldZone);
         d->mStart.setTimeZone(newZone);
         d->mEnd = d->mEnd.toTimeZone(oldZone);
         d->mEnd.setTimeZone(newZone);
+        qCDebug(periodLog) << "New period times:" << d->mStart << "to" << d->mEnd;
+    } else {
+        qCWarning(periodLog) << "Invalid timezone shift request - oldZone:" << oldZone.isValid() << "newZone:" << newZone.isValid();
     }
 }
 

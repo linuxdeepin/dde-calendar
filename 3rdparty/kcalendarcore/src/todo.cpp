@@ -71,6 +71,7 @@ void KCalendarCore::Todo::Private::init(const KCalendarCore::Todo::Private &othe
 Todo::Todo()
     : d(new KCalendarCore::Todo::Private)
 {
+    qCDebug(moduleLog) << "Creating new Todo object";
 }
 
 Todo::Todo(const Todo &other)
@@ -129,6 +130,7 @@ QByteArray Todo::typeStr() const
 }
 void Todo::setDtDue(const QDateTime &dtDue, bool first)
 {
+    qCDebug(moduleLog) << "Setting due date:" << dtDue << "first:" << first;
     startUpdates();
 
     // int diffsecs = d->mDtDue.secsTo(dtDue);
@@ -142,13 +144,14 @@ void Todo::setDtDue(const QDateTime &dtDue, bool first)
     }*/
 
     if (recurs() && !first) {
+        qCDebug(moduleLog) << "Setting recurrence date for recurring todo";
         d->mDtRecurrence = dtDue;
     } else {
         d->mDtDue = dtDue;
     }
 
     if (recurs() && dtDue.isValid() && (!dtStart().isValid() || dtDue < recurrence()->startDateTime())) {
-        qDebug() << "To-do recurrences are now calculated against DTSTART. Fixing legacy to-do.";
+        qCWarning(moduleLog) << "To-do recurrences are now calculated against DTSTART. Fixing legacy to-do.";
         setDtStart(dtDue);
     }
 
@@ -217,12 +220,14 @@ bool Todo::isCompleted() const
 
 void Todo::setCompleted(bool completed)
 {
+    qCDebug(moduleLog) << "Setting todo completion status to:" << completed;
     update();
     if (completed) {
         d->mPercentComplete = 100;
     } else {
         d->mPercentComplete = 0;
         if (hasCompletedDate()) {
+            qCDebug(moduleLog) << "Clearing completion date";
             d->mCompleted = QDateTime();
             setFieldDirty(FieldCompleted);
         }
@@ -230,7 +235,7 @@ void Todo::setCompleted(bool completed)
     setFieldDirty(FieldPercentComplete);
     updated();
 
-    setStatus(completed ? StatusCompleted : StatusNone); // Calls update()/updated().
+    setStatus(completed ? StatusCompleted : StatusNone);
 }
 
 QDateTime Todo::completed() const
@@ -273,9 +278,12 @@ int Todo::percentComplete() const
 
 void Todo::setPercentComplete(int percent)
 {
+    qCDebug(moduleLog) << "Setting todo percent complete to:" << percent;
     if (percent > 100) {
+        qCWarning(moduleLog) << "Percent complete > 100, capping at 100";
         percent = 100;
     } else if (percent < 0) {
+        qCWarning(moduleLog) << "Percent complete < 0, capping at 0"; 
         percent = 0;
     }
 
@@ -285,12 +293,14 @@ void Todo::setPercentComplete(int percent)
         setFieldDirty(FieldPercentComplete);
     }
     if (percent != 100 && d->mCompleted.isValid()) {
+        qCDebug(moduleLog) << "Clearing completion date due to percent < 100";
         d->mCompleted = QDateTime();
         setFieldDirty(FieldCompleted);
     }
     updated();
     if (percent != 100 && status() == Incidence::StatusCompleted) {
-        setStatus(Incidence::StatusNone); // Calls update()/updated().
+        qCDebug(moduleLog) << "Resetting status to None due to percent < 100";
+        setStatus(Incidence::StatusNone);
     }
 }
 
@@ -386,10 +396,15 @@ bool Todo::recursOn(const QDate &date, const QTimeZone &timeZone) const
 bool Todo::isOverdue() const
 {
     if (!dtDue().isValid()) {
-        return false; // if it's never due, it can't be overdue
+        qCDebug(moduleLog) << "Todo has no due date, cannot be overdue";
+        return false;
     }
 
     const bool inPast = allDay() ? dtDue().date() < QDate::currentDate() : dtDue() < QDateTime::currentDateTimeUtc();
+    
+    if (inPast && !isCompleted()) {
+        qCWarning(moduleLog) << "Todo is overdue - due date:" << dtDue();
+    }
 
     return inPast && !isCompleted();
 }

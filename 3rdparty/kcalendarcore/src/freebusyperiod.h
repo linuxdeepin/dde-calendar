@@ -20,8 +20,9 @@
 #define KCALCORE_FREEBUSYPERIOD_H
 
 #include "period.h"
+#include <QLoggingCategory>
 
-#include <QMetaType>
+Q_DECLARE_LOGGING_CATEGORY(freeBusyPeriodLog)
 
 namespace KCalendarCore {
 /**

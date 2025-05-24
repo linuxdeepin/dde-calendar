@@ -20,6 +20,8 @@
 
 using namespace KCalendarCore;
 
+Q_LOGGING_CATEGORY(recurrenceLog, "calendar.recurrence")
+
 //@cond PRIVATE
 class Q_DECL_HIDDEN KCalendarCore::Recurrence::Private
 {
@@ -424,6 +426,7 @@ QDate Recurrence::endDate() const
 
 void Recurrence::setEndDate(const QDate &date)
 {
+    qCDebug(recurrenceLog) << "Setting end date to" << date;
     QDateTime dt(date, d->mStartDateTime.time(), d->mStartDateTime.timeZone());
     if (allDay()) {
         dt.setTime(QTime(23, 59, 59));
@@ -434,10 +437,13 @@ void Recurrence::setEndDate(const QDate &date)
 void Recurrence::setEndDateTime(const QDateTime &dateTime)
 {
     if (d->mRecurReadOnly) {
+        qCWarning(recurrenceLog) << "Cannot set end datetime - recurrence is read only";
         return;
     }
+    qCDebug(recurrenceLog) << "Setting end datetime to" << dateTime;
     RecurrenceRule *rrule = defaultRRule(true);
     if (!rrule) {
+        qCWarning(recurrenceLog) << "Failed to get default recurrence rule";
         return;
     }
 
@@ -448,6 +454,7 @@ void Recurrence::setEndDateTime(const QDateTime &dateTime)
     // We can't use inequality check below, because endDt() also returns a valid date
     // for a duration (it is calculated from the duration).
     if (rrule->duration() > 0 && !dateTime.isValid()) {
+        qCDebug(recurrenceLog) << "Skipping end datetime set - rule has duration and datetime is invalid";
         return;
     }
 
@@ -478,11 +485,13 @@ int Recurrence::durationTo(const QDate &date) const
 void Recurrence::setDuration(int duration)
 {
     if (d->mRecurReadOnly) {
+        qCWarning(recurrenceLog) << "Cannot set duration - recurrence is read only";
         return;
     }
-
+    qCDebug(recurrenceLog) << "Setting duration to" << duration;
     RecurrenceRule *rrule = defaultRRule(true);
     if (!rrule) {
+        qCWarning(recurrenceLog) << "Failed to get default recurrence rule";
         return;
     }
 
@@ -531,8 +540,10 @@ void Recurrence::unsetRecurs()
 void Recurrence::clear()
 {
     if (d->mRecurReadOnly) {
+        qCWarning(recurrenceLog) << "Cannot clear recurrence - recurrence is read only";
         return;
     }
+    qCDebug(recurrenceLog) << "Clearing all recurrence rules and dates";
     qDeleteAll(d->mRRules);
     d->mRRules.clear();
     qDeleteAll(d->mExRules);
@@ -563,8 +574,10 @@ QDate Recurrence::startDate() const
 void Recurrence::setStartDateTime(const QDateTime &start, bool isAllDay)
 {
     if (d->mRecurReadOnly) {
+        qCWarning(recurrenceLog) << "Cannot set start datetime - recurrence is read only";
         return;
     }
+    qCDebug(recurrenceLog) << "Setting start datetime to" << start << "allDay:" << isAllDay;
     d->mStartDateTime = start;
     setAllDay(isAllDay); // set all RRULEs and EXRULEs
 

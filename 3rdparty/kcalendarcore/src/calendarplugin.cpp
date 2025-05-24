@@ -6,11 +6,15 @@
 */
 
 #include "calendarplugin.h"
+#include <QLoggingCategory>
+
+Q_LOGGING_CATEGORY(calendarPluginLog, "calendar.plugin")
 
 using namespace KCalendarCore;
 
 CalendarPlugin::CalendarPlugin(QObject *parent, const QVariantList &args)
     : QObject(parent)
 {
+    qCDebug(calendarPluginLog) << "Creating calendar plugin instance";
     Q_UNUSED(args)
 }

@@ -14,16 +14,21 @@
 */
 
 #include "freebusycache.h"
+#include <QDebug>
 
 using namespace KCalendarCore;
 
+Q_LOGGING_CATEGORY(freeBusyCacheLog, "calendar.freebusy.cache")
+
 FreeBusyCache::~FreeBusyCache()
 {
+    qCDebug(freeBusyCacheLog) << "FreeBusyCache destroyed";
 }
 
 void FreeBusyCache::virtual_hook(int id, void *data)
 {
     Q_UNUSED(id);
     Q_UNUSED(data);
+    qCWarning(freeBusyCacheLog) << "Unhandled virtual hook called with id:" << id;
     Q_ASSERT(false);
 }

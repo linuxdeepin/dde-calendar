@@ -10,6 +10,9 @@
 #include "schedulemessage.h"
 
 #include <QString>
+#include <QDebug>
+
+Q_LOGGING_CATEGORY(scheduleMessageLog, "calendar.schedulemessage")
 
 using namespace KCalendarCore;
 
@@ -35,6 +38,7 @@ public:
 ScheduleMessage::ScheduleMessage(const IncidenceBase::Ptr &incidence, iTIPMethod method, ScheduleMessage::Status status)
     : d(new KCalendarCore::ScheduleMessage::Private)
 {
+    qCDebug(scheduleMessageLog) << "Creating schedule message with method" << methodName(method) << "status" << status;
     d->mIncidence = incidence;
     d->mMethod = method;
     d->mStatus = status;
@@ -42,6 +46,7 @@ ScheduleMessage::ScheduleMessage(const IncidenceBase::Ptr &incidence, iTIPMethod
 
 ScheduleMessage::~ScheduleMessage()
 {
+    qCDebug(scheduleMessageLog) << "Destroying schedule message";
     delete d;
 }
 
@@ -57,26 +62,39 @@ iTIPMethod ScheduleMessage::method() const
 
 QString ScheduleMessage::methodName(iTIPMethod method)
 {
+    QString name;
     switch (method) {
     case iTIPPublish:
-        return QStringLiteral("Publish");
+        name = QStringLiteral("Publish");
+        break;
     case iTIPRequest:
-        return QStringLiteral("Request");
+        name = QStringLiteral("Request");
+        break;
     case iTIPRefresh:
-        return QStringLiteral("Refresh");
+        name = QStringLiteral("Refresh");
+        break;
     case iTIPCancel:
-        return QStringLiteral("Cancel");
+        name = QStringLiteral("Cancel");
+        break;
     case iTIPAdd:
-        return QStringLiteral("Add");
+        name = QStringLiteral("Add");
+        break;
     case iTIPReply:
-        return QStringLiteral("Reply");
+        name = QStringLiteral("Reply");
+        break;
     case iTIPCounter:
-        return QStringLiteral("Counter");
+        name = QStringLiteral("Counter");
+        break;
     case iTIPDeclineCounter:
-        return QStringLiteral("Decline Counter");
+        name = QStringLiteral("Decline Counter");
+        break;
     default:
-        return QStringLiteral("Unknown");
+        name = QStringLiteral("Unknown");
+        qCWarning(scheduleMessageLog) << "Unknown iTIP method:" << method;
+        break;
     }
+    qCDebug(scheduleMessageLog) << "iTIP method" << method << "mapped to name" << name;
+    return name;
 }
 
 ScheduleMessage::Status ScheduleMessage::status() const

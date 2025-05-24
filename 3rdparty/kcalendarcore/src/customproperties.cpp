@@ -17,9 +17,11 @@
 */
 
 #include "customproperties.h"
-
 #include <QDataStream>
 #include <QDebug>
+#include <QLoggingCategory>
+
+Q_LOGGING_CATEGORY(customPropertiesLog, "calendar.customproperties")
 
 using namespace KCalendarCore;
 
@@ -99,12 +101,15 @@ bool CustomProperties::operator==(const CustomProperties &other) const
 void CustomProperties::setCustomProperty(const QByteArray &app, const QByteArray &key, const QString &value)
 {
     if (value.isNull() || key.isEmpty() || app.isEmpty()) {
+        qCWarning(customPropertiesLog) << "Invalid custom property parameters - app:" << app << "key:" << key;
         return;
     }
     QByteArray property = "X-KDE-" + app + '-' + key;
     if (!checkName(property)) {
+        qCWarning(customPropertiesLog) << "Invalid custom property name:" << property;
         return;
     }
+    qCDebug(customPropertiesLog) << "Setting custom property" << property << "to:" << value;
     customPropertyUpdate();
 
     if (d->isVolatileProperty(QLatin1String(property))) {
@@ -118,7 +123,9 @@ void CustomProperties::setCustomProperty(const QByteArray &app, const QByteArray
 
 void CustomProperties::removeCustomProperty(const QByteArray &app, const QByteArray &key)
 {
-    removeNonKDECustomProperty(QByteArray("X-KDE-" + app + '-' + key));
+    QByteArray property = "X-KDE-" + app + '-' + key;
+    qCDebug(customPropertiesLog) << "Removing custom property:" << property;
+    removeNonKDECustomProperty(property);
 }
 
 QString CustomProperties::customProperty(const QByteArray &app, const QByteArray &key) const
@@ -138,8 +145,10 @@ QByteArray CustomProperties::customPropertyName(const QByteArray &app, const QBy
 void CustomProperties::setNonKDECustomProperty(const QByteArray &name, const QString &value, const QString &parameters)
 {
     if (value.isNull() || !checkName(name)) {
+        qCWarning(customPropertiesLog) << "Invalid non-KDE custom property parameters - name:" << name;
         return;
     }
+    qCDebug(customPropertiesLog) << "Setting non-KDE custom property" << name << "to:" << value << "with parameters:" << parameters;
     customPropertyUpdate();
     if (d->isVolatileProperty(QLatin1String(name))) {
         d->mVolatileProperties[name] = value;
@@ -149,8 +158,10 @@ void CustomProperties::setNonKDECustomProperty(const QByteArray &name, const QSt
     }
     customPropertyUpdated();
 }
+
 void CustomProperties::removeNonKDECustomProperty(const QByteArray &name)
 {
+    qCDebug(customPropertiesLog) << "Removing non-KDE custom property:" << name;
     if (d->mProperties.contains(name)) {
         customPropertyUpdate();
         d->mProperties.remove(name);
@@ -175,6 +186,7 @@ QString CustomProperties::nonKDECustomPropertyParameters(const QByteArray &name)
 
 void CustomProperties::setCustomProperties(const QMap<QByteArray, QString> &properties)
 {
+    qCDebug(customPropertiesLog) << "Setting multiple custom properties, count:" << properties.size();
     bool changed = false;
     for (QMap<QByteArray, QString>::ConstIterator it = properties.begin(); it != properties.end(); ++it) {
         // Validate the property name and convert any null string to empty string
@@ -188,6 +200,8 @@ void CustomProperties::setCustomProperties(const QMap<QByteArray, QString> &prop
                 customPropertyUpdate();
             }
             changed = true;
+        } else {
+            qCWarning(customPropertiesLog) << "Invalid property name in batch update:" << it.key();
         }
     }
     if (changed) {
@@ -216,7 +230,7 @@ void CustomProperties::customPropertyUpdated()
 bool checkName(const QByteArray &name)
 {
     // Check that the property name starts with 'X-' and contains
-    //检查属性名称是否以“X-”开头，并包含
+    //检查属性名称是否以"X-"开头，并包含
     // only the permitted characters
     //只有允许的字符
     const char *n = name.constData();

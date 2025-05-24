@@ -22,8 +22,9 @@
 #include "freebusyperiod.h"
 #include "incidencebase.h"
 #include "period.h"
+#include <QLoggingCategory>
 
-#include <QMetaType>
+Q_DECLARE_LOGGING_CATEGORY(freeBusyLog)
 
 namespace KCalendarCore {
 class FreeBusy;

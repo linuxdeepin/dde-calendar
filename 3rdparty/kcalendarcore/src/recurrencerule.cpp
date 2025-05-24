@@ -16,6 +16,8 @@
 #include <QVector>
 #include <QDebug>
 
+Q_LOGGING_CATEGORY(recurrenceRuleLog, "calendar.recurrencerule")
+
 using namespace KCalendarCore;
 
 // Maximum number of intervals to process
@@ -907,8 +909,10 @@ void RecurrenceRule::removeObserver(RuleObserver *observer)
 void RecurrenceRule::setRecurrenceType(PeriodType period)
 {
     if (isReadOnly()) {
+        qCWarning(recurrenceRuleLog) << "Cannot set recurrence type - rule is read only";
         return;
     }
+    qCDebug(recurrenceRuleLog) << "Setting recurrence type to" << period;
     d->mPeriod = period;
     d->setDirty();
 }
@@ -947,8 +951,10 @@ QDateTime RecurrenceRule::endDt(bool *result) const
 void RecurrenceRule::setEndDt(const QDateTime &dateTime)
 {
     if (isReadOnly()) {
+        qCWarning(recurrenceRuleLog) << "Cannot set end datetime - rule is read only";
         return;
     }
+    qCDebug(recurrenceRuleLog) << "Setting end datetime to" << dateTime;
     d->mDateEnd = dateTime;
     if (d->mDateEnd.isValid()) {
         d->mDuration = 0; // set to 0 because there is an end date/time
@@ -959,8 +965,10 @@ void RecurrenceRule::setEndDt(const QDateTime &dateTime)
 void RecurrenceRule::setDuration(int duration)
 {
     if (isReadOnly()) {
+        qCWarning(recurrenceRuleLog) << "Cannot set duration - rule is read only";
         return;
     }
+    qCDebug(recurrenceRuleLog) << "Setting duration to" << duration;
     d->mDuration = duration;
     d->setDirty();
 }
@@ -968,14 +976,21 @@ void RecurrenceRule::setDuration(int duration)
 void RecurrenceRule::setAllDay(bool allDay)
 {
     if (isReadOnly()) {
+        qCWarning(recurrenceRuleLog) << "Cannot set all day - rule is read only";
         return;
     }
+    qCDebug(recurrenceRuleLog) << "Setting all day to" << allDay;
     d->mAllDay = allDay;
     d->setDirty();
 }
 
 void RecurrenceRule::clear()
 {
+    if (isReadOnly()) {
+        qCWarning(recurrenceRuleLog) << "Cannot clear rule - rule is read only";
+        return;
+    }
+    qCDebug(recurrenceRuleLog) << "Clearing recurrence rule";
     d->clear();
 }
 
@@ -987,8 +1002,10 @@ void RecurrenceRule::setDirty()
 void RecurrenceRule::setStartDt(const QDateTime &start)
 {
     if (isReadOnly()) {
+        qCWarning(recurrenceRuleLog) << "Cannot set start datetime - rule is read only";
         return;
     }
+    qCDebug(recurrenceRuleLog) << "Setting start datetime to" << start;
     d->mDateStart = start;
     d->setDirty();
 }
@@ -996,8 +1013,10 @@ void RecurrenceRule::setStartDt(const QDateTime &start)
 void RecurrenceRule::setFrequency(int freq)
 {
     if (isReadOnly() || freq <= 0) {
+        qCWarning(recurrenceRuleLog) << "Cannot set frequency - rule is read only or invalid frequency" << freq;
         return;
     }
+    qCDebug(recurrenceRuleLog) << "Setting frequency to" << freq;
     d->mFrequency = freq;
     d->setDirty();
 }

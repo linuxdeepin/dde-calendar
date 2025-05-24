@@ -17,6 +17,9 @@
 #define KCALCORE_FILESTORAGE_H
 
 #include "calstorage.h"
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(fileStorageLog)
 
 namespace KCalendarCore {
 class CalFormat;

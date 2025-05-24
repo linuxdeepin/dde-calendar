@@ -82,6 +82,7 @@ VCalFormat::~VCalFormat()
 
 bool VCalFormat::load(const Calendar::Ptr &calendar, const QString &fileName)
 {
+    qCDebug(moduleLog) << "Loading vCalendar from file:" << fileName;
     d->mCalendar = calendar;
 
     clearException();
@@ -91,6 +92,7 @@ bool VCalFormat::load(const Calendar::Ptr &calendar, const QString &fileName)
     VObject *vcal = Parse_MIME_FromFileName(const_cast<char *>(QFile::encodeName(fileName).data()));
 
     if (!vcal) {
+        qCCritical(moduleLog) << "Failed to parse vCalendar file:" << fileName;
         setException(new Exception(Exception::CalVersionUnknown));
         return false;
     }
@@ -111,9 +113,9 @@ bool VCalFormat::load(const Calendar::Ptr &calendar, const QString &fileName)
 
 bool VCalFormat::save(const Calendar::Ptr &calendar, const QString &fileName)
 {
+    qCWarning(moduleLog) << "Saving VCAL is not supported";
     Q_UNUSED(calendar);
     Q_UNUSED(fileName);
-    qWarning() << "Saving VCAL is not supported";
     return false;
 }
 
@@ -152,11 +154,10 @@ bool VCalFormat::fromRawString(const Calendar::Ptr &calendar, const QByteArray &
 
 QString VCalFormat::toString(const Calendar::Ptr &calendar, const QString &notebook, bool deleted)
 {
+    qCWarning(moduleLog) << "Exporting to VCAL is not supported";
     Q_UNUSED(calendar);
     Q_UNUSED(notebook);
     Q_UNUSED(deleted);
-
-    qWarning() << "Exporting into VCAL is not supported";
     return {};
 }
 
@@ -507,7 +508,7 @@ Todo::Ptr VCalFormat::VTodoToEvent(VObject *vtodo)
                 anEvent->recurrence()->setEndDateTime(rEndDate);
             }
         } else {
-            qDebug() << "we don't understand this type of recurrence!";
+            qCWarning(moduleLog) << "Unknown recurrence type encountered";
         } // if known recurrence type
     } // repeats
 
@@ -764,7 +765,7 @@ Event::Ptr VCalFormat::VEventToEvent(VObject *vevent)
     ///////////////////////////////////////////////////////////////////////////
 
     // recurrence stuff
-    if ((vo = isAPropertyOf(vevent, VCRRuleProp)) != nullptr) {
+    if ((vo = isAPropertyOf(vevent, VCRuleProp)) != nullptr) {
         uint recurrenceType = Recurrence::rNone;
         int recurrenceTypeAbbrLen = 0;
 
@@ -958,7 +959,7 @@ Event::Ptr VCalFormat::VEventToEvent(VObject *vevent)
             // anEvent->recurrence()->dump();
 
         } else {
-            qDebug() << "we don't understand this type of recurrence!";
+            qCWarning(moduleLog) << "Unknown recurrence type encountered";
         } // if known recurrence type
     } // repeats
 
@@ -1363,6 +1364,8 @@ bool VCalFormat::parseTZOffsetISO8601(const QString &s, int &result)
 // that is used internally in the VCalFormat.
 void VCalFormat::populate(VObject *vcal, bool deleted, const QString &notebook)
 {
+    qCDebug(moduleLog) << "Populating calendar from vCalendar object, deleted:" << deleted << "notebook:" << notebook;
+    
     Q_UNUSED(notebook);
     // this function will populate the caldict dictionary and other event
     // lists. It turns vevents into Events and then inserts them.
@@ -1375,7 +1378,7 @@ void VCalFormat::populate(VObject *vcal, bool deleted, const QString &notebook)
 
     if ((curVO = isAPropertyOf(vcal, ICMethodProp)) != nullptr) {
         char *methodType = fakeCString(vObjectUStringZValue(curVO));
-        // qDebug() << "This calendar is an iTIP transaction of type '" << methodType << "'";
+        qCDebug(moduleLog) << "Calendar iTIP transaction type:" << methodType;
         deleteStr(methodType);
     }
 
@@ -1383,8 +1386,7 @@ void VCalFormat::populate(VObject *vcal, bool deleted, const QString &notebook)
     if ((curVO = isAPropertyOf(vcal, VCProdIdProp)) != nullptr) {
         char *s = fakeCString(vObjectUStringZValue(curVO));
         if (!s || strcmp(productId().toUtf8().constData(), s) != 0) {
-            qDebug() << "This vCalendar file was not created by KOrganizer or"
-                     << "any other product we support. Loading anyway...";
+            qCWarning(moduleLog) << "vCalendar file not created by KOrganizer or supported product. Loading anyway...";
         }
         setLoadedProductId(QString::fromUtf8(s));
         deleteStr(s);
@@ -1394,7 +1396,7 @@ void VCalFormat::populate(VObject *vcal, bool deleted, const QString &notebook)
     if ((curVO = isAPropertyOf(vcal, VCVersionProp)) != nullptr) {
         char *s = fakeCString(vObjectUStringZValue(curVO));
         if (!s || strcmp(_VCAL_VERSION, s) != 0) {
-            qDebug() << "This vCalendar file has version" << s << "We only support" << _VCAL_VERSION;
+            qCWarning(moduleLog) << "vCalendar file version" << s << "not supported. Only support version" << _VCAL_VERSION;
         }
         deleteStr(s);
     }
@@ -1469,19 +1471,19 @@ void VCalFormat::populate(VObject *vcal, bool deleted, const QString &notebook)
                         tz = QStringLiteral("%1;%2;true;%3").arg(strRealStartDate, QString::number(utcOffsetDst), realStartDate.toString());
                         tzList.append(tz);
                     } else {
-                        qDebug() << "unable to parse dst" << argl[1];
+                        qCWarning(moduleLog) << "unable to parse dst" << argl[1];
                     }
                 }
             }
             if (!QTimeZone::isTimeZoneIdAvailable(name.toLatin1())) {
-                qDebug() << "zone is not valid, parsing error" << tzList;
+                qCWarning(moduleLog) << "zone is not valid, parsing error" << tzList;
             } else {
                 previousZone = d->mCalendar->timeZone();
                 d->mCalendar->setTimeZoneId(name.toUtf8());
                 hasTimeZone = true;
             }
         } else {
-            qDebug() << "unable to parse tzoffset" << ts;
+            qCWarning(moduleLog) << "unable to parse tzoffset" << ts;
         }
     }
 
@@ -1500,7 +1502,7 @@ void VCalFormat::populate(VObject *vcal, bool deleted, const QString &notebook)
         // now, check to see that the object is an event or todo.
         if (strcmp(vObjectName(curVO), VCEventProp) == 0) {
             if (!isAPropertyOf(curVO, VCDTstartProp) && !isAPropertyOf(curVO, VCDTendProp)) {
-                qDebug() << "found a VEvent with no DTSTART and no DTEND! Skipping...";
+                qCWarning(moduleLog) << "found a VEvent with no DTSTART and no DTEND! Skipping...";
                 goto SKIP;
             }
 
@@ -1589,7 +1591,7 @@ void VCalFormat::populate(VObject *vcal, bool deleted, const QString &notebook)
             // do nothing daylights are already processed
             ;
         } else {
-            qDebug() << "Ignoring unknown vObject \"" << vObjectName(curVO) << "\"";
+            qCWarning(moduleLog) << "Ignoring unknown vObject \"" << vObjectName(curVO) << "\"";
         }
     SKIP:;
     } // while
@@ -1662,7 +1664,7 @@ Attendee::PartStat VCalFormat::readStatus(const char *s) const
     } else if (statStr == QLatin1String("DELEGATED")) {
         status = Attendee::Delegated;
     } else {
-        qDebug() << "error setting attendee mStatus, unknown mStatus!";
+        qCWarning(moduleLog) << "error setting attendee mStatus, unknown mStatus!";
         status = Attendee::NeedsAction;
     }
 

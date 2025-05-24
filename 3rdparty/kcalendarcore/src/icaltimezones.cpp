@@ -396,18 +396,20 @@ icaltimezone *ICalTimeZoneParser::icaltimezoneFromQTimeZone(const QTimeZone &tz,
 
 void ICalTimeZoneParser::parse(icalcomponent *calendar)
 {
+    qCDebug(icalLog) << "Parsing timezone components";
+    
     for (auto *c = icalcomponent_get_first_component(calendar, ICAL_VTIMEZONE_COMPONENT); c;
          c = icalcomponent_get_next_component(calendar, ICAL_VTIMEZONE_COMPONENT)) {
         auto icalZone = parseTimeZone(c);
-        // icalZone.dump();
         if (!icalZone.id.isEmpty()) {
             if (!icalZone.qZone.isValid()) {
                 icalZone.qZone = resolveICalTimeZone(icalZone);
             }
             if (!icalZone.qZone.isValid()) {
-                qWarning() << "Failed to map" << icalZone.id << "to a known IANA timezone";
+                qCWarning(icalLog) << "Failed to map" << icalZone.id << "to a known IANA timezone";
                 continue;
             }
+            qCDebug(icalLog) << "Successfully parsed timezone:" << icalZone.id;
             mCache->insert(icalZone.id, icalZone);
         }
     }

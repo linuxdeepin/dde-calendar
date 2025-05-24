@@ -17,6 +17,9 @@
 */
 
 #include "calstorage.h"
+#include <QLoggingCategory>
+
+Q_LOGGING_CATEGORY(calStorageLog, "calendar.storage")
 
 using namespace KCalendarCore;
 
@@ -39,14 +42,17 @@ public:
 CalStorage::CalStorage(const Calendar::Ptr &calendar)
     : d(new KCalendarCore::CalStorage::Private(calendar))
 {
+    qCDebug(calStorageLog) << "Creating CalStorage with calendar pointer";
 }
 
 CalStorage::~CalStorage()
 {
+    qCDebug(calStorageLog) << "Destroying CalStorage";
     delete d;
 }
 
 Calendar::Ptr CalStorage::calendar() const
 {
+    qCDebug(calStorageLog) << "Getting calendar pointer";
     return d->mCalendar;
 }

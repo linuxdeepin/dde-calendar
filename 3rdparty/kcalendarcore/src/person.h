@@ -22,8 +22,12 @@
 #include <QMetaType>
 #include <QSharedDataPointer>
 #include <QString>
+#include <QLoggingCategory>
 
 namespace KCalendarCore {
+
+Q_DECLARE_LOGGING_CATEGORY(personLog)
+
 /**
   @brief
   Represents a person, by name and email address.
