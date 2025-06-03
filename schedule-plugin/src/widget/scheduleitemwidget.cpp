@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "scheduleitemwidget.h"
+#include "commondef.h"
 
 #include "../globaldef.h"
 
@@ -36,6 +37,7 @@ void scheduleitemwidget::addscheduleitem()
 
     if (m_scheduleInfo.count() == 1) {
         //单个日程
+        qCDebug(CommonLogger) << "Creating single schedule item";
         scheduleitem *m_scheduleitem = new scheduleitem();
         connect(m_scheduleitem, &scheduleitem::signalItemPress, this, &scheduleitemwidget::signalItemPress);
         m_scheduleitem->setPositon(ItemWidget::ItemOnly);
@@ -44,6 +46,7 @@ void scheduleitemwidget::addscheduleitem()
         mainlayout->addWidget(m_scheduleitem);
     } else if (m_scheduleInfo.count() > 1) {
         //多个日程
+        qCDebug(CommonLogger) << "Creating multiple schedule items - Count:" << m_scheduleInfo.count();
         for (int i = 0; i < m_scheduleInfo.count(); i++) {
             scheduleitem *m_scheduleitem = new scheduleitem();
             connect(m_scheduleitem, &scheduleitem::signalItemPress, this, &scheduleitemwidget::signalItemPress);

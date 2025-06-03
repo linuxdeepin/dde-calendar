@@ -14,6 +14,7 @@
 #include "../data/clocaldata.h"
 #include "../state/confirwfeedbackstate.h"
 #include "dscheduledatamanager.h"
+#include "commondef.h"
 
 cancelScheduleTask::cancelScheduleTask()
     : scheduleBaseTask(new queryScheduleState(this))
@@ -38,20 +39,25 @@ void cancelScheduleTask::slotButtonCheckNum(int index, const QString &text, cons
     scheduleState *currentState = getCurrentState();
     if (buttonCount == 2) {
         if (index == 1) {
+            qCDebug(CommonLogger) << "Processing confirm schedule cancellation";
             reply = confirwScheduleHandle(currentState->getLocalData()->SelectInfo());
         }
     }
     if (buttonCount == 3) {
         if (index == 1) {
+            qCDebug(CommonLogger) << "Processing single instance repeat schedule cancellation";
             reply = repeatScheduleHandle(currentState->getLocalData()->SelectInfo(), false);
         }
         if (index == 2) {
+            qCDebug(CommonLogger) << "Processing all instances repeat schedule cancellation";
             reply = repeatScheduleHandle(currentState->getLocalData()->SelectInfo(), true);
         }
     }
     if (index == 0) {
+        qCDebug(CommonLogger) << "Cancelling operation, returning to initial state";
         reply = InitState(nullptr, true);
     } else {
+        qCDebug(CommonLogger) << "Updating state after button check";
         InitState(nullptr, true);
     }
     emit signaleSendMessage(reply);
@@ -71,7 +77,9 @@ Reply cancelScheduleTask::getFeedbackByQuerySchedule(const DSchedule::List &info
     Reply m_reply;
     scheduleState *nextState = nullptr;
     scheduleState *currentState = getCurrentState();
+
     if (infoVector.size() == 0) {
+        qCDebug(CommonLogger) << "No schedules found";
         QString m_TTSMessage;
         QString m_DisplyMessage;
         m_TTSMessage = NO_SCHEDULE_TTS;
@@ -79,8 +87,10 @@ Reply cancelScheduleTask::getFeedbackByQuerySchedule(const DSchedule::List &info
         REPLY_ONLY_TTS(m_reply, m_TTSMessage, m_DisplyMessage, true);
         currentState->setNextState(nextState);
     } else if (infoVector.size() == 1) {
+        qCDebug(CommonLogger) << "Single schedule found, getting reply";
         m_reply = getReplyBySelectSchedule(infoVector.at(0));
     } else {
+        qCDebug(CommonLogger) << "Multiple schedules found, creating inquiry state";
         nextState = new selectInquiryState(this);
         CLocalData::Ptr m_Data(new CLocalData());
         m_Data->setScheduleInfoVector(infoVector);
@@ -98,10 +108,13 @@ Reply cancelScheduleTask::getReplyBySelectSchedule(const DSchedule::Ptr &info)
     scheduleState *nextState = nullptr;
     scheduleState *currentState = getCurrentState();
     m_Data->setSelectInfo(info);
+
     if (info->getRRuleType() == DSchedule::RRuleType::RRule_None) {
+        qCDebug(CommonLogger) << "Creating confirm feedback state for non-recurring schedule";
         nextState = new confirwFeedbackState(this);
         m_reply = getConfirwScheduleReply(info);
     } else {
+        qCDebug(CommonLogger) << "Creating repeat feedback state for recurring schedule";
         nextState = new repeatfeedbackstate(this);
         m_reply = getRepeatReply(info);
     }
@@ -216,13 +229,16 @@ Reply cancelScheduleTask::getRepeatReply(const DSchedule::Ptr &info)
 void cancelScheduleTask::deleteRepeatSchedule(const DSchedule::Ptr &info, bool isOnlyOne)
 {
     if (isOnlyOne) {
+        qCDebug(CommonLogger) << "Deleting single instance of repeat schedule";
         DSchedule::Ptr newschedule = DScheduleDataManager::getInstance()->queryScheduleByScheduleID(info->uid());
         newschedule->recurrence()->addExDateTime(info->dtStart());
         DScheduleDataManager::getInstance()->updateSchedule(newschedule);
     } else {
         if (info->recurrenceId().isValid() == 0) {
+            qCDebug(CommonLogger) << "Deleting entire repeat schedule";
             DScheduleDataManager::getInstance()->deleteScheduleByScheduleID(info->uid());
         } else {
+            qCDebug(CommonLogger) << "Modifying repeat schedule end date";
             DSchedule::Ptr newschedule = DScheduleDataManager::getInstance()->queryScheduleByScheduleID(info->uid());
             newschedule->recurrence()->setDuration(0);
             newschedule->recurrence()->setEndDateTime(info->dtStart().addDays(-1));
