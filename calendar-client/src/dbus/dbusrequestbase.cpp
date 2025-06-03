@@ -11,11 +11,16 @@ DbusRequestBase::DbusRequestBase(const QString &path, const QString &interface, 
 {
     //关联后端dbus触发信号
     if (!QDBusConnection::sessionBus().connect(this->service(), this->path(), this->interface(), "", this, SLOT(slotDbusCall(QDBusMessage)))) {
-        qCWarning(ClientLogger) << "the connection was fail!" << "path: " << this->path() << "interface: " << this->interface();
+        qCWarning(ClientLogger) << "Failed to connect DBus signal:" 
+                                << "service:" << this->service()
+                                << "path:" << this->path()
+                                << "interface:" << this->interface();
     };
     //关联后端dbus触发信号
     if (!QDBusConnection::sessionBus().connect(this->service(), this->path(), "org.freedesktop.DBus.Properties", "", this, SLOT(slotDbusCall(QDBusMessage)))) {
-        qCWarning(ClientLogger) << "the connection was fail!" << "path: " << this->path() << "interface: " << this->interface();
+        qCWarning(ClientLogger) << "Failed to connect DBus Properties signal:"
+                                << "service:" << this->service()
+                                << "path:" << this->path();
     };
 }
 

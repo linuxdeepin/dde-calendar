@@ -9,7 +9,7 @@
 #include "constants.h"
 #include "cscheduleoperation.h"
 #include "lunarmanager.h"
-
+#include "commondef.h"
 
 #include <DPalette>
 #include <DFontSizeManager>
@@ -56,8 +56,10 @@ void CMyScheduleView::slotAutoFeed(const QFont &font)
 {
     Q_UNUSED(font)
     if (nullptr == m_timeLabel || nullptr == m_scheduleLabel) {
+        qCWarning(ClientLogger) << "Time label or schedule label is null";
         return;
     }
+
     QString strText = m_scheduleInfo->summary();
     QString resultStr = nullptr;
     QFont labelF;
@@ -131,10 +133,14 @@ void CMyScheduleView::slotAccountStateChange()
 {
     AccountItem::Ptr item = gAccountManager->getAccountItemByScheduleTypeId(m_scheduleInfo->scheduleTypeID());
     if (!item) {
+        qCWarning(ClientLogger) << "No account found for schedule type ID:" << m_scheduleInfo->scheduleTypeID();
         return;
     }
+    bool canSync = item->isCanSyncShedule();
+    qCDebug(ClientLogger) << "Account sync state changed for schedule:" << m_scheduleInfo->summary() 
+                          << "can sync:" << canSync;
     //根据可同步状态设置删除按钮是否可用
-    getButtons()[0]->setEnabled(item->isCanSyncShedule());
+    getButtons()[0]->setEnabled(canSync);
 }
 
 /**
@@ -199,14 +205,17 @@ void CMyScheduleView::updateDateTimeFormat()
                 beginName = getDataByFormat(m_scheduleInfo->dtStart().date(), m_dateFormat);
                 endName = getDataByFormat(m_scheduleInfo->dtEnd().date(), m_dateFormat);
                 showTime = beginName + " ~ " + endName;
+                qCDebug(ClientLogger) << "Multi-day all-day schedule:" << showTime;
             } else {
                 showTime = getDataByFormat(m_scheduleInfo->dtStart().date(), m_dateFormat);
+                qCDebug(ClientLogger) << "Single-day all-day schedule:" << showTime;
             }
 
         } else {
             beginName = getDataByFormat(m_scheduleInfo->dtStart().date(), m_dateFormat) + " " + m_scheduleInfo->dtStart().time().toString(m_timeFormat);
             endName = getDataByFormat(m_scheduleInfo->dtEnd().date(), m_dateFormat) + " " + m_scheduleInfo->dtEnd().time().toString(m_timeFormat);
             showTime = beginName + " ~ " + endName;
+            qCDebug(ClientLogger) << "Time-specific schedule:" << showTime;
         }
         m_timeLabel->setText(showTime);
     }
@@ -232,18 +241,26 @@ void CMyScheduleView::slotBtClick(int buttonIndex, const QString &buttonName)
 {
     Q_UNUSED(buttonName);
     if (buttonIndex == 0) {
+        qCDebug(ClientLogger) << "Delete button clicked for schedule:" << m_scheduleInfo->summary();
         //删除日程
         if (CScheduleOperation(m_scheduleInfo->scheduleTypeID(), this).deleteSchedule(m_scheduleInfo)) {
+            qCDebug(ClientLogger) << "Schedule deleted successfully";
             accept();
+        } else {
+            qCWarning(ClientLogger) << "Failed to delete schedule";
         }
         return;
     }
     if (buttonIndex == 1) {
+        qCDebug(ClientLogger) << "Edit button clicked for schedule:" << m_scheduleInfo->summary();
         //编辑日程
         CScheduleDlg dlg(0, this);
         dlg.setData(m_scheduleInfo);
         if (dlg.exec() == DDialog::Accepted) {
+            qCDebug(ClientLogger) << "Schedule edited successfully";
             accept();
+        } else {
+            qCDebug(ClientLogger) << "Schedule edit cancelled";
         }
         return;
     }
@@ -305,10 +322,12 @@ void CMyScheduleView::initUI()
 
     //如果为节假日日程
     if (CScheduleOperation::isFestival(m_scheduleInfo)) {
+        qCDebug(ClientLogger) << "Adding OK button for festival schedule";
         addButton(tr("OK", "button"), false, DDialog::ButtonNormal);
         QAbstractButton *button_ok = getButton(0);
         button_ok->setFixedSize(360, 36);
     } else {
+        qCDebug(ClientLogger) << "Adding Delete and Edit buttons for regular schedule";
         addButton(tr("Delete", "button"), false, DDialog::ButtonNormal);
         addButton(tr("Edit", "button"), false, DDialog::ButtonRecommend);
         for (int i = 0; i < buttonCount(); i++) {

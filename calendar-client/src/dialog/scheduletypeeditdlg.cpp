@@ -7,6 +7,7 @@
 #include "cscheduleoperation.h"
 #include "configsettings.h"
 #include "units.h"
+#include "commondef.h"
 
 #include <DFrame>
 #include <DTitlebar>
@@ -30,7 +31,6 @@ ScheduleTypeEditDlg::ScheduleTypeEditDlg(const DScheduleType &jobTypeOld, QWidge
     , m_jobTypeNew(jobTypeOld)
     , m_title(tr("Edit event type"))
     , m_dialogType(DialogEditType)
-
 {
     init();
 }
@@ -42,10 +42,12 @@ ScheduleTypeEditDlg::ScheduleTypeEditDlg(const DialogType &type, QWidget *parent
     case DialogImportType:
         m_title = tr("Import ICS file");
         m_dialogType = DialogImportType;
+        qCDebug(ClientLogger) << "Initializing import ICS dialog";
         break;
     default:
         m_title = tr("New event type");
         m_dialogType = DialogNewType;
+        qCDebug(ClientLogger) << "Initializing new schedule type dialog (default)";
         break;
     }
     init();
@@ -53,17 +55,20 @@ ScheduleTypeEditDlg::ScheduleTypeEditDlg(const DialogType &type, QWidget *parent
 
 DScheduleType ScheduleTypeEditDlg::newJsonType()
 {
+    qCDebug(ClientLogger) << "Getting new schedule type with color:" << m_colorSeletor->getSelectedColorInfo()->colorCode();
     m_jobTypeNew.setTypeColor(*m_colorSeletor->getSelectedColorInfo());
     return m_jobTypeNew;
 }
 
 void ScheduleTypeEditDlg::setAccount(AccountItem::Ptr account)
 {
+    qCDebug(ClientLogger) << "Setting account for schedule type dialog";
     m_colorSeletor->resetColorButton(account);
 
     //将用户上一次选择的自定义颜色添加进去
     QString colorName = CConfigSettings::getInstance()->value("LastUserColor", "").toString();
     if (!colorName.isEmpty()) {
+        qCDebug(ClientLogger) << "Restoring last user color:" << colorName;
         //设置颜色
         DTypeColor::Ptr typeColor;
         typeColor.reset(new DTypeColor);
@@ -74,11 +79,13 @@ void ScheduleTypeEditDlg::setAccount(AccountItem::Ptr account)
     }
     switch (m_dialogType) {
     case DialogEditType: {
+        qCDebug(ClientLogger) << "Setting color for edit mode:" << m_jobTypeOld.typeColor().colorCode();
         //编辑日程类型
         //设置颜色
         m_colorSeletor->setSelectedColor(m_jobTypeOld.typeColor());
     } break;
     default: {
+        qCDebug(ClientLogger) << "Setting color for new type mode";
         //默认新建日程，选中上一次选中的颜色
         //选中上一次选中的颜色
         QVariant colorId = CConfigSettings::getInstance()->value("LastSysColorTypeNo", -1);
@@ -86,14 +93,18 @@ void ScheduleTypeEditDlg::setAccount(AccountItem::Ptr account)
         if (colorId.type() == QVariant::Int) {
             //如果是int型表示为旧颜色编号
             colorNum = colorId.toInt();
+            qCDebug(ClientLogger) << "Using legacy color number:" << colorNum;
         } else {
             QString &&colorIdStr = colorId.toString();
             if(colorName.isEmpty() && colorIdStr.isEmpty()){
                 colorNum = -1;
+                qCDebug(ClientLogger) << "No previous color selected";
             } else if (!colorIdStr.isEmpty()) {
                 colorNum = GTypeColor.keys().indexOf(colorIdStr);
+                qCDebug(ClientLogger) << "Using system color:" << colorIdStr << "at index" << colorNum;
             } else {
                 colorNum = 9;
+                qCDebug(ClientLogger) << "Using default color index:" << colorNum;
             }
         }
         m_colorSeletor->setSelectedColorById(colorNum);
@@ -176,6 +187,7 @@ void ScheduleTypeEditDlg::slotEditTextChanged(const QString &strName)
     QString tStitlename = strName;
     //去除回车字符
     if (tStitlename.contains("\n")) {
+        qCDebug(ClientLogger) << "Removing newline from type name";
         //设置纯文本显示原始内容
         tStitlename.replace("\n", "");
         m_lineEdit->setText(tStitlename);
@@ -183,6 +195,7 @@ void ScheduleTypeEditDlg::slotEditTextChanged(const QString &strName)
     }
     //最大限制20个字符，超出后过滤掉
     if (tStitlename.length() > 20) {
+        qCDebug(ClientLogger) << "Type name exceeds 20 characters, truncating";
         m_lineEdit->setText(m_typeText);
         return;
     } else {
@@ -193,19 +206,21 @@ void ScheduleTypeEditDlg::slotEditTextChanged(const QString &strName)
     //1不能为空，2不能全空格，3不能重名
 
     if (m_lineEdit->text().isEmpty()) {
+        qCDebug(ClientLogger) << "Type name is empty, clearing alert";
         //名称为空，返回
         //内容清空时，消除警告色和提示信息
         m_lineEdit->setAlert(false);
         m_lineEdit->hideAlertMessage();
-
         return;
     }
     if (tStitlename.trimmed().isEmpty()) {
+        qCWarning(ClientLogger) << "Type name contains only whitespace";
         //名称为全空格，返回
         m_lineEdit->showAlertMessage(tr("The name can not only contain whitespaces"));
         m_lineEdit->setAlert(true);
         return;
     }
+    qCDebug(ClientLogger) << "Setting new type name:" << tStitlename;
     m_jobTypeNew.setDisplayName(tStitlename);
 
     m_lineEdit->setAlert(false);
@@ -269,3 +284,4 @@ void ScheduleTypeEditDlg::slotCheckConfirmBtn()
     }
     confirmBtn->setEnabled(true);
 }
+

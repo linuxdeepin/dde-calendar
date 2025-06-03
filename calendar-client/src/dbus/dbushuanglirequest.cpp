@@ -24,10 +24,11 @@ DbusHuangLiRequest::DbusHuangLiRequest(QObject *parent)
  */
 bool DbusHuangLiRequest::getFestivalMonth(quint32 year, quint32 month, FestivalInfo &festivalInfo)
 {
+    qCDebug(ClientLogger) << "Requesting festival info for" << year << "month" << month;
     QDBusPendingReply<QString> reply = call("getFestivalMonth", QVariant(year), QVariant(month));
 
     if (reply.isError()) {
-        qCWarning(ClientLogger) << reply.error().message();
+        qCWarning(ClientLogger) << "Failed to get festival month info:" << reply.error().message();
         return false;
     }
 
@@ -36,6 +37,7 @@ bool DbusHuangLiRequest::getFestivalMonth(quint32 year, quint32 month, FestivalI
     QJsonDocument jsonDoc(QJsonDocument::fromJson(json.toLocal8Bit(), &json_error));
 
     if (json_error.error != QJsonParseError::NoError) {
+        qCWarning(ClientLogger) << "Failed to parse festival month JSON:" << json_error.errorString();
         return false;
     }
     // 解析数据
@@ -74,11 +76,12 @@ bool DbusHuangLiRequest::getHuangLiDay(quint32 year,
                                        quint32 day,
                                        CaHuangLiDayInfo &info)
 {
+    qCDebug(ClientLogger) << "Requesting HuangLi day info for" << year << month << day;
     QDBusPendingReply<QString> reply =
         call("getHuangLiDay", QVariant(year), QVariant(month), QVariant(day));
 
     if (reply.isError()) {
-        qCWarning(ClientLogger) << reply.error().message();
+        qCWarning(ClientLogger) << "Failed to get HuangLi day info:" << reply.error().message();
         return false;
     }
 
@@ -100,10 +103,11 @@ bool DbusHuangLiRequest::getHuangLiMonth(quint32 year,
                                          bool fill,
                                          CaHuangLiMonthInfo &info)
 {
+    qCDebug(ClientLogger) << "Requesting HuangLi month info for" << year << month << "fill:" << fill;
     QDBusPendingReply<QString> reply =
         call("getHuangLiMonth", QVariant(year), QVariant(month), QVariant(fill));
     if (reply.isError()) {
-        qCWarning(ClientLogger) << reply.error().message();
+        qCWarning(ClientLogger) << "Failed to get HuangLi month info:" << reply.error().message();
         return false;
     }
     QString json = reply.argumentAt<0>();
@@ -122,6 +126,7 @@ bool DbusHuangLiRequest::getHuangLiMonth(quint32 year,
  */
 void DbusHuangLiRequest::getLunarInfoBySolar(quint32 year, quint32 month, quint32 day)
 {
+    qCDebug(ClientLogger) << "Requesting lunar info for solar date" << year << month << day;
     asyncCall("getLunarInfoBySolar", {QVariant(year), QVariant(month), QVariant(day)});
 }
 
@@ -134,14 +139,16 @@ void DbusHuangLiRequest::getLunarInfoBySolar(quint32 year, quint32 month, quint3
  */
 void DbusHuangLiRequest::getLunarMonthCalendar(quint32 year, quint32 month, bool fill)
 {
+    qCDebug(ClientLogger) << "Requesting lunar month calendar for" << year << month << "fill:" << fill;
     asyncCall("getLunarMonthCalendar", {QVariant(year), QVariant(month), QVariant(fill)});
 }
 
 void DbusHuangLiRequest::slotCallFinished(CDBusPendingCallWatcher *call)
 {
     if (call->isError()) {
-        qCWarning(ClientLogger) << call->reply().member() << call->error().message();
+        qCWarning(ClientLogger) << "Async call failed:" << call->reply().member() << call->error().message();
         return;
     }
+    qCDebug(ClientLogger) << "Async call completed successfully:" << call->reply().member();
     call->deleteLater();
 }

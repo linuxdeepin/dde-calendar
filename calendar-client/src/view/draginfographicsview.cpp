@@ -12,6 +12,7 @@
 #include "calendarglobalenv.h"
 #include "scheduledatamanage.h"
 #include "graphicsItem/scheduleitem.h"
+#include "commondef.h"
 
 #include <DMenu>
 
@@ -78,6 +79,7 @@ DragInfoGraphicsView::DragInfoGraphicsView(DWidget *parent)
     setFocusPolicy(Qt::StrongFocus);
     //日程类型发生改变，刷新界面
     connect(gAccountManager, &AccountManager::signalScheduleTypeUpdate, [&]() {
+        qCDebug(ClientLogger) << "Schedule type updated, refreshing view";
         this->viewport()->update();
     });
 }
@@ -139,7 +141,6 @@ void DragInfoGraphicsView::mouseReleaseEvent(QMouseEvent *event)
                     break;
                 }
                 default:
-
                     break;
                 }
             }
@@ -328,6 +329,9 @@ void DragInfoGraphicsView::contextMenuEvent(QContextMenuEvent *event)
     }
     if (infoitem != nullptr && infoitem->isVisible()) {
         DSchedule::Ptr schData = infoitem->getData();
+        qCDebug(ClientLogger) << "Context menu for schedule" 
+                             << "summary:" << schData->summary() 
+                             << "is festival:" << CScheduleOperation::isFestival(schData);
         //是否为节假日日程判断
         if (!CScheduleOperation::isFestival(schData)) {
             m_rightMenu->clear();
@@ -339,6 +343,7 @@ void DragInfoGraphicsView::contextMenuEvent(QContextMenuEvent *event)
             QAction *action_t = m_rightMenu->exec(QCursor::pos());
 
             if (action_t == m_editAction) {
+                qCDebug(ClientLogger) << "Editing schedule:" << schData->summary();
                 CScheduleDlg dlg(0, this);
                 dlg.setData(schData);
                 if (dlg.exec() == DDialog::Accepted) {
@@ -346,11 +351,13 @@ void DragInfoGraphicsView::contextMenuEvent(QContextMenuEvent *event)
                     emit sigStateChange(true);
                 }
             } else if (action_t == m_deleteAction) {
+                qCDebug(ClientLogger) << "Deleting schedule:" << schData->summary();
                 if(DeleteItem(schData)) {
                     emit sigStateChange(true);
                 }
             }
         } else {
+            qCDebug(ClientLogger) << "Showing festival schedule view";
             CMyScheduleView dlg(schData, this);
             dlg.exec();
         }
@@ -382,7 +389,6 @@ void DragInfoGraphicsView::dragEnterEvent(QDragEnterEvent *event)
     } else {
         event->ignore();
     }
-
 }
 
 void DragInfoGraphicsView::dragLeaveEvent(QDragLeaveEvent *event)
@@ -395,10 +401,11 @@ void DragInfoGraphicsView::dragLeaveEvent(QDragLeaveEvent *event)
 void DragInfoGraphicsView::dragMoveEvent(QDragMoveEvent *event)
 {
     QString str = event->mimeData()->data("Info");
-    QDateTime gDate =  getPosDate(event->pos());
+    QDateTime gDate = getPosDate(event->pos());
     QJsonParseError json_error;
     QJsonDocument jsonDoc(QJsonDocument::fromJson(str.toLocal8Bit(), &json_error));
     if (json_error.error != QJsonParseError::NoError) {
+        qCWarning(ClientLogger) << "Failed to parse schedule JSON:" << json_error.errorString();
         return;
     }
 
@@ -683,8 +690,13 @@ void DragInfoGraphicsView::stopTouchAnimation()
  */
 bool DragInfoGraphicsView::DeleteItem(const DSchedule::Ptr &info)
 {
-    if (info.isNull()) return false;
-    //删除日程
+    if (info.isNull()) {
+        qCWarning(ClientLogger) << "Cannot delete null schedule";
+        return false;
+    }
+    qCDebug(ClientLogger) << "Deleting schedule" 
+                         << "summary:" << info->summary() 
+                         << "type:" << info->scheduleTypeID();
     CScheduleOperation _scheduleOperation(info->scheduleTypeID(), this);
     return _scheduleOperation.deleteSchedule(info);
 }
@@ -711,6 +723,7 @@ void DragInfoGraphicsView::setDragPixmap(QDrag *drag, DragInfoItem *item)
 
 void DragInfoGraphicsView::slotCreate(const QDateTime &date)
 {
+    qCDebug(ClientLogger) << "Creating new schedule" << "date:" << date;
     CScheduleDlg dlg(1, this);
     QDateTime tDatatime;
     tDatatime.setDate(date.date());
@@ -724,8 +737,11 @@ void DragInfoGraphicsView::slotCreate(const QDateTime &date)
     dlg.setAllDay(true);
 
     if (dlg.exec() == DDialog::Accepted) {
+        qCDebug(ClientLogger) << "New schedule created successfully";
         emit sigStateChange(true);
         emit signalsUpdateSchedule();
+    } else {
+        qCDebug(ClientLogger) << "New schedule creation cancelled";
     }
 }
 
@@ -905,6 +921,9 @@ void DragInfoGraphicsView::slotContextMenu(CFocusItem *item)
     DragInfoItem *infoitem = dynamic_cast<DragInfoItem *>(item);
     if (infoitem != nullptr && infoitem->isVisible()) {
         DSchedule::Ptr schData = infoitem->getData();
+        qCDebug(ClientLogger) << "Context menu for focused schedule" 
+                             << "summary:" << schData->summary() 
+                             << "is festival:" << CScheduleOperation::isFestival(schData);
         //如果为节假日则退出不展示右击菜单
         if (CScheduleOperation::isFestival(schData))
             return;
@@ -922,6 +941,7 @@ void DragInfoGraphicsView::slotContextMenu(CFocusItem *item)
         QAction *action_t = m_rightMenu->exec(screen_pos);
 
         if (action_t == m_editAction) {
+            qCDebug(ClientLogger) << "Editing focused schedule:" << schData->summary();
             CScheduleDlg dlg(0, this);
             dlg.setData(schData);
             if (dlg.exec() == DDialog::Accepted) {
@@ -929,6 +949,7 @@ void DragInfoGraphicsView::slotContextMenu(CFocusItem *item)
                 emit sigStateChange(true);
             }
         } else if (action_t == m_deleteAction) {
+            qCDebug(ClientLogger) << "Deleting focused schedule:" << schData->summary();
             if(DeleteItem(schData)) {
                 emit sigStateChange(true);
             }

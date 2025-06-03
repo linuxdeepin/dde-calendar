@@ -43,6 +43,7 @@ CWeekWindow::~CWeekWindow()
  */
 void CWeekWindow::setLunarVisible(bool state)
 {
+    qCDebug(ClientLogger) << "Setting lunar visibility" << "visible:" << state;
     m_weekHeadView->setLunarVisible(state);
     m_YearLunarLabel->setVisible(state);
     m_scheduleView->setLunarVisible(state);
@@ -193,6 +194,7 @@ void CWeekWindow::initConnection()
  */
 void CWeekWindow::setTheMe(int type)
 {
+    qCDebug(ClientLogger) << "Setting week window theme" << "type:" << type;
     if (type == 0 || type == 1) {
 
         //返回今天按钮的背景色
@@ -241,6 +243,7 @@ void CWeekWindow::setTheMe(int type)
  */
 void CWeekWindow::setTime(QTime time)
 {
+    qCDebug(ClientLogger) << "Setting schedule view time" << "time:" << time.toString();
     m_scheduleView->setTime(time);
 }
 
@@ -250,6 +253,7 @@ void CWeekWindow::setTime(QTime time)
  */
 void CWeekWindow::setSearchWFlag(bool flag)
 {
+    qCDebug(ClientLogger) << "Setting search flag" << "flag:" << flag;
     m_searchFlag = flag;
     update();
 }
@@ -285,6 +289,7 @@ void CWeekWindow::setYearData()
  */
 void CWeekWindow::updateShowDate(const bool isUpdateBar)
 {
+    qCDebug(ClientLogger) << "Updating show date" << "update bar:" << isUpdateBar;
     setYearData();
     QVector<QDate> _weekShowData = m_calendarManager->getWeekDate(getSelectDate());
     m_weekHeadView->setWeekDay(_weekShowData, getSelectDate());
@@ -293,7 +298,9 @@ void CWeekWindow::updateShowDate(const bool isUpdateBar)
     m_stopDate = _weekShowData.last();
     //如果时间无效则打印log
     if (m_startDate.isNull() || m_stopDate.isNull()) {
-        qCWarning(ClientLogger) << "week start or stop date error";
+        qCWarning(ClientLogger) << "Week start or stop date error" 
+                               << "start date:" << m_startDate 
+                               << "stop date:" << m_stopDate;
     }
     //设置全天和非全天显示时间范围
     m_scheduleView->setRange(m_startDate, m_stopDate);
@@ -339,6 +346,9 @@ void CWeekWindow::updateSearchScheduleInfo()
  */
 void CWeekWindow::setSelectSearchScheduleInfo(const DSchedule::Ptr &info)
 {
+    qCDebug(ClientLogger) << "Setting selected search schedule" 
+                         << "summary:" << info->summary() 
+                         << "start:" << info->dtStart();
     m_scheduleView->setSelectSchedule(info);
 }
 
@@ -365,6 +375,7 @@ void CWeekWindow::slotIsDragging(bool &isDragging)
  */
 void CWeekWindow::slotViewSelectDate(const QDate &date)
 {
+    qCDebug(ClientLogger) << "View select date" << "date:" << date;
     if (setSelectDate(date)) {
         //更加界面
         updateData();
@@ -390,6 +401,7 @@ void CWeekWindow::slotprev()
     if (m_isSwitchStatus)
         return;
 
+    qCDebug(ClientLogger) << "Switching to previous week";
     m_isSwitchStatus = true;
 
     QTimer::singleShot(5, [this]() {
@@ -406,6 +418,7 @@ void CWeekWindow::slotnext()
     if (m_isSwitchStatus)
         return;
 
+    qCDebug(ClientLogger) << "Switching to next week";
     m_isSwitchStatus = true;
 
     QTimer::singleShot(5, [this]() {
@@ -419,6 +432,7 @@ void CWeekWindow::slotnext()
  */
 void CWeekWindow::slottoday()
 {
+    qCDebug(ClientLogger) << "Switching to today";
     switchDate(getCurrendDateTime().date());
 }
 
@@ -428,6 +442,7 @@ void CWeekWindow::slottoday()
  */
 void CWeekWindow::slotSelectDate(const QDate &date)
 {
+    qCDebug(ClientLogger) << "Selecting date" << "date:" << date;
     //更新选择时间
     setSelectDate(date);
     updateShowDate(false);
@@ -439,6 +454,7 @@ void CWeekWindow::slotSelectDate(const QDate &date)
  */
 void CWeekWindow::slotAngleDelta(int delta)
 {
+    qCDebug(ClientLogger) << "Handling angle delta" << "delta:" << delta;
     //如果为拖拽状态则退出
     if (!m_scheduleView->IsDragging()) {
         if (delta > 0) {
@@ -455,6 +471,7 @@ void CWeekWindow::slotAngleDelta(int delta)
  */
 void CWeekWindow::switchDate(const QDate &date)
 {
+    qCDebug(ClientLogger) << "Switching date" << "date:" << date;
     //隐藏提示框
     slotScheduleHide();
     //设置选择时间
@@ -468,6 +485,7 @@ void CWeekWindow::switchDate(const QDate &date)
  */
 void CWeekWindow::slotScheduleHide()
 {
+    qCDebug(ClientLogger) << "Hiding schedule popup";
     m_scheduleView->slotScheduleShow(false);
 }
 

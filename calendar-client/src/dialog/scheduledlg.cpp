@@ -42,6 +42,7 @@ CScheduleDlg::CScheduleDlg(int type, QWidget *parent, const bool isAllDay)
     slotAccountUpdate();
 
     if (type == 1) {
+        qCDebug(ClientLogger) << "Setting up new event dialog";
         m_titleLabel->setText(tr("New Event"));
         m_beginDateEdit->setDate(QDate::currentDate());
         int hours = QTime::currentTime().hour();
@@ -55,6 +56,7 @@ CScheduleDlg::CScheduleDlg(int type, QWidget *parent, const bool isAllDay)
         m_endDateEdit->setDate(QDate::currentDate());
         m_endTimeEdit->setTime(QTime(hours, minnutes).addSecs(3600));
     } else {
+        qCDebug(ClientLogger) << "Setting up edit event dialog";
         m_titleLabel->setText(tr("Edit Event"));
     }
     setFixedSize(dialog_width, 561);
@@ -72,27 +74,32 @@ CScheduleDlg::~CScheduleDlg()
 
 void CScheduleDlg::setData(const DSchedule::Ptr &info)
 {
+    qCDebug(ClientLogger) << "Setting schedule data for editing:" << (info ? info->summary() : "null");
     m_scheduleDataInfo = info;
 
     if (m_type == 1) {
         //如果为新建则设置为提示信息
         m_textEdit->setPlaceholderText(info->summary());
         m_accountItem = gAccountManager->getLocalAccountItem();
+        qCDebug(ClientLogger) << "New schedule mode, using local account";
     } else {
         //如果为编辑则显示
         m_textEdit->setPlainText(info->summary());
         //光标移动到文末
         m_textEdit->moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
         m_accountItem = gAccountManager->getAccountItemByScheduleTypeId(info->scheduleTypeID());
+        qCDebug(ClientLogger) << "Edit mode, using account type:" << info->scheduleTypeID();
         //编辑状态下帐户不可切换，因此将帐户选择框置灰
         m_accountComBox->setEnabled(false);
     }
 
     if (nullptr != m_accountItem) {
+        qCDebug(ClientLogger) << "Updating account and type selection for account:" << m_accountItem->getAccount()->accountName();
         //更新帐户下拉框和类型选择框
         m_accountComBox->setCurrentText(m_accountItem->getAccount()->accountName());
         m_typeComBox->updateJobType(m_accountItem);
     } else {
+        qCWarning(ClientLogger) << "No account found, falling back to local account";
         m_accountItem = gAccountManager->getLocalAccountItem();
     }
 
@@ -110,8 +117,10 @@ void CScheduleDlg::setData(const DSchedule::Ptr &info)
     m_currentDate = info->dtStart();
     m_EndDate = info->dtEnd();
     if (info->lunnar()) {
+        qCDebug(ClientLogger) << "Setting lunar calendar mode";
         m_lunarRadioBtn->click();
     } else {
+        qCDebug(ClientLogger) << "Setting solar calendar mode";
         m_solarRadioBtn->click();
     }
 
@@ -213,6 +222,7 @@ bool CScheduleDlg::selectScheduleType()
  */
 bool CScheduleDlg::createSchedule(const QString &scheduleTypeId)
 {
+    qCDebug(ClientLogger) << "Creating schedule with type:" << scheduleTypeId;
     //创建新的日程实例
     DSchedule::Ptr schedule;
     schedule.reset(new DSchedule());
@@ -233,10 +243,12 @@ bool CScheduleDlg::createSchedule(const QString &scheduleTypeId)
     case 1:
         //农历日程
         schedule->setLunnar(true);
+        qCDebug(ClientLogger) << "Setting lunar calendar schedule";
         break;
     default:
         //公历日程
         schedule->setLunnar(false);
+        qCDebug(ClientLogger) << "Setting solar calendar schedule";
         break;
     }
 
@@ -247,10 +259,12 @@ bool CScheduleDlg::createSchedule(const QString &scheduleTypeId)
     }
 
     if (schedule->summary().isEmpty()) {
+        qCWarning(ClientLogger) << "Schedule summary is empty";
         return false;
     }
 
     if (beginDateTime > endDateTime) {
+        qCWarning(ClientLogger) << "Invalid schedule time: end time" << endDateTime << "is before start time" << beginDateTime;
         DCalendarDDialog *prompt = new DCalendarDDialog(this);
         prompt->setIcon(QIcon(":/icons/deepin/builtin/icons/dde_calendar_warning.svg"));
         prompt->setMessage(tr("End time must be greater than start time"));
@@ -268,6 +282,7 @@ bool CScheduleDlg::createSchedule(const QString &scheduleTypeId)
         alarmType = static_cast<DSchedule::AlarmType>(m_rmindCombox->currentIndex());
     }
     schedule->setAlarmType(alarmType);
+    qCDebug(ClientLogger) << "Setting alarm type:" << alarmType;
 
     //设置重复规则
     DSchedule::RRuleType rruleType;
@@ -285,9 +300,12 @@ bool CScheduleDlg::createSchedule(const QString &scheduleTypeId)
         rruleType = static_cast<DSchedule::RRuleType>(m_beginrepeatCombox->currentIndex());
     }
     schedule->setRRuleType(rruleType);
+    qCDebug(ClientLogger) << "Setting repeat rule type:" << rruleType;
+
     if (m_endrepeatCombox->currentIndex() == 1) {
         //结束与次数
         if (m_endrepeattimes->text().isEmpty()) {
+            qCWarning(ClientLogger) << "Repeat count is empty";
             return false;
         }
         schedule->recurrence()->setDuration(m_endrepeattimes->text().toInt() + 1);
@@ -298,13 +316,16 @@ bool CScheduleDlg::createSchedule(const QString &scheduleTypeId)
         endrpeattime.setDate(m_endRepeatDate->date());
 
         if (beginDateTime > endrpeattime) {
+            qCWarning(ClientLogger) << "Invalid repeat end date:" << endrpeattime << "is before start time" << beginDateTime;
             return false;
         }
         schedule->recurrence()->setDuration(0);
         schedule->recurrence()->setEndDateTime(endrpeattime);
+        qCDebug(ClientLogger) << "Setting repeat end date:" << endrpeattime;
     } else {
         //永不
         schedule->recurrence()->setDuration(-1);
+        qCDebug(ClientLogger) << "Setting infinite repeat";
     }
 
     CScheduleOperation _scheduleOperation(m_accountItem, this);
@@ -313,10 +334,12 @@ bool CScheduleDlg::createSchedule(const QString &scheduleTypeId)
     if (m_type == 1) {
         //创建日程
         schedule->setUid("0");
+        qCDebug(ClientLogger) << "Creating new schedule:" << schedule->summary();
         res = _scheduleOperation.createSchedule(schedule);
 
     } else if (m_type == 0) {
         schedule->setUid(m_scheduleDataInfo->uid());
+        qCDebug(ClientLogger) << "Updating existing schedule:" << schedule->summary();
         //如果有重复规则则将原来数据的忽略列表添加进来
         if (schedule->recurs() && m_scheduleDataInfo->recurs()) {
             schedule->recurrence()->setExDateTimes(m_scheduleDataInfo->recurrence()->exDateTimes());
@@ -411,8 +434,10 @@ void CScheduleDlg::slotBtClick(int buttonIndex, const QString &buttonName)
             getButton(1)->setEnabled(!m_setAccept);
             //如果确定创建(修改)成功则关闭对话框
             if (m_setAccept) {
+                qCDebug(ClientLogger) << "Schedule saved successfully, closing dialog";
                 close();
             } else {
+                qCDebug(ClientLogger) << "Schedule save failed, keeping dialog open";
                 setFocusProxy(getButton(1));
             }
         }
@@ -590,11 +615,11 @@ void CScheduleDlg::signalLogout(DAccount::Type type)
 {
     if (DAccount::Account_UnionID == type && gUosAccountItem == m_accountItem) {
         if (m_type) {
-            //TODO：弹窗提示？
-            qCInfo(ClientLogger) << m_accountComBox->currentText() << "帐户已退出";
+            qCInfo(ClientLogger) << "Account" << m_accountComBox->currentText() << "logged out";
             getButtons()[1]->setEnabled(false);
             m_accountItem.reset(nullptr);
         } else {
+            qCDebug(ClientLogger) << "Switching to new event mode after account logout";
             m_accountComBox->setEnabled(true);
             m_type = 1;
             m_titleLabel->setText(tr("New Event"));
@@ -1407,7 +1432,7 @@ void CScheduleDlg::updateRepeatCombox(bool isLunar)
     }
     //重置重复规则
     m_beginrepeatCombox->setCurrentIndex(0);    //默认选择第一个
-    slotbRpeatactivated(0);     //更新“结束重复”状态
+    slotbRpeatactivated(0);     //更新"结束重复"状态
 }
 
 /**

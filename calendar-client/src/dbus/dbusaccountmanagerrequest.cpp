@@ -68,8 +68,10 @@ DCalendarGeneralSettings::GeneralSettingSource DbusAccountManagerRequest::getFir
     bool ok;
     auto val = interface.property("firstDayOfWeekSource").toInt(&ok);
     if (ok) {
+        qCDebug(ClientLogger) << "First day of week source:" << val;
         return static_cast<DCalendarGeneralSettings::GeneralSettingSource>(val);
     } else {
+        qCWarning(ClientLogger) << "Failed to get first day of week source, using default Source_Database";
         return DCalendarGeneralSettings::Source_Database;
     }
 }
@@ -88,8 +90,10 @@ DCalendarGeneralSettings::GeneralSettingSource DbusAccountManagerRequest::getTim
     bool ok;
     auto val = interface.property("timeFormatTypeSource").toInt(&ok);
     if (ok) {
+        qCDebug(ClientLogger) << "Time format type source:" << val;
         return static_cast<DCalendarGeneralSettings::GeneralSettingSource>(val);
     } else {
+        qCWarning(ClientLogger) << "Failed to get time format type source, using default Source_Database";
         return DCalendarGeneralSettings::Source_Database;
     }
 }
@@ -159,13 +163,14 @@ void DbusAccountManagerRequest::clientIsShow(bool isShow)
 
 bool DbusAccountManagerRequest::getIsSupportUid()
 {
+    qCDebug(ClientLogger) << "Checking UID support";
     QList<QVariant> argumentList;
-    //
-    QDBusMessage  msg = callWithArgumentList(QDBus::Block, QStringLiteral("isSupportUid"), argumentList);
+    QDBusMessage msg = callWithArgumentList(QDBus::Block, QStringLiteral("isSupportUid"), argumentList);
     if (msg.type() == QDBusMessage::ReplyMessage) {
         QVariant variant = msg.arguments().first();
         return variant.toBool();
     } else {
+        qCWarning(ClientLogger) << "Failed to get UID support status, defaulting to false";
         return false;
     }
 }
@@ -179,36 +184,41 @@ void DbusAccountManagerRequest::slotCallFinished(CDBusPendingCallWatcher *call)
 {
     int ret = 0;
     bool canCall = true;
+    
     //错误处理
     if (call->isError()) {
-        //打印错误信息
-        qCWarning(ClientLogger) << call->reply().member() << call->error().message();
+        qCWarning(ClientLogger) << "DBus call error - Method:" << call->reply().member() 
+                               << "Error:" << call->error().message();
         ret = 1;
     } else if (call->getmember() == "getAccountList") {
-        //"getAccountList"方法回调事件
+        qCDebug(ClientLogger) << "Processing getAccountList response";
         QDBusPendingReply<QString> reply = *call;
         //获取返回值
         QString str = reply.argumentAt<0>();
         DAccount::List accountList;
         //解析字符串
         if (DAccount::fromJsonListString(accountList, str)) {
+            qCDebug(ClientLogger) << "Successfully parsed" << accountList.size() << "accounts";
             emit signalGetAccountListFinish(accountList);
         } else {
-            qCWarning(ClientLogger) <<"AccountList Parsing failed!";
+            qCWarning(ClientLogger) << "Failed to parse account list JSON";
             ret = 2;
         }
     } else if (call->getmember() == "getCalendarGeneralSettings") {
+        qCDebug(ClientLogger) << "Processing getCalendarGeneralSettings response";
         QDBusPendingReply<QString> reply = *call;
         QString str = reply.argumentAt<0>();
         DCalendarGeneralSettings::Ptr ptr;
         ptr.reset(new DCalendarGeneralSettings());
         if (DCalendarGeneralSettings::fromJsonString(ptr, str)) {
+            qCDebug(ClientLogger) << "Successfully parsed calendar general settings";
             emit signalGetGeneralSettingsFinish(ptr);
         } else {
-            qCWarning(ClientLogger) <<"AccountList Parsing failed!";
+            qCWarning(ClientLogger) << "Failed to parse calendar general settings JSON";
             ret = 2;
         }
     } else if (call->getmember() == "setCalendarGeneralSettings") {
+        qCDebug(ClientLogger) << "Processing setCalendarGeneralSettings response";
         canCall = false;
         setCallbackFunc(call->getCallbackFunc());
         getCalendarGeneralSettings();
@@ -216,6 +226,7 @@ void DbusAccountManagerRequest::slotCallFinished(CDBusPendingCallWatcher *call)
 
     //执行回调函数
     if (canCall && call->getCallbackFunc() != nullptr) {
+        qCDebug(ClientLogger) << "Executing callback for method:" << call->getmember() << "with ret:" << ret;
         call->getCallbackFunc()({ret, ""});
     }
     //释放内存
@@ -224,9 +235,12 @@ void DbusAccountManagerRequest::slotCallFinished(CDBusPendingCallWatcher *call)
 
 void DbusAccountManagerRequest::slotDbusCall(const QDBusMessage &msg)
 {
+    qCDebug(ClientLogger) << "Received DBus signal:" << msg.member();
     if (msg.member() == "accountUpdate") {
+        qCDebug(ClientLogger) << "Account update signal received, refreshing account list";
         getAccountList();
-    }else if (msg.member() == "PropertiesChanged") {
+    } else if (msg.member() == "PropertiesChanged") {
+        qCDebug(ClientLogger) << "Properties changed signal received";
         QDBusPendingReply<QString, QVariantMap, QStringList> reply = msg;
         onPropertiesChanged(reply.argumentAt<0>(), reply.argumentAt<1>(), reply.argumentAt<2>());
     }
@@ -234,10 +248,13 @@ void DbusAccountManagerRequest::slotDbusCall(const QDBusMessage &msg)
 
 void DbusAccountManagerRequest::onPropertiesChanged(const QString &, const QVariantMap &changedProperties, const QStringList &)
 {
+    qCDebug(ClientLogger) << "Processing properties changed with" << changedProperties.size() << "changes";
     for (QVariantMap::const_iterator it = changedProperties.cbegin(), end = changedProperties.cend(); it != end; ++it) {
         if (it.key() == "firstDayOfWeek") {
+            qCDebug(ClientLogger) << "First day of week property changed, refreshing general settings";
             getCalendarGeneralSettings();
         } else if (it.key() == "timeFormatType") {
+            qCDebug(ClientLogger) << "Time format type property changed, refreshing general settings";
             getCalendarGeneralSettings();
         }
     }

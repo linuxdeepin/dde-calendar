@@ -77,6 +77,7 @@ void CGraphicsView::setMargins(int left, int top, int right, int bottom)
 
 void CGraphicsView::setTheMe(int type)
 {
+    qCDebug(ClientLogger) << "Setting theme" << "type:" << type;
     if (type == 0 || type == 1) {
         m_weekcolor = "#00429A";
         m_weekcolor.setAlphaF(0.05);
@@ -101,10 +102,12 @@ void CGraphicsView::setTheMe(int type)
 
 void CGraphicsView::slotCreate(const QDateTime &date)
 {
+    qCDebug(ClientLogger) << "Creating new schedule" << "date:" << date;
     CScheduleDlg dlg(1, this);
     dlg.setDate(date);
 
     if (dlg.exec() == DDialog::Accepted) {
+        qCDebug(ClientLogger) << "New schedule created successfully";
         emit signalsUpdateSchedule();
         slotStateChange(true);
     }
@@ -134,6 +137,7 @@ void CGraphicsView::setInfo(const DSchedule::List &info)
 
 void CGraphicsView::upDateInfoShow(const CGraphicsView::DragStatus &status, const DSchedule::Ptr &info)
 {
+    qCDebug(ClientLogger) << "Updating info show" << "status:" << status;
     clearSchedule();
     DSchedule::List vListData;
     vListData = m_scheduleInfo;
@@ -145,13 +149,17 @@ void CGraphicsView::upDateInfoShow(const CGraphicsView::DragStatus &status, cons
     case ChangeBegin:
     case ChangeEnd: {
         int index = vListData.indexOf(info);
-        if (index >= 0)
+        if (index >= 0) {
+            qCDebug(ClientLogger) << "Updating existing schedule at index" << index;
             vListData[index] = info;
+        }
     } break;
     case ChangeWhole:
+        qCDebug(ClientLogger) << "Adding whole schedule";
         vListData.append(info);
         break;
     case IsCreate:
+        qCDebug(ClientLogger) << "Adding new schedule";
         vListData.append(info);
         break;
     }
@@ -198,7 +206,7 @@ void CGraphicsView::upDateInfoShow(const CGraphicsView::DragStatus &status, cons
                             addScheduleItem(info.at(m).vData.at(n), currentDate, n + 1,
                                             tNum, 0, m_viewType, m_sMaxNum);
                         }
-                        //添加“...”item
+                        //添加"..."item
                         int index = tNum - 2;
                         if (index < 0) {
                             qCWarning(ClientLogger) << "week view create error,tNum -2 :" << index;
@@ -262,6 +270,11 @@ void CGraphicsView::MoveInfoProcess(DSchedule::Ptr &info, const QPointF &pos)
 
 void CGraphicsView::addScheduleItem(const DSchedule::Ptr &info, QDate date, int index, int totalNum, int type, int viewtype, int maxnum)
 {
+    qCDebug(ClientLogger) << "Adding schedule item" 
+                         << "date:" << date 
+                         << "index:" << index 
+                         << "total:" << totalNum 
+                         << "type:" << type;
     CScheduleItem *item = new CScheduleItem(
         m_coorManage->getDrawRegion(date, info->dtStart(),
                                     info->dtEnd(), index, totalNum, maxnum,
@@ -281,6 +294,9 @@ void CGraphicsView::addScheduleItem(const DSchedule::Ptr &info, QDate date, int 
  */
 void CGraphicsView::setSelectSearchSchedule(const DSchedule::Ptr &info)
 {
+    qCDebug(ClientLogger) << "Setting selected search schedule" 
+                         << "summary:" << info->summary() 
+                         << "start:" << info->dtStart();
     DragInfoGraphicsView::setSelectSearchSchedule(info);
     setTime(info->dtStart().time());
     for (int i = 0; i < m_vScheduleItem.size(); ++i) {
@@ -297,6 +313,7 @@ void CGraphicsView::setSelectSearchSchedule(const DSchedule::Ptr &info)
 
 void CGraphicsView::clearSchedule()
 {
+    qCDebug(ClientLogger) << "Clearing schedule items" << "count:" << m_vScheduleItem.size();
     for (int i = 0; i < m_vScheduleItem.size(); i++) {
         m_Scene->removeItem(m_vScheduleItem.at(i));
         delete m_vScheduleItem[i];
@@ -370,25 +387,29 @@ void CGraphicsView::mouseDoubleClickEvent(QMouseEvent *event)
     CScheduleItem *item = dynamic_cast<CScheduleItem *>(itemAt(event->pos()));
 
     if (item == nullptr) {
+        qCDebug(ClientLogger) << "Double click on empty area, creating new schedule";
         QPointF scenePoss = mapToScene(event->pos());
         CScheduleDlg dlg(1, this);
         QDateTime tDatatime = m_coorManage->getDate(scenePoss);
         dlg.setDate(tDatatime);
         if (dlg.exec() == DDialog::Accepted) {
+            qCDebug(ClientLogger) << "New schedule created from double click";
             emit signalsUpdateSchedule();
             emit sigStateChange(true);
         }
         return;
     }
     if (item->getType() == 1) {
+        qCDebug(ClientLogger) << "Double click on schedule date";
         emit signalsCurrentScheduleDate(item->getDate());
         return;
     }
     m_updateDflag = false;
-    //TODO: item->getData()中的scheduleType为""，不是正常日程，有崩溃风险，待分析解决
+    qCDebug(ClientLogger) << "Opening schedule view for editing";
     CMyScheduleView dlg(item->getData(), this);
     connect(&dlg, &CMyScheduleView::signalsEditorDelete, this, &CGraphicsView::slotDoubleEvent);
     if (dlg.exec() == DDialog::Accepted) {
+        qCDebug(ClientLogger) << "Schedule edited successfully";
         emit sigStateChange(true);
     }
     disconnect(&dlg, &CMyScheduleView::signalsEditorDelete, this, &CGraphicsView::slotDoubleEvent);
@@ -438,6 +459,7 @@ void CGraphicsView::slotUpdateScene()
 
 void CGraphicsView::slotStateChange(bool bState)
 {
+    qCDebug(ClientLogger) << "State change" << "state:" << bState;
     if(bState) {
         for (int i = 0; i < m_vScheduleItem.size(); i++) {
             m_vScheduleItem[i]->setVisible(false);

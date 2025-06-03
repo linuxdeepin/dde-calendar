@@ -95,7 +95,10 @@ void CWeekDayGraphicsview::setCurrentFocusItem(const QDate &focusDate, bool setI
         m_Scene->setCurrentFocusItem(m_backgroundItem.at(static_cast<int>(offset)));
         m_Scene->setIsShowCurrentItem(setItemFocus);
     } else {
-        qCWarning(ClientLogger) << "set CurrentFocusItem Error,offset:" << offset << ",focusDate:" << focusDate << ",firstDate:" << m_backgroundItem.first()->getDate();
+        qCWarning(ClientLogger) << "Failed to set current focus item" 
+                               << "offset:" << offset 
+                               << "focus date:" << focusDate 
+                               << "first item date:" << m_backgroundItem.first()->getDate();
     }
 }
 
@@ -158,7 +161,10 @@ void CWeekDayGraphicsview::setSceneCurrentItemFocus(const QDate &focusDate)
         m_Scene->setCurrentFocusItem(m_backgroundItem.at(offset));
         m_Scene->currentFocusItemUpdate();
     } else {
-        qCWarning(ClientLogger) << "Switching time range error! focusDate:" << focusDate << " first item date:" << m_backgroundItem.first()->getDate();
+        qCWarning(ClientLogger) << "Failed to set scene current item focus" 
+                               << "focus date:" << focusDate 
+                               << "first item date:" << m_backgroundItem.first()->getDate() 
+                               << "offset:" << offset;
     }
 }
 

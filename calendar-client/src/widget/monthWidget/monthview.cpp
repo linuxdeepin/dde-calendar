@@ -6,7 +6,7 @@
 #include "scheduledlg.h"
 #include "scheduledatamanage.h"
 #include "calendarglobalenv.h"
-
+#include "commondef.h"
 
 #include <DPalette>
 
@@ -65,6 +65,9 @@ void CMonthView::setSelectSchedule(const DSchedule::Ptr &scheduleInfo)
 void CMonthView::slotScheduleRemindWidget(const bool isShow, const DSchedule::Ptr &out)
 {
     if (isShow) {
+        qCDebug(ClientLogger) << "Showing schedule reminder widget" 
+                             << "summary:" << out->summary() 
+                             << "type:" << out->scheduleTypeID();
         //获取当前鼠标位置
         QVariant variant;
         CalendarGlobalEnv::getGlobalEnv()->getValueByKey(DDECalendar::CursorPointKey, variant);
@@ -75,7 +78,10 @@ void CMonthView::slotScheduleRemindWidget(const bool isShow, const DSchedule::Pt
         // 因为将提示框从window改为widget，要转换为相对窗口的坐标
         auto rPos = this->mapFromGlobal(remindPos);
         //根据提示框在屏幕的位置设置箭头方向
-        qWarning() <<  "window width: " << this->window()->width() << "pos:" << rPos << "remind width: " << m_remindWidget->width();
+        qCDebug(ClientLogger) << "Reminder widget position" 
+                             << "window width:" << this->window()->width() 
+                             << "relative pos:" << rPos 
+                             << "widget width:" << m_remindWidget->width();
         if (rPos.x() < this->window()->width() / 2) {
             // 显示到右侧
             m_remindWidget->setDirection(DArrowRectangle::ArrowLeft);
@@ -86,6 +92,7 @@ void CMonthView::slotScheduleRemindWidget(const bool isShow, const DSchedule::Pt
             m_remindWidget->show(rPos.x()-10, rPos.y());
         }
     } else {
+        qCDebug(ClientLogger) << "Hiding schedule reminder widget";
         m_remindWidget->hide();
     }
 }
@@ -118,6 +125,7 @@ bool CMonthView::event(QEvent *event)
  */
 void CMonthView::setFirstWeekday(Qt::DayOfWeek weekday)
 {
+    qCDebug(ClientLogger) << "Setting first weekday" << "weekday:" << weekday;
     m_firstWeekDay = weekday;
     m_weekIndicator->setFirstDay(weekday);
 }
@@ -128,6 +136,7 @@ void CMonthView::setFirstWeekday(Qt::DayOfWeek weekday)
  */
 void CMonthView::setShowDate(const QVector<QDate> &showDate)
 {
+    qCDebug(ClientLogger) << "Setting show dates" << "count:" << showDate.size();
     m_showDate = showDate;
     m_monthGraphicsView->setDate(m_showDate);
 }
@@ -138,6 +147,7 @@ void CMonthView::setShowDate(const QVector<QDate> &showDate)
  */
 void CMonthView::setHuangLiInfo(const QMap<QDate, CaHuangLiDayInfo> &huangLiInfo)
 {
+    qCDebug(ClientLogger) << "Setting HuangLi info" << "count:" << huangLiInfo.size();
     m_monthGraphicsView->setLunarInfo(huangLiInfo);
 }
 
@@ -147,6 +157,7 @@ void CMonthView::setHuangLiInfo(const QMap<QDate, CaHuangLiDayInfo> &huangLiInfo
  */
 void CMonthView::setFestival(const QMap<QDate, int> &festivalInfo)
 {
+    qCDebug(ClientLogger) << "Setting festival info" << "count:" << festivalInfo.size();
     m_monthGraphicsView->setFestival(festivalInfo);
 }
 
@@ -156,6 +167,7 @@ void CMonthView::setFestival(const QMap<QDate, int> &festivalInfo)
  */
 void CMonthView::setScheduleInfo(const QMap<QDate, DSchedule::List> &scheduleInfo)
 {
+    qCDebug(ClientLogger) << "Setting schedule info" << "date count:" << scheduleInfo.size();
     m_monthGraphicsView->setScheduleInfo(scheduleInfo);
 }
 
@@ -165,6 +177,7 @@ void CMonthView::setScheduleInfo(const QMap<QDate, DSchedule::List> &scheduleInf
  */
 void CMonthView::setSearchScheduleInfo(const DSchedule::List &searchScheduleInfo)
 {
+    qCDebug(ClientLogger) << "Setting search schedule info" << "count:" << searchScheduleInfo.size();
     m_monthGraphicsView->setSearchScheduleInfo(searchScheduleInfo);
 }
 
@@ -174,12 +187,14 @@ void CMonthView::setSearchScheduleInfo(const DSchedule::List &searchScheduleInfo
  */
 void CMonthView::setCurrentDate(const QDate &currentDate)
 {
+    qCDebug(ClientLogger) << "Setting current date" << "date:" << currentDate;
     m_weekIndicator->setCurrentDate(currentDate);
     m_monthGraphicsView->setCurrentDate(currentDate);
 }
 
 void CMonthView::setRemindWidgetTimeFormat(QString timeformat)
 {
+    qCDebug(ClientLogger) << "Setting reminder widget time format" << "format:" << timeformat;
     m_remindWidget->setTimeFormat(timeformat);
 }
 
@@ -188,16 +203,21 @@ void CMonthView::setRemindWidgetTimeFormat(QString timeformat)
  */
 void CMonthView::deleteSelectSchedule()
 {
+    qCDebug(ClientLogger) << "Deleting selected schedule";
     m_monthGraphicsView->slotDeleteItem();
 }
 
 void CMonthView::setLunarVisible(bool visible)
 {
+    qCDebug(ClientLogger) << "Setting lunar visibility" << "visible:" << visible;
     m_monthGraphicsView->setLunarVisible(visible);
 }
 
 DSchedule::Ptr CMonthView::getScheduleInfo(const QDate &beginDate, const QDate &endDate)
 {
+    qCDebug(ClientLogger) << "Getting schedule info" 
+                         << "begin date:" << beginDate 
+                         << "end date:" << endDate;
     DSchedule::Ptr info;
     info.reset(new DSchedule());
     if (beginDate.daysTo(endDate) > 0) {

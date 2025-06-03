@@ -5,6 +5,7 @@
 #include "cdateedit.h"
 #include "lunarcalendarwidget.h"
 #include "lunarmanager.h"
+#include "commondef.h"
 
 #include <QCoreApplication>
 #include <QLineEdit>
@@ -12,11 +13,13 @@
 
 CDateEdit::CDateEdit(QWidget *parent) : QDateEdit(parent)
 {
+    qCDebug(ClientLogger) << "Creating CDateEdit widget";
     connect(this, &QDateEdit::userDateChanged, this, &CDateEdit::slotDateEidtInfo);
     connect(lineEdit(), &QLineEdit::textChanged, this, &CDateEdit::slotRefreshLineEditTextFormat);
     connect(lineEdit(), &QLineEdit::cursorPositionChanged, this, &CDateEdit::slotCursorPositionChanged);
     connect(lineEdit(), &QLineEdit::selectionChanged, this, &CDateEdit::slotSelectionChanged);
     connect(lineEdit(), &QLineEdit::editingFinished, this, [this]() {
+        qCDebug(ClientLogger) << "Date edit finished, refreshing text format";
         //监听完成输入信号，触发文本改变事件，保证退出文本编辑的情况下依旧能刷新文本样式
         //当非手动输入时间时不会触发文本改变信号
         slotRefreshLineEditTextFormat(text());
@@ -33,6 +36,7 @@ void CDateEdit::setDate(QDate date)
 
 void CDateEdit::setDisplayFormat(QString format)
 {
+    qCDebug(ClientLogger) << "Setting display format to:" << format;
     this->m_format = format;
     //刷新时间显示信息
     slotDateEidtInfo(date());
@@ -45,6 +49,7 @@ QString CDateEdit::displayFormat()
 
 void CDateEdit::setLunarCalendarStatus(bool status)
 {
+    qCDebug(ClientLogger) << "Setting lunar calendar status to:" << status;
     m_showLunarCalendar = status;
     //刷新时间显示信息
     slotDateEidtInfo(date());
@@ -66,6 +71,7 @@ QTextCharFormat CDateEdit::getsetLunarTextFormat()
 
 void CDateEdit::setCalendarPopup(bool enable)
 {
+    qCDebug(ClientLogger) << "Setting calendar popup to:" << enable;
     QDateEdit::setCalendarPopup(enable);
     //更新日历显示类型
     updateCalendarWidget();
@@ -75,16 +81,18 @@ void CDateEdit::slotDateEidtInfo(const QDate &date)
 {
     QString format = m_format;
 
-
     if (m_showLunarCalendar) {
         if (!showGongli()) {
+            qCDebug(ClientLogger) << "Hiding Gregorian calendar due to space constraints";
             format = "yyyy/";
         }
         m_lunarName = getLunarName(date);
         format += m_lunarName;
+        qCDebug(ClientLogger) << "Updated lunar calendar format:" << format << "lunar name:" << m_lunarName;
     }
     //当当前显示格式与应该显示格式一致时不再重新设置
     if (QDateEdit::displayFormat() == format) {
+        qCDebug(ClientLogger) << "Display format unchanged, skipping update";
         return;
     }
 
@@ -94,8 +102,10 @@ void CDateEdit::slotDateEidtInfo(const QDate &date)
     QDateTimeEdit::Section section = QDateTimeEdit::NoSection;
     if (hasSelected) {
         section = currentSection();     //选择节
+        qCDebug(ClientLogger) << "Preserving selection state, section:" << section;
     } else {
         cPos = lineEdit()->cursorPosition();    //光标所在位置
+        qCDebug(ClientLogger) << "Preserving cursor position:" << cPos;
     }
 
     QDateEdit::setDisplayFormat(format);
@@ -129,12 +139,10 @@ void CDateEdit::slotRefreshLineEditTextFormat(const QString &text)
     }
 
     QList<QTextLayout::FormatRange> formats;
-
     QTextLayout::FormatRange fr_tracker;
 
     fr_tracker.start = text.size() - m_lunarName.size();    //样式起始位置
     fr_tracker.length = m_lunarName.size();                 //样式长度
-
     fr_tracker.format = m_lunarTextFormat;                  //样式
 
     formats.append(fr_tracker);

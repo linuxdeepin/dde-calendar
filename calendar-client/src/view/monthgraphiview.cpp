@@ -70,6 +70,7 @@ CMonthGraphicsview::~CMonthGraphicsview()
 
 void CMonthGraphicsview::setTheMe(int type)
 {
+    qCDebug(ClientLogger) << "Setting month view theme" << "type:" << type;
     m_themetype = type;
     DragInfoGraphicsView::setTheMe(type);
 
@@ -102,6 +103,7 @@ void CMonthGraphicsview::setDate(const QVector<QDate> &showDate)
 
 void CMonthGraphicsview::setFestival(const QMap<QDate, int> &festivalInfo)
 {
+    qCDebug(ClientLogger) << "Setting festival info" << "count:" << festivalInfo.size();
     m_festivallist = festivalInfo;
     for (int i = 0; i < m_DayItem.size(); ++i) {
         m_DayItem.at(i)->setStatus(static_cast<CMonthDayItem::HolidayStatus>(m_festivallist[m_DayItem.at(i)->getDate()]));
@@ -111,12 +113,14 @@ void CMonthGraphicsview::setFestival(const QMap<QDate, int> &festivalInfo)
 
 void CMonthGraphicsview::setLunarInfo(const QMap<QDate, CaHuangLiDayInfo> &lunarCache)
 {
+    qCDebug(ClientLogger) << "Setting lunar info" << "count:" << lunarCache.size();
     m_lunarCache = lunarCache;
     updateLunar();
 }
 
 void CMonthGraphicsview::setLunarVisible(bool visible)
 {
+    qCDebug(ClientLogger) << "Setting lunar visibility" << "visible:" << visible;
     CMonthDayItem::m_LunarVisible = visible;
 }
 
@@ -126,6 +130,7 @@ void CMonthGraphicsview::setLunarVisible(bool visible)
  */
 void CMonthGraphicsview::setScheduleInfo(const QMap<QDate, DSchedule::List> &info)
 {
+    qCDebug(ClientLogger) << "Setting schedule info" << "date count:" << info.size();
     m_schedulelistdata = info;
     updateInfo();
 }
@@ -136,6 +141,9 @@ void CMonthGraphicsview::setScheduleInfo(const QMap<QDate, DSchedule::List> &inf
  */
 void CMonthGraphicsview::setSelectSearchSchedule(const DSchedule::Ptr &scheduleInfo)
 {
+    qCDebug(ClientLogger) << "Setting selected search schedule" 
+                         << "summary:" << scheduleInfo->summary() 
+                         << "start:" << scheduleInfo->dtStart();
     DragInfoGraphicsView::setSelectSearchSchedule(scheduleInfo);
     //获取所有的日程item
     QVector<QGraphicsRectItem *> mScheduleShowBtn = m_MonthScheduleView->getScheduleShowItem();
@@ -146,6 +154,7 @@ void CMonthGraphicsview::setSelectSearchSchedule(const DSchedule::Ptr &scheduleI
         if (item == nullptr) continue;
 
         if (scheduleInfo == item->getData()) {
+            qCDebug(ClientLogger) << "Found matching schedule item at index" << i;
             item->setStartValue(0);
             item->setEndValue(4);
             item->startAnimation();
@@ -159,12 +168,16 @@ void CMonthGraphicsview::setSelectSearchSchedule(const DSchedule::Ptr &scheduleI
  */
 void CMonthGraphicsview::setSearchScheduleInfo(const DSchedule::List &searchScheduleInfo)
 {
+    qCDebug(ClientLogger) << "Setting search schedule info" << "count:" << searchScheduleInfo.size();
     DragInfoItem::setSearchScheduleInfo(searchScheduleInfo);
     this->scene()->update();
 }
 
 void CMonthGraphicsview::updateSize()
 {
+    qCDebug(ClientLogger) << "Updating month view size" 
+                         << "width:" << viewport()->rect().width() 
+                         << "height:" << viewport()->rect().height();
     //场景的大小和位置
     QRectF sceneRect(0, 0, viewport()->rect().width(), viewport()->rect().height());
     m_Scene->setSceneRect(sceneRect);
@@ -187,6 +200,7 @@ void CMonthGraphicsview::updateSize()
 
 void CMonthGraphicsview::updateLunar()
 {
+    qCDebug(ClientLogger) << "Updating lunar info";
     QDate date;
     CaHuangLiDayInfo info;
     QString lunarStr("");
@@ -222,6 +236,7 @@ void CMonthGraphicsview::updateLunar()
  */
 void CMonthGraphicsview::updateInfo()
 {
+    qCDebug(ClientLogger) << "Updating month view info";
     DragInfoGraphicsView::updateInfo();
     int h = m_MonthScheduleView->getScheduleHeight();
     m_MonthScheduleView->setallsize(this->viewport()->width(),
@@ -231,9 +246,11 @@ void CMonthGraphicsview::updateInfo()
 
     switch (m_DragStatus) {
     case IsCreate:
+        qCDebug(ClientLogger) << "Updating info for new schedule creation";
         upDateInfoShow(IsCreate, m_DragScheduleInfo);
         break;
     case ChangeWhole:
+        qCDebug(ClientLogger) << "Updating info for whole schedule change";
         upDateInfoShow(ChangeWhole, m_DragScheduleInfo);
         break;
     default:
@@ -364,6 +381,7 @@ void CMonthGraphicsview::mouseDoubleClickEvent(QMouseEvent *event)
     if (item != nullptr) {
         //双击切换视图
         if (item->getDate().year() > DDECalendar::QueryEarliestYear) {
+            qCDebug(ClientLogger) << "Double click on schedule num item, switching view to date:" << item->getDate();
             emit signalsViewSelectDate(item->getDate());
         }
         return;
@@ -372,9 +390,11 @@ void CMonthGraphicsview::mouseDoubleClickEvent(QMouseEvent *event)
     CMonthScheduleItem *infoitem = dynamic_cast<CMonthScheduleItem *>(listItem);
 
     if (infoitem != nullptr) {
+        qCDebug(ClientLogger) << "Double click on schedule item, opening edit dialog";
         CMyScheduleView dlg(infoitem->getData(), this);
         connect(&dlg, &CMyScheduleView::signalsEditorDelete, this, &CMonthGraphicsview::signalsUpdateSchedule);
         if (dlg.exec() == DDialog::Accepted) {
+            qCDebug(ClientLogger) << "Schedule edited successfully";
             emit sigStateChange(true);
         }
         return;
@@ -387,12 +407,14 @@ void CMonthGraphicsview::mouseDoubleClickEvent(QMouseEvent *event)
         if (point.y() < 38) {
             //双击切换视图
             if (Dayitem->getDate().year() > DDECalendar::QueryEarliestYear) {
+                qCDebug(ClientLogger) << "Double click on day item header, switching view to date:" << Dayitem->getDate();
                 emit signalsViewSelectDate(Dayitem->getDate());
             }
         } else {
             //双击新建日程
             if (Dayitem->getDate().year() >= DDECalendar::QueryEarliestYear) {
                 if (Dayitem->getDate().year() <= DDECalendar::QueryLatestYear) {
+                    qCDebug(ClientLogger) << "Double click on day item body, creating new schedule for date:" << Dayitem->getDate();
                     slotCreate(QDateTime(Dayitem->getDate(), QTime(0, 0, 0)));
                 }
             }
@@ -435,10 +457,16 @@ void CMonthGraphicsview::setSceneCurrentItemFocus(const QDate &focusDate)
 {
     int offset = static_cast<int>(m_DayItem.first()->getDate().daysTo(focusDate));
     if (offset >= 0 && offset < m_DayItem.size()) {
+        qCDebug(ClientLogger) << "Setting scene current item focus" 
+                             << "focus date:" << focusDate 
+                             << "offset:" << offset;
         m_Scene->setCurrentFocusItem(m_DayItem.at(offset));
         m_Scene->currentFocusItemUpdate();
     } else {
-        qCWarning(ClientLogger) << "Switching time range error! focusDate:" << focusDate << " first item date:" << m_DayItem.first()->getDate();
+        qCWarning(ClientLogger) << "Invalid focus date offset" 
+                               << "focus date:" << focusDate 
+                               << "first item date:" << m_DayItem.first()->getDate() 
+                               << "offset:" << offset;
     }
 }
 
@@ -530,6 +558,7 @@ QDateTime CMonthGraphicsview::getDragScheduleInfoEndTime(const QDateTime &moveDa
 
 void CMonthGraphicsview::slotCreate(const QDateTime &date)
 {
+    qCDebug(ClientLogger) << "Creating new schedule" << "date:" << date;
     CScheduleDlg dlg(1, this);
     QDateTime tDatatime;
     tDatatime.setDate(date.date());
@@ -544,6 +573,7 @@ void CMonthGraphicsview::slotCreate(const QDateTime &date)
     dlg.setAllDay(true);
 
     if (dlg.exec() == DDialog::Accepted) {
+        qCDebug(ClientLogger) << "New schedule created successfully";
         emit signalsUpdateSchedule();
         emit signalsScheduleUpdate(0);
         emit sigStateChange(true);

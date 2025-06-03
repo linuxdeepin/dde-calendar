@@ -73,6 +73,7 @@ void JobTypeListView::initUI()
         DScheduleType info = index.data(RoleJobTypeInfo).value<DScheduleType>();
         QString displayName = info.displayName();
         if (!displayName.isEmpty()) {
+            qCDebug(ClientLogger) << "Showing tooltip for schedule type:" << displayName;
             QToolTip::showText(QCursor::pos(), info.displayName());
         }
     });
@@ -169,8 +170,10 @@ bool JobTypeListView::viewportEvent(QEvent *event)
 bool JobTypeListView::updateJobType()
 {
     AccountItem::Ptr account = gAccountManager->getAccountItemByAccountId(m_account_id);
-    if (!account)
+    if (!account) {
+        qCWarning(ClientLogger) << "Failed to update job types: Account not found for id" << m_account_id;
         return false;
+    }
     m_modelJobType->removeRows(0, m_modelJobType->rowCount());//先清理
     m_iIndexCurrentHover = -1;
 
@@ -194,14 +197,17 @@ void JobTypeListView::updateCalendarAccount(QString account_id)
 void JobTypeListView::slotAddScheduleType()
 {
     AccountItem::Ptr account = gAccountManager->getAccountItemByAccountId(m_account_id);
-    if (!account)
+    if (!account) {
+        qCWarning(ClientLogger) << "Failed to add schedule type: Account not found for id" << m_account_id;
         return;
+    }
 
     ScheduleTypeEditDlg dialog(this);
     dialog.setAccount(account);
     //按保存键退出则触发保存数据
     if (QDialog::Accepted == dialog.exec()) {
         DScheduleType::Ptr type(new DScheduleType(dialog.newJsonType()));
+        qCDebug(ClientLogger) << "Creating new schedule type:" << type->displayName();
         account->createJobType(type);
     }
 }
@@ -210,19 +216,24 @@ void JobTypeListView::slotImportScheduleType()
 {
     // 选择ICS文件
     auto docDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
-    auto filename =
-        QFileDialog::getOpenFileName(nullptr, tr("import ICS file"), docDir, "ICS (*.ics)");
+    auto filename = QFileDialog::getOpenFileName(nullptr, tr("import ICS file"), docDir, "ICS (*.ics)");
     if (filename.isEmpty()) {
+        qCDebug(ClientLogger) << "Import cancelled: No file selected";
         return;
     }
+
     auto fileinfo = QFileInfo(filename);
     if (!fileinfo.exists()) {
-        qCWarning(ClientLogger) << "ics file not exists";
+        qCWarning(ClientLogger) << "Import failed: ICS file does not exist:" << filename;
         return;
     }
+
     AccountItem::Ptr account = gAccountManager->getAccountItemByAccountId(m_account_id);
-    if (!account)
+    if (!account) {
+        qCWarning(ClientLogger) << "Import failed: Account not found for id" << m_account_id;
         return;
+    }
+
     // 从ics文件读取内置的基本信息
     KCalendarCore::ICalFormat icalformat;
     QTimeZone timezone = QDateTime::currentDateTime().timeZone();
@@ -230,12 +241,15 @@ void JobTypeListView::slotImportScheduleType()
     auto typeID = cal->nonKDECustomProperty("X-DDE-CALENDAR-TYPE-ID");
     auto typeName = cal->nonKDECustomProperty("X-DDE-CALENDAR-TYPE-NAME");
     auto typeColor = cal->nonKDECustomProperty("X-DDE-CALENDAR-TYPE-COLOR");
+
     // 如果没有颜色，使用随机颜色
     if (typeColor.isEmpty()) {
         auto colorList = account->getColorTypeList();
         auto rindex = QRandomGenerator::global()->generate() % colorList.length();
         typeColor = colorList[rindex]->colorCode();
+        qCDebug(ClientLogger) << "Using random color for import:" << typeColor;
     }
+
     // 如果没有显示名，使用推荐的显示名
     if (typeName.isEmpty()) {
         typeName = cal->nonKDECustomProperty("X-WR-CALNAME");
@@ -246,6 +260,8 @@ void JobTypeListView::slotImportScheduleType()
     }
     // 仅使用前二十个字符，避免显示名过长
     typeName = typeName.mid(0, 20);
+    qCDebug(ClientLogger) << "Importing schedule type:" << typeName << "with color:" << typeColor;
+
     // 显示等待对话框
     m_waitDialog->show();
 
@@ -259,17 +275,21 @@ void JobTypeListView::slotImportScheduleType()
         if (msg.code == 0) {
             // 记录创建的类型ID
             typeID = msg.msg.toString();
+            qCDebug(ClientLogger) << "Created schedule type with ID:" << typeID;
+        } else {
+            qCWarning(ClientLogger) << "Failed to create schedule type:" << msg.msg.toString();
         }
         // 延迟一秒后再退出
         // 一来可以避免导入小文件时，进度过快引起等待对话框闪烁
         // 二来在导入大文件时堵塞dbus调用，延迟可以避免客户端在日程类型更新信号执行的槽函数被堵塞。
         QTimer::singleShot(1000, &event, &QEventLoop::quit);
     });
-    qCDebug(ClientLogger) << "import" << typeID << "from" << filename;
+
     // 等待日程创建完毕
     event.exec();
     // 导入ics文件
     if (!typeID.isEmpty()) {
+        qCDebug(ClientLogger) << "Importing ICS file:" << filename << "to type:" << typeID;
         account->importSchedule(filename, typeID, true, [&event](CallMessge msg) {
             event.quit();
         });
@@ -282,26 +302,36 @@ void JobTypeListView::slotImportScheduleType()
 void JobTypeListView::slotExportScheduleType()
 {
     DStandardItem *item = dynamic_cast<DStandardItem *>(m_modelJobType->item(m_iIndexCurrentHover));
-    if (!item)
-        return;
-    AccountItem::Ptr account = gAccountManager->getAccountItemByAccountId(m_account_id);
-    if (!account)
-        return;
-    auto docDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
-    DScheduleType info = item->data(RoleJobTypeInfo).value<DScheduleType>();
-    auto filename =
-        QFileDialog::getSaveFileName(nullptr, "", docDir + "/" + info.displayName() + ".ics", "");
-    if (filename.isEmpty()) {
+    if (!item) {
+        qCWarning(ClientLogger) << "Export failed: No item selected";
         return;
     }
+
+    AccountItem::Ptr account = gAccountManager->getAccountItemByAccountId(m_account_id);
+    if (!account) {
+        qCWarning(ClientLogger) << "Export failed: Account not found for id" << m_account_id;
+        return;
+    }
+
+    auto docDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+    DScheduleType info = item->data(RoleJobTypeInfo).value<DScheduleType>();
+    auto filename = QFileDialog::getSaveFileName(nullptr, "", docDir + "/" + info.displayName() + ".ics", "");
+    if (filename.isEmpty()) {
+        qCDebug(ClientLogger) << "Export cancelled: No file selected";
+        return;
+    }
+
     QEventLoop event;
     m_waitDialog->show();
     auto typeID = info.typeID();
-    qCDebug(ClientLogger) << "export" << typeID << "to" << filename;
+    qCDebug(ClientLogger) << "Exporting schedule type:" << info.displayName() << "to file:" << filename;
+    
     account->exportSchedule(filename, typeID, [&filename, &event](CallMessge msg) {
-        qCDebug(ClientLogger) << msg.code << msg.msg;
         if (msg.code == 0) {
+            qCDebug(ClientLogger) << "Export successful, showing file:" << filename;
             DDesktopServices::showFileItem(filename);
+        } else {
+            qCWarning(ClientLogger) << "Export failed:" << msg.msg.toString();
         }
         QTimer::singleShot(1000, &event, &QEventLoop::quit);
     });
@@ -359,24 +389,36 @@ int JobTypeListView::addJobTypeItem(const DScheduleType &info)
 
 void JobTypeListView::slotUpdateJobType()
 {
-    int index =  indexAt(mapFromGlobal(QCursor::pos())).row();
-    if (index < 0 || index >= m_modelJobType->rowCount())
+    int index = indexAt(mapFromGlobal(QCursor::pos())).row();
+    if (index < 0 || index >= m_modelJobType->rowCount()) {
+        qCWarning(ClientLogger) << "Update failed: Invalid index" << index;
         return;
+    }
+
     QStandardItem *item = m_modelJobType->item(index);
-    if (!item)
+    if (!item) {
+        qCWarning(ClientLogger) << "Update failed: Item not found at index" << index;
         return;
+    }
+
     AccountItem::Ptr account = gAccountManager->getAccountItemByAccountId(m_account_id);
-    if (!account)
+    if (!account) {
+        qCWarning(ClientLogger) << "Update failed: Account not found for id" << m_account_id;
         return;
+    }
 
     DScheduleType info = item->data(RoleJobTypeInfo).value<DScheduleType>();
+    qCDebug(ClientLogger) << "Updating schedule type:" << info.displayName();
+    
     ScheduleTypeEditDlg dialog(info, this);
     dialog.setAccount(account);
     if (QDialog::Accepted == dialog.exec()) {
         DScheduleType::Ptr type(new DScheduleType(dialog.newJsonType()));
         if (type->typeID() == "0") {
+            qCDebug(ClientLogger) << "Creating new schedule type from update";
             account->createJobType(type);
         } else {
+            qCDebug(ClientLogger) << "Updating existing schedule type:" << type->typeID();
             account->updateScheduleType(type);
         }
     }
@@ -385,18 +427,25 @@ void JobTypeListView::slotUpdateJobType()
 void JobTypeListView::slotDeleteJobType()
 {
     DStandardItem *item = dynamic_cast<DStandardItem *>(m_modelJobType->item(m_iIndexCurrentHover));
-    if (!item)
+    if (!item) {
+        qCWarning(ClientLogger) << "Delete failed: No item selected";
         return;
+    }
+
     AccountItem::Ptr account = gAccountManager->getAccountItemByAccountId(m_account_id);
-    if (!account)
+    if (!account) {
+        qCWarning(ClientLogger) << "Delete failed: Account not found for id" << m_account_id;
         return;
+    }
 
     DScheduleType info = item->data(RoleJobTypeInfo).value<DScheduleType>();
     //TODO:获取日程编号
     QString typeNo = info.typeID();
+    qCDebug(ClientLogger) << "Deleting schedule type:" << info.displayName() << "ID:" << typeNo;
 
     //TODO:根据帐户获取对应信息
     if (account->scheduleTypeIsUsed(typeNo)) {
+        qCDebug(ClientLogger) << "Schedule type is in use, showing confirmation dialog";
         CScheduleCtrlDlg msgBox(this);
         msgBox.setText(tr("You are deleting an event type."));
         msgBox.setInformativeText(tr("All events under this type will be deleted and cannot be recovered."));
@@ -404,12 +453,15 @@ void JobTypeListView::slotDeleteJobType()
         msgBox.addWaringButton(tr("Delete", "button"), true);
         msgBox.exec();
         if (msgBox.clickButton() == 0) {
+            qCDebug(ClientLogger) << "Delete cancelled by user";
             return;
         } else if (msgBox.clickButton() == 1) {
             //删除日程类型时，后端会删除关联日程
+            qCDebug(ClientLogger) << "User confirmed deletion of schedule type and associated events";
             account->deleteScheduleTypeByID(typeNo);
         }
     } else {
+        qCDebug(ClientLogger) << "Schedule type not in use, deleting directly";
         account->deleteScheduleTypeByID(typeNo);
     }
 }

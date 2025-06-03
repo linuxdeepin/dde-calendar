@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "animationstackedwidget.h"
+#include "commondef.h"
 
 #include <QPainter>
 #include <QMouseEvent>
@@ -27,6 +28,7 @@ AnimationStackedWidget::~AnimationStackedWidget()
  */
 void AnimationStackedWidget::setDuration(int duration)
 {
+    qCDebug(ClientLogger) << "Setting animation duration to:" << duration << "ms";
     m_Duration = duration;
     m_Animation->setEasingCurve(QEasingCurve::InOutQuad);
 }
@@ -55,12 +57,13 @@ void AnimationStackedWidget::mouseMoveEvent(QMouseEvent *e)
  */
 void AnimationStackedWidget::animationFinished()
 {
+    qCDebug(ClientLogger) << "Animation finished, current index:" << currentIndex() << "next index:" << m_NextIndex;
     m_IsAnimation = false;
     setCurrentIndex(m_NextIndex);
     //如果有需要跳转的页面
     if (m_nextGotoIndex != -1) {
+        qCDebug(ClientLogger) << "Queued animation to index:" << m_nextGotoIndex;
         setCurrent(m_nextGotoIndex);
-        //
         m_nextGotoIndex = -1;
         return;
     }
@@ -134,11 +137,13 @@ void AnimationStackedWidget::setCurrentWidget(int &index, int beginWidth)
 {
     //如果正在动画，那么退出
     if (m_IsAnimation) {
+        qCDebug(ClientLogger) << "Animation in progress, queueing index:" << index;
         m_nextGotoIndex = index;
         return;
     }
     //如果索引为当前索引则退出
     if (index == currentIndex()) {
+        qCDebug(ClientLogger) << "Requested index is same as current:" << index;
         emit signalIsFinished();
         return;
     }

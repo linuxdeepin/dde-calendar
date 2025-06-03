@@ -4,6 +4,7 @@
 
 #include "accountitem.h"
 #include "doanetworkdbus.h"
+#include "commondef.h"
 
 AccountItem::AccountItem(const DAccount::Ptr &account, QObject *parent)
     : QObject(parent)
@@ -51,6 +52,7 @@ QString AccountItem::getSyncMsg(DAccount::AccountSyncState code)
  */
 void AccountItem::resetAccount()
 {
+    qCDebug(ClientLogger) << "Resetting account data for:" << m_account->accountName();
     querySchedulesWithParameter(QDate().currentDate().year());
     m_dbusRequest->getScheduleTypeList();
     m_dbusRequest->getSysColors();
@@ -208,6 +210,7 @@ DAccount::SyncFreqType AccountItem::getSyncFreq()
  */
 void AccountItem::createJobType(const DScheduleType::Ptr &typeInfo, CallbackFunc callback)
 {
+    qCDebug(ClientLogger) << "Creating job type:" << typeInfo->displayName() << "for account:" << m_account->accountName();
     m_dbusRequest->setCallbackFunc(callback);
     typeInfo->setPrivilege(DScheduleType::User);
     m_dbusRequest->createScheduleType(typeInfo);
@@ -221,6 +224,7 @@ void AccountItem::createJobType(const DScheduleType::Ptr &typeInfo, CallbackFunc
  */
 void AccountItem::updateScheduleType(const DScheduleType::Ptr &typeInfo, CallbackFunc callback)
 {
+    qCDebug(ClientLogger) << "Updating schedule type:" << typeInfo->displayName() << "ID:" << typeInfo->typeID() << "for account:" << m_account->accountName();
     m_dbusRequest->setCallbackFunc(callback);
     m_dbusRequest->updateScheduleType(typeInfo);
 }
@@ -233,6 +237,7 @@ void AccountItem::updateScheduleType(const DScheduleType::Ptr &typeInfo, Callbac
  */
 void AccountItem::updateScheduleTypeShowState(const DScheduleType::Ptr &scheduleInfo, CallbackFunc callback)
 {
+    qCDebug(ClientLogger) << "Updating schedule type show state for type:" << scheduleInfo->displayName() << "ID:" << scheduleInfo->typeID();
     m_dbusRequest->setCallbackFunc(callback);
     m_dbusRequest->updateScheduleTypeShowState(scheduleInfo);
 }
@@ -245,6 +250,7 @@ void AccountItem::updateScheduleTypeShowState(const DScheduleType::Ptr &schedule
  */
 void AccountItem::deleteScheduleTypeByID(const QString &typeID, CallbackFunc callback)
 {
+    qCDebug(ClientLogger) << "Deleting schedule type ID:" << typeID << "for account:" << m_account->accountName();
     m_dbusRequest->setCallbackFunc(callback);
     m_dbusRequest->deleteScheduleTypeByID(typeID);
 }
@@ -268,6 +274,7 @@ bool AccountItem::scheduleTypeIsUsed(const QString &typeID)
  */
 void AccountItem::createSchedule(const DSchedule::Ptr &scheduleInfo, CallbackFunc callback)
 {
+    qCDebug(ClientLogger) << "Creating schedule:" << scheduleInfo->summary() << "for account:" << m_account->accountName();
     m_dbusRequest->setCallbackFunc(callback);
     m_dbusRequest->createSchedule(scheduleInfo);
 }
@@ -280,6 +287,7 @@ void AccountItem::createSchedule(const DSchedule::Ptr &scheduleInfo, CallbackFun
  */
 void AccountItem::updateSchedule(const DSchedule::Ptr &scheduleInfo, CallbackFunc callback)
 {
+    qCDebug(ClientLogger) << "Updating schedule:" << scheduleInfo->summary() << "ID:" << scheduleInfo->scheduleTypeID() << "for account:" << m_account->accountName();
     m_dbusRequest->setCallbackFunc(callback);
     m_dbusRequest->updateSchedule(scheduleInfo);
 }
@@ -297,6 +305,7 @@ DSchedule::Ptr AccountItem::getScheduleByScheduleID(const QString &scheduleID)
  */
 void AccountItem::deleteScheduleByID(const QString &scheduleID, CallbackFunc callback)
 {
+    qCDebug(ClientLogger) << "Deleting schedule ID:" << scheduleID << "for account:" << m_account->accountName();
     m_dbusRequest->setCallbackFunc(callback);
     m_dbusRequest->deleteScheduleByScheduleID(scheduleID);
 }
@@ -309,12 +318,14 @@ void AccountItem::deleteScheduleByID(const QString &scheduleID, CallbackFunc cal
  */
 void AccountItem::deleteSchedulesByTypeID(const QString &typeID, CallbackFunc callback)
 {
+    qCDebug(ClientLogger) << "Deleting all schedules for type ID:" << typeID << "for account:" << m_account->accountName();
     m_dbusRequest->setCallbackFunc(callback);
     m_dbusRequest->deleteSchedulesByScheduleTypeID(typeID);
 }
 
 void AccountItem::querySchedulesWithParameter(const int year, CallbackFunc callback)
 {
+    qCDebug(ClientLogger) << "Querying schedules for year:" << year << "account:" << m_account->accountName();
     QDateTime start(QDate(year, 1, 1), QTime(0, 0, 0));
     QDateTime end(QDate(year, 12, 31), QTime(23, 59, 59));
     querySchedulesWithParameter(start, end, callback);
@@ -322,11 +333,13 @@ void AccountItem::querySchedulesWithParameter(const int year, CallbackFunc callb
 
 void AccountItem::querySchedulesWithParameter(const QDateTime &start, const QDateTime &end, CallbackFunc callback)
 {
+    qCDebug(ClientLogger) << "Querying schedules from" << start.toString() << "to" << end.toString() << "for account:" << m_account->accountName();
     querySchedulesWithParameter("", start, end, callback);
 }
 
 void AccountItem::querySchedulesWithParameter(const QString &key, const QDateTime &start, const QDateTime &end, CallbackFunc callback)
 {
+    qCDebug(ClientLogger) << "Querying schedules with key:" << key << "from" << start.toString() << "to" << end.toString() << "for account:" << m_account->accountName();
     DScheduleQueryPar::Ptr ptr;
     ptr.reset(new DScheduleQueryPar);
     ptr->setKey(key);
@@ -343,6 +356,10 @@ void AccountItem::querySchedulesWithParameter(const QString &key, const QDateTim
  */
 void AccountItem::querySchedulesWithParameter(const DScheduleQueryPar::Ptr &params, CallbackFunc callback)
 {
+    qCDebug(ClientLogger) << "Querying schedules with parameters for account:" << m_account->accountName()
+                          << "key:" << params->key()
+                          << "start:" << params->dtStart().toString()
+                          << "end:" << params->dtEnd().toString();
     m_preQuery = params;
     m_dbusRequest->setCallbackFunc(callback);
     m_dbusRequest->querySchedulesWithParameter(params);
@@ -382,6 +399,7 @@ bool AccountItem::querySchedulesByExternal(const QString &key, const QDateTime &
  */
 void AccountItem::slotGetAccountInfoFinish(DAccount::Ptr account)
 {
+    qCDebug(ClientLogger) << "Received account info update for:" << account->accountName() << "type:" << account->accountType();
     m_account = account;
     emit signalAccountDataUpdate();
 }
@@ -393,6 +411,7 @@ void AccountItem::slotGetAccountInfoFinish(DAccount::Ptr account)
  */
 void AccountItem::slotGetScheduleTypeListFinish(DScheduleType::List scheduleTypeList)
 {
+    qCDebug(ClientLogger) << "Received" << scheduleTypeList.size() << "schedule types for account:" << m_account->accountName();
     m_scheduleTypeList = scheduleTypeList;
     emit signalScheduleTypeUpdate();
 }
@@ -430,6 +449,7 @@ void AccountItem::slotGetSysColorsFinish(DTypeColor::List typeColorList)
 
 void AccountItem::slotAccountStateChange(DAccount::AccountStates state)
 {
+    qCDebug(ClientLogger) << "Account state changed to" << state << "for account:" << m_account->accountName();
     getAccount()->setAccountState(state);
     emit signalAccountStateChange();
 }
@@ -449,18 +469,21 @@ void AccountItem::slotSearchUpdata()
 {
     //如果存在查询则更新查询
     if (nullptr != m_preQuery) {
+        qCDebug(ClientLogger) << "Updating search results for account:" << m_account->accountName();
         querySchedulesWithParameter(m_preQuery);
     }
 }
 
 void AccountItem::importSchedule(QString icsFilePath, QString typeID, bool cleanExists, CallbackFunc func)
 {
+    qCDebug(ClientLogger) << "Importing schedule from file:" << icsFilePath << "to type:" << typeID << "clean exists:" << cleanExists << "for account:" << m_account->accountName();
     m_dbusRequest->setCallbackFunc(func);
     m_dbusRequest->importSchedule(icsFilePath, typeID, cleanExists);
 }
 
 void AccountItem::exportSchedule(QString icsFilePath, QString typeID, CallbackFunc func)
 {
+    qCDebug(ClientLogger) << "Exporting schedule to file:" << icsFilePath << "from type:" << typeID << "for account:" << m_account->accountName();
     m_dbusRequest->setCallbackFunc(func);
     m_dbusRequest->exportSchedule(icsFilePath, typeID);
 }

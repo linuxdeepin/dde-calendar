@@ -108,6 +108,7 @@ Calendarmainwindow::Calendarmainwindow(int index, QWidget *w)
 
     //兼容以前的配置信息
     if (CConfigSettings::getInstance()->contains("base.geometry")) {
+        qCDebug(ClientLogger) << "Restoring window geometry from legacy config";
         QByteArray arrayByte = CConfigSettings::getInstance()->value("base.geometry").toByteArray();
         bool isOk = false;
         int state = CConfigSettings::getInstance()->value("base.state").toInt(&isOk);
@@ -122,12 +123,14 @@ Calendarmainwindow::Calendarmainwindow(int index, QWidget *w)
         CConfigSettings::getInstance()->remove("base.geometry");
         CConfigSettings::getInstance()->remove("base.state");
     } else if (CConfigSettings::getInstance()->contains("base.windowWidth")) {
+        qCDebug(ClientLogger) << "Restoring window size from config";
         //获取窗口的宽度和高度
         int width = CConfigSettings::getInstance()->value("base.windowWidth").toInt();
         int height = CConfigSettings::getInstance()->value("base.windowHeight").toInt();
         QRect rect(0, 0, width, height);
         this->setGeometry(rect);
     } else {
+        qCDebug(ClientLogger) << "Using default window size";
         //如果没有相关配置则设置为默认尺寸
         QRect rect(0, 0, Calendar_Default_Width, Calendar_Default_Height);
         this->setGeometry(rect);
@@ -173,6 +176,7 @@ void Calendarmainwindow::slotCurrentDateUpdate()
     m_DayWindow->setCurrentDateTime(_currentDate);
     //如果当前日期与动态图标日期不一样则重新生成动态图标
     if (_currentDate.date() != CDynamicIcon::getInstance()->getDate()) {
+        qCDebug(ClientLogger) << "Updating dynamic icon date" << "new date:" << QDate::currentDate();
         CDynamicIcon::getInstance()->setDate(QDate::currentDate());
         CDynamicIcon::getInstance()->setIcon();
         //更新视图数据显示
@@ -203,8 +207,9 @@ void Calendarmainwindow::slotSetSearchFocus()
  */
 void Calendarmainwindow::viewWindow(int type, const bool showAnimation)
 {
+    qCDebug(ClientLogger) << "Switching view window" << "type:" << type << "show animation:" << showAnimation;
     if (type < 0 || type >= m_stackWidget->count()) {
-        qCWarning(ClientLogger) << "set view error,set index:" << type;
+        qCWarning(ClientLogger) << "Invalid view type:" << type;
         return;
     }
     if (showAnimation) {
@@ -218,14 +223,17 @@ void Calendarmainwindow::viewWindow(int type, const bool showAnimation)
     }
     switch (type) {
     case DDECalendar::CalendarYearWindow: {
-        //更新界面显示
+        qCDebug(ClientLogger) << "Updating year window display";
         m_yearwindow->updateData();
     } break;
     case DDECalendar::CalendarMonthWindow: {
+        qCDebug(ClientLogger) << "Switching to month window";
     } break;
     case DDECalendar::CalendarWeekWindow: {
+        qCDebug(ClientLogger) << "Switching to week window";
     } break;
     case DDECalendar::CalendarDayWindow: {
+        qCDebug(ClientLogger) << "Switching to day window";
         m_DayWindow->setTime();
         m_searchflag = true;
     } break;
@@ -265,11 +273,13 @@ void Calendarmainwindow::setSearchWidth(int w)
 
 void Calendarmainwindow::slotTheme(int type)
 {
+    qCDebug(ClientLogger) << "Setting application theme" << "type:" << type;
     if (type == 0) {
         type = DGuiApplicationHelper::instance()->themeType();
     }
 
     if (type == 1) {
+        qCDebug(ClientLogger) << "Applying light theme";
         DPalette anipa = m_contentBackground->palette();
         anipa.setColor(DPalette::Window, "#F8F8F8");
         m_contentBackground->setPalette(anipa);
@@ -282,6 +292,7 @@ void Calendarmainwindow::slotTheme(int type)
         m_transparentFrame->setPalette(tframepa);
         m_transparentFrame->setBackgroundRole(DPalette::Window);
     } else {
+        qCDebug(ClientLogger) << "Applying dark theme";
         DPalette anipa = m_contentBackground->palette();
         anipa.setColor(DPalette::Window, "#252525");
         m_contentBackground->setPalette(anipa);
@@ -304,8 +315,11 @@ void Calendarmainwindow::slotTheme(int type)
 
 void Calendarmainwindow::slotOpenSchedule(QString job)
 {
-    if (job.isEmpty())
+    if (job.isEmpty()) {
+        qCWarning(ClientLogger) << "Attempted to open empty schedule";
         return;
+    }
+    qCDebug(ClientLogger) << "Opening schedule" << "job:" << job;
     DSchedule::Ptr out;
     DSchedule::fromJsonString(out, job);
 
@@ -776,6 +790,7 @@ void Calendarmainwindow::slotNewSchedule()
 
 void Calendarmainwindow::slotDeleteitem()
 {
+    qCDebug(ClientLogger) << "Deleting selected item";
     if (m_scheduleSearchView->getHasScheduleShow() && m_scheduleSearchView->getScheduleStatus()) {
         //删除选中的schedule
         m_scheduleSearchView->deleteSchedule();
@@ -794,6 +809,7 @@ void Calendarmainwindow::slotDeleteitem()
  */
 void Calendarmainwindow::slotSetMaxSize()
 {
+    qCDebug(ClientLogger) << "Setting maximum window size based on screen resolution";
     //获取屏幕大小
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     QSize deskSize = QGuiApplication::primaryScreen()->size();
@@ -936,6 +952,7 @@ void Calendarmainwindow::removeSyncToast()
 
 void Calendarmainwindow::slotShowSyncToast(int syncNum)
 {
+    qCDebug(ClientLogger) << "Showing sync toast" << "sync number:" << syncNum;
     //-1:正在刷新 0:正常 1:网络异常 2:服务器异常 3：存储已经满
     static int preSyncNum = -2;
     if (preSyncNum != syncNum && syncNum == -1) {
@@ -950,6 +967,7 @@ void Calendarmainwindow::slotShowSyncToast(int syncNum)
         preSyncNum = -2;
         switch (syncNum) {
         case 0: {
+            qCDebug(ClientLogger) << "Sync completed successfully";
             //同步成功
             removeSyncToast();
             DMessageManager::instance()->sendMessage(this->window(), QIcon::fromTheme(":/icons/deepin/builtin/icons/dde_calendar_success_200px.png"), tr("Sync successful"));
@@ -958,6 +976,7 @@ void Calendarmainwindow::slotShowSyncToast(int syncNum)
         case 1:
         case 2:
         case 3: {
+            qCWarning(ClientLogger) << "Sync failed with error code:" << syncNum;
             //同步失败
             removeSyncToast();
             DMessageManager::instance()->sendMessage(this->window(), QIcon::fromTheme(":/icons/deepin/builtin/icons/dde_calendar_fail_200px.png"), tr("Sync failed, please try later"));
@@ -971,6 +990,7 @@ void Calendarmainwindow::slotShowSyncToast(int syncNum)
 
 void Calendarmainwindow::slotAccountUpdate()
 {
+    qCDebug(ClientLogger) << "Updating account information";
     AccountItem::Ptr uidAccount = gUosAccountItem;
     if (!uidAccount.isNull()) {
         connect(uidAccount.get(), &AccountItem::signalSyncStateChange, this, &Calendarmainwindow::slotShowSyncToast);

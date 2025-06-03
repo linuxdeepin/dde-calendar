@@ -459,13 +459,16 @@ void CSettingDialog::slotFirstDayofWeekCurrentChanged(int index)
 
     //此次只设置一周首日，不刷新界面
     if (index == 0) {
+        qCDebug(ClientLogger) << "Setting first day of week to Sunday";
         gAccountManager->setFirstDayofWeek(7);
         gCalendarManager->setFirstDayOfWeek(7, false);
     } else if (index == 1) {
+        qCDebug(ClientLogger) << "Setting first day of week to Monday";
         gAccountManager->setFirstDayofWeek(1);
         gCalendarManager->setFirstDayOfWeek(1, false);
     } else {
         if (gAccountManager->getFirstDayofWeekSource() != DCalendarGeneralSettings::Source_System) {
+            qCDebug(ClientLogger) << "Setting first day of week to system default";
             gAccountManager->setFirstDayofWeekSource(DCalendarGeneralSettings::Source_System);
         }
     }
@@ -476,13 +479,16 @@ void CSettingDialog::slotTimeTypeCurrentChanged(int index)
     DCalendarGeneralSettings::Ptr setting = gAccountManager->getGeneralSettings();
 
     if (index == 0) {
+        qCDebug(ClientLogger) << "Setting time format to 24-hour";
         gAccountManager->setTimeFormatType(DCalendarGeneralSettings::TwentyFour);
         gCalendarManager->setTimeShowType(DCalendarGeneralSettings::TwentyFour, false);
     } else if (index == 1) {
+        qCDebug(ClientLogger) << "Setting time format to 12-hour";
         gAccountManager->setTimeFormatType(DCalendarGeneralSettings::Twelve);
         gCalendarManager->setTimeShowType(DCalendarGeneralSettings::Twelve, false);
     } else {
         if (gAccountManager->getTimeFormatTypeSource() != DCalendarGeneralSettings::Source_System) {
+            qCDebug(ClientLogger) << "Setting time format to system default";
             gAccountManager->setTimeFormatTypeSource(DCalendarGeneralSettings::Source_System);
         }
     }
@@ -513,10 +519,10 @@ void CSettingDialog::slotTypeImportBtnClickded()
 void CSettingDialog::slotSetUosSyncFreq(int freq)
 {
     QComboBox *com = qobject_cast<QComboBox *>(sender());
-    if (!com)
+    if (!com || !gUosAccountItem)
         return;
-    if (!gUosAccountItem)
-        return;
+    
+    qCDebug(ClientLogger) << "Setting UOS sync frequency to:" << freq;
     gUosAccountItem->setSyncFreq(DAccount::SyncFreqType(com->itemData(freq).toInt()));
 }
 
@@ -524,6 +530,7 @@ void CSettingDialog::slotUosManualSync()
 {
     if (!gUosAccountItem)
         return;
+    qCDebug(ClientLogger) << "Manual sync requested for account:" << gUosAccountItem->getAccount()->accountID();
     gAccountManager->downloadByAccountID(gUosAccountItem->getAccount()->accountID());
 }
 
@@ -533,6 +540,7 @@ void CSettingDialog::slotSyncTagButtonUpdate()
         return;
 
     auto state = gUosAccountItem->getAccount()->accountState();
+    qCDebug(ClientLogger) << "Updating sync tag buttons for account state:" << state;
     m_radiobuttonAccountCalendar->setChecked(state & DAccount::Account_Calendar);
     m_radiobuttonAccountSetting->setChecked(state & DAccount::Account_Setting);
 
@@ -565,6 +573,7 @@ void CSettingDialog::slotSyncAccountStateUpdate(bool status)
 
 void CSettingDialog::slotLastSyncTimeUpdate(const QString &datetime)
 {
+    qCDebug(ClientLogger) << "Last sync time updated:" << datetime;
     QString dtstr;
     if (gCalendarManager->getTimeShowType()) {
         dtstr = dtFromString(datetime).toString("yyyy/MM/dd ap hh:mm");
@@ -771,12 +780,13 @@ QWidget *CSettingDialog::createControlCenterLink(QObject *obj)
     myLabel->setTextFormat(Qt::RichText);
     myLabel->setFixedHeight(36);
     connect(myLabel, &DLabel::linkActivated, this, [this]{
-        qCDebug(ClientLogger) << "open deepin control center";
+        qCDebug(ClientLogger) << "Opening control center";
         QString datePage = ControlCenterPage;
         auto ver = DSysInfo::majorVersion().toInt();
         if (ver > 23) {
             // v25 control center has changed the datetime page.
             datePage = "system/timeAndLang";
+            qCDebug(ClientLogger) << "Using v25+ control center page:" << datePage;
         }
         this->m_controlCenterProxy->ShowPage(datePage);
     });

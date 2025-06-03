@@ -22,8 +22,10 @@ DWIDGET_USE_NAMESPACE
 
 int main(int argc, char *argv[])
 {
+    qCDebug(ClientLogger) << "Starting dde-calendar application";
     //在root下或者非deepin/uos环境下运行不会发生异常，需要加上XDG_CURRENT_DESKTOP=Deepin环境变量；
     if (!QString(qgetenv("XDG_CURRENT_DESKTOP")).toLower().startsWith("deepin")) {
+        qCInfo(ClientLogger) << "Setting XDG_CURRENT_DESKTOP to Deepin environment";
         setenv("XDG_CURRENT_DESKTOP", "Deepin", 1);
     }
     QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
@@ -43,12 +45,14 @@ int main(int argc, char *argv[])
 #endif
 
     if (DGuiApplicationHelper::setSingleInstance(app->applicationName(), DGuiApplicationHelper::UserScope)) {
+        qCDebug(ClientLogger) << "Initializing application as single instance";
         //准备数据
         gAccountManager->resetAccount();
 
         app->setOrganizationName("deepin");
         app->setApplicationName("dde-calendar");
         app->loadTranslator();
+        qCInfo(ClientLogger) << "Application initialized with name: dde-calendar, version:" << VERSION;
 #ifdef QT_DEBUG
         // 在开发调试时使用项目内的翻译文件
         auto tf = "../translations/dde-calendar_zh_CN";
@@ -87,19 +91,22 @@ int main(int argc, char *argv[])
         einterface.registerAction("VIEW", "check a date on calendar");
         einterface.registerAction("QUERY", "find a schedule information");
         einterface.registerAction("CANCEL", "cancel a schedule");
+        qCDebug(ClientLogger) << "DBus actions registered: CREATE, VIEW, QUERY, CANCEL";
+        
         QDBusConnection dbus = QDBusConnection::sessionBus();
         //如果注册失败打印出失败信息
         if (!dbus.registerService("com.deepin.Calendar")) {
-            qCWarning(ClientLogger) << "registerService Error:" << dbus.lastError();
+            qCWarning(ClientLogger) << "Failed to register DBus service:" << dbus.lastError().message();
         }
         if (!dbus.registerObject("/com/deepin/Calendar", &ww)) {
-            qCWarning(ClientLogger) << "registerObject Error:" << dbus.lastError();
+            qCWarning(ClientLogger) << "Failed to register DBus object:" << dbus.lastError().message();
         }
         ww.slotTheme(DGuiApplicationHelper::instance()->themeType());
         ww.show();
 
-        qCDebug(ClientLogger) << "dde-calendar-service start";
+        qCInfo(ClientLogger) << "dde-calendar application started successfully";
         return app->exec();
     }
+    qCWarning(ClientLogger) << "Application startup failed: Another instance is already running";
     return 0;
 }

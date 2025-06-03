@@ -37,3 +37,6 @@ binaries
 #linglong building dir
 linglong
 build
+.cursorindexingignore
+.cursor
+.specstory
