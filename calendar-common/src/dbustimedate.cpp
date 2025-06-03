@@ -23,8 +23,7 @@ DBusTimedate::DBusTimedate(QObject *parent)
                                                "org.freedesktop.DBus.Properties",
                                                QLatin1String("PropertiesChanged"), this,
                                                SLOT(propertiesChanged(QDBusMessage)))) {
-        qCWarning(ClientLogger) << "the PropertiesChanged was fail!";
-        qCWarning(ClientLogger) << this->lastError();
+        qCWarning(ServiceLogger) << "Failed to connect to PropertiesChanged signal:" << this->lastError().message();
     }
 
     m_hasDateTimeFormat = getHasDateTimeFormat();
@@ -55,11 +54,17 @@ void DBusTimedate::propertiesChanged(const QDBusMessage &msg)
 {
     QList<QVariant> arguments = msg.arguments();
     // 参数固定长度
-    if (3 != arguments.count())
+    if (3 != arguments.count()) {
+        qCWarning(ServiceLogger) << "Invalid number of arguments in PropertiesChanged signal:" << arguments.count();
         return;
+    }
+
     QString interfaceName = msg.arguments().at(0).toString();
-    if (interfaceName != this->interface())
+    if (interfaceName != this->interface()) {
+        qCDebug(ServiceLogger) << "Ignoring PropertiesChanged for interface:" << interfaceName;
         return;
+    }
+
     QVariantMap changedProps = qdbus_cast<QVariantMap>(arguments.at(1).value<QDBusArgument>());
     QStringList keys = changedProps.keys();
     foreach (const QString &prop, keys) {
@@ -90,6 +95,7 @@ bool DBusTimedate::getHasDateTimeFormat()
         QVariant variant = reply.arguments().first();
         return variant.toString().contains("\"ShortDateFormat\"");
     } else {
+        qCWarning(ServiceLogger) << "Failed to check DateTime format support:" << reply.errorMessage();
         return false;
     }
 }

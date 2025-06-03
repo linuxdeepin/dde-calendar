@@ -40,6 +40,7 @@ QString DScheduleType::accountID() const
 
 void DScheduleType::setAccountID(const QString &accountID)
 {
+    qCDebug(ServiceLogger) << "Setting account ID from" << m_accountID << "to" << accountID;
     m_accountID = accountID;
 }
 
@@ -50,6 +51,8 @@ DScheduleType::Privileges DScheduleType::privilege() const
 
 void DScheduleType::setPrivilege(const Privileges &privilege)
 {
+    qCDebug(ServiceLogger) << "Setting privilege from" << static_cast<int>(m_privilege) 
+                          << "to" << static_cast<int>(privilege);
     m_privilege = privilege;
 }
 
@@ -60,11 +63,15 @@ DTypeColor DScheduleType::typeColor() const
 
 void DScheduleType::setTypeColor(const DTypeColor &typeColor)
 {
+    qCDebug(ServiceLogger) << "Setting type color - ID:" << typeColor.colorID() 
+                          << "Code:" << typeColor.colorCode() 
+                          << "Privilege:" << static_cast<int>(typeColor.privilege());
     m_typeColor = typeColor;
 }
 
 void DScheduleType::setColorID(const QString &colorID)
 {
+    qCDebug(ServiceLogger) << "Setting color ID from" << m_typeColor.colorID() << "to" << colorID;
     m_typeColor.setColorID(colorID);
 }
 
@@ -75,6 +82,7 @@ QString DScheduleType::getColorID() const
 
 void DScheduleType::setColorCode(const QString &colorCode)
 {
+    qCDebug(ServiceLogger) << "Setting color code from" << m_typeColor.colorCode() << "to" << colorCode;
     m_typeColor.setColorCode(colorCode);
 }
 
@@ -90,6 +98,7 @@ QString DScheduleType::typeID() const
 
 void DScheduleType::setTypeID(const QString &typeID)
 {
+    qCDebug(ServiceLogger) << "Setting type ID from" << m_typeID << "to" << typeID;
     m_typeID = typeID;
 }
 
@@ -100,6 +109,7 @@ QString DScheduleType::displayName() const
 
 void DScheduleType::setDisplayName(const QString &displayName)
 {
+    qCDebug(ServiceLogger) << "Setting display name from" << m_displayName << "to" << displayName;
     m_displayName = displayName;
 }
 
@@ -110,6 +120,8 @@ DScheduleType::ShowState DScheduleType::showState() const
 
 void DScheduleType::setShowState(const ShowState &showState)
 {
+    qCDebug(ServiceLogger) << "Setting show state from" << static_cast<int>(m_showState) 
+                          << "to" << static_cast<int>(showState);
     m_showState = showState;
 }
 
@@ -120,6 +132,7 @@ QString DScheduleType::typeName() const
 
 void DScheduleType::setTypeName(const QString &typeName)
 {
+    qCDebug(ServiceLogger) << "Setting type name from" << m_typeName << "to" << typeName;
     m_typeName = typeName;
 }
 
@@ -130,6 +143,7 @@ QString DScheduleType::typePath() const
 
 void DScheduleType::setTypePath(const QString &typePath)
 {
+    qCDebug(ServiceLogger) << "Setting type path from" << m_typePath << "to" << typePath;
     m_typePath = typePath;
 }
 
@@ -140,6 +154,7 @@ QString DScheduleType::description() const
 
 void DScheduleType::setDescription(const QString &description)
 {
+    qCDebug(ServiceLogger) << "Setting description from" << m_description << "to" << description;
     m_description = description;
 }
 
@@ -150,6 +165,8 @@ QDateTime DScheduleType::dtCreate() const
 
 void DScheduleType::setDtCreate(const QDateTime &dtCreate)
 {
+    qCDebug(ServiceLogger) << "Setting creation date from" << m_dtCreate.toString() 
+                          << "to" << dtCreate.toString();
     m_dtCreate = dtCreate;
 }
 
@@ -160,6 +177,8 @@ QDateTime DScheduleType::dtUpdate() const
 
 void DScheduleType::setDtUpdate(const QDateTime &dtUpdate)
 {
+    qCDebug(ServiceLogger) << "Setting update date from" << m_dtUpdate.toString() 
+                          << "to" << dtUpdate.toString();
     m_dtUpdate = dtUpdate;
 }
 
@@ -170,6 +189,8 @@ QDateTime DScheduleType::dtDelete() const
 
 void DScheduleType::setDtDelete(const QDateTime &dtDelete)
 {
+    qCDebug(ServiceLogger) << "Setting delete date from" << m_dtDelete.toString() 
+                          << "to" << dtDelete.toString();
     m_dtDelete = dtDelete;
 }
 
@@ -180,21 +201,25 @@ int DScheduleType::deleted() const
 
 void DScheduleType::setDeleted(int deleted)
 {
+    qCDebug(ServiceLogger) << "Setting deleted status from" << m_deleted << "to" << deleted;
     m_deleted = deleted;
 }
 
 bool DScheduleType::fromJsonString(DScheduleType::Ptr &scheduleType, const QString &jsonStr)
 {
+    qCDebug(ServiceLogger) << "Parsing schedule type from JSON string";
     if (scheduleType.isNull()) {
+        qCDebug(ServiceLogger) << "Creating new schedule type instance for JSON parsing";
         scheduleType = DScheduleType::Ptr(new DScheduleType);
     }
     //反序列化
     QJsonParseError jsonError;
     QJsonDocument jsonDoc(QJsonDocument::fromJson(jsonStr.toLocal8Bit(), &jsonError));
     if (jsonError.error != QJsonParseError::NoError) {
-        qCWarning(CommonLogger) << "error:" << jsonError.errorString();
+        qCWarning(ServiceLogger) << "Failed to parse schedule type JSON. Error:" << jsonError.errorString();
         return false;
     }
+
     QJsonObject rootObj = jsonDoc.object();
     if (rootObj.contains("accountID")) {
         scheduleType->setAccountID(rootObj.value("accountID").toString());
@@ -263,8 +288,9 @@ bool DScheduleType::fromJsonString(DScheduleType::Ptr &scheduleType, const QStri
 
 bool DScheduleType::toJsonString(const DScheduleType::Ptr &scheduleType, QString &jsonStr)
 {
+    qCDebug(ServiceLogger) << "Converting schedule type to JSON string";
     if (scheduleType.isNull()) {
-        qCWarning(CommonLogger) << "hold a reference to a null pointer.";
+        qCWarning(ServiceLogger) << "Cannot convert null schedule type to JSON";
         return false;
     }
     //序列化
@@ -297,18 +323,21 @@ bool DScheduleType::toJsonString(const DScheduleType::Ptr &scheduleType, QString
 
 bool DScheduleType::fromJsonListString(DScheduleType::List &stList, const QString &jsonStr)
 {
+    qCDebug(ServiceLogger) << "Parsing schedule type list from JSON string";
     QJsonParseError jsonError;
     QJsonDocument jsonDoc(QJsonDocument::fromJson(jsonStr.toLocal8Bit(), &jsonError));
     if (jsonError.error != QJsonParseError::NoError) {
-        qCWarning(CommonLogger) << "error:" << jsonError.errorString();
+        qCWarning(ServiceLogger) << "Failed to parse schedule type list JSON. Error:" << jsonError.errorString();
         return false;
     }
+
     QJsonObject rootObj = jsonDoc.object();
     if (rootObj.contains("scheduleType")) {
         QJsonArray jsonArray = rootObj.value("scheduleType").toArray();
         for (auto ja : jsonArray) {
             QJsonObject typeObject = ja.toObject();
             DScheduleType::Ptr scheduleType = DScheduleType::Ptr(new DScheduleType);
+            
             if (typeObject.contains("accountID")) {
                 scheduleType->setAccountID(typeObject.value("accountID").toString());
             }
@@ -420,6 +449,7 @@ int DScheduleType::syncTag() const
 
 void DScheduleType::setSyncTag(int syncTag)
 {
+    qCDebug(ServiceLogger) << "Setting sync tag from" << m_syncTag << "to" << syncTag;
     m_syncTag = syncTag;
 }
 
@@ -427,10 +457,14 @@ bool operator<(const DScheduleType::Ptr &st1, const DScheduleType::Ptr &st2)
 {
     //权限不一致权限小的排在前面
     if (st1->privilege() != st2->privilege()) {
+        qCDebug(ServiceLogger) << "Comparing privileges - st1:" << static_cast<int>(st1->privilege()) 
+                              << "st2:" << static_cast<int>(st2->privilege());
         return st1->privilege() < st2->privilege();
     }
     //权限一一致的创建时间早的排在前面
     if (st1->dtCreate() != st2->dtCreate()) {
+        qCDebug(ServiceLogger) << "Comparing creation dates - st1:" << st1->dtCreate().toString() 
+                              << "st2:" << st2->dtCreate().toString();
         return st1->dtCreate() < st2->dtCreate();
     }
     return true;

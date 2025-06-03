@@ -139,10 +139,12 @@ QList<int> GetNextMonth(qint32 year, qint32 month)
  */
 QList<stDayFestival> GetFestivalsInRange(const QDateTime &start, const QDateTime &end)
 {
+    qCDebug(ServiceLogger) << "Getting festivals in range:" << start.toString() << "to" << end.toString();
     QList<stDayFestival> festivaldays;
     if (start <= end) {
         //days为需要查询的天数,而不是两个时间的差值
         int days = static_cast<int>(start.daysTo(end) + 1);
+        qCDebug(ServiceLogger) << "Calculating festivals for" << days << "days";
         for (int i = 0; i < days; ++i) {
             stDayFestival stdayfestival;
             QDateTime tem = start.addDays(i);
@@ -159,9 +161,9 @@ QList<stDayFestival> GetFestivalsInRange(const QDateTime &start, const QDateTime
             festivaldays.append(stdayfestival);
         }
     } else {
-        qCDebug(ServiceLogger) << __FUNCTION__ << "start day later than  end day";
+        qCWarning(ServiceLogger) << "Invalid date range: start date" << start.toString() << "is later than end date" << end.toString();
     }
-
+    qCDebug(ServiceLogger) << "Found" << festivaldays.size() << "festivals in the specified range";
     return festivaldays;
 }
 /**
@@ -172,6 +174,7 @@ QList<stDayFestival> GetFestivalsInRange(const QDateTime &start, const QDateTime
  */
 QList<stDayFestival> FilterDayFestival(QList<stDayFestival> &festivaldays, const QString &querykey)
 {
+    qCDebug(ServiceLogger) << "Filtering festivals with query key:" << querykey;
     QList<stDayFestival> m_festivaldays;
     pinyinsearch *search = pinyinsearch::getPinPinSearch();
 
@@ -193,7 +196,7 @@ QList<stDayFestival> FilterDayFestival(QList<stDayFestival> &festivaldays, const
         m_festivals.date = festivalsdate;
         m_festivaldays.append(m_festivals);
     }
-
+    qCDebug(ServiceLogger) << "Filtered festivals count:" << m_festivaldays.size();
     return m_festivaldays;
 }
 

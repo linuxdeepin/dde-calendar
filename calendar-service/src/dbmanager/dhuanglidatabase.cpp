@@ -25,31 +25,32 @@ DHuangLiDataBase::DHuangLiDataBase(QObject *parent)
     : DDataBase(parent)
     , m_settings(getAppConfigDir().filePath("config.ini"), QSettings::IniFormat)
 {
-    qDebug()<< getAppConfigDir().filePath("config.ini");
+    qCDebug(ServiceLogger) << "Initializing HuangLi database with config file:" << getAppConfigDir().filePath("config.ini");
     QString huangliPath = QStandardPaths::locate(QStandardPaths::GenericDataLocation,
                                                  QString("dde-calendar/data/huangli.db"),
                                                  QStandardPaths::LocateFile);
     setDBPath(huangliPath);
-    qCDebug(ServiceLogger) << "huangli database" << huangliPath;
+    qCDebug(ServiceLogger) << "Found huangli database at:" << huangliPath;
     setConnectionName("HuangLi");
     dbOpen();
     // 延迟一段时间后，从网络更新节假日
-    QTimer::singleShot(QRandomGenerator::global()->bounded(1000, 9999),
-                       this,
-                       &DHuangLiDataBase::updateFestivalList);
+    int delay = QRandomGenerator::global()->bounded(1000, 9999);
+    qCDebug(ServiceLogger) << "Scheduling festival update in" << delay << "ms";
+    QTimer::singleShot(delay, this, &DHuangLiDataBase::updateFestivalList);
 }
 
 // readJSON 会读取一个JSON文件，如果 cache 为 true，则会缓存对象，以供下次使用
 QJsonDocument DHuangLiDataBase::readJSON(QString filename, bool cache)
 {
     if (cache && readJSONCache.contains(filename)) {
+        qCDebug(ServiceLogger) << "Using cached JSON data for file:" << filename;
         return readJSONCache.value(filename);
     }
-    qCDebug(ServiceLogger) << "read json file" << filename;
+    qCDebug(ServiceLogger) << "Reading JSON file:" << filename;
     QJsonDocument doc;
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly)) {
-        qCWarning(ServiceLogger) << "cannot open json file" << filename;
+        qCWarning(ServiceLogger) << "Failed to open JSON file:" << filename << "Error:" << file.errorString();
     } else {
         auto data = file.readAll();
         doc = QJsonDocument::fromJson(data);
@@ -64,18 +65,20 @@ void DHuangLiDataBase::updateFestivalList()
     auto festivalUpdateDate = now.toString("yyyy-MM-dd");
     // 每天更新一次
     if (m_settings.value(HolidayUpdateDateSetKey, "") == festivalUpdateDate) {
+        qCDebug(ServiceLogger) << "Festival data already updated today, skipping update";
         return;
     }
+    qCDebug(ServiceLogger) << "Updating festival data for date:" << festivalUpdateDate;
     m_settings.setValue(HolidayUpdateDateSetKey, festivalUpdateDate);
     // 获取今年和明年的节假日数据
     for (auto i = 0; i < 2; i++) {
         auto year = now.date().year() + i;
         auto filename = getAppCacheDir().filePath(QString("%1.json").arg(year));
         auto url = QString("%1/%2.json").arg(HolidayUpdateURLPrefix).arg(year);
+        qCDebug(ServiceLogger) << "Downloading festival data for year" << year << "from" << url << "to" << filename;
         auto process = DownloadFile(url, filename);
-        qCDebug(ServiceLogger) << "Download File" << url << filename;
-        connect(process.get(), &QProcess::readyReadStandardError, [process]() {
-            qCDebug(ServiceLogger) << "Download Error: " << process->readAllStandardError();
+        connect(process.get(), &QProcess::readyReadStandardError, [process, year]() {
+            qCWarning(ServiceLogger) << "Download error for year" << year << ":" << process->readAllStandardError();
         });
     }
 }
@@ -83,8 +86,7 @@ void DHuangLiDataBase::updateFestivalList()
 // queryFestivalList 查询指定月份的节假日列表
 QJsonArray DHuangLiDataBase::queryFestivalList(quint32 year, quint8 month)
 {
-    qCDebug(ServiceLogger) << "query festival list"
-                           << "year" << year << "month" << month;
+    qCDebug(ServiceLogger) << "Querying festival list for year:" << year << "month:" << month;
     QJsonArray dataset;
     QFile file(QString("%1/%2.json").arg(HolidayDir).arg(year));
     if (file.open(QIODevice::ReadOnly)) {

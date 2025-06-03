@@ -79,6 +79,7 @@ DDataBaseManagement::DDataBaseManagement()
         //判断是否存在旧的数据库
         QString oldDBFile(oldDatabasePath() + "/" + m_oldDatabaseName);
         if (databaseExists(oldDBFile)) {
+            qCDebug(ServiceLogger) << "Found old database, starting migration from:" << oldDBFile;
             //对数据进行迁移
             QSqlDatabase oldDB = QSqlDatabase::addDatabase("QSQLITE", "oldDB");
             oldDB.setDatabaseName(oldDBFile);
@@ -151,6 +152,7 @@ bool DDataBaseManagement::databaseExists(const QString &databasePath, bool creat
     bool exist = false;
     if (dir.exists(databasePath)) {
         exist = true;
+        qCDebug(ServiceLogger) << "Database path exists:" << databasePath;
     } else {
         if (create) {
             dir.mkpath(databasePath);
@@ -168,6 +170,9 @@ bool DDataBaseManagement::hasLunnarField(QSqlDatabase &db)
     if (query.exec(hasIsLunarField) && query.next()) {
         //获取是否存在为农历标识字段，若存在则返回1,不存在则返回0
         haslunnar = query.value(0).toInt();
+        qCDebug(ServiceLogger) << "Lunar field check result:" << haslunnar;
+    } else {
+        qCWarning(ServiceLogger) << "Failed to check lunar field:" << query.lastError().text();
     }
     if (query.isActive()) {
         query.finish();
@@ -184,6 +189,9 @@ bool DDataBaseManagement::hasTypeDB(QSqlDatabase &db)
     if (query.exec(strSql) && query.next()) {
         //获取是否存在为农历标识字段，若存在则返回1,不存在则返回0
         hasType = query.value(0).toInt();
+        qCDebug(ServiceLogger) << "Type table check result:" << hasType;
+    } else {
+        qCWarning(ServiceLogger) << "Failed to check type table:" << query.lastError().text();
     }
     if (query.isActive()) {
         query.finish();
@@ -200,6 +208,9 @@ bool DDataBaseManagement::hasRemindDB(QSqlDatabase &db)
     if (query.exec(strSql) && query.next()) {
         //获取是否存在为农历标识字段，若存在则返回1,不存在则返回0
         hasRemind = query.value(0).toInt();
+        qCDebug(ServiceLogger) << "Reminder table check result:" << hasRemind;
+    } else {
+        qCWarning(ServiceLogger) << "Failed to check reminder table:" << query.lastError().text();
     }
     if (query.isActive()) {
         query.finish();
@@ -236,6 +247,9 @@ DScheduleType::List DDataBaseManagement::queryOldJobTypeData(QSqlDatabase &db)
             }
             typeList.append(type);
         }
+        qCDebug(ServiceLogger) << "Retrieved" << typeList.size() << "job types";
+    } else {
+        qCWarning(ServiceLogger) << "Failed to query job types:" << query.lastError().text();
     }
     return typeList;
 }
@@ -277,6 +291,7 @@ DSchedule::List DDataBaseManagement::queryOldJobData(QSqlDatabase &db, const boo
 
                 if (ical.fromString(rule, query.value("r_rule").toString())) {
                     recurrence->addRRule(rule);
+                    qCDebug(ServiceLogger) << "Added recurrence rule for schedule:" << schedule->summary();
                 }
 
                 //添加忽略列表
@@ -293,7 +308,6 @@ DSchedule::List DDataBaseManagement::queryOldJobData(QSqlDatabase &db, const boo
             if (!remind.isEmpty()) {
                 //提醒规则
                 QStringList strList = remind.split(";", Qt::SkipEmptyParts);
-
                 int remindNum = strList.at(0).toInt();
                 //小于0表示不提醒
                 if (remindNum >= 0) {
@@ -322,7 +336,7 @@ DSchedule::List DDataBaseManagement::queryOldJobData(QSqlDatabase &db, const boo
             if (m_typeMap.contains(type)) {
                 schedule->setScheduleTypeID(m_typeMap[type]);
             } else {
-                qCWarning(ServiceLogger) << " can not find type:" << type;
+                qCWarning(ServiceLogger) << "Cannot find type mapping for type:" << type << "in schedule:" << schedule->summary();
             }
             scheduleList.append(schedule);
         }

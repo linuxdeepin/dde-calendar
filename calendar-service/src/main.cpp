@@ -45,6 +45,7 @@ bool loadTranslator(QCoreApplication *app, QList<QLocale> localeFallback = QList
 
 int main(int argc, char *argv[])
 {
+    qCInfo(ServiceLogger) << "Starting dde-calendar-service.";
     QCoreApplication a(argc, argv);
     a.setOrganizationName("deepin");
     a.setApplicationName("dde-calendar-service");
@@ -55,7 +56,7 @@ int main(int argc, char *argv[])
 
     //加载翻译
     if (!loadTranslator(&a)) {
-        qCDebug(ServiceLogger) << "loadtranslator failed";
+        qCWarning(ServiceLogger) << "Translation load failed.";
     }
 
     DDataBaseManagement dbManagement;
@@ -69,6 +70,6 @@ int main(int argc, char *argv[])
           serviceManager.updateRemindJob();
         });
     }
-    qCDebug(ServiceLogger) << "dde-calendar-service start";
+    qCInfo(ServiceLogger) << "dde-calendar-service start.";
     return a.exec();
 }
