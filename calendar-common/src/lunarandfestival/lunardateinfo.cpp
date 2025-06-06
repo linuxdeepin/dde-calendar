@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "lunardateinfo.h"
-
 #include "lunarcalendar.h"
+#include "commondef.h"
 
 #include <QDebug>
 
@@ -24,6 +24,9 @@ QMap<int, QDate> LunarDateInfo::getRRuleStartDate(const QDate &beginDate, const 
     QMap<int, QDate> solar;
     //不在范围内直接返回,开始时间小于结束时间或者需要计算的起始时间晚于结束时间
     if (endDate < beginDate || solarDate > endDate) {
+        qCWarning(ServiceLogger) << "Invalid date range: end date" << endDate.toString() 
+                                << "is before begin date" << beginDate.toString() 
+                                << "or solar date" << solarDate.toString() << "is after end date";
         return solar;
     }
 
@@ -32,6 +35,7 @@ QMap<int, QDate> LunarDateInfo::getRRuleStartDate(const QDate &beginDate, const 
     //如果日程开始时间在查询起始时间之前
     if (solarDate > m_queryStartDate) {
         m_queryStartDate = solarDate;
+        qCDebug(ServiceLogger) << "Adjusted query start date to solar date:" << solarDate.toString();
     }
     //如果是农历日程
     //TODO: 重复类型
@@ -55,6 +59,7 @@ QMap<int, QDate> LunarDateInfo::getRRuleStartDate(const QDate &beginDate, const 
 //通过公历时间获取范围内该时间的农历天的具体公历日期
 QMap<int, QDate> LunarDateInfo::getAllNextMonthLunarDayBySolar(const QDate &solarDate)
 {
+    qCDebug(ServiceLogger) << "Getting next month lunar days for solar date:" << solarDate.toString();
     QMap<int, QDate> solar;
     //如果需要通过公历信息获取下一个对应农历信息对应的天
 
@@ -68,6 +73,7 @@ QMap<int, QDate> LunarDateInfo::getAllNextMonthLunarDayBySolar(const QDate &sola
 
         //如果超过范围则退出
         if (addSolarMap(solar, nextSolar, count, info.LunarMonthDays)) {
+            qCDebug(ServiceLogger) << "Month recurrence calculation completed. Found" << solar.size() << "dates";
             break;
         }
     }
@@ -76,6 +82,7 @@ QMap<int, QDate> LunarDateInfo::getAllNextMonthLunarDayBySolar(const QDate &sola
 
 QMap<int, QDate> LunarDateInfo::getAllNextYearLunarDayBySolar(const QDate &solarDate)
 {
+    qCDebug(ServiceLogger) << "Getting next year lunar days for solar date:" << solarDate.toString();
     QMap<int, QDate> solar;
 
     //TODO: 需要优化
@@ -160,16 +167,20 @@ QMap<int, QDate> LunarDateInfo::getAllNextYearLunarDayBySolar(const QDate &solar
             continue;
         }
     }
+    qCDebug(ServiceLogger) << "Year recurrence calculation completed. Found" << solar.size() << "dates";
     return solar;
 }
 
 lunarInfo LunarDateInfo::getNextMonthLunarDay(QDate &nextDate, const lunarInfo &info)
 {
+    qCDebug(ServiceLogger) << "Getting next month lunar day for date:" << nextDate.toString();
     LunarCalendar *lunc = LunarCalendar::GetLunarCalendar(nextDate.year());
     lunarInfo nextinfo = lunc->SolarDayToLunarDay(nextDate.month(), nextDate.day());
     //判断农历的天是否为重复的天，比如一月初一，加上一月份的天数应该为二月初一
     //如果不一样，则说明这个月没有这一天，比如正月三十，加上正月的月份天数，到了二月份是没有三十的，
     if (nextinfo.LunarDay != info.LunarDay) {
+        qCDebug(ServiceLogger) << "Adjusting date due to lunar day mismatch. Expected:" << info.LunarDay 
+                              << "Got:" << nextinfo.LunarDay;
         nextDate = nextDate.addDays(info.LunarDay - nextinfo.LunarDay);
         return getNextMonthLunarDay(nextDate, info);
     }
@@ -185,14 +196,19 @@ LunarDateInfo::LunnarRRule LunarDateInfo::ParseRRule(const QString &rule)
 {
     //无规则的不走这里判断所以此处默认rule不为空
     //局部变量初始化
+    qCDebug(ServiceLogger) << "Parsing recurrence rule:" << rule;
     LunnarRRule options = RRule_None;
     QStringList rruleslist = rule.split(";", Qt::SkipEmptyParts);
     //rpeat重复规则 0 无  1 每天 2 每个工作日 3 每周 4每月 5每年
     //type结束重复类型 0 永不 1  多少次结束  2 结束日期
     if (rruleslist.contains("FREQ=MONTHLY")) {
         options = RRule_Month;
+        qCDebug(ServiceLogger) << "Detected monthly recurrence rule";
     } else if (rruleslist.contains("FREQ=YEARLY")) {
         options = RRule_Year;
+        qCDebug(ServiceLogger) << "Detected yearly recurrence rule";
+    } else {
+        qCDebug(ServiceLogger) << "No specific recurrence rule detected";
     }
     return options;
 }

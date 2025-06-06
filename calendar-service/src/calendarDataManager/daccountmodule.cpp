@@ -101,6 +101,7 @@ void DAccountModule::setSyncFreq(const QString &freq)
     DAccount::SyncFreqType syncType = m_account->syncFreq();
     DAccount::syncFreqFromJsonString(m_account, freq);
     if (syncType == m_account->syncFreq()) {
+        qCDebug(ServiceLogger) << "Sync frequency unchanged for account:" << m_account->accountID();
         return;
     }
     m_accountDB->updateAccountInfo();
@@ -135,6 +136,8 @@ QString DAccountModule::createScheduleType(const QString &typeInfo)
         DTypeColor::Ptr typeColor(new DTypeColor(scheduleType->typeColor()));
         typeColor->setPrivilege(DTypeColor::PriUser);
         m_accountDB->addTypeColor(typeColor);
+        qCDebug(ServiceLogger) << "Added custom color for schedule type:" << typeColor->colorID();
+        
         //添加创建颜色任务
         if (m_account->isNetWorkAccount()) {
             DUploadTaskData::Ptr uploadTask(new DUploadTaskData);
@@ -142,6 +145,7 @@ QString DAccountModule::createScheduleType(const QString &typeInfo)
             uploadTask->setTaskObject(DUploadTaskData::Task_Color);
             uploadTask->setObjectId(typeColor->colorID());
             m_accountDB->addUploadTask(uploadTask);
+            qCDebug(ServiceLogger) << "Added color upload task for network account";
         }
     }
     //设置创建时间
@@ -154,6 +158,7 @@ QString DAccountModule::createScheduleType(const QString &typeInfo)
         uploadTask->setTaskObject(DUploadTaskData::Task_ScheduleType);
         uploadTask->setObjectId(scheduleTypeID);
         m_accountDB->addUploadTask(uploadTask);
+        qCDebug(ServiceLogger) << "Added schedule type upload task for network account";
         //开启上传任务
         uploadNetWorkAccountData();
     }
@@ -308,11 +313,13 @@ QString DAccountModule::createSchedule(const QString &scheduleInfo)
         uploadTask->setTaskObject(DUploadTaskData::Task_Schedule);
         uploadTask->setObjectId(scheduleID);
         m_accountDB->addUploadTask(uploadTask);
+        qCDebug(ServiceLogger) << "Added schedule upload task for network account";
         //开启上传任务
         uploadNetWorkAccountData();
     }
     //根据是否为提醒日程更新提醒任务
     if (schedule->alarms().size() > 0) {
+        qCDebug(ServiceLogger) << "Updating reminders for new schedule:" << scheduleID;
         updateRemindSchedules(false);
     }
     //发送日程更新信号
@@ -615,16 +622,26 @@ void DAccountModule::remindJob(const QString &alarmID)
 void DAccountModule::accountDownload()
 {
     if (m_dataSync != nullptr) {
-        qCInfo(ServiceLogger) << "开始下载数据";
-        m_dataSync->syncData(this->account()->accountID(), this->account()->accountName(), (int)this->account()->accountState(), DDataSyncBase::Sync_Upload | DDataSyncBase::Sync_Download);
+        qCInfo(ServiceLogger) << "Starting data download for account:" << m_account->accountID();
+        m_dataSync->syncData(this->account()->accountID(), this->account()->accountName(), 
+                            (int)this->account()->accountState(), 
+                            DDataSyncBase::Sync_Upload | DDataSyncBase::Sync_Download);
+    } else {
+        qCWarning(ServiceLogger) << "Cannot download data - sync not available for account:" 
+                                << m_account->accountID();
     }
 }
 
 void DAccountModule::uploadNetWorkAccountData()
 {
     if (m_dataSync != nullptr) {
-        qCInfo(ServiceLogger) << "开始上传数据";
-        m_dataSync->syncData(this->account()->accountID(), this->account()->accountName(), (int)this->account()->accountState(), DDataSyncBase::Sync_Upload);
+        qCInfo(ServiceLogger) << "Starting data upload for account:" << m_account->accountID();
+        m_dataSync->syncData(this->account()->accountID(), this->account()->accountName(), 
+                            (int)this->account()->accountState(), 
+                            DDataSyncBase::Sync_Upload);
+    } else {
+        qCWarning(ServiceLogger) << "Cannot upload data - sync not available for account:" 
+                                << m_account->accountID();
     }
 }
 
@@ -898,19 +915,23 @@ void DAccountModule::slotSyncState(const int syncState)
         //执行正常
         m_account->setSyncState(DAccount::Sync_Normal);
         m_accountDB->updateAccountInfo();
+        qCDebug(ServiceLogger) << "Sync completed successfully for account:" << m_account->accountID();
         //同步成功后更新提醒任务
         updateRemindSchedules(false);
         break;
     case 7506:
         //网络异常
         m_account->setSyncState(DAccount::Sync_NetworkAnomaly);
+        qCWarning(ServiceLogger) << "Network anomaly during sync for account:" << m_account->accountID();
         break;
     case 7508:
         //存储已满
         m_account->setSyncState(DAccount::Sync_StorageFull);
+        qCWarning(ServiceLogger) << "Storage full during sync for account:" << m_account->accountID();
         break;
     default:
-        qCWarning(ServiceLogger)<<"syncState:"<<syncState<<"fun:"<<__FUNCTION__<<" line:"<<__LINE__;
+        qCWarning(ServiceLogger) << "Server exception during sync for account:" << m_account->accountID() 
+                                << "Error code:" << syncState;
         //默认服务器异常
         m_account->setSyncState(DAccount::Sync_ServerException);
         break;
@@ -919,13 +940,6 @@ void DAccountModule::slotSyncState(const int syncState)
     emit signalDtLastUpdate();
     //错误处理
     emit signalSyncState();
-    //如果上传失败，需要启动定时上传
-//    if (m_account->syncState() != DAccount::Sync_Normal) {
-//        uploadTaskHanding(1);
-//    } else {
-//        //如果有定时上传则停止
-//        uploadTaskHanding(0);
-//    }
 }
 
 void DAccountModule::slotDateUpdate(const DDataSyncBase::UpdateTypes updateType)
@@ -949,14 +963,14 @@ bool DAccountModule::importSchedule(const QString &icsFilePath, const QString &t
     KCalendarCore::MemoryCalendar::Ptr cal(new KCalendarCore::MemoryCalendar(timezone));
     auto ok = icalformat.load(cal, icsFilePath);
     if (!ok) {
-        qCWarning(ServiceLogger) << "can not load ics file from" << icsFilePath;
+        qCWarning(ServiceLogger) << "Failed to load ICS file:" << icsFilePath;
         return false;
     }
     auto events = cal->events();
     if (cleanExists) {
         ok = m_accountDB->deleteSchedulesByScheduleTypeID(typeID, true);
         if (!ok) {
-            qCWarning(ServiceLogger) << "can not clean schedules from" << typeID;
+            qCWarning(ServiceLogger) << "Failed to clean existing schedules for type:" << typeID;
             return false;
         }
     };
@@ -964,8 +978,9 @@ bool DAccountModule::importSchedule(const QString &icsFilePath, const QString &t
         auto data = event.data();
         auto sch = DSchedule::Ptr(new DSchedule(*data));
         sch->setScheduleTypeID(typeID);
-        qCInfo(ServiceLogger) << "import schedule" << event.data()->dtStart().toString()
-                << event.data()->summary() << m_accountDB->createSchedule(sch);
+        qCDebug(ServiceLogger) << "Imported schedule:" << data->summary() 
+                               << "Start:" << data->dtStart().toString() 
+                               << "ID:" << m_accountDB->createSchedule(sch);
     };
     // 发送日程更新信号
     emit signalScheduleUpdate();

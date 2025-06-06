@@ -48,9 +48,12 @@ DAlarmManager::DAlarmManager(QObject *parent)
 
 void DAlarmManager::updateRemind(const DRemindData::List &remindList)
 {
-    qCDebug(ServiceLogger) << "updateRemind" << "list size:" << remindList.size();
-    if (remindList.size() == 0)
+    qCDebug(ServiceLogger) << "Updating reminders, list size:" << remindList.size();
+    if (remindList.size() == 0) {
+        qCDebug(ServiceLogger) << "No reminders to update";
         return;
+    }
+
     QString &&accountID = remindList.at(0)->accountID();
     CSystemdTimerControl systemdTimerControl;
     //清空该帐户下日程提醒
@@ -71,10 +74,13 @@ void DAlarmManager::updateRemind(const DRemindData::List &remindList)
 
 void DAlarmManager::notifyJobsChanged(const DRemindData::List &remindList)
 {
-    if (remindList.size() == 0)
+    qCDebug(ServiceLogger) << "Notifying jobs changed, list size:" << remindList.size();
+    if (remindList.size() == 0) {
+        qCDebug(ServiceLogger) << "No jobs to notify about";
         return;
-    CSystemdTimerControl systemdTimerControl;
+    }
 
+    CSystemdTimerControl systemdTimerControl;
     QVector<SystemDInfo> infoVector {};
     foreach (auto remind, remindList) {
         SystemDInfo info;
@@ -91,7 +97,7 @@ void DAlarmManager::notifyMsgHanding(const DRemindData::Ptr &remindData, const i
 {
     switch (operationNum) {
     case 1:
-        //打开日历
+        qCDebug(ServiceLogger) << "Opening calendar UI for alarm:" << remindData->alarmID();
         emit signalCallOpenCalendarUI(remindData->alarmID());
         break;
     case 2: //稍后提醒
@@ -100,9 +106,12 @@ void DAlarmManager::notifyMsgHanding(const DRemindData::Ptr &remindData, const i
     case 23: //四个小时后提醒
     case 3: //明天提醒
     case 4: //提前一天提醒
+        qCDebug(ServiceLogger) << "Processing remind later operation:" << operationNum 
+                              << "for alarm:" << remindData->alarmID();
         remindLater(remindData, operationNum);
         break;
     default:
+        qCWarning(ServiceLogger) << "Unknown operation number:" << operationNum;
         break;
     }
 }
@@ -113,6 +122,7 @@ void DAlarmManager::remindLater(const DRemindData::Ptr &remindData, const int op
     SystemDInfo info;
     info.accountID = remindData->accountID();
     info.alarmID = remindData->alarmID();
+    
     //如果是稍后提醒则设置对应的重复次数
     if (operationNum == 2) {
         info.laterCount = remindData->remindCount();
@@ -121,13 +131,16 @@ void DAlarmManager::remindLater(const DRemindData::Ptr &remindData, const int op
         info.laterCount = remindData->remindCount() + 1;
     }
     info.triggerTimer = remindData->dtRemind();
+    
     //停止相应的任务
     systemdTimerControl.stopSystemdTimerByJobInfo(info);
 
     if (operationNum != 2) {
         //如果不是稍后提醒，还原成原来的提醒次数
         info.laterCount--;
+        qCDebug(ServiceLogger) << "Restored remind count to:" << info.laterCount;
     }
+    
     QVector<SystemDInfo> infoVector;
     infoVector.append(info);
     //开启新任务
@@ -136,18 +149,21 @@ void DAlarmManager::remindLater(const DRemindData::Ptr &remindData, const int op
 
 int DAlarmManager::remindJob(const DRemindData::Ptr &remindData, const DSchedule::Ptr &schedule)
 {
+    qCDebug(ServiceLogger) << "Processing remind job for schedule:" << schedule->uid();
     //如果没有提醒
     if (schedule->alarms().size() == 0) {
-        qCWarning(ServiceLogger) << "remind job failed id=%1" << schedule->uid();
+        qCWarning(ServiceLogger) << "Remind job failed - No alarms found for schedule:" << schedule->uid();
         return 0;
     }
 
     KCalendarCore::Alarm::Ptr alarm = schedule->alarms().at(0);
-
     int nDays = -(alarm->startOffset().asDays());
+    qCDebug(ServiceLogger) << "Alarm offset days:" << nDays;
 
     qint64 duration = 0;
     bool bmax = getRemindLaterDuration(remindData->remindCount(), duration);
+    qCDebug(ServiceLogger) << "Remind later duration:" << duration << "ms, Max duration:" << bmax;
+
     QStringList actionlist;
     QVariantMap hints;
     QString cmd = QString("dbus-send --session --print-reply --dest=com.deepin.dataserver.Calendar "
@@ -155,6 +171,7 @@ int DAlarmManager::remindJob(const DRemindData::Ptr &remindData, const DSchedule
                           "com.deepin.dataserver.Calendar.AccountManager.notifyMsgHanding string:%1 string:%2")
                   .arg(remindData->accountID())
                   .arg(remindData->alarmID());
+
     auto argMake = [&](int operationNum, const QString & text, const QString & transText) {
         actionlist << text << transText;
         hints.insert("x-deepin-action-" + text, QString("/bin/bash,-c,%1 int32:%2").arg(cmd).arg(operationNum));
@@ -162,21 +179,24 @@ int DAlarmManager::remindJob(const DRemindData::Ptr &remindData, const DSchedule
 
     QDateTime tm = QDateTime::currentDateTime();
     if (tm < schedule->dtStart()) {
+        qCDebug(ServiceLogger) << "Schedule start time is in the future:" << schedule->dtStart().toString();
         //如果提醒规则大于3天且是第二次提醒
         if (nDays >= 3 && remindData->remindCount() == 1) {
             //default对应的是默认操作，也就是在点击空白区域会出发的操作
             argMake(1, notifyActKeyDefault, "");
             argMake(5, notifyActKeyClose, tr("Close", "button"));
             //当前时间与开始时间间隔大于1天
-            if (tm < schedule->dtStart().addDays(-1))
+            if (tm < schedule->dtStart().addDays(-1)) {
+                qCDebug(ServiceLogger) << "Adding one day before reminder action";
                 argMake(4, notifyActKeyRemind1DayBefore, tr("One day before start"));
-
+            }
         } else if ((nDays == 1 || nDays == 2) && bmax) {
+            qCDebug(ServiceLogger) << "Adding actions for short-term reminder (1-2 days)";
             argMake(1, notifyActKeyDefault, "");
             argMake(5, notifyActKeyClose, tr("Close", "button"));
             argMake(3, notifyActKeyRemindTomorrow, tr("Remind me tomorrow"));
-
         } else {
+            qCDebug(ServiceLogger) << "Adding actions for immediate reminder";
             argMake(1, notifyActKeyDefault, "");
             argMake(5, notifyActKeyClose, tr("Close", "button"));
             argMake(2, notifyActKeyRemindLater, tr("Remind me later"));
@@ -187,6 +207,7 @@ int DAlarmManager::remindJob(const DRemindData::Ptr &remindData, const DSchedule
             argMake(3, notifyActKeyRemindTomorrow, tr("Tomorrow"));
         }
     } else {
+        qCDebug(ServiceLogger) << "Schedule has already started, adding basic actions";
         argMake(1, notifyActKeyDefault, "");
         argMake(5, notifyActKeyClose, tr("Close", "button"));
     }
@@ -199,11 +220,12 @@ int DAlarmManager::remindJob(const DRemindData::Ptr &remindData, const DSchedule
     qint32 timeout = 0;
     QList<QVariant> argumentList;
     argumentList << appname << replaces_id << appicon << title << body << actionlist << hints << timeout;
-    qCDebug(ServiceLogger) << __FUNCTION__ << QString("remind now: %1, title:"
-                                        " %2, body: %3")
-             .arg(QDateTime::currentDateTime().toString())
-             .arg(title)
-             .arg(body);
+    
+    qCDebug(ServiceLogger) << "Sending notification - Time:" << QDateTime::currentDateTime().toString()
+                          << "Title:" << title
+                          << "Body:" << body
+                          << "Actions:" << actionlist.size();
+
     int notifyid = m_dbusnotify->Notify(argumentList);
     return notifyid;
 }
@@ -223,27 +245,35 @@ QString DAlarmManager::getRemindBody(const DSchedule::Ptr &schedule)
     quint32 startdayofyear = static_cast<quint32>(schedule->dtStart().date().dayOfYear());
     quint32 enddayofyear = static_cast<quint32>(schedule->dtEnd().date().dayOfYear());
     QString prefix;
+
     if (schedule->allDay()) {
+        qCDebug(ServiceLogger) << "Processing all-day schedule";
         //全天日程
         if (startdayofyear == enddayofyear) {
             //非跨天日程，只展示开始时间
             prefix = msgStart;
+            qCDebug(ServiceLogger) << "Single-day all-day schedule, using start time only";
         } else {
             //跨天日程，展示整个日程的时间
             prefix = QString(tr("%1 to %2")).arg(msgStart).arg(msgEnd);
+            qCDebug(ServiceLogger) << "Multi-day all-day schedule, using full time range";
         }
     } else {
+        qCDebug(ServiceLogger) << "Processing regular schedule";
         //非全天日程
         if (startdayofyear == enddayofyear) {
             //非跨天日程，GetBodyTimePart已经返回了日程的日期，即date，所以，这里只需要日程的结束时间，即time
             msgEnd = schedule->dtEnd().time().toString("HH:mm");
+            qCDebug(ServiceLogger) << "Single-day regular schedule, using end time only";
         }
         //展示日程的开始结束时间
         prefix = QString(tr("%1 to %2")).arg(msgStart).arg(msgEnd);
+        qCDebug(ServiceLogger) << "Using full time range for schedule display";
     }
+
     //日程时间+title
     QString strBody = QString("%1 %2").arg(prefix).arg(schedule->summary());
-
+    qCDebug(ServiceLogger) << "Generated reminder body:" << strBody;
     return strBody;
 }
 
@@ -264,9 +294,11 @@ QString DAlarmManager::getBodyTimePart(const QDateTime &nowtime, const QDateTime
         if (diff == 0) {
             //日程开始时间是今天
             strmsg = tr("Today");
+            qCDebug(ServiceLogger) << "Using 'Today' for same-day all-day schedule";
         } else if (diff == 1) {
             //日程开始时间是明天
             strmsg = tr("Tomorrow");
+            qCDebug(ServiceLogger) << "Using 'Tomorrow' for next-day all-day schedule";
         }
     } else {
         //非全天日程，展示日期和时间，即date time
@@ -275,12 +307,15 @@ QString DAlarmManager::getBodyTimePart(const QDateTime &nowtime, const QDateTime
         if (diff == 0) {
             //日程开始时间是今天，
             strmsg = tr("Today") + " " + jobtime.time().toString("HH:mm");
+            qCDebug(ServiceLogger) << "Using 'Today' with time for same-day schedule";
         } else if (diff == 1) {
             //日程开始时间是明天
             strmsg = tr("Tomorrow") + " " + jobtime.time().toString("HH:mm");
+            qCDebug(ServiceLogger) << "Using 'Tomorrow' with time for next-day schedule";
         }
     }
 
+    qCDebug(ServiceLogger) << "Generated time part:" << strmsg;
     return strmsg;
 }
 

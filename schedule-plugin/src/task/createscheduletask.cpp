@@ -18,16 +18,21 @@ Reply createScheduleTask::SchedulePress(semanticAnalysisTask &semanticTask)
     //创建
     CreateJsonData *createJsonData = dynamic_cast<CreateJsonData *>(semanticTask.getJsonData());
     //如果转换失败则返回错误消息
-    if (createJsonData == nullptr)
+    if (createJsonData == nullptr) {
+        qCWarning(CommonLogger) << "Failed to cast json data to CreateJsonData";
         return errorMessage();
+    }
     Reply m_reply;
     if (createJsonData->getPropertyStatus() != JsonData::PRO_NONE
             || createJsonData->offset() > -1) {
+        qCWarning(CommonLogger) << "Invalid property status or offset - Status:" << createJsonData->getPropertyStatus() 
+                               << "Offset:" << createJsonData->offset();
         REPLY_ONLY_TTS(m_reply, CREATE_ERR_TTS, CREATE_ERR_TTS, true);
         return m_reply;
     }
     //如果时间无效
     if (createJsonData->getDateTimeInvalid()) {
+        qCWarning(CommonLogger) << "Invalid date time in create request";
         REPLY_ONLY_TTS(m_reply, DATETIME_ERR_TTS, DATETIME_ERR_TTS, true);
         return m_reply;
     }
@@ -37,11 +42,11 @@ Reply createScheduleTask::SchedulePress(semanticAnalysisTask &semanticTask)
     setDateTime(createJsonData);
     if (m_begintime > m_endtime) {
         //日程的开始时间大于结束时间，
-        qCritical("error: schedule begindatetime is after the enddatetime!");
+        qCritical(CommonLogger) << "Invalid schedule time range - Begin:" << m_begintime << "End:" << m_endtime;
     }
     if (shouldEndSession(createJsonData)) {
         if (!isValidDateTime) {
-            qCInfo(CommonLogger) << "schedule begintime or endtime is not valided!";
+            qCInfo(CommonLogger) << "Invalid schedule time - Begin:" << m_begintime << "End:" << m_endtime;
             //无效时间，直接返回回复语
             REPLY_ONLY_TTS(m_reply, replyNotValidDT, replyNotValidDT, true);
             //设置时间有效标志为true
@@ -49,11 +54,11 @@ Reply createScheduleTask::SchedulePress(semanticAnalysisTask &semanticTask)
             return m_reply;
         } else if (!beginDateTimeIsinHalfYear()) {
             if (beginDateTimeBeforeCurrent()) {
-                qCInfo(CommonLogger) << "schedule begintime is before currenttime!";
+                qCInfo(CommonLogger) << "Schedule begin time is before current time - Begin:" << m_begintime;
                 //"我现在有点慌，因为我还不会制定过去的提醒"
                 REPLY_ONLY_TTS(m_reply, createJsonData->SuggestMsg(), createJsonData->SuggestMsg(), true);
             } else if (beginDateTimeOutHalfYear()) {
-                qCInfo(CommonLogger) << "schedule begintime is after halfyear!";
+                qCInfo(CommonLogger) << "Schedule begin time is beyond half year - Begin:" << m_begintime;
                 //"只能创建未来半年的日程"
                 REPLY_ONLY_TTS(m_reply, CREATE_TIME_OUT_TTS, CREATE_TIME_OUT_TTS, true);
             }
@@ -63,6 +68,7 @@ Reply createScheduleTask::SchedulePress(semanticAnalysisTask &semanticTask)
             setScheduleTitleName(createJsonData);
             //创建日程和插件
             QString scheduleID = createScheduleWithRepeatStatus(createJsonData);
+            qCInfo(CommonLogger) << "Created schedule with ID:" << scheduleID;
             creareScheduleUI(scheduleID);
             //带有插件的回复语
             REPLY_WIDGET_TTS(m_reply, m_widget, getReply(createJsonData), getReply(createJsonData), true);
@@ -70,6 +76,7 @@ Reply createScheduleTask::SchedulePress(semanticAnalysisTask &semanticTask)
     } else {
         //如果需要进行多轮，需要先将此标志设置为true
         isValidDateTime = true;
+        qCDebug(CommonLogger) << "Starting multi-round schedule creation";
         //开始date为今天，没有给time(默认为00：00,小于当前time)，需要进行多轮，设置默认回复语
         //只有回复语
         REPLY_ONLY_TTS(m_reply, createJsonData->SuggestMsg(), createJsonData->SuggestMsg(), false);
@@ -86,14 +93,17 @@ void createScheduleTask::setDateTime(CreateJsonData *createJsonData)
         //只有一个时间，为日程开始时间，结束时间为开始时间一个小时后
         m_begintime = createJsonData->getDateTime().suggestDatetime.at(0).datetime;
         m_endtime = m_begintime.addSecs(60 * 60);
+        qCDebug(CommonLogger) << "Single time point - Begin:" << m_begintime << "End:" << m_endtime;
         if (!validDateTime(m_begintime)) {
             //日程时间是否有效
             QString strDateTime = createJsonData->getDateTime().suggestDatetime.at(0).strDateTime;
+            qCWarning(CommonLogger) << "Invalid date time:" << strDateTime;
             isValidDateTime = false;
             replyNotValidDT = QString(ISVALID_DATE_TIME).arg(strDateTime);
             break;
         }
         if (!createJsonData->getDateTime().suggestDatetime.at(0).hasTime) {
+            qCDebug(CommonLogger) << "No time specified, using current time";
             m_begintime.setTime(QTime::currentTime());
             m_endtime = m_begintime.addSecs(60 * 60);
         }
@@ -102,12 +112,15 @@ void createScheduleTask::setDateTime(CreateJsonData *createJsonData)
         //日程是否带有具体时间
         bool firstScheduleHasTime = createJsonData->getDateTime().suggestDatetime.at(0).hasTime;
         bool secondScheduleHasTime = createJsonData->getDateTime().suggestDatetime.at(1).hasTime;
+        qCDebug(CommonLogger) << "Two time points - First has time:" << firstScheduleHasTime 
+                             << "Second has time:" << secondScheduleHasTime;
         //有两个时间
         m_begintime = createJsonData->getDateTime().suggestDatetime.at(0).datetime;
         m_endtime = createJsonData->getDateTime().suggestDatetime.at(1).datetime;
         //日程开始时间是否有效
         if (!validDateTime(m_begintime)) {
             QString strDateTime = createJsonData->getDateTime().suggestDatetime.at(0).strDateTime;
+            qCWarning(CommonLogger) << "Invalid begin date time:" << strDateTime;
             isValidDateTime = false;
             replyNotValidDT = QString(ISVALID_DATE_TIME).arg(strDateTime);
             break;
@@ -115,6 +128,7 @@ void createScheduleTask::setDateTime(CreateJsonData *createJsonData)
         //日程结束时间是否有效
         if (!validDateTime(m_endtime)) {
             QString endDateTime = createJsonData->getDateTime().suggestDatetime.at(1).strDateTime;
+            qCWarning(CommonLogger) << "Invalid end date time:" << endDateTime;
             isValidDateTime = false;
             replyNotValidDT = QString(ISVALID_DATE_TIME).arg(endDateTime);
             break;
@@ -123,21 +137,26 @@ void createScheduleTask::setDateTime(CreateJsonData *createJsonData)
         if (m_begintime.date() == QDateTime::currentDateTime().date()) {
             if (m_begintime.time() > QTime::currentTime()) {
                 //跨天日程，如果日程开始时间大于当前时间，则开始时间为当天
+                qCDebug(CommonLogger) << "Adjusting begin time for same day schedule";
                 m_begintime.setDate(m_begintime.date().addDays(m_begintime.date().daysTo(QDate::currentDate())));
             } else {
                 //跨天日程，如果日程开始时间小于等于当前时间，则开始时间加一天
+                qCDebug(CommonLogger) << "Adjusting begin time to next day";
                 m_begintime.setDate(m_begintime.date().addDays(m_begintime.date().daysTo(QDate::currentDate()) + 1));
             }
         }
         //开始时间没有具体时间点，设置为当前时间点
         if (firstScheduleHasTime && !secondScheduleHasTime) {
+            qCDebug(CommonLogger) << "Setting end time to match begin time";
             m_endtime.setTime(m_begintime.time());
         } else if (!firstScheduleHasTime && secondScheduleHasTime) {
+            qCDebug(CommonLogger) << "Setting begin time to match end time";
             m_begintime.setTime(m_endtime.time());
         }
     } break;
     default: {
         //其他情况视为错误输入
+        qCWarning(CommonLogger) << "Invalid number of date time suggestions:" << DateTimeSize;
         isValidDateTime = false;
         replyNotValidDT = "您输入的时间不正确，请重新输入";
     } break;
@@ -156,6 +175,7 @@ void createScheduleTask::setScheduleTitleName(CreateJsonData *createJsonData)
 
 QString createScheduleTask::createScheduleWithRepeatStatus(CreateJsonData *createJsonData)
 {
+    qCDebug(CommonLogger) << "Creating schedule with repeat status:" << createJsonData->getRepeatStatus();
     //创建的日程信息
     QString scheduleID;
     //重复日程的时间
@@ -165,40 +185,49 @@ QString createScheduleTask::createScheduleWithRepeatStatus(CreateJsonData *creat
     case CreateJsonData::NONE: {
         //非重复日程，不能创建过期日程
         if (m_begintime >= QDateTime::currentDateTime() && m_begintime < QDateTime::currentDateTime().addMonths(6)) {
+            qCDebug(CommonLogger) << "Creating non-repeating schedule";
             scheduleID = getNotRepeatDaySchedule();
         }
     }
     break;
     case CreateJsonData::EVED:
         //每天重复日程
+        qCDebug(CommonLogger) << "Creating daily repeating schedule";
         scheduleID = getEveryDaySchedule();
         break;
     case CreateJsonData::EVEW: {
         //每周重复日程
+        qCDebug(CommonLogger) << "Creating weekly repeating schedule - Days:" << getDayNum;
         scheduleID = getEveryWeekSchedule(getDayNum);
     }
     break;
     case CreateJsonData::EVEM: {
         //每月重复日程
+        qCDebug(CommonLogger) << "Creating monthly repeating schedule - Days:" << getDayNum;
         scheduleID = getEveryMonthSchedule(getDayNum);
     }
     break;
     case CreateJsonData::EVEY: {
         //每年重复日程,不能创建过期或者超过半年的日程
-        if (m_begintime > QDateTime::currentDateTime() && m_begintime < QDateTime::currentDateTime().addMonths(6))
+        if (m_begintime > QDateTime::currentDateTime() && m_begintime < QDateTime::currentDateTime().addMonths(6)) {
+            qCDebug(CommonLogger) << "Creating yearly repeating schedule";
             scheduleID = getEveryYearSchedule();
+        }
     }
     break;
     case CreateJsonData::WORKD:
         //工作日
+        qCDebug(CommonLogger) << "Creating workday repeating schedule";
         scheduleID = getEveryWorkDaySchedule();
         break;
     case CreateJsonData::RESTD: {
         //休息日
+        qCDebug(CommonLogger) << "Creating rest day repeating schedule";
         scheduleID = getEveryRestDaySchedule();
     }
     break;
     }
+    qCDebug(CommonLogger) << "Created schedule with ID:" << scheduleID;
     return scheduleID;
 }
 
@@ -240,33 +269,41 @@ QString createScheduleTask::getReply(CreateJsonData *createJsonData)
 
 bool createScheduleTask::beginDateTimeIsinHalfYear()
 {
+    qCDebug(CommonLogger) << "Checking if begin time is within half year - Begin:" << m_begintime;
     //判断日程开始时间是否在半年内
-    if (m_begintime < QDateTime::currentDateTime() || m_begintime > QDateTime::currentDateTime().addMonths(6))
+    if (m_begintime < QDateTime::currentDateTime() || m_begintime > QDateTime::currentDateTime().addMonths(6)) {
+        qCDebug(CommonLogger) << "Begin time is outside half year range";
         return false;
-    else
-        return true;
+    }
+    qCDebug(CommonLogger) << "Begin time is within half year range";
+    return true;
 }
 
 bool createScheduleTask::beginDateTimeOutHalfYear()
 {
+    qCDebug(CommonLogger) << "Checking if begin time is beyond half year - Begin:" << m_begintime;
     //日程开始时间不在半年范围内
-    if (m_begintime > QDateTime::currentDateTime().addMonths(6))
+    if (m_begintime > QDateTime::currentDateTime().addMonths(6)) {
+        qCDebug(CommonLogger) << "Begin time is beyond half year";
         return true;
-    else
-        return false;
+    }
+    return false;
 }
 
 bool createScheduleTask::beginDateTimeBeforeCurrent()
 {
+    qCDebug(CommonLogger) << "Checking if begin time is before current time - Begin:" << m_begintime;
     //日程开始时间早于当前时间
-    if (m_begintime < QDateTime::currentDateTime())
+    if (m_begintime < QDateTime::currentDateTime()) {
+        qCDebug(CommonLogger) << "Begin time is before current time";
         return true;
-    else
-        return false;
+    }
+    return false;
 }
 
 QString createScheduleTask::getNotRepeatDaySchedule()
 {
+    qCDebug(CommonLogger) << "Creating non-repeating schedule - Begin:" << m_begintime << "End:" << m_endtime;
     //设置重复类型
     m_widget->setRpeat(0);
     //创建日程
@@ -276,6 +313,7 @@ QString createScheduleTask::getNotRepeatDaySchedule()
 
 QString createScheduleTask::getEveryDaySchedule()
 {
+    qCDebug(CommonLogger) << "Creating daily repeating schedule - Begin:" << m_begintime << "End:" << m_endtime;
     //设置重复类型
     m_widget->setRpeat(1);
     DSchedule::Ptr scheduleinfo = setDateTimeAndGetSchedule(m_begintime, m_endtime);
@@ -580,6 +618,7 @@ QVector<QDateTime> createScheduleTask::getWeekBackPartDateTime(QDate BeginDate, 
 
 DSchedule::Ptr createScheduleTask::setDateTimeAndGetSchedule(QDateTime beginDateTime, QDateTime endDateTime)
 {
+    qCDebug(CommonLogger) << "Setting schedule date time and getting schedule - Begin:" << beginDateTime << "End:" << endDateTime;
     m_widget->setDateTime(beginDateTime, endDateTime);
     m_widget->setschedule();
 

@@ -25,6 +25,8 @@ DAccountDataBase::DAccountDataBase(const DAccount::Ptr &account, QObject *parent
 QString DAccountDataBase::createSchedule(const DSchedule::Ptr &schedule)
 {
     if (!schedule.isNull()) {
+        qCDebug(ServiceLogger) << "Creating schedule:" << schedule->summary() 
+                              << "Start:" << schedule->dtStart().toString();
         SqliteQuery query(m_database);
         schedule->setUid(DDataBase::createUuid());
 
@@ -49,20 +51,20 @@ QString DAccountDataBase::createSchedule(const DSchedule::Ptr &schedule)
             query.addBindValue(0);
             if (!query.exec()) {
                 schedule->setUid("");
-                qCWarning(ServiceLogger) << "createSchedule error:" << query.lastError();
+                qCWarning(ServiceLogger) << "Failed to create schedule:" << query.lastError().text();
+            } else {
+                qCDebug(ServiceLogger) << "Successfully created schedule with ID:" << schedule->uid();
             }
             if (query.isActive()) {
                 query.finish();
             }
         } else {
             schedule->setUid("");
-            qCWarning(ServiceLogger) << "createSchedule error:" << query.lastError();
+            qCWarning(ServiceLogger) << "Failed to prepare schedule creation query:" << query.lastError().text();
         }
-
     } else {
-        qCWarning(ServiceLogger) << "schedule is null";
+        qCWarning(ServiceLogger) << "Attempted to create null schedule";
     }
-
     return schedule->uid();
 }
 
@@ -70,6 +72,8 @@ bool DAccountDataBase::updateSchedule(const DSchedule::Ptr &schedule)
 {
     bool resbool = false;
     if (!schedule.isNull()) {
+        qCDebug(ServiceLogger) << "Updating schedule:" << schedule->summary() 
+                              << "ID:" << schedule->schedulingID();
         SqliteQuery query(m_database);
         QString strSql("UPDATE schedules                                                  \
                        SET scheduleTypeID=?, summary=?, description=?, allDay=?           \
@@ -91,8 +95,9 @@ bool DAccountDataBase::updateSchedule(const DSchedule::Ptr &schedule)
             query.addBindValue(schedule->schedulingID());
             if (query.exec()) {
                 resbool = true;
+                qCDebug(ServiceLogger) << "Successfully updated schedule:" << schedule->schedulingID();
             } else {
-                qCWarning(ServiceLogger) << Q_FUNC_INFO << query.lastError();
+                qCWarning(ServiceLogger) << "Failed to update schedule:" << query.lastError().text();
             }
             if (query.isActive()) {
                 query.finish();
@@ -101,7 +106,6 @@ bool DAccountDataBase::updateSchedule(const DSchedule::Ptr &schedule)
             qCWarning(ServiceLogger) << Q_FUNC_INFO << query.lastError();
         }
     }
-
     return resbool;
 }
 
@@ -337,6 +341,7 @@ void DAccountDataBase::initDBData()
 {
     //如果不存在对应的数据库则创建
     if (!dbFileExists()) {
+        qCDebug(ServiceLogger) << "Database file does not exist, creating new database";
         createDB();
         initTypeColor();
         initScheduleDB();
@@ -344,12 +349,14 @@ void DAccountDataBase::initDBData()
         initAccountDB();
     } else {
         //如果存在则连接数据库
+        qCDebug(ServiceLogger) << "Database file exists, opening connection";
         dbOpen();
     }
 }
 
 QString DAccountDataBase::createScheduleType(const DScheduleType::Ptr &scheduleType)
 {
+    qCDebug(ServiceLogger) << "Creating schedule type:" << scheduleType->typeName();
     QString strSql("INSERT INTO scheduleType (                      \
                    typeID, typeName, typeDisplayName, typePath,     \
                    typeColorID, description, privilege, showState,  \
@@ -359,6 +366,7 @@ QString DAccountDataBase::createScheduleType(const DScheduleType::Ptr &scheduleT
     if (query.prepare(strSql)) {
         if (scheduleType->typeID().size() < 30) {
             scheduleType->setTypeID(DDataBase::createUuid());
+            qCDebug(ServiceLogger) << "Generated new type ID:" << scheduleType->typeID();
         }
 
         query.addBindValue(scheduleType->typeID());
@@ -374,11 +382,11 @@ QString DAccountDataBase::createScheduleType(const DScheduleType::Ptr &scheduleT
         query.addBindValue(scheduleType->deleted());
 
         if (!query.exec()) {
-            qCWarning(ServiceLogger) << __FUNCTION__ << query.lastError();
+            qCWarning(ServiceLogger) << "Failed to create schedule type:" << query.lastError().text();
             scheduleType->setTypeID("");
         }
     } else {
-        qCWarning(ServiceLogger) << __FUNCTION__ << query.lastError();
+        qCWarning(ServiceLogger) << "Failed to prepare schedule type creation query:" << query.lastError().text();
         scheduleType->setTypeID("");
     }
 
@@ -607,6 +615,7 @@ QString DAccountDataBase::getFestivalTypeID()
 
 void DAccountDataBase::getAccountInfo(const DAccount::Ptr &account)
 {
+    qCDebug(ServiceLogger) << "Getting account info for:" << account->accountName();
     QString strSql("SELECT syncState,accountState, accountName, displayName, cloudPath,      \
                    accountType, syncFreq, intervalTime, syncTag, expandStatus, dtLastUpdate         \
                    FROM account WHERE id = 1;");
@@ -624,8 +633,9 @@ void DAccountDataBase::getAccountInfo(const DAccount::Ptr &account)
         account->setSyncTag(query.value("syncTag").toInt());
         account->setIsExpandDisplay(query.value("expandStatus").toBool());
         account->setDtLastSync(dtFromString(query.value("dtLastUpdate").toString()));
+        qCDebug(ServiceLogger) << "Successfully retrieved account info for:" << account->accountName();
     } else {
-        qCWarning(ServiceLogger) << query.lastError();
+        qCWarning(ServiceLogger) << "Failed to get account info:" << query.lastError().text();
     }
     if (query.isActive()) {
         query.finish();
@@ -652,10 +662,10 @@ void DAccountDataBase::updateAccountInfo()
         query.addBindValue(m_account->isExpandDisplay());
         query.addBindValue(dtToString(m_account->dtLastSync()));
         if (!query.exec()) {
-            qCWarning(ServiceLogger) << query.lastError();
+            qCWarning(ServiceLogger) << "Failed to update account info:" << query.lastError().text();
         }
     } else {
-        qCWarning(ServiceLogger) << query.lastError();
+        qCWarning(ServiceLogger) << "Failed to prepare account info update query:" << query.lastError().text();
     }
 
     if (query.isActive()) {
@@ -766,10 +776,10 @@ void DAccountDataBase::createRemindInfo(const DRemindData::Ptr &remind)
         query.addBindValue(dtToString(remind->dtStart()));
         query.addBindValue(dtToString(remind->dtEnd()));
         if (!query.exec()) {
-            qCWarning(ServiceLogger) << Q_FUNC_INFO << query.lastError();
+            qCWarning(ServiceLogger) << "Failed to create reminder:" << query.lastError().text();
         }
     } else {
-        qCWarning(ServiceLogger) << Q_FUNC_INFO << query.lastError();
+        qCWarning(ServiceLogger) << "Failed to prepare reminder creation query:" << query.lastError().text();
     }
 }
 
@@ -790,10 +800,10 @@ void DAccountDataBase::updateRemindInfo(const DRemindData::Ptr &remind)
         query.addBindValue(dtToString(remind->dtEnd()));
         query.addBindValue(remind->alarmID());
         if (!query.exec()) {
-            qCWarning(ServiceLogger) << Q_FUNC_INFO << query.lastError();
+            qCWarning(ServiceLogger) << "Failed to update reminder:" << query.lastError().text();
         }
     } else {
-        qCWarning(ServiceLogger) << Q_FUNC_INFO << query.lastError();
+        qCWarning(ServiceLogger) << "Failed to prepare reminder update query:" << query.lastError().text();
     }
 }
 
@@ -804,10 +814,10 @@ void DAccountDataBase::deleteRemindInfoByAlarmID(const QString &alarmID)
     if (query.prepare(strSql)) {
         query.addBindValue(alarmID);
         if (!query.exec()) {
-            qCWarning(ServiceLogger) << Q_FUNC_INFO << query.lastError();
+            qCWarning(ServiceLogger) << "Failed to delete reminder:" << query.lastError().text();
         }
     } else {
-        qCWarning(ServiceLogger) << Q_FUNC_INFO << query.lastError();
+        qCWarning(ServiceLogger) << "Failed to prepare reminder deletion query:" << query.lastError().text();
     }
 
     if (query.isActive()) {
@@ -894,7 +904,7 @@ void DAccountDataBase::clearRemindJobDatabase()
             query.finish();
         }
     } else {
-        qCWarning(ServiceLogger) << __FUNCTION__ << query.lastError();
+        qCWarning(ServiceLogger) << "Failed to clear reminder jobs:" << query.lastError().text();
     }
 }
 
@@ -1010,48 +1020,50 @@ void DAccountDataBase::createDB()
     //如果不存在该文件则创建
     if (!file.exists() && m_database.open()) {
         m_database.close();
+        qCDebug(ServiceLogger) << "Created new database file:" << getDBPath();
     }
     //将权限修改为600（对文件的所有者可以读写，其他用户不可读不可写）
     if (!file.setPermissions(QFile::WriteOwner | QFile::ReadOwner)) {
-        qCWarning(ServiceLogger) << "permissions cannot be modified，error:" << file.errorString();
+        qCWarning(ServiceLogger) << "Failed to set database file permissions:" << file.errorString();
     }
+
     if (m_database.open()) {
         SqliteQuery query(m_database);
         bool res = true;
         //帐户信息表
         res = query.exec(sql_create_account);
         if (!res) {
-            qCWarning(ServiceLogger) << "account create failed.error:" << query.lastError();
+            qCWarning(ServiceLogger) << "Failed to create account table:" << query.lastError().text();
         }
 
         //日程表
         res = query.exec(sql_create_schedules);
         if (!res) {
-            qCWarning(ServiceLogger) << "schedules create failed.error:" << query.lastError();
+            qCWarning(ServiceLogger) << "Failed to create schedules table:" << query.lastError().text();
         }
 
         //类型表
         res = query.exec(sql_create_scheduleType);
         if (!res) {
-            qCWarning(ServiceLogger) << "scheduleType create failed.error:" << query.lastError();
+            qCWarning(ServiceLogger) << "Failed to create scheduleType table:" << query.lastError().text();
         }
 
         //颜色表
         res = query.exec(sql_create_typeColor);
         if (!res) {
-            qCWarning(ServiceLogger) << "typeColorSql create failed.error:" << query.lastError();
+            qCWarning(ServiceLogger) << "Failed to create typeColor table:" << query.lastError().text();
         }
 
         //创建上传任务表
         res = query.exec(sql_create_uploadTask);
         if (!res) {
-            qCWarning(ServiceLogger) << "uploadTask create failed.error:" << query.lastError();
+            qCWarning(ServiceLogger) << "Failed to create uploadTask table:" << query.lastError().text();
         }
 
         //创建提醒任务表
         res = query.exec(sql_create_remindTask);
         if (!res) {
-            qCWarning(ServiceLogger) << "remindTask create failed.error:" << query.lastError();
+            qCWarning(ServiceLogger) << "Failed to create remindTask table:" << query.lastError().text();
         }
 
         if (query.isActive()) {

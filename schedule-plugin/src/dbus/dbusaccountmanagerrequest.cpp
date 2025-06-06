@@ -37,6 +37,7 @@ DAccount::List DbusAccountManagerRequest::getAccountList()
  */
 void DbusAccountManagerRequest::downloadByAccountID(const QString &accountID)
 {
+    qCInfo(CommonLogger) << "Requesting download for account ID:" << accountID;
     QList<QVariant> argumentList;
     argumentList << QVariant(accountID);
     asyncCall("downloadByAccountID", argumentList);
@@ -92,7 +93,8 @@ void DbusAccountManagerRequest::slotCallFinished(CDBusPendingCallWatcher *call)
     //错误处理
     if (call->isError()) {
         //打印错误信息
-        qCWarning(CommonLogger) << call->reply().member() << call->error().message();
+        qCWarning(CommonLogger) << "DBus call failed - Method:" << call->reply().member() 
+                               << "Error:" << call->error().message();
         ret = 1;
     } else if (call->getmember() == "getAccountList") {
         //"getAccountList"方法回调事件
@@ -102,24 +104,27 @@ void DbusAccountManagerRequest::slotCallFinished(CDBusPendingCallWatcher *call)
         DAccount::List accountList;
         //解析字符串
         if (DAccount::fromJsonListString(accountList, str)) {
+            qCDebug(CommonLogger) << "Successfully processed account list with" << accountList.size() << "accounts";
             emit signalGetAccountListFinish(accountList);
         } else {
-            qCWarning(CommonLogger)<< "AccountList Parsing failed!";
+            qCWarning(CommonLogger) << "Failed to parse account list from JSON response";
             ret = 2;
         }
     } else if (call->getmember() == "getCalendarGeneralSettings") {
-        qCInfo(CommonLogger) << "getCalendarGeneralSettings";
+        qCDebug(CommonLogger) << "Processing calendar general settings response";
         QDBusPendingReply<QString> reply = *call;
         QString str = reply.argumentAt<0>();
         DCalendarGeneralSettings::Ptr ptr;
         ptr.reset(new DCalendarGeneralSettings());
         if (DCalendarGeneralSettings::fromJsonString(ptr, str)) {
+            qCDebug(CommonLogger) << "Successfully parsed calendar general settings";
             emit signalGetGeneralSettingsFinish(ptr);
         } else {
-            qCWarning(CommonLogger) <<"AccountList Parsing failed!";
+            qCWarning(CommonLogger) << "Failed to parse calendar general settings from JSON";
             ret = 2;
         }
     } else if (call->getmember() == "setCalendarGeneralSettings") {
+        qCDebug(CommonLogger) << "Calendar settings updated, refreshing general settings";
         canCall = false;
         setCallbackFunc(call->getCallbackFunc());
         getCalendarGeneralSettings();
@@ -127,6 +132,7 @@ void DbusAccountManagerRequest::slotCallFinished(CDBusPendingCallWatcher *call)
 
     //执行回调函数
     if (canCall && call->getCallbackFunc() != nullptr) {
+        qCDebug(CommonLogger) << "Executing callback for method:" << call->getmember() << "with ret:" << ret;
         call->getCallbackFunc()({ret, ""});
     }
     //释放内存

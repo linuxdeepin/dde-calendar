@@ -37,6 +37,7 @@ QString DAccount::displayName() const
 
 void DAccount::setDisplayName(const QString &displayName)
 {
+    qCDebug(ServiceLogger) << "Setting display name for account" << m_accountID << "from" << m_displayName << "to" << displayName;
     m_displayName = displayName;
 }
 
@@ -47,6 +48,7 @@ QString DAccount::accountID() const
 
 void DAccount::setAccountID(const QString &accountID)
 {
+    qCDebug(ServiceLogger) << "Setting account ID from" << m_accountID << "to" << accountID;
     m_accountID = accountID;
 }
 
@@ -57,6 +59,7 @@ QString DAccount::accountName() const
 
 void DAccount::setAccountName(const QString &accountName)
 {
+    qCDebug(ServiceLogger) << "Setting account name for" << m_accountID << "from" << m_accountName << "to" << accountName;
     m_accountName = accountName;
 }
 
@@ -67,6 +70,7 @@ QString DAccount::dbusPath() const
 
 void DAccount::setDbusPath(const QString &dbusPath)
 {
+    qCDebug(ServiceLogger) << "Setting DBus path for account" << m_accountID << "from" << m_dbusPath << "to" << dbusPath;
     m_dbusPath = dbusPath;
 }
 
@@ -122,6 +126,7 @@ QString DAccount::avatar() const
 
 void DAccount::setAvatar(const QString &avatar)
 {
+    qCDebug(ServiceLogger) << "Setting avatar for account" << m_accountID;
     m_avatar = avatar;
 }
 
@@ -132,6 +137,7 @@ QString DAccount::description() const
 
 void DAccount::setDescription(const QString &description)
 {
+    qCDebug(ServiceLogger) << "Setting description for account" << m_accountID;
     m_description = description;
 }
 
@@ -142,6 +148,7 @@ QDateTime DAccount::dtCreate() const
 
 void DAccount::setDtCreate(const QDateTime &dtCreate)
 {
+    qCDebug(ServiceLogger) << "Setting creation time for account" << m_accountID << "to" << dtCreate.toString();
     m_dtCreate = dtCreate;
 }
 
@@ -152,6 +159,7 @@ QDateTime DAccount::dtDelete() const
 
 void DAccount::setDtDelete(const QDateTime &dtDelete)
 {
+    qCDebug(ServiceLogger) << "Setting deletion time for account" << m_accountID << "to" << dtDelete.toString();
     m_dtDelete = dtDelete;
 }
 
@@ -162,13 +170,14 @@ QDateTime DAccount::dtUpdate() const
 
 void DAccount::setDtUpdate(const QDateTime &dtUpdate)
 {
+    qCDebug(ServiceLogger) << "Setting update time for account" << m_accountID << "to" << dtUpdate.toString();
     m_dtUpdate = dtUpdate;
 }
 
 bool DAccount::toJsonString(const DAccount::Ptr &account, QString &jsonStr)
 {
     if (account.isNull()) {
-        qCWarning(CommonLogger) << "hold a reference to a null pointer.";
+        qCWarning(ServiceLogger) << "Cannot convert null account to JSON";
         return false;
     }
     QJsonObject rootObj;
@@ -197,13 +206,14 @@ bool DAccount::toJsonString(const DAccount::Ptr &account, QString &jsonStr)
 bool DAccount::fromJsonString(Ptr &account, const QString &jsonStr)
 {
     if (account.isNull()) {
+        qCDebug(ServiceLogger) << "Creating new account instance for JSON parsing";
         account = DAccount::Ptr(new DAccount);
     }
 
     QJsonParseError jsonError;
     QJsonDocument jsonDoc(QJsonDocument::fromJson(jsonStr.toLocal8Bit(), &jsonError));
     if (jsonError.error != QJsonParseError::NoError) {
-        qCWarning(CommonLogger) << "error:" << jsonError.errorString();
+        qCWarning(ServiceLogger) << "Failed to parse account JSON. Error:" << jsonError.errorString();
         return false;
     }
     QJsonObject rootObj = jsonDoc.object();
@@ -284,9 +294,10 @@ bool DAccount::fromJsonListString(List &accountList, const QString &jsonStr)
     QJsonParseError jsonError;
     QJsonDocument jsonDoc(QJsonDocument::fromJson(jsonStr.toLocal8Bit(), &jsonError));
     if (jsonError.error != QJsonParseError::NoError) {
-        qCWarning(CommonLogger) << "error:" << jsonError.errorString();
+        qCWarning(ServiceLogger) << "Failed to parse account list JSON. Error:" << jsonError.errorString();
         return false;
     }
+
     QJsonObject rootObj = jsonDoc.object();
     if (rootObj.contains("accounts")) {
         QJsonArray jsArr = rootObj.value("accounts").toArray();
@@ -297,7 +308,7 @@ bool DAccount::fromJsonListString(List &accountList, const QString &jsonStr)
             if (fromJsonString(account, strAcc)) {
                 accountList.append(account);
             } else {
-                qCWarning(CommonLogger) << "format failed:" << strAcc;
+                qCWarning(ServiceLogger) << "Failed to parse account JSON:" << strAcc;
             }
         }
     }
@@ -311,6 +322,7 @@ QString DAccount::dbName() const
 
 void DAccount::setDbName(const QString &dbName)
 {
+    qCDebug(ServiceLogger) << "Setting database name for account" << m_accountID << "from" << m_dbName << "to" << dbName;
     m_dbName = dbName;
 }
 
@@ -321,6 +333,7 @@ QString DAccount::cloudPath() const
 
 void DAccount::setCloudPath(const QString &cloudPath)
 {
+    qCDebug(ServiceLogger) << "Setting cloud path for account" << m_accountID << "from" << m_cloudPath << "to" << cloudPath;
     m_cloudPath = cloudPath;
 }
 
@@ -371,6 +384,7 @@ QDateTime DAccount::dtLastSync() const
 
 void DAccount::setDtLastSync(const QDateTime &dtLastSync)
 {
+    qCDebug(ServiceLogger) << "Setting last sync time for account" << m_accountID << "to" << dtLastSync.toString();
     m_dtLastSync = dtLastSync;
 }
 
@@ -389,9 +403,10 @@ void DAccount::syncFreqFromJsonString(const DAccount::Ptr &account, const QStrin
     QJsonParseError jsonError;
     QJsonDocument jsonDoc(QJsonDocument::fromJson(syncFreqStr.toLocal8Bit(), &jsonError));
     if (jsonError.error != QJsonParseError::NoError) {
-        qCWarning(CommonLogger) << "error:" << jsonError.errorString();
+        qCWarning(ServiceLogger) << "Failed to parse sync frequency JSON. Error:" << jsonError.errorString();
         return;
     }
+
     QJsonObject rootObj = jsonDoc.object();
     if (rootObj.contains("syncFreq")) {
         account->setSyncFreq(SyncFreqType(rootObj.value("syncFreq").toInt()));

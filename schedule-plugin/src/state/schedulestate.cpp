@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "schedulestate.h"
+#include "commondef.h"
 
 #include "../task/schedulebasetask.h"
 #include "../data/changejsondata.h"
@@ -21,21 +22,30 @@ scheduleState::~scheduleState()
 Reply scheduleState::process(const JsonData *jsonData)
 {
     Reply reply;
+
     //如果时间无效
     if (jsonData->getDateTimeInvalid()) {
+        qCDebug(CommonLogger) << "DateTime is invalid, transitioning to queryScheduleState";
         scheduleState *nextState = new queryScheduleState(m_Task);
         setNextState(nextState);
         REPLY_ONLY_TTS(reply, DATETIME_ERR_TTS, DATETIME_ERR_TTS, true);
         return reply;
     }
-    switch (eventFilter(jsonData)) {
+
+    Filter_Flag filterResult = eventFilter(jsonData);
+    qCDebug(CommonLogger) << "Event filter result:" << filterResult;
+
+    switch (filterResult) {
     case Fileter_Err: {
+        qCDebug(CommonLogger) << "Processing error event";
         reply = ErrEvent();
     } break;
     case Fileter_Normal: {
+        qCDebug(CommonLogger) << "Processing normal event";
         reply = normalEvent(jsonData);
     } break;
     case Fileter_Init: {
+        qCDebug(CommonLogger) << "Processing init event";
         reply = initEvent(jsonData);
     } break;
     }
@@ -70,6 +80,7 @@ Reply scheduleState::initEvent(const JsonData *jsonData)
 scheduleState::Filter_Flag scheduleState::changeDateErrJudge(const JsonData *jsonData, const scheduleState::Filter_Flag &defaultflag)
 {
     Filter_Flag resultFlag {defaultflag};
+
     //如果只有修改信息没有被修改信息返回错误
     JsonData *queryData = const_cast<JsonData *>(jsonData);
     changejsondata *mchangeJsonData = dynamic_cast<changejsondata *>(queryData);
@@ -80,8 +91,13 @@ scheduleState::Filter_Flag scheduleState::changeDateErrJudge(const JsonData *jso
         bool noChangeDate = mchangeJsonData->fromDateTime().suggestDatetime.size() == 0
                             && mchangeJsonData->TitleName().isEmpty();
         if (hasChangeToData && noChangeDate) {
+            qCDebug(CommonLogger) << "Invalid change data detected - has change to but no change from";
             resultFlag = Filter_Flag::Fileter_Err;
         }
+    } else {
+        qCDebug(CommonLogger) << "Not a change data type, using default flag";
     }
+
+    qCDebug(CommonLogger) << "Date change error judgment result:" << resultFlag;
     return resultFlag;
 }

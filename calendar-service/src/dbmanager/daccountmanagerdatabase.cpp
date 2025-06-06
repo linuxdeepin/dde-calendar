@@ -49,7 +49,7 @@ DAccount::List DAccountManagerDataBase::getAccountList()
             accountList.append(account);
         }
     } else {
-        qCWarning(ServiceLogger) << "getAccountList error:" << query.lastError();
+        qCWarning(ServiceLogger) << "Failed to get account list:" << query.lastError().text();
     }
     return accountList;
 }
@@ -78,10 +78,10 @@ DAccount::Ptr DAccountManagerDataBase::getAccountByID(const QString &accountID)
             account->setDtCreate(QDateTime::fromString(query.value("dtCreate").toString(), Qt::ISODate));
             return account;
         } else {
-            qCWarning(ServiceLogger) << "getAccountByID error:" << query.lastError();
+            qCWarning(ServiceLogger) << "Account not found or query failed:" << query.lastError().text();
         }
     } else {
-        qCWarning(ServiceLogger) << "getAccountByID error:" << query.lastError();
+        qCWarning(ServiceLogger) << "Failed to prepare account query:" << query.lastError().text();
     }
 
     return nullptr;
@@ -89,10 +89,12 @@ DAccount::Ptr DAccountManagerDataBase::getAccountByID(const QString &accountID)
 
 QString DAccountManagerDataBase::addAccountInfo(const DAccount::Ptr &accountInfo)
 {
+    qCDebug(ServiceLogger) << "Adding new account:" << accountInfo->accountName();
     SqliteQuery query(m_database);
     //生成唯一标识
     if (accountInfo->accountID().isEmpty()) {
         accountInfo->setAccountID(DDataBase::createUuid());
+        qCDebug(ServiceLogger) << "Generated new account ID:" << accountInfo->accountID();
     }
     QString strSql("INSERT INTO accountManager                                          \
                    (accountID, accountName, displayName, accountState, accountAvatar,  \
@@ -114,11 +116,11 @@ QString DAccountManagerDataBase::addAccountInfo(const DAccount::Ptr &accountInfo
         query.addBindValue(accountInfo->isExpandDisplay());
         query.addBindValue(0);
         if (!query.exec()) {
-            qCWarning(ServiceLogger) << "addAccountInfo error:" << query.lastError();
+            qCWarning(ServiceLogger) << "Failed to add account:" << query.lastError().text();
             accountInfo->setAccountID("");
         }
     } else {
-        qCWarning(ServiceLogger) << "addAccountInfo error:" << query.lastError();
+        qCWarning(ServiceLogger) << "Failed to prepare account insertion query:" << query.lastError().text();
         accountInfo->setAccountID("");
     }
 
@@ -127,6 +129,7 @@ QString DAccountManagerDataBase::addAccountInfo(const DAccount::Ptr &accountInfo
 
 bool DAccountManagerDataBase::updateAccountInfo(const DAccount::Ptr &accountInfo)
 {
+    qCDebug(ServiceLogger) << "Updating account:" << accountInfo->accountName() << "ID:" << accountInfo->accountID();
     QString strSql("UPDATE accountManager                                                           \
                    SET accountName=?, displayName=?, accountState= ?,                   \
                    accountAvatar=?, accountDescription=?, accountType=?, dbName=?,               \
@@ -148,7 +151,7 @@ bool DAccountManagerDataBase::updateAccountInfo(const DAccount::Ptr &accountInfo
         res = query.exec();
     }
     if (!res) {
-        qCWarning(ServiceLogger) << "updateAccountInfo error:" << query.lastError();
+         qCWarning(ServiceLogger) << "Failed to update account:" << query.lastError().text();
     }
 
     return res;
@@ -156,6 +159,7 @@ bool DAccountManagerDataBase::updateAccountInfo(const DAccount::Ptr &accountInfo
 
 bool DAccountManagerDataBase::deleteAccountInfo(const QString &accountID)
 {
+    qCDebug(ServiceLogger) << "Deleting account with ID:" << accountID;
     QString strSql("DELETE FROM accountManager      \
                    WHERE accountID=?");
     SqliteQuery query(m_database);
@@ -166,44 +170,51 @@ bool DAccountManagerDataBase::deleteAccountInfo(const QString &accountID)
     }
 
     if (!res) {
-        qCWarning(ServiceLogger) << "deleteAccountInfo error:" << query.lastError();
+        qCWarning(ServiceLogger) << "Failed to delete account:" << query.lastError().text();
     }
     return res;
 }
 // 保存通用设置
 DCalendarGeneralSettings::Ptr DAccountManagerDataBase::getCalendarGeneralSettings()
 {
+    qCDebug(ServiceLogger) << "Getting calendar general settings";
     DCalendarGeneralSettings::Ptr cgSet(new DCalendarGeneralSettings);
     SqliteQuery query(m_database);
     query.exec("select vch_value from calendargeneralsettings where vch_key = 'firstDayOfWeek' ");
-    if (query.next())
+    if (query.next()) {
         cgSet->setFirstDayOfWeek(static_cast<Qt::DayOfWeek>(query.value(0).toInt()));
+        qCDebug(ServiceLogger) << "Retrieved first day of week:" << cgSet->firstDayOfWeek();
+    }
 
     query.exec("select vch_value from calendargeneralsettings where vch_key = 'timeShowType' ");
-    if (query.next())
+    if (query.next()) {
         cgSet->setTimeShowType(static_cast<DCalendarGeneralSettings::TimeShowType>(query.value(0).toInt()));
+        qCDebug(ServiceLogger) << "Retrieved time show type:" << cgSet->timeShowType();
+    }
 
     return cgSet;
 }
 // 获取通用设置
 void DAccountManagerDataBase::setCalendarGeneralSettings(const DCalendarGeneralSettings::Ptr &cgSet)
 {
+    qCDebug(ServiceLogger) << "Updating calendar general settings";
     SqliteQuery query(m_database);
     query.prepare("update calendargeneralsettings set vch_value = ? where vch_key = 'firstDayOfWeek' ");
     query.addBindValue(cgSet->firstDayOfWeek());
     if (!query.exec()) {
-        qCWarning(ServiceLogger) << "UPDATE calendargeneralsettings error," << query.lastError();
+        qCWarning(ServiceLogger) << "Failed to update first day of week:" << query.lastError().text();
     }
 
     query.prepare("update calendargeneralsettings set vch_value = ? where vch_key = 'timeShowType' ");
     query.addBindValue(cgSet->timeShowType());
     if (!query.exec()) {
-        qCWarning(ServiceLogger) << "UPDATE calendargeneralsettings error," << query.lastError();
+        qCWarning(ServiceLogger) << "Failed to update time show type:" << query.lastError().text();
     }
 }
 
 void DAccountManagerDataBase::createDB()
 {
+    qCDebug(ServiceLogger) << "Creating account manager database";
     dbOpen();
     //这里用QFile来修改日历数据库文件的权限
     QFile file;
@@ -212,10 +223,11 @@ void DAccountManagerDataBase::createDB()
     if (!file.exists()) {
         m_database.open();
         m_database.close();
+        qCDebug(ServiceLogger) << "Created new database file:" << getDBPath();
     }
     //将权限修改为600（对文件的所有者可以读写，其他用户不可读不可写）
     if (!file.setPermissions(QFile::WriteOwner | QFile::ReadOwner)) {
-        qCWarning(ServiceLogger) << "permissions cannot be modified，error:" << file.errorString();
+        qCWarning(ServiceLogger) << "Failed to set database file permissions:" << file.errorString();
     }
 
     if (m_database.open()) {
@@ -224,14 +236,13 @@ void DAccountManagerDataBase::createDB()
         //创建帐户管理表
         res = query.exec(sql_create_accountManager);
         if (!res) {
-            qCWarning(ServiceLogger) << "accountManager create failed.error:" << query.lastError();
+            qCWarning(ServiceLogger) << "Failed to create accountManager table:" << query.lastError().text();
         }
-
 
         //日历通用设置
         res = query.exec(sql_create_calendargeneralsettings);
         if (!res) {
-            qCWarning(ServiceLogger) << "uploadTask create failed.error:" << query.lastError();
+            qCWarning(ServiceLogger) << "Failed to create calendargeneralsettings table:" << query.lastError().text();
         }
 
         //创建calendargeneralsettings的触发器，数据有变动时，更新dt_update
@@ -267,6 +278,7 @@ void DAccountManagerDataBase::createDB()
 
 void DAccountManagerDataBase::initAccountManagerDB()
 {
+    qCDebug(ServiceLogger) << "Initializing account manager database tables";
     QDateTime currentDateTime = QDateTime::currentDateTime();
     currentDateTime.setOffsetFromUtc(currentDateTime.offsetFromUtc());
     m_database = QSqlDatabase::database(NameAccountManager);
@@ -302,10 +314,10 @@ void DAccountManagerDataBase::initAccountManagerDB()
                     query.finish();
                 }
             } else {
-                qCWarning(ServiceLogger) << __FUNCTION__ << query.lastError();
+                qCWarning(ServiceLogger) << "Failed to create local account:" << query.lastError().text();
             }
         } else {
-            qCWarning(ServiceLogger) << __FUNCTION__ << query.lastError();
+            qCWarning(ServiceLogger) << "Failed to prepare local account creation query:" << query.lastError().text();
         }
     }
 
@@ -315,14 +327,16 @@ void DAccountManagerDataBase::initAccountManagerDB()
         if (query.exec("insert into calendargeneralsettings values"
                        "('firstDayOfWeek',  '7'),"
                        "('timeShowType',    '0')")) {
+            qCDebug(ServiceLogger) << "Initialized calendar general settings";
             m_database.commit();
         } else {
-            qCWarning(ServiceLogger) << __FUNCTION__ << query.lastError();
+            qCWarning(ServiceLogger) << "Failed to initialize calendar general settings:" << query.lastError().text();
         }
     }
 }
 
 void DAccountManagerDataBase::setLoaclDB(const QString &loaclDB)
 {
+    qCDebug(ServiceLogger) << "Setting local database name:" << loaclDB;
     m_loaclDB = loaclDB;
 }

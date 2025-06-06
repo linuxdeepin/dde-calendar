@@ -54,9 +54,11 @@ DScheduleQueryPar::Ptr DScheduleQueryPar::fromJsonString(const QString &queryStr
     QJsonParseError jsonError;
     QJsonDocument jsonDoc(QJsonDocument::fromJson(queryStr.toLocal8Bit(), &jsonError));
     if (jsonError.error != QJsonParseError::NoError) {
-        qCWarning(CommonLogger) << "error:" << jsonError.errorString() << " queryStr:" << queryStr;
+        qCWarning(ServiceLogger) << "Failed to parse query parameters JSON. Error:" << jsonError.errorString() 
+                                 << "Query string:" << queryStr;
         return nullptr;
     }
+
     DScheduleQueryPar::Ptr queryPar = DScheduleQueryPar::Ptr(new DScheduleQueryPar);
     QJsonObject rootObj = jsonDoc.object();
     if (rootObj.contains("key")) {
@@ -93,9 +95,10 @@ DScheduleQueryPar::Ptr DScheduleQueryPar::fromJsonString(const QString &queryStr
 QString DScheduleQueryPar::toJsonString(const DScheduleQueryPar::Ptr &queryPar)
 {
     if (queryPar.isNull()) {
-        qCWarning(CommonLogger) << "hold a reference to a null pointer.";
+        qCWarning(ServiceLogger) << "Cannot convert null query parameters to JSON";
         return QString();
     }
+
     QJsonObject jsonObj;
     jsonObj.insert("key", queryPar->key());
     jsonObj.insert("dtStart", dtToString(queryPar->dtStart()));
@@ -111,6 +114,7 @@ QString DScheduleQueryPar::toJsonString(const DScheduleQueryPar::Ptr &queryPar)
     default:
         break;
     }
+
     QJsonDocument jsonDoc;
     jsonDoc.setObject(jsonObj);
     return QString::fromUtf8(jsonDoc.toJson(QJsonDocument::Compact));

@@ -34,13 +34,14 @@ void DbusAccountRequest::updateAccountInfo(const DAccount::Ptr &account)
  */
 DScheduleType::List DbusAccountRequest::getScheduleTypeList()
 {
+    qCDebug(CommonLogger) << "Requesting schedule type list";
     DScheduleType::List typeList;
     QList<QVariant> argumentList;
     QDBusPendingCall pCall = asyncCallWithArgumentList(QStringLiteral("getScheduleTypeList"), argumentList);
     pCall.waitForFinished();
     QDBusMessage reply = pCall.reply();
     if (reply.type() != QDBusMessage::ReplyMessage) {
-        qCWarning(CommonLogger) << "getScheduleTypeList error ," << reply;
+        qCWarning(CommonLogger) << "Failed to get schedule type list:" << reply.errorMessage();
         return typeList;
     }
     QDBusReply<QString> scheduleReply = reply;
@@ -55,6 +56,7 @@ DScheduleType::List DbusAccountRequest::getScheduleTypeList()
  */
 void DbusAccountRequest::getScheduleTypeByID(const QString &typeID)
 {
+    qCDebug(CommonLogger) << "Requesting schedule type by ID:" << typeID;
     asyncCall("getScheduleTypeByID", {QVariant(typeID)});
 }
 
@@ -65,6 +67,7 @@ void DbusAccountRequest::getScheduleTypeByID(const QString &typeID)
  */
 void DbusAccountRequest::createScheduleType(const DScheduleType::Ptr &typeInfo)
 {
+    qCInfo(CommonLogger) << "Creating new schedule type:" << typeInfo->typeName();
     QString jsonStr;
     DScheduleType::toJsonString(typeInfo, jsonStr);
     asyncCall("createScheduleType", {QVariant(jsonStr)});
@@ -77,6 +80,7 @@ void DbusAccountRequest::createScheduleType(const DScheduleType::Ptr &typeInfo)
  */
 void DbusAccountRequest::updateScheduleType(const DScheduleType::Ptr &typeInfo)
 {
+    qCInfo(CommonLogger) << "Updating schedule type:" << typeInfo->typeName() << "ID:" << typeInfo->typeID();
     QString jsonStr;
     DScheduleType::toJsonString(typeInfo, jsonStr);
     asyncCall("updateScheduleType", {QVariant(jsonStr)});
@@ -89,6 +93,7 @@ void DbusAccountRequest::updateScheduleType(const DScheduleType::Ptr &typeInfo)
  */
 void DbusAccountRequest::deleteScheduleTypeByID(const QString &typeID)
 {
+    qCInfo(CommonLogger) << "Deleting schedule type with ID:" << typeID;
     QList<QVariant> argumentList;
     asyncCall("deleteScheduleTypeByID", {QVariant(typeID)});
 }
@@ -100,6 +105,7 @@ void DbusAccountRequest::deleteScheduleTypeByID(const QString &typeID)
  */
 void DbusAccountRequest::scheduleTypeByUsed(const QString &typeID)
 {
+    qCDebug(CommonLogger) << "Checking if schedule type is in use:" << typeID;
     asyncCall("scheduleTypeByUsed", {QVariant(typeID)});
 }
 
@@ -110,6 +116,7 @@ void DbusAccountRequest::scheduleTypeByUsed(const QString &typeID)
  */
 QString DbusAccountRequest::createSchedule(const DSchedule::Ptr &scheduleInfo)
 {
+    qCInfo(CommonLogger) << "Creating new schedule:" << scheduleInfo->summary();
     QString jsonStr;
     DSchedule::toJsonString(scheduleInfo, jsonStr);
 
@@ -119,7 +126,7 @@ QString DbusAccountRequest::createSchedule(const DSchedule::Ptr &scheduleInfo)
     pCall.waitForFinished();
     QDBusMessage reply = pCall.reply();
     if (reply.type() != QDBusMessage::ReplyMessage) {
-        qCWarning(CommonLogger) << "getScheduleTypeByID error ," << reply;
+        qCWarning(CommonLogger) << "Failed to create schedule:" << reply.errorMessage();
         return nullptr;
     }
     QDBusReply<QString> scheduleReply = reply;
@@ -133,6 +140,7 @@ QString DbusAccountRequest::createSchedule(const DSchedule::Ptr &scheduleInfo)
  */
 void DbusAccountRequest::updateSchedule(const DSchedule::Ptr &scheduleInfo)
 {
+    qCInfo(CommonLogger) << "Updating schedule:" << scheduleInfo->summary() << "ID:" << scheduleInfo->uid();
     QString jsonStr;
     DSchedule::toJsonString(scheduleInfo, jsonStr);
     asyncCall("updateSchedule", {QVariant(jsonStr)});
@@ -140,13 +148,14 @@ void DbusAccountRequest::updateSchedule(const DSchedule::Ptr &scheduleInfo)
 
 DSchedule::Ptr DbusAccountRequest::getScheduleByID(const QString &scheduleID)
 {
+    qCDebug(CommonLogger) << "Requesting schedule by ID:" << scheduleID;
     QList<QVariant> argumentList;
     argumentList << QVariant::fromValue(scheduleID);
     QDBusPendingCall pCall = asyncCallWithArgumentList(QStringLiteral("getScheduleByScheduleID"), argumentList);
     pCall.waitForFinished();
     QDBusMessage reply = pCall.reply();
     if (reply.type() != QDBusMessage::ReplyMessage) {
-        qCWarning(CommonLogger) << "getScheduleTypeByID error ," << reply;
+        qCWarning(CommonLogger) << "Failed to get schedule by ID:" << reply.errorMessage();
         return nullptr;
     }
     QDBusReply<QString> scheduleReply = reply;
@@ -164,6 +173,7 @@ DSchedule::Ptr DbusAccountRequest::getScheduleByID(const QString &scheduleID)
  */
 void DbusAccountRequest::deleteScheduleByScheduleID(const QString &scheduleID)
 {
+    qCInfo(CommonLogger) << "Deleting schedule with ID:" << scheduleID;
     QList<QVariant> argumentList;
     asyncCall("deleteScheduleByScheduleID", {QVariant(scheduleID)});
 }
@@ -175,6 +185,7 @@ void DbusAccountRequest::deleteScheduleByScheduleID(const QString &scheduleID)
  */
 void DbusAccountRequest::deleteSchedulesByScheduleTypeID(const QString &typeID)
 {
+    qCInfo(CommonLogger) << "Deleting all schedules for type ID:" << typeID;
     QList<QVariant> argumentList;
     asyncCall("deleteSchedulesByScheduleTypeID", {QVariant(typeID)});
 }
@@ -194,27 +205,30 @@ DSchedule::Map DbusAccountRequest::querySchedulesWithParameter(const DScheduleQu
     pCall.waitForFinished();
     QDBusMessage reply = pCall.reply();
     if (reply.type() != QDBusMessage::ReplyMessage) {
-        qCWarning(CommonLogger) << "getSysColors error ," << reply;
+        qCWarning(CommonLogger) << "Failed to query schedules:" << reply.errorMessage();
         return scheduleMap;
     }
     QDBusReply<QString> scheduleReply = reply;
     scheduleMap = DSchedule::fromMapString(scheduleReply.value());
+    qCDebug(CommonLogger) << "Successfully queried" << scheduleMap.size() << "schedule dates";
     return scheduleMap;
 }
 
 DTypeColor::List DbusAccountRequest::getSysColors()
 {
+    qCDebug(CommonLogger) << "Requesting system colors";
     DTypeColor::List colorList;
     QList<QVariant> argumentList;
     QDBusPendingCall pCall = asyncCallWithArgumentList(QStringLiteral("getSysColors"), argumentList);
     pCall.waitForFinished();
     QDBusMessage reply = pCall.reply();
     if (reply.type() != QDBusMessage::ReplyMessage) {
-        qCWarning(CommonLogger) << "getSysColors error ," << reply;
+        qCWarning(CommonLogger) << "Failed to get system colors:" << reply.errorMessage();
         return colorList;
     }
     QDBusReply<QString> scheduleReply = reply;
     colorList = DTypeColor::fromJsonString(scheduleReply.value());
+    qCDebug(CommonLogger) << "Successfully retrieved" << colorList.size() << "system colors";
     return colorList;
 }
 
@@ -225,7 +239,8 @@ void DbusAccountRequest::slotCallFinished(CDBusPendingCallWatcher *call)
     QString msg = "";
 
     if (call->isError()) {
-        qCWarning(CommonLogger) << call->reply().member() << call->error().message();
+        qCWarning(CommonLogger) << "DBus call failed - Method:" << call->reply().member() 
+                               << "Error:" << call->error().message();
         ret = 1;
     } else {
         QDBusPendingReply<QVariant> reply = *call;
@@ -234,30 +249,35 @@ void DbusAccountRequest::slotCallFinished(CDBusPendingCallWatcher *call)
             DAccount::Ptr ptr;
             ptr.reset(new DAccount());
             if (DAccount::fromJsonString(ptr, str.toString())) {
+                qCDebug(CommonLogger) << "Successfully processed account info for:" << ptr->accountName();
                 emit signalGetAccountInfoFinish(ptr);
             } else {
-                qCWarning(CommonLogger) << "AccountInfo Parsing failed!";
+                qCWarning(CommonLogger) << "Failed to parse account info from JSON";
                 ret = 2;
             }
         } else if (call->getmember() == "getScheduleTypeList") {
             DScheduleType::List stList;
             if (DScheduleType::fromJsonListString(stList, str.toString())) {
+                qCDebug(CommonLogger) << "Successfully processed" << stList.size() << "schedule types";
                 emit signalGetScheduleTypeListFinish(stList);
             } else {
-                qCWarning(CommonLogger) << "ScheduleTypeList Parsing failed!";
+                qCWarning(CommonLogger) << "Failed to parse schedule type list from JSON";
                 ret = 2;
             }
         } else if (call->getmember() == "querySchedulesWithParameter") {
             QMap<QDate, DSchedule::List> map = DSchedule::fromMapString(str.toString());
+            qCDebug(CommonLogger) << "Successfully processed schedule query with" << map.size() << "dates";
             emit signalGetScheduleListFinish(map);
         } else if (call->getmember() == "searchSchedulesWithParameter") {
             QMap<QDate, DSchedule::List> map = DSchedule::fromMapString(str.toString());
+            qCDebug(CommonLogger) << "Successfully processed schedule search with" << map.size() << "dates";
             emit signalSearchScheduleListFinish(map);
         } else if (call->getmember() == "getSysColors") {
             DTypeColor::List list = DTypeColor::fromJsonString(str.toString());
+            qCDebug(CommonLogger) << "Successfully processed" << list.size() << "system colors";
             emit signalGetSysColorsFinish(list);
         } else if (call->getmember() == "createScheduleType") {
-            //创建日程类型结束
+            qCDebug(CommonLogger) << "Schedule type created, refreshing type list";
             canCall = false;
             //在发起数据获取刷新数据，并将本回调函数和数据传到下一个事件中
             CallbackFunc func = call->getCallbackFunc();
@@ -266,15 +286,12 @@ void DbusAccountRequest::slotCallFinished(CDBusPendingCallWatcher *call)
             });
             getScheduleTypeList();
         } else if (call->getmember() == "createSchedule") {
-            //创建日程结束
-            //            canCall = false;
-            //重新读取日程数据
+            qCDebug(CommonLogger) << "Schedule created, refreshing schedule list";
             setCallbackFunc(call->getCallbackFunc());
             querySchedulesWithParameter(m_priParams);
             msg = str.toString();
-
         } else if (call->getmember() == "deleteScheduleByScheduleID") {
-            //删除日程结束
+            qCDebug(CommonLogger) << "Schedule deleted, refreshing schedule list";
             canCall = false;
             //重新读取日程数据
             setCallbackFunc(call->getCallbackFunc());
@@ -286,6 +303,7 @@ void DbusAccountRequest::slotCallFinished(CDBusPendingCallWatcher *call)
         }
 
         if (canCall && call->getCallbackFunc() != nullptr) {
+            qCDebug(CommonLogger) << "Executing callback for method:" << call->getmember() << "with ret:" << ret;
             call->getCallbackFunc()({ret, msg});
         }
     }

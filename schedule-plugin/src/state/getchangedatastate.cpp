@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "getchangedatastate.h"
+#include "commondef.h"
 
 #include "../globaldef.h"
 #include "../data/changejsondata.h"
@@ -34,23 +35,32 @@ scheduleState::Filter_Flag getChangeDataState::eventFilter(const JsonData *jsonD
         || jsonData->getRepeatStatus() != JsonData::NONE) {
         return Filter_Flag::Fileter_Init;
     }
-    if (jsonData->getPropertyStatus() == JsonData::LAST)
-        return Fileter_Err;
-    if (jsonData->offset() > 0) {
+
+    if (jsonData->getPropertyStatus() == JsonData::LAST) {
+        qCDebug(CommonLogger) << "Event filter: Error state - Property status is LAST";
         return Fileter_Err;
     }
+
+    if (jsonData->offset() > 0) {
+        qCDebug(CommonLogger) << "Event filter: Error state - Invalid offset:" << jsonData->offset();
+        return Fileter_Err;
+    }
+
     //类型转换
     JsonData *queryData = const_cast<JsonData *>(jsonData);
     changejsondata *mchangeJsonData = dynamic_cast<changejsondata *>(queryData);
     //如果存在form信息则表示一个新的修改
     if (mchangeJsonData->fromDateTime().suggestDatetime.size() > 0) {
+        qCDebug(CommonLogger) << "Event filter: Initial state - Has from datetime";
         return Fileter_Init;
     }
+
     //如果存在修改的信息则为正常状态
     if (mchangeJsonData->toDateTime().suggestDatetime.size() > 0
         || !mchangeJsonData->toPlaceStr().isEmpty()) {
         return Fileter_Normal;
     } else {
+        qCDebug(CommonLogger) << "Event filter: Error state - No valid modification data";
         return Fileter_Err;
     }
 }
@@ -70,10 +80,13 @@ Reply getChangeDataState::normalEvent(const JsonData *jsonData)
     changejsondata *mchangeJsonData = dynamic_cast<changejsondata *>(queryData);
     //如果有修改时间的信息则赋值
     if (mchangeJsonData->toDateTime().suggestDatetime.size() > 0) {
+        qCDebug(CommonLogger) << "Updating schedule with new datetime";
         m_localData->setToTime(mchangeJsonData->toDateTime());
     }
+
     //如果有修改内容的信息则获取
     if (!mchangeJsonData->toPlaceStr().isEmpty()) {
+        qCDebug(CommonLogger) << "Updating schedule with new title:" << mchangeJsonData->toPlaceStr();
         m_localData->setToTitleName(mchangeJsonData->toPlaceStr());
     }
     return m_Task->getReplyBySelectSchedule(m_localData->SelectInfo());
