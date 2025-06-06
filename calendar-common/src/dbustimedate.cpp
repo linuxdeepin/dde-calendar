@@ -5,14 +5,45 @@
 #include "dbustimedate.h"
 #include "commondef.h"
 
+#include <DSysInfo>
+
 #include <QDBusPendingReply>
 #include <QDBusReply>
 #include <QtDebug>
 #include <QDBusInterface>
 
-#define NETWORK_DBUS_INTEERFACENAME "com.deepin.daemon.Timedate"
-#define NETWORK_DBUS_NAME "com.deepin.daemon.Timedate"
-#define NETWORK_DBUS_PATH "/com/deepin/daemon/Timedate"
+DCORE_USE_NAMESPACE
+
+inline const char *getTimedateService()
+{
+    auto ver = DSysInfo::majorVersion().toInt();
+    if (ver > 20) {
+        return "org.deepin.dde.Timedate1";
+    }
+    return "com.deepin.daemon.Timedate";
+}
+
+inline const char *getTimedatePath()
+{
+    auto ver = DSysInfo::majorVersion().toInt();
+    if (ver > 20) {
+        return "/org/deepin/dde/Timedate1";
+    }
+    return "/com/deepin/daemon/Timedate";
+}
+
+inline const char *getTimedateInterface()
+{
+    auto ver = DSysInfo::majorVersion().toInt();
+    if (ver > 20) {
+        return "org.deepin.dde.Timedate1";
+    }
+    return "com.deepin.daemon.Timedate";
+}
+
+#define NETWORK_DBUS_INTEERFACENAME getTimedateInterface()
+#define NETWORK_DBUS_NAME getTimedateService()
+#define NETWORK_DBUS_PATH getTimedatePath()
 
 DBusTimedate::DBusTimedate(QObject *parent)
     : QDBusAbstractInterface(NETWORK_DBUS_NAME, NETWORK_DBUS_PATH, NETWORK_DBUS_INTEERFACENAME, QDBusConnection::sessionBus(), parent)
@@ -23,7 +54,7 @@ DBusTimedate::DBusTimedate(QObject *parent)
                                                "org.freedesktop.DBus.Properties",
                                                QLatin1String("PropertiesChanged"), this,
                                                SLOT(propertiesChanged(QDBusMessage)))) {
-        qCWarning(ClientLogger) << "the PropertiesChanged was fail!";
+        qCWarning(ClientLogger) << "Failed to connect to the PropertiesChanged signal for" << NETWORK_DBUS_NAME << NETWORK_DBUS_PATH;
         qCWarning(ClientLogger) << this->lastError();
     }
 
