@@ -9,9 +9,6 @@
 
 #include <QDBusConnection>
 
-const QString DBus_TimeDate_Name = "com.deepin.daemon.Timedate";
-const QString DBus_TimeDate_Path = "/com/deepin/daemon/Timedate";
-
 CalendarManager *CalendarManager::m_scheduleManager = nullptr;
 CalendarManager *CalendarManager::getInstance()
 {

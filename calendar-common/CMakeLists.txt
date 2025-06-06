@@ -3,6 +3,7 @@ project(commondata)
 
 find_package(PkgConfig REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core DBus Sql)
+find_package(Dtk${DTK_VERSION_MAJOR} REQUIRED Core)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -29,4 +30,5 @@ target_link_libraries(${PROJECT_NAME}
     Qt${QT_VERSION_MAJOR}::DBus
     Qt${QT_VERSION_MAJOR}::Sql
     kcalendarcore
+    Dtk${DTK_VERSION_MAJOR}::Core
 )
