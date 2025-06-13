@@ -594,31 +594,31 @@
     <name>CWeekWidget</name>
     <message>
         <source>Sun</source>
-        <translation type="vanished">Pazar</translation>
+        <translation type="vanished">Paz</translation>
     </message>
     <message>
         <source>Mon</source>
-        <translation type="vanished">Pazartesi</translation>
+        <translation type="vanished">Pzt</translation>
     </message>
     <message>
         <source>Tue</source>
-        <translation type="vanished">Salı</translation>
+        <translation type="vanished">Sal</translation>
     </message>
     <message>
         <source>Wed</source>
-        <translation type="vanished">Çarşamba</translation>
+        <translation type="vanished">Çar</translation>
     </message>
     <message>
         <source>Thu</source>
-        <translation type="vanished">Perşembe</translation>
+        <translation type="vanished">Per</translation>
     </message>
     <message>
         <source>Fri</source>
-        <translation type="vanished">Cuma</translation>
+        <translation type="vanished">Cum</translation>
     </message>
     <message>
         <source>Sat</source>
-        <translation type="vanished">Cumartesi</translation>
+        <translation type="vanished">Cmt</translation>
     </message>
 </context>
 <context>
