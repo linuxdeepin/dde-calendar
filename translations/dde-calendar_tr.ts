@@ -778,37 +778,37 @@
     <message>
         <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="72"/>
         <source>Sun</source>
-        <translation>Pazar</translation>
+        <translation>Paz</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="72"/>
         <source>Mon</source>
-        <translation>Pazartesi</translation>
+        <translation>Pzt</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="72"/>
         <source>Tue</source>
-        <translation>Salı</translation>
+        <translation>Sal</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="72"/>
         <source>Wed</source>
-        <translation>Çarşamba</translation>
+        <translation>Çar</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="72"/>
         <source>Thu</source>
-        <translation>Perşembe</translation>
+        <translation>Per</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="72"/>
         <source>Fri</source>
-        <translation>Cuma</translation>
+        <translation>Cum</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/cweekwidget.cpp" line="72"/>
         <source>Sat</source>
-        <translation>Cumartesi</translation>
+        <translation>Cmt</translation>
     </message>
 </context>
 <context>
