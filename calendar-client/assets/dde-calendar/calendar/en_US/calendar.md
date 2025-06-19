@@ -1,231 +1,219 @@
-# Calendar|dde-calendar|
+# Calendar | dde-calendar
 
 ## Overview
 
-Calendar is a helpful tool to view dates and manage your personal life. By creating events with specific time, you can make your schedule easily.
+Calendar is a small tool for viewing dates and managing schedules. It supports viewing lunar calendars, Chinese almanacs, solar terms, and common festival information, with built-in schedule reminders to help you better plan your time.
 
 ![0|main](fig/main.png)
 
+## Getting Started
 
-## Guide
+Run or close Calendar, or create shortcuts using the following methods.
 
-You can run, exit or create a desktop shortcut of Calendar as follows.
+### Running Calendar
 
-### Run Calendar
+1. Click the Launcher icon ![deepin_launcher](../common/deepin_launcher.svg) on the taskbar to enter the Launcher interface.
+2. Scroll the mouse wheel or search to locate the Calendar icon ![draw](../common/dde_calendar.svg), then click to run.
+3. Right-click ![draw](../common/dde_calendar.svg) to:
+   - Click **Send to Desktop** to create a desktop shortcut.
+   - Click **Pin to Taskbar** to pin the application to the taskbar.
+   - Click **Start on Boot** to add the application to startup items, automatically running when the computer starts.
 
-1.  Click ![deepin_launcher](../common/deepin_launcher.svg) in the Dock to enter the Launcher interface.
-2.  Locate ![draw](../common/dde_calendar.svg) by scrolling the mouse wheel or searching for "Calendar" on the Launcher interface and click it to run.
-3.  Right-click ![draw](../common/dde_calendar.svg), you can:
+### Closing Calendar
 
-   - Click **Send to desktop** to create a desktop shortcut.
-   - Click **Send to dock** to fix it in the Dock.
-   - Click **Add to startup** to add it to startup and it will automatically run when the system starts up.
+- Click ![close_icon](../common/close_icon.svg) in the Calendar interface to exit.
+- Right-click ![draw](../common/dde_calendar.svg) on the taskbar and select **Close All** to exit Calendar.
+- Click ![icon_menu](../common/icon_menu.svg) in the Calendar interface and select **Exit** to exit Calendar.
 
+### Viewing Shortcuts
 
-### Exit Calendar
-
-- On the Calendar interface, click ![close_icon](../common/close_icon.svg) to exit calendar.
-- Right-click ![draw](../common/dde_calendar.svg) in the Dock and select **Close All** to exit.
-- Click ![icon_menu](../common/icon_menu.svg) on the Calendar interface and select **Exit** to exit.
-
-### View Shortcuts
-
-On the Calendar interface, press **Ctrl + Shift + ?** on the keyboard to view shortcuts. Proficiency in shortcuts will greatly improve your efficiency.
+In the Calendar interface, use the shortcut **Ctrl + Shift + ?** to open the shortcut preview. Mastering shortcuts will greatly improve your efficiency.
 
 ![0|view](fig/hotkey.png)
 
+## Operations Guide
 
+Calendar displays date attributes in Year, Month, Week, and Day views.
 
-## Operations
+The system defaults to Month view. Switch between views by clicking the corresponding buttons.
 
-Calendar can be divided into yearly view, monthly view, weekly view and daily view.
+- Only in Chinese systems: Calendar displays lunar dates, Chinese almanacs, and festival information.
+- Dates start from **1900**; dates earlier than **1900** cannot be viewed.
+- In Month and Week views, Saturdays and Sundays are visually distinguished from weekdays.
 
-Monthly view is the default one and you can click to switch between different views.
+The sidebar shows calendar accounts and a mini-calendar view.
 
-- Lunar calendar dates will only be displayed in the Chinese system in paring with the solar calendar dates.
-- The dates start from the year **1900** and you cannot view dates earlier than that year. 
-- In the monthly and weekly view, the display of Saturday and Sunday is different from that of days between Monday to Friday. 
-
-On the Calendar interface, click ![side_menu](../common/side_menu.svg) to show or hide the side pane, which shows the event types of different accounts and a small calendar. 
-
-1. By checking or unchecking the event types, the events of the types under that account show or hide on the right.
-
-2. Click the date on the small calendar at the bottom, the calendar on the right changes accordingly.
+1. Click ![side_menu](../common/side_menu.svg) to toggle the sidebar visibility.
+2. Check calendar types under Calendar Accounts to display their schedules; uncheck to hide.
+3. Click dates in the mini-calendar to navigate the main calendar view.
 
 <table border="1">
 <tr>
-   <th width="110px">View</th>
-   <th width=“200px”>Description</th>
+   <th width="80px">View</th>
+   <th width="200px">Description</th>
 </tr>
 <tr>
-   <td>Yearly View</td>
-   <td>Display the months and days of the whole year.</td>
+   <td>Year</td>
+   <td>Displays all months and days of the year.</td>
 </tr>
 <tr>
-   <td>Monthly View</td>
-   <td>Display the days and events of the month.</td>
+   <td>Month</td>
+    <td>Shows festival information and schedules.</td>
 </tr>
 <tr>
-   <td>Weekly View</td>
-   <td>Display the days and events of the week.</td>
+   <td>Week</td>
+   <td>Displays daily schedules for the week.</td>
 </tr>
 <tr>
-   <td>Daily View</td>
-   <td>Display the detailed events.</td>
+   <td>Day</td>
+   <td>Shows festival info, detailed schedules, and Chinese almanac.</td>
 </tr> 
 </table>
 
+### Creating Schedules
 
+1. Create a schedule using one of these methods:
+   - Click the add button <img src="../common/add.svg" alt="plus" style="zoom:50%;" /> in the menu bar.
+   - Double-click a blank date area or right-click and select **New Schedule** in Month/Week/Day view.
+   - Click and drag to create a schedule in Month/Week/Day view.
+   
+2. The "New Schedule" window appears. Configure calendar account, schedule type, content, time, reminders, etc.
 
-### Create Events
-
-1. You can create events in one of the following ways:
-
-   - Click the ![add](../common/add.svg) icon in the menu bar on the calendar interface.
-   - Double-click, or right-click to select **New event** in the blank area in the monthly, weekly or daily view.
-   - Click and drag the mouse in the monthly, weekly or daily view.
-
-2. Set the event type, description, time, reminder, etc. in the pop-up **New Event** dialogue.
-
-   ![0|create](fig/create.png)
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<img src="fig/create.png" alt="pic" style="zoom:67%;" />
 
 <table border="1">
 <tr>
-   <th width="50px">Field</th>
+   <th width="50px">Parameter</th>
    <th width="200px">Description</th>
 </tr>
 <tr>
    <td>Calendar Account</td>
-   <td>You can create events under a local account or network accounts, such as UOS ID. Local account is selected by default.</td>
+   <td>Defaults to local account; supports UOS ID and other network accounts.</td>
 </tr>
 <tr>
    <td>Type</td>
-   <td>There are three event types, namely "Work", "Life" and "Other" by default. You can also customize your event type.
-       <ol><li>Select  <b>New event type</b> from the Type dropdown list.</li>
-          <li>The Type field becomes editable. Input the type name and select the color.</li></ol>
-       You can add, edit or delete the custom type by the <b>Manage</b> option in the main menu. Please refer to the Manage section in Main Menu for details.</td>
+   <td>Default types: "Work", "Life", "Other". Custom types can be added:
+       <ol><li>Select <b>New Schedule Type</b> from the dropdown.</li>
+          <li>Enter type name and set color.</li></ol>
+        You can also add/edit/delete types via the main menu (see "Manage" section).</td>
 </tr>
 <tr>
-   <td>Description</td>
-   <td>Input the description information of the event.</td>
+   <td>Content</td>
+   <td>Schedule description.</td>
 </tr>
 <tr>
-   <td>Event Time</td>
-   <td>Set the time properties for the event.
+   <td>Schedule Time</td>
+   <td>Set all-day or timed schedules; Gregorian or lunar calendar dates/times.
    <ul>
-       <li>All day<ul> <li>Check <b>All Day</b>: Only dates can be selected as starts and ends. </li>
-   <li>Uncheck <b>All Day</b>: Hours and minutes are available for starts and ends as well except for dates.</li>
-           </ul></li>
-   </ul>
+       <li>All-day
+        <ul><li>Checked: Only dates can be set for start/end times.</li>
+           <li>Unchecked: Dates, hours, and minutes can be set.</li></ul>
+        </li>
+    </ul>
    <ul>
-     <li>Time<ul>  <li>Solar: Starts and ends are displayed in solar time only.</li>
-   <li>Lunar: Starts and ends are displayed both in solar time and lunar time.</li>
-         </ul></li>
-   </ul>  </td>
+     <li>Calendar Type
+        <ul><li>Gregorian: Displays Gregorian dates only.</li>
+            <li>Lunar: Displays both Gregorian and lunar dates.</li></ul>
+     </li>
+   </ul></td>
 </tr>
 <tr>
    <td>Reminder</td>
    <td>
-Options for <b>Reminde Me</b> with <b>All Day</b> checked: Never, On start day (9:00 AM), 1 day before, 2 days before and 1 week before.<br>
-Options for <b>Reminde Me</b> with <b>All Day</b> unchecked: Never, At time of event, 15 mins before, 30 mins before, 1 hour before, 1 day before, 2 days before, 1 week before.</td>
+All-day: Options include Never, Day of event (9 AM), 1 day before, 2 days before, or 1 week before.<br>
+Timed: Options include Never, At start time, 15 min before, 30 min before, 1 hour before, 1 day before, 2 days before, or 1 week before.</td>
 </tr>
 <tr>
    <td>Repeat</td>
    <td>
-Options for <b>Repeat</b> with <b>Solar</b> checked: Never, Daily, Weekdays, Weekly, Monthly, and Yealy.<br>
-Options for <b>Repeat</b> with <b>Lunar</b> checked: Never, Monthly, and Yearly.</td>
+Gregorian: Never, Daily, Weekdays, Weekly, Monthly, Yearly.<br>
+Lunar: Never, Monthly, Yearly.</td>
 </tr>
 <tr>
    <td>End Repeat</td>
-   <td>Only when the <b>Repeat</b> feature is enabled, can <b>End Repeat</b> be displayed. The options for <b>End Repeat</b> are Never, after n time(s) and on the date selected. </td>
+   <td>Appears only if repeat is enabled. Options: Never, After n times, or By date.</td>
 </tr> 
 </table>
-3. Click **Save** to create the event. 
 
+3. Click **Save** to create the schedule. Schedules appear as tags in calendar views.
 
-### Edit Events
+### Editing Schedules
 
-1. Double-click or right-click a date with events in the monthly, weekly or daily view.
-2. Select **Edit** and the **Edit Event** dialogue will pop up.
-3. Set properties for the event.  
-4. Click **Save**. 
-5. If it is set as an all-day event or a repeated event, a prompt box will pop up for you to confirm information. 
+1. Double-click or right-click a schedule tag in Month/Week/Day view.
+2. Select **Edit**.
+3. Modify schedule properties in the "Edit Schedule" window and click **Save**.
+4. If editing all-day or repeating schedules, confirm the prompt to complete changes.
 
-> ![notes](../common/notes.svg) Notes: You can drag the event label created to a specified time or date to change its starts and ends.
+> ![notes](../common/notes.svg) Note: Drag schedule tags to modify start/end times.
 
-During event editing, different prompts will be displayed according to the changes of content. Descriptions of buttons in the prompts are listed as below.
+Prompt buttons during editing:
 
 <table border="1">
 <tr>
    <th width="130px">Button</th>
-   <th width=“200px”>Description</th>
+   <th width="200px">Description</th>
 </tr>
 <tr>
-   <td>All</td>
-   <td>Effective for all relevant repeating events. </td>
+   <td>All Schedules</td>
+   <td>Modify all related recurring schedules.</td>
 </tr>
 <tr>
-   <td>Only This Event</td>
-   <td>Only effective for the current event.  </td>
+   <td>This Schedule Only</td>
+   <td>Modify only the current schedule.</td>
 </tr>
 <tr>
-   <td>All Future Events</td>
-   <td>All the future events on and after the selected date will be changed and the events before the selected date will remain unchanged.</td>
+   <td>All Future Schedules</td>
+   <td>Modify schedules from the selected date onward; earlier schedules remain unchanged.</td>
 </tr>
 <tr>
-   <td>Change All </td>
-   <td>All repeating events will be changed.</td>
+   <td>Change All</td>
+   <td>Modify all recurring schedules.</td>
 </tr> 
 </table>
 
+### Setting All-Day/Multi-Day Schedules
 
+When creating/editing schedules, set **Start Time** and **End Time** to create all-day or multi-day schedules.
 
-### Set All-day or Multiple-day Events
+### Setting Recurring Schedules
 
-Set the **Starts** and **Ends** and you are able to set an all-day or consecutive multiple-day events when creating or editing an event.
+1. When creating/editing schedules, select a repeat cycle (e.g., Monthly) from the **Repeat** dropdown.
+2. Set end conditions in the **End Repeat** dropdown.
 
-### Set Repeating Events
+<img src="fig/repeat.png" alt="pic" style="zoom:67%;" />
 
-1. Click the dropdown list on the right of **Repeat** and select an option as needed when creating or editing an event.
-2. Click the dropdown list on the right of **End Repeat** and select the end time of the event.
+### Searching Schedules
 
-![pic](fig/repeat.png)
+1. Click ![search](../common/search.svg) in the top search box.
+2. Enter keywords and press **Enter**.
+3. Click ![0|close](../common/close_icon.svg) or delete text to clear keywords/cancel search.
 
-### Search Events
+### Viewing Schedules
 
-1.  In the top search box of the Calendar interface, you can click![search](../common/search.svg)to enter keywords.
+Double-click a schedule tag in Month/Week/Day view to open the "My Schedule" window for viewing, editing, or deleting.
 
-2.  Press the **Enter** key on the keyboard for searching.
-   
-3.  Click ![0|close](../common/close_icon.svg) or delete the entered information in the search box to clear the current keywords or cancel the search. 
+### Viewing Schedule Reminder Details
 
-### View Events
+Click notification prompts to view schedule details when reminders appear.
 
-Double-click an event title in the monthly, weekly or daily view and the **My Event** window will pop up. You can view events, [Edit Events](#Edit Events) or [Delete Events](#Delete Events). 
-
-### View Schedule Details
-
-Click the message to view the schedule details when the system sends out a notification.
-
-Descriptions of buttons in the prompts are listed as below.
+Reminder action buttons:
 
 <table border="1">
 <tr>
    <th width="130px">Button</th>
-   <th width=“200px”>Description</th>
+   <th width="200px">Description</th>
 </tr>
 <tr>
-   <td>Remind me later</td>
-   <td>If the reminder is set on the current day, when you click <b>Remind me later</b> on the first reminder, you will be reminded again 10 minutes later. The following reminder intervals will be increased by 5 minutes each time you click <b>Remind me later</b>.<br> You can also choose 15 mins later, 1 hour later, 4 hours later or Tomorrow from the <b>Remind me later</b> dropdown list. </td>
+   <td>Snooze</td>
+   <td>First reminder: Snooze for 10 min; subsequent snoozes add 5 min each time.<br>Options: 15 min later, 1 hour later, 4 hours later, or tomorrow.</td>
 </tr>
 <tr>
-   <td>Remind me tomorrow</td>
-   <td>It is shown when the reminder is set to one day or two days ahead of the event. </td>
+   <td>Remind Tomorrow</td>
+   <td>Appears for "1 day before" or "2 days before" reminders.</td>
 </tr>
 <tr>
-   <td>One day before start </td>
-   <td>It is shown when the reminder is set to one week ahead of the event.</td>
+   <td>Remind 1 Day Earlier</td>
+   <td>Appears for "1 week before" reminders.</td>
 </tr>
 <tr>
    <td>Close</td>
@@ -233,101 +221,110 @@ Descriptions of buttons in the prompts are listed as below.
 </tr> 
 </table>
 
+### Deleting Schedules
 
-### Delete Events
+1. Double-click or right-click a schedule tag in Month/Week/Day view.
+2. Select **Delete**.
+3. Confirm deletion in the prompt.
 
-1.  Double-click or right-click a date with event in the monthly, weekly or daily view.
-2.  Click **Delete** and a **You are deleting an event** prompt box will pop up.
-3.  Confirm and delete the event.
+Deletion prompt buttons:
 
-Descriptions of icons in the deletion prompts for repeating and non-repeating events are listed as below.
-
-<table border="1"><tr>   <th width="130px">Button</th>   <th width=“200px”>Description</th></tr><tr>   <td>Delete</td>   <td>Delete non-repeating events. </td></tr><tr>   <td>Delete All</td>   <td>Delete all occurrences of this event.</td></tr><tr>   <td>Delete Only This Event </td>   <td>Delete only the selected occurrence of the event. This is only applicable to repeating events.</td></tr><tr>   <td>Delete All Future Events</td>   <td> Delete this occurrence and all future occurrences of the event but the occurrences of the event before the selected date will be retained. This is only applicable to repeating events.</td></tr> </table>
-
-   
+<table border="1">
+<tr>
+   <th width="130px">Button</th>
+   <th width="200px">Description</th>
+</tr>
+<tr>
+   <td>Delete Schedule</td>
+   <td>Delete non-recurring schedules.</td>
+</tr>
+<tr>
+   <td>Delete All</td>
+   <td>Delete all recurring schedules.</td>
+</tr>
+<tr>
+   <td>Delete This Only</td>
+   <td>Delete only the selected recurring schedule.</td>
+</tr>
+<tr>
+   <td>Delete Future Schedules</td>
+   <td>Delete recurring schedules from the selected date onward; earlier schedules remain.</td>
+</tr> 
+</table>
 
 ## Main Menu
 
-On the main menu, you can manage settings, view the privacy policy, switch window themes, view the help manual and get more information about Calendar.
+Access management settings, view privacy policy, switch themes, view help, or learn more about Calendar.
 
 ### Manage
 
-Click ![icon_menu](../common/icon_menu.svg) > **Manage** to open the manage window, where you can sign in UOS ID to sync events and settings to the cloud, manage event types, and make general settings.
+Click ![icon_menu](../common/icon_menu.svg) > **Manage** to:
+- Manage schedule types
+- Sync schedule data/calendar settings to cloud via UOS/deepin ID
+- Configure general settings
 
-![manage](fig/manage.png)
+#### Cloud Sync
 
-#### Manage Accounts and Sync
+Sync schedule data and settings to cloud via UOS/deepin ID.
 
-Calendar supports sync events and settings to the cloud by UOS ID.
+> ![notes](../common/notes.svg) Note: Not available on older UOS/deepin versions.
 
-> ![notes](../common/notes.svg) Notes: It is not available in old system versions and deepin system at present.
-
-**UOS ID Sign In and Sign Out**
-
-1. On the Account Settings interface, click **Sign In**.
-2. In the pop-up window, sign into your UOS ID by entering your account and password, or SMS verification code, or scanning QR code with WeChat.
-3. When signed in, your avatar, account info and related items are shown. Click **Sign Out** if you want.
+**Logging In/Out**
+1. Click **Log In** in Account Settings.
+2. Log in via UOS/deepin ID/password, SMS, or WeChat scan.
+3. Click **Log Out** to sign out.
 
 **Sync Settings**
+1. While logged in, toggle **Schedules** and **General Settings** to enable/disable sync.
+2. Select sync frequency or choose **Manual Sync**.
+3. Click **Sync Now** for immediate sync.
 
-1. When signed in, Check **Events** and **General settings** to sync them to the cloud.
-2. In the dropdown list of **Sync interval**, select the time interval for auto sync, or choose **Manual**.
-2. Click **Sync Now** to start syncing immediately.
+> ![notes](../common/notes.svg) Note: Requires enabling **UOS/deepin Cloud Sync** in Control Center.
 
-> ![notes](../common/notes.svg) Notes: To make sync settings available, you should turn on **UOS Cloud sync** in Control Center first.
+#### Managing Schedule Types
 
-#### Manage Event Types
-
-Click ![icon_menu](../common/icon_menu.svg) > **Manage**  on the Calendar interface to enter the Manage Calendar interface. You can add, edit or delete custom event types.
-
-**Add An Event Type**
-
-1. Click ![icon_menu](../common/add1.svg) on the Manage Calendar interface.
-2. Input the name and set the color for the event type in the **New event type** dialogue.
+**Add Type**
+1. Click ![icon](../common/add1.svg) in Calendar Management.
+2. Enter name and set color.
 3. Click **Save**.
 
-**Edit An Event Type**
-
-1. Select a custom event type on the Manage Calendar interface.
-2. Click ![icon_menu](../common/edit.svg).
-3. Input the name and set the color for the event type in the **Edit event type** dialogue.
+**Edit Type**
+1. Select a custom type.
+2. Click ![icon](../common/edit.svg).
+3. Modify name/color.
 4. Click **Save**.
 
-**Delete An Event Type**
-
-1. Select a custom event type on the Manage Calendar interface.
-
-2. Click ![icon_menu](../common/delete.svg)to delete the event type.
+**Delete Type**
+1. Select a custom type.
+2. Click ![icon](../common/delete.svg).
 
 #### General Settings
 
-**First day of week**
+**First Day of Week**  
+Set **Sunday** or **Monday** as the start of the week.
 
-In the dropdown list of **First day of week**, select **Sunday** or **Monday** as the first day of a week displayed in Calendar.
-
-**Time format**
-
-In the dropdown list of **Time**, select **24-hour clock** or **12-hour clock** as the time format shown in Calendar.
+**Time Format**  
+Choose **24-hour** or **12-hour** format.
 
 ### Theme
 
-There are three window themes, namely Light Theme, Dark Theme and System Theme.
-
-1.  Click ![icon_menu](../common/icon_menu.svg) on the Calendar interface.
-2.  Click **Theme** to select one theme.
+Window themes include Light, Dark, and System.
+1. Click ![icon_menu](../common/icon_menu.svg) in Calendar.
+2. Select **Theme** > Choose a theme.
 
 ### Help
 
-1.  Click ![icon_menu](../common/icon_menu.svg) on the Calendar interface.
-2.  Click **Help** to view the manual of Calendar.
+View help manual for Calendar usage.
+1. Click ![icon_menu](../common/icon_menu.svg).
+2. Select **Help**.
 
 ### About
 
-1.  Click ![icon_menu](../common/icon_menu.svg) on the Calendar interface.
-2.  Click **About** to view the version and introduction of Calendar. 
+View Calendar version and info.
+1. Click ![icon_menu](../common/icon_menu.svg).
+2. Select **About**.
 
 ### Exit
 
-1.  Click ![icon_menu](../common/icon_menu.svg) on the Calendar interface.
-2.  Click **Exit** to exit Calendar.
-
+1. Click ![icon_menu](../common/icon_menu.svg).
+2. Select **Exit**.
