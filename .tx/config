@@ -1,0 +1,20 @@
+[main]
+host = https://www.transifex.com
+
+[o:linuxdeepin:p:deepin-desktop-environment:r:6266c10022d26e548b3f7324f3af75c6]
+file_filter = translations/dde-calendar_<lang>.ts
+source_file = translations/dde-calendar_en_US.ts
+source_lang = en_US
+type = QT
+
+[o:linuxdeepin:p:deepin-desktop-environment:r:85e9ee7d8a9c82af00e8e8761a0aa93c]
+file_filter = translations/desktop/desktop_<lang>.ts
+source_file = translations/desktop/desktop.ts
+source_lang = en_US
+type = QT
+
+[o:linuxdeepin:p:deepin-desktop-environment:r:ecfd9d2397411fb030ecda872f33c554]
+file_filter = translations/dde-calendar-service_<lang>.ts
+source_file = translations/dde-calendar-service_en_US.ts
+source_lang = en_US
+type = QT

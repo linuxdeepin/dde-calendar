@@ -1,711 +1,819 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS version="2.1" language="ko">
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.1" language="ko">
 <context>
     <name>AccountItem</name>
     <message>
+        <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="41"/>
         <source>Sync successful</source>
-        <translation type="unfinished"/>
+        <translation>동기화 성공</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="42"/>
         <source>Network error</source>
-        <translation type="unfinished"/>
+        <translation>네트워크 오류</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="43"/>
         <source>Server exception</source>
-        <translation type="unfinished"/>
+        <translation>서버 예외</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="44"/>
         <source>Storage full</source>
-        <translation type="unfinished"/>
+        <translation>저장 공간이 가득 찼습니다</translation>
     </message>
 </context>
 <context>
     <name>AccountManager</name>
     <message>
+        <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="227"/>
         <source>Local account</source>
-        <translation type="unfinished"/>
+        <translation>로컬 계정</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="229"/>
         <source>Event types</source>
-        <translation type="unfinished"/>
+        <translation>이벤트 유형</translation>
     </message>
 </context>
 <context>
     <name>CColorPickerWidget</name>
     <message>
+        <location filename="../calendar-client/src/customWidget/colorWidget/colorpickerWidget.cpp" line="77"/>
         <source>Color</source>
-        <translation type="vanished">색상</translation>
+        <translation>색상</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/customWidget/colorWidget/colorpickerWidget.cpp" line="90"/>
         <source>Cancel</source>
         <comment>button</comment>
-        <translation type="vanished">취소</translation>
+        <translation>취소</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/customWidget/colorWidget/colorpickerWidget.cpp" line="92"/>
         <source>Save</source>
         <comment>button</comment>
-        <translation type="vanished">저장</translation>
+        <translation>저장</translation>
     </message>
 </context>
 <context>
     <name>CDayMonthView</name>
     <message>
+        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="33"/>
         <source>Monday</source>
-        <translation type="vanished">월요일</translation>
+        <translation>월요일</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="34"/>
         <source>Tuesday</source>
-        <translation type="vanished">화요일</translation>
+        <translation>화요일</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="35"/>
         <source>Wednesday</source>
-        <translation type="vanished">수요일</translation>
+        <translation>수요일</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="36"/>
         <source>Thursday</source>
-        <translation type="vanished">목요일</translation>
+        <translation>목요일</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="37"/>
         <source>Friday</source>
-        <translation type="vanished">금요일</translation>
+        <translation>금요일</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="38"/>
         <source>Saturday</source>
-        <translation type="vanished">토요일</translation>
+        <translation>토요일</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="39"/>
         <source>Sunday</source>
-        <translation type="vanished">일요일</translation>
+        <translation>일요일</translation>
     </message>
 </context>
 <context>
     <name>CDayWindow</name>
     <message>
+        <location filename="../calendar-client/src/widget/dayWidget/daywindow.cpp" line="112"/>
         <source>Y</source>
-        <translation type="vanished">년</translation>
+        <translation>년</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/widget/dayWidget/daywindow.cpp" line="113"/>
         <source>M</source>
-        <translation type="vanished">월</translation>
+        <translation>월</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/widget/dayWidget/daywindow.cpp" line="114"/>
         <source>D</source>
-        <translation type="vanished">일</translation>
+        <translation>일</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/widget/dayWidget/daywindow.cpp" line="170"/>
         <source>Lunar</source>
-        <translation type="unfinished"/>
+        <translation>음력</translation>
     </message>
 </context>
 <context>
     <name>CGraphicsView</name>
     <message>
+        <location filename="../calendar-client/src/view/graphicsview.cpp" line="628"/>
         <source>New Event</source>
-        <translation type="vanished">새 이벤트</translation>
+        <translation>새 이벤트</translation>
     </message>
 </context>
 <context>
     <name>CMonthScheduleNumItem</name>
     <message>
+        <location filename="../calendar-client/src/view/graphicsItem/cmonthschedulenumitem.cpp" line="80"/>
         <source>%1 more</source>
-        <translation type="vanished">%1 더</translation>
+        <translation>%1 더</translation>
     </message>
 </context>
 <context>
     <name>CMonthView</name>
     <message>
+        <location filename="../calendar-client/src/widget/monthWidget/monthview.cpp" line="50"/>
         <source>New event</source>
-        <translation type="vanished">새 이벤트</translation>
+        <translation>새 이벤트</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/widget/monthWidget/monthview.cpp" line="230"/>
         <source>New Event</source>
-        <translation type="vanished">새 이벤트</translation>
+        <translation>새 이벤트</translation>
     </message>
 </context>
 <context>
     <name>CMonthWindow</name>
     <message>
+        <location filename="../calendar-client/src/widget/monthWidget/monthwindow.cpp" line="98"/>
         <source>Y</source>
-        <translation type="vanished">년</translation>
+        <translation>년</translation>
     </message>
 </context>
 <context>
     <name>CMyScheduleView</name>
     <message>
+        <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="284"/>
         <source>My Event</source>
-        <translation type="vanished">나의 이벤트</translation>
+        <translation>나의 이벤트</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="326"/>
         <source>OK</source>
         <comment>button</comment>
-        <translation type="vanished">확인</translation>
+        <translation>확인</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="331"/>
         <source>Delete</source>
         <comment>button</comment>
-        <translation type="vanished">삭제</translation>
+        <translation>삭제</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="332"/>
         <source>Edit</source>
         <comment>button</comment>
-        <translation type="vanished">편집</translation>
+        <translation>편집</translation>
     </message>
 </context>
 <context>
     <name>CPushButton</name>
     <message>
+        <location filename="../calendar-client/src/customWidget/cpushbutton.cpp" line="17"/>
         <source>New event type</source>
-        <translation type="unfinished"/>
+        <translation>신규 이벤트 유형</translation>
     </message>
 </context>
 <context>
     <name>CScheduleDlg</name>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="46"/>
         <source>New Event</source>
-        <translation type="vanished">새 이벤트</translation>
+        <translation>새 이벤트</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="60"/>
         <source>Edit Event</source>
-        <translation type="vanished">이벤트 편집</translation>
+        <translation>이벤트 편집</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="270"/>
         <source>End time must be greater than start time</source>
-        <translation type="vanished">종료 시간은 시작 시간보다 커야 합니다.</translation>
+        <translation>종료 시간은 시작 시간보다 커야 합니다.</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="271"/>
         <source>OK</source>
         <comment>button</comment>
-        <translation type="vanished">확인</translation>
+        <translation>확인</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="506"/>
         <source>Never</source>
-        <translation type="vanished">없음</translation>
+        <translation>없음</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="507"/>
         <source>At time of event</source>
-        <translation type="vanished">이벤트 시</translation>
+        <translation>이벤트 시</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="508"/>
         <source>15 minutes before</source>
-        <translation type="vanished">15분 전</translation>
+        <translation>15분 전</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="509"/>
         <source>30 minutes before</source>
-        <translation type="vanished">30분 전</translation>
+        <translation>30분 전</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="510"/>
         <source>1 hour before</source>
-        <translation type="vanished">1시간 전</translation>
+        <translation>1시간 전</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="511"/>
         <source>1 day before</source>
-        <translation type="vanished">1일 전</translation>
+        <translation>1일 전</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="512"/>
         <source>2 days before</source>
-        <translation type="vanished">2일 전</translation>
+        <translation>2일 전</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="513"/>
         <source>1 week before</source>
-        <translation type="vanished">1주일 전</translation>
+        <translation>1주일 전</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="536"/>
         <source>On start day (9:00 AM)</source>
-        <translation type="vanished">시작일 (오전 9:00)</translation>
+        <translation>시작일 (오전 9:00)</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="583"/>
         <source>time(s)</source>
-        <translation type="vanished">시간</translation>
+        <translation>시간</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="598"/>
         <source>Enter a name please</source>
-        <translation type="unfinished"/>
+        <translation>이름을 입력해 주세요</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="693"/>
         <source>The name can not only contain whitespaces</source>
-        <translation type="unfinished"/>
+        <translation>이름은 단독으로 공백을 포함할 수 없습니다</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="749"/>
         <source>Type:</source>
-        <translation type="vanished">종류:</translation>
+        <translation>종류:</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="754"/>
         <source>Description:</source>
-        <translation type="vanished">설명:</translation>
+        <translation>설명:</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="759"/>
         <source>All Day:</source>
-        <translation type="vanished">하루 종일:</translation>
+        <translation>하루 종일:</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="764"/>
         <source>Starts:</source>
-        <translation type="vanished">시작:</translation>
+        <translation>시작:</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="769"/>
         <source>Ends:</source>
-        <translation type="vanished">종료</translation>
+        <translation>종료</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="774"/>
         <source>Remind Me:</source>
-        <translation type="vanished">알림 메시지:</translation>
+        <translation>알림 메시지:</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="779"/>
         <source>Repeat:</source>
-        <translation type="vanished">반복:</translation>
+        <translation>반복:</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="784"/>
         <source>End Repeat:</source>
-        <translation type="vanished">종료 반복:</translation>
+        <translation>종료 반복:</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="840"/>
         <source>Calendar account:</source>
-        <translation type="unfinished"/>
+        <translation>캘린더 계정:</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="841"/>
         <source>Calendar account</source>
-        <translation type="unfinished"/>
+        <translation>캘린더 계정</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="868"/>
         <source>Type</source>
-        <translation type="vanished">타입</translation>
+        <translation>타입</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="910"/>
         <source>Description</source>
-        <translation type="vanished">설명</translation>
+        <translation>설명</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="940"/>
         <source>All Day</source>
-        <translation type="vanished">하루 종일</translation>
+        <translation>하루 종일</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="964"/>
         <source>Time:</source>
-        <translation type="unfinished"/>
+        <translation>시간:</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="965"/>
         <source>Time</source>
-        <translation type="vanished">시간</translation>
+        <translation>시간</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="972"/>
         <source>Solar</source>
-        <translation type="unfinished"/>
+        <translation>양력</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="973"/>
         <source>Lunar</source>
-        <translation type="unfinished"/>
+        <translation>음력</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1006"/>
         <source>Starts</source>
-        <translation type="vanished">시작</translation>
+        <translation>시작</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1047"/>
         <source>Ends</source>
-        <translation type="vanished">종료</translation>
+        <translation>종료</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1092"/>
         <source>Remind Me</source>
-        <translation type="vanished">알림</translation>
+        <translation>알림</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1119"/>
         <source>Repeat</source>
-        <translation type="vanished">다시</translation>
+        <translation>다시</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1134"/>
         <source>Daily</source>
-        <translation type="vanished">매일</translation>
+        <translation>매일</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1135"/>
         <source>Weekdays</source>
-        <translation type="vanished">요일</translation>
+        <translation>요일</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1136"/>
         <source>Weekly</source>
-        <translation type="vanished">매주</translation>
+        <translation>매주</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1137"/>
         <source>Monthly</source>
-        <translation type="vanished">매달</translation>
+        <translation>매달</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1138"/>
         <source>Yearly</source>
-        <translation type="vanished">매년</translation>
+        <translation>매년</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1158"/>
         <source>End Repeat</source>
-        <translation type="vanished">반복 종료</translation>
+        <translation>반복 종료</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1169"/>
         <source>After</source>
-        <translation type="vanished">이후</translation>
+        <translation>이후</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1170"/>
         <source>On</source>
-        <translation type="vanished">진행 </translation>
+        <translation>진행 </translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1240"/>
         <source>Cancel</source>
         <comment>button</comment>
-        <translation type="vanished">취소</translation>
+        <translation>취소</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1241"/>
         <source>Save</source>
         <comment>button</comment>
-        <translation type="vanished">저장</translation>
+        <translation>저장</translation>
     </message>
 </context>
 <context>
     <name>CScheduleOperation</name>
     <message>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="74"/>
         <source>All occurrences of a repeating event must have the same all-day status.</source>
-        <translation type="vanished">반복 이벤트의 모든 발생은 하루 종일 동일한 상태를 가져야 합니다.</translation>
+        <translation>반복 이벤트의 모든 발생은 하루 종일 동일한 상태를 가져야 합니다.</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="75"/>
         <source>Do you want to change all occurrences?</source>
-        <translation type="vanished">모든 항목을 변경하시겠습니까?</translation>
+        <translation>모든 항목을 변경하시겠습니까?</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="76"/>
         <source>Cancel</source>
         <comment>button</comment>
-        <translation type="vanished">취소</translation>
+        <translation>취소</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="77"/>
         <source>Change All</source>
-        <translation type="vanished">모두 변경</translation>
+        <translation>모두 변경</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="94"/>
         <source>You are changing the repeating rule of this event.</source>
-        <translation type="vanished">이 이벤트의 반복 규칙을 변경하고 있습니다.</translation>
+        <translation>이 이벤트의 반복 규칙을 변경하고 있습니다.</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="127"/>
         <source>You are deleting an event.</source>
-        <translation type="vanished">이벤트를 삭제하는 중.</translation>
+        <translation>이벤트를 삭제하는 중.</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="128"/>
         <source>Are you sure you want to delete this event?</source>
-        <translation type="vanished">이 이벤트를 삭제하시겠습니까?</translation>
+        <translation>이 이벤트를 삭제하시겠습니까?</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="130"/>
         <source>Delete</source>
         <comment>button</comment>
-        <translation type="vanished">삭제</translation>
+        <translation>삭제</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="150"/>
         <source>Do you want to delete all occurrences of this event, or only the selected occurrence?</source>
-        <translation type="vanished">이 이벤트의 모든 발생 항목을 삭제하시겠습니까, 아니면 선택한 발생 항목만 삭제하시겠습니까?</translation>
+        <translation>이 이벤트의 모든 발생 항목을 삭제하시겠습니까, 아니면 선택한 발생 항목만 삭제하시겠습니까?</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="152"/>
         <source>Delete All</source>
-        <translation type="vanished">모두 삭제</translation>
+        <translation>모두 삭제</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="153"/>
         <source>Delete Only This Event</source>
-        <translation type="vanished">이 이벤트만 삭제</translation>
+        <translation>이 이벤트만 삭제</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="173"/>
         <source>Do you want to delete this and all future occurrences of this event, or only the selected occurrence?</source>
-        <translation type="vanished">이 이벤트와 이 이벤트의 모든 향후 발생 항목을 삭제하시겠습니까? 아니면 선택한 발생 항목만 삭제하시겠습니까?</translation>
+        <translation>이 이벤트와 이 이벤트의 모든 향후 발생 항목을 삭제하시겠습니까? 아니면 선택한 발생 항목만 삭제하시겠습니까?</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="175"/>
         <source>Delete All Future Events</source>
-        <translation type="vanished">모든 향후 이벤트 삭제</translation>
+        <translation>모든 향후 이벤트 삭제</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="255"/>
         <source>You are changing a repeating event.</source>
-        <translation type="vanished">반복 이벤트를 변경하는 중입니다.</translation>
+        <translation>반복 이벤트를 변경하는 중입니다.</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="257"/>
         <source>Do you want to change only this occurrence of the event, or all occurrences?</source>
-        <translation type="vanished">이벤트의 이 발생만 변경하시겠습니까, 아니면 모든 발생을 변경하시겠습니까?</translation>
+        <translation>이벤트의 이 발생만 변경하시겠습니까, 아니면 모든 발생을 변경하시겠습니까?</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="260"/>
         <source>All</source>
-        <translation type="vanished">모두</translation>
+        <translation>모두</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="261"/>
         <source>Only This Event</source>
-        <translation type="vanished">이 이벤트만</translation>
+        <translation>이 이벤트만</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="290"/>
         <source>Do you want to change only this occurrence of the event, or this and all future occurrences?</source>
-        <translation type="vanished">이벤트의 이 발생만 변경하시겠습니까, 아니면 이 발생과 향후 모든 발생만 변경하시겠습니까?</translation>
+        <translation>이벤트의 이 발생만 변경하시겠습니까, 아니면 이 발생과 향후 모든 발생만 변경하시겠습니까?</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="293"/>
         <source>All Future Events</source>
-        <translation type="vanished">모든 향후 이벤트</translation>
+        <translation>모든 향후 이벤트</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="416"/>
         <source>You have selected a leap month, and will be reminded according to the rules of the lunar calendar.</source>
-        <translation type="unfinished"/>
+        <translation>당신은 윤달을 선택했습니다. 음력 규칙에 따라 알림이 제공됩니다.</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="417"/>
         <source>OK</source>
         <comment>button</comment>
-        <translation type="vanished">확인</translation>
+        <translation>확인</translation>
     </message>
 </context>
 <context>
     <name>CScheduleSearchDateItem</name>
     <message>
+        <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="905"/>
         <source>Y</source>
-        <translation type="vanished">년</translation>
+        <translation>년</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="905"/>
         <source>M</source>
-        <translation type="vanished">월</translation>
+        <translation>월</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="905"/>
         <source>D</source>
-        <translation type="vanished">일</translation>
+        <translation>일</translation>
     </message>
 </context>
 <context>
     <name>CScheduleSearchItem</name>
     <message>
+        <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="42"/>
         <source>Edit</source>
-        <translation type="vanished">편집</translation>
+        <translation>편집</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="43"/>
         <source>Delete</source>
-        <translation type="vanished">삭제</translation>
+        <translation>삭제</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="267"/>
         <source>All Day</source>
-        <translation type="vanished">하루 종일</translation>
+        <translation>하루 종일</translation>
     </message>
 </context>
 <context>
     <name>CScheduleSearchView</name>
     <message>
+        <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="648"/>
         <source>No search results</source>
-        <translation type="vanished">검색결과가 없습니다.</translation>
+        <translation>검색결과가 없습니다.</translation>
     </message>
 </context>
 <context>
     <name>CScheduleView</name>
     <message>
+        <location filename="../calendar-client/src/customWidget/scheduleview.cpp" line="316"/>
         <source>ALL DAY</source>
-        <translation type="vanished">하루 종일</translation>
+        <translation>하루 종일</translation>
     </message>
 </context>
 <context>
     <name>CSettingDialog</name>
     <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="389"/>
+        <source>import ICS file</source>
+        <translation>ICS 파일 가져오기</translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="403"/>
         <source>Manual</source>
-        <translation type="vanished">수동</translation>
+        <translation>수동</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="404"/>
         <source>15 mins</source>
-        <translation type="unfinished"/>
+        <translation>15분</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="405"/>
         <source>30 mins</source>
-        <translation type="unfinished"/>
+        <translation>30분</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="406"/>
         <source>1 hour</source>
-        <translation type="vanished">1 시간</translation>
+        <translation>1 시간</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="407"/>
         <source>24 hours</source>
-        <translation type="unfinished"/>
+        <translation>24시간</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="418"/>
         <source>Sync Now</source>
-        <translation type="unfinished"/>
+        <translation>즉시 동기화</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="585"/>
         <source>Last sync</source>
-        <translation type="unfinished"/>
+        <translation>마지막 동기화</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="779"/>
+        <source>Please go to the Control Center to change system settings</source>
+        <translation>시스템 설정을 변경하려면 제어 센터로 이동해 주세요</translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="346"/>
         <source>Monday</source>
-        <translation type="vanished">월요일</translation>
+        <translation>월요일</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="345"/>
         <source>Sunday</source>
-        <translation type="vanished">일요일</translation>
+        <translation>일요일</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="347"/>
+        <source>Use System Setting</source>
+        <translation>시스템 설정 사용</translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="365"/>
         <source>12-hour clock</source>
-        <translation type="unfinished"/>
+        <translation>12시간제 시계</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="364"/>
         <source>24-hour clock</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Tuesday</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Wednesday</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Thursday</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Friday</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Saturday</source>
-        <translation type="unfinished"/>
+        <translation>24시간제 시계</translation>
     </message>
 </context>
 <context>
     <name>CTimeEdit</name>
     <message>
+        <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="71"/>
         <source>(%1 mins)</source>
-        <translation type="unfinished"/>
+        <translation>(%1 분)</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="73"/>
         <source>(%1 hour)</source>
-        <translation type="unfinished"/>
+        <translation>(%1 시간)</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="75"/>
         <source>(%1 hours)</source>
-        <translation type="unfinished"/>
+        <translation>(%1 시간)</translation>
     </message>
 </context>
 <context>
     <name>CTitleWidget</name>
     <message>
+        <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="30"/>
         <source>Y</source>
-        <translation type="vanished">년</translation>
+        <translation>년</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="42"/>
         <source>M</source>
-        <translation type="vanished">월</translation>
+        <translation>월</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="50"/>
         <source>W</source>
-        <translation type="vanished">주</translation>
+        <translation>주</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="58"/>
         <source>D</source>
-        <translation type="vanished">일</translation>
+        <translation>일</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="92"/>
         <source>Search events and festivals</source>
-        <translation type="unfinished"/>
-    </message>
-</context>
-<context>
-    <name>CWeekWidget</name>
-    <message>
-        <source>Sun</source>
-        <translation type="vanished">일요일</translation>
-    </message>
-    <message>
-        <source>Mon</source>
-        <translation type="vanished">월요일</translation>
-    </message>
-    <message>
-        <source>Tue</source>
-        <translation type="vanished">화</translation>
-    </message>
-    <message>
-        <source>Wed</source>
-        <translation type="vanished">수요일</translation>
-    </message>
-    <message>
-        <source>Thu</source>
-        <translation type="vanished">목</translation>
-    </message>
-    <message>
-        <source>Fri</source>
-        <translation type="vanished">금요일</translation>
-    </message>
-    <message>
-        <source>Sat</source>
-        <translation type="vanished">토요일</translation>
+        <translation>이벤트 및 축제 검색</translation>
     </message>
 </context>
 <context>
     <name>CWeekWindow</name>
     <message>
+        <location filename="../calendar-client/src/widget/weekWidget/weekwindow.cpp" line="90"/>
         <source>Week</source>
-        <translation type="vanished">일주일</translation>
+        <translation>일주일</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/widget/weekWidget/weekwindow.cpp" line="280"/>
         <source>Y</source>
-        <translation type="vanished">년</translation>
+        <translation>년</translation>
     </message>
 </context>
 <context>
     <name>CYearScheduleView</name>
     <message>
+        <location filename="../calendar-client/src/widget/yearWidget/yearscheduleview.cpp" line="268"/>
         <source>All Day</source>
-        <translation type="vanished">하루 종일</translation>
+        <translation>하루 종일</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/widget/yearWidget/yearscheduleview.cpp" line="288"/>
         <source>No event</source>
-        <translation type="vanished">이벤트 없음</translation>
+        <translation>이벤트 없음</translation>
     </message>
 </context>
 <context>
     <name>CYearWindow</name>
     <message>
+        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="615"/>
         <source>Y</source>
-        <translation type="vanished">년</translation>
+        <translation>년</translation>
     </message>
 </context>
 <context>
     <name>CalendarWindow</name>
     <message>
+        <location filename="../calendar-client/src/main.cpp" line="66"/>
         <source>Calendar</source>
-        <translation type="vanished">달력</translation>
+        <translation>달력</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/main.cpp" line="69"/>
         <source>Calendar is a tool to view dates, and also a smart daily planner to schedule all things in life. </source>
-        <translation type="vanished">캘린더는 날짜를 볼 수있는 도구이며, 일상의 모든 것을 예약 할 수있는 현명한 일일 플래너입니다</translation>
+        <translation>캘린더는 날짜를 볼 수있는 도구이며, 일상의 모든 것을 예약 할 수있는 현명한 일일 플래너입니다</translation>
     </message>
 </context>
 <context>
     <name>Calendarmainwindow</name>
     <message>
+        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="89"/>
         <source>Calendar</source>
-        <translation type="vanished">달력</translation>
+        <translation>달력</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="372"/>
         <source>Manage</source>
-        <translation type="unfinished"/>
+        <translation>관리</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="379"/>
         <source>Privacy Policy</source>
-        <translation type="vanished">개인정보 보호정책</translation>
+        <translation>개인정보 보호정책</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="962"/>
         <source>Syncing...</source>
-        <translation type="vanished">동기화중...</translation>
+        <translation>동기화중...</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="973"/>
         <source>Sync successful</source>
-        <translation type="unfinished"/>
+        <translation>동기화 성공</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="982"/>
         <source>Sync failed, please try later</source>
-        <translation type="unfinished"/>
+        <translation>동기화 실패, 나중에 다시 시도해 주세요</translation>
     </message>
 </context>
 <context>
     <name>CenterWidget</name>
     <message>
+        <location filename="../calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="174"/>
         <source>All Day</source>
-        <translation type="vanished">하루 종일</translation>
+        <translation>하루 종일</translation>
     </message>
 </context>
 <context>
     <name>DAccountDataBase</name>
     <message>
+        <location filename="../calendar-service/src/dbmanager/daccountdatabase.cpp" line="1155"/>
         <source>Work</source>
         <translation>작업</translation>
     </message>
     <message>
+        <location filename="../calendar-service/src/dbmanager/daccountdatabase.cpp" line="1157"/>
         <source>Life</source>
         <translation>생활</translation>
     </message>
     <message>
+        <location filename="../calendar-service/src/dbmanager/daccountdatabase.cpp" line="1159"/>
         <source>Other</source>
         <translation>기타</translation>
     </message>
@@ -713,47 +821,58 @@
 <context>
     <name>DAlarmManager</name>
     <message>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="187"/>
         <source>Close</source>
         <comment>button</comment>
         <translation>닫기</translation>
     </message>
     <message>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="191"/>
         <source>One day before start</source>
         <translation>시작 하루 전</translation>
     </message>
     <message>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="197"/>
         <source>Remind me tomorrow</source>
         <translation>내일 알림</translation>
     </message>
     <message>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="202"/>
         <source>Remind me later</source>
         <translation>나중에 알림</translation>
     </message>
     <message>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="204"/>
         <source>15 mins later</source>
-        <translation type="unfinished"/>
+        <translation>15분 후</translation>
     </message>
     <message>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="205"/>
         <source>1 hour later</source>
-        <translation type="unfinished"/>
+        <translation>1시간 후</translation>
     </message>
     <message>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="206"/>
         <source>4 hours later</source>
-        <translation type="unfinished"/>
+        <translation>4시간 후</translation>
     </message>
     <message>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="207"/>
         <source>Tomorrow</source>
         <translation>내일</translation>
     </message>
     <message>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="215"/>
         <source>Schedule Reminder</source>
         <translation>일정 알림</translation>
     </message>
     <message>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="258"/>
         <source>%1 to %2</source>
-        <translation type="unfinished"/>
+        <translation>'%1부터 %2까지'</translation>
     </message>
     <message>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="296"/>
         <source>Today</source>
         <translation>오늘</translation>
     </message>
@@ -761,223 +880,287 @@
 <context>
     <name>DragInfoGraphicsView</name>
     <message>
+        <location filename="../calendar-client/src/view/draginfographicsview.cpp" line="48"/>
         <source>Edit</source>
-        <translation type="vanished">편집</translation>
+        <translation>편집</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/view/draginfographicsview.cpp" line="49"/>
         <source>Delete</source>
-        <translation type="vanished">삭제</translation>
+        <translation>삭제</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/view/draginfographicsview.cpp" line="50"/>
         <source>New event</source>
-        <translation type="vanished">새 이벤트</translation>
+        <translation>새 이벤트</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/view/draginfographicsview.cpp" line="759"/>
         <source>New Event</source>
-        <translation type="vanished">새 이벤트</translation>
+        <translation>새 이벤트</translation>
     </message>
 </context>
 <context>
     <name>JobTypeListView</name>
     <message>
+        <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="144"/>
+        <source>export</source>
+        <translation>내보내기</translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="219"/>
+        <source>import ICS file</source>
+        <translation>ICS 파일 가져오기</translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="450"/>
         <source>You are deleting an event type.</source>
-        <translation type="unfinished"/>
+        <translation>이 이벤트 유형을 삭제하고 있습니다.</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="451"/>
         <source>All events under this type will be deleted and cannot be recovered.</source>
-        <translation type="unfinished"/>
+        <translation>이 유형의 모든 이벤트가 삭제되고 복구할 수 없습니다.</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="452"/>
         <source>Cancel</source>
         <comment>button</comment>
-        <translation type="vanished">취소</translation>
+        <translation>취소</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="453"/>
         <source>Delete</source>
         <comment>button</comment>
-        <translation type="vanished">삭제</translation>
+        <translation>삭제</translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="38"/>
         <source>Account settings</source>
-        <translation type="unfinished"/>
+        <translation>계정 설정</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="42"/>
         <source>Account</source>
-        <translation type="vanished">계정</translation>
+        <translation>계정</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="53"/>
         <source>Select items to be synced</source>
-        <translation type="unfinished"/>
+        <translation>동기화할 항목을 선택하세요</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="56"/>
         <source>Events</source>
-        <translation type="unfinished"/>
+        <translation>이벤트</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="63"/>
         <source>General settings</source>
-        <translation type="unfinished"/>
+        <translation>일반 설정</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="74"/>
         <source>Sync interval</source>
-        <translation type="unfinished"/>
+        <translation>동기화 간격</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="96"/>
         <source>Manage calendar</source>
-        <translation type="unfinished"/>
+        <translation>달력 관리</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="104"/>
         <source>Calendar account</source>
-        <translation type="unfinished"/>
+        <translation>달력 계정</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="112"/>
         <source>Event types</source>
-        <translation type="unfinished"/>
+        <translation>이벤트 유형</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="150"/>
         <source>General</source>
-        <translation type="vanished">일반</translation>
+        <translation>일반</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="152"/>
         <source>First day of week</source>
-        <translation type="unfinished"/>
+        <translation>주간 시작 요일</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="153"/>
         <source>Time</source>
-        <translation type="vanished">시간</translation>
+        <translation>시간</translation>
     </message>
 </context>
 <context>
     <name>Return</name>
     <message>
+        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="611"/>
         <source>Today</source>
         <comment>Return</comment>
-        <translation type="vanished">오늘</translation>
+        <translation>오늘</translation>
     </message>
 </context>
 <context>
     <name>Return Today</name>
     <message>
+        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="339"/>
         <source>Today</source>
         <comment>Return Today</comment>
-        <translation type="vanished">오늘</translation>
+        <translation>오늘</translation>
     </message>
 </context>
 <context>
     <name>ScheduleTypeEditDlg</name>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="22"/>
         <source>New event type</source>
-        <translation type="unfinished"/>
+        <translation>새로운 이벤트 유형</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="32"/>
         <source>Edit event type</source>
-        <translation type="unfinished"/>
+        <translation>이벤트 유형 편집</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="43"/>
+        <source>Import ICS file</source>
+        <translation>ICS 파일 가져오기</translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="151"/>
         <source>Name:</source>
-        <translation type="vanished">이름:</translation>
+        <translation>이름:</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="152"/>
         <source>Color:</source>
-        <translation type="unfinished"/>
+        <translation>색상:</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="156"/>
+        <source>ICS File:</source>
+        <translation>ICS 파일:</translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="167"/>
         <source>Cancel</source>
         <comment>button</comment>
-        <translation type="vanished">취소</translation>
+        <translation>취소</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="168"/>
         <source>Save</source>
         <comment>button</comment>
-        <translation type="vanished">저장</translation>
+        <translation>저장</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="219"/>
         <source>The name can not only contain whitespaces</source>
-        <translation type="unfinished"/>
+        <translation>이름은 공백 문자만 포함할 수 없습니다</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="256"/>
         <source>Enter a name please</source>
-        <translation type="unfinished"/>
+        <translation>이름을 입력해 주세요</translation>
     </message>
 </context>
 <context>
     <name>Shortcut</name>
     <message>
+        <location filename="../calendar-client/src/shortcut.cpp" line="16"/>
         <source>Help</source>
-        <translation type="vanished">도움말</translation>
+        <translation>도움말</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/shortcut.cpp" line="17"/>
         <source>Delete event</source>
-        <translation type="vanished">이벤트 삭제</translation>
+        <translation>이벤트 삭제</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/shortcut.cpp" line="20"/>
         <source>Copy</source>
-        <translation type="vanished">복사</translation>
+        <translation>복사</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/shortcut.cpp" line="21"/>
         <source>Cut</source>
-        <translation type="vanished">잘라내기</translation>
+        <translation>잘라내기</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/shortcut.cpp" line="22"/>
         <source>Paste</source>
-        <translation type="vanished">붙여넣기</translation>
+        <translation>붙여넣기</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/shortcut.cpp" line="25"/>
         <source>Delete</source>
-        <translation type="vanished">삭제</translation>
+        <translation>삭제</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/shortcut.cpp" line="26"/>
         <source>Select all</source>
-        <translation type="vanished">전체 선택</translation>
+        <translation>전체 선택</translation>
     </message>
 </context>
 <context>
     <name>SidebarCalendarWidget</name>
     <message>
+        <location filename="../calendar-client/src/widget/sidebarWidget/sidebarcalendarwidget.cpp" line="126"/>
         <source>Y</source>
-        <translation type="vanished">년</translation>
+        <translation>년</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/widget/sidebarWidget/sidebarcalendarwidget.cpp" line="126"/>
         <source>M</source>
-        <translation type="vanished">월</translation>
+        <translation>월</translation>
     </message>
 </context>
 <context>
     <name>TimeJumpDialog</name>
     <message>
+        <location filename="../calendar-client/src/dialog/timejumpdialog.cpp" line="29"/>
         <source>Go</source>
         <comment>button</comment>
-        <translation type="vanished">Go</translation>
+        <translation>Go</translation>
     </message>
 </context>
 <context>
     <name>UserloginWidget</name>
     <message>
+        <location filename="../calendar-client/src/widget/settingWidget/userloginwidget.cpp" line="48"/>
         <source>Sign In</source>
         <comment>button</comment>
-        <translation type="vanished">로그인</translation>
+        <translation>로그인</translation>
     </message>
     <message>
+        <location filename="../calendar-client/src/widget/settingWidget/userloginwidget.cpp" line="49"/>
         <source>Sign Out</source>
         <comment>button</comment>
-        <translation type="vanished">로그아웃</translation>
+        <translation>로그아웃</translation>
     </message>
 </context>
 <context>
     <name>YearFrame</name>
     <message>
+        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="928"/>
         <source>Y</source>
-        <translation type="vanished">년</translation>
+        <translation>년</translation>
     </message>
 </context>
 <context>
     <name>today</name>
     <message>
+        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="188"/>
         <source>Today</source>
         <comment>Today</comment>
-        <translation type="vanished">오늘</translation>
+        <translation>오늘</translation>
     </message>
 </context>
 </TS>
