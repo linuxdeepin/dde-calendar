@@ -1,4 +1,4 @@
-# Calendar | dde-calendar
+# Calendar|dde-calendar|
 
 ## Overview
 
