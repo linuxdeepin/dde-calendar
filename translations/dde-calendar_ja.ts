@@ -936,15 +936,15 @@
     </message>
     <message>
         <source>15 mins later</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">15分後</translation>
     </message>
     <message>
         <source>1 hour later</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">1時間後</translation>
     </message>
     <message>
         <source>4 hours later</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">4時間後</translation>
     </message>
     <message>
         <source>Tomorrow</source>
@@ -991,7 +991,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="143"/>
         <source>export</source>
-        <translation type="unfinished"/>
+        <translation>エクスポート</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="214"/>
@@ -1048,28 +1048,28 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="53"/>
         <source>Select items to be synced</source>
-        <translation type="unfinished"/>
+        <translation>同期するアイテム</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="56"/>
         <source>Events</source>
-        <translation type="unfinished"/>
+        <translation>イベント</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="63"/>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="146"/>
         <source>General settings</source>
-        <translation type="unfinished"/>
+        <translation>一般設定</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="74"/>
         <source>Sync interval</source>
-        <translation type="unfinished"/>
+        <translation>同期の間隔</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="104"/>
         <source>Calendar account</source>
-        <translation type="unfinished"/>
+        <translation>カレンダーアカウント</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="150"/>
@@ -1079,7 +1079,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="152"/>
         <source>First day of week</source>
-        <translation type="unfinished"/>
+        <translation>週最初の曜日</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="153"/>
@@ -1113,12 +1113,12 @@
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="21"/>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="47"/>
         <source>New event type</source>
-        <translation type="unfinished"/>
+        <translation>新しいイベントの種類</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="31"/>
         <source>Edit event type</source>
-        <translation type="unfinished"/>
+        <translation>イベントの種類を編集</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="43"/>
