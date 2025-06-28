@@ -436,7 +436,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1144"/>
         <source>After</source>
-        <translation> </translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1145"/>
@@ -540,7 +540,7 @@
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="235"/>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="265"/>
         <source>You are changing a repeating event.</source>
-        <translation>繰り返しイベントを変更しています。</translation>
+        <translation>繰り返しイベントを変更しようとしています。</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="237"/>
@@ -693,12 +693,12 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="404"/>
         <source>15 mins</source>
-        <translation type="unfinished"/>
+        <translation>15分</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="405"/>
         <source>30 mins</source>
-        <translation type="unfinished"/>
+        <translation>30分</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="406"/>
@@ -708,17 +708,17 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="407"/>
         <source>24 hours</source>
-        <translation type="unfinished"/>
+        <translation>24時間</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="418"/>
         <source>Sync Now</source>
-        <translation type="unfinished"/>
+        <translation>今すぐ同期</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="576"/>
         <source>Last sync</source>
-        <translation type="unfinished"/>
+        <translation>最終同期</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="770"/>
@@ -731,17 +731,17 @@
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="72"/>
         <source>(%1 mins)</source>
-        <translation type="unfinished"/>
+        <translation>(%1分)</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="74"/>
         <source>(%1 hour)</source>
-        <translation type="unfinished"/>
+        <translation>(%1時間)</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="76"/>
         <source>(%1 hours)</source>
-        <translation type="unfinished"/>
+        <translation>(%1時間)</translation>
     </message>
 </context>
 <context>
