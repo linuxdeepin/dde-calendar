@@ -493,11 +493,11 @@
     </message>
     <message>
         <source>15 mins</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">15分</translation>
     </message>
     <message>
         <source>30 mins</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">30分</translation>
     </message>
     <message>
         <source>1 hour</source>
@@ -505,15 +505,15 @@
     </message>
     <message>
         <source>24 hours</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">24時間</translation>
     </message>
     <message>
         <source>Sync Now</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">今すぐ同期</translation>
     </message>
     <message>
         <source>Last sync</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">最終同期</translation>
     </message>
     <message>
         <source>Monday</source>
@@ -556,15 +556,15 @@
     <name>CTimeEdit</name>
     <message>
         <source>(%1 mins)</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">(%1分)</translation>
     </message>
     <message>
         <source>(%1 hour)</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">(%1時間)</translation>
     </message>
     <message>
         <source>(%1 hours)</source>
-        <translation type="unfinished"/>
+        <translation type="vanished">(%1時間)</translation>
     </message>
 </context>
 <context>
