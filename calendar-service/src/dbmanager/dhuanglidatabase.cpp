@@ -27,31 +27,44 @@ DHuangLiDataBase::DHuangLiDataBase(QObject *parent)
 
 QString DHuangLiDataBase::queryFestivalList(quint32 year, quint8 month)
 {
-    QJsonArray dataset;
+    QJsonArray resultArray;
     QFile file(QString("%1/%2.json").arg(HolidayDir).arg(year));
     if (file.open(QIODevice::ReadOnly)) {
         auto data = file.readAll();
         file.close();
         auto doc = QJsonDocument::fromJson(data);
+        QMap<QString, QJsonObject> festivalMap;
         for (auto val : doc.object().value("days").toArray()) {
             auto day = val.toObject();
-            auto name = day.value("name").toString();
-            auto date = QDate::fromString(day.value("date").toString(), "yyyy-MM-dd");
-            auto isOffday = day.value("isOffDay").toBool();
+            auto name = day.value("name").toString("");
+            auto dateStr = day.value("date").toString("");
+            QDate date = QDate::fromString(dateStr, "yyyy-MM-dd");
             if (quint32(date.year()) == year && quint32(date.month()) == month) {
-                QJsonObject obj;
-                obj.insert("name", name);
-                obj.insert("date", date.toString("yyyy-MM-dd"));
-                obj.insert("status", isOffday ? 1 : 2);
-                dataset.append(obj);
+                // 分组
+                if (!festivalMap.contains(name)) {
+                    QJsonObject festObj;
+                    festObj["id"] = "";
+                    festObj["month"] = static_cast<int>(month);
+                    festObj["year"] = static_cast<int>(year);
+                    festObj["name"] = name;
+                    festObj["rest"] = "";
+                    festObj["description"] = "";
+                    festObj["list"] = QJsonArray();
+                    festivalMap.insert(name, festObj);
+                }
+                QJsonObject itemObj;
+                itemObj["status"] = day.value("isOffDay").toBool() ? 1 : 2;
+                itemObj["date"] = dateStr;
+                QJsonArray listArr = festivalMap[name]["list"].toArray();
+                listArr.append(itemObj);
+                festivalMap[name]["list"] = listArr;
             }
         }
-        file.close();
+        for (auto it = festivalMap.begin(); it != festivalMap.end(); ++it) {
+            resultArray.append(it.value());
+        }
     }
-    QJsonDocument result;
-    QJsonObject obj;
-    result.setArray(dataset);
-    return QString(result.toJson(QJsonDocument::Compact));
+    return QString(QJsonDocument(resultArray).toJson(QJsonDocument::Compact));
 }
 
 QList<stHuangLi> DHuangLiDataBase::queryHuangLiByDays(const QList<stDay> &days)

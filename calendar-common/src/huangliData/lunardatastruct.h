@@ -16,11 +16,17 @@ typedef struct HuangLi {
 
 typedef struct _tagHolidayInfo {
     QDate date;
-    uint status; // 1: 休 2: 补班
+    char status {};// 1: 休 2: 补班
 } HolidayInfo;
 
 typedef struct _tagFestivalInfo {
-    QVector<HolidayInfo> listHoliday {};
+    QString ID {};
+    QString FestivalName {};
+    QString description {};
+    QString Rest {};
+    int month = 0;
+    int year = 0;
+    QVector<HolidayInfo> listHoliday {};//除次参数外，其他参数都为空，已废弃
 } FestivalInfo;
 
 #endif // LUNARDATASTRUCT_H
