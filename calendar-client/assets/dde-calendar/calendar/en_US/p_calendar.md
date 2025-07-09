@@ -260,18 +260,19 @@ Access management settings, view privacy policy, switch themes, view help, or le
 
 Click ![icon_menu](../common/icon_menu.svg) > **Manage** to:
 - Manage schedule types
-- Sync schedule data/calendar settings to cloud via UOS/deepin ID
+- Sync schedule data/calendar settings to cloud via UOS ID
 - Configure general settings
 
 #### Cloud Sync
 
-Sync schedule data and settings to cloud via UOS/deepin ID.
+Sync schedule data and settings to cloud via UOS ID.
 
-> ![notes](../common/notes.svg) Note: Not available on older UOS/deepin versions.
+> ![notes](../common/notes.svg) Note: Not available on older UOS versions.
 
 **Logging In/Out**
+
 1. Click **Log In** in Account Settings.
-2. Log in via UOS/deepin ID/password, SMS, or WeChat scan.
+2. Log in via UOS ID/password, SMS, or WeChat scan.
 3. Click **Log Out** to sign out.
 
 **Sync Settings**
@@ -279,7 +280,7 @@ Sync schedule data and settings to cloud via UOS/deepin ID.
 2. Select sync frequency or choose **Manual Sync**.
 3. Click **Sync Now** for immediate sync.
 
-> ![notes](../common/notes.svg) Note: Requires enabling **UOS/deepin Cloud Sync** in Control Center.
+> ![notes](../common/notes.svg) Note: Requires enabling **UOS Cloud Sync** in Control Center.
 
 #### Managing Schedule Types
 
