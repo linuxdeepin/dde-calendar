@@ -20,6 +20,7 @@ const QString kDictFile = ":/pinyin.dict";
  */
 pinyinsearch::pinyinsearch()
 {
+    qCDebug(CommonLogger) << "pinyinsearch constructor called, initializing valid pinyin map.";
     for (int i = 0; i < validPinyinList.size(); i++) {
         QString key = validPinyinList[i];
         validPinyinMap[key] = true;
@@ -31,7 +32,9 @@ pinyinsearch::pinyinsearch()
 
 pinyinsearch *pinyinsearch::getPinPinSearch()
 {
+    // qCDebug(CommonLogger) << "Getting pinyinsearch instance.";
     if (m_pinyinsearch == nullptr) {
+        qCDebug(CommonLogger) << "pinyinsearch instance is null, creating new one.";
         //new pinyinsearch
         m_pinyinsearch = new pinyinsearch();
         //获取拼音字典
@@ -47,6 +50,7 @@ pinyinsearch *pinyinsearch::getPinPinSearch()
  */
 bool pinyinsearch::CanQueryByPinyin(QString str)
 {
+    // qCDebug(CommonLogger) << "Checking if can query by pinyin:" << str;
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     QRegularExpression regexp("^[a-zA-Z]+$");
     return regexp.match(str).hasMatch();
@@ -63,6 +67,7 @@ bool pinyinsearch::CanQueryByPinyin(QString str)
  */
 QString pinyinsearch::CreatePinyin(const QString &zh)
 {
+    qCDebug(CommonLogger) << "Creating pinyin for Chinese string:" << zh;
     //返回中文对应的拼音，汉字个数对应QList长度，每个汉字拥有的拼音个数对应QStringList长度
     QList<QStringList> pyList = Pinyin(zh);
     QString pinyinStr;
@@ -73,19 +78,22 @@ QString pinyinsearch::CreatePinyin(const QString &zh)
         if (!pyStr.isEmpty())
             pinyinStr += "[" + pyStr + "]";
     }
+    qCDebug(CommonLogger) << "Created pinyin string:" << pinyinStr;
     return pinyinStr;
 }
 
 void pinyinsearch::initDict()
 {
+    qCDebug(CommonLogger) << "Initializing pinyin dictionary.";
     if (!pinyinDictVector.isEmpty()) {
+        qCDebug(CommonLogger) << "Dictionary already initialized, skipping.";
         return;
     }
 
     QFile file(kDictFile);
 
     if (!file.open(QIODevice::ReadOnly)) {
-        qCWarning(ServiceLogger) << "open dictFile error :" << file.error();
+        qCWarning(CommonLogger) << "open dictFile error :" << file.error();
         return;
     }
 
@@ -100,6 +108,7 @@ void pinyinsearch::initDict()
             pinyinDictVector.insert(items[0].toInt(nullptr, 16), items[1]);
         }
     }
+    qCDebug(CommonLogger) << "Pinyin dictionary initialized with" << pinyinDictVector.size() << "entries.";
 }
 
 /**
@@ -109,6 +118,7 @@ void pinyinsearch::initDict()
  */
 QString pinyinsearch::CreatePinyinQuery(QString pinyin) const
 {
+    // qCDebug(CommonLogger) << "Creating pinyin query for:" << pinyin;
     QString expr;
     //对传入的拼音进行划分，例如：“nihao”->"[%ni%][%hao%]"
     while (pinyin.size() > 0) {
@@ -142,6 +152,7 @@ QString pinyinsearch::CreatePinyinQuery(QString pinyin) const
  */
 QString pinyinsearch::CreatePinyinRegexp(QString pinyin) const
 {
+    // qCDebug(CommonLogger) << "Creating pinyin regexp for:" << pinyin;
     QString expr;
     while (pinyin.size() > 0) {
         int i = singlePinyinMaxLength;
@@ -170,6 +181,7 @@ QString pinyinsearch::CreatePinyinRegexp(QString pinyin) const
  */
 bool pinyinsearch::PinyinMatch(const QString &zh, const QString &py) const
 {
+    qCDebug(CommonLogger) << "Matching pinyin for Chinese:" << zh << "with pinyin:" << py;
     //获取汉字的拼音
     QString zhPinyin = CreatePinyin(zh);
     //获取拼音的正则表达式
@@ -189,6 +201,7 @@ bool pinyinsearch::PinyinMatch(const QString &zh, const QString &py) const
  */
 QList<QStringList> pinyinsearch::Pinyin(QString str)
 {
+    // qCDebug(CommonLogger) << "Getting pinyin for string:" << str;
     QList<QStringList> pys {};
     QStringList py;
     for (int i = 0; i < str.count(); i++) {
@@ -209,6 +222,7 @@ QList<QStringList> pinyinsearch::Pinyin(QString str)
  */
 QStringList pinyinsearch::SinglePinyin(QString index)
 {
+    // qCDebug(CommonLogger) << "Getting single pinyin for character:" << index;
     //通过汉字的编码找到对应的拼音
     QString value;
     //查找对应的拼音
@@ -229,6 +243,7 @@ QStringList pinyinsearch::SinglePinyin(QString index)
  */
 QStringList pinyinsearch::RemoveYin(QStringList pinyin)
 {
+    // qCDebug(CommonLogger) << "Removing tone from pinyin list.";
     QString str;
     QStringList strList;
     //遍历每个拼音

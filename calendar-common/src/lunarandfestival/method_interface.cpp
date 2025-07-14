@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "method_interface.h"
+#include "commondef.h"
 
 #include <QtMath>
 #include <QDebug>
@@ -15,6 +16,7 @@
  */
 QString GetLunarMonthName(int lunarmonthname, bool isleap)
 {
+    // qCDebug(CommonLogger) << "Getting lunar month name for month:" << lunarmonthname << "isLeap:" << isleap;
     QString monthname = lunarMonthNames[lunarmonthname - 1];
     if (isleap) {
         return "闰" + monthname + "月";
@@ -29,6 +31,7 @@ QString GetLunarMonthName(int lunarmonthname, bool isleap)
  */
 QString GetLunarDayName(int lundayname)
 {
+    // qCDebug(CommonLogger) << "Getting lunar day name for day:" << lundayname;
     return lunarDayNames[lundayname - 1];
 }
 
@@ -42,6 +45,7 @@ QString GetLunarDayName(int lundayname)
  */
 QString GetLunarDayFestival(int monthname, int lunarday, int lunarmonthdays, int solarterm)
 {
+    // qCDebug(CommonLogger) << "Getting lunar day festival for:" << monthname << lunarday;
     int key = monthname * 100 + lunarday;
     if (lunarFestival.contains(key)) {
         return lunarFestival[key];
@@ -63,6 +67,7 @@ QString GetLunarDayFestival(int monthname, int lunarday, int lunarmonthdays, int
  */
 QString GetSolarTermName(int order)
 {
+    // qCDebug(CommonLogger) << "Getting solar term name for order:" << order;
     if (0 <= order && order <= 23) {
         return SolarTermNames[order];
     }
@@ -75,6 +80,7 @@ QString GetSolarTermName(int order)
  */
 QString GetTianGanDiZhi(int num)
 {
+    // qCDebug(CommonLogger) << "Getting TianGanDiZhi for num:" << num;
     return TianGan[num % 10] + DiZhi[num % 12];
 }
 
@@ -86,6 +92,7 @@ QString GetTianGanDiZhi(int num)
  */
 QString GetGanZhiMonth(int year, int monthzhi)
 {
+    // qCDebug(CommonLogger) << "Getting GanZhi month for year:" << year << "monthzhi:" << monthzhi;
     return GetTianGanDiZhi((year - 1900) * 12 + monthzhi + 12);
 }
 
@@ -96,6 +103,7 @@ QString GetGanZhiMonth(int year, int monthzhi)
  */
 QString GetGanZhiYear(int lunaryear)
 {
+    // qCDebug(CommonLogger) << "Getting GanZhi year for lunar year:" << lunaryear;
     return GetTianGanDiZhi(lunaryear - 1864);
 }
 
@@ -108,6 +116,7 @@ QString GetGanZhiYear(int lunaryear)
  */
 QString GetGanZhiDay(int year, int month, int day)
 {
+    // qCDebug(CommonLogger) << "Getting GanZhi day for:" << year << month << day;
     QDateTime unixDateTime = QDateTime(QDate(year, month, day), QTime(0, 0, 0, 0), Qt::TimeSpec::UTC);
     qint64 unixTime = unixDateTime.toMSecsSinceEpoch() / 1000;
     int dayCyclical = int(unixTime / 86400) + 29219 + 18;
@@ -121,11 +130,13 @@ QString GetGanZhiDay(int year, int month, int day)
  */
 QString GetYearZodiac(int lunaryear)
 {
+    // qCDebug(CommonLogger) << "Getting year zodiac for lunar year:" << lunaryear;
     return Animals[(lunaryear - 4) % 12];
 }
 
 QVector<double> get25SolarTermJDs(int year, int start)
 {
+    // qCDebug(CommonLogger) << "Getting 25 solar term JDs starting from year:" << year << "start:" << start;
     // 从某一年的某个节气开始，连续计算25个节气，返回各节气的儒略日
     // year 年份
     // start 起始的节气
@@ -146,6 +157,7 @@ QVector<double> get25SolarTermJDs(int year, int start)
 
 double GetEarthEclipticLongitudeForSun(double jd)
 {
+    // qCDebug(CommonLogger) << "Calculating Earth's heliocentric ecliptic longitude for JD:" << jd;
     // 计算地球的日心黄经
     double l = GetSunEclipticLongitudeForEarth(jd);
     // 计算地球的日心黄纬
@@ -172,6 +184,7 @@ double GetEarthEclipticLongitudeForSun(double jd)
  */
 double GetSunEclipticLongitudeForEarth(double jd)
 {
+    // qCDebug(CommonLogger) << "Calculating Sun's ecliptic longitude for Earth for JD:" << jd;
     double t = GetJulianThousandYears(jd);
     double L0 = GetEarthL0(t);
     double L1 = GetEarthL1(t);
@@ -185,6 +198,7 @@ double GetSunEclipticLongitudeForEarth(double jd)
 
 double GetJulianThousandYears(double jd)
 {
+    // qCDebug(CommonLogger) << "Getting Julian thousand years for JD:" << jd;
     //1000年的日数
     const double  DaysOf1000Years = 365250.0;
     return (jd - J2000) / DaysOf1000Years;
@@ -198,6 +212,7 @@ double GetJulianThousandYears(double jd)
  */
 double GetSunEclipticLatitudeForEarth(double jd)
 {
+    // qCDebug(CommonLogger) << "Calculating Sun's ecliptic latitude for Earth for JD:" << jd;
     double t = GetJulianThousandYears(jd);
     double B0 = GetEarthB0(t);
     double B1 = GetEarthB1(t);
@@ -222,6 +237,7 @@ double GetSunEclipticLatitudeForEarth(double jd)
  */
 double Vsop2Fk5LongitudeCorrection(double l, double b, double jd)
 {
+    // qCDebug(CommonLogger) << "Applying VSOP87 to FK5 longitude correction.";
     double t = GetJulianCentury(jd);
     double lp = l - ToRadians(1.397) * t - ToRadians(0.00031) * t * t;
     return SecondsToRadians(-0.09033 + 0.03916 * (qCos(lp) + qSin(lp)) * qTan(b));
@@ -235,6 +251,7 @@ double Vsop2Fk5LongitudeCorrection(double l, double b, double jd)
  */
 double GetSunRadiusForEarth(double jd)
 {
+    // qCDebug(CommonLogger) << "Calculating Sun-Earth radius for JD:" << jd;
     double t = GetJulianThousandYears(jd);
     double R0 = GetEarthR0(t);
     double R1 = GetEarthR1(t);
@@ -248,6 +265,7 @@ double GetSunRadiusForEarth(double jd)
 
 double NewtonIteration(double angle, double x0, bool IsGetSolarTermJD)
 {
+    // qCDebug(CommonLogger) << "Performing Newton iteration. Angle:" << angle << "x0:" << x0 << "IsGetSolarTermJD:" << IsGetSolarTermJD;
     //此函数原是传入的匿名函数，这里用bool用作区分，后续可以优化
     const double Epsilon = 1e-7;
     const double Delta = 5e-6;
@@ -312,6 +330,7 @@ double DmsToSeconds(int d, int m, double s)
 // DmsToRadians 把度分秒表示的角度换算成弧度(rad)
 double DmsToRadians(int d, int m, int s)
 {
+    // qCDebug(CommonLogger) << "Converting DMS to radians:" << d << m << s;
     return ToRadians(DmsToDegrees(d, m, s));
 }
 
@@ -322,6 +341,7 @@ double DmsToRadians(int d, int m, int s)
 // 返回 节气的儒略日力学时间 TD
 double GetSolarTermJD(int year, int order)
 {
+    // qCDebug(CommonLogger) << "Getting solar term JD for year:" << year << "order:" << order;
     const double RADIANS_PER_TERM = M_PI / 12.0;
     double angle = double(order) * RADIANS_PER_TERM;
     int month = ((order + 1) / 2 + 2) % 12 + 1;
@@ -339,12 +359,14 @@ double GetSolarTermJD(int year, int order)
 // IsLeapYear 公历闰年判断
 bool IsLeapYear(int year)
 {
+    // qCDebug(CommonLogger) << "Checking if year is leap:" << year;
     return ((year & 3) == 0 && year % 100 != 0) || year % 400 == 0;
 }
 
 // GetSolarMonthDays 获取公历月份的天数
 int GetSolarMonthDays(int year, int month)
 {
+    // qCDebug(CommonLogger) << "Getting solar month days for:" << year << month;
     if (month == 2 && IsLeapYear(year)) {
         return 29;
     } else {
@@ -357,6 +379,7 @@ int GetSolarMonthDays(int year, int month)
 // 返回星期几的数字表示，1-6表示星期一到星期六，0表示星期日
 int GetWeekday(int y, int m, int d)
 {
+    // qCDebug(CommonLogger) << "Getting weekday for:" << y << m << d;
     if (m <= 2) {
         y -= 1;
         m += 12;
@@ -375,6 +398,7 @@ int GetWeekday(int y, int m, int d)
 // ∆T = TT - UT 此算法在-1999年到3000年有效
 double GetDeltaT(int year, int month)
 {
+    // qCDebug(CommonLogger) << "Getting Delta T for:" << year << month;
     double y = double(year) + (double(month) - 0.5) / 12;
 
     if (year < -500) {
@@ -469,6 +493,7 @@ double GetDeltaT(int year, int month)
 // GetDateFromJulianDay 从儒略日中获取公历的日期
 void GetDateFromJulianDay(double jd, int &yy, int &mm, int &dd)
 {
+    // qCDebug(CommonLogger) << "Getting date from Julian Day:" << jd;
     /*
      * This algorithm is taken from
      * "Numerical Recipes in c, 2nd Ed." (1992), pp. 14-15
@@ -519,6 +544,7 @@ void GetDateFromJulianDay(double jd, int &yy, int &mm, int &dd)
 // GetTimeFromJulianDay 从儒略日中获取时间 时分秒
 void GetTimeFromJulianDay(double jd, int &hour, int &minute, int &second)
 {
+    // qCDebug(CommonLogger) << "Getting time from Julian Day:" << jd;
     double frac = jd - qFloor(jd);
     int s = int(qFloor(frac * 24.0 * 60.0 * 60.0));
 
@@ -531,6 +557,7 @@ void GetTimeFromJulianDay(double jd, int &hour, int &minute, int &second)
 // 其中包含了 TT 到 UTC 的转换
 QDateTime GetDateTimeFromJulianDay(double jd)
 {
+    // qCDebug(CommonLogger) << "Getting QDateTime from Julian Day:" << jd;
     int year, month, day;
     GetDateFromJulianDay(jd, year, month, day);
     //  TT -> UTC
@@ -545,22 +572,26 @@ QDateTime GetDateTimeFromJulianDay(double jd)
 // JDUTC2BeijingTime 儒略日 UTC 时间转换到北京时间
 double JDUTC2BeijingTime(double utcJD)
 {
+    // qCDebug(CommonLogger) << "Converting JD UTC to Beijing Time:" << utcJD;
     return utcJD + 8.0 / 24.0;
 }
 
 // JDBeijingTime2UTC 儒略日 北京时间到 UTC 时间
 double JDBeijingTime2UTC(double bjtJD)
 {
+    // qCDebug(CommonLogger) << "Converting JD Beijing Time to UTC:" << bjtJD;
     return bjtJD - 8.0 / 24.0;
 }
 
 double getNewMoonJD(double jd0)
 {
+    // qCDebug(CommonLogger) << "Getting new moon JD from jd0:" << jd0;
     return NewtonIteration(0, jd0, false);
 }
 
 QVector<double> get15NewMoonJDs(double jd)
 {
+    // qCDebug(CommonLogger) << "Getting 15 new moon JDs from JD:" << jd;
     // 计算从某个时间之后的连续15个朔日
     // 参数: jd 开始时间的 儒略日
     // 返回 15个朔日时间 数组指针 儒略日北京时间
@@ -576,6 +607,7 @@ QVector<double> get15NewMoonJDs(double jd)
 
 qint64 deltaDays(QDateTime t1, QDateTime t2)
 {
+    // qCDebug(CommonLogger) << "Calculating delta days between:" << t1 << "and" << t2;
     // 计算两个时间相差的天数
     // t2 > t1 结果为正数
     return int(t1.date().daysTo(t2.date()));
@@ -584,6 +616,7 @@ qint64 deltaDays(QDateTime t1, QDateTime t2)
 
 QString festivalForFatherAndMother(int year, int month, int day)
 {
+    // qCDebug(CommonLogger) << "Checking for Father's/Mother's day for:" << year << month << day;
     int disparityMotherDay, disparityFatherDay, fatherDay, motherDay;
     int leapYear = 0;
     for (int i = 1900; i <= year; i++) {
@@ -618,6 +651,7 @@ QString festivalForFatherAndMother(int year, int month, int day)
  */
 void GetMoonEclipticParameter(MoonEclipticParameter &moonEclipticParameter, double T)
 {
+    // qCDebug(CommonLogger) << "Getting moon ecliptic parameters for T:" << T;
     double T2 = T * T;
     double T3 = T2 * T;
     double T4 = T3 * T;
@@ -642,6 +676,7 @@ void GetMoonEclipticParameter(MoonEclipticParameter &moonEclipticParameter, doub
  */
 double ToRadians(double degrees)
 {
+    // qCDebug(CommonLogger) << "Converting degrees to radians:" << degrees;
     return degrees * M_PI / 180;
 }
 /**
@@ -651,6 +686,7 @@ double ToRadians(double degrees)
  */
 double Mod2Pi(double r)
 {
+    // qCDebug(CommonLogger) << "Running Mod2Pi on:" << r;
     while (r < 0) {
         r += M_PI * 2;
     }
@@ -666,6 +702,7 @@ double Mod2Pi(double r)
  */
 double CalcMoonECLongitudePeriodic(MoonEclipticParameter &moonEclipticParameter)
 {
+    // qCDebug(CommonLogger) << "Calculating moon ecliptic longitude periodic sum.";
     double EI = 0.0;
     for (int i = 0; i < MoonLongitude.count(); i++) {
         double theta = MoonLongitude[i].D * moonEclipticParameter.D + MoonLongitude[i].M * moonEclipticParameter.M
@@ -682,6 +719,7 @@ double CalcMoonECLongitudePeriodic(MoonEclipticParameter &moonEclipticParameter)
  */
 double CalcMoonLongitudePerturbation(double T, MoonEclipticParameter &moonEclipticParameter)
 {
+    // qCDebug(CommonLogger) << "Calculating moon longitude perturbation for T:" << T;
     double A1 = Mod2Pi(ToRadians(119.75 + 131.849 * T));
     double A2 = Mod2Pi(ToRadians(53.09 + 479264.290 * T));
 
@@ -694,6 +732,7 @@ double CalcMoonLongitudePerturbation(double T, MoonEclipticParameter &moonEclipt
  */
 double GetMoonEclipticLongitudeEC(double julianDay)
 {
+    // qCDebug(CommonLogger) << "Getting moon ecliptic longitude EC for Julian Day:" << julianDay;
     MoonEclipticParameter m_radian;
     double T = GetJulianCentury(julianDay);
     GetMoonEclipticParameter(m_radian, T);
@@ -714,6 +753,7 @@ double GetMoonEclipticLongitudeEC(double julianDay)
  */
 double GetJulianCentury(double julianDay)
 {
+    // qCDebug(CommonLogger) << "Getting Julian century for Julian Day:" << julianDay;
     // 100年的日数
     const double DaysOfCentury = 36525.0;
     return (julianDay - J2000) / DaysOfCentury;
@@ -726,6 +766,7 @@ double GetJulianCentury(double julianDay)
  */
 void GetEarthNutationParameter(EarthNutationParameter &earthNutationParameter, double T)
 {
+    // qCDebug(CommonLogger) << "Getting Earth nutation parameters for T:" << T;
     double T2 = T * T;
     double T3 = T2 * T;
 
@@ -743,6 +784,7 @@ void GetEarthNutationParameter(EarthNutationParameter &earthNutationParameter, d
 
 double CalcEarthLongitudeNutation(double T)
 {
+    // qCDebug(CommonLogger) << "Calculating Earth longitude nutation for T:" << T;
     EarthNutationParameter m_radian;
     GetEarthNutationParameter(m_radian, T);
     double result = 0.0;
@@ -761,16 +803,19 @@ double CalcEarthLongitudeNutation(double T)
  */
 double SecondsToDegrees(double seconds)
 {
+    // qCDebug(CommonLogger) << "Converting seconds to degrees:" << seconds;
     return seconds / 3600;
 }
 
 double SecondsToRadians(double seconds)
 {
+    // qCDebug(CommonLogger) << "Converting seconds to radians:" << seconds;
     return ToRadians(SecondsToDegrees(seconds));
 }
 
 double CalcEarthObliquityNutation(double dt)
 {
+    // qCDebug(CommonLogger) << "Calculating Earth obliquity nutation for dt:" << dt;
     EarthNutationParameter m_radian;
     GetEarthNutationParameter(m_radian, dt);
     double result = 0.0;
@@ -785,12 +830,14 @@ double CalcEarthObliquityNutation(double dt)
 
 double ToJulianDateHMS(int year, int month, int day, int hour, int minute, double second)
 {
+    // qCDebug(CommonLogger) << "Converting HMS to Julian Date:" << year << month << day << hour << minute << second;
     int jdn = ToJulianDate(year, month, day);
     return double(jdn) + (double(hour) - 12) / 24.0 + double(minute) / 1440.0 + second / 86400.0;
 }
 
 int ToJulianDate(int year, int month, int day)
 {
+    // qCDebug(CommonLogger) << "Converting to Julian Date:" << year << month << day;
     int a = (14 - month) / 12;
     int y = year + 4800 - a;
     int m = month + 12 * a - 3;
@@ -799,17 +846,20 @@ int ToJulianDate(int year, int month, int day)
 
 double coefficient()
 {
+    // qCDebug(CommonLogger) << "Getting coefficient.";
     return SecondsToRadians(0.0001);
 }
 
 double lightAberration()
 {
+    // qCDebug(CommonLogger) << "Getting light aberration.";
     return SecondsToRadians(20.4898);
 }
 
 //获取阳历节日
 QString GetSolarDayFestival(int year, int month, int day)
 {
+    // qCDebug(CommonLogger) << "Getting solar day festival for:" << year << month << day;
     QString festivals;
     if ((month == 5) || (month == 6)) {
         QString name = festivalForFatherAndMother(year, month, day);

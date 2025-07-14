@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "lunarcalendar.h"
+#include "commondef.h"
 
 #include <QTime>
 #include <QDateTime>
@@ -12,11 +13,14 @@ QMap<int, LunarCalendar *> LunarCalendar::glYearCache;
 
 LunarCalendar *LunarCalendar::GetLunarCalendar(qint32 year)
 {
+    // qCDebug(CommonLogger) << "Getting lunar calendar for year:" << year;
     auto it = glYearCache.find(year);
     LunarCalendar *plcal = nullptr;
     if (it != glYearCache.end()) {
+        // qCDebug(CommonLogger) << "Found calendar in cache.";
         plcal = it.value();
     } else {
+        // qCDebug(CommonLogger) << "Calendar not in cache, creating new instance.";
         plcal = new LunarCalendar(year);
         glYearCache.insert(year, plcal);
     }
@@ -28,6 +32,7 @@ LunarCalendar *LunarCalendar::GetLunarCalendar(qint32 year)
  */
 void LunarCalendar::LogOffEmptyData()
 {
+    qCDebug(CommonLogger) << "Clearing all cached lunar calendars.";
     QMap<int, LunarCalendar *>::iterator it = glYearCache.begin();
     for (; it != glYearCache.end(); ++it) {
         delete it.value();
@@ -39,6 +44,7 @@ void LunarCalendar::LogOffEmptyData()
 //指定年份内公历日期转换为农历日
 lunarInfo LunarCalendar::SolarDayToLunarDay(qint32 month, qint32 day)
 {
+    // qCDebug(CommonLogger) << "Converting solar day to lunar day for:" << Year << month << day;
     lunarInfo dayinfo;
     QDateTime dt(QDate(Year, month, day), QTime(0, 0, 0, 0), Qt::TimeSpec::UTC);
     int yd = dt.date().dayOfYear();
@@ -74,6 +80,7 @@ lunarInfo LunarCalendar::SolarDayToLunarDay(qint32 month, qint32 day)
 
 LunarCalendar::LunarCalendar(qint32 year)
 {
+    // qCDebug(CommonLogger) << "Constructing LunarCalendar for year:" << year;
     Year = year;
     Months.reserve(13);
     calcProcData();
@@ -83,6 +90,7 @@ LunarCalendar::LunarCalendar(qint32 year)
 
 void LunarCalendar::calcProcData()
 {
+    // qCDebug(CommonLogger) << "Calculating process data for year:" << Year;
     SolarTermJDs = get25SolarTermJDs(Year - 1, DongZhi);
     for (int i = 0; i < 25; i++) {
         SolarTermTimes.append(GetDateTimeFromJulianDay(SolarTermJDs[i]));
@@ -101,6 +109,7 @@ void LunarCalendar::calcProcData()
 
 void LunarCalendar::fillMonths()
 {
+    // qCDebug(CommonLogger) << "Filling months for year:" << Year;
     //采用夏历建寅，冬至所在月份为农历11月(冬月)
     int yuejian = 11;
     for (int i = 0; i < 14; i++) {
@@ -125,6 +134,7 @@ void LunarCalendar::fillMonths()
 
 void LunarCalendar::calcLeapMonth()
 {
+    // qCDebug(CommonLogger) << "Calculating leap month for year:" << Year;
     // 根据节气计算是否有闰月，如果有闰月，根据农历月命名规则，调整月名称
     if (int(NewMoonJDs[13] + 0.5) <= int(SolarTermJDs[24] + 0.5)) {
         // 第13月的月末没有超过冬至，说明今年需要闰一个月
@@ -139,7 +149,7 @@ void LunarCalendar::calcLeapMonth()
         }
         if (i < 14) {
             // 找到闰月
-            //qCDebug(ServiceLogger)<<QString("找到闰月 %1").arg(i);
+            //qCDebug(CommonLogger)<<QString("找到闰月 %1").arg(i);
             Months[i].IsLeap = true;
             // 对后面的农历月调整月名
             while (i < 14) {
@@ -152,6 +162,7 @@ void LunarCalendar::calcLeapMonth()
 
 qint32 LunarCalendar::getSolarTermInfo(qint32 month, qint32 day) const
 {
+    // qCDebug(CommonLogger) << "Getting solar term info for:" << month << day;
     int index = 2 * month - 1;
     qint32 SolarTerm = -1;
     QDateTime dt1 = SolarTermTimes[index];
@@ -161,5 +172,6 @@ qint32 LunarCalendar::getSolarTermInfo(qint32 month, qint32 day) const
     } else if (dt2.date().day() == day) {
         SolarTerm = (index + 1 + DongZhi) % 24;
     }
+    // qCDebug(CommonLogger) << "Solar term found:" << SolarTerm;
     return SolarTerm;
 }

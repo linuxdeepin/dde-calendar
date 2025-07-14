@@ -24,6 +24,7 @@ DSchedule::DSchedule()
     , m_scheduleTypeID("")
     , m_compatibleID(0)
 {
+    qCDebug(CommonLogger) << "DSchedule constructor called.";
 }
 
 DSchedule::DSchedule(const DSchedule &schedule)
@@ -32,6 +33,7 @@ DSchedule::DSchedule(const DSchedule &schedule)
     , m_scheduleTypeID("")
     , m_compatibleID(0)
 {
+    qCDebug(CommonLogger) << "DSchedule copy constructor called for schedule:" << schedule.summary();
     this->setScheduleTypeID(schedule.scheduleTypeID());
 }
 
@@ -41,52 +43,63 @@ DSchedule::DSchedule(const KCalendarCore::Event &event)
     , m_scheduleTypeID("")
     , m_compatibleID(0)
 {
+    qCDebug(CommonLogger) << "DSchedule constructor from KCalendarCore::Event called for event:" << event.summary();
 }
 
 DSchedule *DSchedule::clone() const
 {
+    // qCDebug(CommonLogger) << "Cloning DSchedule:" << summary();
     return new DSchedule(*this);
 }
 
 QString DSchedule::scheduleTypeID() const
 {
+    // qCDebug(CommonLogger) << "Getting scheduleTypeID:" << m_scheduleTypeID;
     return m_scheduleTypeID;
 }
 
 void DSchedule::setScheduleTypeID(const QString &typeID)
 {
+    // qCDebug(CommonLogger) << "Setting scheduleTypeID to:" << typeID;
     m_scheduleTypeID = typeID;
 }
 
 bool DSchedule::isMoved()
 {
+    // qCDebug(CommonLogger) << "Checking if schedule is moved:" << m_moved;
     return this->m_moved;
 }
 
 void DSchedule::setMoved(bool moved)
 {
+    // qCDebug(CommonLogger) << "Setting moved status to:" << moved;
     this->m_moved = moved;
 }
 
 bool DSchedule::isValid() const
 {
     //TODO:添加判断日程是否有效
+    // qCDebug(CommonLogger) << "Checking if schedule is valid.";
     return true;
 }
 
 bool DSchedule::isMultiDay() const
 {
     //如果日期不一致则为跨天日程
-    return dtStart().date() != dtEnd().date();
+    bool multiDay = dtStart().date() != dtEnd().date();
+    // qCDebug(CommonLogger) << "Checking if schedule is multi-day:" << multiDay;
+    return multiDay;
 }
 
 bool DSchedule::operator==(const DSchedule &schedule) const
 {
+    // qCDebug(CommonLogger) << "Comparing schedules with operator==";
     return this->instanceIdentifier() == schedule.instanceIdentifier();
 }
 
 bool operator<(const DSchedule::Ptr &s1, const DSchedule::Ptr &s2)
 {
+    // qCDebug(CommonLogger) << "Comparing DSchedule::Ptr with operator<";
     if (s1.isNull() || s2.isNull()) {
         return false;
     }
@@ -95,6 +108,7 @@ bool operator<(const DSchedule::Ptr &s1, const DSchedule::Ptr &s2)
 
 bool DSchedule::operator<(const DSchedule &schedule) const
 {
+    // qCDebug(CommonLogger) << "Comparing schedules with operator<";
     if (this->allDay() != schedule.allDay()) {
         return this->allDay() > schedule.allDay();
     }
@@ -112,9 +126,10 @@ bool DSchedule::operator<(const DSchedule &schedule) const
 
 void DSchedule::setAlarmType(const DSchedule::AlarmType &alarmType)
 {
+    // qCDebug(CommonLogger) << "Setting alarm type to:" << static_cast<int>(alarmType);
     //如果提醒规则没有变化则退出
     if (alarmType == getAlarmType()) {
-        qCDebug(ServiceLogger) << "Alarm type unchanged, skipping update";
+        qCDebug(CommonLogger) << "Alarm type unchanged, skipping update";
         return;
     }
 
@@ -122,7 +137,7 @@ void DSchedule::setAlarmType(const DSchedule::AlarmType &alarmType)
     this->clearAlarms();
     //如果为从不则退出
     if (alarmType == AlarmType::Alarm_None || alarmType == AlarmType::Alarm_AllDay_None) {
-        qCDebug(ServiceLogger) << "Setting alarm type to None, clearing all alarms";
+        qCDebug(CommonLogger) << "Setting alarm type to None, clearing all alarms";
         return;
     }
 
@@ -137,7 +152,7 @@ void DSchedule::setAlarmType(const DSchedule::AlarmType &alarmType)
             KCalendarCore::Duration duration(iter.key());
             alarm->setStartOffset(duration);
             addAlarm(alarm);
-            qCDebug(ServiceLogger) << "Added alarm with offset:" << iter.key() << "seconds";
+            qCDebug(CommonLogger) << "Added alarm with offset:" << iter.key() << "seconds";
             break;
         }
     }
@@ -145,6 +160,7 @@ void DSchedule::setAlarmType(const DSchedule::AlarmType &alarmType)
 
 DSchedule::AlarmType DSchedule::getAlarmType()
 {
+    // qCDebug(CommonLogger) << "Getting alarm type for schedule:" << summary();
     AlarmType alarmType = allDay() ? Alarm_AllDay_None : Alarm_None;
     KCalendarCore::Alarm::List alarmList = this->alarms();
     if (alarmList.size() > 0) {
@@ -154,13 +170,15 @@ DSchedule::AlarmType DSchedule::getAlarmType()
             alarmType = alarmMap[duration.asSeconds()];
         }
     }
+    // qCDebug(CommonLogger) << "Found alarm type:" << static_cast<int>(alarmType);
     return alarmType;
 }
 
 void DSchedule::setRRuleType(const DSchedule::RRuleType &rtype)
 {
+    // qCDebug(CommonLogger) << "Setting RRule type to:" << static_cast<int>(rtype);
     if (getRRuleType() == rtype) {
-        qCDebug(ServiceLogger) << "Recurrence rule type unchanged, skipping update";
+        qCDebug(CommonLogger) << "Recurrence rule type unchanged, skipping update";
         return;
     }
 
@@ -189,6 +207,7 @@ void DSchedule::setRRuleType(const DSchedule::RRuleType &rtype)
     }
 
     if (!rules.isEmpty()) {
+        // qCDebug(CommonLogger) << "Applying recurrence rule:" << rules;
         KCalendarCore::Recurrence *recurrence = this->recurrence();
         KCalendarCore::RecurrenceRule *rrule = new KCalendarCore::RecurrenceRule();
 
@@ -201,6 +220,7 @@ void DSchedule::setRRuleType(const DSchedule::RRuleType &rtype)
 
 DSchedule::RRuleType DSchedule::getRRuleType()
 {
+    // qCDebug(CommonLogger) << "Getting RRule type for schedule:" << summary();
     RRuleType rtype = RRule_None;
     if (this->recurs()) {
         KCalendarCore::RecurrenceRule *rrule = this->recurrence()->defaultRRuleConst();
@@ -226,25 +246,28 @@ DSchedule::RRuleType DSchedule::getRRuleType()
             break;
         }
     }
+    // qCDebug(CommonLogger) << "Found RRule type:" << static_cast<int>(rtype);
     return rtype;
 }
 
 int DSchedule::numberOfRepetitions(const Ptr &scheudle, const QDateTime &datetime)
 {
+    // qCDebug(CommonLogger) << "Calculating number of repetitions for schedule" << scheudle->summary() << "until" << datetime;
     return scheudle->recurrence()->durationTo(datetime);
 }
 
 bool DSchedule::fromJsonString(DSchedule::Ptr &schedule, const QString &json)
 {
+    // qCDebug(CommonLogger) << "Parsing schedule from JSON string:" << json;
     if (schedule.isNull()) {
-        qCDebug(ServiceLogger) << "Creating new schedule instance for JSON parsing";
+        // qCDebug(CommonLogger) << "Creating new schedule instance for JSON parsing";
         schedule = DSchedule::Ptr(new DSchedule);
     }
 
     QJsonParseError jsonError;
     QJsonDocument jsonDoc(QJsonDocument::fromJson(json.toLocal8Bit(), &jsonError));
     if (jsonError.error != QJsonParseError::NoError) {
-        qCWarning(ServiceLogger) << "Failed to parse schedule JSON. Error:" << jsonError.errorString();
+        qCWarning(CommonLogger) << "Failed to parse schedule JSON. Error:" << jsonError.errorString();
         return false;
     }
 
@@ -262,15 +285,16 @@ bool DSchedule::fromJsonString(DSchedule::Ptr &schedule, const QString &json)
             resBool = true;
         }
     } else {
-        qCWarning(ServiceLogger) << "No schedule data found in JSON";
+        qCWarning(CommonLogger) << "No schedule data found in JSON";
     }
     return resBool;
 }
 
 bool DSchedule::toJsonString(const DSchedule::Ptr &schedule, QString &json)
 {
+    // qCDebug(CommonLogger) << "Converting schedule to JSON string:" << schedule->summary();
     if (schedule.isNull()) {
-        qCWarning(ServiceLogger) << "Cannot convert null schedule to JSON";
+        qCWarning(CommonLogger) << "Cannot convert null schedule to JSON";
         return false;
     }
 
@@ -281,11 +305,13 @@ bool DSchedule::toJsonString(const DSchedule::Ptr &schedule, QString &json)
     QJsonDocument jsonDoc;
     jsonDoc.setObject(rootObject);
     json = QString::fromUtf8(jsonDoc.toJson(QJsonDocument::Compact));
+    // qCDebug(CommonLogger) << "Resulting JSON:" << json;
     return true;
 }
 
 bool DSchedule::fromIcsString(Ptr &schedule, const QString &string)
 {
+    // qCDebug(CommonLogger) << "Parsing schedule from ICS string:" << string;
     bool resBool = false;
     KCalendarCore::ICalFormat icalformat;
     QTimeZone timezone = QDateTime::currentDateTime().timeZone();
@@ -294,16 +320,18 @@ bool DSchedule::fromIcsString(Ptr &schedule, const QString &string)
         KCalendarCore::Event::List eventList = _cal->events();
         if (eventList.size() > 0) {
             schedule = DSchedule::Ptr(new DSchedule(*eventList.at(0).data())); // eventList.at(0).staticCast<DSchedule>();
+            // qCDebug(CommonLogger) << "Successfully parsed schedule:" << schedule->summary();
             resBool = true;
         }
     } else {
-        qCWarning(ServiceLogger) << "Failed to parse ICS string";
+        qCWarning(CommonLogger) << "Failed to parse ICS string";
     }
     return resBool;
 }
 
 QString DSchedule::toIcsString(const DSchedule::Ptr &schedule)
 {
+    // qCDebug(CommonLogger) << "Converting schedule to ICS string:" << schedule->summary();
     KCalendarCore::ICalFormat icalformat;
     KCalendarCore::MemoryCalendar::Ptr _cal(new KCalendarCore::MemoryCalendar(nullptr));
     _cal->addEvent(schedule);
@@ -312,11 +340,12 @@ QString DSchedule::toIcsString(const DSchedule::Ptr &schedule)
 
 QMap<QDate, DSchedule::List> DSchedule::fromMapString(const QString &json)
 {
+    // qCDebug(CommonLogger) << "Parsing schedule map from JSON string:" << json;
     QMap<QDate, DSchedule::List> scheduleMap;
     QJsonParseError jsonError;
     QJsonDocument jsonDoc(QJsonDocument::fromJson(json.toLocal8Bit(), &jsonError));
     if (jsonError.error != QJsonParseError::NoError) {
-        qCWarning(ServiceLogger) << "Failed to parse schedule map JSON. Error:" << jsonError.errorString();
+        qCWarning(CommonLogger) << "Failed to parse schedule map JSON. Error:" << jsonError.errorString();
         return scheduleMap;
     }
 
@@ -337,11 +366,13 @@ QMap<QDate, DSchedule::List> DSchedule::fromMapString(const QString &json)
             }
         }
     }
+    // qCDebug(CommonLogger) << "Parsed" << scheduleMap.size() << "dates from schedule map JSON.";
     return scheduleMap;
 }
 
 QString DSchedule::toMapString(const QMap<QDate, DSchedule::List> &scheduleMap)
 {
+    // qCDebug(CommonLogger) << "Converting schedule map to JSON string, containing" << scheduleMap.size() << "dates.";
     QJsonArray rootArray;
     QMap<QDate, DSchedule::List>::const_iterator iter = scheduleMap.constBegin();
     for (; iter != scheduleMap.constEnd(); ++iter) {
@@ -363,6 +394,7 @@ QString DSchedule::toMapString(const QMap<QDate, DSchedule::List> &scheduleMap)
 
 QPair<QString, DSchedule::List> DSchedule::fromListString(const QString &json)
 {
+    // qCDebug(CommonLogger) << "Parsing schedule list from JSON string:" << json;
     QPair<QString, DSchedule::List> schedulePair;
     QJsonParseError jsonError;
     QJsonDocument jsonDoc(QJsonDocument::fromJson(json.toLocal8Bit(), &jsonError));
@@ -387,11 +419,13 @@ QPair<QString, DSchedule::List> DSchedule::fromListString(const QString &json)
     }
     schedulePair.second = scheduleList;
 
+    // qCDebug(CommonLogger) << "Parsed" << scheduleList.size() << "schedules from list string for query:" << schedulePair.first;
     return schedulePair;
 }
 
 QString DSchedule::toListString(const QString &query, const DSchedule::List &scheduleList)
 {
+    // qCDebug(CommonLogger) << "Converting schedule list to JSON string for query:" << query << "with" << scheduleList.size() << "schedules.";
     QJsonObject jsonObj;
     jsonObj.insert("query", query);
     QJsonArray jsonArray;
@@ -410,6 +444,7 @@ QString DSchedule::toListString(const QString &query, const DSchedule::List &sch
 
 void DSchedule::expendRecurrence(DSchedule::Map &scheduleMap, const DSchedule::Ptr &schedule, const QDateTime &dtStart, const QDateTime &dtEnd)
 {
+    // qCDebug(CommonLogger) << "Expanding recurrence for schedule:" << schedule->summary() << "from" << dtStart << "to" << dtEnd;
     QDateTime queryDtStart = dtStart;
     //如果日程为全天日程，则查询的开始时间设置为0点，因为全天日程的开始和结束时间都是0点
     if(schedule->allDay()){
@@ -420,6 +455,7 @@ void DSchedule::expendRecurrence(DSchedule::Map &scheduleMap, const DSchedule::P
         //获取日程的开始结束时间差
         qint64 interval = schedule->dtStart().secsTo(schedule->dtEnd());
         QList<QDateTime> dtList = schedule->recurrence()->timesInInterval(queryDtStart, dtEnd);
+        // qCDebug(CommonLogger) << "Found" << dtList.size() << "recurrence instances.";
         foreach (auto &dt, dtList) {
             QDateTime scheduleDtEnd = dt.addSecs(interval);
             DSchedule::Ptr newSchedule = DSchedule::Ptr(schedule->clone());
@@ -433,6 +469,7 @@ void DSchedule::expendRecurrence(DSchedule::Map &scheduleMap, const DSchedule::P
             scheduleMap[dt.date()].append(newSchedule);
         }
     } else {
+        // qCDebug(CommonLogger) << "Schedule does not recur, checking if it falls within the interval.";
         if (!(schedule->dtStart() > dtEnd || schedule->dtEnd() < queryDtStart)) {
             scheduleMap[schedule->dtStart().date()].append(schedule);
         }
@@ -441,6 +478,7 @@ void DSchedule::expendRecurrence(DSchedule::Map &scheduleMap, const DSchedule::P
 
 QMap<QDate, DSchedule::List> DSchedule::convertSchedules(const DScheduleQueryPar::Ptr &queryPar, const DSchedule::List &scheduleList)
 {
+    // qCDebug(CommonLogger) << "Converting" << scheduleList.size() << "schedules based on query parameters.";
     QDateTime dtStart = queryPar->dtStart();
     QDateTime dtEnd = queryPar->dtEnd();
     bool extend = queryPar->queryType() == DScheduleQueryPar::Query_None;
@@ -451,8 +489,10 @@ QMap<QDate, DSchedule::List> DSchedule::convertSchedules(const DScheduleQueryPar
         qint64 interval = schedule->dtStart().secsTo(schedule->dtEnd());
         //如果存在重复日程
         if (schedule->recurs()) {
+            // qCDebug(CommonLogger) << "Processing recurring schedule:" << schedule->summary();
             //如果为农历日程
             if (schedule->lunnar()) {
+                // qCDebug(CommonLogger) << "Processing lunar recurring schedule.";
                 //农历重复日程计算
                 LunarDateInfo lunardate(schedule->recurrence()->defaultRRuleConst(), interval);
 
@@ -478,10 +518,12 @@ QMap<QDate, DSchedule::List> DSchedule::convertSchedules(const DScheduleQueryPar
                     scheduleMap[recurDateTime.date()].append(newSchedule);
                 }
             } else {
+                // qCDebug(CommonLogger) << "Processing Gregorian recurring schedule.";
                 //非农历日程
                 expendRecurrence(scheduleMap, schedule, dtStart, dtEnd);
             }
         } else {
+            // qCDebug(CommonLogger) << "Processing non-recurring schedule:" << schedule->summary();
             //普通日程
             //如果在查询时间范围内
             QDateTime queryDtStart = dtStart;
@@ -491,6 +533,7 @@ QMap<QDate, DSchedule::List> DSchedule::convertSchedules(const DScheduleQueryPar
             }
             if (!(schedule->dtEnd() < queryDtStart || schedule->dtStart() > dtEnd)) {
                 if (extend && schedule->isMultiDay()) {
+                    // qCDebug(CommonLogger) << "Expanding multi-day schedule.";
                     //需要扩展的天数
                     int extenddays = static_cast<int>(schedule->dtStart().daysTo(schedule->dtEnd()));
                     for (int i = 0; i <= extenddays; ++i) {
@@ -506,6 +549,7 @@ QMap<QDate, DSchedule::List> DSchedule::convertSchedules(const DScheduleQueryPar
 
     //如果为查询前N个日程，则取前N个日程
     if (queryPar->queryType() == DScheduleQueryPar::Query_Top) {
+        // qCDebug(CommonLogger) << "Filtering for top" << queryPar->queryTop() << "schedules.";
         int scheduleNum = 0;
         DSchedule::Map filterSchedule;
         DSchedule::Map::const_iterator iter = scheduleMap.constBegin();
@@ -527,15 +571,18 @@ QMap<QDate, DSchedule::List> DSchedule::convertSchedules(const DScheduleQueryPar
         scheduleMap = filterSchedule;
     }
 
+    // qCDebug(CommonLogger) << "Conversion finished, returning" << scheduleMap.size() << "dates with schedules.";
     return scheduleMap;
 }
 
 QMap<QDate, DSchedule::List> DSchedule::fromQueryResult(const QString &query)
 {
+    // qCDebug(CommonLogger) << "Parsing schedules from query result:" << query;
     QMap<QDate, DSchedule::List> scheduleMap;
     QPair<QString, DSchedule::List> pair = fromListString(query);
     DScheduleQueryPar::Ptr queryPar = DScheduleQueryPar::fromJsonString(pair.first);
     if (queryPar.isNull()) {
+        qCWarning(CommonLogger) << "Failed to parse query parameters from query result.";
         return scheduleMap;
     }
 
@@ -545,11 +592,13 @@ QMap<QDate, DSchedule::List> DSchedule::fromQueryResult(const QString &query)
 
 bool operator==(const DSchedule::Ptr &s1, const DSchedule::Ptr &s2)
 {
+    // qCDebug(CommonLogger) << "Comparing DSchedule::Ptr with operator==";
     return s1.isNull() || s2.isNull() ? s1.isNull() && s2.isNull() : s1->instanceIdentifier() == s2->instanceIdentifier();
 }
 
 QMap<int, DSchedule::AlarmType> DSchedule::getAlarmMap()
 {
+    // qCDebug(CommonLogger) << "Getting alarm map.";
     static QMap<int, DSchedule::AlarmType> alarmMap {
         {0, Alarm_Begin},
         {-15 * Duration_Min, Alarm_15Min_Front},
@@ -567,27 +616,31 @@ QMap<int, DSchedule::AlarmType> DSchedule::getAlarmMap()
 
 QString DSchedule::fileName() const
 {
+    // qCDebug(CommonLogger) << "Getting file name:" << m_fileName;
     return m_fileName;
 }
 
 void DSchedule::setFileName(const QString &fileName)
 {
-    qCDebug(ServiceLogger) << "Setting file name for schedule" << summary() << "from" << m_fileName << "to" << fileName;
+    // qCDebug(CommonLogger) << "Setting file name for schedule" << summary() << "from" << m_fileName << "to" << fileName;
     m_fileName = fileName;
 }
 
 int DSchedule::compatibleID() const
 {
+    // qCDebug(CommonLogger) << "Getting compatible ID:" << m_compatibleID;
     return m_compatibleID;
 }
 
 void DSchedule::setcompatibleID(int compatibleID)
 {
+    // qCDebug(CommonLogger) << "Setting compatible ID to:" << compatibleID;
     m_compatibleID = compatibleID;
 }
 
 QDebug operator<<(QDebug debug, const DSchedule &scheduleJsonData)
 {
+    // qCDebug(CommonLogger) << "Streaming DSchedule to QDebug.";
     QDebugStateSaver saver(debug);
     debug.noquote() << "dtStart:" << dtToString(scheduleJsonData.dtStart())
                     << " ,dtEnd:" << dtToString(scheduleJsonData.dtEnd())

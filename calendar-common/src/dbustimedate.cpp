@@ -48,13 +48,14 @@ inline const char *getTimedateInterface()
 DBusTimedate::DBusTimedate(QObject *parent)
     : QDBusAbstractInterface(NETWORK_DBUS_NAME, NETWORK_DBUS_PATH, NETWORK_DBUS_INTEERFACENAME, QDBusConnection::sessionBus(), parent)
 {
+    qCDebug(CommonLogger) << "DBusTimedate::DBusTimedate";
     //关联后端dbus触发信号
     if (!QDBusConnection::sessionBus().connect(NETWORK_DBUS_NAME,
                                                NETWORK_DBUS_PATH,
                                                "org.freedesktop.DBus.Properties",
                                                QLatin1String("PropertiesChanged"), this,
                                                SLOT(propertiesChanged(QDBusMessage)))) {
-        qCWarning(ServiceLogger) << "Failed to connect to PropertiesChanged signal:" << this->lastError().message();
+        qCWarning(CommonLogger) << "Failed to connect to PropertiesChanged signal:" << this->lastError().message();
     }
 
     m_hasDateTimeFormat = getHasDateTimeFormat();
@@ -62,18 +63,21 @@ DBusTimedate::DBusTimedate(QObject *parent)
 
 int DBusTimedate::shortTimeFormat()
 {
+    qCDebug(CommonLogger) << "DBusTimedate::shortTimeFormat";
     //如果存在对应的时间设置则获取，否则默认为4
     return m_hasDateTimeFormat ? getPropertyByName("ShortTimeFormat").toInt() : 4;
 }
 
 int DBusTimedate::shortDateFormat()
 {
+    qCDebug(CommonLogger) << "DBusTimedate::shortDateFormat";
     //如果存在对应的时间设置则获取，否则默认为1
     return m_hasDateTimeFormat ? getPropertyByName("ShortDateFormat").toInt() : 1;
 }
 
 Qt::DayOfWeek DBusTimedate::weekBegins()
 {
+    qCDebug(CommonLogger) << "DBusTimedate::weekBegins";
     if (m_hasDateTimeFormat) {
         // WeekBegins是从0开始的，加1才能对应DayOfWeek
         return Qt::DayOfWeek(getPropertyByName("WeekBegins").toInt() + 1);
@@ -83,16 +87,17 @@ Qt::DayOfWeek DBusTimedate::weekBegins()
 
 void DBusTimedate::propertiesChanged(const QDBusMessage &msg)
 {
+    qCDebug(CommonLogger) << "DBusTimedate::propertiesChanged";
     QList<QVariant> arguments = msg.arguments();
     // 参数固定长度
     if (3 != arguments.count()) {
-        qCWarning(ServiceLogger) << "Invalid number of arguments in PropertiesChanged signal:" << arguments.count();
+        qCWarning(CommonLogger) << "Invalid number of arguments in PropertiesChanged signal:" << arguments.count();
         return;
     }
 
     QString interfaceName = msg.arguments().at(0).toString();
     if (interfaceName != this->interface()) {
-        qCDebug(ServiceLogger) << "Ignoring PropertiesChanged for interface:" << interfaceName;
+        qCDebug(CommonLogger) << "Ignoring PropertiesChanged for interface:" << interfaceName;
         return;
     }
 
@@ -100,8 +105,10 @@ void DBusTimedate::propertiesChanged(const QDBusMessage &msg)
     QStringList keys = changedProps.keys();
     foreach (const QString &prop, keys) {
         if (prop == "ShortTimeFormat") {
+            qCDebug(CommonLogger) << "ShortTimeFormat changed";
             emit ShortTimeFormatChanged(changedProps[prop].toInt());
         } else if (prop == "ShortDateFormat") {
+            qCDebug(CommonLogger) << "ShortDateFormat changed";
             emit ShortDateFormatChanged(changedProps[prop].toInt());
         }
     }
@@ -109,12 +116,14 @@ void DBusTimedate::propertiesChanged(const QDBusMessage &msg)
 
 QVariant DBusTimedate::getPropertyByName(const char *porpertyName)
 {
+    qCDebug(CommonLogger) << "DBusTimedate::getPropertyByName, propertyName:" << porpertyName;
     QDBusInterface dbusinterface(this->service(), this->path(), this->interface(), QDBusConnection::sessionBus(), this);
     return dbusinterface.property(porpertyName);
 }
 
 bool DBusTimedate::getHasDateTimeFormat()
 {
+    qCDebug(CommonLogger) << "DBusTimedate::getHasDateTimeFormat";
     QDBusMessage msg = QDBusMessage::createMethodCall(NETWORK_DBUS_NAME,
                                                       NETWORK_DBUS_PATH,
                                                       "org.freedesktop.DBus.Introspectable",
@@ -126,7 +135,7 @@ bool DBusTimedate::getHasDateTimeFormat()
         QVariant variant = reply.arguments().first();
         return variant.toString().contains("\"ShortDateFormat\"");
     } else {
-        qCWarning(ServiceLogger) << "Failed to check DateTime format support:" << reply.errorMessage();
+        qCWarning(CommonLogger) << "Failed to check DateTime format support:" << reply.errorMessage();
         return false;
     }
 }

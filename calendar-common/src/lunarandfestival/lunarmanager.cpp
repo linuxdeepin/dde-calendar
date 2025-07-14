@@ -11,6 +11,7 @@
 
 stLunarDayInfo SolarToLunar(qint32 year, qint32 month, qint32 day)
 {
+    // qCDebug(CommonLogger) << "Converting solar to lunar for date:" << year << month << day;
     stLunarDayInfo info;
     LunarCalendar *pcalendar = LunarCalendar::GetLunarCalendar(year);
     lunarInfo lday = pcalendar->SolarDayToLunarDay(month, day);
@@ -33,12 +34,14 @@ stLunarDayInfo SolarToLunar(qint32 year, qint32 month, qint32 day)
  */
 LunarMonthInfo GetLunarMonthCalendar(qint32 year, qint32 month, bool fill)
 {
+    // qCDebug(CommonLogger) << "Getting lunar month calendar for:" << year << month << "with fill:" << fill;
     SolarMonthInfo solarMonth = GetSolarMonthCalendar(year, month, fill);
     return GetLunarMonthCalendar(solarMonth);
 }
 
 LunarMonthInfo GetLunarMonthCalendar(const SolarMonthInfo &solarMonth)
 {
+    // qCDebug(CommonLogger) << "Converting solar month calendar to lunar month calendar.";
     LunarMonthInfo lunarmonth;
     lunarmonth.FirstDayWeek = solarMonth.FirstDayWeek;
     lunarmonth.Days = solarMonth.Days;
@@ -56,6 +59,7 @@ LunarMonthInfo GetLunarMonthCalendar(const SolarMonthInfo &solarMonth)
  */
 SolarMonthInfo GetSolarMonthCalendar(qint32 year, qint32 month, bool fill)
 {
+    qCDebug(CommonLogger) << "Getting solar month calendar for:" << year << month << "with fill:" << fill;
     SolarMonthInfo solarMonth;
     int weekday = GetWeekday(year, month);
     int daycount = GetSolarMonthDays(year, month);
@@ -92,6 +96,7 @@ SolarMonthInfo GetSolarMonthCalendar(qint32 year, qint32 month, bool fill)
 
 QList<stDay> GetMonthDays(qint32 year, qint32 month, qint32 start, qint32 days)
 {
+    // qCDebug(CommonLogger) << "Getting month days for:" << year << month << "from" << start << "to" << days;
     QList<stDay> DayInfo;
     for (int day = start; day <= days; day++) {
         stDay stday = {year, month, day};
@@ -102,6 +107,7 @@ QList<stDay> GetMonthDays(qint32 year, qint32 month, qint32 start, qint32 days)
 
 QList<int> GetPreMonth(qint32 year, qint32 month)
 {
+    // qCDebug(CommonLogger) << "Getting previous month for:" << year << month;
     QList<int> datas;
     int preYear, preMonth;
     if (month == 1) {
@@ -118,6 +124,7 @@ QList<int> GetPreMonth(qint32 year, qint32 month)
 
 QList<int> GetNextMonth(qint32 year, qint32 month)
 {
+    // qCDebug(CommonLogger) << "Getting next month for:" << year << month;
     QList<int> datas;
     int nextYear, nextMonth;
     if (month == 12) {
@@ -139,12 +146,12 @@ QList<int> GetNextMonth(qint32 year, qint32 month)
  */
 QList<stDayFestival> GetFestivalsInRange(const QDateTime &start, const QDateTime &end)
 {
-    qCDebug(ServiceLogger) << "Getting festivals in range:" << start.toString() << "to" << end.toString();
+    qCDebug(CommonLogger) << "Getting festivals in range:" << start.toString() << "to" << end.toString();
     QList<stDayFestival> festivaldays;
     if (start <= end) {
         //days为需要查询的天数,而不是两个时间的差值
         int days = static_cast<int>(start.daysTo(end) + 1);
-        qCDebug(ServiceLogger) << "Calculating festivals for" << days << "days";
+        qCDebug(CommonLogger) << "Calculating festivals for" << days << "days";
         for (int i = 0; i < days; ++i) {
             stDayFestival stdayfestival;
             QDateTime tem = start.addDays(i);
@@ -161,9 +168,9 @@ QList<stDayFestival> GetFestivalsInRange(const QDateTime &start, const QDateTime
             festivaldays.append(stdayfestival);
         }
     } else {
-        qCWarning(ServiceLogger) << "Invalid date range: start date" << start.toString() << "is later than end date" << end.toString();
+        qCWarning(CommonLogger) << "Invalid date range: start date" << start.toString() << "is later than end date" << end.toString();
     }
-    qCDebug(ServiceLogger) << "Found" << festivaldays.size() << "festivals in the specified range";
+    qCDebug(CommonLogger) << "Found" << festivaldays.size() << "festivals in the specified range";
     return festivaldays;
 }
 /**
@@ -174,7 +181,7 @@ QList<stDayFestival> GetFestivalsInRange(const QDateTime &start, const QDateTime
  */
 QList<stDayFestival> FilterDayFestival(QList<stDayFestival> &festivaldays, const QString &querykey)
 {
-    qCDebug(ServiceLogger) << "Filtering festivals with query key:" << querykey;
+    qCDebug(CommonLogger) << "Filtering festivals with query key:" << querykey;
     QList<stDayFestival> m_festivaldays;
     pinyinsearch *search = pinyinsearch::getPinPinSearch();
 
@@ -196,11 +203,12 @@ QList<stDayFestival> FilterDayFestival(QList<stDayFestival> &festivaldays, const
         m_festivals.date = festivalsdate;
         m_festivaldays.append(m_festivals);
     }
-    qCDebug(ServiceLogger) << "Filtered festivals count:" << m_festivaldays.size();
+    qCDebug(CommonLogger) << "Filtered festivals count:" << m_festivaldays.size();
     return m_festivaldays;
 }
 
 void logOffEmptyData()
 {
+    // qCDebug(CommonLogger) << "Logging off empty data from LunarCalendar.";
     LunarCalendar::LogOffEmptyData();
 }

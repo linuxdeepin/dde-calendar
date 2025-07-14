@@ -17,44 +17,52 @@ DScheduleQueryPar::DScheduleQueryPar()
     , m_rruleType(RRule_None)
     , m_queryType(Query_None)
 {
+    qCDebug(CommonLogger) << "DScheduleQueryPar constructor called.";
 }
 
 QDateTime DScheduleQueryPar::dtStart() const
 {
+    // qCDebug(CommonLogger) << "Getting dtStart:" << m_dtStart;
     return m_dtStart;
 }
 
 void DScheduleQueryPar::setDtStart(const QDateTime &dtStart)
 {
+    // qCDebug(CommonLogger) << "Setting dtStart to:" << dtStart;
     m_dtStart = dtStart;
 }
 
 QDateTime DScheduleQueryPar::dtEnd() const
 {
+    // qCDebug(CommonLogger) << "Getting dtEnd:" << m_dtEnd;
     return m_dtEnd;
 }
 
 void DScheduleQueryPar::setDtEnd(const QDateTime &dtEnd)
 {
+    // qCDebug(CommonLogger) << "Setting dtEnd to:" << dtEnd;
     m_dtEnd = dtEnd;
 }
 
 QString DScheduleQueryPar::key() const
 {
+    // qCDebug(CommonLogger) << "Getting key:" << m_key;
     return m_key;
 }
 
 void DScheduleQueryPar::setKey(const QString &key)
 {
+    // qCDebug(CommonLogger) << "Setting key to:" << key;
     m_key = key;
 }
 
 DScheduleQueryPar::Ptr DScheduleQueryPar::fromJsonString(const QString &queryStr)
 {
+    // qCDebug(CommonLogger) << "Parsing DScheduleQueryPar from JSON string:" << queryStr;
     QJsonParseError jsonError;
     QJsonDocument jsonDoc(QJsonDocument::fromJson(queryStr.toLocal8Bit(), &jsonError));
     if (jsonError.error != QJsonParseError::NoError) {
-        qCWarning(ServiceLogger) << "Failed to parse query parameters JSON. Error:" << jsonError.errorString() 
+        qCWarning(CommonLogger) << "Failed to parse query parameters JSON. Error:" << jsonError.errorString() 
                                  << "Query string:" << queryStr;
         return nullptr;
     }
@@ -89,13 +97,15 @@ DScheduleQueryPar::Ptr DScheduleQueryPar::fromJsonString(const QString &queryStr
     default:
         break;
     }
+    // qCDebug(CommonLogger) << "Successfully parsed DScheduleQueryPar from JSON.";
     return queryPar;
 }
 
 QString DScheduleQueryPar::toJsonString(const DScheduleQueryPar::Ptr &queryPar)
 {
+    // qCDebug(CommonLogger) << "Converting DScheduleQueryPar to JSON string.";
     if (queryPar.isNull()) {
-        qCWarning(ServiceLogger) << "Cannot convert null query parameters to JSON";
+        qCWarning(CommonLogger) << "Cannot convert null query parameters to JSON";
         return QString();
     }
 
@@ -117,35 +127,43 @@ QString DScheduleQueryPar::toJsonString(const DScheduleQueryPar::Ptr &queryPar)
 
     QJsonDocument jsonDoc;
     jsonDoc.setObject(jsonObj);
-    return QString::fromUtf8(jsonDoc.toJson(QJsonDocument::Compact));
+    QString jsonString = QString::fromUtf8(jsonDoc.toJson(QJsonDocument::Compact));
+    // qCDebug(CommonLogger) << "Resulting DScheduleQueryPar JSON:" << jsonString;
+    return jsonString;
 }
 
 DScheduleQueryPar::QueryType DScheduleQueryPar::queryType() const
 {
+    // qCDebug(CommonLogger) << "Getting queryType:" << m_queryType;
     return m_queryType;
 }
 
 void DScheduleQueryPar::setQueryType(const QueryType &queryType)
 {
+    // qCDebug(CommonLogger) << "Setting queryType to:" << queryType;
     m_queryType = queryType;
 }
 
 int DScheduleQueryPar::queryTop() const
 {
+    // qCDebug(CommonLogger) << "Getting queryTop:" << m_queryTop;
     return m_queryTop;
 }
 
 void DScheduleQueryPar::setQueryTop(int queryTop)
 {
+    // qCDebug(CommonLogger) << "Setting queryTop to:" << queryTop;
     m_queryTop = queryTop;
 }
 
 DScheduleQueryPar::RRuleType DScheduleQueryPar::rruleType() const
 {
+    // qCDebug(CommonLogger) << "Getting rruleType:" << m_rruleType;
     return m_rruleType;
 }
 
 void DScheduleQueryPar::setRruleType(const RRuleType &rruleType)
 {
+    // qCDebug(CommonLogger) << "Setting rruleType to:" << rruleType;
     m_rruleType = rruleType;
 }
