@@ -97,7 +97,7 @@
 </tr>
 <tr>
    <td>日历帐户</td>
-   <td>默认本地帐户，可选UOS ID等网络账户。</td>
+   <td>默认本地帐户，可选deepin ID等网络账户。</td>
 </tr>
 <tr>
    <td>类型</td>
