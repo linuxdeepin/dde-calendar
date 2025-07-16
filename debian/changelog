@@ -1,3 +1,10 @@
+dde-calendar (6.5.16) unstable; urgency=medium
+
+  * chore: More logs for common
+  * Update deepin-manual resources
+
+ -- dengzhongyuan <dengzhongyuan@uniontech.com>  Wed, 16 Jul 2025 09:28:22 +0800
+
 dde-calendar (6.5.15) unstable; urgency=medium
 
   * chore: Update deepin-manual resources
