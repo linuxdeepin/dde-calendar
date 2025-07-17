@@ -3,10 +3,12 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "shortcut.h"
+#include "commondef.h"
 
 Shortcut::Shortcut(QObject *parent)
     : QObject(parent)
 {
+    qCDebug(ClientLogger) << "Shortcut constructor start";
     ShortcutGroup group1;
     ShortcutGroup group2;
     ShortcutGroup group3;
@@ -40,9 +42,12 @@ Shortcut::Shortcut(QObject *parent)
         jsonGroups.append(jsonGroup);
     }
     m_shortcutObj.insert("shortcut", jsonGroups);
+    qCDebug(ClientLogger) << "Shortcut constructor end";
 }
+
 QString Shortcut::toStr()
 {
+    // qCDebug(ClientLogger) << "Converting shortcut object to JSON string";
     QJsonDocument doc(m_shortcutObj);
     return doc.toJson().data();
 }

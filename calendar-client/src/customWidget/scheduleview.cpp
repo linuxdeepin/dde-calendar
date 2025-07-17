@@ -11,6 +11,7 @@
 #include "constants.h"
 #include "calendarmanage.h"
 #include "calendarglobalenv.h"
+#include "commondef.h"
 
 #include <DPalette>
 #include <DHorizontalLine>
@@ -34,6 +35,7 @@ CScheduleView::CScheduleView(QWidget *parent, ScheduleViewPos viewType)
     , m_touchGesture(this)
     , m_timeFormat(CalendarManager::getInstance()->getTimeFormat())
 {
+    qCDebug(ClientLogger) << "Creating CScheduleView with viewType:" << viewType;
     initUI();
     initConnection();
     setLineWidth(0);
@@ -42,10 +44,12 @@ CScheduleView::CScheduleView(QWidget *parent, ScheduleViewPos viewType)
 
 CScheduleView::~CScheduleView()
 {
+    qCDebug(ClientLogger) << "Destroying CScheduleView";
 }
 
 void CScheduleView::setviewMargin(int left, int top, int right, int bottom)
 {
+    qCDebug(ClientLogger) << "Setting view margins:" << left << top << right << bottom;
     m_leftMargin = left;
     m_topMargin = top;
     m_rightMargin = right;
@@ -58,7 +62,9 @@ void CScheduleView::setRange(int w, int h, QDate begin, QDate end)
 {
     Q_UNUSED(h);
 
+    qCDebug(ClientLogger) << "Setting range with width:" << w << "begin date:" << begin << "end date:" << end;
     if (!(w > 0)) {
+        qCDebug(ClientLogger) << "Invalid width, returning";
         return;
     }
     m_beginDate = begin;
@@ -74,6 +80,7 @@ void CScheduleView::setRange(int w, int h, QDate begin, QDate end)
 
 void CScheduleView::setRange(QDate begin, QDate end)
 {
+    qCDebug(ClientLogger) << "Setting date range:" << begin << "to" << end;
     m_TotalDay = begin.daysTo(end) + 1;
     m_graphicsView->setRange(begin, end);
     m_alldaylist->setRange(begin, end);
@@ -84,12 +91,15 @@ void CScheduleView::setRange(QDate begin, QDate end)
 
 void CScheduleView::setTheMe(int type)
 {
+    qCDebug(ClientLogger) << "Setting theme type:" << type;
     if (type == 0 || type == 1) {
+        qCDebug(ClientLogger) << "Setting light theme colors";
         m_linecolor = "#000000";
         m_linecolor.setAlphaF(0.1);
         m_ALLDayColor = "#303030";
         m_timeColor = "#7D7D7D";
     } else if (type == 2) {
+        qCDebug(ClientLogger) << "Setting dark theme colors";
         m_linecolor = "#000000";
         m_linecolor.setAlphaF(0.1);
         m_ALLDayColor = "#7D7D7D";
@@ -105,36 +115,45 @@ void CScheduleView::setTheMe(int type)
 
 void CScheduleView::setLunarVisible(bool state)
 {
+    // qCDebug(ClientLogger) << "Setting lunar visible:" << state;
     Q_UNUSED(state);
 }
 
 void CScheduleView::setTime(QTime time)
 {
+    // qCDebug(ClientLogger) << "Setting time:" << time;
     m_graphicsView->setTime(time);
 }
 
 void CScheduleView::setSelectSchedule(const DSchedule::Ptr &scheduleInfo)
 {
+    qCDebug(ClientLogger) << "Setting selected schedule ID:" << scheduleInfo->uid();
     if (scheduleInfo->allDay()) {
+        qCDebug(ClientLogger) << "Schedule is all day event";
         m_alldaylist->setSelectSearchSchedule(scheduleInfo);
     } else {
+        qCDebug(ClientLogger) << "Schedule is not all day event";
         m_graphicsView->setSelectSearchSchedule(scheduleInfo);
     }
 }
 
 void CScheduleView::updateHeight()
 {
+    qCDebug(ClientLogger) << "Updating height";
     m_graphicsView->updateHeight();
     m_alldaylist->updateHeight();
 }
 
 bool CScheduleView::IsDragging()
 {
-    return (m_graphicsView->getDragStatus() != 4) || (m_alldaylist->getDragStatus() != 4);
+    bool isDragging = (m_graphicsView->getDragStatus() != 4) || (m_alldaylist->getDragStatus() != 4);
+    qCDebug(ClientLogger) << "Checking drag status:" << isDragging;
+    return isDragging;
 }
 
 void CScheduleView::setCurrentDate(const QDateTime &currentDate)
 {
+    qCDebug(ClientLogger) << "Setting current date:" << currentDate;
     m_graphicsView->setCurrentDate(currentDate);
 }
 
@@ -144,6 +163,7 @@ void CScheduleView::setCurrentDate(const QDateTime &currentDate)
  */
 void CScheduleView::setShowScheduleInfo(const QMap<QDate, DSchedule::List> &scheduleInfo)
 {
+    qCDebug(ClientLogger) << "Setting show schedule info with" << scheduleInfo.size() << "dates";
     m_showSchedule = scheduleInfo;
     updateSchedule();
 }
@@ -154,23 +174,27 @@ void CScheduleView::setShowScheduleInfo(const QMap<QDate, DSchedule::List> &sche
  */
 void CScheduleView::setTimeFormat(QString timeformat)
 {
+    qCDebug(ClientLogger) << "Setting time format:" << timeformat;
     m_timeFormat = timeformat;
     m_ScheduleRemindWidget->setTimeFormat(timeformat);
 }
 
 void CScheduleView::setDate(QDate date)
 {
+    qCDebug(ClientLogger) << "Setting date:" << date;
     m_currteDate = date;
     updateAllday();
 }
 
 void CScheduleView::slotupdateSchedule()
 {
+    qCDebug(ClientLogger) << "Slot update schedule called";
     updateSchedule();
 }
 
 void CScheduleView::slotPosHours(QVector<int> vPos, QVector<int> vHours, int currentTimeType)
 {
+    qCDebug(ClientLogger) << "Setting position hours, time type:" << currentTimeType;
     m_vHours = vHours;
     m_vPos = vPos;
     m_currentTimeType = currentTimeType;
@@ -179,6 +203,7 @@ void CScheduleView::slotPosHours(QVector<int> vPos, QVector<int> vHours, int cur
 
 void CScheduleView::paintEvent(QPaintEvent *event)
 {
+    // qCDebug(ClientLogger) << "Paint event triggered";
     DFrame::paintEvent(event);
     QPainter painter(this);
     font.setWeight(QFont::Normal);
@@ -188,10 +213,12 @@ void CScheduleView::paintEvent(QPaintEvent *event)
     QLocale locale;
 
     if (locale.language() == QLocale::Chinese) {
+        // qDebug() << "Chinese";
         QRect tinrect((m_leftMargin - hourTextWidth) / 2 - 5,
                       m_topMargin - 8 + m_vPos[m_vPos.count() - 1], hourTextWidth, hourTextHeight);
 
         if (m_currentTimeType == 0) {
+            // qDebug() << "Chinese current time type 0";
             painter.save();
             painter.setFont(font);
             painter.setPen(m_timeColor);
@@ -209,6 +236,7 @@ void CScheduleView::paintEvent(QPaintEvent *event)
             }
             painter.restore();
         } else {
+            // qDebug() << "Chinese current time type 1";
             painter.save();
             painter.setFont(font);
             painter.setPen(m_timeColor);
@@ -233,6 +261,7 @@ void CScheduleView::paintEvent(QPaintEvent *event)
             painter.restore();
 
             if (m_viewPos == ScheduleViewPos::DayPos && m_beginDate == QDate::currentDate()) {
+                // qDebug() << "Chinese current time type 1 draw current time";
                 painter.save();
                 painter.setFont(font);
                 painter.setPen(m_currenttimecolor);
@@ -245,6 +274,7 @@ void CScheduleView::paintEvent(QPaintEvent *event)
             }
         }
     } else {
+        // qDebug() << "English";
         if (m_currentTimeType == 0) {
             painter.save();
             painter.setFont(font);
@@ -264,6 +294,7 @@ void CScheduleView::paintEvent(QPaintEvent *event)
             }
             painter.restore();
         } else {
+            // qDebug() << "English current time type 1";
             painter.save();
             painter.setFont(font);
             painter.setPen(m_timeColor);
@@ -327,6 +358,7 @@ void CScheduleView::paintEvent(QPaintEvent *event)
     painter.drawRect(QRectF(0, point_y, this->width() - m_rightMargin - 2, 1));
     painter.restore();
     if (m_viewPos == ScheduleViewPos::WeekPos) {
+        // qDebug() << "WeekPos";
         //如果为周视图绘制右侧背景色（否则会有一个竖线的白色背景，不协调）
         painter.setPen(Qt::NoPen);
         painter.setBrush(m_outerBorderColor);
@@ -339,13 +371,16 @@ void CScheduleView::paintEvent(QPaintEvent *event)
         path.lineTo(0, 0);
         painter.fillPath(path, palette().color(backgroundRole()));
     }
+    // qDebug() << "Paint event end";
 }
 
 void CScheduleView::resizeEvent(QResizeEvent *event)
 {
+    // qCDebug(ClientLogger) << "Resize event triggered, new size:" << width() << "x" << height();
     if (m_viewPos == ScheduleViewPos::WeekPos) {
         m_sMaxNum = ((width() - m_leftMargin) / 7) / 27;
         if (m_sMaxNum < 4) {
+            // qCDebug(ClientLogger) << "Adjusting m_sMaxNum to minimum value 4";
             m_sMaxNum = 4;
         }
     }
@@ -362,6 +397,7 @@ void CScheduleView::resizeEvent(QResizeEvent *event)
 
 void CScheduleView::wheelEvent(QWheelEvent *e)
 {
+    // qCDebug(ClientLogger) << "Wheel event, delta x:" << e->angleDelta().x();
     if (e->angleDelta().x() != 0) {
         emit signalAngleDelta(e->angleDelta().x());
     }
@@ -369,27 +405,35 @@ void CScheduleView::wheelEvent(QWheelEvent *e)
 
 bool CScheduleView::event(QEvent *e)
 {
+    // qDebug() << "Event";
     if (m_touchGesture.event(e)) {
+        // qCDebug(ClientLogger) << "Touch gesture event detected";
         //获取触摸状态
         switch (m_touchGesture.getTouchState()) {
         case touchGestureOperation::T_SLIDE: {
+            qCDebug(ClientLogger) << "Touch slide state detected";
             //在滑动状态如果可以更新数据则切换月份
             if (m_touchGesture.isUpdate()) {
+                qCDebug(ClientLogger) << "Touch gesture update is true";
                 m_touchGesture.setUpdate(false);
                 switch (m_touchGesture.getMovingDir()) {
                 case touchGestureOperation::T_LEFT:
+                    qCDebug(ClientLogger) << "Touch moving left";
                     emit signalAngleDelta(-1);
                     break;
                 case touchGestureOperation::T_RIGHT:
+                    qCDebug(ClientLogger) << "Touch moving right";
                     emit signalAngleDelta(1);
                     break;
                 default:
+                    qCDebug(ClientLogger) << "Touch moving in other direction";
                     break;
                 }
             }
             break;
         }
         default:
+            // qCDebug(ClientLogger) << "Other touch state detected";
             break;
         }
         return true;
@@ -400,6 +444,7 @@ bool CScheduleView::event(QEvent *e)
 
 void CScheduleView::initUI()
 {
+    qCDebug(ClientLogger) << "Initializing UI";
     m_layout = new QVBoxLayout;
     m_layout->setSpacing(0);
     m_layout->setContentsMargins(0, 0, 0, 0);
@@ -408,6 +453,7 @@ void CScheduleView::initUI()
     m_layout->addSpacing(1);
     m_graphicsView = new CGraphicsView(this, m_viewPos);
     const int miniHeight = m_viewPos == ScheduleViewPos::WeekPos ? 300 : 380;
+    qCDebug(ClientLogger) << "Setting minimum height:" << miniHeight;
     m_graphicsView->setMinimumHeight(miniHeight);
     connect(m_graphicsView, SIGNAL(signalsPosHours(QVector<int>, QVector<int>, int)), this,
             SLOT(slotPosHours(QVector<int>, QVector<int>, int)));
@@ -422,6 +468,7 @@ void CScheduleView::initUI()
 
 void CScheduleView::initConnection()
 {
+    qCDebug(ClientLogger) << "Initializing connections";
     connect(m_graphicsView, &CGraphicsView::signalsUpdateSchedule, this,
             &CScheduleView::slotupdateSchedule);
     connect(m_alldaylist, &CAllDayEventWeekView::signalsUpdateSchedule, this,
@@ -463,6 +510,7 @@ void CScheduleView::initConnection()
  */
 void CScheduleView::slotDeleteitem()
 {
+    qCDebug(ClientLogger) << "Delete item slot called";
     //"delete"快捷键删除日程，因为只有一个点击选中日程所以全天或非全天只需要有一个删除就可以了
     m_graphicsView->slotDeleteItem();
     //因添加了对焦点选中item的快捷删除，添加对全天选中日程的删除
@@ -471,14 +519,19 @@ void CScheduleView::slotDeleteitem()
 
 void CScheduleView::slotCurrentScheduleDate(QDate date)
 {
-    if (m_viewPos == ScheduleViewPos::DayPos)
+    qCDebug(ClientLogger) << "Current schedule date slot called with date:" << date;
+    if (m_viewPos == ScheduleViewPos::DayPos) {
+        qCDebug(ClientLogger) << "In day position, returning";
         return;
+    }
     emit signalsCurrentScheduleDate(date);
 }
 
 void CScheduleView::slotScheduleShow(const bool isShow, const DSchedule::Ptr &out)
 {
+    // qCDebug(ClientLogger) << "Schedule show slot called, isShow:" << isShow;
     if (isShow) {
+        qCDebug(ClientLogger) << "Showing schedule with ID:" << out->uid();
         QVariant variant;
         CalendarGlobalEnv::getGlobalEnv()->getValueByKey(DDECalendar::CursorPointKey, variant);
         QPoint pos22 = variant.value<QPoint>();
@@ -496,25 +549,30 @@ void CScheduleView::slotScheduleShow(const bool isShow, const DSchedule::Ptr &ou
         m_ScheduleRemindWidget->setData(out, gdColor);
 
         if ((pos22.x() + m_ScheduleRemindWidget->width() + 15) > screenGeometry.width()) {
+            qCDebug(ClientLogger) << "Positioning widget to the right";
             m_ScheduleRemindWidget->setDirection(DArrowRectangle::ArrowRight);
             m_ScheduleRemindWidget->show(pos22.x() - 15, pos22.y());
         } else {
+            qCDebug(ClientLogger) << "Positioning widget to the left";
             m_ScheduleRemindWidget->setDirection(DArrowRectangle::ArrowLeft);
             m_ScheduleRemindWidget->show(pos22.x() + 15, pos22.y());
         }
     } else {
+        // qCDebug(ClientLogger) << "Hiding schedule widget";
         m_ScheduleRemindWidget->hide();
     }
 }
 
 void CScheduleView::slotUpdatePaint(const int topM)
 {
+    qCDebug(ClientLogger) << "Update paint slot called with topMargin:" << topM;
     m_topMargin = topM;
     update();
 }
 
 void CScheduleView::slotUpdateScene()
 {
+    qCDebug(ClientLogger) << "Update scene slot called";
     m_graphicsView->slotUpdateScene();
     m_alldaylist->slotUpdateScene();
 }
@@ -525,10 +583,13 @@ void CScheduleView::slotUpdateScene()
  */
 void CScheduleView::slotSwitchView(const QDate &focusDate, CWeekDayGraphicsview::ViewType viewtype, bool setItemFocus)
 {
+    qCDebug(ClientLogger) << "Switch view slot called with date:" << focusDate << "viewtype:" << viewtype << "setItemFocus:" << setItemFocus;
     if (viewtype == CWeekDayGraphicsview::ALLDayView) {
+        qCDebug(ClientLogger) << "Switching to all day view";
         m_alldaylist->setCurrentFocusItem(focusDate, setItemFocus);
         m_alldaylist->setFocus(Qt::TabFocusReason);
     } else {
+        qCDebug(ClientLogger) << "Switching to regular view";
         m_graphicsView->setCurrentFocusItem(focusDate, setItemFocus);
         m_graphicsView->setFocus(Qt::TabFocusReason);
     }
@@ -539,6 +600,7 @@ void CScheduleView::slotSwitchView(const QDate &focusDate, CWeekDayGraphicsview:
  */
 void CScheduleView::updateSchedule()
 {
+    qCDebug(ClientLogger) << "Updating schedule";
     //获取一个月的日程信息
     m_graphicsView->clearSchedule();
     DSchedule::List allInfo;
@@ -550,17 +612,21 @@ void CScheduleView::updateSchedule()
             if (_iterator.value().at(i)->allDay()) {
                 //过滤
                 if (!allInfo.contains(_iterator.value().at(i))) {
+                    // qCDebug(ClientLogger) << "Adding all-day schedule with ID:" << _iterator.value().at(i)->uid();
                     allInfo.append(_iterator.value().at(i));
                 }
             } else {
                 //过滤
                 if (!nonAllInfo.contains(_iterator.value().at(i))) {
+                    // qCDebug(ClientLogger) << "Adding non-all-day schedule with ID:" << _iterator.value().at(i)->uid();
                     nonAllInfo.append(_iterator.value().at(i));
                 }
             }
         }
     }
+    qCDebug(ClientLogger) << "Setting all-day info with" << allInfo.size() << "schedules";
     m_alldaylist->setInfo(allInfo);
+    qCDebug(ClientLogger) << "Setting non-all-day info with" << nonAllInfo.size() << "schedules";
     m_graphicsView->setInfo(nonAllInfo);
     updateAllday();
     m_graphicsView->updateInfo();
@@ -570,6 +636,7 @@ void CScheduleView::updateSchedule()
 
 void CScheduleView::updateAllday()
 {
+    qCDebug(ClientLogger) << "Updating all day view";
     m_alldaylist->updateInfo();
     update();
     m_graphicsView->resize(m_graphicsView->width(), this->height() - m_alldaylist->height());
@@ -577,6 +644,7 @@ void CScheduleView::updateAllday()
 
 int CScheduleView::scheduleViewHeight()
 {
+    qCDebug(ClientLogger) << "Calculating schedule view height";
     qreal mHeight = 0;
 
     if (m_viewPos == ScheduleViewPos::DayPos) {
@@ -588,5 +656,6 @@ int CScheduleView::scheduleViewHeight()
     mHeight = mHeight < 500 ? 1035 : mHeight;
     int m_minTime = qRound((20.0 / mHeight) * 86400);
     m_graphicsView->setMinTime(m_minTime);
+    qCDebug(ClientLogger) << "Calculated height:" << qRound(mHeight) << "minTime:" << m_minTime;
     return qRound(mHeight);
 }

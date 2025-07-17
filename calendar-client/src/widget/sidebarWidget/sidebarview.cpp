@@ -6,11 +6,13 @@
 #include "calendarmanage.h"
 #include "widget/monthWidget/monthdayview.h"
 #include "widget/dayWidget/daymonthview.h"
+#include "commondef.h"
 #include <QVBoxLayout>
 #include <QPixmap>
 
 SidebarView::SidebarView(QWidget *parent) : QWidget(parent)
 {
+    qCDebug(ClientLogger) << "SidebarView constructed";
     initView();
     initConnection();
     //初始化数据
@@ -23,6 +25,7 @@ SidebarView::SidebarView(QWidget *parent) : QWidget(parent)
  */
 void SidebarView::initView()
 {
+    qCDebug(ClientLogger) << "Initializing SidebarView";
     QVBoxLayout *vLayout = new QVBoxLayout(this);
     vLayout->setContentsMargins(0, 8, 0, 10);
     vLayout->setSpacing(0);
@@ -60,6 +63,7 @@ void SidebarView::initView()
 
 void SidebarView::initConnection()
 {
+    qCDebug(ClientLogger) << "Initializing SidebarView connections";
     //监听日程类型更新事件
     connect(gAccountManager, &AccountManager::signalAccountUpdate, this, &SidebarView::slotAccountUpdate);
     connect(gAccountManager, &AccountManager::signalScheduleTypeUpdate, this, &SidebarView::slotScheduleTypeUpdate);
@@ -72,6 +76,7 @@ void SidebarView::initConnection()
  */
 void SidebarView::initData()
 {
+    qCDebug(ClientLogger) << "Initializing SidebarView data";
     m_treeWidget->clear();
 
     initLocalAccountItem();
@@ -86,6 +91,7 @@ void SidebarView::initData()
  */
 void SidebarView::initExpandStatus()
 {
+    qCDebug(ClientLogger) << "Initializing expand status for sidebar items";
     //初始化列表展开状态
     QList<SidebarAccountItemWidget*> itemWidget;
     itemWidget << m_localItemWidget << m_unionItemWidget;
@@ -93,6 +99,9 @@ void SidebarView::initExpandStatus()
         if (widget != nullptr) {
             //先进行一次反的展开状态目的是解决使用widget填充item时添加列表项后最后一项的widget没有隐藏问题
             bool ret = widget->getAccountItem()->getAccount()->isExpandDisplay();
+            // qCDebug(ClientLogger) << "Setting expand status for account:" 
+            //                      << widget->getAccountItem()->getAccount()->accountName() 
+            //                      << "to:" << ret;
             widget->getTreeItem()->setExpanded(!ret);
             widget->setSelectStatus(ret);
         }
@@ -105,6 +114,7 @@ void SidebarView::initExpandStatus()
  */
 void SidebarView::initLocalAccountItem()
 {
+    qCDebug(ClientLogger) << "Initializing local account item";
     if (nullptr != m_localItemWidget) {
 //        m_localItemWidget->deleteLater();
         delete m_localItemWidget;
@@ -112,11 +122,13 @@ void SidebarView::initLocalAccountItem()
     }
     QSharedPointer<AccountItem> localAccount = gAccountManager->getLocalAccountItem();
     if (nullptr == localAccount) {
+        qCDebug(ClientLogger) << "No local account found";
         return;
     }
     QTreeWidgetItem *localItem = new QTreeWidgetItem();
     m_treeWidget->addTopLevelItem(localItem);
     QString localName = localAccount->getAccount()->accountName();
+    qCDebug(ClientLogger) << "Added local account:" << localName;
 
     m_localItemWidget = new SidebarAccountItemWidget(localAccount);
     m_treeWidget->setItemWidget(localItem, 0, m_localItemWidget);
@@ -129,14 +141,17 @@ void SidebarView::initLocalAccountItem()
  */
 void SidebarView::initUnionAccountItem()
 {
+    qCDebug(ClientLogger) << "Initializing UnionID account item";
     QSharedPointer<AccountItem> unionAccount = gAccountManager->getUnionAccountItem();
     if (nullptr == unionAccount) {
+        qCDebug(ClientLogger) << "No UnionID account found";
         return;
     }
 
     QTreeWidgetItem *unionItem = new QTreeWidgetItem();
     m_treeWidget->addTopLevelItem(unionItem);
     QString unionName = unionAccount->getAccount()->accountName();
+    qCDebug(ClientLogger) << "Added UnionID account:" << unionName;
     m_unionItemWidget = new SidebarAccountItemWidget(unionAccount);
     m_treeWidget->setItemWidget(unionItem, 0, m_unionItemWidget);
     unionItem->setToolTip(0,unionName);
@@ -151,10 +166,14 @@ void SidebarView::initUnionAccountItem()
 void SidebarView::resetJobTypeChildItem(SidebarAccountItemWidget *parentItemWidget)
 {
     if (nullptr == parentItemWidget) {
+        qCDebug(ClientLogger) << "Parent item widget is null, cannot reset job types";
         return;
     }
+    // qCDebug(ClientLogger) << "Resetting job type items for account:" 
+    //                      << parentItemWidget->getAccountItem()->getAccount()->accountName();
     QTreeWidgetItem *parentItem = parentItemWidget->getTreeItem();
     int itemChildrenCounts = parentItem->childCount();
+    qCDebug(ClientLogger) << "Removing" << itemChildrenCounts << "existing child items";
     while(itemChildrenCounts--)
     {
         QTreeWidgetItem * child =  parentItem->child(itemChildrenCounts); //index从大到小区做删除处理
@@ -164,6 +183,7 @@ void SidebarView::resetJobTypeChildItem(SidebarAccountItemWidget *parentItemWidg
     }
 
     DScheduleType::List typeList = parentItemWidget->getAccountItem()->getScheduleTypeList();
+    qCDebug(ClientLogger) << "Adding" << typeList.size() << "schedule type items";
     QTreeWidgetItem *item;
     for (DScheduleType::Ptr p : typeList) {
         if (nullptr != p) {
@@ -173,6 +193,7 @@ void SidebarView::resetJobTypeChildItem(SidebarAccountItemWidget *parentItemWidg
             parentItem->addChild(item);
             SidebarItemWidget *widget = new SidebarTypeItemWidget(p, this);
             m_treeWidget->setItemWidget(item, 0, widget);
+            // qCDebug(ClientLogger) << "Added schedule type:" << p->displayName() << "with ID:" << p->typeID();
             connect(widget,&SidebarItemWidget::signalStatusChange,this,[&](bool status, QString id){
                 Q_UNUSED(id)
                 Q_UNUSED(status)
@@ -190,7 +211,9 @@ void SidebarView::resetJobTypeChildItem(SidebarAccountItemWidget *parentItemWidg
  */
 void SidebarView::resetTreeItemPos(QTreeWidgetItem *item)
 {
+    // qCDebug(ClientLogger) << "Resetting tree item positions for" << item->childCount() << "children";
     if (nullptr == item) {
+        qCDebug(ClientLogger) << "Tree item is null, cannot reset positions";
         return;
     }
     QWidget* ptmpWidget = nullptr;
@@ -211,6 +234,7 @@ void SidebarView::resetTreeItemPos(QTreeWidgetItem *item)
  */
 void SidebarView::slotAccountUpdate()
 {
+    qCDebug(ClientLogger) << "Account update received, reinitializing data";
     initData();
 }
 
@@ -220,6 +244,7 @@ void SidebarView::slotAccountUpdate()
  */
 void SidebarView::slotScheduleTypeUpdate()
 {
+    qCDebug(ClientLogger) << "Schedule type update received";
     //初始化列表数据
     resetJobTypeChildItem(m_localItemWidget);
     resetJobTypeChildItem(m_unionItemWidget);
@@ -234,9 +259,11 @@ void SidebarView::slotScheduleTypeUpdate()
  */
 void SidebarView::signalLogout(DAccount::Type accountType)
 {
+    qCDebug(ClientLogger) << "Account logout received for type:" << accountType;
     //先清空列表
     m_treeWidget->clear();
     if (DAccount::Account_UnionID == accountType){
+        qCDebug(ClientLogger) << "UnionID account logged out, reinitializing local account";
         if (m_unionItemWidget) {
             //清空数据
             m_unionItemWidget->getAccountItem().reset(nullptr);
@@ -251,6 +278,7 @@ void SidebarView::signalLogout(DAccount::Type accountType)
 
 void SidebarView::paintEvent(QPaintEvent *event)
 {
+    // qCDebug(ClientLogger) << "SidebarView::paintEvent";
     //绘制背景
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);

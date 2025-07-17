@@ -6,6 +6,7 @@
 #include "schedulecoormanage.h"
 #include "scheduledatamanage.h"
 #include "calendarmanage.h"
+#include "commondef.h"
 
 #include <DFontSizeManager>
 
@@ -28,12 +29,14 @@ CScheduleItem::CScheduleItem(QRectF rect, QGraphicsItem *parent, int type)
     , m_transparentcolor("#000000")
     , m_timeFormat(CalendarManager::getInstance()->getTimeFormat())
 {
+    qCDebug(ClientLogger) << "CScheduleItem constructor - rect:" << rect << "type:" << type;
     m_transparentcolor.setAlphaF(0.05);
     connect(CalendarManager::getInstance(), &CalendarManager::signalTimeFormatChanged, this, &CScheduleItem::timeFormatChanged);
 }
 
 CScheduleItem::~CScheduleItem()
 {
+    qCDebug(ClientLogger) << "CScheduleItem destructor";
 }
 
 /**
@@ -44,6 +47,8 @@ CScheduleItem::~CScheduleItem()
  */
 void CScheduleItem::setData(const DSchedule::Ptr &info, QDate date, int totalNum)
 {
+    // qCDebug(ClientLogger) << "CScheduleItem::setData - schedule:" << (info ? info->summary() : "null") 
+    //                      << "date:" << date << "totalNum:" << totalNum;
     m_vScheduleInfo = info;
     m_totalNum = totalNum;
     setDate(date);
@@ -57,7 +62,10 @@ void CScheduleItem::setData(const DSchedule::Ptr &info, QDate date, int totalNum
  */
 bool CScheduleItem::hasSelectSchedule(const DSchedule::Ptr &info)
 {
-    return info == m_vScheduleInfo;
+    bool result = (info == m_vScheduleInfo);
+    // qCDebug(ClientLogger) << "CScheduleItem::hasSelectSchedule - schedule:" << (info ? info->summary() : "null") 
+    //                      << "result:" << result;
+    return result;
 }
 
 /**
@@ -71,8 +79,12 @@ bool CScheduleItem::hasSelectSchedule(const DSchedule::Ptr &info)
  */
 void CScheduleItem::splitText(QFont font, int w, int h, QString str, QStringList &listStr, QFontMetrics &fontM)
 {
-    if (str.isEmpty())
+    // qCDebug(ClientLogger) << "CScheduleItem::splitText - width:" << w << "height:" << h 
+    //                      << "text:" << str;
+    if (str.isEmpty()) {
+        qCDebug(ClientLogger) << "CScheduleItem::splitText - Text is empty, returning";
         return;
+    }
     QFontMetrics fontMetrics(font);
     int heightT = fontM.height();
     QString tStr;
@@ -94,6 +106,7 @@ void CScheduleItem::splitText(QFont font, int w, int h, QString str, QStringList
     tListStr.append(tStr);
 
     if (w < 30) {
+        qCDebug(ClientLogger) << "Width too small (< 30), special handling for text";
         QFontMetrics fm_s(fontM);
         QFontMetrics f_st(font);
         QString s = tListStr.at(0) + "...";
@@ -114,6 +127,7 @@ void CScheduleItem::splitText(QFont font, int w, int h, QString str, QStringList
             }
         }
     } else {
+        qCDebug(ClientLogger) << "Normal width handling for text";
         for (int i = 0; i < tListStr.count(); i++) {
             if ((i + 1) * heightT <= h - 1) {
                 listStr.append(tListStr.at(i));
@@ -136,6 +150,7 @@ void CScheduleItem::splitText(QFont font, int w, int h, QString str, QStringList
             }
         }
     }
+    qCDebug(ClientLogger) << "Final text split into" << listStr.count() << "lines";
 }
 
 /**
@@ -143,6 +158,7 @@ void CScheduleItem::splitText(QFont font, int w, int h, QString str, QStringList
  */
 void CScheduleItem::timeFormatChanged(int value)
 {
+    qCDebug(ClientLogger) << "CScheduleItem::timeFormatChanged - value:" << value;
     if (value) {
         m_timeFormat = "hh:mm";
     } else {
@@ -159,6 +175,9 @@ void CScheduleItem::timeFormatChanged(int value)
  */
 void CScheduleItem::paintBackground(QPainter *painter, const QRectF &rect, const bool isPixMap)
 {
+    // qCDebug(ClientLogger) << "CScheduleItem::paintBackground - rect:" << rect 
+    //                      << "isPixMap:" << isPixMap
+    //                      << "schedule:" << (m_vScheduleInfo ? m_vScheduleInfo->summary() : "null");
     Q_UNUSED(isPixMap);
     //根据日程类型获取颜色
     CSchedulesColor gdColor = CScheduleDataManage::getScheduleDataManage()->getScheduleColorByType(m_vScheduleInfo->scheduleTypeID());
@@ -166,10 +185,13 @@ void CScheduleItem::paintBackground(QPainter *painter, const QRectF &rect, const
     QColor textPenColor = CScheduleDataManage::getScheduleDataManage()->getTextColor();
     //判断是否为选中日程
     if (m_vScheduleInfo == m_pressInfo) {
+        // qCDebug(ClientLogger) << "Schedule is selected";
         //判断当前日程是否为拖拽移动日程
         if (m_vScheduleInfo->isMoved() == m_pressInfo->isMoved()) {
+            // qCDebug(ClientLogger) << "Schedule is highlighted";
             m_vHighflag = true;
         } else {
+            // qCDebug(ClientLogger) << "Schedule is dimmed (opacity 0.4)";
             painter->setOpacity(0.4);
             textPenColor.setAlphaF(0.4);
             gdColor.orginalColor.setAlphaF(0.4);
@@ -184,10 +206,13 @@ void CScheduleItem::paintBackground(QPainter *painter, const QRectF &rect, const
     int h = fm.height();
 
     if (m_vHoverflag) {
+        // qCDebug(ClientLogger) << "Schedule is hovered";
         bColor = gdColor.hoverColor;
     } else if (m_vHighflag) {
+        // qCDebug(ClientLogger) << "Schedule is highlighted";
         bColor = gdColor.hightColor;
     } else if (m_vSelectflag) {
+        // qCDebug(ClientLogger) << "Schedule is selected";
         bColor = gdColor.pressColor;
     }
     painter->setBrush(bColor);
@@ -195,6 +220,7 @@ void CScheduleItem::paintBackground(QPainter *painter, const QRectF &rect, const
     painter->drawRect(rect);
 
     if (m_vHoverflag && !m_vSelectflag) {
+        // qCDebug(ClientLogger) << "Drawing hover effect";
         painter->save();
         QRectF tRect = QRectF(rect.x() + 0.5, rect.y() + 0.5, rect.width() - 1, rect.height() - 1);
         QPen tPen;
@@ -214,6 +240,7 @@ void CScheduleItem::paintBackground(QPainter *painter, const QRectF &rect, const
         painter->restore();
     }
     if (m_vSelectflag) {
+        // qCDebug(ClientLogger) << "Adjusting opacity for selected schedule";
         if (themetype == 0 || themetype == 1) {
             textPenColor.setAlphaF(0.4);
             gdColor.orginalColor.setAlphaF(0.4);
@@ -238,6 +265,7 @@ void CScheduleItem::paintBackground(QPainter *painter, const QRectF &rect, const
         tMargin = 5;
 
     if (m_type == 0) {
+        // qCDebug(ClientLogger) << "Drawing normal schedule item";
         int timeTextHight = 0;
         QFont font;
         font.setWeight(QFont::Normal);
@@ -246,16 +274,19 @@ void CScheduleItem::paintBackground(QPainter *painter, const QRectF &rect, const
 
         //绘制日程起始时间
         if (m_vScheduleInfo->dtStart().date() == getDate()) {
+            // qCDebug(ClientLogger) << "Drawing start time for schedule";
             painter->save();
             painter->setFont(font);
             painter->setPen(gdColor.orginalColor);
 
             QTime stime = m_vScheduleInfo->dtStart().time();
             QString str = stime.toString((CalendarManager::getInstance()->getTimeShowType() ? "AP " : "") + m_timeFormat);
+            // qCDebug(ClientLogger) << "Start time text:" << str;
             QFontMetrics fontMetrics(font);
             qreal drawTextWidth = rect.width() - m_offset * 2;
 
             if (fm.horizontalAdvance(str) > drawTextWidth - 5) {
+                // qCDebug(ClientLogger) << "Time text too long, truncating";
                 QString tStr;
                 for (int i = 0; i < str.count(); i++) {
                     tStr.append(str.at(i));
@@ -272,6 +303,7 @@ void CScheduleItem::paintBackground(QPainter *painter, const QRectF &rect, const
                     }
                 }
                 QString tStrs = fontMetrics.elidedText(str, Qt::ElideRight, qRound(drawTextWidth - 5));
+                // qCDebug(ClientLogger) << "Final time text:" << tStrs;
                 painter->drawText(
                     QRectF(rect.topLeft().x() + tMargin, rect.topLeft().y() + 3, drawTextWidth - 5, h),
                     Qt::AlignLeft, tStrs);
@@ -283,11 +315,13 @@ void CScheduleItem::paintBackground(QPainter *painter, const QRectF &rect, const
             }
             painter->restore();
         } else {
+            // qCDebug(ClientLogger) << "Not drawing start time (different date)";
             timeTextHight = -20;
         }
         painter->save();
 
         //绘制日程标题
+        // qCDebug(ClientLogger) << "Drawing schedule title";
         font = DFontSizeManager::instance()->get(DFontSizeManager::T6, font);
         font.setLetterSpacing(QFont::PercentageSpacing, 105);
         painter->setFont(font);
@@ -304,6 +338,7 @@ void CScheduleItem::paintBackground(QPainter *painter, const QRectF &rect, const
         for (int i = 0; i < liststr.count(); i++) {
             if ((20 + timeTextHight + (i + 1) * (h - 3)) > rect.height())
                 return;
+            // qCDebug(ClientLogger) << "Drawing title line" << i+1 << ":" << liststr.at(i);
             painter->drawText(
                 QRect(textRect.topLeft().x() + tMargin,
                       textRect.topLeft().y() + 20 + timeTextHight + i * (h - 3),
@@ -313,6 +348,7 @@ void CScheduleItem::paintBackground(QPainter *painter, const QRectF &rect, const
         }
         painter->restore();
     } else {
+        // qCDebug(ClientLogger) << "Drawing more item indicator";
         painter->save();
         QFont font;
         font.setWeight(QFont::Normal);
@@ -323,6 +359,7 @@ void CScheduleItem::paintBackground(QPainter *painter, const QRectF &rect, const
         painter->restore();
     }
     if (m_vSelectflag) {
+        // qCDebug(ClientLogger) << "Drawing selection overlay";
         QColor selcolor = m_transparentcolor;
         selcolor.setAlphaF(0.05);
         painter->setBrush(selcolor);
@@ -330,6 +367,7 @@ void CScheduleItem::paintBackground(QPainter *painter, const QRectF &rect, const
         painter->drawRect(rect);
     }
     if (getItemFocus()) {
+        // qCDebug(ClientLogger) << "Drawing focus frame";
         //获取tab图形
         QRectF drawRect = rect.marginsRemoved(QMarginsF(1, 1, 1, 1));
         painter->setBrush(Qt::NoBrush);

@@ -24,6 +24,7 @@ DGUI_USE_NAMESPACE
 CMyScheduleView::CMyScheduleView(const DSchedule::Ptr &schduleInfo, QWidget *parent)
     : DCalendarDDialog(parent)
 {
+    qCDebug(ClientLogger) << "CMyScheduleView constructor with schedule:" << schduleInfo->summary();
     setContentsMargins(0, 0, 0, 0);
     m_scheduleInfo = schduleInfo;
     initUI();
@@ -39,11 +40,13 @@ CMyScheduleView::CMyScheduleView(const DSchedule::Ptr &schduleInfo, QWidget *par
 
 void CMyScheduleView::setSchedules(const DSchedule::Ptr &schduleInfo)
 {
+    qCDebug(ClientLogger) << "Setting schedule to:" << schduleInfo->summary();
     m_scheduleInfo = schduleInfo;
 }
 
 void CMyScheduleView::updateFormat()
 {
+    qCDebug(ClientLogger) << "Updating format for schedule:" << m_scheduleInfo->summary();
     updateDateTimeFormat();
     slotAccountStateChange();
 }
@@ -54,6 +57,7 @@ void CMyScheduleView::updateFormat()
  */
 void CMyScheduleView::slotAutoFeed(const QFont &font)
 {
+    qCDebug(ClientLogger) << "Auto-adjusting text layout for schedule:" << m_scheduleInfo->summary();
     Q_UNUSED(font)
     if (nullptr == m_timeLabel || nullptr == m_scheduleLabel) {
         qCWarning(ClientLogger) << "Time label or schedule label is null";
@@ -114,23 +118,28 @@ void CMyScheduleView::slotAutoFeed(const QFont &font)
             if (textWidth > m_timeLabel->width()) {
                 timeName[index - 1] = '\n';
                 m_timeLabelH = 58;
+                qCDebug(ClientLogger) << "Adjusting time label height to 58 for lunar calendar";
             } else {
                 m_timeLabelH = 26;
+                qCDebug(ClientLogger) << "Setting time label height to 26 for lunar calendar";
             }
         }
         m_timeLabel->setText(timeName);
     } else {
         m_timeLabelH = 26;
+        qCDebug(ClientLogger) << "Setting time label height to 26 for standard calendar";
     }
     //更新控件高度
     m_timeLabel->setFixedHeight(m_timeLabelH);
 
     //更新界面高度
     setFixedHeight(m_defaultH + m_timeLabelH + m_scheduleLabelH);
+    qCDebug(ClientLogger) << "Updated view height to:" << (m_defaultH + m_timeLabelH + m_scheduleLabelH);
 }
 
 void CMyScheduleView::slotAccountStateChange()
 {
+    qCDebug(ClientLogger) << "Account state changed for schedule:" << m_scheduleInfo->summary();
     AccountItem::Ptr item = gAccountManager->getAccountItemByScheduleTypeId(m_scheduleInfo->scheduleTypeID());
     if (!item) {
         qCWarning(ClientLogger) << "No account found for schedule type ID:" << m_scheduleInfo->scheduleTypeID();
@@ -149,6 +158,7 @@ void CMyScheduleView::slotAccountStateChange()
  */
 void CMyScheduleView::setLabelTextColor(const int type)
 {
+    qCDebug(ClientLogger) << "Setting label text colors for theme type:" << type;
     //标题显示颜色
     QColor titleColor;
     //日程显示颜色
@@ -160,12 +170,14 @@ void CMyScheduleView::setLabelTextColor(const int type)
         scheduleTitleColor = "#FFFFFF";
         timeColor = "#FFFFFF";
         timeColor.setAlphaF(0.7);
+        qCDebug(ClientLogger) << "Using dark theme colors";
     } else {
         titleColor = "#001A2E";
         scheduleTitleColor = "#000000";
         scheduleTitleColor.setAlphaF(0.9);
         timeColor = "#000000";
         timeColor.setAlphaF(0.6);
+        qCDebug(ClientLogger) << "Using light theme colors";
     }
     //设置颜色
     setPaletteTextColor(m_Title, titleColor);
@@ -180,9 +192,12 @@ void CMyScheduleView::setLabelTextColor(const int type)
  */
 void CMyScheduleView::setPaletteTextColor(QWidget *widget, QColor textColor)
 {
+    qCDebug(ClientLogger) << "Setting palette text color:" << textColor.name();
     //如果为空指针则退出
-    if (nullptr == widget)
+    if (nullptr == widget) {
+        qCWarning(ClientLogger) << "Widget is null, cannot set palette color";
         return;
+    }
     DPalette palette = widget->palette();
     //设置文字显示颜色
     palette.setColor(DPalette::WindowText, textColor);
@@ -194,9 +209,11 @@ void CMyScheduleView::setPaletteTextColor(QWidget *widget, QColor textColor)
  */
 void CMyScheduleView::updateDateTimeFormat()
 {
+    qCDebug(ClientLogger) << "Updating date time format for schedule:" << m_scheduleInfo->summary();
     //如果为节假日
     if (CScheduleOperation::isFestival(m_scheduleInfo)) {
         m_timeLabel->setText(m_scheduleInfo->dtStart().toString(m_dateFormat));
+        qCDebug(ClientLogger) << "Festival schedule date format:" << m_scheduleInfo->dtStart().toString(m_dateFormat);
     } else {
         QString showTime;
         QString beginName, endName;
@@ -224,10 +241,12 @@ void CMyScheduleView::updateDateTimeFormat()
 
 QString CMyScheduleView::getDataByFormat(const QDate &date, QString format)
 {
+    qCDebug(ClientLogger) << "Getting formatted date for:" << date << "with format:" << format;
     QString name = date.toString(format);
     if (m_scheduleInfo->lunnar()) {
         //接入农历时间
         name += gLunarManager->getHuangLiShortName(date);
+        qCDebug(ClientLogger) << "Added lunar calendar info to date:" << name;
     }
     return name;
 }
@@ -239,6 +258,7 @@ QString CMyScheduleView::getDataByFormat(const QDate &date, QString format)
  */
 void CMyScheduleView::slotBtClick(int buttonIndex, const QString &buttonName)
 {
+    qCDebug(ClientLogger) << "Button clicked: index=" << buttonIndex << "name=" << buttonName;
     Q_UNUSED(buttonName);
     if (buttonIndex == 0) {
         qCDebug(ClientLogger) << "Delete button clicked for schedule:" << m_scheduleInfo->summary();
@@ -271,6 +291,7 @@ void CMyScheduleView::slotBtClick(int buttonIndex, const QString &buttonName)
  */
 void CMyScheduleView::initUI()
 {
+    qCDebug(ClientLogger) << "Initializing UI for schedule view";
     //在点击任何对话框上的按钮后不关闭对话框，保证关闭子窗口时不被一起关掉
     setOnButtonClickedClose(false);
 
@@ -347,18 +368,22 @@ void CMyScheduleView::initUI()
     centerWidget->setPalette(centerWidgetPalette);
     //添加窗口为剧中对齐
     addContent(centerWidget, Qt::AlignCenter);
+    qCDebug(ClientLogger) << "UI initialization complete";
 }
 
 void CMyScheduleView::initConnection()
 {
+    qCDebug(ClientLogger) << "Initializing connections for schedule view";
     //关联主题改变事件
     QObject::connect(DGuiApplicationHelper::instance(), &DGuiApplicationHelper::themeTypeChanged,
                      this,
                      &CMyScheduleView::setLabelTextColor);
     //如果为节假日日程
     if (CScheduleOperation::isFestival(m_scheduleInfo)) {
+        qCDebug(ClientLogger) << "Adding close button for festival schedule";
         connect(this, &DDialog::buttonClicked, this, &CMyScheduleView::close);
     } else {
+        qCDebug(ClientLogger) << "Adding delete and edit buttons for regular schedule";
         connect(this, &DDialog::buttonClicked, this, &CMyScheduleView::slotBtClick);
     }
     QObject::connect(qGuiApp, &DApplication::fontChanged, this, &CMyScheduleView::slotAutoFeed);

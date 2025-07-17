@@ -4,6 +4,7 @@
 
 #include "colorpickerWidget.h"
 #include "tabletconfig.h"
+#include "commondef.h"
 
 #include <DFontSizeManager>
 #include <DFrame>
@@ -27,6 +28,7 @@ CColorPickerWidget::CColorPickerWidget(QWidget *parent)
     , m_cancelBtn(new DPushButton(this))
     , m_enterBtn(new DSuggestButton(this))
 {
+    qCDebug(ClientLogger) << "CColorPickerWidget constructor initialized";
     initUI();
     setColorHexLineEdit();
     moveToCenter();
@@ -36,16 +38,19 @@ CColorPickerWidget::CColorPickerWidget(QWidget *parent)
     connect(m_colorLabel, &ColorLabel::signalpickedColor, this, &CColorPickerWidget::slotUpdateColor);
     connect(m_colHexLineEdit, &DLineEdit::textChanged, this, &CColorPickerWidget::slotHexLineEditChange);
     connect(m_colorSlider, &ColorSlider::valueChanged, this, [this](int val) {
+        qCDebug(ClientLogger) << "Color slider value changed to:" << val;
         m_colorLabel->setHue(val);
     });
 }
 
 CColorPickerWidget::~CColorPickerWidget()
 {
+    qCDebug(ClientLogger) << "CColorPickerWidget destructor called";
 }
 
 void CColorPickerWidget::setColorHexLineEdit()
 {
+    qCDebug(ClientLogger) << "CColorPickerWidget::setColorHexLineEdit - Setting up hex line edit";
     m_colHexLineEdit->setText("");
     //确认按钮初始置灰
     m_enterBtn->setDisabled(true);
@@ -60,6 +65,7 @@ void CColorPickerWidget::setColorHexLineEdit()
  */
 void CColorPickerWidget::initUI()
 {
+    qCDebug(ClientLogger) << "CColorPickerWidget::initUI - Initializing UI components";
     QFont mlabelTitle;
     QFont mlabelContext;
     mlabelTitle.setWeight(QFont::Bold);
@@ -103,34 +109,42 @@ void CColorPickerWidget::initUI()
     btnLayout->addWidget(m_enterBtn);
     mLayout->addLayout(btnLayout);
     this->setLayout(mLayout);
-     setLabelText();
+    setLabelText();
     this->setFocusPolicy(Qt::TabFocus);
     setTabOrder(m_colHexLineEdit, m_cancelBtn);
     setTabOrder(m_cancelBtn, m_enterBtn);
     setTabOrder(m_enterBtn, m_colorSlider);
+    qCDebug(ClientLogger) << "UI initialization completed";
 }
 
 void CColorPickerWidget::setLabelText() {
+    qCDebug(ClientLogger) << "CColorPickerWidget::setLabelText - Setting label text based on locale";
     QLocale local;
     if(local.language() == QLocale::Chinese) {
+        qCDebug(ClientLogger) << "Chinese locale detected, keeping original text";
         return;
     }
-    QString  str = m_strColorLabel;
+    QString str = m_strColorLabel;
     QFontMetrics fontMetrice(m_wordLabel->font());
     if(fontMetrice.horizontalAdvance(str) > (m_wordLabel->width()+4)) {
-        str = fontMetrice.elidedText(str,Qt::ElideRight,m_wordLabel->width());
+        qCDebug(ClientLogger) << "Text too long, applying elision";
+        str = fontMetrice.elidedText(str, Qt::ElideRight, m_wordLabel->width());
     }
     m_wordLabel->setText(str);
 }
 
-void CColorPickerWidget::changeEvent(QEvent *e)  {
+void CColorPickerWidget::changeEvent(QEvent *e) {
+    // qCDebug(ClientLogger) << "CColorPickerWidget::changeEvent";
     QWidget::changeEvent(e);
     if(e->type() == QEvent::FontChange) {
+        // qCDebug(ClientLogger) << "CColorPickerWidget::changeEvent - Font changed, updating label text";
         setLabelText();
     }
 }
+
 void CColorPickerWidget::slotHexLineEditChange(const QString &text)
 {
+    qCDebug(ClientLogger) << "CColorPickerWidget::slotHexLineEditChange - Text changed to:" << text;
     QString lowerText = text.toLower();
     if (lowerText == text) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
@@ -142,36 +156,47 @@ void CColorPickerWidget::slotHexLineEditChange(const QString &text)
 #endif
 
     } else {
+        qCDebug(ClientLogger) << "Converting text to lowercase";
         m_colHexLineEdit->setText(lowerText);
     }
 }
 
 QColor CColorPickerWidget::getSelectedColor()
 {
+    // qCDebug(ClientLogger) << "CColorPickerWidget::getSelectedColor";
     return QColor("#" + m_colHexLineEdit->text());
 }
 
 void CColorPickerWidget::slotUpdateColor(const QColor &color)
 {
+    qCDebug(ClientLogger) << "CColorPickerWidget::slotUpdateColor - Updating color to:" << color;
     if (color.isValid()) {
-        this->m_colHexLineEdit->setText(color.name().remove("#"));
+        QString colorName = color.name().remove("#");
+        qCDebug(ClientLogger) << "Setting hex edit text to:" << colorName;
+        this->m_colHexLineEdit->setText(colorName);
+    } else {
+        qCDebug(ClientLogger) << "Invalid color provided";
     }
 }
 
 void CColorPickerWidget::slotCancelBtnClicked()
 {
+    qCDebug(ClientLogger) << "CColorPickerWidget::slotCancelBtnClicked - Cancel button clicked, rejecting dialog";
     reject();
 }
 
 void CColorPickerWidget::slotEnterBtnClicked()
 {
+    qCDebug(ClientLogger) << "CColorPickerWidget::slotEnterBtnClicked - Enter button clicked, accepting dialog";
     accept();
 }
 
 void CColorPickerWidget::keyPressEvent(QKeyEvent *e)
 {
+    // qCDebug(ClientLogger) << "CColorPickerWidget::keyPressEvent - Key pressed:" << e->key();
     //键盘有两个Enter按键，一个为Enter一个为Return
     if (e->key() == Qt::Key_Enter || e->key() == Qt::Key_Return) {
+        // qCDebug(ClientLogger) << "Enter/Return key pressed, not handling";
         //暂时不处理回车事件
     } else {
         DAbstractDialog::keyPressEvent(e);

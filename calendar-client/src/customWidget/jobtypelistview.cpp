@@ -31,16 +31,19 @@ static const int RoleJobTypeLine = Qt::UserRole + 4;
 
 JobTypeListView::JobTypeListView(QWidget *parent) : QTableView(parent)
 {
+    qCDebug(ClientLogger) << "JobTypeListView constructor";
     initUI();
 }
 
 JobTypeListView::~JobTypeListView()
 {
+    qCDebug(ClientLogger) << "JobTypeListView destructor";
 //    JobTypeInfoManager::instance()->removeFromNoticeBill(this);
 }
 
 void JobTypeListView::initUI()
 {
+    qCDebug(ClientLogger) << "JobTypeListView::initUI";
     m_modelJobType = new QStandardItemModel(this);
     setModel(m_modelJobType);
     setFrameStyle(QFrame::NoFrame);
@@ -86,6 +89,7 @@ bool JobTypeListView::viewportEvent(QEvent *event)
     int indexCurrentHover;
 
     if (QEvent::HoverLeave == event->type()) {
+        qCDebug(ClientLogger) << "JobTypeListView::viewportEvent HoverLeave";
         QStandardItemModel *itemModel = qobject_cast<QStandardItemModel *>(model());
         if (nullptr == itemModel) {
             return true;
@@ -108,6 +112,7 @@ bool JobTypeListView::viewportEvent(QEvent *event)
         indexCurrentHover = indexAt(static_cast<QHoverEvent *>(event)->pos()).row();
 
         if (indexCurrentHover != m_iIndexCurrentHover) {
+            qCDebug(ClientLogger) << "JobTypeListView::viewportEvent hover index changed to:" << indexCurrentHover;
             DStandardItem *itemJobType;
 
             //隐藏此前鼠标悬浮行的图标
@@ -146,6 +151,7 @@ bool JobTypeListView::viewportEvent(QEvent *event)
                     connect(actionExport, &QAction::triggered, this, &JobTypeListView::slotExportScheduleType);
                     if (!itemJobType->data(RoleJobTypeEditable).toBool()) {
                         if (!itemJobType->data(RoleJobTypeLine).toBool()) {
+                            qCDebug(ClientLogger) << "JobTypeListView: Adding export action to non-editable item";
                             itemJobType->setActionList(Qt::Edge::RightEdge, { actionExport });
                         }
                         return true;
@@ -160,6 +166,7 @@ bool JobTypeListView::viewportEvent(QEvent *event)
                     actionDelete->setParent(this);
                     connect(actionDelete, &QAction::triggered, this, &JobTypeListView::slotDeleteJobType);
 
+                    qCDebug(ClientLogger) << "JobTypeListView: Adding edit, delete, and export actions to editable item";
                     itemJobType->setActionList(Qt::Edge::RightEdge, {actionEdit, actionDelete, actionExport});
                 }
             }
@@ -167,8 +174,10 @@ bool JobTypeListView::viewportEvent(QEvent *event)
     }
     return true;
 }
+
 bool JobTypeListView::updateJobType()
 {
+    qCDebug(ClientLogger) << "JobTypeListView::updateJobType for account:" << m_account_id;
     AccountItem::Ptr account = gAccountManager->getAccountItemByAccountId(m_account_id);
     if (!account) {
         qCWarning(ClientLogger) << "Failed to update job types: Account not found for id" << m_account_id;
@@ -178,6 +187,7 @@ bool JobTypeListView::updateJobType()
     m_iIndexCurrentHover = -1;
 
     DScheduleType::List lstJobType = account->getScheduleTypeList();
+    qCDebug(ClientLogger) << "JobTypeListView::updateJobType found" << lstJobType.size() << "schedule types";
     int viewHeight = 0;
     for (int i = 0; i < lstJobType.size(); i++) {
         viewHeight += addJobTypeItem(*lstJobType[i]);
@@ -190,12 +200,14 @@ bool JobTypeListView::updateJobType()
 
 void JobTypeListView::updateCalendarAccount(QString account_id)
 {
+    qCDebug(ClientLogger) << "JobTypeListView::updateCalendarAccount account_id:" << account_id;
     m_account_id = account_id;
     updateJobType();
 }
 
 void JobTypeListView::slotAddScheduleType()
 {
+    qCDebug(ClientLogger) << "JobTypeListView::slotAddScheduleType";
     AccountItem::Ptr account = gAccountManager->getAccountItemByAccountId(m_account_id);
     if (!account) {
         qCWarning(ClientLogger) << "Failed to add schedule type: Account not found for id" << m_account_id;
@@ -214,6 +226,7 @@ void JobTypeListView::slotAddScheduleType()
 
 void JobTypeListView::slotImportScheduleType()
 {
+    qCDebug(ClientLogger) << "JobTypeListView::slotImportScheduleType";
     // 选择ICS文件
     auto docDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
     auto filename = QFileDialog::getOpenFileName(nullptr, tr("import ICS file"), docDir, "ICS (*.ics)");
@@ -301,6 +314,7 @@ void JobTypeListView::slotImportScheduleType()
 
 void JobTypeListView::slotExportScheduleType()
 {
+    qCDebug(ClientLogger) << "JobTypeListView::slotExportScheduleType";
     DStandardItem *item = dynamic_cast<DStandardItem *>(m_modelJobType->item(m_iIndexCurrentHover));
     if (!item) {
         qCWarning(ClientLogger) << "Export failed: No item selected";
@@ -346,11 +360,14 @@ bool JobTypeListView::canAdd()
         return false;
 
     //最多20个类型
-    return account->getScheduleTypeList().count() < 20;
+    int count = account->getScheduleTypeList().count();
+    qCDebug(ClientLogger) << "JobTypeListView::canAdd checking if can add more types, current count:" << count;
+    return count < 20;
 }
 
 void JobTypeListView::setItemEnabled(bool b)
 {
+    qCDebug(ClientLogger) << "JobTypeListView::setItemEnabled enabled:" << b;
     if (!m_modelJobType) return;
 
     for (int i = 0; i < m_modelJobType->rowCount(); ++i) {
@@ -361,6 +378,7 @@ void JobTypeListView::setItemEnabled(bool b)
 
 int JobTypeListView::addJobTypeItem(const DScheduleType &info)
 {
+    qCDebug(ClientLogger) << "JobTypeListView::addJobTypeItem adding type:" << info.displayName() << "ID:" << info.typeID();
     int itemHeight = 0;
     DStandardItem *item = new DStandardItem;
     item->setData(QVariant::fromValue(info), RoleJobTypeInfo);
@@ -389,6 +407,7 @@ int JobTypeListView::addJobTypeItem(const DScheduleType &info)
 
 void JobTypeListView::slotUpdateJobType()
 {
+    qCDebug(ClientLogger) << "JobTypeListView::slotUpdateJobType";
     int index = indexAt(mapFromGlobal(QCursor::pos())).row();
     if (index < 0 || index >= m_modelJobType->rowCount()) {
         qCWarning(ClientLogger) << "Update failed: Invalid index" << index;
@@ -426,6 +445,7 @@ void JobTypeListView::slotUpdateJobType()
 
 void JobTypeListView::slotDeleteJobType()
 {
+    qCDebug(ClientLogger) << "JobTypeListView::slotDeleteJobType";
     DStandardItem *item = dynamic_cast<DStandardItem *>(m_modelJobType->item(m_iIndexCurrentHover));
     if (!item) {
         qCWarning(ClientLogger) << "Delete failed: No item selected";
@@ -469,11 +489,13 @@ void JobTypeListView::slotDeleteJobType()
 
 void JobTypeListViewStyle::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
+    // qCDebug(ClientLogger) << "JobTypeListViewStyle::paint";
     QStyleOptionViewItem opt = option;
 
     //draw line
     bool isDrawLine = index.data(RoleJobTypeLine).toBool();
     if (isDrawLine) {
+        // qCDebug(ClientLogger) << "JobTypeListViewStyle::paint draw line";
         int y = opt.rect.y() + opt.rect.height() / 2;
         int x = opt.rect.x();
         int w = x + opt.rect.width();

@@ -41,6 +41,7 @@ DragInfoGraphicsView::DragInfoGraphicsView(DWidget *parent)
     , m_rightMenu(new DMenu(this))
     , m_MoveDate(QDateTime::currentDateTime())
 {
+    qCDebug(ClientLogger) << "DragInfoGraphicsView constructor";
     setFrameShape(QFrame::NoFrame);
     setScene(m_Scene);
     setContentsMargins(0, 0, 0, 0);
@@ -86,16 +87,20 @@ DragInfoGraphicsView::DragInfoGraphicsView(DWidget *parent)
 
 DragInfoGraphicsView::~DragInfoGraphicsView()
 {
+    qCDebug(ClientLogger) << "DragInfoGraphicsView destructor";
 }
 
 void DragInfoGraphicsView::mousePressEvent(QMouseEvent *event)
 {
+    // qCDebug(ClientLogger) << "DragInfoGraphicsView::mousePressEvent at" << event->pos();
     if (event->button() != Qt::LeftButton) {
+        qCDebug(ClientLogger) << "Not left button, ignoring press event";
         return;
     }
     stopTouchAnimation();
     if (event->source() == Qt::MouseEventSynthesizedByQt) {
         //如果为触摸点击则记录相关状态并改变触摸状态
+        qCDebug(ClientLogger) << "Touch event detected";
         DGraphicsView::mousePressEvent(event);
         m_TouchBeginPoint = event->pos();
         m_TouchBeginTime = QDateTime::currentDateTime().toMSecsSinceEpoch();
@@ -110,12 +115,16 @@ void DragInfoGraphicsView::mousePressEvent(QMouseEvent *event)
 
 void DragInfoGraphicsView::mouseReleaseEvent(QMouseEvent *event)
 {
+    // qCDebug(ClientLogger) << "DragInfoGraphicsView::mouseReleaseEvent at" << event->pos();
     if (event->button() == Qt::RightButton) {
+        qCDebug(ClientLogger) << "Right button release, ignoring";
         return;
     }
     if (event->source() == Qt::MouseEventSynthesizedByQt) {
+        qCDebug(ClientLogger) << "Touch event release, current state:" << m_touchState;
         //如果为触摸点击状态则调用左击事件处理
         if (m_touchState == TS_PRESS) {
+            qCDebug(ClientLogger) << "Processing touch press as mouse press";
             mousePress(m_TouchBeginPoint.toPoint());
         }
         if (m_touchState == TS_SLIDE) {
@@ -123,11 +132,13 @@ void DragInfoGraphicsView::mouseReleaseEvent(QMouseEvent *event)
             const qint64 timeOffset = QDateTime::currentDateTime().toMSecsSinceEpoch() - m_TouchBeginTime;
             //如果为快速滑动则开启滑动动画效果
             if (timeOffset < 150) {
+                qCDebug(ClientLogger) << "Fast slide detected, starting animation";
                 m_touchAnimation->setStartValue(verticalScrollBar()->sliderPosition());
                 m_touchAnimation->setEndValue(verticalScrollBar()->minimum());
                 switch (m_touchMovingDir) {
                 case touchGestureOperation::T_TOP: {
                     //如果手势往上
+                    qCDebug(ClientLogger) << "Gesture direction: UP";
                     m_touchAnimation->setStartValue(verticalScrollBar()->sliderPosition());
                     m_touchAnimation->setEndValue(verticalScrollBar()->maximum());
                     m_touchAnimation->start();
@@ -135,6 +146,7 @@ void DragInfoGraphicsView::mouseReleaseEvent(QMouseEvent *event)
                 }
                 case touchGestureOperation::T_BOTTOM: {
                     //如果手势往下
+                    qCDebug(ClientLogger) << "Gesture direction: DOWN";
                     m_touchAnimation->setStartValue(verticalScrollBar()->sliderPosition());
                     m_touchAnimation->setEndValue(verticalScrollBar()->minimum());
                     m_touchAnimation->start();
@@ -155,9 +167,11 @@ void DragInfoGraphicsView::mouseReleaseEvent(QMouseEvent *event)
 
 void DragInfoGraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
+    // qCDebug(ClientLogger) << "DragInfoGraphicsView::mouseMoveEvent at" << event->pos();
     //移动偏移
     const int lengthOffset = 5;
     if (event->source() == Qt::MouseEventSynthesizedByQt) {
+        // qCDebug(ClientLogger) << "DragInfoGraphicsView::mouseMoveEvent - Touch move event, current state:" << m_touchState;
         m_touchMovingDir = touchGestureOperation::T_MOVE_NONE;
         switch (m_touchState) {
         case TS_NONE: {
@@ -171,11 +185,13 @@ void DragInfoGraphicsView::mouseMoveEvent(QMouseEvent *event)
             qreal movingLength = QLineF(m_TouchBeginPoint, event->pos()).length();
             //如果移动距离小于5且点击时间大于250毫秒小于900毫秒则为拖拽移动状态
             if (movingLength < lengthOffset && (timeOffset > 250 && timeOffset < 900)) {
+                qCDebug(ClientLogger) << "Changing touch state to drag move";
                 m_touchState = TS_DRAG_MOVE;
                 m_touchDragMoveState = 1;
             }
             //如果移动距离大于5则为滑动状态
             if (movingLength > lengthOffset) {
+                qCDebug(ClientLogger) << "Changing touch state to slide";
                 m_touchState = TS_SLIDE;
             }
             break;
@@ -187,10 +203,12 @@ void DragInfoGraphicsView::mouseMoveEvent(QMouseEvent *event)
             qreal movingLength = QLineF(m_TouchBeginPoint, event->pos()).length();
             //如果移动距离小于5且点击时间大于900毫秒则为长按状态
             if (movingLength < lengthOffset && (timeOffset > 900)) {
+                qCDebug(ClientLogger) << "Changing touch state to long press";
                 m_touchState = TS_LONG_PRESS;
             }
             if (movingLength > lengthOffset) {
                 if (m_touchDragMoveState == 1) {
+                    qCDebug(ClientLogger) << "Processing touch drag as mouse press";
                     mousePress(m_TouchBeginPoint.toPoint());
                 }
                 m_touchDragMoveState = 2;
@@ -200,6 +218,7 @@ void DragInfoGraphicsView::mouseMoveEvent(QMouseEvent *event)
         case TS_SLIDE: {
             //3 滑动
             QPointF _currentPoint = event->pos();
+            qCDebug(ClientLogger) << "Processing slide event";
             slideEvent(m_TouchBeginPoint, _currentPoint);
             break;
         }
@@ -209,6 +228,7 @@ void DragInfoGraphicsView::mouseMoveEvent(QMouseEvent *event)
     }
 
     if (m_press) {
+        qCDebug(ClientLogger) << "Mouse moved while pressed, hiding schedule and resetting press state";
         emit signalScheduleShow(false);
         m_press = false;
         DragInfoItem::setPressFlag(false);
@@ -219,7 +239,9 @@ void DragInfoGraphicsView::mouseMoveEvent(QMouseEvent *event)
         if (item != nullptr) {
             if (isCanDragge(item->getData())) {
                 if (m_DragStatus == NONE) {
-                    switch (getPosInItem(event->pos(), item->rect())) {
+                    PosInItem position = getPosInItem(event->pos(), item->rect());
+                    qCDebug(ClientLogger) << "Mouse over draggable item, position:" << position;
+                    switch (position) {
                     case LEFT:
                     case RIGHT:
                         setCursor(Qt::SplitHCursor);
@@ -241,6 +263,7 @@ void DragInfoGraphicsView::mouseMoveEvent(QMouseEvent *event)
         }
     } else {
         QDateTime gDate = getPosDate(event->pos());
+        qCDebug(ClientLogger) << "Mouse move with drag status:" << m_DragStatus << "at date:" << gDate;
         switch (m_DragStatus) {
         case IsCreate:
             if (gDate.date().year() >= DDECalendar::QueryEarliestYear && gDate.date().year() <= DDECalendar::QueryLatestYear) {
@@ -248,6 +271,7 @@ void DragInfoGraphicsView::mouseMoveEvent(QMouseEvent *event)
                     //如果拖拽创建为false则判断是否可被创建。如果为true则不需要判断
                     m_isCreate = m_isCreate ? m_isCreate : JudgeIsCreate(event->pos());
                     if (m_isCreate) {
+                        qCDebug(ClientLogger) << "Creating schedule via drag";
                         if (!IsEqualtime(m_MoveDate, gDate)) {
                             m_MoveDate = gDate;
                             m_DragScheduleInfo = getScheduleInfo(m_PressDate, m_MoveDate);
@@ -262,6 +286,7 @@ void DragInfoGraphicsView::mouseMoveEvent(QMouseEvent *event)
             break;
         case ChangeBegin:
             if (!IsEqualtime(m_MoveDate, gDate)) {
+                qCDebug(ClientLogger) << "Changing schedule begin time to:" << gDate;
                 m_MoveDate = gDate;
                 //获取日程开始时间
                 QDateTime _beginTime = getDragScheduleInfoBeginTime(m_MoveDate);
@@ -272,6 +297,7 @@ void DragInfoGraphicsView::mouseMoveEvent(QMouseEvent *event)
             break;
         case ChangeEnd:
             if (!IsEqualtime(m_MoveDate, gDate)) {
+                qCDebug(ClientLogger) << "Changing schedule end time to:" << gDate;
                 m_MoveDate = gDate;
                 m_DragScheduleInfo->setDtStart(m_InfoBeginTime);
                 //获取结束时间
@@ -282,6 +308,7 @@ void DragInfoGraphicsView::mouseMoveEvent(QMouseEvent *event)
             break;
         case ChangeWhole: {
             if (!m_PressRect.contains(event->pos())) {
+                qCDebug(ClientLogger) << "Schedule dragged outside press rect, executing drag operation";
                 //拖拽前设置是否已经更新日程界面标志为否
                 m_hasUpdateMark = false;
                 m_Drag->exec(Qt::MoveAction);
@@ -290,6 +317,7 @@ void DragInfoGraphicsView::mouseMoveEvent(QMouseEvent *event)
                 setCursor(Qt::ArrowCursor);
                 //如果拖拽结束后没有修改日程则更新下界面日程显示
                 if (!m_hasUpdateMark) {
+                    qCDebug(ClientLogger) << "No update mark after drag, updating info display";
                     updateInfo();
                 }
             }
@@ -304,15 +332,18 @@ void DragInfoGraphicsView::mouseMoveEvent(QMouseEvent *event)
 
 void DragInfoGraphicsView::wheelEvent(QWheelEvent *event)
 {
+    qCDebug(ClientLogger) << "DragInfoGraphicsView::wheelEvent - angle delta:" << event->angleDelta();
     stopTouchAnimation();
     DGraphicsView::wheelEvent(event);
 }
 
 void DragInfoGraphicsView::contextMenuEvent(QContextMenuEvent *event)
 {
+    qCDebug(ClientLogger) << "DragInfoGraphicsView::contextMenuEvent at" << event->pos();
     DGraphicsView::contextMenuEvent(event);
     //如果不为默认状态则不执行右击事件
     if (m_DragStatus != NONE) {
+        qCDebug(ClientLogger) << "Not in NONE drag status, ignoring context menu event";
         return;
     }
     emit signalScheduleShow(false);
@@ -325,6 +356,7 @@ void DragInfoGraphicsView::contextMenuEvent(QContextMenuEvent *event)
 
     CScheduleItem *tt = dynamic_cast<CScheduleItem *>(listItem);
     if (tt != nullptr && tt->getType() != 0) {
+        qCDebug(ClientLogger) << "Schedule item with non-zero type, ignoring context menu";
         return;
     }
     if (infoitem != nullptr && infoitem->isVisible()) {
@@ -338,7 +370,9 @@ void DragInfoGraphicsView::contextMenuEvent(QContextMenuEvent *event)
             m_rightMenu->addAction(m_editAction);
             m_rightMenu->addAction(m_deleteAction);
             //如果日程是不可修改的则设置删除按钮无效
-            m_deleteAction->setEnabled(!CScheduleOperation::scheduleIsInvariant(schData));
+            bool canDelete = !CScheduleOperation::scheduleIsInvariant(schData);
+            qCDebug(ClientLogger) << "Schedule can be deleted:" << canDelete;
+            m_deleteAction->setEnabled(canDelete);
 
             QAction *action_t = m_rightMenu->exec(QCursor::pos());
 
@@ -347,13 +381,19 @@ void DragInfoGraphicsView::contextMenuEvent(QContextMenuEvent *event)
                 CScheduleDlg dlg(0, this);
                 dlg.setData(schData);
                 if (dlg.exec() == DDialog::Accepted) {
+                    qCDebug(ClientLogger) << "Schedule edit accepted, updating";
                     emit signalsUpdateSchedule();
                     emit sigStateChange(true);
+                } else {
+                    qCDebug(ClientLogger) << "Schedule edit cancelled";
                 }
             } else if (action_t == m_deleteAction) {
                 qCDebug(ClientLogger) << "Deleting schedule:" << schData->summary();
                 if(DeleteItem(schData)) {
+                    qCDebug(ClientLogger) << "Schedule deleted, updating state";
                     emit sigStateChange(true);
+                } else {
+                    qCDebug(ClientLogger) << "Schedule delete failed or cancelled";
                 }
             }
         } else {
@@ -362,37 +402,44 @@ void DragInfoGraphicsView::contextMenuEvent(QContextMenuEvent *event)
             dlg.exec();
         }
     } else {
+        qCDebug(ClientLogger) << "No info item at position, creating context menu for background";
         RightClickToCreate(listItem, event->pos());
     }
 }
 
 void DragInfoGraphicsView::dragEnterEvent(QDragEnterEvent *event)
 {
+    qCDebug(ClientLogger) << "DragInfoGraphicsView::dragEnterEvent with mime types:" << event->mimeData()->formats();
     if (event->mimeData()->hasFormat("Info")) {
         QString str = event->mimeData()->data("Info");
         DSchedule::Ptr info;
         DSchedule::fromJsonString(info, str);
 
         if (info.isNull()) {
+            qCDebug(ClientLogger) << "Invalid schedule info in drag data, ignoring";
             event->ignore();
         }
 
         //如果该日程是不能被拖拽的则忽略不接受
         //重复日程不能被切换全天和非全天
         if ((event->source() != this && info->recurs()) || !isCanDragge(info)) {
+            qCDebug(ClientLogger) << "Schedule cannot be dragged (recurring or non-draggable)";
             event->ignore();
         } else {
+            qCDebug(ClientLogger) << "Accepting drag for schedule";
             event->accept();
             //设置被修改的日程原始信息
             m_PressScheduleInfo = info;
         }
     } else {
+        qCDebug(ClientLogger) << "Drag data does not have Info format, ignoring";
         event->ignore();
     }
 }
 
 void DragInfoGraphicsView::dragLeaveEvent(QDragLeaveEvent *event)
 {
+    qCDebug(ClientLogger) << "DragInfoGraphicsView::dragLeaveEvent";
     Q_UNUSED(event);
     upDateInfoShow();
     m_MoveDate = m_MoveDate.addMonths(-2);
@@ -400,6 +447,7 @@ void DragInfoGraphicsView::dragLeaveEvent(QDragLeaveEvent *event)
 
 void DragInfoGraphicsView::dragMoveEvent(QDragMoveEvent *event)
 {
+    qCDebug(ClientLogger) << "DragInfoGraphicsView::dragMoveEvent at" << event->pos();
     QString str = event->mimeData()->data("Info");
     QDateTime gDate = getPosDate(event->pos());
     QJsonParseError json_error;
@@ -410,6 +458,7 @@ void DragInfoGraphicsView::dragMoveEvent(QDragMoveEvent *event)
     }
 
     if (!IsEqualtime(m_MoveDate, gDate)) {
+        qCDebug(ClientLogger) << "Move date changed to:" << gDate;
         m_MoveDate = gDate;
         QJsonObject rootobj = jsonDoc.object();
         DSchedule::fromJsonString(m_DragScheduleInfo, str);
@@ -421,17 +470,22 @@ void DragInfoGraphicsView::dragMoveEvent(QDragMoveEvent *event)
 
 void DragInfoGraphicsView::dropEvent(QDropEvent *event)
 {
+    qCDebug(ClientLogger) << "DragInfoGraphicsView::dropEvent at" << event->pos();
     if (event->mimeData()->hasFormat("Info")) {
         if (event->source() != this || m_MoveDate != m_PressDate) {
+            qCDebug(ClientLogger) << "Schedule dropped, source:" << event->source() 
+                                 << "move date:" << m_MoveDate << "press date:" << m_PressDate;
             //后面方法出现模态框，阻塞，导致拖拽图片不消失，手动先调用取消接口解决
             QDrag::cancel();
 
             auto startDate = m_DragScheduleInfo->dtStart();
             auto endDate = m_DragScheduleInfo->dtEnd();
             if (startDate.date().year() >= DDECalendar::QueryEarliestYear && endDate.date().year() <= DDECalendar::QueryLatestYear) {
+                qCDebug(ClientLogger) << "Schedule dates within valid range, updating schedule";
                 emit sigStateChange(true);
                 updateScheduleInfo(m_DragScheduleInfo);
             } else {
+                qCDebug(ClientLogger) << "Schedule dates outside valid range, just updating display";
                 emit signalsUpdateSchedule();
             }
             m_DragStatus = NONE;
@@ -443,6 +497,7 @@ void DragInfoGraphicsView::dropEvent(QDropEvent *event)
 bool DragInfoGraphicsView::event(QEvent *e)
 {
     if (e->type() == QEvent::Leave) {
+        // qCDebug(ClientLogger) << "Mouse left view area, checking for schedule update";
         if (m_DragStatus == IsCreate ||
                 m_DragStatus == ChangeBegin ||
                 m_DragStatus == ChangeEnd)
@@ -453,11 +508,13 @@ bool DragInfoGraphicsView::event(QEvent *e)
 
 void DragInfoGraphicsView::keyPressEvent(QKeyEvent *event)
 {
+    // qCDebug(ClientLogger) << "DragInfoGraphicsView::keyPressEvent with key:" << event->key();
     DGraphicsView::keyPressEvent(event);
 }
 
 void DragInfoGraphicsView::paintEvent(QPaintEvent *event)
 {
+    // qCDebug(ClientLogger) << "DragInfoGraphicsView::paintEvent";
     DGraphicsView::paintEvent(event);
     //绘制圆角效果
     QPainter painter(viewport());
@@ -466,6 +523,7 @@ void DragInfoGraphicsView::paintEvent(QPaintEvent *event)
     painter.setBrush(m_outerBorderColor);
     //左下角绘制圆角补角,颜色与外框背景色一致
     if (m_leftShowRadius) {
+        // qCDebug(ClientLogger) << "DragInfoGraphicsView::paintEvent - Left show radius";
         QPainterPath _leftPath;
         _leftPath.moveTo(0, this->height() - m_radius);
         _leftPath.arcTo(0, this->height() - m_radius * 2, m_radius * 2, m_radius * 2, 180, 90);
@@ -475,6 +533,7 @@ void DragInfoGraphicsView::paintEvent(QPaintEvent *event)
     }
     //右下角绘制圆角补角
     if (m_rightShowRadius) {
+        // qCDebug(ClientLogger) << "DragInfoGraphicsView::paintEvent - Right show radius";
         QPainterPath _rightPath;
         _rightPath.moveTo(this->width() - m_radius, this->height());
         _rightPath.arcTo(this->width() - m_radius * 2, this->height() - m_radius * 2, m_radius * 2, m_radius * 2, 270, 90);
@@ -487,6 +546,7 @@ void DragInfoGraphicsView::paintEvent(QPaintEvent *event)
 
 void DragInfoGraphicsView::showEvent(QShowEvent *event)
 {
+    // qCDebug(ClientLogger) << "DragInfoGraphicsView::showEvent";
     //显示时重置大小
     resize(this->width(), this->height());
     DGraphicsView::showEvent(event);
@@ -494,6 +554,7 @@ void DragInfoGraphicsView::showEvent(QShowEvent *event)
 
 void DragInfoGraphicsView::slotCreate()
 {
+    qCDebug(ClientLogger) << "DragInfoGraphicsView::slotCreate";
     slotCreate(m_createDate);
 }
 
@@ -503,6 +564,7 @@ void DragInfoGraphicsView::slotCreate()
  */
 void DragInfoGraphicsView::setPressSelectInfo(const DSchedule::Ptr &info)
 {
+    // qCDebug(ClientLogger) << "DragInfoGraphicsView::setPressSelectInfo with info";
     DragInfoItem::setPressSchedule(info);
 }
 
@@ -512,6 +574,7 @@ void DragInfoGraphicsView::setPressSelectInfo(const DSchedule::Ptr &info)
  */
 void DragInfoGraphicsView::updateScheduleInfo(const DSchedule::Ptr &info)
 {
+    qCDebug(ClientLogger) << "DragInfoGraphicsView::updateScheduleInfo with info";
     QVariant variant;
     //获取主窗口指针
     CalendarGlobalEnv::getGlobalEnv()->getValueByKey("MainWindow", variant);
@@ -519,6 +582,7 @@ void DragInfoGraphicsView::updateScheduleInfo(const DSchedule::Ptr &info)
     //设置父类为主窗口
     CScheduleOperation _scheduleOperation(info->scheduleTypeID(), qobject_cast<QWidget *>(parent));
     if (_scheduleOperation.changeSchedule(info, m_PressScheduleInfo)) {
+        qCDebug(ClientLogger) << "DragInfoGraphicsView::updateScheduleInfo - Schedule changed successfully";
         //如果日程修改成功则更新更新标志
         m_hasUpdateMark = true;
     } else {
@@ -529,6 +593,7 @@ void DragInfoGraphicsView::updateScheduleInfo(const DSchedule::Ptr &info)
 
 void DragInfoGraphicsView::DragPressEvent(const QPoint &pos, DragInfoItem *item)
 {
+    qCDebug(ClientLogger) << "DragInfoGraphicsView::DragPressEvent with pos:" << pos;
     m_PressPos = pos;
     m_PressDate = getPosDate(pos);
     m_MoveDate = m_PressDate.addMonths(-2);
@@ -538,6 +603,7 @@ void DragInfoGraphicsView::DragPressEvent(const QPoint &pos, DragInfoItem *item)
     if (item != nullptr) {
         PosInItem mpressstatus = getPosInItem(pos, item->boundingRect());
         if (mpressstatus != MIDDLE && !isCanDragge(item->getData())) {
+            qCDebug(ClientLogger) << "DragInfoGraphicsView::DragPressEvent - Item cannot be dragged";
             return;
         }
         //拖拽使用副本，不更改原始日程
@@ -547,22 +613,27 @@ void DragInfoGraphicsView::DragPressEvent(const QPoint &pos, DragInfoItem *item)
         m_InfoEndTime = m_DragScheduleInfo->dtEnd();
         switch (mpressstatus) {
         case TOP:
+            qCDebug(ClientLogger) << "DragInfoGraphicsView::DragPressEvent - Top";
             m_DragStatus = ChangeBegin;
             setCursor(Qt::SplitVCursor);
             break;
         case BOTTOM:
+            qCDebug(ClientLogger) << "DragInfoGraphicsView::DragPressEvent - Bottom";
             m_DragStatus = ChangeEnd;
             setCursor(Qt::SplitVCursor);
             break;
         case LEFT:
+            qCDebug(ClientLogger) << "DragInfoGraphicsView::DragPressEvent - Left";
             m_DragStatus = ChangeBegin;
             setCursor(Qt::SplitHCursor);
             break;
         case RIGHT:
+            qCDebug(ClientLogger) << "DragInfoGraphicsView::DragPressEvent - Right";
             m_DragStatus = ChangeEnd;
             setCursor(Qt::SplitHCursor);
             break;
         default:
+            qCDebug(ClientLogger) << "DragInfoGraphicsView::DragPressEvent - Default";
             ShowSchedule(item);
             m_DragStatus = ChangeWhole;
             QMimeData *mimeData = new QMimeData();
@@ -593,12 +664,14 @@ void DragInfoGraphicsView::DragPressEvent(const QPoint &pos, DragInfoItem *item)
  */
 void DragInfoGraphicsView::mouseReleaseScheduleUpdate()
 {
+    qCDebug(ClientLogger) << "DragInfoGraphicsView::mouseReleaseScheduleUpdate";
     setCursor(Qt::ArrowCursor);
     m_press = false;
     DragInfoItem::setPressFlag(false);
 
     switch (m_DragStatus) {
     case IsCreate:
+        qCDebug(ClientLogger) << "DragInfoGraphicsView::mouseReleaseScheduleUpdate - IsCreate";
         if (MeetCreationConditions(m_MoveDate)) {
             //如果不添加会进入leaveEvent事件内的条件
             m_DragStatus = NONE;
@@ -615,6 +688,7 @@ void DragInfoGraphicsView::mouseReleaseScheduleUpdate()
         }
         break;
     case ChangeBegin:
+        qCDebug(ClientLogger) << "DragInfoGraphicsView::mouseReleaseScheduleUpdate - ChangeBegin";
         if (!IsEqualtime(m_MoveDate, m_InfoBeginTime)) {
             //如果不添加会进入leaveEvent事件内的条件
             m_DragStatus = NONE;
@@ -622,6 +696,7 @@ void DragInfoGraphicsView::mouseReleaseScheduleUpdate()
         }
         break;
     case ChangeEnd:
+        qCDebug(ClientLogger) << "DragInfoGraphicsView::mouseReleaseScheduleUpdate - ChangeEnd";
         if (!IsEqualtime(m_MoveDate, m_InfoEndTime)) {
             //如果不添加会进入leaveEvent事件内的条件
             m_DragStatus = NONE;
@@ -637,6 +712,7 @@ void DragInfoGraphicsView::mouseReleaseScheduleUpdate()
 
 void DragInfoGraphicsView::mousePress(const QPoint &point)
 {
+    // qCDebug(ClientLogger) << "DragInfoGraphicsView::mousePress with point:" << point;
     setPressSelectInfo(DSchedule::Ptr());
     //设置拖拽日程为无效日程
     m_DragScheduleInfo = DSchedule::Ptr();
@@ -645,14 +721,17 @@ void DragInfoGraphicsView::mousePress(const QPoint &point)
     DragInfoItem *infoitem = dynamic_cast<DragInfoItem *>(listItem);
     //不满足拖拽条件的日程不进行拖拽事件
     if (infoitem) {
+        // qCDebug(ClientLogger) << "DragInfoGraphicsView::mousePress - Infoitem found";
         setPressSelectInfo(infoitem->getData());
         m_PressScheduleInfo = infoitem->getData();
         m_press = true;
         if (isCanDragge(infoitem->getData())) {
+            // qCDebug(ClientLogger) << "DragInfoGraphicsView::mousePress - Can drag";
             //满足拖拽条件
             DragInfoItem::setPressFlag(true);
             DragPressEvent(point, infoitem);
         } else {
+            // qCDebug(ClientLogger) << "DragInfoGraphicsView::mousePress - Cannot drag";
             //不满足拖拽条件，只展示信息弹窗
             m_PressPos = point;
             m_PressDate = getPosDate(point);
@@ -660,6 +739,7 @@ void DragInfoGraphicsView::mousePress(const QPoint &point)
             ShowSchedule(infoitem);
         }
     } else {
+        // qCDebug(ClientLogger) << "DragInfoGraphicsView::mousePress - No infoitem";
         //没有日程信息，可滑动
         emit signalScheduleShow(false);
         DragPressEvent(point, infoitem);
@@ -670,17 +750,20 @@ void DragInfoGraphicsView::mousePress(const QPoint &point)
 
 int DragInfoGraphicsView::getSlidePos() const
 {
+    // qCDebug(ClientLogger) << "DragInfoGraphicsView::getSlidePos";
     return m_touchSlidePos;
 }
 
 void DragInfoGraphicsView::setSlidePos(int pos)
 {
+    // qCDebug(ClientLogger) << "DragInfoGraphicsView::setSlidePos with pos:" << pos;
     m_touchSlidePos = pos;
     verticalScrollBar()->setValue(m_touchSlidePos);
 }
 
 void DragInfoGraphicsView::stopTouchAnimation()
 {
+    // qCDebug(ClientLogger) << "DragInfoGraphicsView::stopTouchAnimation";
     m_touchAnimation->stop();
 }
 
@@ -690,13 +773,12 @@ void DragInfoGraphicsView::stopTouchAnimation()
  */
 bool DragInfoGraphicsView::DeleteItem(const DSchedule::Ptr &info)
 {
+    // qCDebug(ClientLogger) << "DragInfoGraphicsView::DeleteItem with info";
     if (info.isNull()) {
         qCWarning(ClientLogger) << "Cannot delete null schedule";
         return false;
     }
-    qCDebug(ClientLogger) << "Deleting schedule" 
-                         << "summary:" << info->summary() 
-                         << "type:" << info->scheduleTypeID();
+    qCDebug(ClientLogger) << "Deleting schedule";
     CScheduleOperation _scheduleOperation(info->scheduleTypeID(), this);
     return _scheduleOperation.deleteSchedule(info);
 }
@@ -707,11 +789,13 @@ bool DragInfoGraphicsView::DeleteItem(const DSchedule::Ptr &info)
  */
 void DragInfoGraphicsView::setSelectSearchSchedule(const DSchedule::Ptr &scheduleInfo)
 {
+    // qCDebug(ClientLogger) << "DragInfoGraphicsView::setSelectSearchSchedule with scheduleInfo:" << scheduleInfo->summary();
     setPressSelectInfo(scheduleInfo);
 }
 
 void DragInfoGraphicsView::setDragPixmap(QDrag *drag, DragInfoItem *item)
 {
+    // qCDebug(ClientLogger) << "DragInfoGraphicsView::setDragPixmap with item:" << item->getData()->summary();
     Q_UNUSED(item);
     //设置一个1*1的透明图片，要不然关闭窗口特效会有一个小黑点
     QPixmap pixmap(1, 1);
@@ -747,6 +831,7 @@ void DragInfoGraphicsView::slotCreate(const QDateTime &date)
 
 DSchedule::Ptr DragInfoGraphicsView::getScheduleInfo(const QDateTime &beginDate, const QDateTime &endDate)
 {
+    // qCDebug(ClientLogger) << "DragInfoGraphicsView::getScheduleInfo with beginDate:" << beginDate << "endDate:" << endDate;
     DSchedule::Ptr info;
     info.reset(new DSchedule());
     if (beginDate.daysTo(endDate) > 0) {
@@ -767,6 +852,7 @@ DSchedule::Ptr DragInfoGraphicsView::getScheduleInfo(const QDateTime &beginDate,
 
 void DragInfoGraphicsView::ShowSchedule(DragInfoItem *infoitem)
 {
+    // qCDebug(ClientLogger) << "DragInfoGraphicsView::ShowSchedule with infoitem:" << infoitem->getData()->summary();
     if (infoitem == nullptr)
         return;
     emit signalScheduleShow(true, infoitem->getData());
@@ -775,6 +861,7 @@ void DragInfoGraphicsView::ShowSchedule(DragInfoItem *infoitem)
 
 void DragInfoGraphicsView::setTheMe(int type)
 {
+    // qCDebug(ClientLogger) << "DragInfoGraphicsView::setTheMe with type:" << type;
     Q_UNUSED(type);
     DPalette _painte;
     //获取外框背景色
@@ -783,6 +870,7 @@ void DragInfoGraphicsView::setTheMe(int type)
 
 void DragInfoGraphicsView::slideEvent(QPointF &startPoint, QPointF &stopPort)
 {
+    // qCDebug(ClientLogger) << "DragInfoGraphicsView::slideEvent with startPoint:" << startPoint << "stopPort:" << stopPort;
     qreal _movingLine {0};
     //获取滑动方向
     touchGestureOperation::TouchMovingDirection _touchMovingDir =
@@ -795,12 +883,14 @@ void DragInfoGraphicsView::slideEvent(QPointF &startPoint, QPointF &stopPort)
     switch (_touchMovingDir) {
     case touchGestureOperation::T_TOP:
     case touchGestureOperation::T_BOTTOM: {
+        // qCDebug(ClientLogger) << "DragInfoGraphicsView::slideEvent - Top or Bottom";
         const int pos_Diff_Y = qFloor(stopPort.y() - startPoint.y());
         verticalScrollBar()->setValue(verticalScrollBar()->sliderPosition() - pos_Diff_Y);
         startPoint = stopPort;
         break;
     }
     case touchGestureOperation::T_LEFT: {
+        // qCDebug(ClientLogger) << "DragInfoGraphicsView::slideEvent - Left";
         if (_movingLine > moveOffset) {
             delta = 1;
             startPoint = stopPort;
@@ -808,6 +898,7 @@ void DragInfoGraphicsView::slideEvent(QPointF &startPoint, QPointF &stopPort)
         break;
     }
     case touchGestureOperation::T_RIGHT: {
+        // qCDebug(ClientLogger) << "DragInfoGraphicsView::slideEvent - Right";
         if (_movingLine > moveOffset) {
             delta = -1;
             startPoint = stopPort;
@@ -827,8 +918,10 @@ void DragInfoGraphicsView::slideEvent(QPointF &startPoint, QPointF &stopPort)
  */
 void DragInfoGraphicsView::updateInfo()
 {
+    // qCDebug(ClientLogger) << "DragInfoGraphicsView::updateInfo";
     //如果拖拽日程有效则更新为不是移动日程
     if (m_DragScheduleInfo && m_DragScheduleInfo->isValid() && m_DragScheduleInfo->uid() != "0") {
+        qCDebug(ClientLogger) << "DragInfoGraphicsView::updateInfo - Update schedule data";
         m_DragScheduleInfo->setMoved(false);
         //设置选择日程状态
         setPressSelectInfo(m_DragScheduleInfo);
@@ -837,17 +930,20 @@ void DragInfoGraphicsView::updateInfo()
 
 int DragInfoGraphicsView::getDragStatus() const
 {
+    // qCDebug(ClientLogger) << "DragInfoGraphicsView::getDragStatus";
     return m_DragStatus;
 }
 
 void DragInfoGraphicsView::setShowRadius(bool leftShow, bool rightShow)
 {
+    // qCDebug(ClientLogger) << "DragInfoGraphicsView::setShowRadius with leftShow:" << leftShow << "rightShow:" << rightShow;
     m_leftShowRadius = leftShow;
     m_rightShowRadius = rightShow;
 }
 
 bool DragInfoGraphicsView::isCanDragge(const DSchedule::Ptr &info)
 {
+    // qCDebug(ClientLogger) << "DragInfoGraphicsView::isCanDragge with info";
     if (info.isNull() || info->scheduleTypeID().isEmpty())
         return false;
     //是否为节假日日程判断
@@ -867,6 +963,7 @@ bool DragInfoGraphicsView::isCanDragge(const DSchedule::Ptr &info)
  */
 void DragInfoGraphicsView::slotDeleteItem()
 {
+    // qCDebug(ClientLogger) << "DragInfoGraphicsView::slotDeleteItem";
     //获取选中日程
     DSchedule::Ptr _pressSchedule = DragInfoItem::getPressSchedule();
 
@@ -886,6 +983,7 @@ void DragInfoGraphicsView::slotDeleteItem()
     if (!_pressSchedule.isNull() && _pressSchedule->isValid()
             && !CScheduleOperation::isFestival(_pressSchedule)
             && !CScheduleOperation::scheduleIsInvariant(_pressSchedule)) {
+        qCDebug(ClientLogger) << "DragInfoGraphicsView::slotDeleteItem - Delete schedule";
         CScheduleOperation _scheduleOperation(_pressSchedule->scheduleTypeID(), this);
         _scheduleOperation.deleteSchedule(_pressSchedule);
         //设置选择日程为无效日程
@@ -897,27 +995,34 @@ void DragInfoGraphicsView::slotDeleteItem()
 
 void DragInfoGraphicsView::slotSwitchPrePage(const QDate &focusDate, bool isSwitchView)
 {
+    // qCDebug(ClientLogger) << "DragInfoGraphicsView::slotSwitchPrePage with focusDate:" << focusDate << "isSwitchView:" << isSwitchView;
     emit signalSwitchPrePage();
     if (isSwitchView) {
+        qCDebug(ClientLogger) << "DragInfoGraphicsView::slotSwitchPrePage - Switch view";
         m_Scene->signalSwitchView(focusDate, true);
     } else {
+        qCDebug(ClientLogger) << "DragInfoGraphicsView::slotSwitchPrePage - Set scene current item focus";
         setSceneCurrentItemFocus(focusDate);
     }
 }
 
 void DragInfoGraphicsView::slotSwitchNextPage(const QDate &focusDate, bool isSwitchView)
 {
+    // qCDebug(ClientLogger) << "DragInfoGraphicsView::slotSwitchNextPage with focusDate:" << focusDate << "isSwitchView:" << isSwitchView;
     emit signalSwitchNextPage();
     //如果需要切换视图则
     if (isSwitchView) {
+        qCDebug(ClientLogger) << "DragInfoGraphicsView::slotSwitchNextPage - Switch view";
         m_Scene->signalSwitchView(focusDate, true);
     } else {
+        qCDebug(ClientLogger) << "DragInfoGraphicsView::slotSwitchNextPage - Set scene current item focus";
         setSceneCurrentItemFocus(focusDate);
     }
 }
 
 void DragInfoGraphicsView::slotContextMenu(CFocusItem *item)
 {
+    qCDebug(ClientLogger) << "DragInfoGraphicsView::slotContextMenu";
     DragInfoItem *infoitem = dynamic_cast<DragInfoItem *>(item);
     if (infoitem != nullptr && infoitem->isVisible()) {
         DSchedule::Ptr schData = infoitem->getData();
@@ -945,12 +1050,14 @@ void DragInfoGraphicsView::slotContextMenu(CFocusItem *item)
             CScheduleDlg dlg(0, this);
             dlg.setData(schData);
             if (dlg.exec() == DDialog::Accepted) {
+                qCDebug(ClientLogger) << "DragInfoGraphicsView::slotContextMenu - Edit schedule successfully";
                 emit signalsUpdateSchedule();
                 emit sigStateChange(true);
             }
         } else if (action_t == m_deleteAction) {
             qCDebug(ClientLogger) << "Deleting focused schedule:" << schData->summary();
             if(DeleteItem(schData)) {
+                qCDebug(ClientLogger) << "DragInfoGraphicsView::slotContextMenu - Delete schedule successfully";
                 emit sigStateChange(true);
             }
         }
@@ -964,11 +1071,13 @@ void DragInfoGraphicsView::slotContextMenu(CFocusItem *item)
  */
 void DragInfoGraphicsView::slotsetNextFocus()
 {
+    // qCDebug(ClientLogger) << "DragInfoGraphicsView::slotsetNextFocus";
     focusNextPrevChild(true);
 }
 
 void DragInfoGraphicsView::setSceneCurrentItemFocus(const QDate &focusDate)
 {
+    // qCDebug(ClientLogger) << "DragInfoGraphicsView::setSceneCurrentItemFocus with focusDate:" << focusDate;
     Q_UNUSED(focusDate);
 }
 
@@ -977,15 +1086,18 @@ void DragInfoGraphicsView::setSceneCurrentItemFocus(const QDate &focusDate)
  */
 void DragInfoGraphicsView::pressScheduleInit()
 {
+    // qCDebug(ClientLogger) << "DragInfoGraphicsView::pressScheduleInit";
     m_PressScheduleInfo = DSchedule::Ptr();
 }
 
 QDate DragInfoGraphicsView::getCurrentDate() const
 {
+    // qCDebug(ClientLogger) << "DragInfoGraphicsView::getCurrentDate";
     return m_currentDate;
 }
 
 void DragInfoGraphicsView::setCurrentDate(const QDate &currentDate)
 {
+    // qCDebug(ClientLogger) << "DragInfoGraphicsView::setCurrentDate with currentDate:" << currentDate;
     m_currentDate = currentDate;
 }

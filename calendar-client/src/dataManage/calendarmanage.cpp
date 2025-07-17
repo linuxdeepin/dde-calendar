@@ -12,6 +12,7 @@
 CalendarManager *CalendarManager::m_scheduleManager = nullptr;
 CalendarManager *CalendarManager::getInstance()
 {
+    qCDebug(ClientLogger) << "Getting CalendarManager instance";
     CaHuangLiDayInfo::registerMetaType();
     if (m_scheduleManager == nullptr) {
         m_scheduleManager = new  CalendarManager;
@@ -24,6 +25,7 @@ CalendarManager *CalendarManager::getInstance()
 
 void CalendarManager::releaseInstance()
 {
+    qCDebug(ClientLogger) << "Releasing CalendarManager instance";
     if (m_scheduleManager != nullptr) {
         delete m_scheduleManager;
         m_scheduleManager = nullptr;
@@ -44,16 +46,19 @@ void CalendarManager::setSelectDate(const QDate &selectDate, bool isSwitchYear)
 //获取选择时间
 QDate CalendarManager::getSelectDate() const
 {
+    // qCDebug(ClientLogger) << "Getting select date:" << m_selectDate.toString();
     return m_selectDate;
 }
 //设置当前时间
 void CalendarManager::setCurrentDateTime(const QDateTime &currentDateTime)
 {
+    // qCDebug(ClientLogger) << "Setting current date time to:" << currentDateTime.toString();
     m_currentDateTime = currentDateTime;
 }
 //获取当前时间
 QDateTime CalendarManager::getCurrentDate() const
 {
+    // qCDebug(ClientLogger) << "Getting current date time:" << m_currentDateTime.toString();
     return m_currentDateTime;
 }
 
@@ -101,29 +106,37 @@ void CalendarManager::setWeekDayFormatByID(const int &weekDayFormatID)
 //获取周显示格式
 QString CalendarManager::getWeekDayFormat() const
 {
+    // qCDebug(ClientLogger) << "Getting week day format:" << m_weekDayFormat;
     return m_weekDayFormat;
 }
 
 //返回显示的年份,开始和结束时间
 ShowDateRange CalendarManager::getShowDateRange() const
 {
+    // qCDebug(ClientLogger) << "Getting show date range for year:" << m_showDateRange.showYear 
+    //                       << "from" << m_showDateRange.startDate.toString() 
+    //                       << "to" << m_showDateRange.stopDate.toString();
     return m_showDateRange;
 }
 
 //根据日期获取当前周第一天的日期
 QDate CalendarManager::getFirstDayOfWeek(const QDate &date)
 {
+    qCDebug(ClientLogger) << "Calculating first day of week for date:" << date.toString();
     //根据选择时间周工作日和每周第一天的周工作日得到偏移量
     int _offset = date.dayOfWeek() - getFirstDayOfWeek();
     //根据偏移量获取需要添加还有减去的偏移天数
     const int _offsetDay = (_offset + 7) % 7;
     //返回这周第一天的日期
-    return date.addDays(-_offsetDay);
+    QDate firstDay = date.addDays(-_offsetDay);
+    qCDebug(ClientLogger) << "First day of week is:" << firstDay.toString();
+    return firstDay;
 }
 
 //根据日期获取该日期处于该年第多少周
 int CalendarManager::getWeekNumOfYear(const QDate &date)
 {
+    qCDebug(ClientLogger) << "Calculating week number of year for date:" << date.toString();
     int _weekNum {0};
     //获取选择时间所在周的最后一天
     const QDate _laseDateInWeekBySelectDate = getInstance()->getFirstDayOfWeek(date).addDays(6);
@@ -134,6 +147,7 @@ int CalendarManager::getWeekNumOfYear(const QDate &date)
     //处于该年显示第多少天,0为第一天
     const qint64  _dayOfShowYear = _firstShowDayOfYear.daysTo(_firstDayOfYear) + _laseDateInWeekBySelectDate.dayOfYear() - 1;
     _weekNum = qFloor(_dayOfShowYear / 7) + 1;
+    qCDebug(ClientLogger) << "Week number is:" << _weekNum;
     return  _weekNum;
 }
 
@@ -188,6 +202,7 @@ void CalendarManager::setDateFormatChanged(int value)
 
 QString CalendarManager::getTimeFormat() const
 {
+    // qCDebug(ClientLogger) << "Getting time format:" << m_timeFormat;
     return m_timeFormat;
 }
 
@@ -202,11 +217,13 @@ void CalendarManager::setTimeShowType(int value, bool update)
 
 int CalendarManager::getTimeShowType() const
 {
+    // qCDebug(ClientLogger) << "Getting time show type:" << m_timeShowType;
     return m_timeShowType;
 }
 
 QString CalendarManager::getDateFormat() const
 {
+    // qCDebug(ClientLogger) << "Getting date format:" << m_dateFormat;
     return m_dateFormat;
 }
 
@@ -237,6 +254,7 @@ void CalendarManager::setYearBeginAndEndDate(const int year)
  */
 void CalendarManager::addShowWidget(CScheduleBaseWidget *showWidget)
 {
+    // qCDebug(ClientLogger) << "Adding show widget:" << showWidget;
     m_showWidget.append(showWidget);
 }
 
@@ -246,6 +264,7 @@ void CalendarManager::addShowWidget(CScheduleBaseWidget *showWidget)
  */
 void CalendarManager::removeShowWidget(CScheduleBaseWidget *showWidget)
 {
+    // qCDebug(ClientLogger) << "Removing show widget:" << showWidget;
     m_showWidget.removeOne(showWidget);
 }
 
@@ -256,7 +275,9 @@ void CalendarManager::removeShowWidget(CScheduleBaseWidget *showWidget)
  */
 CScheduleBaseWidget *CalendarManager::getShowWidget(const int index)
 {
+    qCDebug(ClientLogger) << "Getting show widget at index:" << index;
     if (index < 0 || index >= m_showWidget.size()) {
+        qCDebug(ClientLogger) << "Invalid index, returning nullptr";
         return nullptr;
     }
     return m_showWidget.at(index);
@@ -268,6 +289,7 @@ CScheduleBaseWidget *CalendarManager::getShowWidget(const int index)
  */
 int CalendarManager::getShowWidgetSize()
 {
+    // qCDebug(ClientLogger) << "Getting show widget size:" << m_showWidget.size();
     return m_showWidget.size();
 }
 
@@ -277,6 +299,7 @@ int CalendarManager::getShowWidgetSize()
  */
 bool CalendarManager::getShowLunar() const
 {
+    // qCDebug(ClientLogger) << "Getting show lunar flag:" << m_showLunar;
     return m_showLunar;
 }
 
@@ -286,6 +309,7 @@ bool CalendarManager::getShowLunar() const
  */
 Qt::DayOfWeek CalendarManager::getFirstDayOfWeek()
 {
+    // qCDebug(ClientLogger) << "Getting first day of week:" << m_firstDayOfWeek;
     return Qt::DayOfWeek(m_firstDayOfWeek);
 }
 
@@ -316,13 +340,14 @@ CalendarManager::CalendarManager(QObject *parent)
     , m_selectDate(m_currentDateTime.date())
     , m_weekDayFormat("ddd")
 {
+    qCDebug(ClientLogger) << "Creating CalendarManager";
     initConnection();
     initData();
 }
 
 CalendarManager::~CalendarManager()
 {
-
+    qCDebug(ClientLogger) << "Destroying CalendarManager";
 }
 
 /**
@@ -330,11 +355,14 @@ CalendarManager::~CalendarManager()
  */
 void CalendarManager::initData()
 {
+    qCDebug(ClientLogger) << "Initializing calendar data";
     //获取本地语言判断是否为中文
     m_showLunar = QLocale::system().language() == QLocale::Chinese;
+    qCDebug(ClientLogger) << "Show lunar set to:" << m_showLunar << "based on system language";
     //获取时间日期格式
     const int _timeFormat = m_timeDateDbus->shortTimeFormat();
     const int _dateFormat = m_timeDateDbus->shortDateFormat();
+    qCDebug(ClientLogger) << "System time format:" << _timeFormat << "date format:" << _dateFormat;
     setYearBeginAndEndDate(m_selectDate.year());
     //设置时间日期格式
     setTimeFormatChanged(_timeFormat);
@@ -347,6 +375,7 @@ void CalendarManager::initData()
  */
 void CalendarManager::initConnection()
 {
+    qCDebug(ClientLogger) << "Initializing calendar connections";
     connect(gAccountManager, &AccountManager::signalGeneralSettingsUpdate, this, &CalendarManager::slotGeneralSettingsUpdate);
     connect(m_timeDateDbus, &DaemonTimeDate::ShortTimeFormatChanged, this, &CalendarManager::signalTimeFormatChanged);
     connect(m_timeDateDbus, &DaemonTimeDate::ShortTimeFormatChanged, this, &CalendarManager::slotTimeFormatChanged);  // add time format slot.
@@ -360,6 +389,7 @@ void CalendarManager::initConnection()
  */
 void CalendarManager::weekBeginsChanged(int value)
 {
+    qCDebug(ClientLogger) << "Week begins changed to:" << value;
     setFirstDayOfWeek(value);
 }
 
@@ -368,6 +398,7 @@ void CalendarManager::weekBeginsChanged(int value)
  */
 void CalendarManager::slotGetLunarSuccess()
 {
+    qCDebug(ClientLogger) << "Lunar data updated successfully";
     //更新显示界面
     for (int i = 0; i < m_showWidget.size(); ++i) {
         m_showWidget.at(i)->updateShowLunar();
@@ -376,11 +407,13 @@ void CalendarManager::slotGetLunarSuccess()
 
 void CalendarManager::slotGeneralSettingsUpdate()
 {
+    qCDebug(ClientLogger) << "Updating from general settings";
     DCalendarGeneralSettings::Ptr setting = gAccountManager->getGeneralSettings();
     if (!setting) {
         qCWarning(ClientLogger) << "Failed to get general settings";
         return;
     }
+    qCDebug(ClientLogger) << "Setting first day of week to:" << setting->firstDayOfWeek() << "and time show type to:" << setting->timeShowType();
     setFirstDayOfWeek(setting->firstDayOfWeek());
     setTimeShowType(setting->timeShowType());
 }
@@ -391,10 +424,12 @@ void CalendarManager::slotGeneralSettingsUpdate()
  */
 void CalendarManager::slotDateFormatChanged(int value)
 {
+    qCDebug(ClientLogger) << "Date format changed to:" << value;
     setDateFormatChanged(value);
 }
 
 void CalendarManager::slotTimeFormatChanged(int value)
 {
+    qCDebug(ClientLogger) << "Time format changed to:" << value;
     setTimeFormatChanged(value);
 }

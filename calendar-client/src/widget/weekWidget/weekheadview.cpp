@@ -5,6 +5,7 @@
 #include "weekheadview.h"
 #include "customframe.h"
 #include "scheduledatamanage.h"
+#include "commondef.h"
 
 #include <DPalette>
 
@@ -26,6 +27,7 @@ CWeekHeadView::CWeekHeadView(QWidget *parent)
     : DWidget(parent)
     , m_touchGesture(this)
 {
+    qCDebug(ClientLogger) << "CWeekHeadView constructed";
     setContentsMargins(0, 0, 0, 0);
 
     m_dayNumFont.setWeight(QFont::Medium);
@@ -49,6 +51,7 @@ CWeekHeadView::CWeekHeadView(QWidget *parent)
     hBoxLayout->setStretch(0, 0);
     hBoxLayout->setSpacing(0);
 
+    qCDebug(ClientLogger) << "Creating week day cells";
     for (int c = 0; c != DDEWeekCalendar::AFewDaysofWeek; ++c) {
         QWidget *cell = new QWidget(this);
         cell->installEventFilter(this);
@@ -62,7 +65,7 @@ CWeekHeadView::CWeekHeadView(QWidget *parent)
 
 CWeekHeadView::~CWeekHeadView()
 {
-
+    qCDebug(ClientLogger) << "CWeekHeadView destroyed";
 }
 
 /**
@@ -71,9 +74,11 @@ CWeekHeadView::~CWeekHeadView()
  */
 void CWeekHeadView::setTheMe(int type)
 {
+    qCDebug(ClientLogger) << "Setting theme to type:" << type;
     m_themetype = type;
 
     if (type == 0 || type == 1) {
+        qCDebug(ClientLogger) << "Setting theme to light";
         QColor textC = "#000000";
         QColor textBC(230, 238, 242);
 
@@ -92,6 +97,7 @@ void CWeekHeadView::setTheMe(int type)
         m_backgroundColor = "#E6EEF2";
         m_solofestivalLunarColor = "#4DFF7272";
     } else if (type == 2) {
+        qCDebug(ClientLogger) << "Setting theme to dark";
         QColor textBC = "#82AEC1";
         textBC.setAlphaF(0.1);
         m_monthLabel->setBColor(textBC);
@@ -121,6 +127,8 @@ void CWeekHeadView::setTheMe(int type)
  */
 void CWeekHeadView::setWeekDay(QVector<QDate> vDays, const QDate &selectDate)
 {
+    qCDebug(ClientLogger) << "Setting week days from" << vDays.first().toString() << "to" << vDays.last().toString() 
+                          << "with selected date:" << selectDate.toString();
     if (vDays.count() != DDEWeekCalendar::AFewDaysofWeek)
         return;
     m_days = vDays;
@@ -134,6 +142,7 @@ void CWeekHeadView::setWeekDay(QVector<QDate> vDays, const QDate &selectDate)
  */
 void CWeekHeadView::setHunagLiInfo(const QMap<QDate, CaHuangLiDayInfo> &huangLiInfo)
 {
+    qCDebug(ClientLogger) << "Setting Huangli information for" << huangLiInfo.size() << "days";
     m_huangLiInfo = huangLiInfo;
     update();
 }
@@ -144,6 +153,7 @@ void CWeekHeadView::setHunagLiInfo(const QMap<QDate, CaHuangLiDayInfo> &huangLiI
  */
 void CWeekHeadView::setLunarVisible(bool visible)
 {
+    qCDebug(ClientLogger) << "Setting lunar visibility to:" << visible;
     int state = int(m_showState);
 
     if (visible)
@@ -163,13 +173,17 @@ void CWeekHeadView::setLunarVisible(bool visible)
  */
 bool CWeekHeadView::eventFilter(QObject *o, QEvent *e)
 {
+    // qCDebug(ClientLogger) << "Event filter received for object:" << o->objectName() << "with event type:" << e->type();
     QWidget *cell = qobject_cast<QWidget *>(o);
 
     if (cell && m_cellList.contains(cell)) {
+        // qCDebug(ClientLogger) << "Event filter received for cell:" << cell->objectName() << "with event type:" << e->type();
         if (e->type() == QEvent::Paint) {
+            // qCDebug(ClientLogger) << "Painting cell for date:" << m_days[m_cellList.indexOf(cell)].toString();
             paintCell(cell);
         }  else if (e->type() == QEvent::MouseButtonDblClick) {
             const int pos = m_cellList.indexOf(cell);
+            // qCDebug(ClientLogger) << "Cell double-clicked for date:" << m_days[pos].toString();
             emit signalsViewSelectDate(m_days[pos]);
         }
     }
@@ -183,6 +197,7 @@ bool CWeekHeadView::eventFilter(QObject *o, QEvent *e)
  */
 const QString CWeekHeadView::getCellDayNum(int pos)
 {
+    // qCDebug(ClientLogger) << "Getting cell day number for position:" << pos;
     return QString::number(m_days[pos].day());
 }
 
@@ -193,6 +208,7 @@ const QString CWeekHeadView::getCellDayNum(int pos)
  */
 const QDate CWeekHeadView::getCellDate(int pos)
 {
+    // qCDebug(ClientLogger) << "Getting cell date for position:" << pos;
     return m_days[pos];
 }
 
@@ -203,6 +219,7 @@ const QDate CWeekHeadView::getCellDate(int pos)
  */
 const QString CWeekHeadView::getLunar(int pos)
 {
+    // qCDebug(ClientLogger) << "Getting lunar information for position:" << pos;
     CaHuangLiDayInfo info ;
     if (pos >= 0 && pos < m_days.size()) {
         info = m_huangLiInfo[m_days[pos]];
@@ -221,6 +238,7 @@ const QString CWeekHeadView::getLunar(int pos)
  */
 void CWeekHeadView::paintCell(QWidget *cell)
 {
+    // qCDebug(ClientLogger) << "Painting cell";
     m_weekendsTextColor = CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
     const QRect rect(0, 0, cell->width(), cell->height());
     const int pos = m_cellList.indexOf(cell);
@@ -363,26 +381,32 @@ void CWeekHeadView::paintCell(QWidget *cell)
 
 void CWeekHeadView::wheelEvent(QWheelEvent *e)
 {
+    // qCDebug(ClientLogger) << "Wheel event received";
     //如果滚轮为左右方向则触发信号
     if (e->angleDelta().x() != 0) {
+        qCDebug(ClientLogger) << "Wheel event with horizontal delta:" << e->angleDelta().x();
         emit signalAngleDelta(e->angleDelta().x());
     }
 }
 
 bool CWeekHeadView::event(QEvent *e)
 {
+    // qCDebug(ClientLogger) << "Event received";
     if (m_touchGesture.event(e)) {
         //获取触摸状态
         switch (m_touchGesture.getTouchState()) {
         case touchGestureOperation::T_SLIDE: {
+            // qCDebug(ClientLogger) << "Touch gesture detected: slide";
             //在滑动状态如果可以更新数据则切换月份
             if (m_touchGesture.isUpdate()) {
                 m_touchGesture.setUpdate(false);
                 switch (m_touchGesture.getMovingDir()) {
                 case touchGestureOperation::T_LEFT:
+                    qCDebug(ClientLogger) << "Touch gesture detected: slide left";
                     emit signalAngleDelta(-1);
                     break;
                 case touchGestureOperation::T_RIGHT:
+                    qCDebug(ClientLogger) << "Touch gesture detected: slide right";
                     emit signalAngleDelta(1);
                     break;
                 default:

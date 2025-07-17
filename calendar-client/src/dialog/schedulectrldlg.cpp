@@ -7,6 +7,7 @@
 #include "scheduledatamanage.h"
 #include "cdynamicicon.h"
 #include "constants.h"
+#include "commondef.h"
 #include <QTimer>
 
 #include <DMessageBox>
@@ -21,6 +22,7 @@ DGUI_USE_NAMESPACE
 CScheduleCtrlDlg::CScheduleCtrlDlg(QWidget *parent)
     : DCalendarDDialog(parent)
 {
+    qCDebug(ClientLogger) << "CScheduleCtrlDlg constructor";
     setContentsMargins(0, 0, 0, 0);
     initUI();
     initConnection();
@@ -30,6 +32,7 @@ CScheduleCtrlDlg::CScheduleCtrlDlg(QWidget *parent)
 
 void CScheduleCtrlDlg::initUI()
 {
+    qCDebug(ClientLogger) << "Initializing UI for schedule control dialog";
     //在点击任何对话框上的按钮后不关闭对话框，保证关闭子窗口时不被一起关掉
     setOnButtonClickedClose(false);
     QIcon t_icon(CDynamicIcon::getInstance()->getPixmap());// = QIcon::fromTheme("dde-calendar");
@@ -72,10 +75,12 @@ void CScheduleCtrlDlg::initUI()
     gwi->setPalette(anipa);
     gwi->setBackgroundRole(DPalette::Window);
     addContent(gwi, Qt::AlignCenter);
+    qCDebug(ClientLogger) << "UI initialization complete";
 }
 
 void CScheduleCtrlDlg::initConnection()
 {
+    qCDebug(ClientLogger) << "Initializing connections for schedule control dialog";
     //关联主题信号
     QObject::connect(DGuiApplicationHelper::instance(), &DGuiApplicationHelper::themeTypeChanged,
                      this,
@@ -85,6 +90,7 @@ void CScheduleCtrlDlg::initConnection()
 
 void CScheduleCtrlDlg::setTheMe(const int type)
 {
+    qCDebug(ClientLogger) << "Setting theme for schedule control dialog with type:" << type;
     //标题文字颜色
     QColor titleColor;
     //提示内容文字颜色
@@ -94,11 +100,13 @@ void CScheduleCtrlDlg::setTheMe(const int type)
         titleColor.setAlphaF(0.9);
         contentColor = "#FFFFFF";
         contentColor.setAlphaF(0.7);
+        qCDebug(ClientLogger) << "Using dark theme colors";
     } else {
         titleColor = "#000000";
         titleColor.setAlphaF(0.9);
         contentColor = "#000000";
         contentColor.setAlphaF(0.7);
+        qCDebug(ClientLogger) << "Using light theme colors";
     }
     setPaletteTextColor(m_firstLabel, titleColor);
     setPaletteTextColor(m_seconLabel, contentColor);
@@ -106,9 +114,12 @@ void CScheduleCtrlDlg::setTheMe(const int type)
 
 void CScheduleCtrlDlg::setPaletteTextColor(QWidget *widget, QColor textColor)
 {
+    qCDebug(ClientLogger) << "Setting palette text color:" << textColor.name();
     //如果为空指针则退出
-    if (nullptr == widget)
+    if (nullptr == widget) {
+        qCWarning(ClientLogger) << "Widget is null, cannot set palette color";
         return;
+    }
     DPalette palette = widget->palette();
     //设置文字显示颜色
     palette.setColor(DPalette::WindowText, textColor);
@@ -117,6 +128,7 @@ void CScheduleCtrlDlg::setPaletteTextColor(QWidget *widget, QColor textColor)
 
 void CScheduleCtrlDlg::changeEvent(QEvent *event)
 {
+    qCDebug(ClientLogger) << "Change event with type:" << event->type();
     Q_UNUSED(event)
     QFont font;
     QFontMetrics font_button(font);
@@ -139,6 +151,7 @@ void CScheduleCtrlDlg::changeEvent(QEvent *event)
     // 在changeEvent里使用setFixedHeight会导致弹出的确认对话框会显示在左上角
     // 推测是窗口的问题, 先通过延迟在应用层临时解决
     QTimer::singleShot(10, this, [this, height_firstLabel, height_seconLabel]{
+        qCDebug(ClientLogger) << "Adjusting dialog height to:" << (36 + 48 + height_firstLabel + height_seconLabel + 30);
         setFixedHeight(36 + 48 + height_firstLabel + height_seconLabel + 30);
         gwi->setFixedHeight(height_firstLabel + height_seconLabel);
     });
@@ -146,12 +159,14 @@ void CScheduleCtrlDlg::changeEvent(QEvent *event)
 
 void CScheduleCtrlDlg::buttonJudge(int id)
 {
+    qCDebug(ClientLogger) << "Button clicked with id:" << id;
     m_id = id;
     accept();
 }
 
 QAbstractButton *CScheduleCtrlDlg::addPushButton(QString btName, bool type)
 {
+    qCDebug(ClientLogger) << "Adding push button:" << btName << "with type:" << type;
     addButton(btName, false, DDialog::ButtonNormal);
     int button_index = getButtonIndexByText(btName);
     QAbstractButton *button = getButton(button_index);
@@ -172,6 +187,7 @@ QAbstractButton *CScheduleCtrlDlg::addPushButton(QString btName, bool type)
 
 QAbstractButton *CScheduleCtrlDlg::addsuggestButton(QString btName, bool type)
 {
+    qCDebug(ClientLogger) << "Adding suggest button:" << btName << "with type:" << type;
     addButton(btName, false, DDialog::ButtonRecommend);
     int button_index = getButtonIndexByText(btName);
     QAbstractButton *suggestButton = getButton(button_index);
@@ -192,6 +208,7 @@ QAbstractButton *CScheduleCtrlDlg::addsuggestButton(QString btName, bool type)
 
 QAbstractButton *CScheduleCtrlDlg::addWaringButton(QString btName, bool type)
 {
+    qCDebug(ClientLogger) << "Adding warning button:" << btName << "with type:" << type;
     addButton(btName, false, DDialog::ButtonWarning);
     int button_index = getButtonIndexByText(btName);
     QAbstractButton *suggestButton = getButton(button_index);
@@ -212,18 +229,21 @@ QAbstractButton *CScheduleCtrlDlg::addWaringButton(QString btName, bool type)
 
 void CScheduleCtrlDlg::setText(QString str)
 {
+    qCDebug(ClientLogger) << "Setting text:" << str;
     m_firstLabel->setText(str);
     m_firstLabel->setToolTip(str);
 }
 
 void CScheduleCtrlDlg::setInformativeText(QString str)
 {
+    qCDebug(ClientLogger) << "Setting informative text:" << str;
     m_seconLabel->setText(str);
     m_seconLabel->setToolTip(str);
 }
 
 int CScheduleCtrlDlg::clickButton()
 {
+    qCDebug(ClientLogger) << "Getting clicked button id:" << m_id;
     if (m_id < 0 || m_id > buttonCount() - 1) return buttonCount();
     return  m_id;
 }

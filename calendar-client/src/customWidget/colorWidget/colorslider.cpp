@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "colorslider.h"
+#include "commondef.h"
 
 #include <QStyleOptionSlider>
 #include <QDebug>
@@ -14,12 +15,14 @@ const int IMAGE_HEIGHT = 10;
 ColorSlider::ColorSlider(QWidget *parent)
     : QSlider(parent)
 {
+    qCDebug(ClientLogger) << "ColorSlider constructor initialized";
     setMinimum(0);
     setMaximum(359);
     setOrientation(Qt::Horizontal);
     QRect rect = this->rect();
 
     m_backgroundImage = QImage(rect.width(), IMAGE_HEIGHT, QImage::Format_ARGB32);
+    qCDebug(ClientLogger) << "Creating background image with dimensions:" << rect.width() << "x" << IMAGE_HEIGHT;
 
     for (qreal s = 0; s < m_backgroundImage.width(); s++) {
         for (qreal v = 1; v <= m_backgroundImage.height() ; v++) {
@@ -36,11 +39,13 @@ ColorSlider::ColorSlider(QWidget *parent)
 
 ColorSlider::~ColorSlider()
 {
+    qCDebug(ClientLogger) << "ColorSlider destructor called";
 }
 
 //h∈(0, 360), s∈(0, 1), v∈(0, 1)
 QColor ColorSlider::getColor(qreal h, qreal s, qreal v)
 {
+    // qCDebug(ClientLogger) << "ColorSlider::getColor - h:" << h << "s:" << s << "v:" << v;
     int hi = int(h / 60) % 6;
     qreal f = h / 60 - hi;
 
@@ -55,11 +60,11 @@ QColor ColorSlider::getColor(qreal h, qreal s, qreal v)
     QColor color;
 
     if (hi == 0) {
-        color =  QColor(std::min(int(255 * p), 255), std::min(int(255 * q), 255), std::min(int(255 * v), 255));
+        color = QColor(std::min(int(255 * p), 255), std::min(int(255 * q), 255), std::min(int(255 * v), 255));
     } else if (hi == 1) {
-        color =  QColor(std::min(int(255 * t), 255), std::min(int(255 * p), 255), std::min(int(255 * v), 255));
+        color = QColor(std::min(int(255 * t), 255), std::min(int(255 * p), 255), std::min(int(255 * v), 255));
     } else if (hi == 2) {
-        color =  QColor(std::min(int(255 * v), 255), std::min(int(255 * p), 255), int(255 * q));
+        color = QColor(std::min(int(255 * v), 255), std::min(int(255 * p), 255), int(255 * q));
     } else if (hi == 3) {
         color = QColor(std::min(int(255 * v), 255), std::min(int(255 * t), 255), std::min(int(255 * p), 255));
     } else if (hi == 4) {
@@ -68,11 +73,13 @@ QColor ColorSlider::getColor(qreal h, qreal s, qreal v)
         color = QColor(std::min(int(255 * p), 255), std::min(int(255 * v), 255), std::min(int(255 * t), 255));
     }
 
+    qCDebug(ClientLogger) << "Calculated color:" << color;
     return color;
 }
 
 void ColorSlider::paintEvent(QPaintEvent *ev)
 {
+    // qCDebug(ClientLogger) << "ColorSlider::paintEvent";
     Q_UNUSED(ev)
 
     QRect rect = this->rect();

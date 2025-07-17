@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "cmonthschedulenumitem.h"
+#include "commondef.h"
 
 #include <QPainter>
 
@@ -10,11 +11,13 @@ CMonthScheduleNumItem::CMonthScheduleNumItem(QGraphicsItem *parent)
     : CFocusItem(parent)
     , m_num(0)
 {
+    qCDebug(ClientLogger) << "CMonthScheduleNumItem constructor";
     setItemType(COTHER);
 }
 
 CMonthScheduleNumItem::~CMonthScheduleNumItem()
 {
+    qCDebug(ClientLogger) << "CMonthScheduleNumItem destructor";
 }
 
 /**
@@ -24,6 +27,7 @@ CMonthScheduleNumItem::~CMonthScheduleNumItem()
  */
 void CMonthScheduleNumItem::setColor(QColor color1, QColor color2)
 {
+    qCDebug(ClientLogger) << "CMonthScheduleNumItem::setColor - color1:" << color1 << "color2:" << color2;
     m_color1 = color1;
     m_color2 = color2;
 }
@@ -35,6 +39,7 @@ void CMonthScheduleNumItem::setColor(QColor color1, QColor color2)
  */
 void CMonthScheduleNumItem::setText(QColor tColor, QFont font)
 {
+    qCDebug(ClientLogger) << "CMonthScheduleNumItem::setText - textColor:" << tColor << "font family:" << font.family();
     m_textcolor = tColor;
     m_font = font;
 }
@@ -45,11 +50,13 @@ void CMonthScheduleNumItem::setText(QColor tColor, QFont font)
  */
 void CMonthScheduleNumItem::setSizeType(DFontSizeManager::SizeType sizeType)
 {
+    qCDebug(ClientLogger) << "CMonthScheduleNumItem::setSizeType - sizeType:" << sizeType;
     m_SizeType = sizeType;
 }
 
 void CMonthScheduleNumItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
+    // qCDebug(ClientLogger) << "CMonthScheduleNumItem::paint - num:" << m_num << "focus:" << getItemFocus();
     Q_UNUSED(option);
     Q_UNUSED(widget);
     qreal labelwidth = this->rect().width();
@@ -66,6 +73,7 @@ void CMonthScheduleNumItem::paint(QPainter *painter, const QStyleOptionGraphicsI
     painter->setRenderHints(QPainter::Antialiasing);
     painter->setBrush(linearGradient);
     if (getItemFocus()) {
+        // qCDebug(ClientLogger) << "Item has focus, drawing frame with system active color";
         QPen framePen;
         framePen.setWidth(2);
         framePen.setColor(getSystemActiveColor());
@@ -78,6 +86,7 @@ void CMonthScheduleNumItem::paint(QPainter *painter, const QStyleOptionGraphicsI
     painter->setFont(m_font);
     painter->setPen(m_textcolor);
     QString str = QString(tr("%1 more")).arg(m_num) + "...";
+    // qCDebug(ClientLogger) << "Original text:" << str;
     QFontMetrics fm = painter->fontMetrics();
     QString tStr;
     for (int i = 0; i < str.count(); i++) {
@@ -91,5 +100,6 @@ void CMonthScheduleNumItem::paint(QPainter *painter, const QStyleOptionGraphicsI
     if (tStr != str) {
         tStr = tStr + "...";
     }
+    // qCDebug(ClientLogger) << "Final display text:" << tStr;
     painter->drawText(QRectF(rectX, rectY, labelwidth, labelheight + 4), Qt::AlignCenter, tStr);
 }

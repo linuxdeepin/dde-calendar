@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2015 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -8,6 +8,7 @@
 #include "daymonthview.h"
 #include "schedulesearchview.h"
 #include "scheduleview.h"
+#include "commondef.h"
 
 #include <DPalette>
 
@@ -20,15 +21,21 @@ DGUI_USE_NAMESPACE
 CDayWindow::CDayWindow(QWidget *parent)
     : CScheduleBaseWidget(parent)
 {
+    qCDebug(ClientLogger) << "CDayWindow::CDayWindow";
     initUI();
     initConnection();
     setLunarVisible(m_calendarManager->getShowLunar());
 }
 
-CDayWindow::~CDayWindow() {}
+CDayWindow::~CDayWindow()
+{
+    qCDebug(ClientLogger) << "CDayWindow::~CDayWindow";
+}
 void CDayWindow::setTheMe(int type)
 {
+    qCDebug(ClientLogger) << "CDayWindow::setTheMe, type:" << type;
     if (type == 0 || type == 1) {
+        qCDebug(ClientLogger) << "Applying light theme";
         m_leftground->setBColor("#FFFFFF");
 
         DPalette ypa = m_YearLabel->palette();
@@ -44,6 +51,7 @@ void CDayWindow::setTheMe(int type)
         m_SolarDay->setPalette(spa);
         m_SolarDay->setForegroundRole(DPalette::WindowText);
     } else if (type == 2) {
+        qCDebug(ClientLogger) << "Applying dark theme";
         m_leftground->setBColor("#282828");
 
         DPalette ypa = m_YearLabel->palette();
@@ -69,13 +77,17 @@ void CDayWindow::setTheMe(int type)
  */
 void CDayWindow::setTime(const QTime time)
 {
+    qCDebug(ClientLogger) << "CDayWindow::setTime, time:" << time;
     if (time.isValid()) {
+        qCDebug(ClientLogger) << "Time is valid, setting it";
         //如果时间有效
         m_scheduleView->setTime(time);
     } else {
         if (getSelectDate() == getCurrendDateTime().date()) {
+            qCDebug(ClientLogger) << "Setting to current time";
             m_scheduleView->setTime(getCurrendDateTime().time());
         } else {
+            qCDebug(ClientLogger) << "Setting to make time";
             m_scheduleView->setTime(m_makeTime);
         }
     }
@@ -86,6 +98,7 @@ void CDayWindow::setTime(const QTime time)
  */
 void CDayWindow::updateHeight()
 {
+    qCDebug(ClientLogger) << "CDayWindow::updateHeight";
     m_scheduleView->updateHeight();
 }
 
@@ -95,6 +108,7 @@ void CDayWindow::updateHeight()
  */
 void CDayWindow::setCurrentDateTime(const QDateTime &currentDate)
 {
+    qCDebug(ClientLogger) << "CDayWindow::setCurrentDateTime, date:" << currentDate;
     //设置当前时间
     CScheduleBaseWidget::setCurrentDateTime(currentDate);
     //更新当前时间
@@ -106,6 +120,7 @@ void CDayWindow::setCurrentDateTime(const QDateTime &currentDate)
  */
 void CDayWindow::setYearData()
 {
+    qCDebug(ClientLogger) << "CDayWindow::setYearData";
     QLocale locale;
     //判断是否为中文环境
     if (getShowLunar()) {
@@ -123,6 +138,7 @@ void CDayWindow::setYearData()
  */
 void CDayWindow::updateShowDate(const bool isUpdateBar)
 {
+    qCDebug(ClientLogger) << "CDayWindow::updateShowDate, isUpdateBar:" << isUpdateBar;
     Q_UNUSED(isUpdateBar)
     setYearData();
     int w = m_scheduleView->width() - 72;
@@ -133,8 +149,10 @@ void CDayWindow::updateShowDate(const bool isUpdateBar)
     QVector<QDate> _monthDate = m_calendarManager->getMonthDate(getSelectDate().year(), getSelectDate().month());
     m_daymonthView->setShowDate(_monthDate, getSelectDate(), getCurrendDateTime().date());
     //如果为中文环境则显示农历信息
-    if (getShowLunar())
+    if (getShowLunar()) {
+        qCDebug(ClientLogger) << "Showing lunar, updating lunar info";
         updateShowLunar();
+    }
     updateShowSchedule();
 }
 
@@ -143,6 +161,7 @@ void CDayWindow::updateShowDate(const bool isUpdateBar)
  */
 void CDayWindow::updateShowSchedule()
 {
+    qCDebug(ClientLogger) << "CDayWindow::updateShowSchedule";
     //获取一天的日程信息
     QMap<QDate, DSchedule::List> _weekScheduleInfo = gScheduleManager->getScheduleMap(getSelectDate(), getSelectDate());
     //设置显示日程信息
@@ -166,6 +185,7 @@ void CDayWindow::updateShowSchedule()
  */
 void CDayWindow::updateShowLunar()
 {
+    qCDebug(ClientLogger) << "CDayWindow::updateShowLunar";
     CaHuangLiDayInfo _huangLiInfo = getLunarInfo();
     m_LunarLabel->setText(tr("Lunar") + _huangLiInfo.mLunarMonthName + _huangLiInfo.mLunarDayName);
     m_daymonthView->setHuangLiInfo(_huangLiInfo);
@@ -173,6 +193,7 @@ void CDayWindow::updateShowLunar()
 
 void CDayWindow::updateSearchScheduleInfo()
 {
+    qCDebug(ClientLogger) << "CDayWindow::updateSearchScheduleInfo";
     m_scheduleView->slotUpdateScene();
 }
 
@@ -182,9 +203,12 @@ void CDayWindow::updateSearchScheduleInfo()
  */
 void CDayWindow::setSelectSearchScheduleInfo(const DSchedule::Ptr &info)
 {
+    qCDebug(ClientLogger) << "CDayWindow::setSelectSearchScheduleInfo";
     if (info->allDay()) {
+        qCDebug(ClientLogger) << "All day event, setting default time";
         setTime();
     } else {
+        qCDebug(ClientLogger) << "Timed event, setting specific time";
         m_scheduleView->setTime(info->dtStart().time());
     }
 
@@ -196,17 +220,20 @@ void CDayWindow::setSelectSearchScheduleInfo(const DSchedule::Ptr &info)
  */
 void CDayWindow::deleteselectSchedule()
 {
+    qCDebug(ClientLogger) << "CDayWindow::deleteselectSchedule";
     m_scheduleView->slotDeleteitem();
 }
 
 void CDayWindow::setSearchWFlag(bool flag)
 {
+    qCDebug(ClientLogger) << "CDayWindow::setSearchWFlag, flag:" << flag;
     m_searchFlag = flag;
     m_daymonthView->setSearchFlag(flag);
 }
 
 void CDayWindow::setLunarVisible(bool state)
 {
+    qCDebug(ClientLogger) << "CDayWindow::setLunarVisible, state:" << state;
     m_LunarLabel->setVisible(state);
     m_SolarDay->setVisible(state);
     m_scheduleView->setLunarVisible(state);
@@ -215,6 +242,7 @@ void CDayWindow::setLunarVisible(bool state)
 
 void CDayWindow::initUI()
 {
+    qCDebug(ClientLogger) << "CDayWindow::initUI";
     QHBoxLayout *titleLayout = new QHBoxLayout;
     titleLayout->setContentsMargins(0, 0, 0, 0);
     titleLayout->setSpacing(0);
@@ -294,6 +322,7 @@ void CDayWindow::initUI()
 
 void CDayWindow::initConnection()
 {
+    qCDebug(ClientLogger) << "CDayWindow::initConnection";
     connect(m_daymonthView, &CDayMonthView::signalIsDragging, this, &CDayWindow::slotIsDragging);
     connect(m_daymonthView, &CDayMonthView::signalChangeSelectDate, this, &CDayWindow::slotChangeSelectDate);
     connect(m_scheduleView, &CScheduleView::signalSwitchPrePage, this, &CDayWindow::slotSwitchPrePage);
@@ -306,6 +335,7 @@ void CDayWindow::initConnection()
  */
 void CDayWindow::setMakeTime(QMap<QDate, DSchedule::List> &info)
 {
+    qCDebug(ClientLogger) << "CDayWindow::setMakeTime";
     if (info.contains(getSelectDate())) {
         DSchedule::List _scheduleVector = info[getSelectDate()];
         //设置当前第一个非全天默认时间
@@ -320,8 +350,10 @@ void CDayWindow::setMakeTime(QMap<QDate, DSchedule::List> &info)
         }
         //如果为默认时间则表示当天没有非全天日程
         if (firstscheduleBeginTime.date() > getSelectDate()) {
+            qCDebug(ClientLogger) << "No non-all-day events, setting default time";
             m_makeTime.setHMS(12, 30, 0, 0);
         } else if (firstscheduleBeginTime.date() == getSelectDate()) {
+            qCDebug(ClientLogger) << "Found non-all-day events, setting make time";
             m_makeTime = firstscheduleBeginTime.time();
             //设置定位的时间位置,原始时间太靠下,现向上偏移2小时
             QTime onTime = m_makeTime;
@@ -332,9 +364,11 @@ void CDayWindow::setMakeTime(QMap<QDate, DSchedule::List> &info)
             }
             m_makeTime = onTime;
         } else {
+            qCDebug(ClientLogger) << "Setting default make time";
             m_makeTime.setHMS(0, 0, 0, 0);
         }
     } else {
+        qCDebug(ClientLogger) << "No schedules for selected date, setting default time";
         //将定位的默认时间显示出8点
         m_makeTime.setHMS(12, 30, 0, 0);
     }
@@ -342,6 +376,7 @@ void CDayWindow::setMakeTime(QMap<QDate, DSchedule::List> &info)
 
 void CDayWindow::slotScheduleHide()
 {
+    qCDebug(ClientLogger) << "CDayWindow::slotScheduleHide";
     m_scheduleView->slotScheduleShow(false);
 }
 
@@ -351,7 +386,9 @@ void CDayWindow::slotScheduleHide()
  */
 void CDayWindow::slotChangeSelectDate(const QDate &date)
 {
+    qCDebug(ClientLogger) << "CDayWindow::slotChangeSelectDate, date:" << date;
     if (setSelectDate(date, true)) {
+        qCDebug(ClientLogger) << "Date set successfully, updating view";
         //隐藏日程悬浮框
         slotScheduleHide();
         updateShowDate();
@@ -361,6 +398,7 @@ void CDayWindow::slotChangeSelectDate(const QDate &date)
 
 void CDayWindow::slotIsDragging(bool &isDragging)
 {
+    qCDebug(ClientLogger) << "CDayWindow::slotIsDragging";
     isDragging = m_scheduleView->IsDragging();
 }
 
@@ -369,6 +407,7 @@ void CDayWindow::slotIsDragging(bool &isDragging)
  */
 void CDayWindow::slotSwitchPrePage()
 {
+    qCDebug(ClientLogger) << "CDayWindow::slotSwitchPrePage";
     slotChangeSelectDate(getSelectDate().addDays(-1));
 }
 
@@ -377,5 +416,6 @@ void CDayWindow::slotSwitchPrePage()
  */
 void CDayWindow::slotSwitchNextPage()
 {
+    qCDebug(ClientLogger) << "CDayWindow::slotSwitchNextPage";
     slotChangeSelectDate(getSelectDate().addDays(1));
 }

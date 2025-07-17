@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "cfocusitem.h"
+#include "commondef.h"
 
 #include "scheduledatamanage.h"
 
@@ -15,6 +16,7 @@ CFocusItem::CFocusItem(QGraphicsItem *parent)
     , m_itemType(CITEM)
     , m_isFocus(false)
 {
+    qCDebug(ClientLogger) << "CFocusItem constructor";
 }
 
 /**
@@ -23,6 +25,7 @@ CFocusItem::CFocusItem(QGraphicsItem *parent)
  */
 void CFocusItem::setNextFocusItem(CFocusItem *nextFocusItem)
 {
+    // qCDebug(ClientLogger) << "CFocusItem::setNextFocusItem - next item:" << (nextFocusItem ? "set" : "null");
     m_NextFocusItem = nextFocusItem;
 }
 
@@ -32,6 +35,7 @@ void CFocusItem::setNextFocusItem(CFocusItem *nextFocusItem)
  */
 void CFocusItem::setItemFocus(bool isFocus)
 {
+    // qCDebug(ClientLogger) << "CFocusItem::setItemFocus - isFocus:" << isFocus;
     m_isFocus = isFocus;
     this->scene()->update();
 }
@@ -42,6 +46,7 @@ void CFocusItem::setItemFocus(bool isFocus)
  */
 bool CFocusItem::getItemFocus() const
 {
+    // qCDebug(ClientLogger) << "CFocusItem::getItemFocus - returning:" << m_isFocus;
     return m_isFocus;
 }
 
@@ -51,6 +56,7 @@ bool CFocusItem::getItemFocus() const
  */
 void CFocusItem::setItemType(CFocusItem::CItemType itemType)
 {
+    // qCDebug(ClientLogger) << "CFocusItem::setItemType - itemType:" << itemType;
     m_itemType = itemType;
 }
 
@@ -60,6 +66,7 @@ void CFocusItem::setItemType(CFocusItem::CItemType itemType)
  */
 CFocusItem::CItemType CFocusItem::getItemType() const
 {
+    // qCDebug(ClientLogger) << "CFocusItem::getItemType - returning:" << m_itemType;
     return m_itemType;
 }
 
@@ -69,9 +76,13 @@ CFocusItem::CItemType CFocusItem::getItemType() const
  */
 CFocusItem *CFocusItem::setNextItemFocusAndGetNextItem()
 {
+    qCDebug(ClientLogger) << "CFocusItem::setNextItemFocusAndGetNextItem called";
     if (m_NextFocusItem != nullptr) {
+        qCDebug(ClientLogger) << "Setting focus to next item";
         m_isFocus = false;
         m_NextFocusItem->setItemFocus(true);
+    } else {
+        qCDebug(ClientLogger) << "No next focus item available";
     }
     return m_NextFocusItem;
 }
@@ -82,10 +93,13 @@ CFocusItem *CFocusItem::setNextItemFocusAndGetNextItem()
  */
 QColor CFocusItem::getSystemActiveColor()
 {
-    return CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
+    QColor color = CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
+    // qCDebug(ClientLogger) << "CFocusItem::getSystemActiveColor - returning:" << color;
+    return color;
 }
 
 void CFocusItem::setDate(const QDate &date)
 {
+    // qCDebug(ClientLogger) << "CFocusItem::setDate - date:" << date;
     m_Date = date;
 }

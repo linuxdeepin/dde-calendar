@@ -4,6 +4,7 @@
 
 #include "jobtypecombobox.h"
 
+#include "commondef.h"
 #include <DPushButton>
 
 #include <QLayout>
@@ -17,6 +18,7 @@
 
 JobTypeComboBox::JobTypeComboBox(QWidget *parent) : DComboBox(parent)
 {
+    qCDebug(ClientLogger) << "JobTypeComboBox::JobTypeComboBox";
     initUI();
     //不启用自动匹配
     setCompleter(nullptr);
@@ -31,12 +33,15 @@ JobTypeComboBox::JobTypeComboBox(QWidget *parent) : DComboBox(parent)
 
 JobTypeComboBox::~JobTypeComboBox()
 {
+    qCDebug(ClientLogger) << "JobTypeComboBox::~JobTypeComboBox";
     return;
 }
 
 QString JobTypeComboBox::getCurrentJobTypeNo()
 {
+    qCDebug(ClientLogger) << "JobTypeComboBox::getCurrentJobTypeNo";
     if (this->currentIndex() < 0 || this->currentIndex() >= m_lstJobType.size()) {
+        qCDebug(ClientLogger) << "Current index is out of bounds";
         return QString();
     }
     return m_lstJobType[this->currentIndex()]->typeID();
@@ -44,8 +49,10 @@ QString JobTypeComboBox::getCurrentJobTypeNo()
 
 void JobTypeComboBox::setCurrentJobTypeNo(const QString &strJobTypeNo)
 {
+    qCDebug(ClientLogger) << "JobTypeComboBox::setCurrentJobTypeNo, jobTypeNo:" << strJobTypeNo;
     for (int i = 0; i < m_lstJobType.size(); i++) {
         if (strJobTypeNo == m_lstJobType[i]->typeID()) {
+            // qCDebug(ClientLogger) << "Found job type at index:" << i;
             this->setCurrentIndex(i);
             break;
         }
@@ -55,7 +62,9 @@ void JobTypeComboBox::setCurrentJobTypeNo(const QString &strJobTypeNo)
 
 void JobTypeComboBox::setAlert(bool isAlert)
 {
+    qCDebug(ClientLogger) << "JobTypeComboBox::setAlert, isAlert:" << isAlert;
     if (m_control) {
+        qCDebug(ClientLogger) << "m_control is valid, setting alert";
         //输入框未显示警告色？
         m_control->setAlert(isAlert);
     }
@@ -63,51 +72,65 @@ void JobTypeComboBox::setAlert(bool isAlert)
 
 bool JobTypeComboBox::isAlert() const
 {
+    qCDebug(ClientLogger) << "JobTypeComboBox::isAlert";
     if (m_control) {
+        qCDebug(ClientLogger) << "m_control is valid, returning alert status";
         return m_control->isAlert();
     }
+    qCDebug(ClientLogger) << "m_control is null, returning false";
     return false;
 }
 
 void JobTypeComboBox::showAlertMessage(const QString &text, int duration)
 {
+    qCDebug(ClientLogger) << "JobTypeComboBox::showAlertMessage, text:" << text << "duration:" << duration;
     showAlertMessage(text, nullptr, duration);
 }
 
 void JobTypeComboBox::showAlertMessage(const QString &text, QWidget *follower, int duration)
 {
+    qCDebug(ClientLogger) << "JobTypeComboBox::showAlertMessage, text:" << text << "duration:" << duration;
     if (m_control) {
+        qCDebug(ClientLogger) << "m_control is valid, showing alert message";
         m_control->showAlertMessage(text, follower ? follower : this, duration);
     }
 }
 
 void JobTypeComboBox::setAlertMessageAlignment(Qt::Alignment alignment)
 {
+    qCDebug(ClientLogger) << "JobTypeComboBox::setAlertMessageAlignment";
     if (m_control) {
+        qCDebug(ClientLogger) << "m_control is valid, setting message alignment";
         m_control->setMessageAlignment(alignment);
     }
 }
 
 void JobTypeComboBox::hideAlertMessage()
 {
+    qCDebug(ClientLogger) << "JobTypeComboBox::hideAlertMessage";
     if (m_control) {
+        qCDebug(ClientLogger) << "m_control is valid, hiding alert message";
         m_control->hideAlertMessage();
     }
 }
 
 int JobTypeComboBox::getCurrentEditPosition() const
 {
+    qCDebug(ClientLogger) << "JobTypeComboBox::getCurrentEditPosition";
     return m_newPos;
 }
 
 void JobTypeComboBox::updateJobType(const AccountItem::Ptr& account)
 {
+    qCDebug(ClientLogger) << "JobTypeComboBox::updateJobType";
     if (nullptr == account) {
+        qCDebug(ClientLogger) << "account is null, returning";
         return;
     }
 
     //将自定义控件内存是否并置空，保存初始展示时能够进入高度调整
     if (m_customWidget) {
+        qCDebug(ClientLogger) << "m_customWidget is valid, deleting it";
         m_addBtn->deleteLater();
         m_customWidget->deleteLater();
         m_addBtn = nullptr;
@@ -117,6 +140,7 @@ void JobTypeComboBox::updateJobType(const AccountItem::Ptr& account)
     //切换账号重置选项后需重置view的高度限制和大小策略，使其在初次显示时能跟随列表项数量动态调整高度
     QFrame *viewContainer = findChild<QFrame *>();
     if (viewContainer) {
+        qCDebug(ClientLogger) << "viewContainer is valid, resetting height and size policy";
         viewContainer->setMinimumHeight(0);
         viewContainer->setMaximumHeight(16777215);
         viewContainer->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
@@ -127,6 +151,7 @@ void JobTypeComboBox::updateJobType(const AccountItem::Ptr& account)
     QString text = currentText();
     m_lstJobType = account->getScheduleTypeList();
     clear(); //更新前先清空原有列表
+    qCDebug(ClientLogger) << "Updating job types, count:" << m_lstJobType.size();
     for (m_itemNumIndex = 0; m_itemNumIndex < m_lstJobType.size(); m_itemNumIndex++) {
         addJobTypeItem(m_itemNumIndex, m_lstJobType[m_itemNumIndex]->getColorCode(), m_lstJobType[m_itemNumIndex]->displayName());
     }
@@ -140,6 +165,7 @@ void JobTypeComboBox::updateJobType(const AccountItem::Ptr& account)
 
 void JobTypeComboBox::addJobTypeItem(int idx, QString strColorHex, QString strJobType)
 {
+    // qCDebug(ClientLogger) << "JobTypeComboBox::addJobTypeItem, idx:" << idx << "color:" << strColorHex << "type:" << strJobType;
     //绘制的pixmap为基准大小的4倍，防止缩放时出现齿距
     QSize size(64, 64);
     QPixmap pixmap(size);
@@ -162,13 +188,16 @@ void JobTypeComboBox::addJobTypeItem(int idx, QString strColorHex, QString strJo
 
 void JobTypeComboBox::initUI()
 {
+    qCDebug(ClientLogger) << "JobTypeComboBox::initUI";
     setEditable(false);
     setIconSize(QSize(16, 16));
 }
 
 void JobTypeComboBox::setItemSelectable(bool status)
 {
+    qCDebug(ClientLogger) << "JobTypeComboBox::setItemSelectable, status:" << status;
     if (-1 == m_hoverSelectedIndex) {
+        qCDebug(ClientLogger) << "m_hoverSelectedIndex is -1, returning";
         return;
     }
     //更改当前列表框里的高亮项的可选择状态设置，将其设置为不可选中状态可实现失去选中效果，待聚焦后再恢复过来
@@ -177,14 +206,18 @@ void JobTypeComboBox::setItemSelectable(bool status)
 
     //设置“添加按键”按钮的高亮状态
     if (nullptr != m_addBtn) {
+        qCDebug(ClientLogger) << "m_addBtn is valid, setting highlight";
         m_addBtn->setHighlight(!status);
     }
 }
 
 void JobTypeComboBox::addCustomWidget(QFrame *viewContainer)
 {
+    qCDebug(ClientLogger) << "JobTypeComboBox::addCustomWidget";
     if (viewContainer) {
+        qCDebug(ClientLogger) << "viewContainer is valid";
         if (nullptr == m_customWidget) {
+            qCDebug(ClientLogger) << "m_customWidget is null, creating it";
             //获取原控件布局
             QBoxLayout *layout = qobject_cast<QBoxLayout *>(viewContainer->layout());
             //自定义控件
@@ -216,15 +249,19 @@ void JobTypeComboBox::addCustomWidget(QFrame *viewContainer)
 
 void JobTypeComboBox::showPopup()
 {
+    qCDebug(ClientLogger) << "JobTypeComboBox::showPopup";
     //重置icon大小
     setIconSize(QSize(16, 16));
     setItemSelectable(true);
-    if (currentIndex() < 0)
+    if (currentIndex() < 0) {
+        qCDebug(ClientLogger) << "Current index < 0, setting to 0";
         setCurrentIndex(0);
+    }
     //设置为不可编辑模式
     setEditable(false);
     //下拉模式取消信号关联，并释放警报控制
     if (m_control) {
+        qCDebug(ClientLogger) << "m_control is valid, disconnecting and deleting";
         disconnect(m_control, &DAlertControl::alertChanged, this, &JobTypeComboBox::alertChanged);
         delete m_control;
         m_control = nullptr;
@@ -237,16 +274,19 @@ void JobTypeComboBox::showPopup()
     QFrame *viewContainer = findChild<QFrame *>();
 
     if (nullptr == m_customWidget) {
+        qCDebug(ClientLogger) << "m_customWidget is null, adding custom widget";
         //添加自定义布局
         addCustomWidget(viewContainer);
     }
 
     if (m_customWidget && m_lstJobType.size() >= 20) {
+        qCDebug(ClientLogger) << "Hiding custom widget, too many items";
         m_customWidget->hide();
     }
 
     //设置最大高度为400
-    if (viewContainer->height() > 400) {
+    if (viewContainer && viewContainer->height() > 400) {
+        qCDebug(ClientLogger) << "View container height > 400, setting to 400";
         viewContainer->setFixedHeight(400);
     }
     //重新调整选中项的位置
@@ -256,43 +296,56 @@ void JobTypeComboBox::showPopup()
 
 bool JobTypeComboBox::eventFilter(QObject *obj, QEvent *event)
 {
+    // qCDebug(ClientLogger) << "JobTypeComboBox::eventFilter, obj:" << (obj ? obj->objectName() : "null") << "event type:" << event->type();
     if (view() == obj && (event->type() == QEvent::Enter)) {
+        // qCDebug(ClientLogger) << "Mouse enter view";
         view()->setFocus();
     } else if (m_addBtn == obj && (event->type() == QEvent::Enter)) {
+        // qCDebug(ClientLogger) << "Mouse enter add button";
         m_addBtn->setFocus();
     } else if (view() == obj && event->type() == QEvent::FocusIn) {
+        // qCDebug(ClientLogger) << "View focus in";
         //列表框控件焦点进入事件
         setItemSelectable(true);
     } else if (m_addBtn == obj && event->type() == QEvent::FocusIn) {
+        // qCDebug(ClientLogger) << "Add button focus in";
         //“添加按键”控件焦点进入事件
         setItemSelectable(false);
     } else if (event->type() == QEvent::KeyPress) {
+        // qCDebug(ClientLogger) << "KeyPress event";
         QKeyEvent *kEvent = dynamic_cast<QKeyEvent *>(event);
         if (view() == obj && kEvent->key() == Qt::Key_Down) {
+            // qCDebug(ClientLogger) << "Key_Down on view";
             //焦点在列表框时的下方向按键按下事件
-            if (m_addBtn->isHighlight()) {
+            if (m_addBtn && m_addBtn->isHighlight()) {
+                // qCDebug(ClientLogger) << "Add button is highlighted, returning true";
                 return true;
             }
 
             if (m_hoverSelectedIndex == m_itemNumIndex - 1) {
+                qCDebug(ClientLogger) << "Reached last item, moving focus to add button";
                 //列表框到达最后一项时的下方向按键按下事件
                 //将焦点转移到“添加按键”控件上
                 m_addBtn->setFocus();
 
             }
         } else if (m_addBtn == obj && kEvent->key() == Qt::Key_Up) {
+            // qCDebug(ClientLogger) << "Key_Up on add button";
             //焦点在m_addBtn时的上方向按键按下事件
             if (m_addBtn->isHighlight()) {
+                qCDebug(ClientLogger) << "Add button is highlighted, moving focus to view";
                 //将焦点转移到列表控件上
                 view()->setFocus();
             }
-        } else if (m_addBtn->isHighlight() && kEvent->key() == Qt::Key_Return) {
+        } else if (m_addBtn && m_addBtn->isHighlight() && kEvent->key() == Qt::Key_Return) {
+            qCDebug(ClientLogger) << "Key_Return on highlighted add button";
             //回车事件
             slotBtnAddItemClicked();
         }
 
         //过滤掉m_addBtn的所有按键事件
         if (m_addBtn == obj) {
+            qCDebug(ClientLogger) << "Filtering key event for add button";
             return true;
         }
     }
@@ -301,6 +354,7 @@ bool JobTypeComboBox::eventFilter(QObject *obj, QEvent *event)
 
 void JobTypeComboBox::slotBtnAddItemClicked()
 {
+    qCDebug(ClientLogger) << "JobTypeComboBox::slotBtnAddItemClicked";
     JobTypeComboBox::hidePopup();
     setIconSize(QSize(0, 0));
     //设置没有选中，
@@ -318,6 +372,7 @@ void JobTypeComboBox::slotBtnAddItemClicked()
 
 void JobTypeComboBox::slotEditingFinished()
 {
+    qCDebug(ClientLogger) << "JobTypeComboBox::slotEditingFinished";
     //TODO:待优化，由于上下按键会匹配下拉列表内容，导致会调整lineEdit显示位置
     //当前先改回设置显示图标的方法
     //    int oldPos = m_newPos;
@@ -330,6 +385,7 @@ void JobTypeComboBox::slotEditingFinished()
 
 void JobTypeComboBox::slotEditCursorPositionChanged(int oldPos, int newPos)
 {
+    qCDebug(ClientLogger) << "JobTypeComboBox::slotEditCursorPositionChanged, oldPos:" << oldPos << "newPos:" << newPos;
     m_oldPos = oldPos;
     m_newPos = newPos;
 }

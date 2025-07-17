@@ -12,6 +12,7 @@
 #include "scheduledaterangeinfo.h"
 #include "calendarmanage.h"
 #include "calendarglobalenv.h"
+#include "commondef.h"
 
 
 #include <DPalette>
@@ -35,6 +36,7 @@ CScheduleSearchItem::CScheduleSearchItem(QWidget *parent)
     , m_rightMenu(new DMenu(this))
     , m_timeFormat(CalendarManager::getInstance()->getTimeFormat())
 {
+    qCDebug(ClientLogger) << "CScheduleSearchItem::CScheduleSearchItem";
     //设置对象名称和辅助显示名称
     this->setObjectName("CScheduleDataItem");
     this->setAccessibleName("CScheduleDataItem");
@@ -57,11 +59,13 @@ CScheduleSearchItem::CScheduleSearchItem(QWidget *parent)
 
 void CScheduleSearchItem::setBackgroundColor(QColor color1)
 {
+    qCDebug(ClientLogger) << "CScheduleSearchItem::setBackgroundColor, color:" << color1;
     m_Backgroundcolor = color1;
 }
 
 void CScheduleSearchItem::setText(QColor tColor, QFont font)
 {
+    qCDebug(ClientLogger) << "CScheduleSearchItem::setText, color:" << tColor;
     m_tTextColor = tColor;
     m_tFont = font;
     //设置时间显示宽度
@@ -70,12 +74,14 @@ void CScheduleSearchItem::setText(QColor tColor, QFont font)
 
 void CScheduleSearchItem::setTimeC(QColor tColor, QFont font)
 {
+    qCDebug(ClientLogger) << "CScheduleSearchItem::setTimeC, color:" << tColor;
     m_timecolor = tColor;
     m_timefont = font;
 }
 
 void CScheduleSearchItem::setData(DSchedule::Ptr vScheduleInfo, QDate date)
 {
+    qCDebug(ClientLogger) << "CScheduleSearchItem::setData, date:" << date;
     m_ScheduleInfo = vScheduleInfo;
     m_date = date;
     update();
@@ -83,13 +89,16 @@ void CScheduleSearchItem::setData(DSchedule::Ptr vScheduleInfo, QDate date)
 
 void CScheduleSearchItem::setRoundtype(int rtype)
 {
+    qCDebug(ClientLogger) << "CScheduleSearchItem::setRoundtype, rtype:" << rtype;
     m_roundtype = rtype;
     update();
 }
 
 void CScheduleSearchItem::setTheMe(int type)
 {
+    qCDebug(ClientLogger) << "CScheduleSearchItem::setTheMe, type:" << type;
     if (type == 2) {
+        qCDebug(ClientLogger) << "Applying dark theme";
         m_presscolor.background = CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
         m_presscolor.background.setAlphaF(1);
         m_presscolor.timeColor = "#FFFFFF";
@@ -104,6 +113,7 @@ void CScheduleSearchItem::setTheMe(int type)
         m_hovercolor.textColor = "#C0C6D4";
         m_hovercolor.textColor.setAlphaF(1);
     } else {
+        qCDebug(ClientLogger) << "Applying light theme";
         m_presscolor.background = CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
         m_presscolor.background.setAlphaF(1);
         m_presscolor.timeColor = "#FFFFFF";
@@ -125,6 +135,7 @@ void CScheduleSearchItem::setTheMe(int type)
  */
 void CScheduleSearchItem::setDurationSize(QFont font)
 {
+    qCDebug(ClientLogger) << "CScheduleSearchItem::setDurationSize";
     QFontMetrics fm1(font);
     QString currentTimeStr = QTime::currentTime().toString("hh:mm");
     //设置时间显示最大宽度
@@ -132,6 +143,7 @@ void CScheduleSearchItem::setDurationSize(QFont font)
 }
 void CScheduleSearchItem::slotEdit()
 {
+    qCDebug(ClientLogger) << "CScheduleSearchItem::slotEdit";
     CScheduleDlg dlg(0, this);
     dlg.setData(m_ScheduleInfo);
     dlg.exec();
@@ -139,13 +151,16 @@ void CScheduleSearchItem::slotEdit()
 
 void CScheduleSearchItem::slotDelete()
 {
+    qCDebug(ClientLogger) << "CScheduleSearchItem::slotDelete";
     //删除日程
     CScheduleOperation _scheduleOperation(m_ScheduleInfo->scheduleTypeID(), this);
     bool _isDelete = _scheduleOperation.deleteSchedule(m_ScheduleInfo);
     //删除日程后，将焦点设置给父类
     if (_isDelete) {
+        qCDebug(ClientLogger) << "Schedule deleted, setting focus to parent";
         parentWidget()->setFocus(Qt::TabFocusReason);
     } else {
+        qCDebug(ClientLogger) << "Failed to delete schedule, keeping focus";
         this->setFocus();
     }
 }
@@ -155,6 +170,7 @@ void CScheduleSearchItem::slotDelete()
  */
 void CScheduleSearchItem::slotTimeFormatChanged(int value)
 {
+    qCDebug(ClientLogger) << "CScheduleSearchItem::slotTimeFormatChanged, value:" << value;
     if (value) {
         m_timeFormat = "hh:mm";
     } else {
@@ -165,11 +181,14 @@ void CScheduleSearchItem::slotTimeFormatChanged(int value)
 
 void CScheduleSearchItem::slotSchotCutClicked()
 {
+    qCDebug(ClientLogger) << "CScheduleSearchItem::slotSchotCutClicked";
     //选中该item时才可以使用快捷键
     if (m_tabFocus) {
         //节日日程不能使用
-        if (CScheduleOperation::isFestival(m_ScheduleInfo))
+        if (CScheduleOperation::isFestival(m_ScheduleInfo)) {
+            qCDebug(ClientLogger) << "Festival schedule, cannot use shortcut";
             return;
+        }
         m_rightMenu->clear();
         m_rightMenu->addAction(m_editAction);
         m_rightMenu->addAction(m_deleteAction);
@@ -183,6 +202,7 @@ void CScheduleSearchItem::slotSchotCutClicked()
 
 void CScheduleSearchItem::paintEvent(QPaintEvent *e)
 {
+    // qCDebug(ClientLogger) << "CScheduleSearchItem::paintEvent";
     Q_UNUSED(e);
     int labelRightX = width() - 2; //绘制区域x方向右边界坐标点
     int labelBottomY = height();    //绘制区域y方向下边界坐标点
@@ -324,10 +344,13 @@ void CScheduleSearchItem::paintEvent(QPaintEvent *e)
 }
 void CScheduleSearchItem::contextMenuEvent(QContextMenuEvent *event)
 {
+    qCDebug(ClientLogger) << "CScheduleSearchItem::contextMenuEvent";
     Q_UNUSED(event);
     //判断是否为节假日日程
-    if (CScheduleOperation::isFestival(m_ScheduleInfo))
+    if (CScheduleOperation::isFestival(m_ScheduleInfo)) {
+        qCDebug(ClientLogger) << "Festival schedule, no context menu";
         return;
+    }
     //在有些环境中弹出右击菜单不会触发leaveEvent，主动更新leave对应的事件处理
     m_mouseStatus = M_NONE;
     update();
@@ -343,6 +366,7 @@ void CScheduleSearchItem::contextMenuEvent(QContextMenuEvent *event)
 
 void CScheduleSearchItem::mouseDoubleClickEvent(QMouseEvent *event)
 {
+    // qCDebug(ClientLogger) << "CScheduleSearchItem::mouseDoubleClickEvent";
     Q_UNUSED(event);
     CMyScheduleView dlg(m_ScheduleInfo, this);
     dlg.exec();
@@ -350,6 +374,7 @@ void CScheduleSearchItem::mouseDoubleClickEvent(QMouseEvent *event)
 
 void CScheduleSearchItem::mousePressEvent(QMouseEvent *event)
 {
+    // qCDebug(ClientLogger) << "CScheduleSearchItem::mousePressEvent";
     //鼠标点击取消焦点显示
     m_tabFocus = false;
     if (event->button() == Qt::LeftButton) {
@@ -364,6 +389,7 @@ void CScheduleSearchItem::mousePressEvent(QMouseEvent *event)
 
 void CScheduleSearchItem::mouseReleaseEvent(QMouseEvent *event)
 {
+    // qCDebug(ClientLogger) << "CScheduleSearchItem::mouseReleaseEvent";
     if (event->button() == Qt::LeftButton) {
         m_mouseStatus = M_HOVER;
         update();
@@ -376,6 +402,7 @@ void CScheduleSearchItem::enterEvent(QEnterEvent *event)
 void CScheduleSearchItem::enterEvent(QEvent *event)
 #endif
 {
+    // qCDebug(ClientLogger) << "CScheduleSearchItem::enterEvent";
     DLabel::enterEvent(event);
     m_mouseStatus = M_HOVER;
     update();
@@ -383,6 +410,7 @@ void CScheduleSearchItem::enterEvent(QEvent *event)
 
 void CScheduleSearchItem::leaveEvent(QEvent *event)
 {
+    // qCDebug(ClientLogger) << "CScheduleSearchItem::leaveEvent";
     DLabel::leaveEvent(event);
     m_mouseStatus = M_NONE;
     update();
@@ -390,6 +418,7 @@ void CScheduleSearchItem::leaveEvent(QEvent *event)
 
 bool CScheduleSearchItem::eventFilter(QObject *o, QEvent *e)
 {
+    // qCDebug(ClientLogger) << "CScheduleSearchItem::eventFilter, event type:" << e->type();
     Q_UNUSED(o);
 
     if (e->type() == QEvent::MouseButtonPress) {
@@ -404,6 +433,7 @@ bool CScheduleSearchItem::eventFilter(QObject *o, QEvent *e)
 
 void CScheduleSearchItem::focusInEvent(QFocusEvent *e)
 {
+    // qCDebug(ClientLogger) << "CScheduleSearchItem::focusInEvent, reason:" << e->reason();
     if (e->reason() == Qt::TabFocusReason) {
         //注册为键盘操作
         if (!CalendarGlobalEnv::getGlobalEnv()->registerKey("SearchItemEvent", "Keyboard")) {
@@ -421,6 +451,7 @@ void CScheduleSearchItem::focusInEvent(QFocusEvent *e)
 
 void CScheduleSearchItem::focusOutEvent(QFocusEvent *e)
 {
+    // qCDebug(ClientLogger) << "CScheduleSearchItem::focusOutEvent, reason:" << e->reason();
    //只针对tab的情况生效
     if (e->reason() == Qt::TabFocusReason){
         emit signalSelectCurrentItem(this, true);
@@ -432,6 +463,7 @@ void CScheduleSearchItem::focusOutEvent(QFocusEvent *e)
 
 void CScheduleSearchItem::keyPressEvent(QKeyEvent *event)
 {
+    // qCDebug(ClientLogger) << "CScheduleSearchItem::keyPressEvent, key:" << event->key();
     //回车显示我的日程详情
     if (event->key() == Qt::Key_Return) {
         CMyScheduleView dlg(m_ScheduleInfo, this);
@@ -447,6 +479,7 @@ void CScheduleSearchItem::keyPressEvent(QKeyEvent *event)
 CScheduleSearchView::CScheduleSearchView(QWidget *parent)
     : DWidget(parent)
 {
+    qCDebug(ClientLogger) << "CScheduleSearchView::CScheduleSearchView";
     QVBoxLayout *layout = new QVBoxLayout;
     layout->setSpacing(0);
     m_gradientItemList = new CScheduleListWidget(parent);
@@ -467,6 +500,7 @@ CScheduleSearchView::CScheduleSearchView(QWidget *parent)
 
 CScheduleSearchView::~CScheduleSearchView()
 {
+    qCDebug(ClientLogger) << "CScheduleSearchView::~CScheduleSearchView";
     for (int i = 0; i < m_gradientItemList->count(); i++) {
         QListWidgetItem *item11 = m_gradientItemList->takeItem(i);
         m_gradientItemList->removeItemWidget(item11);
@@ -478,7 +512,9 @@ CScheduleSearchView::~CScheduleSearchView()
 
 void CScheduleSearchView::setTheMe(int type)
 {
+    qCDebug(ClientLogger) << "CScheduleSearchView::setTheMe, type:" << type;
     if (type == 0 || type == 1) {
+        qCDebug(ClientLogger) << "Applying light theme";
         m_bBackgroundcolor = "#000000";
         m_bBackgroundcolor.setAlphaF(0.03);
         m_btimecolor = "#526A7F";
@@ -486,6 +522,7 @@ void CScheduleSearchView::setTheMe(int type)
         m_lBackgroundcolor = Qt::white;
         m_lTextColor = "#001A2E";
     } else if (type == 2) {
+        qCDebug(ClientLogger) << "Applying dark theme";
         m_bBackgroundcolor = "#FFFFFF";
         m_bBackgroundcolor.setAlphaF(0.05);
         m_btimecolor = "#6D7C88";
@@ -502,6 +539,7 @@ void CScheduleSearchView::setTheMe(int type)
  */
 void CScheduleSearchView::clearSearch()
 {
+    qCDebug(ClientLogger) << "CScheduleSearchView::clearSearch";
     m_searchStr.clear();
     m_vlistData.clear();
     m_scheduleSearchItem.clear();
@@ -522,6 +560,7 @@ void CScheduleSearchView::clearSearch()
 
 void CScheduleSearchView::setMaxWidth(const int w)
 {
+    // qCDebug(ClientLogger) << "CScheduleSearchView::setMaxWidth, width:" << w;
     m_maxWidth = w;
 }
 
@@ -530,6 +569,7 @@ void CScheduleSearchView::setMaxWidth(const int w)
  */
 bool CScheduleSearchView::getHasScheduleShow()
 {
+    // qCDebug(ClientLogger) << "CScheduleSearchView::getHasScheduleShow, hasScheduleShow:" << hasScheduleShow;
     return hasScheduleShow;
 }
 
@@ -538,6 +578,7 @@ bool CScheduleSearchView::getHasScheduleShow()
  */
 bool CScheduleSearchView::getScheduleStatus()
 {
+    // qCDebug(ClientLogger) << "CScheduleSearchView::getScheduleStatus";
     return m_scheduleSearchItem.contains(m_selectItem);
 }
 
@@ -546,9 +587,11 @@ bool CScheduleSearchView::getScheduleStatus()
  */
 void CScheduleSearchView::deleteSchedule()
 {
+    qCDebug(ClientLogger) << "CScheduleSearchView::deleteSchedule";
     currentDItemIndex = m_scheduleSearchItem.indexOf(m_selectItem);
     //如果存在该item且为节日日程不可操作
     if (currentDItemIndex >= 0 && !CScheduleOperation::isFestival(m_selectItem->getData())) {
+        qCDebug(ClientLogger) << "Deleting item at index:" << currentDItemIndex;
         m_selectItem->slotDelete();
     }
 }
@@ -558,6 +601,7 @@ void CScheduleSearchView::deleteSchedule()
  */
 void CScheduleSearchView::updateDateShow()
 {
+    qCDebug(ClientLogger) << "CScheduleSearchView::updateDateShow";
     m_currentItem = nullptr;
     //是否搜索到日程标志
     hasScheduleShow = true;
@@ -590,6 +634,7 @@ void CScheduleSearchView::updateDateShow()
             }
         }
         if (_showInfo.size() > 0) {
+            // qCDebug(ClientLogger) << "Found" << _showInfo.size() << "schedules for date" << _iterator.key();
             //获取跟当前时间最近的日程时间
             if (d < offset) {
                 offset = d;
@@ -622,6 +667,7 @@ void CScheduleSearchView::updateDateShow()
         }
     }
     if (m_gradientItemList->count() == 0) {
+        qCDebug(ClientLogger) << "No search results";
         hasScheduleShow = false;
         QListWidgetItem *listItem = new QListWidgetItem(m_gradientItemList);
         DLabel *gwi = new DLabel();
@@ -659,6 +705,7 @@ void CScheduleSearchView::updateDateShow()
     }
 
     if (currentDItemIndex >= 0 && m_scheduleSearchItem.size() > 0) {
+        qCDebug(ClientLogger) << "Restoring focus after deletion";
         //删除日程后,重新设置焦点
         if (currentDItemIndex < m_scheduleSearchItem.size()) {
             m_scheduleSearchItem.at(currentDItemIndex)->setFocus(Qt::TabFocusReason);
@@ -673,6 +720,7 @@ void CScheduleSearchView::updateDateShow()
 
 void CScheduleSearchView::createItemWidget(DSchedule::Ptr info, QDate date, int rtype)
 {
+    qCDebug(ClientLogger) << "CScheduleSearchView::createItemWidget (schedule), date:" << date << "rtype:" << rtype;
     DSchedule::Ptr &gd = info;
 
     CScheduleSearchItem *gwi = new CScheduleSearchItem(this);
@@ -702,6 +750,7 @@ void CScheduleSearchView::createItemWidget(DSchedule::Ptr info, QDate date, int 
 
 QListWidgetItem *CScheduleSearchView::createItemWidget(QDate date)
 {
+    qCDebug(ClientLogger) << "CScheduleSearchView::createItemWidget (date), date:" << date;
     CScheduleSearchDateItem *gwi = new CScheduleSearchDateItem();
     QFont font;
     font.setWeight(QFont::Medium);
@@ -733,6 +782,7 @@ QListWidgetItem *CScheduleSearchView::createItemWidget(QDate date)
  */
 void CScheduleSearchView::slotsetSearch(QString str)
 {
+    qCDebug(ClientLogger) << "CScheduleSearchView::slotsetSearch, search string:" << str;
     if (str.isEmpty())
         return;
     m_searchStr = str;
@@ -740,6 +790,7 @@ void CScheduleSearchView::slotsetSearch(QString str)
     QDateTime bDate = date.addMonths(-6);
 
     if (bDate.date() < QDate(1900, 1, 1)) {
+        qCWarning(ClientLogger) << "Start date is before 1900, adjusting to 1900-01-01";
         bDate.setDate(QDate(1900, 1, 1));
     }
     QDateTime eDate = date.addMonths(6);
@@ -749,12 +800,14 @@ void CScheduleSearchView::slotsetSearch(QString str)
 
 void CScheduleSearchView::slotScearedScheduleUpdate()
 {
+    qCDebug(ClientLogger) << "CScheduleSearchView::slotScearedScheduleUpdate";
     m_vlistData = gScheduleManager->getAllSearchedScheduleMap();
     updateDateShow();
 }
 
 void CScheduleSearchView::slotSelectSchedule(const DSchedule::Ptr &scheduleInfo)
 {
+    qCDebug(ClientLogger) << "CScheduleSearchView::slotSelectSchedule";
     emit signalSelectSchedule(scheduleInfo);
 }
 
@@ -763,7 +816,9 @@ void CScheduleSearchView::slotSelectSchedule(const DSchedule::Ptr &scheduleInfo)
  */
 void CScheduleSearchView::updateSearch()
 {
+    qCDebug(ClientLogger) << "CScheduleSearchView::updateSearch";
     if (isVisible()) {
+        qCDebug(ClientLogger) << "View is visible, performing search";
         slotsetSearch(m_searchStr);
     }
 }
@@ -775,6 +830,7 @@ void CScheduleSearchView::updateSearch()
  */
 void CScheduleSearchView::slotSelectCurrentItem(CScheduleSearchItem *item, bool itemFocusOut)
 {
+    qCDebug(ClientLogger) << "CScheduleSearchView::slotSelectCurrentItem, itemFocusOut:" << itemFocusOut;
     for (int i = 0; i < m_gradientItemList->count(); i++) {
         QListWidgetItem *cItem = m_gradientItemList->item(i);
         if (item == m_gradientItemList->itemWidget(cItem)) {
@@ -783,6 +839,7 @@ void CScheduleSearchView::slotSelectCurrentItem(CScheduleSearchItem *item, bool 
             m_gradientItemList->scrollToItem(cItem, QAbstractItemView::PositionAtTop);
             if (i == m_gradientItemList->count() - 1 && itemFocusOut && !keyPressUP) {
                 //最后一个item,发送信号将焦点传递给搜索框
+                qCDebug(ClientLogger) << "Last item focus out, emitting signal";
                 emit signalSelectCurrentItem();
             }
         }
@@ -796,6 +853,7 @@ void CScheduleSearchView::slotSelectCurrentItem(CScheduleSearchItem *item, bool 
  */
 void CScheduleSearchView::slotListWidgetClicked()
 {
+    qCDebug(ClientLogger) << "CScheduleSearchView::slotListWidgetClicked";
     //取消当前tab选中item
     m_selectItem = nullptr;
     emit signalScheduleHide();
@@ -803,6 +861,7 @@ void CScheduleSearchView::slotListWidgetClicked()
 
 void CScheduleSearchView::resizeEvent(QResizeEvent *event)
 {
+    // qCDebug(ClientLogger) << "CScheduleSearchView::resizeEvent";
     for (int i = 0; i < m_gradientItemList->count(); i++) {
         QListWidgetItem *item11 = m_gradientItemList->item(i);
         item11->setSizeHint(QSize(m_maxWidth - 5, 36)); //每次改变Item的高度
@@ -827,11 +886,13 @@ void CScheduleSearchView::resizeEvent(QResizeEvent *event)
 
 void CScheduleSearchView::mousePressEvent(QMouseEvent *event)
 {
+    // qCDebug(ClientLogger) << "CScheduleSearchView::mousePressEvent";
     DWidget::mousePressEvent(event);
 }
 
 void CScheduleSearchView::keyPressEvent(QKeyEvent *event)
 {
+    // qCDebug(ClientLogger) << "CScheduleSearchView::keyPressEvent, key:" << event->key();
     if (event->key() == Qt::Key_Up) {
         //上键,选中上一个item
         keyPressUP = true;
@@ -850,6 +911,7 @@ void CScheduleSearchView::keyPressEvent(QKeyEvent *event)
 
 void CScheduleSearchView::focusInEvent(QFocusEvent *e)
 {
+    // qCDebug(ClientLogger) << "CScheduleSearchView::focusInEvent, reason:" << e->reason();
     DWidget::focusInEvent(e);
     if (e->reason() == Qt::TabFocusReason) {
         if (m_scheduleSearchItem.size() > 0) {
@@ -861,6 +923,7 @@ void CScheduleSearchView::focusInEvent(QFocusEvent *e)
 CScheduleSearchDateItem::CScheduleSearchDateItem(QWidget *parent)
     : DLabel(parent)
 {
+    // qCDebug(ClientLogger) << "CScheduleSearchDateItem::CScheduleSearchDateItem";
     //设置对象名称和辅助显示名称
     this->setObjectName("CScheduleDateItem");
     this->setAccessibleName("CScheduleDateItem");
@@ -869,22 +932,26 @@ CScheduleSearchDateItem::CScheduleSearchDateItem(QWidget *parent)
 
 void CScheduleSearchDateItem::setBackgroundColor(QColor color1)
 {
+    // qCDebug(ClientLogger) << "CScheduleSearchDateItem::setBackgroundColor, color:" << color1;
     m_Backgroundcolor = color1;
 }
 
 void CScheduleSearchDateItem::setText(QColor tColor, QFont font)
 {
+    // qCDebug(ClientLogger) << "CScheduleSearchDateItem::setText, color:" << tColor;
     m_textcolor = tColor;
     m_font = font;
 }
 
 void CScheduleSearchDateItem::setDate(QDate date)
 {
+    // qCDebug(ClientLogger) << "CScheduleSearchDateItem::setDate, date:" << date;
     m_date = date;
 }
 
 void CScheduleSearchDateItem::paintEvent(QPaintEvent *e)
 {
+    // qCDebug(ClientLogger) << "CScheduleSearchDateItem::paintEvent";
     Q_UNUSED(e);
     int labelwidth = width();
     int labelheight = height();
@@ -912,6 +979,7 @@ void CScheduleSearchDateItem::paintEvent(QPaintEvent *e)
 
 void CScheduleSearchDateItem::mousePressEvent(QMouseEvent *event)
 {
+    // qCDebug(ClientLogger) << "CScheduleSearchDateItem::mousePressEvent";
     emit signalLabelScheduleHide();
     DLabel::mousePressEvent(event);
 }
@@ -919,6 +987,7 @@ void CScheduleSearchDateItem::mousePressEvent(QMouseEvent *event)
 CScheduleListWidget::CScheduleListWidget(QWidget *parent)
     : DListWidget(parent)
 {
+    qCDebug(ClientLogger) << "CScheduleListWidget::CScheduleListWidget";
     //设置对象名称和辅助显示名称
     this->setObjectName("CScheduleListWidget");
     this->setAccessibleName("CScheduleListWidget");
@@ -937,16 +1006,19 @@ CScheduleListWidget::CScheduleListWidget(QWidget *parent)
 
 CScheduleListWidget::~CScheduleListWidget()
 {
+    qCDebug(ClientLogger) << "CScheduleListWidget::~CScheduleListWidget";
 }
 
 void CScheduleListWidget::mousePressEvent(QMouseEvent *event)
 {
+    // qCDebug(ClientLogger) << "CScheduleListWidget::mousePressEvent";
     DListWidget::mousePressEvent(event);
     emit signalListWidgetClicked();
 }
 
 void CScheduleListWidget::paintEvent(QPaintEvent *e)
 {
+    // qCDebug(ClientLogger) << "CScheduleListWidget::paintEvent";
     DListWidget::paintEvent(e);
     QPainter painter(this->viewport());
     painter.setRenderHint(QPainter::Antialiasing);

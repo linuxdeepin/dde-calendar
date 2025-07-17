@@ -13,12 +13,14 @@ AnimationStackedWidget::AnimationStackedWidget(const AnimationOri ori, QWidget *
     , m_animationOri(ori)
     , m_Animation(new QPropertyAnimation(this, "offset", this))
 {
+    qCDebug(ClientLogger) << "AnimationStackedWidget constructor initialized with orientation:" << ori;
     setDuration(1000);
     connect(m_Animation, &QPropertyAnimation::finished, this, &AnimationStackedWidget::animationFinished);
 }
 
 AnimationStackedWidget::~AnimationStackedWidget()
 {
+    qCDebug(ClientLogger) << "AnimationStackedWidget destructor called";
     delete m_Animation;
 }
 
@@ -86,15 +88,18 @@ void AnimationStackedWidget::setCurrent(int index)
  */
 void AnimationStackedWidget::setPre()
 {
+    qCDebug(ClientLogger) << "AnimationStackedWidget::setPre - Setting previous widget";
     //获取堆窗口数
     const int count = this->count();
     switch (m_animationOri) {
     case LR: {
         m_moveOri = LeftToRight;
+        qCDebug(ClientLogger) << "Animation direction: LeftToRight";
     }
     break;
     case TB: {
         m_moveOri = TopToBottom;
+        qCDebug(ClientLogger) << "Animation direction: TopToBottom";
     }
     break;
     }
@@ -103,6 +108,7 @@ void AnimationStackedWidget::setPre()
     if (nextIndex < 0) {
         nextIndex = nextIndex + count;
     }
+    qCDebug(ClientLogger) << "Current index:" << currentIndex() << "Next index:" << nextIndex;
     setCurrentWidget(nextIndex, getBeginValue());
 }
 
@@ -111,20 +117,24 @@ void AnimationStackedWidget::setPre()
  */
 void AnimationStackedWidget::setNext()
 {
+    qCDebug(ClientLogger) << "AnimationStackedWidget::setNext - Setting next widget";
     //获取堆窗口数
     const int count = this->count();
     switch (m_animationOri) {
     case LR: {
         m_moveOri = RightToLeft;
+        qCDebug(ClientLogger) << "Animation direction: RightToLeft";
     }
     break;
     case TB: {
         m_moveOri = BottomToTop;
+        qCDebug(ClientLogger) << "Animation direction: BottomToTop";
     }
     break;
     }
     //获取下一个窗口编号
     int nextIndex = (currentIndex() + 1) % count;
+    qCDebug(ClientLogger) << "Current index:" << currentIndex() << "Next index:" << nextIndex;
     setCurrentWidget(nextIndex, getBeginValue());
 }
 
@@ -135,6 +145,7 @@ void AnimationStackedWidget::setNext()
  */
 void AnimationStackedWidget::setCurrentWidget(int &index, int beginWidth)
 {
+    qCDebug(ClientLogger) << "AnimationStackedWidget::setCurrentWidget - Setting widget index:" << index << "with begin width:" << beginWidth;
     //如果正在动画，那么退出
     if (m_IsAnimation) {
         qCDebug(ClientLogger) << "Animation in progress, queueing index:" << index;
@@ -154,6 +165,7 @@ void AnimationStackedWidget::setCurrentWidget(int &index, int beginWidth)
     m_Animation->setStartValue(beginWidth);
     m_Animation->setEndValue(0);
     m_Animation->setDuration(m_Duration);
+    qCDebug(ClientLogger) << "Starting animation from" << beginWidth << "to 0 with duration:" << m_Duration;
     m_Animation->start();
 }
 
@@ -163,6 +175,7 @@ void AnimationStackedWidget::setCurrentWidget(int &index, int beginWidth)
  */
 int AnimationStackedWidget::getBeginValue()
 {
+    // qCDebug(ClientLogger) << "AnimationStackedWidget::getBeginValue - Getting begin value";
     //存储窗口高度或宽度
     int value {0};
     //获取窗口矩阵
@@ -187,15 +200,18 @@ int AnimationStackedWidget::getBeginValue()
  */
 AnimationStackedWidget::MoveOrientation AnimationStackedWidget::getMoveOrientation(const int currIndex, const int nextIndex)
 {
+    qCDebug(ClientLogger) << "AnimationStackedWidget::getMoveOrientation - Current index:" << currIndex << "Next index:" << nextIndex;
     MoveOrientation moveOri{LeftToRight};
     if (nextIndex < currIndex) {
         switch (m_animationOri) {
         case LR: {
             moveOri = LeftToRight;
+            qCDebug(ClientLogger) << "Selected orientation: LeftToRight";
         }
         break;
         case TB: {
             moveOri = TopToBottom;
+            qCDebug(ClientLogger) << "Selected orientation: TopToBottom";
         }
         break;
         }
@@ -203,10 +219,12 @@ AnimationStackedWidget::MoveOrientation AnimationStackedWidget::getMoveOrientati
         switch (m_animationOri) {
         case LR: {
             moveOri = RightToLeft;
+            qCDebug(ClientLogger) << "Selected orientation: RightToLeft";
         }
         break;
         case TB: {
             moveOri = BottomToTop;
+            qCDebug(ClientLogger) << "Selected orientation: BottomToTop";
         }
         break;
         }
@@ -221,6 +239,7 @@ AnimationStackedWidget::MoveOrientation AnimationStackedWidget::getMoveOrientati
  */
 void AnimationStackedWidget::paintCurrentWidget(QPainter &paint, int currentIndex)
 {
+    // qCDebug(ClientLogger) << "AnimationStackedWidget::paintCurrentWidget - Painting current widget";
     //获得当前页面的Widget
     QWidget *currentWidget = widget(currentIndex);
     QPixmap currentPixmap(currentWidget->size());
@@ -237,21 +256,25 @@ void AnimationStackedWidget::paintCurrentWidget(QPainter &paint, int currentInde
     QRectF sourceRect;
     switch (m_moveOri) {
     case LeftToRight: {
+        // qCDebug(ClientLogger) << "AnimationStackedWidget::paintCurrentWidget - Painting current widget";
         targetRect = QRectF(widgetWidth - value, 0, value, widgetHeight);
         sourceRect = QRectF(0.0, 0.0, value, widgetHeight);
     }
     break;
     case RightToLeft: {
+        // qCDebug(ClientLogger) << "AnimationStackedWidget::paintCurrentWidget - Painting current widget";
         targetRect = QRectF(0.0, 0.0, value, widgetHeight);
         sourceRect = QRectF(widgetWidth - value, 0, value, widgetHeight);
     }
     break;
     case TopToBottom: {
+        // qCDebug(ClientLogger) << "AnimationStackedWidget::paintCurrentWidget - Painting current widget";
         targetRect = QRectF(0.0, widgetHeight - value, widgetWidth, value);
         sourceRect = QRectF(0.0, 0.0, widgetWidth, value);
     }
     break;
     case BottomToTop: {
+        // qCDebug(ClientLogger) << "AnimationStackedWidget::paintCurrentWidget - Painting current widget";
         targetRect = QRectF(0.0, 0.0, widgetWidth, value);
         sourceRect = QRectF(0, widgetHeight - value, widgetWidth, value);
     }
@@ -266,6 +289,7 @@ void AnimationStackedWidget::paintCurrentWidget(QPainter &paint, int currentInde
  */
 void AnimationStackedWidget::paintNextWidget(QPainter &paint, int nextIndex)
 {
+    // qCDebug(ClientLogger) << "AnimationStackedWidget::paintNextWidget - Painting next widget";
     QWidget *nextWidget = widget(nextIndex);
     QRect widgetRect = this->rect();
     //设置下一个窗口的大小
@@ -281,21 +305,25 @@ void AnimationStackedWidget::paintNextWidget(QPainter &paint, int nextIndex)
     QRectF sourceRect;
     switch (m_moveOri) {
     case LeftToRight: {
+        // qCDebug(ClientLogger) << "AnimationStackedWidget::paintNextWidget - Painting next widget";
         targetRect = QRectF(0.0, 0.0, widgetWidth - value, widgetHeight);
         sourceRect = QRectF(value, 0.0, widgetWidth - value, widgetHeight);
     }
     break;
     case RightToLeft: {
+        // qCDebug(ClientLogger) << "AnimationStackedWidget::paintNextWidget - Painting next widget";
         targetRect = QRectF(value, 0.0, widgetWidth - value, widgetHeight);
         sourceRect = QRectF(0.0, 0.0, widgetWidth - value, widgetHeight);
     }
     break;
     case TopToBottom: {
+        // qCDebug(ClientLogger) << "AnimationStackedWidget::paintNextWidget - Painting next widget";
         targetRect = QRectF(0.0, 0.0, widgetWidth, widgetHeight - value);
         sourceRect = QRectF(0.0, value, widgetWidth, widgetHeight - value);
     }
     break;
     case BottomToTop: {
+        // qCDebug(ClientLogger) << "AnimationStackedWidget::paintNextWidget - Painting next widget";
         targetRect = QRectF(0.0, value, widgetWidth, widgetHeight - value);
         sourceRect = QRectF(0.0, 0.0, widgetWidth, widgetHeight - value);
     }
@@ -309,6 +337,7 @@ void AnimationStackedWidget::paintNextWidget(QPainter &paint, int nextIndex)
  */
 double AnimationStackedWidget::offset() const
 {
+    // qCDebug(ClientLogger) << "AnimationStackedWidget::offset - Getting offset";
     return m_offset;
 }
 
@@ -318,6 +347,7 @@ double AnimationStackedWidget::offset() const
  */
 void AnimationStackedWidget::setOffset(double offset)
 {
+    // qCDebug(ClientLogger) << "AnimationStackedWidget::setOffset - Setting offset to:" << offset;
     m_offset = offset;
     update();
 }

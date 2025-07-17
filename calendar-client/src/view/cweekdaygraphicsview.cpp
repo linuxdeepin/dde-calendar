@@ -23,6 +23,7 @@ CWeekDayGraphicsview::CWeekDayGraphicsview(QWidget *parent, ViewPosition viewPos
     , m_coorManage(new CScheduleCoorManage)
     , m_rightmagin(0)
 {
+    qCDebug(ClientLogger) << "CWeekDayGraphicsview constructor - viewPos:" << viewPos << "viewType:" << viewtype;
     createBackgroundItem();
     m_Scene->setFirstFocusItem(m_backgroundItem.first());
     //添加键盘事件处理
@@ -30,9 +31,11 @@ CWeekDayGraphicsview::CWeekDayGraphicsview(QWidget *parent, ViewPosition viewPos
     m_keyPrxy->addkeyPressDeal(new CWeekDaySceneTabKeyDeal(m_Scene));
     m_keyPrxy->addkeyPressDeal(new CKeyEnableDeal(m_Scene));
     if (m_viewType == ALLDayView) {
+        qCDebug(ClientLogger) << "Adding ALL day key handlers";
         m_keyPrxy->addkeyPressDeal(new CAllDayKeyLeftDeal(m_Scene));
         m_keyPrxy->addkeyPressDeal(new CAllDayKeyRightDeal(m_Scene));
     } else {
+        qCDebug(ClientLogger) << "Adding part time key handlers";
         m_keyPrxy->addkeyPressDeal(new CKeyLeftDeal(m_Scene));
         m_keyPrxy->addkeyPressDeal(new CKeyRightDeal(m_Scene));
     }
@@ -43,19 +46,24 @@ CWeekDayGraphicsview::CWeekDayGraphicsview(QWidget *parent, ViewPosition viewPos
 
 CWeekDayGraphicsview::~CWeekDayGraphicsview()
 {
+    qCDebug(ClientLogger) << "CWeekDayGraphicsview destructor";
     delete m_coorManage;
     m_coorManage = nullptr;
 }
 
 void CWeekDayGraphicsview::setRange(int w, int h, QDate begindate, QDate enddate, int rightmagin)
 {
+    qCDebug(ClientLogger) << "CWeekDayGraphicsview::setRange - w:" << w << "h:" << h 
+                         << "begindate:" << begindate << "enddate:" << enddate << "rightmagin:" << rightmagin;
     m_MoveDate.setDate(begindate.addMonths(-2));
     m_beginDate = begindate;
     m_endDate = enddate;
     //如果为全天区域
     if (m_viewType == ALLDayView) {
+        qCDebug(ClientLogger) << "Adjusting width for ALL day view";
         w -= 2;
     } else {
+        qCDebug(ClientLogger) << "Adjusting width for part time view";
         w = w - rightmagin - 2;
     }
     setBackgroundDate();
@@ -66,6 +74,7 @@ void CWeekDayGraphicsview::setRange(int w, int h, QDate begindate, QDate enddate
 
 void CWeekDayGraphicsview::setRange(QDate begin, QDate end)
 {
+    qCDebug(ClientLogger) << "CWeekDayGraphicsview::setRange - begin:" << begin << "end:" << end;
     m_MoveDate.setDate(begin.addMonths(-2));
     m_beginDate = begin;
     m_endDate = end;
@@ -76,6 +85,7 @@ void CWeekDayGraphicsview::setRange(QDate begin, QDate end)
 
 void CWeekDayGraphicsview::setTheMe(int type)
 {
+    qCDebug(ClientLogger) << "CWeekDayGraphicsview::setTheMe - type:" << type;
     for (int i = 0; i < m_backgroundItem.size(); ++i) {
         m_backgroundItem.at(i)->setTheMe(type);
     }
@@ -85,13 +95,17 @@ void CWeekDayGraphicsview::setTheMe(int type)
 
 CScheduleCoorManage *CWeekDayGraphicsview::getCoorManage() const
 {
+    qCDebug(ClientLogger) << "CWeekDayGraphicsview::getCoorManage called";
     return m_coorManage;
 }
 
 void CWeekDayGraphicsview::setCurrentFocusItem(const QDate &focusDate, bool setItemFocus)
 {
+    qCDebug(ClientLogger) << "CWeekDayGraphicsview::setCurrentFocusItem - focusDate:" << focusDate 
+                         << "setItemFocus:" << setItemFocus;
     qint64 offset = m_backgroundItem.first()->getDate().daysTo(focusDate);
     if (offset >= 0 && offset < m_backgroundItem.size()) {
+        qCDebug(ClientLogger) << "Setting current focus item at offset:" << offset;
         m_Scene->setCurrentFocusItem(m_backgroundItem.at(static_cast<int>(offset)));
         m_Scene->setIsShowCurrentItem(setItemFocus);
     } else {
@@ -104,9 +118,12 @@ void CWeekDayGraphicsview::setCurrentFocusItem(const QDate &focusDate, bool setI
 
 void CWeekDayGraphicsview::setSceneRect(qreal x, qreal y, qreal w, qreal h)
 {
+    qCDebug(ClientLogger) << "CWeekDayGraphicsview::setSceneRect - x:" << x << "y:" << y << "w:" << w << "h:" << h;
     m_Scene->setSceneRect(x, y, w, h);
     const qreal backgroundItemHeight = h;
     const qreal backgroundItemWidth = w / m_backgroundItem.size();
+    qCDebug(ClientLogger) << "Setting background item dimensions - width:" << backgroundItemWidth 
+                         << "height:" << backgroundItemHeight;
     for (int i = 0; i < m_backgroundItem.size(); ++i) {
         m_backgroundItem.at(i)->setDate(m_beginDate.addDays(i));
         m_backgroundItem.at(i)->setRect(x + backgroundItemWidth * i, 0, backgroundItemWidth, backgroundItemHeight);
@@ -115,8 +132,10 @@ void CWeekDayGraphicsview::setSceneRect(qreal x, qreal y, qreal w, qreal h)
 
 void CWeekDayGraphicsview::createBackgroundItem()
 {
+    qCDebug(ClientLogger) << "CWeekDayGraphicsview::createBackgroundItem called - viewPos:" << m_viewPos;
     if (m_viewPos == DayPos) {
         //日视图
+        qCDebug(ClientLogger) << "Creating day view background item";
         CWeekDayBackgroundItem *backgroundItem = new CWeekDayBackgroundItem();
         connect(backgroundItem, &CWeekDayBackgroundItem::signalPosOnView, this, &CWeekDayGraphicsview::slotPosOnView);
         backgroundItem->setZValue(-1);
@@ -124,18 +143,21 @@ void CWeekDayGraphicsview::createBackgroundItem()
         m_Scene->addItem(backgroundItem);
         //如果为非全天则设置背景焦点获取显示
         if (m_viewType == PartTimeView) {
+            qCDebug(ClientLogger) << "Setting part time view focus for day view";
             backgroundItem->setShowFocus(true);
         }
         //设置编号
         backgroundItem->setBackgroundNum(0);
     } else {
         //周视图
+        qCDebug(ClientLogger) << "Creating week view background items";
         for (int i = 0; i < DDEWeekCalendar::AFewDaysofWeek; ++i) {
             CWeekDayBackgroundItem *item = new CWeekDayBackgroundItem();
             connect(item, &CWeekDayBackgroundItem::signalPosOnView, this, &CWeekDayGraphicsview::slotPosOnView);
             item->setZValue(-1);
             if (m_backgroundItem.size() > 0) {
-                //设置对应左右和下一个                            关系
+                //设置对应左右和下一个关系
+                qCDebug(ClientLogger) << "Setting navigation relationships for background item" << i;
                 m_backgroundItem.last()->setNextFocusItem(item);
                 m_backgroundItem.last()->setRightItem(item);
                 item->setLeftItem(m_backgroundItem.last());
@@ -144,6 +166,7 @@ void CWeekDayGraphicsview::createBackgroundItem()
             item->setDrawDividingLine(true);
             //如果为非全天则设置背景焦点获取显示
             if (m_viewType == PartTimeView) {
+                qCDebug(ClientLogger) << "Setting part time view focus for week item" << i;
                 item->setShowFocus(true);
             }
             //设置编号
@@ -152,12 +175,15 @@ void CWeekDayGraphicsview::createBackgroundItem()
             m_Scene->addItem(item);
         }
     }
+    qCDebug(ClientLogger) << "Created" << m_backgroundItem.size() << "background items";
 }
 
 void CWeekDayGraphicsview::setSceneCurrentItemFocus(const QDate &focusDate)
 {
+    qCDebug(ClientLogger) << "CWeekDayGraphicsview::setSceneCurrentItemFocus - focusDate:" << focusDate;
     int offset = static_cast<int>(m_backgroundItem.first()->getDate().daysTo(focusDate));
     if (offset >= 0 && offset < m_backgroundItem.size()) {
+        qCDebug(ClientLogger) << "Setting scene current focus item at offset:" << offset;
         m_Scene->setCurrentFocusItem(m_backgroundItem.at(offset));
         m_Scene->currentFocusItemUpdate();
     } else {
@@ -173,6 +199,7 @@ void CWeekDayGraphicsview::setSceneCurrentItemFocus(const QDate &focusDate)
  */
 void CWeekDayGraphicsview::updateBackgroundShowItem()
 {
+    qCDebug(ClientLogger) << "CWeekDayGraphicsview::updateBackgroundShowItem called";
     for (int i = 0; i < m_backgroundItem.size(); ++i) {
         m_backgroundItem.at(i)->updateShowItem();
     }
@@ -183,6 +210,7 @@ void CWeekDayGraphicsview::updateBackgroundShowItem()
  */
 void CWeekDayGraphicsview::setBackgroundDate()
 {
+    qCDebug(ClientLogger) << "CWeekDayGraphicsview::setBackgroundDate called";
     for (int i = 0; i < m_backgroundItem.size(); ++i) {
         m_backgroundItem.at(i)->setDate(m_beginDate.addDays(i));
     }
@@ -190,20 +218,26 @@ void CWeekDayGraphicsview::setBackgroundDate()
 
 void CWeekDayGraphicsview::slotSwitchView(const QDate &focusDate, bool setItemFocus)
 {
+    qCDebug(ClientLogger) << "CWeekDayGraphicsview::slotSwitchView - focusDate:" << focusDate 
+                         << "setItemFocus:" << setItemFocus << "current viewType:" << m_viewType;
     if (m_viewType == ALLDayView) {
+        qCDebug(ClientLogger) << "Switching from ALLDayView to PartTimeView";
         emit signaleSwitchToView(focusDate, PartTimeView, setItemFocus);
     } else {
+        qCDebug(ClientLogger) << "Switching from PartTimeView to ALLDayView";
         emit signaleSwitchToView(focusDate, ALLDayView, setItemFocus);
     }
 }
 
 void CWeekDayGraphicsview::slotViewInit()
 {
+    qCDebug(ClientLogger) << "CWeekDayGraphicsview::slotViewInit called";
     m_Scene->currentItemInit();
 }
 
 void CWeekDayGraphicsview::slotPosOnView(const qreal y)
 {
+    qCDebug(ClientLogger) << "CWeekDayGraphicsview::slotPosOnView - y:" << y;
     //定位到当前焦点的item
     QPointF point(m_Scene->width() / 2, y);
     centerOn(point);

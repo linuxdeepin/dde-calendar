@@ -3,20 +3,24 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "schedulemanager.h"
+#include "commondef.h"
 
 ScheduleManager::ScheduleManager(QObject *parent) : QObject(parent)
 {
+    qCDebug(ClientLogger) << "ScheduleManager constructor";
     initconnect();
 }
 
 ScheduleManager *ScheduleManager::getInstace()
 {
+    qCDebug(ClientLogger) << "Getting ScheduleManager instance";
     static ScheduleManager manager;
     return &manager;
 }
 
 void ScheduleManager::initconnect()
 {
+    qCDebug(ClientLogger) << "Initializing ScheduleManager connections";
     connect(gAccountManager, &AccountManager::signalScheduleUpdate, this, &ScheduleManager::slotScheduleUpdate);
     connect(gAccountManager, &AccountManager::signalSearchScheduleUpdate, this, &ScheduleManager::slotSearchUpdate);
 }
@@ -28,6 +32,7 @@ void ScheduleManager::initconnect()
  */
 void ScheduleManager::resetSchedule(int year)
 {
+    qCDebug(ClientLogger) << "Resetting schedule for year:" << year;
     for (AccountItem::Ptr p : gAccountManager->getAccountList()) {
         p->querySchedulesWithParameter(year);
     }
@@ -35,6 +40,7 @@ void ScheduleManager::resetSchedule(int year)
 
 void ScheduleManager::resetSchedule(const QDateTime &start, const QDateTime &end)
 {
+    qCDebug(ClientLogger) << "Resetting schedule from" << start << "to" << end;
     for (AccountItem::Ptr p : gAccountManager->getAccountList()) {
         p->querySchedulesWithParameter(start, end);
     }
@@ -46,12 +52,15 @@ void ScheduleManager::resetSchedule(const QDateTime &start, const QDateTime &end
  */
 void ScheduleManager::updateSchedule()
 {
+    qCDebug(ClientLogger) << "Updating schedule data";
     m_scheduleMap.clear();
     if (nullptr != gAccountManager->getLocalAccountItem()) {
+        qCDebug(ClientLogger) << "Getting schedule map from local account";
         m_scheduleMap = gAccountManager->getLocalAccountItem()->getScheduleMap();
     }
 
     if (nullptr != gAccountManager->getUnionAccountItem()) {
+        qCDebug(ClientLogger) << "Getting schedule map from union account";
         QMap<QDate, DSchedule::List> scheduleMap = gAccountManager->getUnionAccountItem()->getScheduleMap();
         if (m_scheduleMap.size() == 0) {
             m_scheduleMap = scheduleMap;
@@ -65,6 +74,7 @@ void ScheduleManager::updateSchedule()
             }
         }
     }
+    qCDebug(ClientLogger) << "Schedule update complete with" << m_scheduleMap.size() << "dates";
     emit signalScheduleUpdate();
 }
 
@@ -74,11 +84,14 @@ void ScheduleManager::updateSchedule()
  */
 void ScheduleManager::updateSearchSchedule()
 {
+    qCDebug(ClientLogger) << "Updating search schedule data";
     m_searchScheduleMap.clear();
     if (nullptr != gLocalAccountItem) {
+        qCDebug(ClientLogger) << "Getting search schedule map from local account";
         m_searchScheduleMap = gLocalAccountItem->getSearchScheduleMap();
     }
     if (nullptr != gUosAccountItem) {
+        qCDebug(ClientLogger) << "Getting search schedule map from UOS account";
         QMap<QDate, DSchedule::List> scheduleMap = gUosAccountItem->getSearchScheduleMap();
         if (m_searchScheduleMap.size() == 0) {
             m_searchScheduleMap = scheduleMap;
@@ -92,6 +105,7 @@ void ScheduleManager::updateSearchSchedule()
             }
         }
     }
+    qCDebug(ClientLogger) << "Search schedule update complete with" << m_searchScheduleMap.size() << "dates";
     emit signalSearchScheduleUpdate();
 }
 
@@ -101,11 +115,13 @@ void ScheduleManager::updateSearchSchedule()
  */
 void ScheduleManager::slotScheduleUpdate()
 {
+    qCDebug(ClientLogger) << "Schedule update slot triggered";
     updateSchedule();
 }
 
 void ScheduleManager::slotSearchUpdate()
 {
+    qCDebug(ClientLogger) << "Search update slot triggered";
     updateSearchSchedule();
 }
 
@@ -116,6 +132,7 @@ void ScheduleManager::slotSearchUpdate()
  */
 QMap<QDate, DSchedule::List> ScheduleManager::getAllScheduleMap()
 {
+    qCDebug(ClientLogger) << "Getting all schedule map with" << m_scheduleMap.size() << "dates";
     return m_scheduleMap;
 }
 
@@ -128,6 +145,7 @@ QMap<QDate, DSchedule::List> ScheduleManager::getAllScheduleMap()
  */
 QMap<QDate, DSchedule::List> ScheduleManager::getScheduleMap(const QDate &startDate, const QDate &stopDate) const
 {
+    qCDebug(ClientLogger) << "Getting schedule map from" << startDate << "to" << stopDate;
     QMap<QDate, DSchedule::List> map;
     QDate date = startDate;
     while (date != stopDate) {
@@ -140,6 +158,7 @@ QMap<QDate, DSchedule::List> ScheduleManager::getScheduleMap(const QDate &startD
     if (m_scheduleMap.contains(date)) {
         map[date] = m_scheduleMap[date];
     }
+    qCDebug(ClientLogger) << "Found schedules for" << map.size() << "dates in the requested range";
     return map;
 }
 
@@ -150,6 +169,7 @@ QMap<QDate, DSchedule::List> ScheduleManager::getScheduleMap(const QDate &startD
  */
 QMap<QDate, DSchedule::List> ScheduleManager::getAllSearchedScheduleMap()
 {
+    qCDebug(ClientLogger) << "Getting all searched schedule map with" << m_searchScheduleMap.size() << "dates";
     return m_searchScheduleMap;
 }
 
@@ -160,10 +180,12 @@ QMap<QDate, DSchedule::List> ScheduleManager::getAllSearchedScheduleMap()
  */
 DSchedule::List ScheduleManager::getAllSearchedScheduleList()
 {
+    qCDebug(ClientLogger) << "Getting all searched schedule list";
     DSchedule::List list;
     for (DSchedule::List l : m_searchScheduleMap.values()) {
         list.append(l);
     }
+    qCDebug(ClientLogger) << "Found" << list.size() << "searched schedules";
     return list;
 }
 
@@ -174,10 +196,12 @@ DSchedule::List ScheduleManager::getAllSearchedScheduleList()
  */
 QSet<QDate> ScheduleManager::getAllScheduleDate()
 {
+    qCDebug(ClientLogger) << "Getting all schedule dates";
     QSet<QDate> set;
     for (QDate date : m_scheduleMap.keys()) {
         set.insert(date);
     }
+    qCDebug(ClientLogger) << "Found" << set.size() << "dates with schedules";
     return set;
 }
 
@@ -188,10 +212,12 @@ QSet<QDate> ScheduleManager::getAllScheduleDate()
  */
 QSet<QDate> ScheduleManager::getAllSearchedScheduleDate()
 {
+    qCDebug(ClientLogger) << "Getting all searched schedule dates";
     QSet<QDate> set;
     for (QDate date : m_searchScheduleMap.keys()) {
         set.insert(date);
     }
+    qCDebug(ClientLogger) << "Found" << set.size() << "dates with searched schedules";
     return set;
 }
 
@@ -203,9 +229,12 @@ QSet<QDate> ScheduleManager::getAllSearchedScheduleDate()
  */
 DSchedule::List ScheduleManager::getScheduleByDay(QDate date)
 {
+    qCDebug(ClientLogger) << "Getting schedules for date:" << date;
     if (m_scheduleMap.contains(date)) {
+        qCDebug(ClientLogger) << "Found" << m_scheduleMap[date].size() << "schedules for" << date;
         return m_scheduleMap[date];
     }
+    qCDebug(ClientLogger) << "No schedules found for" << date;
     return DSchedule::List();
 }
 
@@ -217,12 +246,17 @@ DSchedule::List ScheduleManager::getScheduleByDay(QDate date)
  */
 DScheduleType::Ptr ScheduleManager::getScheduleTypeByScheduleId(const QString &id)
 {
+    qCDebug(ClientLogger) << "Getting schedule type by schedule ID:" << id;
     DScheduleType::Ptr type = nullptr;
     for (AccountItem::Ptr p : gAccountManager->getAccountList()) {
         type = p->getScheduleTypeByID(id);
         if (nullptr != type) {
+            qCDebug(ClientLogger) << "Found schedule type for ID:" << id;
             break;
         }
+    }
+    if (type == nullptr) {
+        qCDebug(ClientLogger) << "No schedule type found for ID:" << id;
     }
     return type;
 }
@@ -236,6 +270,7 @@ DScheduleType::Ptr ScheduleManager::getScheduleTypeByScheduleId(const QString &i
  */
 void ScheduleManager::searchSchedule(const QString &key, const QDateTime &startTime, const QDateTime &endTime)
 {
+    qCDebug(ClientLogger) << "Searching schedules with key:" << key << "from" << startTime << "to" << endTime;
     m_searchScheduleMap.clear();
     static int count = 0;
     count = 0;
@@ -245,11 +280,13 @@ void ScheduleManager::searchSchedule(const QString &key, const QDateTime &startT
     m_searchQuery->setDtStart(startTime);
     m_searchQuery->setDtEnd(endTime);
     for (AccountItem::Ptr p : gAccountManager->getAccountList()) {
-        count ++;
+        count++;
+        // qCDebug(ClientLogger) << "Querying account for schedules";
         p->querySchedulesWithParameter(m_searchQuery, [&](CallMessge) {
             count--;
             if (count == 0) {
-                this->updateSearchSchedule();
+                // qCDebug(ClientLogger) << "All account queries completed, updating search schedule";
+                updateSearchSchedule();
             }
         });
     }
@@ -261,6 +298,7 @@ void ScheduleManager::searchSchedule(const QString &key, const QDateTime &startT
  */
 void ScheduleManager::clearSearchSchedule()
 {
+    qCDebug(ClientLogger) << "Clearing search schedule";
     m_searchScheduleMap.clear();
     m_searchQuery.reset(nullptr);
     emit signalSearchScheduleUpdate();

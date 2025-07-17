@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "timeedit.h"
+#include "commondef.h"
 
 #include <QEvent>
 #include <QFocusEvent>
@@ -21,22 +22,26 @@ CTimeEdit::CTimeEdit(QWidget *parent)
     , m_hasFocus(false)
     , m_miniTime(QTime(0, 0, 0))
 {
+    qCDebug(ClientLogger) << "Creating CTimeEdit";
     initUI();
     initConnection();
 }
 
 CTimeEdit::~CTimeEdit()
 {
+    qCDebug(ClientLogger) << "Destroying CTimeEdit";
     delete m_timeEdit;
 }
 
 void CTimeEdit::setMineTime(const QTime &mineTime)
 {
+    qCDebug(ClientLogger) << "Setting minimum time:" << mineTime.toString();
     m_miniTime = mineTime;
 }
 
 void CTimeEdit::setTime(const QTime &time)
 {
+    qCDebug(ClientLogger) << "Setting time:" << time.toString();
     m_time = time;
     setSelectItem(m_time);
     m_timeEdit->getLineEdit()->setText(time.toString(m_timeFormat));
@@ -48,14 +53,17 @@ QTime CTimeEdit::getTime()
     QString timetext = m_timeEdit->getLineEdit()->displayText();
     //将text转换为时间
     m_time = QTime::fromString(timetext, m_timeFormat);
+    qCDebug(ClientLogger) << "Getting time:" << m_time.toString();
     return m_time;
 }
 
 void CTimeEdit::updateListItem(bool isShowTimeInterval)
 {
+    qCDebug(ClientLogger) << "Updating list items, show time interval:" << isShowTimeInterval;
     m_isShowTimeInterval = isShowTimeInterval;
     QTime topTimer(m_miniTime);
     if (!m_isShowTimeInterval) {
+        qCDebug(ClientLogger) << "Time interval not shown, setting top timer";
         // 根据开始时间的分钟数设置结束时间下拉列表的分钟数，当前默认为0,故先注释
         // int m = m_miniTime.minute() >= 30 ? m_miniTime.minute() - 30 : m_miniTime.minute();
         int m = 0;
@@ -81,16 +89,20 @@ void CTimeEdit::updateListItem(bool isShowTimeInterval)
         QString showStr = userData + timeIntervalStr;
         addItem(showStr, userData);
     }
+    qCDebug(ClientLogger) << "Added" << count() << "time items to list";
 }
 
 void CTimeEdit::setTimeFormat(int value)
 {
+    qCDebug(ClientLogger) << "Setting time format value:" << value;
     //获取edit的当前时间
     QTime editCurrentTime = getTime();
     //根据value值,设置时间显示格式
     if (value) {
+        qCDebug(ClientLogger) << "Setting 24-hour format";
         m_timeFormat = "hh:mm";
     } else {
+        qCDebug(ClientLogger) << "Setting 12-hour format";
         m_timeFormat = "h:mm";
     }
     //先更新列表信息，更新列表信息后再设置编辑框显示时间
@@ -102,12 +114,14 @@ void CTimeEdit::setTimeFormat(int value)
 
 void CTimeEdit::slotFocusDraw(bool showFocus)
 {
+    qCDebug(ClientLogger) << "Focus draw slot called, show focus:" << showFocus;
     m_hasFocus = showFocus;
     update();
 }
 
 void CTimeEdit::setSelectItem(const QTime &time)
 {
+    qCDebug(ClientLogger) << "Setting select item for time:" << time.toString();
     //若有则设置选中，若没有则取消选中设置定位到相近值附近
     int similarNumber = -1;
     int diff = 24 * 60 * 60 * 1000;
@@ -124,8 +138,10 @@ void CTimeEdit::setSelectItem(const QTime &time)
         }
     }
     if (diff == 0) {
+        qCDebug(ClientLogger) << "Exact time match found at index:" << similarNumber;
         setCurrentIndex(similarNumber);
     } else {
+        qCDebug(ClientLogger) << "No exact match, closest time at index:" << similarNumber << "with diff:" << diff;
         setCurrentIndex(-1);
     }
     scrollPosition = this->model()->index(similarNumber, 0);
@@ -133,28 +149,34 @@ void CTimeEdit::setSelectItem(const QTime &time)
 
 void CTimeEdit::slotSetPlainText(const QString &arg)
 {
+    qCDebug(ClientLogger) << "Setting plain text:" << arg;
     QString userData = currentData().toString();
     if (userData.isEmpty()) {
+        qCDebug(ClientLogger) << "User data is empty, using arg text";
         this->lineEdit()->setText(arg);
     } else {
+        qCDebug(ClientLogger) << "Using user data text:" << userData;
         this->lineEdit()->setText(userData);
     }
 }
 
 void CTimeEdit::slotActivated(const QString &arg)
 {
+    qCDebug(ClientLogger) << "Activated slot called with:" << arg;
     slotSetPlainText(arg);
     emit signaleditingFinished();
 }
 
 void CTimeEdit::slotEditingFinished()
 {
+    qCDebug(ClientLogger) << "Editing finished slot called";
     setTime(m_timeEdit->time());
     emit signaleditingFinished();
 }
 
 void CTimeEdit::initUI()
 {
+    qCDebug(ClientLogger) << "Initializing UI";
     //关闭自动补全
     this->setCompleter(nullptr);
     //设置edit的宽度
@@ -168,6 +190,7 @@ void CTimeEdit::initUI()
 
 void CTimeEdit::initConnection()
 {
+    qCDebug(ClientLogger) << "Initializing connections";
     connect(CalendarManager::getInstance(), &CalendarManager::signalTimeFormatChanged, this,
             &CTimeEdit::setTimeFormat);
     connect(m_timeEdit, &CCustomTimeEdit::signalUpdateFocus, this, &CTimeEdit::slotFocusDraw);
@@ -179,10 +202,12 @@ void CTimeEdit::initConnection()
 
 void CTimeEdit::showPopup()
 {
+    qCDebug(ClientLogger) << "Showing popup";
     DComboBox::showPopup();
     //获取下拉视图容器
     QFrame *viewContainer = this->findChild<QFrame *>();
     if (viewContainer) {
+        qCDebug(ClientLogger) << "View container found, configuring";
         //移动前先隐藏
         viewContainer->hide();
         //如果显示视图容器则设置高度
@@ -206,21 +231,27 @@ void CTimeEdit::showPopup()
         viewContainer->move(showPoint.x(), showPoint.y());
         //显示
         viewContainer->show();
+        qCDebug(ClientLogger) << "View container positioned at:" << showPoint << "with size:" << viewContainer->size();
+    } else {
+        qCDebug(ClientLogger) << "View container not found";
     }
     //因改变了容器的高度，所以需要重新定位当前位置
     if (this->view()->currentIndex() == scrollPosition) {
+        qCDebug(ClientLogger) << "Scrolling to current position at center";
         this->view()->scrollTo(scrollPosition, QAbstractItemView::PositionAtCenter);
     } else {
+        qCDebug(ClientLogger) << "Scrolling to position at top";
         this->view()->scrollTo(scrollPosition, QAbstractItemView::PositionAtTop);
     }
-
 }
 
 void CTimeEdit::focusInEvent(QFocusEvent *event)
 {
+    // qCDebug(ClientLogger) << "Focus in event, reason:" << event->reason();
     DComboBox::focusInEvent(event);
     //    如果为tab焦点进入则选中时间
     if (event->reason() == Qt::TabFocusReason) {
+        // qCDebug(ClientLogger) << "Tab focus, setting focus to line edit";
         lineEdit()->setFocus(Qt::TabFocusReason);
     }
 }
@@ -230,6 +261,7 @@ void CTimeEdit::paintEvent(QPaintEvent *e)
     DComboBox::paintEvent(e);
     //如果有焦点则设置焦点显示效果
     if (m_hasFocus) {
+        // qCDebug(ClientLogger) << "Painting focus rectangle";
         QPainter painter(this);
         QStyleOptionFocusRect option;
         option.initFrom(this);
@@ -240,6 +272,7 @@ void CTimeEdit::paintEvent(QPaintEvent *e)
 
 void CTimeEdit::resizeEvent(QResizeEvent *e)
 {
+    // qCDebug(ClientLogger) << "Resize event, new size:" << size();
     DComboBox::resizeEvent(e);
     m_timeEdit->setFixedHeight(this->height());
 }

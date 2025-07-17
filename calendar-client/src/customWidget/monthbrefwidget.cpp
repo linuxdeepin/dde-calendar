@@ -6,6 +6,7 @@
 #include "constants.h"
 #include "scheduledatamanage.h"
 #include "calendarglobalenv.h"
+#include "commondef.h"
 
 #include <DPaletteHelper>
 #include <QMouseEvent>
@@ -20,6 +21,7 @@ MonthBrefWidget::MonthBrefWidget(QWidget *parent)
     : QWidget(parent)
     , m_globalData(new GlobalData)
 {
+    qCDebug(ClientLogger) << "MonthBrefWidget constructor";
     QGridLayout *gridLayout = new QGridLayout(this);
     gridLayout->setSpacing(0);
     gridLayout->setContentsMargins(0, 0, 0, 0);
@@ -38,6 +40,7 @@ MonthBrefWidget::MonthBrefWidget(QWidget *parent)
 
 MonthBrefWidget::~MonthBrefWidget()
 {
+    qCDebug(ClientLogger) << "MonthBrefWidget destructor";
     delete m_globalData;
 }
 
@@ -48,12 +51,14 @@ MonthBrefWidget::~MonthBrefWidget()
  */
 void MonthBrefWidget::setShowMonthDate(const QDate& monthDate)
 {
+    qCDebug(ClientLogger) << "MonthBrefWidget::setShowMonthDate:" << monthDate.toString();
     //获取当月第一天
     QDate date = QDate(monthDate.year(), monthDate.month(), 1);
     int firstday = CalendarManager::getInstance()->getFirstDayOfWeek();
     int day = date.dayOfWeek();
     //计算当前月日历第一天该显示的时间
     date = date.addDays(-(day-firstday+7)%7);
+    qCDebug(ClientLogger) << "First day to display:" << date.toString();
     for (int i = 0; i < m_DayItem.size(); ++i) {
         m_DayItem.at(i)->setDate(date);
         date = date.addDays(1);
@@ -70,6 +75,7 @@ void MonthBrefWidget::setShowMonthDate(const QDate& monthDate)
  */
 void MonthBrefWidget::setHasScheduleDateSet(const QSet<QDate> &hasScheduleSet)
 {
+    qCDebug(ClientLogger) << "MonthBrefWidget::setHasScheduleDateSet, size:" << hasScheduleSet.size();
     //清空原有标识
     for (int i = 0; i < 32; ++i) {
         m_globalData->m_scheduleDateFlag[i]  = false;
@@ -77,6 +83,7 @@ void MonthBrefWidget::setHasScheduleDateSet(const QSet<QDate> &hasScheduleSet)
     //根据日程所在天设置标识
     for (QDate date:hasScheduleSet) {
         if (m_globalData->isBelongMonth(date)) {
+            // qCDebug(ClientLogger) << "Setting schedule flag for date:" << date.toString();
             m_globalData->m_scheduleDateFlag[date.day()] = true;
         }
     }
@@ -90,6 +97,7 @@ void MonthBrefWidget::setHasScheduleDateSet(const QSet<QDate> &hasScheduleSet)
  */
 void MonthBrefWidget::setHasSearchScheduleSet(const QSet<QDate> &hasScheduleSet)
 {
+    qCDebug(ClientLogger) << "MonthBrefWidget::setHasSearchScheduleSet, size:" << hasScheduleSet.size();
     //清空原有标识
     for (int i = 0; i < 32; ++i) {
         m_globalData->m_searchedDateFlag[i]  = false;
@@ -97,6 +105,7 @@ void MonthBrefWidget::setHasSearchScheduleSet(const QSet<QDate> &hasScheduleSet)
     //根据日程所在天设置标识
     for (QDate date:hasScheduleSet) {
         if (m_globalData->isBelongMonth(date)) {
+            // qCDebug(ClientLogger) << "Setting search flag for date:" << date.toString();
             m_globalData->m_searchedDateFlag[date.day()] = true;
         }
     }
@@ -110,7 +119,9 @@ void MonthBrefWidget::setHasSearchScheduleSet(const QSet<QDate> &hasScheduleSet)
  */
 void MonthBrefWidget::mousePressEvent(QMouseEvent *event)
 {
+    // qCDebug(ClientLogger) << "MonthBrefWidget::mousePressEvent";
     if (event->source() == Qt::MouseEventSynthesizedByQt) {
+        qCDebug(ClientLogger) << "MonthBrefWidget::mousePressEvent - touch event detected";
         //如果为触摸转换则设置触摸状态和触摸开始坐标
         m_touchState = 1;
         m_touchBeginPoint = event->pos();
@@ -124,7 +135,9 @@ void MonthBrefWidget::mousePressEvent(QMouseEvent *event)
  */
 void MonthBrefWidget::mouseReleaseEvent(QMouseEvent *event)
 {
+    // qCDebug(ClientLogger) << "MonthBrefWidget::mouseReleaseEvent";
     if (event->source() == Qt::MouseEventSynthesizedByQt) {
+        qCDebug(ClientLogger) << "MonthBrefWidget::mouseReleaseEvent - touch event released";
         m_touchState = 0;
         QWidget::mouseReleaseEvent(event);
     }
@@ -137,10 +150,12 @@ void MonthBrefWidget::mouseReleaseEvent(QMouseEvent *event)
  */
 void MonthBrefWidget::mouseMoveEvent(QMouseEvent *event)
 {
+    // qCDebug(ClientLogger) << "MonthBrefWidget::mouseMoveEvent";
     if (event->source() == Qt::MouseEventSynthesizedByQt) {
         QPoint currentPoint = event->pos();
         //如果移动距离大与5则为触摸移动状态
         if (QLineF(m_touchBeginPoint, currentPoint).length() > 5) {
+            qCDebug(ClientLogger) << "MonthBrefWidget::mouseMoveEvent - touch movement detected";
             m_touchState = 2;
         }
         QWidget::mouseMoveEvent(event);
@@ -150,6 +165,7 @@ void MonthBrefWidget::mouseMoveEvent(QMouseEvent *event)
 CMonthDayRectWidget::CMonthDayRectWidget(MonthBrefWidget::GlobalData* globalData, QWidget *parent) : QPushButton(parent)
   , m_globaldata(globalData)
 {
+    qCDebug(ClientLogger) << "CMonthDayRectWidget constructor";
     setMinimumSize(10, 10);
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     setFocusPolicy(Qt::NoFocus);
@@ -166,10 +182,13 @@ CMonthDayRectWidget::CMonthDayRectWidget(MonthBrefWidget::GlobalData* globalData
  */
 void CMonthDayRectWidget::setTheMe(int type)
 {
+    qCDebug(ClientLogger) << "CMonthDayRectWidget::setTheMe with type:" << type;
     CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
     if (type == 0 || type == 1) {
+        qCDebug(ClientLogger) << "Setting light theme color";
         m_ceventColor = QColor(255, 93, 0);
     } else if (type == 2) {
+        qCDebug(ClientLogger) << "Setting dark theme color";
         m_ceventColor = QColor(204, 77, 3);
     }
     update();
@@ -182,6 +201,7 @@ void CMonthDayRectWidget::setTheMe(int type)
  */
 void CMonthDayRectWidget::setDate(const QDate &date)
 {
+    // qCDebug(ClientLogger) << "CMonthDayRectWidget::setDate:" << date.toString();
     m_date = date;
 }
 
@@ -192,6 +212,7 @@ void CMonthDayRectWidget::setDate(const QDate &date)
  */
 QDate CMonthDayRectWidget::getDate() const
 {
+    // qCDebug(ClientLogger) << "CMonthDayRectWidget::getDate:" << m_date.toString();
     return  m_date;
 }
 
@@ -202,8 +223,10 @@ QDate CMonthDayRectWidget::getDate() const
  */
 void CMonthDayRectWidget::mousePressEvent(QMouseEvent *event)
 {
+    // qCDebug(ClientLogger) << "CMonthDayRectWidget::mousePressEvent for date:" << m_date.toString();
     //因双击会产生两次按下事件，第二次按下事件触发在双击事件触发后，双击后要跳转页面，因此在按下时判断本控件是否出现显示状态再进行处理
     if (event->button() == Qt::LeftButton && isVisible()) {
+        qCDebug(ClientLogger) << "Left button clicked and widget visible";
         m_pressed = true;
         //保存日程悬浮框显示位置
         CalendarGlobalEnv::getGlobalEnv()->reviseValue(DDECalendar::CursorPointKey, mapToGlobal(QPoint(width()/2,height()/2)));
@@ -220,7 +243,9 @@ void CMonthDayRectWidget::mousePressEvent(QMouseEvent *event)
  */
 void CMonthDayRectWidget::mouseDoubleClickEvent(QMouseEvent *event)
 {
+    // qCDebug(ClientLogger) << "CMonthDayRectWidget::mouseDoubleClickEvent for date:" << m_date.toString();
     if (event->button() == Qt::LeftButton) {
+        qCDebug(ClientLogger) << "Double click with left button, emitting signal";
         emit signalDoubleClick(m_date);
     }
     QWidget::mouseDoubleClickEvent(event);
@@ -233,7 +258,9 @@ void CMonthDayRectWidget::mouseDoubleClickEvent(QMouseEvent *event)
  */
 void CMonthDayRectWidget::mouseReleaseEvent(QMouseEvent *event)
 {
+    // qCDebug(ClientLogger) << "CMonthDayRectWidget::mouseReleaseEvent for date:" << m_date.toString();
     if (event->button() == Qt::LeftButton) {
+        qCDebug(ClientLogger) << "Left button released";
         m_pressed = false;
     }
     update();
@@ -247,6 +274,7 @@ void CMonthDayRectWidget::mouseReleaseEvent(QMouseEvent *event)
  */
 void CMonthDayRectWidget::paintEvent(QPaintEvent *event)
 {
+    // qCDebug(ClientLogger) << "CMonthDayRectWidget::paintEvent for date:" << m_date.toString();
     //获取待绘制的文字
     QString text = QString::number(m_date.day());
 
@@ -266,6 +294,7 @@ void CMonthDayRectWidget::paintEvent(QPaintEvent *event)
     QColor highColor = DPaletteHelper::instance()->palette(this).highlight().color();
 
     if (m_date == QDate::currentDate() && m_globaldata->isBelongMonth(m_date)) {
+        // qCDebug(ClientLogger) << "Painting current date";
         //当天日期
         painter.setBrush(highColor);
         painter.setPen(Qt::NoPen);
@@ -273,6 +302,7 @@ void CMonthDayRectWidget::paintEvent(QPaintEvent *event)
         painter.setPen(DPaletteHelper::instance()->palette(this).highlightedText().color());
         painter.drawText(rectf, Qt::AlignCenter, text);
     } else if (m_globaldata->isSelectedDate(m_date)) {
+        // qCDebug(ClientLogger) << "Painting selected date";
         //被选中的日期
         painter.setBrush(highColor);
         painter.setPen(Qt::NoPen);
@@ -282,13 +312,16 @@ void CMonthDayRectWidget::paintEvent(QPaintEvent *event)
         painter.setOpacity(1);
         painter.drawText(rectf, Qt::AlignCenter, text);
     } else if (m_globaldata->isHasSearchedByDate(m_date)) {
+        // qCDebug(ClientLogger) << "Painting date with search results";
         //有被搜索日程，绘制文字
         painter.setPen(highColor);
         painter.setOpacity(1);
         painter.drawText(rectf, Qt::AlignCenter, text);
     } else {
+        // qCDebug(ClientLogger) << "Painting normal date";
         //绘制默认文字
         if (!m_globaldata->isBelongMonth(m_date)) {
+            // qCDebug(ClientLogger) << "Date not in current month, setting opacity";
             //置灰日期
             painter.setOpacity(0.3);
         }
@@ -296,6 +329,7 @@ void CMonthDayRectWidget::paintEvent(QPaintEvent *event)
     }
 
     if (m_globaldata->isHasSearchedByDate(m_date)) {
+        // qCDebug(ClientLogger) << "Drawing search indicator circle";
         //有被搜索日程，绘制圆圈
         QPainterPath path;
         path.addEllipse(rectf);
@@ -306,26 +340,31 @@ void CMonthDayRectWidget::paintEvent(QPaintEvent *event)
     }
 
     if (m_globaldata->isHasScheduleByDate(m_date)) {
+        // qCDebug(ClientLogger) << "Drawing schedule indicator dot";
         //有日程，绘制日程圆点
         painter.setBrush(QBrush(m_ceventColor));
         painter.setPen(Qt::NoPen);
         painter.setOpacity(1);
         qreal ellipse_r = r * (4.0 / 25);
         if (ellipse_r < 4) {
+            // qCDebug(ClientLogger) << "Adjusting dot size to minimum";
             ellipse_r = 4;
         } else if (ellipse_r > 7) {
+            // qCDebug(ClientLogger) << "Adjusting dot size to maximum";
             ellipse_r = 7;
         }
         painter.drawEllipse(QRectF(rectf.x() + rectf.width() - ellipse_r, rectf.y() + rect().y(), ellipse_r, ellipse_r));
     }
 
     if (m_pressed) {
+        // qCDebug(ClientLogger) << "Drawing pressed state";
         //按下状态，绘制点击效果
         painter.setBrush(DPaletteHelper::instance()->palette(this).text());
         painter.setPen(Qt::NoPen);
         painter.setOpacity(0.3);
         painter.drawEllipse(rectf);
     } else if (m_hovered) {
+        // qCDebug(ClientLogger) << "Drawing hover state";
         //悬浮状态，绘制悬浮效果
         painter.setBrush(DPaletteHelper::instance()->palette(this).text());
         painter.setOpacity(0.2);
@@ -346,6 +385,7 @@ void CMonthDayRectWidget::enterEvent(QEnterEvent *event)
 void CMonthDayRectWidget::enterEvent(QEvent *event)
 #endif
 {
+    // qCDebug(ClientLogger) << "CMonthDayRectWidget::enterEvent for date:" << m_date.toString();
     m_hovered = true;
     QWidget::enterEvent(event);
 }
@@ -356,6 +396,7 @@ void CMonthDayRectWidget::enterEvent(QEvent *event)
  */
 void CMonthDayRectWidget::leaveEvent(QEvent *event)
 {
+    // qCDebug(ClientLogger) << "CMonthDayRectWidget::leaveEvent for date:" << m_date.toString();
     m_hovered = false;
     QWidget::leaveEvent(event);
 }

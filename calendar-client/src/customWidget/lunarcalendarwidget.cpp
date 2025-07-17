@@ -4,6 +4,7 @@
 
 #include "lunarcalendarwidget.h"
 #include "lunarmanager.h"
+#include "commondef.h"
 
 #include <DPalette>
 #include <DStyle>
@@ -92,17 +93,20 @@ private:
 
 QColor CalenderStyle::getColor(const QStyleOption *option, DPalette::ColorType type, const QWidget *widget) const
 {
+    // qCDebug(ClientLogger) << "CalenderStyle::getColor - DPalette::ColorType" << type;
     const DPalette &pa = DPaletteHelper::instance()->palette(widget, option->palette);
     return pa.brush(type).color();
 }
 
 QColor CalenderStyle::getColor(const QStyleOption *option, QPalette::ColorRole role) const
 {
+    // qCDebug(ClientLogger) << "CalenderStyle::getColor - QPalette::ColorRole" << role;
     return option->palette.brush(role).color();
 }
 
 void CalenderStyle::drawCalenderEllipse(QPainter *p, const QRect &rect, int offset) const
 {
+    // qCDebug(ClientLogger) << "CalenderStyle::drawCalenderEllipse with offset:" << offset;
     int d = (rect.height() - 7) / 2;
     int h = d + 7;
     QRect r = rect.adjusted(0, 0, 0, -(rect.height() - h));
@@ -115,7 +119,9 @@ void CalenderStyle::drawCalenderEllipse(QPainter *p, const QRect &rect, int offs
 
 void CalenderStyle::drawItemViewSelected(QPainter *p, const QStyleOption *opt) const
 {
+    // qCDebug(ClientLogger) << "CalenderStyle::drawItemViewSelected";
     if (opt->state & QStyle::State_Selected) {
+        // qCDebug(ClientLogger) << "Drawing selected item view";
         QRect rect = opt->rect;
 
         int d = (rect.height() - 7) / 2;
@@ -134,9 +140,12 @@ void CalenderStyle::drawItemViewSelected(QPainter *p, const QStyleOption *opt) c
 
 void CalenderStyle::drawItemViewFocus(QPainter *p, const QStyleOption *opt, const QWidget *w) const
 {
+    // qCDebug(ClientLogger) << "CalenderStyle::drawItemViewFocus";
     const QColor &focus_color = getColor(opt, QPalette::Highlight);
-    if (!focus_color.isValid() || focus_color.alpha() == 0)
+    if (!focus_color.isValid() || focus_color.alpha() == 0) {
+        qCDebug(ClientLogger) << "Focus color invalid or transparent, returning";
         return;
+    }
 
     p->setRenderHint(QPainter::Antialiasing);
     QPen pen;
@@ -146,6 +155,7 @@ void CalenderStyle::drawItemViewFocus(QPainter *p, const QStyleOption *opt, cons
     p->setBrush(Qt::NoBrush);
 
     bool calendar = w && (w->objectName() == "qt_calendar_calendarview");
+    // qCDebug(ClientLogger) << "Is calendar view:" << calendar;
 
     pen.setWidth(2);
     int offset = 1;
@@ -153,6 +163,7 @@ void CalenderStyle::drawItemViewFocus(QPainter *p, const QStyleOption *opt, cons
     pen.setColor(getColor(opt, QPalette::Base));
     p->setPen(pen);
     if (calendar) {
+        // qCDebug(ClientLogger) << "Drawing inner frame for calendar";
         pen.setWidth(3);
         p->setPen(pen);
         offset = 2;
@@ -163,6 +174,7 @@ void CalenderStyle::drawItemViewFocus(QPainter *p, const QStyleOption *opt, cons
     pen.setColor(focus_color);
     p->setPen(pen);
     if (calendar) {
+        // qCDebug(ClientLogger) << "Drawing outer frame for calendar";
         pen.setWidth(2);
         p->setPen(pen);
         offset = 1;
@@ -172,6 +184,7 @@ void CalenderStyle::drawItemViewFocus(QPainter *p, const QStyleOption *opt, cons
 
 QString CalenderStyle::getLunarDayName(const QDate &date) const
 {
+    qCDebug(ClientLogger) << "CalenderStyle::getLunarDayName for date:" << date.toString();
     updateLunarInfo(date);
     CaHuangLiDayInfo &info = m_caHuangLiDayMap[date];
 
@@ -180,6 +193,7 @@ QString CalenderStyle::getLunarDayName(const QDate &date) const
 
 QString CalenderStyle::getLunarYearDesc(const QDate &date) const
 {
+    qCDebug(ClientLogger) << "CalenderStyle::getLunarYearDesc for date:" << date.toString();
     updateLunarInfo(date);
     CaHuangLiDayInfo &info = m_caHuangLiDayMap[date];
 
@@ -188,10 +202,14 @@ QString CalenderStyle::getLunarYearDesc(const QDate &date) const
 
 void CalenderStyle::updateLunarInfo(const QDate &date) const
 {
-    if (m_caHuangLiDayMap.count() > 100)
+    qCDebug(ClientLogger) << "CalenderStyle::updateLunarInfo for date:" << date.toString();
+    if (m_caHuangLiDayMap.count() > 100) {
+        qCDebug(ClientLogger) << "Map size exceeds 100, clearing cache";
         m_caHuangLiDayMap.clear();
+    }
 
     if (!m_caHuangLiDayMap.contains(date)) {
+        qCDebug(ClientLogger) << "Date not in cache, fetching lunar info";
         CaHuangLiDayInfo info = gLunarManager->getHuangLiDay(date);
         m_caHuangLiDayMap[date] = info;
     }
@@ -199,20 +217,26 @@ void CalenderStyle::updateLunarInfo(const QDate &date) const
 
 void CalenderStyle::drawControl(QStyle::ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
+    qCDebug(ClientLogger) << "CalenderStyle::drawControl element:" << element;
     const QWidget *w = widget;
     const QStyleOption *opt = option;
     QPainter *p = painter;
 
     while (element == CE_ItemViewItem) {
         if (w && w->objectName() == "qt_calendar_calendarview") {
+            // qCDebug(ClientLogger) << "Drawing calendar view item";
             if (const QStyleOptionViewItem *vopt = qstyleoption_cast<const QStyleOptionViewItem *>(opt)) {
 
                 LunarCalendarWidget *calendar = qobject_cast<LunarCalendarWidget *>(w->parent());
-                if (!calendar)
+                if (!calendar) {
+                    qCDebug(ClientLogger) << "Calendar widget not found, breaking";
                     break;
+                }
                 const QAbstractTableModel *model = qobject_cast<const QAbstractTableModel *>(vopt->index.model());
-                if (!model)
+                if (!model) {
+                    qCDebug(ClientLogger) << "Model not found, breaking";
                     break;
+                }
 
                 //获取阳历和阴历
                 QString dayName;
@@ -221,17 +245,21 @@ void CalenderStyle::drawControl(QStyle::ControlElement element, const QStyleOpti
                 int day = vopt->index.data().toInt();
                 //该item的时间
                 QDate curDate = QDate(calendar->yearShown(), calendar->monthShown(), 1);
+                // qCDebug(ClientLogger) << "Processing item with day:" << day << "initial date:" << curDate.toString();
                 //显示天的item需要获取每个item的显示时间
                 if (day > 0) {
                     //如果是第一行会显示上个月的日期
                     if (vopt->index.row() < 2 && day > 20) {
+                        // qCDebug(ClientLogger) << "Adjusting to previous month";
                         curDate = curDate.addMonths(-1);
                     } else if (vopt->index.row() > 3 && day < 15) {
                         //如果显示行数大于3且显示的天小于15则表示是下个月
+                        // qCDebug(ClientLogger) << "Adjusting to next month";
                         curDate = curDate.addMonths(1);
                     }
                     curDate.setDate(curDate.year(), curDate.month(), day);
                     dayName = getLunarDayName(curDate);
+                    // qCDebug(ClientLogger) << "Final date:" << curDate.toString() << "lunar day:" << dayName;
 
                     //更新阴历年描述
                     int selectedYear = calendar->yearShown();
@@ -239,6 +267,7 @@ void CalenderStyle::drawControl(QStyle::ControlElement element, const QStyleOpti
 
                     //如果为焦点状态，则根据该item的日期设置年份时间
                     if (vopt->state & QStyle::State_HasFocus) {
+                        // qCDebug(ClientLogger) << "Item has focus, updating lunar year text";
                         QDate selectedDate = QDate(selectedYear, selectedMonth, day);
                         calendar->setLunarYearText(getLunarYearDesc(selectedDate));
                     }
@@ -249,6 +278,7 @@ void CalenderStyle::drawControl(QStyle::ControlElement element, const QStyleOpti
 
                 //绘制禁用项
                 if (!(vopt->state & QStyle::State_Enabled)) {
+                    // qCDebug(ClientLogger) << "Drawing disabled item";
                     p->save();
                     p->setPen(Qt::NoPen);
                     p->setBrush(getColor(vopt, DPalette::Window));
@@ -261,6 +291,7 @@ void CalenderStyle::drawControl(QStyle::ControlElement element, const QStyleOpti
 
                 // draw the text
                 if (!vopt->text.isEmpty()) {
+                    // qCDebug(ClientLogger) << "Drawing text:" << vopt->text;
                     QPalette::ColorGroup cg = (vopt->state & QStyle::State_Enabled)
                                                   ? QPalette::Normal
                                                   : QPalette::Disabled;
@@ -279,9 +310,11 @@ void CalenderStyle::drawControl(QStyle::ControlElement element, const QStyleOpti
                     const QRect rect = vopt->rect;
                     int d = (rect.height() - 7) / 2;
                     if (vopt->index.row() == 0) {
+                        // qCDebug(ClientLogger) << "Drawing header row text";
                         p->setPen(colorOrg);
                         p->drawText(vopt->rect, Qt::AlignCenter, dayNumber);
                     } else {
+                        // qCDebug(ClientLogger) << "Drawing day number and lunar day";
                         int h = d + 7;
                         p->setPen(colorOrg);
                         p->drawText(rect.adjusted(0, 0, 0, -(rect.height() - h)), Qt::AlignCenter, dayNumber);
@@ -294,6 +327,7 @@ void CalenderStyle::drawControl(QStyle::ControlElement element, const QStyleOpti
 
                 //绘制日历分割线
                 if (vopt->index.row() == 0) {
+                    // qCDebug(ClientLogger) << "Drawing calendar separator line for column:" << vopt->index.column();
                     p->save();
                     QColor color = getColor(vopt, DPalette::FrameBorder, w);
                     color.setAlpha(static_cast<int>(255 * 0.05));
@@ -314,6 +348,7 @@ void CalenderStyle::drawControl(QStyle::ControlElement element, const QStyleOpti
 
                 // draw the focus rect
                 if (vopt->state & QStyle::State_HasFocus) {
+                    // qCDebug(ClientLogger) << "Drawing focus rectangle";
                     QStyleOptionFocusRect o;
                     o.QStyleOption::operator=(*vopt);
                     o.rect = proxy()->subElementRect(SE_ItemViewItemFocusRect, vopt, w);
@@ -339,6 +374,7 @@ LunarCalendarWidget::LunarCalendarWidget(QWidget *parent)
     : QCalendarWidget(parent)
     , m_style(new CalenderStyle)
 {
+    qCDebug(ClientLogger) << "LunarCalendarWidget constructor";
     QWidget *w = findChild<QTableView *>("qt_calendar_calendarview");
     if (w)
         w->setStyle(m_style);
@@ -362,6 +398,7 @@ LunarCalendarWidget::LunarCalendarWidget(QWidget *parent)
 
 LunarCalendarWidget::~LunarCalendarWidget()
 {
+    qCDebug(ClientLogger) << "LunarCalendarWidget destructor";
     //Sets the widget's GUI style to style. The ownership of the style object is not transferred.
     //需手动删除
     delete m_style;
@@ -369,27 +406,36 @@ LunarCalendarWidget::~LunarCalendarWidget()
 
 void LunarCalendarWidget::setLunarYearText(const QString &text)
 {
+    qCDebug(ClientLogger) << "LunarCalendarWidget::setLunarYearText:" << text;
     if (m_lunarLabel->text() != text)
         m_lunarLabel->setText(text);
 }
 
 QString LunarCalendarWidget::lunarYearText()
 {
+    qCDebug(ClientLogger) << "LunarCalendarWidget::lunarYearText";
     return m_lunarLabel->text();
 }
 
 QSize LunarCalendarWidget::minimumSizeHint() const
 {
+    qCDebug(ClientLogger) << "LunarCalendarWidget::minimumSizeHint";
     QTableView *view = findChild<QTableView *>("qt_calendar_calendarview");
-    if (!view)
+    if (!view) {
+        qCDebug(ClientLogger) << "Calendar view not found, returning empty size";
         return QSize();
+    }
     QAbstractItemModel *model = view->model();
-    if (!model)
+    if (!model) {
+        qCDebug(ClientLogger) << "Model not found, returning empty size";
         return QSize();
+    }
 
     QWidget *navigationbar = findChild<QWidget *>("qt_calendar_navigationbar");
-    if (!navigationbar)
+    if (!navigationbar) {
+        qCDebug(ClientLogger) << "Navigation bar not found, returning empty size";
         return QSize();
+    }
 
     int rowcount = model->rowCount();
     int hf = QFontMetrics(this->font()).height();
@@ -407,5 +453,6 @@ QSize LunarCalendarWidget::minimumSizeHint() const
     //底部留空
     h += BottomSpacing;
 
+    qCDebug(ClientLogger) << "Calculated minimum size:" << QSize(w, h);
     return QSize(w, h);
 }

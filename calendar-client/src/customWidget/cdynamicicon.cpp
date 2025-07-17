@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "cdynamicicon.h"
-
+#include "commondef.h"
 
 #include <DAboutDialog>
 #include <DLog>
@@ -39,6 +39,7 @@ CDynamicIcon::CDynamicIcon(int width, int height)
     , m_backgroundrenderer(new QSvgRenderer())
 
 {
+    qCDebug(ClientLogger) << "CDynamicIcon constructor initialized with size:" << width << "x" << height;
     m_pixmap->fill(Qt::transparent);
     m_Date = QDate::currentDate();
     setDate(m_Date);
@@ -46,6 +47,7 @@ CDynamicIcon::CDynamicIcon(int width, int height)
 
 CDynamicIcon::~CDynamicIcon()
 {
+    qCDebug(ClientLogger) << "CDynamicIcon destructor called";
     delete m_pixmap;
     m_pixmap = nullptr;
 
@@ -65,7 +67,9 @@ CDynamicIcon::~CDynamicIcon()
 
 CDynamicIcon *CDynamicIcon::getInstance()
 {
+    qCDebug(ClientLogger) << "CDynamicIcon::getInstance - Getting singleton instance";
     if (nullptr == m_Icon) {
+        qCDebug(ClientLogger) << "Creating new CDynamicIcon instance";
         m_Icon = new CDynamicIcon(512, 512);
     }
     return m_Icon;
@@ -73,6 +77,7 @@ CDynamicIcon *CDynamicIcon::getInstance()
 
 void CDynamicIcon::releaseInstance()
 {
+    qCDebug(ClientLogger) << "CDynamicIcon::releaseInstance - Releasing singleton instance";
     if (m_Icon != nullptr) {
         delete m_Icon;
         m_Icon = nullptr;
@@ -81,18 +86,22 @@ void CDynamicIcon::releaseInstance()
 
 void CDynamicIcon::setDate(const QDate &date)
 {
+    // qCDebug(ClientLogger) << "CDynamicIcon::setDate - Setting date to:" << date;
     m_Date = date;
     QString dayfile = QString(":/resources/DynamicIcon/day%1.svg").arg(date.day());
 
     m_Dayrenderer->load(dayfile);
 
     QString weekfile = QString(":/resources/DynamicIcon/week%1.svg").arg(date.dayOfWeek());
+    // qCDebug(ClientLogger) << "Loading week SVG:" << weekfile;
     m_Weekrenderer->load(weekfile);
 
     QString monthfile = QString(":/resources/DynamicIcon/month%1.svg").arg(date.month());
+    // qCDebug(ClientLogger) << "Loading month SVG:" << monthfile;
     m_Monthrenderer->load(monthfile);
 
     QString backgroundfile(":/resources/DynamicIcon/calendar_bg.svg");
+    // qCDebug(ClientLogger) << "Loading background SVG:" << backgroundfile;
     m_backgroundrenderer->load(backgroundfile);
 
     //draw pixmap
@@ -102,23 +111,28 @@ void CDynamicIcon::setDate(const QDate &date)
 
 void CDynamicIcon::setIcon()
 {
+    // qCDebug(ClientLogger) << "CDynamicIcon::setIcon - Setting application icon";
     QIcon icon(this->getPixmap());
     qApp->setProductIcon(icon);
     qApp->setWindowIcon(icon);
 
-    if (qApp->aboutDialog() != nullptr)
+    if (qApp->aboutDialog() != nullptr) {
+        // qCDebug(ClientLogger) << "Setting about dialog icon";
         qApp->aboutDialog()->setProductIcon(icon);
+    }
 
     m_Titlebar->setIcon(icon);
 }
 
 void CDynamicIcon::setTitlebar(DTitlebar *titlebar)
 {
+    // qCDebug(ClientLogger) << "CDynamicIcon::setTitlebar - Setting titlebar";
     m_Titlebar = titlebar;
 }
 
 void CDynamicIcon::paintPixmap(QPixmap *pixmap)
 {
+    // qCDebug(ClientLogger) << "CDynamicIcon::paintPixmap - Painting icon with size:" << pixmap->size();
     QPainter painter(pixmap);
 
     //draw background

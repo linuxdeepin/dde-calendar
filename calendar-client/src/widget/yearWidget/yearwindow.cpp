@@ -8,6 +8,7 @@
 #include "schedulesearchview.h"
 #include "yearscheduleview.h"
 #include "calendarglobalenv.h"
+#include "commondef.h"
 
 #include <DPalette>
 
@@ -21,6 +22,7 @@ DGUI_USE_NAMESPACE
 CYearWindow::CYearWindow(QWidget *parent)
     : CScheduleBaseWidget(parent)
 {
+    qCDebug(ClientLogger) << "CYearWindow constructed";
     initUI();
     initConnection();
     setContentsMargins(0, 0, 0, 0);
@@ -36,7 +38,7 @@ CYearWindow::CYearWindow(QWidget *parent)
 
 CYearWindow::~CYearWindow()
 {
-
+    qCDebug(ClientLogger) << "CYearWindow destroyed";
 }
 
 /**
@@ -47,8 +49,10 @@ CYearWindow::~CYearWindow()
  */
 bool CYearWindow::eventFilter(QObject *watched, QEvent *event)
 {
+    // qCDebug(ClientLogger) << "Event filter received for object:" << watched->objectName() << "with event type:" << event->type();
     if (watched == m_today) {
         if (event->type() == QEvent::MouseButtonPress) {
+            qCDebug(ClientLogger) << "Today button pressed";
             slottoday();
         }
         if (event->type() == QEvent::KeyPress) {
@@ -56,6 +60,7 @@ bool CYearWindow::eventFilter(QObject *watched, QEvent *event)
             QKeyEvent *key = dynamic_cast<QKeyEvent *>(event);
             if (key->key() == Qt::Key_Return) {
                 //返回今天
+                qCDebug(ClientLogger) << "Return key pressed on today button";
                 slottoday();
             }
         }
@@ -65,9 +70,11 @@ bool CYearWindow::eventFilter(QObject *watched, QEvent *event)
             QKeyEvent *key = dynamic_cast<QKeyEvent *>(event);
             if (key->key() == Qt::Key_Up) {
                 //上一年
+                qCDebug(ClientLogger) << "Up key pressed on year widget, switching to previous year";
                 slotprev();
             } else if (key->key() == Qt::Key_Down) {
                 //下一年
+                qCDebug(ClientLogger) << "Down key pressed on year widget, switching to next year";
                 slotnext();
             }
         }
@@ -81,8 +88,10 @@ bool CYearWindow::eventFilter(QObject *watched, QEvent *event)
  */
 void CYearWindow::mousePressEvent(QMouseEvent *event)
 {
+    // qCDebug(ClientLogger) << "Mouse press event received";
     if (event->source() == Qt::MouseEventSynthesizedByQt) {
         //如果为触摸点击则记录开始坐标
+        // qCDebug(ClientLogger) << "Touch press detected at:" << event->pos();
         m_touchBeginPoint = event->pos();
     }
     QWidget::mousePressEvent(event);
@@ -94,13 +103,16 @@ void CYearWindow::mousePressEvent(QMouseEvent *event)
  */
 void CYearWindow::resizeEvent(QResizeEvent *event)
 {
+    // qCDebug(ClientLogger) << "Year window resize event with size:" << event->size();
     Q_UNUSED(event);
     m_topWidget->setGeometry(0, 0, this->width(), DDEMonthCalendar::M_YTopHeight);
 }
 
 void CYearWindow::mouseMoveEvent(QMouseEvent *event)
 {
+    // qCDebug(ClientLogger) << "Mouse move event received";
     if (event->source() == Qt::MouseEventSynthesizedByQt) {
+        // qCDebug(ClientLogger) << "Touch move detected at:" << event->pos();
         return;
     }
     QWidget::mouseMoveEvent(event);
@@ -108,20 +120,24 @@ void CYearWindow::mouseMoveEvent(QMouseEvent *event)
 
 void CYearWindow::mouseReleaseEvent(QMouseEvent *event)
 {
+    // qCDebug(ClientLogger) << "Mouse release event received";
     if (event->source() == Qt::MouseEventSynthesizedByQt) {
         //如果为触摸移动状态
         if (m_touchState == 2) {
             //获取停止位置
             QPointF stopPoint = event->pos();
+            qCDebug(ClientLogger) << "Touch release detected at:" << stopPoint << "with touch state:" << m_touchState;
             //计算出移动状态
             TouchGestureData touchGData = calculateAzimuthAngle(m_touchBeginPoint, stopPoint);
             //如果方向为上下则切换年份
             switch (touchGData.movingDirection) {
             case TouchGestureData::T_TOP: {
+                qCDebug(ClientLogger) << "Touch gesture detected: swipe up, switching to next year";
                 slotnext();
                 break;
             }
             case TouchGestureData::T_BOTTOM: {
+                qCDebug(ClientLogger) << "Touch gesture detected: swipe down, switching to previous year";
                 slotprev();
                 break;
             }
@@ -135,6 +151,7 @@ void CYearWindow::mouseReleaseEvent(QMouseEvent *event)
 
 bool CYearWindow::event(QEvent *e)
 {
+    // qCDebug(ClientLogger) << "Event received with type:" << e->type();
     if (e->type() == QEvent::Gesture)
         return gestureEvent(dynamic_cast<QGestureEvent *>(e));
     return QWidget::event(e);
@@ -147,6 +164,7 @@ bool CYearWindow::event(QEvent *e)
  */
 bool CYearWindow::gestureEvent(QGestureEvent *event)
 {
+    qCDebug(ClientLogger) << "Gesture event received";
     if (QGesture *tap = event->gesture(Qt::TapGesture))
         tapGestureTriggered(dynamic_cast<QTapGesture *>(tap));
     if (QGesture *pan = event->gesture(Qt::PanGesture))
@@ -160,19 +178,24 @@ bool CYearWindow::gestureEvent(QGestureEvent *event)
  */
 void CYearWindow::tapGestureTriggered(QTapGesture *tap)
 {
+    qCDebug(ClientLogger) << "Tap gesture triggered with state:" << tap->state();
     switch (tap->state()) {
     case Qt::NoGesture: {
+        qCDebug(ClientLogger) << "Tap gesture no gesture";
         break;
     }
     case Qt::GestureStarted: {
+        qCDebug(ClientLogger) << "Tap gesture started";
         m_touchState = 1;
         break;
     }
     case Qt::GestureUpdated: {
+        qCDebug(ClientLogger) << "Tap gesture updated";
         m_touchState = 2;
         break;
     }
     case Qt::GestureFinished: {
+        qCDebug(ClientLogger) << "Tap gesture finished";
         break;
     }
     default: {
@@ -187,6 +210,7 @@ void CYearWindow::tapGestureTriggered(QTapGesture *tap)
  */
 void CYearWindow::panTriggered(QPanGesture *pan)
 {
+    qCDebug(ClientLogger) << "Pan gesture triggered with state:" << pan->state();
     switch (pan->state()) {
     case Qt::GestureFinished: {
         QPointF zeroPoint(0, 0);
@@ -194,10 +218,12 @@ void CYearWindow::panTriggered(QPanGesture *pan)
         TouchGestureData touchGData = calculateAzimuthAngle(zeroPoint, offset);
         switch (touchGData.movingDirection) {
         case TouchGestureData::T_TOP: {
+            qCDebug(ClientLogger) << "Pan gesture detected: upward movement, switching to next year";
             slotnext();
             break;
         }
         case TouchGestureData::T_BOTTOM: {
+            qCDebug(ClientLogger) << "Pan gesture detected: downward movement, switching to previous year";
             slotprev();
             break;
         }
@@ -220,6 +246,7 @@ void CYearWindow::panTriggered(QPanGesture *pan)
  */
 TouchGestureData CYearWindow::calculateAzimuthAngle(QPointF &startPoint,  QPointF &stopPoint)
 {
+    qCDebug(ClientLogger) << "Calculating azimuth angle from:" << startPoint << "to:" << stopPoint;
     TouchGestureData _result{};
     qreal angle = 0.0000;
     qreal   dx = stopPoint.rx() - startPoint.rx();
@@ -249,6 +276,7 @@ TouchGestureData CYearWindow::calculateAzimuthAngle(QPointF &startPoint,  QPoint
  */
 void CYearWindow::initUI()
 {
+    qCDebug(ClientLogger) << "Initializing UI for CYearWindow";
     m_today = new LabelWidget(this);
     m_today->setObjectName("yearToDay");
     m_today->setAccessibleName("yearToDay");
@@ -371,6 +399,7 @@ void CYearWindow::initUI()
     m_topWidget->setLayout(yeartitleLayout);
 
     m_scheduleView = new CYearScheduleOutView(this);
+    qCDebug(ClientLogger) << "UI initialization completed for CYearWindow";
 }
 
 /**
@@ -378,6 +407,7 @@ void CYearWindow::initUI()
  */
 void CYearWindow::initConnection()
 {
+    qCDebug(ClientLogger) << "Initializing connections for CYearWindow";
     connect(m_prevButton, &DIconButton::clicked, this, &CYearWindow::slotprev);
     connect(m_nextButton, &DIconButton::clicked, this, &CYearWindow::slotnext);
     connect(m_StackedWidget, &AnimationStackedWidget::signalIsFinished, this, &CYearWindow::setYearData);
@@ -392,7 +422,9 @@ void CYearWindow::initConnection()
  */
 void CYearWindow::setTheMe(int type)
 {
+    qCDebug(ClientLogger) << "Setting theme to type:" << type;
     if (type == 0 || type == 1) {
+        qCDebug(ClientLogger) << "Setting theme to light";
         DPalette todayPa = m_today->palette();
         todayPa.setColor(DPalette::WindowText, QColor("#000000"));
         todayPa.setColor(DPalette::Window, Qt::white);
@@ -415,6 +447,7 @@ void CYearWindow::setTheMe(int type)
         m_yearLunarDayLabel->setPalette(LunaPa);
         m_yearLunarDayLabel->setForegroundRole(DPalette::WindowText);
     } else if (type == 2) {
+        qCDebug(ClientLogger) << "Setting theme to dark";
         DPalette todayPa = m_today->palette();
         todayPa.setColor(DPalette::WindowText, QColor("#C0C6D4"));
         QColor tbColor = "#414141";
@@ -454,6 +487,7 @@ void CYearWindow::setTheMe(int type)
  */
 void CYearWindow::setSearchWFlag(bool flag)
 {
+    // qCDebug(ClientLogger) << "Setting search flag to:" << flag;
     m_searchFlag = flag;
 }
 
@@ -462,6 +496,7 @@ void CYearWindow::setSearchWFlag(bool flag)
  */
 void CYearWindow::updateShowDate(const bool isUpdateBar)
 {
+    qCDebug(ClientLogger) << "Updating show date, isUpdateBar:" << isUpdateBar;
     Q_UNUSED(isUpdateBar);
     m_scheduleView->setTimeFormat((m_calendarManager->getTimeShowType()?"AP ":"") + m_calendarManager->getTimeFormat());
     m_yearWidget->setShowDate(getSelectDate());
@@ -472,6 +507,7 @@ void CYearWindow::updateShowDate(const bool isUpdateBar)
  */
 void CYearWindow::updateShowSchedule()
 {
+    qCDebug(ClientLogger) << "Updating show schedule data";
     //获取显示日期中是否包含日程信息标志
     m_yearWidget->setDateHasScheduleSign(ScheduleManager::getInstace()->getAllScheduleDate());
 
@@ -482,6 +518,7 @@ void CYearWindow::updateShowSchedule()
  */
 void CYearWindow::updateShowLunar()
 {
+    qCDebug(ClientLogger) << "Updating show lunar information";
     //获取农历信息
     getLunarInfo();
     m_yearWidget->setLunarYearDate(m_lunarYear);
@@ -496,6 +533,7 @@ void CYearWindow::updateShowLunar()
  */
 void CYearWindow::updateSearchScheduleInfo()
 {
+    qCDebug(ClientLogger) << "Updating search schedule information";
     //获取搜索日程信息
     m_yearWidget->setSearchSchedule(gScheduleManager->getAllSearchedScheduleDate());
 }
@@ -506,6 +544,7 @@ void CYearWindow::updateSearchScheduleInfo()
  */
 void CYearWindow::setSelectSearchScheduleInfo(const DSchedule::Ptr &info)
 {
+    // qCDebug(ClientLogger) << "Setting selected search schedule info:" << (info ? info->uid() : "null");
     Q_UNUSED(info);
 }
 
@@ -514,6 +553,7 @@ void CYearWindow::setSelectSearchScheduleInfo(const DSchedule::Ptr &info)
  */
 void CYearWindow::slotSetScheduleHide()
 {
+    // qCDebug(ClientLogger) << "Hiding schedule view";
     m_scheduleView->hide();
 }
 
@@ -522,6 +562,7 @@ void CYearWindow::slotSetScheduleHide()
  */
 void CYearWindow::slotprev()
 {
+    qCDebug(ClientLogger) << "Switching to previous year";
     QDate minYear = getSelectDate();
     if (minYear.year() > 1900)
     {
@@ -534,6 +575,7 @@ void CYearWindow::slotprev()
  */
 void CYearWindow::slotnext()
 {
+    qCDebug(ClientLogger) << "Switching to next year";
     QDate maxYear = getSelectDate();
     if (maxYear.year() < 2100)
     {
@@ -546,6 +588,7 @@ void CYearWindow::slotnext()
  */
 void CYearWindow::slottoday()
 {
+    qCDebug(ClientLogger) << "Returning to today";
     //隐藏提示
     slotSetScheduleHide();
     //设置选择时间为当前时间，切换年份信息
@@ -561,6 +604,7 @@ void CYearWindow::slottoday()
  */
 void CYearWindow::switchYear(const int offsetYear)
 {
+    qCDebug(ClientLogger) << "Switching year with offset:" << offsetYear;
     slotSetScheduleHide();
     //获取选择时间
     QDate _selectData = getSelectDate();
@@ -595,6 +639,7 @@ void CYearWindow::switchYear(const int offsetYear)
  */
 void CYearWindow::setLunarShow()
 {
+    qCDebug(ClientLogger) << "Setting lunar show with year:" << m_lunarYear << "day:" << m_lunarDay;
     m_yearLunarLabel->setText(m_lunarYear);
     m_yearLunarDayLabel->setText(m_lunarDay);
 }
@@ -604,6 +649,7 @@ void CYearWindow::setLunarShow()
  */
 void CYearWindow::setYearData()
 {
+    qCDebug(ClientLogger) << "Setting year data for date:" << getSelectDate().toString();
     //如果选择日期为本地时间日期则显示今天，否则显示返回当天
     if (getSelectDate() == getCurrendDateTime().date()) {
         m_today->setText(QCoreApplication::translate("today", "Today", "Today"));
@@ -630,6 +676,7 @@ void CYearWindow::setYearData()
  */
 void CYearWindow::slotMousePress(const QDate &selectDate, const int pressType)
 {
+    qCDebug(ClientLogger) << "Mouse press on date:" << selectDate.toString() << "with press type:" << pressType;
     slotSetScheduleHide();
     if (!selectDate.isValid())
         return;
@@ -639,6 +686,7 @@ void CYearWindow::slotMousePress(const QDate &selectDate, const int pressType)
     switch (pressType) {
     case 0: {
         // 0:单击
+        qCDebug(ClientLogger) << "Single click, showing schedule view";
         DSchedule::List _scheduleInfo {};
         //获取选择日期的日程信息
         _scheduleInfo = gScheduleManager->getScheduleByDay(selectDate);
@@ -654,10 +702,12 @@ void CYearWindow::slotMousePress(const QDate &selectDate, const int pressType)
         // 根据鼠标位置，决定悬浮框显示位置
         if (rPos.x() < this->width() / 2) {
             // 显示到右侧
+            qCDebug(ClientLogger) << "Showing schedule view on right side";
             m_scheduleView->setDirection(DArrowRectangle::ArrowLeft);
             m_scheduleView->show(rPos.x()+10, rPos.y());
         } else {
             // 显示到左侧
+            qCDebug(ClientLogger) << "Showing schedule view on left side";
             m_scheduleView->setDirection(DArrowRectangle::ArrowRight);
             m_scheduleView->show(rPos.x()-10, rPos.y());
         }
@@ -666,16 +716,19 @@ void CYearWindow::slotMousePress(const QDate &selectDate, const int pressType)
     }
     case 1: {
         // 1:双击时间
+        qCDebug(ClientLogger) << "Double click on date, switching to day view";
         signalSwitchView();
         break;
     }
     case 2: {
         // 2: 双击月
+        qCDebug(ClientLogger) << "Double click on month, switching to month view";
         signalSwitchView(1);
         break;
     }
     case 3: {
         // 3: 提示框跳转周视图
+        qCDebug(ClientLogger) << "Schedule view action, switching to week view";
         signalSwitchView(2);
         break;
     }
@@ -690,12 +743,17 @@ void CYearWindow::slotMousePress(const QDate &selectDate, const int pressType)
  */
 void CYearWindow::wheelEvent(QWheelEvent *event)
 {
+    // qCDebug(ClientLogger) << "Wheel event with delta y:" << event->angleDelta().y();
     //如果为左右方向则退出
-    if (event->angleDelta().x() != 0 )
+    if (event->angleDelta().x() != 0 ) {
+        // qCDebug(ClientLogger) << "return from Wheel event with delta x:" << event->angleDelta().x();
         return;
+    }
     if (event->angleDelta().y() < 0) {
+        qCDebug(ClientLogger) << "Wheel event next";
         slotnext();
     } else {
+        qCDebug(ClientLogger) << "Wheel event prev";
         slotprev();
     }
 }
@@ -703,6 +761,7 @@ void CYearWindow::wheelEvent(QWheelEvent *event)
 YearFrame::YearFrame(DWidget *parent)
     : QWidget(parent)
 {
+    qCDebug(ClientLogger) << "YearFrame constructed";
     QGridLayout *gridLayout = new QGridLayout;
     gridLayout->setContentsMargins(0, 0, 0, 0);
     gridLayout->setSpacing(8);
@@ -769,7 +828,7 @@ YearFrame::YearFrame(DWidget *parent)
 
 YearFrame::~YearFrame()
 {
-
+    qCDebug(ClientLogger) << "YearFrame destroyed";
 }
 
 /**
@@ -779,6 +838,7 @@ YearFrame::~YearFrame()
  */
 void YearFrame::setShowDate(const QDate &selectDate)
 {
+    qCDebug(ClientLogger) << "Setting show date for YearFrame to:" << selectDate.toString();
     QDate _showMonth(selectDate.year(), 1, 1);
     for (int i = 0; i < DDEYearCalendar::FrameSizeOfEveryYear; i++) {
         QDate _setShowMonth = _showMonth.addMonths(i);
@@ -797,6 +857,7 @@ void YearFrame::setShowDate(const QDate &selectDate)
  */
 void YearFrame::setLunarYearDate(const QString &lunar)
 {
+    qCDebug(ClientLogger) << "Setting lunar year date to:" << lunar;
     m_YearLunarLabel->setText(lunar);
 }
 
@@ -806,6 +867,7 @@ void YearFrame::setLunarYearDate(const QString &lunar)
  */
 void YearFrame::setDateHasScheduleSign(const QSet<QDate> &hasSchedule)
 {
+    qCDebug(ClientLogger) << "Setting date has schedule sign with" << hasSchedule.size() << "dates";
     QDate _startDate;
     QDate _stopDate;
     QDate _getDate;
@@ -833,7 +895,9 @@ void YearFrame::setDateHasScheduleSign(const QSet<QDate> &hasSchedule)
  */
 void YearFrame::setTheMe(int type)
 {
+    qCDebug(ClientLogger) << "Setting theme for YearFrame to type:" << type;
     if (type == 0 || type == 1) {
+        qCDebug(ClientLogger) << "Setting theme to light";
         DPalette gpa = palette();
         gpa.setColor(DPalette::Window, "#F8F8F8");
         setPalette(gpa);
@@ -849,6 +913,7 @@ void YearFrame::setTheMe(int type)
         m_YearLunarLabel->setPalette(LunaPa);
         m_YearLunarLabel->setForegroundRole(DPalette::WindowText);
     } else if (type == 2) {
+        qCDebug(ClientLogger) << "Setting theme to dark";
         DPalette gpa = palette();
         gpa.setColor(DPalette::Window, "#252525");
         setPalette(gpa);
@@ -875,6 +940,7 @@ void YearFrame::setTheMe(int type)
  */
 void YearFrame::setSearchSchedule(const QSet<QDate> &hasSchedule)
 {
+    qCDebug(ClientLogger) << "Setting search schedule with" << hasSchedule.size() << "dates";
     QDate _startDate;
     QDate _stopDate;
     QDate _getDate;
@@ -904,6 +970,7 @@ void YearFrame::setSearchSchedule(const QSet<QDate> &hasSchedule)
  */
 void YearFrame::setViewFocus(int index)
 {
+    qCDebug(ClientLogger) << "Setting view focus to index:" << index;
     if (index >= 0 && index < m_monthViewList.size()) {
         //设置选中view的焦点类型
         m_monthViewList.at(index)->setFocus(Qt::FocusReason::TabFocusReason);
@@ -916,6 +983,7 @@ void YearFrame::setViewFocus(int index)
  */
 int YearFrame::getViewFocusIndex()
 {
+    // qCDebug(ClientLogger) << "Getting view focus index:" << currentFocusView;
     return currentFocusView;
 }
 
@@ -924,10 +992,13 @@ int YearFrame::getViewFocusIndex()
  */
 void YearFrame::setYearShow()
 {
+    qCDebug(ClientLogger) << "Setting year show for year:" << m_selectDate.year();
     if (QLocale::system().language() == QLocale::Chinese) {
+        qCDebug(ClientLogger) << "Setting year show for year:" << m_selectDate.year() << "in Chinese";
         m_YearLabel->setText(QString::number(m_selectDate.year()) + tr("Y"));
         m_YearLunarLabel->setText(m_LunarYear);
     } else {
+        qCDebug(ClientLogger) << "Setting year show for year:" << m_selectDate.year() << "in English";
         m_YearLabel->setText(QString::number(m_selectDate.year()));
         m_YearLunarLabel->setText("");
     }
@@ -938,13 +1009,16 @@ void YearFrame::setYearShow()
  */
 bool YearFrame::eventFilter(QObject *watched, QEvent *event)
 {
+    // qCDebug(ClientLogger) << "Event filter received for object:" << watched->objectName() << "with event type:" << event->type();
     //返回当前活动窗口中的焦点小部件
     CYearView *monthview = qobject_cast<CYearView *>(QApplication::focusWidget());
     //焦点小部件是否为12个月份中的一个
     if (m_monthViewList.contains(monthview)) {
         //焦点小部件在list中的index
         currentFocusView = m_monthViewList.indexOf(monthview);
+        // qCDebug(ClientLogger) << "Focus changed to month view index:" << currentFocusView;
     } else {
+        // qCDebug(ClientLogger) << "Focus changed to none";
         currentFocusView = -1;
     }
     return QWidget::eventFilter(watched, event);

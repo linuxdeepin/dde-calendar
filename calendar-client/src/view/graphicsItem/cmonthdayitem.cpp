@@ -5,6 +5,7 @@
 #include "cmonthdayitem.h"
 #include "constants.h"
 #include "scheduledatamanage.h"
+#include "commondef.h"
 
 #include <DIcon>
 
@@ -17,6 +18,7 @@ CMonthDayItem::CMonthDayItem(QGraphicsItem *parent)
     , m_DayLunar("")
     , m_DayStatus(H_NONE)
 {
+    qCDebug(ClientLogger) << "CMonthDayItem constructor";
     //设置字体
     m_dayNumFont.setPixelSize(DDECalendar::FontSizeTwentyfour);
     m_dayNumFont.setWeight(QFont::Light);
@@ -27,6 +29,7 @@ CMonthDayItem::CMonthDayItem(QGraphicsItem *parent)
 
 CMonthDayItem::~CMonthDayItem()
 {
+    qCDebug(ClientLogger) << "CMonthDayItem destructor";
 }
 
 /**
@@ -35,6 +38,7 @@ CMonthDayItem::~CMonthDayItem()
  */
 void CMonthDayItem::setLunar(const QString &lunar)
 {
+    // qCDebug(ClientLogger) << "CMonthDayItem::setLunar - lunar:" << lunar;
     m_DayLunar = lunar;
 }
 
@@ -44,6 +48,7 @@ void CMonthDayItem::setLunar(const QString &lunar)
  */
 void CMonthDayItem::setStatus(const CMonthDayItem::HolidayStatus &status)
 {
+    // qCDebug(ClientLogger) << "CMonthDayItem::setStatus - status:" << status;
     m_DayStatus = status;
 }
 
@@ -53,9 +58,11 @@ void CMonthDayItem::setStatus(const CMonthDayItem::HolidayStatus &status)
  */
 void CMonthDayItem::setTheMe(int type)
 {
+    qCDebug(ClientLogger) << "CMonthDayItem::setTheMe - type:" << type;
     m_themetype = type;
 
     if (type == 0 || type == 1) {
+        qCDebug(ClientLogger) << "Setting light theme colors";
         m_dayNumColor = "#000000";
         m_dayNumCurrentColor = "#FFFFFF";
 
@@ -71,6 +78,7 @@ void CMonthDayItem::setTheMe(int type)
         m_BorderColor = "#000000";
         m_BorderColor.setAlphaF(0.05);
     } else if (type == 2) {
+        qCDebug(ClientLogger) << "Setting dark theme colors";
         m_dayNumColor = "#C0C6D4";
         m_dayNumCurrentColor = "#B8D3FF";
 
@@ -92,6 +100,7 @@ void CMonthDayItem::setTheMe(int type)
 
 void CMonthDayItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
+    // qCDebug(ClientLogger) << "CMonthDayItem::paint - date:" << m_Date << "isCurrentMonth:" << m_IsCurrentMonth;
     Q_UNUSED(option)
     Q_UNUSED(widget)
     const int hh = 36;
@@ -101,20 +110,25 @@ void CMonthDayItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
     if (m_LunarVisible) {
         switch (m_DayStatus) {
         case H_WORK:
+            // qCDebug(ClientLogger) << "Drawing work day background";
             painter->setBrush(QBrush(m_banColor));
             break;
         case H_REST:
+            // qCDebug(ClientLogger) << "Drawing rest day background";
             painter->setBrush(QBrush(m_xiuColor));
             break;
         default:
+            // qCDebug(ClientLogger) << "Drawing normal day background";
             painter->setBrush(QBrush(m_fillColor));
             break;
         }
     } else {
+        // qCDebug(ClientLogger) << "Lunar not visible, drawing normal background";
         painter->setBrush(QBrush(m_fillColor));
     }
 
     if (!m_IsCurrentMonth) {
+        // qCDebug(ClientLogger) << "Not current month, setting opacity to 0.4";
         painter->setOpacity(0.4);
     }
     QPen pen;
@@ -133,6 +147,7 @@ void CMonthDayItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
     }
     //如果为当前时间
     if (m_Date == QDate::currentDate()) {
+        // qCDebug(ClientLogger) << "Drawing current date highlight";
         //设置不透明度为1
         painter->setOpacity(1);
         QFont tFont = m_dayNumFont;
@@ -159,6 +174,7 @@ void CMonthDayItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
     painter->restore();
     //绘制农历
     if (m_LunarVisible) {
+        // qCDebug(ClientLogger) << "Drawing lunar text:" << m_DayLunar;
         QFontMetrics metrics(m_LunerFont);
         int Lunarwidth = metrics.horizontalAdvance(m_DayLunar);
         qreal filleRectX = this->rect().width() - 12 - 3 - (58 + Lunarwidth) / 2;
@@ -170,10 +186,12 @@ void CMonthDayItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
             // Use QIcon replace DIcon in order to fix image non-clear issue
             switch (m_DayStatus) {
             case H_WORK: {
+                // qCDebug(ClientLogger) << "Drawing work day icon";
                 QPixmap pixmap = QIcon(":/icons/deepin/builtin/icons/dde_calendar_ban_32px.svg").pixmap(iconSize);
                 painter->drawPixmap(fillRectT, pixmap);
             } break;
             case H_REST: {
+                // qCDebug(ClientLogger) << "Drawing rest day icon";
                 QPixmap pixmap = QIcon(":/icons/deepin/builtin/icons/dde_calendar_xiu.svg").pixmap(iconSize);
                 painter->drawPixmap(fillRectT, pixmap);
             } break;
@@ -189,6 +207,7 @@ void CMonthDayItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
     }
     //如果有焦点则绘制焦点效果
     if (getItemFocus()) {
+        // qCDebug(ClientLogger) << "Drawing focus effect for day item at position:" << getBackgroundNum();
         const int offset = 1;
         //获取tab图形
         QRectF drawRect(rect().x() + offset, rect().y() + offset, rect().width() - offset * 2, rect().height() - offset * 2);
@@ -209,6 +228,7 @@ void CMonthDayItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
         path.moveTo(drawRect.x(), drawRect.y());
         //如果为左下角则绘制圆角
         if (this->getBackgroundNum() == 35) {
+            // qCDebug(ClientLogger) << "Drawing bottom-left corner with rounded edge";
             path.lineTo(drawRect.x(), drawRect.y() + drawRect.height() - radius);
             QRectF arcRect(drawRect.x(), drawRect.y() + drawRect.height() - diameter, diameter, diameter);
             path.arcTo(arcRect, 180, 90);
@@ -217,6 +237,7 @@ void CMonthDayItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
         }
         //如果为右下角则绘制圆角
         if (this->getBackgroundNum() == 41) {
+            // qCDebug(ClientLogger) << "Drawing bottom-right corner with rounded edge";
             path.lineTo(drawRect.x() + drawRect.width() - radius, drawRect.y() + drawRect.height());
             QRectF arcRect(drawRect.x() + drawRect.width() - diameter, drawRect.y() + drawRect.height() - diameter, diameter, diameter);
             path.arcTo(arcRect, 270, 90);

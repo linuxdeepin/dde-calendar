@@ -41,14 +41,13 @@ QVariant ExportedInterface::invoke(const QString &action, const QString &paramet
             qCWarning(ClientLogger) << "Invalid schedule info for CREATE action";
             return QVariant(false);
         }
-        qCDebug(ClientLogger) << "Creating schedule with title:" << info->summary();
+        qCDebug(ClientLogger) << "Creating schedule";
         bool _createSucc = _scheduleOperation.createSchedule(info);
         //如果创建失败
         if (!_createSucc) {
-            qCWarning(ClientLogger) << "Failed to create schedule:" << info->summary();
+            qCWarning(ClientLogger) << "Failed to create schedule";
             return QVariant(false);
         }
-        qCDebug(ClientLogger) << "Successfully created schedule:" << info->summary();
     } else if (action == "VIEW") {
         qCDebug(ClientLogger) << "Viewing calendar with type:" << para.viewType;
         dynamic_cast<Calendarmainwindow *>(m_object)->viewWindow(para.viewType);

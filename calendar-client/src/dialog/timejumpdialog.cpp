@@ -4,11 +4,13 @@
 
 #include "timejumpdialog.h"
 #include "cschedulebasewidget.h"
+#include "commondef.h"
 #include <QHBoxLayout>
 #include <QLineEdit>
 
 TimeJumpDialog::TimeJumpDialog(ArrowDirection direction, QWidget *parent) : DArrowRectangle(direction, DArrowRectangle::FloatWindow, parent)
 {
+    qCDebug(ClientLogger) << "Creating time jump dialog";
     setWindowFlags(Qt::Popup);
     initView();
     initConnect();
@@ -16,6 +18,7 @@ TimeJumpDialog::TimeJumpDialog(ArrowDirection direction, QWidget *parent) : DArr
 
 void TimeJumpDialog::initView()
 {
+    qCDebug(ClientLogger) << "Initializing time jump dialog view";
     setRadius(16);  //设置圆角大小
     setArrowWidth(60);  //设置箭头宽度
     setArrowHeight(30); //设置箭头高度
@@ -45,11 +48,12 @@ void TimeJumpDialog::initView()
     QWidget *wgt = new QWidget();
     wgt->setLayout(hLayout);
     setContent(wgt);
-
+    qCDebug(ClientLogger) << "Time jump dialog view initialized";
 }
 
 void TimeJumpDialog::initConnect()
 {
+    qCDebug(ClientLogger) << "Initializing time jump dialog connections";
     connect(m_yearEdit, &CTimeLineEdit::signalNumChange, this, &TimeJumpDialog::slotEditNumChange);
     connect(m_monthEdit, &CTimeLineEdit::signalNumChange, this, &TimeJumpDialog::slotEditNumChange);
     connect(m_dayEdit, &CTimeLineEdit::signalNumChange, this, &TimeJumpDialog::slotEditNumChange);
@@ -57,10 +61,12 @@ void TimeJumpDialog::initConnect()
     connect(m_monthEdit, &CTimeLineEdit::signalDateJump, this, &TimeJumpDialog::slotDateJump);
     connect(m_dayEdit, &CTimeLineEdit::signalDateJump, this, &TimeJumpDialog::slotDateJump);
     connect(m_jumpButton, &QPushButton::clicked, this, &TimeJumpDialog::slotJumpButtonClicked);
+    qCDebug(ClientLogger) << "Time jump dialog connections initialized";
 }
 
 void TimeJumpDialog::initData()
 {
+    qCDebug(ClientLogger) << "Initializing time jump dialog data";
     m_yearEdit->setRange(1900, 2100);
     m_monthEdit->setRange(1, 12);
     //设置天编辑器限制范围
@@ -79,6 +85,7 @@ void TimeJumpDialog::initData()
  */
 void TimeJumpDialog::showPopup(const QDate &date, const QPoint &pos)
 {
+    qCDebug(ClientLogger) << "Showing time jump dialog";
     showPopup(date, pos.x(), pos.y());
 }
 
@@ -91,6 +98,7 @@ void TimeJumpDialog::showPopup(const QDate &date, const QPoint &pos)
  */
 void TimeJumpDialog::showPopup(const QDate &date, int x, int y)
 {
+    qCDebug(ClientLogger) << "Showing time jump dialog at position:" << x << "," << y;
     //保存时间
     m_date = date;
     //初始化数据
@@ -110,9 +118,11 @@ void TimeJumpDialog::showPopup(const QDate &date, int x, int y)
  */
 int TimeJumpDialog::getMaxDayNum()
 {
+    qCDebug(ClientLogger) << "Getting maximum day number for month:" << m_date.month();
     static int dayNum[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
     int maxDay = dayNum[m_date.month() - 1];
     if (m_date.month() == 2  && QDate::isLeapYear(m_date.year())) {
+        qCDebug(ClientLogger) << "Leap year";
         maxDay = 29;
     }
     return maxDay;
@@ -124,6 +134,7 @@ int TimeJumpDialog::getMaxDayNum()
  */
 void TimeJumpDialog::resetEdietStepEnable()
 {
+    qCDebug(ClientLogger) << "Resetting editor step enable";
     //将所有编辑器调整为可上下编辑状态
     m_yearEdit->setStepEnabled(CTimeLineEdit::StepUpEnabled | CTimeLineEdit::StepDownEnabled);
     m_monthEdit->setStepEnabled(CTimeLineEdit::StepUpEnabled | CTimeLineEdit::StepDownEnabled);
@@ -131,16 +142,20 @@ void TimeJumpDialog::resetEdietStepEnable()
 
     //根据每一级当前值设置上下编辑状态
     if (m_yearEdit->value() == m_yearEdit->minimum()) {
+        qCDebug(ClientLogger) << "Year edit minimum";
         m_yearEdit->setStepEnabled(CTimeLineEdit::StepUpEnabled);
         if (m_monthEdit->value() == m_monthEdit->minimum()) {
+            qCDebug(ClientLogger) << "Month edit minimum";
             m_monthEdit->setStepEnabled(CTimeLineEdit::StepUpEnabled);
             if (m_dayEdit->value() == m_dayEdit->minimum()) {
                 m_dayEdit->setStepEnabled(CTimeLineEdit::StepUpEnabled);
             }
         }
     } else if (m_yearEdit->value() == m_yearEdit->maximum()) {
+        qCDebug(ClientLogger) << "Year edit maximum";
         m_yearEdit->setStepEnabled(CTimeLineEdit::StepDownEnabled);
         if (m_monthEdit->value() == m_monthEdit->maximum()) {
+            qCDebug(ClientLogger) << "Month edit maximum";
             m_monthEdit->setStepEnabled(CTimeLineEdit::StepDownEnabled);
             if (m_dayEdit->value() == m_dayEdit->maximum()) {
                 m_dayEdit->setStepEnabled(CTimeLineEdit::StepDownEnabled);
@@ -157,10 +172,12 @@ void TimeJumpDialog::resetEdietStepEnable()
  */
 void TimeJumpDialog::slotEditNumChange(int id, int num)
 {
+    qCDebug(ClientLogger) << "Editing number changed:" << id << "," << num;
     switch (id) {
     case EditYear:
         //更改年
     {
+        qCDebug(ClientLogger) << "Year changed:" << num;
         //因直接设置一年的年月日可能会造成更改月或年后该日期不存在导致的日期错误，
         //所以变化年或者月时先将日变为1，后续再根据实际情况更改日日期
         int day = m_date.day();
@@ -174,6 +191,7 @@ void TimeJumpDialog::slotEditNumChange(int id, int num)
     case EditMonth:
         //更改月
     {
+        qCDebug(ClientLogger) << "Month changed:" << num;
         int day = m_date.day();
         m_date.setDate(m_date.year(), num, 1);
         int maxDay = getMaxDayNum();
@@ -184,9 +202,11 @@ void TimeJumpDialog::slotEditNumChange(int id, int num)
     break;
     case EditDay:
         //更改日
+        qCDebug(ClientLogger) << "Day changed:" << num;
         m_date.setDate(m_date.year(), m_date.month(), num);
         break;
     }
+    qCDebug(ClientLogger) << "Resetting editor step enable";
     resetEdietStepEnable();
 }
 
@@ -198,14 +218,18 @@ void TimeJumpDialog::slotEditNumChange(int id, int num)
  */
 void TimeJumpDialog::slotDateJump(int id, int num)
 {
+    qCDebug(ClientLogger) << "Date jump:" << id << "," << num;
     switch (id) {
     case EditYear:
+        qCDebug(ClientLogger) << "Year jump:" << num;
         m_date = m_date.addYears(num);
         break;
     case EditMonth:
+        qCDebug(ClientLogger) << "Month jump:" << num;
         m_date = m_date.addMonths(num);
         break;
     case EditDay:
+        qCDebug(ClientLogger) << "Day jump:" << num;
         m_date = m_date.addDays(num);
         break;
     }
@@ -219,6 +243,7 @@ void TimeJumpDialog::slotDateJump(int id, int num)
  */
 void TimeJumpDialog::slotJumpButtonClicked()
 {
+    qCDebug(ClientLogger) << "Jump button clicked";
     //将焦点转移到button控件上，使在跳转时间前正在编辑的edit控件触发finished事件
     m_jumpButton->setFocus();
     //设置全局时间

@@ -11,6 +11,7 @@
 #include "commondef.h"
 #include "myscheduleview.h"
 #include "constants.h"
+#include "commondef.h"
 
 
 #include <DPalette>
@@ -31,6 +32,7 @@ DGUI_USE_NAMESPACE
 CGraphicsView::CGraphicsView(QWidget *parent, ViewPosition Type)
     : CWeekDayGraphicsview(parent, Type, ViewType::PartTimeView)
 {
+    qCDebug(ClientLogger) << "CGraphicsView constructor - Type:" << Type;
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_timeInterval = height() / 24.0;
 
@@ -56,6 +58,7 @@ CGraphicsView::CGraphicsView(QWidget *parent, ViewPosition Type)
 
     //如果为周视图
     if (m_viewPos == WeekPos) {
+        qCDebug(ClientLogger) << "Week view detected, setting corner radius";
         //设置显示右下角圆角
         setShowRadius(false, true);
     }
@@ -63,6 +66,7 @@ CGraphicsView::CGraphicsView(QWidget *parent, ViewPosition Type)
 
 CGraphicsView::~CGraphicsView()
 {
+    qCDebug(ClientLogger) << "CGraphicsView destructor";
     m_timer->stop();
     m_timer->deleteLater();
     clearSchedule();
@@ -70,6 +74,8 @@ CGraphicsView::~CGraphicsView()
 
 void CGraphicsView::setMargins(int left, int top, int right, int bottom)
 {
+    qCDebug(ClientLogger) << "CGraphicsView::setMargins - left:" << left << "top:" << top 
+                         << "right:" << right << "bottom:" << bottom;
     Q_UNUSED(top)
     m_margins = QMargins(left, 0, right, bottom);
     setViewportMargins(m_margins);
@@ -79,6 +85,7 @@ void CGraphicsView::setTheMe(int type)
 {
     qCDebug(ClientLogger) << "Setting theme" << "type:" << type;
     if (type == 0 || type == 1) {
+        qCDebug(ClientLogger) << "Setting light theme colors";
         m_weekcolor = "#00429A";
         m_weekcolor.setAlphaF(0.05);
         QColor linecolor = "#000000";
@@ -89,6 +96,7 @@ void CGraphicsView::setTheMe(int type)
         m_LRPen.setStyle(Qt::SolidLine);
         m_TBPen.setStyle(Qt::SolidLine);
     } else if (type == 2) {
+        qCDebug(ClientLogger) << "Setting dark theme colors";
         m_weekcolor = "#4F9BFF";
         m_weekcolor.setAlphaF(0.1);
         QColor linecolor = "#000000";
@@ -115,23 +123,27 @@ void CGraphicsView::slotCreate(const QDateTime &date)
 
 bool CGraphicsView::MeetCreationConditions(const QDateTime &date)
 {
+    // qCDebug(ClientLogger) << "CGraphicsView::MeetCreationConditions - date:" << date;
     return qAbs(date.daysTo(m_PressDate)) < 7;
 }
 
 void CGraphicsView::updateHeight()
 {
+    // qCDebug(ClientLogger) << "CGraphicsView::updateHeight";
     scene()->update();
     update();
 }
 
 void CGraphicsView::setCurrentDate(const QDateTime &currentDate)
 {
+    qCDebug(ClientLogger) << "CGraphicsView::setCurrentDate - date:" << currentDate;
     m_currentDateTime = currentDate;
     scrollBarValueChangedSlot();
 }
 
 void CGraphicsView::setInfo(const DSchedule::List &info)
 {
+    // qCDebug(ClientLogger) << "CGraphicsView::setInfo - count:" << info.size();
     m_scheduleInfo = info;
 }
 
@@ -145,6 +157,7 @@ void CGraphicsView::upDateInfoShow(const CGraphicsView::DragStatus &status, cons
     switch (status) {
     case NONE:
         Q_UNUSED(info);
+        qCDebug(ClientLogger) << "Status: NONE, no action needed";
         break;
     case ChangeBegin:
     case ChangeEnd: {
@@ -169,6 +182,8 @@ void CGraphicsView::upDateInfoShow(const CGraphicsView::DragStatus &status, cons
     qint64 beginoffset = 0, endoffset = 0;
     DSchedule::List currentInfo;
 
+    // qCDebug(ClientLogger) << "Processing date range from" << m_beginDate << "to" << m_endDate 
+    //                      << "(" << count << "days)";
     for (int i = 0; i <= count; ++i) {
         currentDate = m_beginDate.addDays(i);
         currentInfo.clear();
@@ -192,6 +207,7 @@ void CGraphicsView::upDateInfoShow(const CGraphicsView::DragStatus &status, cons
         }
         std::sort(currentInfo.begin(), currentInfo.end());
         if (currentInfo.size() > 0) {
+            qCDebug(ClientLogger) << "Found" << currentInfo.size() << "schedules for date" << currentDate;
             m_InfoMap[currentDate] = currentInfo;
             QList<ScheduleclassificationInfo> info;
             scheduleClassificationType(currentInfo, info);
@@ -201,6 +217,8 @@ void CGraphicsView::upDateInfoShow(const CGraphicsView::DragStatus &status, cons
                 //如果为周视图则要显示一个位置显示日程的数目
                 if (m_viewPos == WeekPos) {
                     if (tNum > m_sMaxNum) {
+                        // qCDebug(ClientLogger) << "Week view: too many schedules (" << tNum 
+                        //                     << "), showing only" << m_sMaxNum;
                         tNum = m_sMaxNum;
                         for (int n = 0; n < tNum - 1; n++) {
                             addScheduleItem(info.at(m).vData.at(n), currentDate, n + 1,
@@ -219,12 +237,14 @@ void CGraphicsView::upDateInfoShow(const CGraphicsView::DragStatus &status, cons
                         addScheduleItem(tdetaliinfo, currentDate, tNum, tNum, 1,
                                         m_viewType, m_sMaxNum);
                     } else {
+                        qCDebug(ClientLogger) << "Week view: adding" << tNum << "schedules";
                         for (int n = 0; n < tNum; n++) {
                             addScheduleItem(info.at(m).vData.at(n), currentDate, n + 1,
                                             tNum, 0, m_viewType, m_sMaxNum);
                         }
                     }
                 } else {
+                    qCDebug(ClientLogger) << "Day view: adding" << tNum << "schedules";
                     for (int n = 0; n < tNum; n++) {
                         addScheduleItem(info.at(m).vData.at(n), currentDate, n + 1,
                                         tNum, 0, m_viewType, m_sMaxNum);
@@ -234,31 +254,41 @@ void CGraphicsView::upDateInfoShow(const CGraphicsView::DragStatus &status, cons
         }
     }
     //更新每个背景上的日程标签
+    qCDebug(ClientLogger) << "Updating background show items";
     updateBackgroundShowItem();
 }
 
 QDateTime CGraphicsView::getPosDate(const QPoint &p)
 {
-    return TimeRounding(m_coorManage->getDate(mapToScene(p)));
+    QDateTime result = TimeRounding(m_coorManage->getDate(mapToScene(p)));
+    // qCDebug(ClientLogger) << "CGraphicsView::getPosDate - point:" << p << "date:" << result;
+    return result;
 }
 
 void CGraphicsView::ShowSchedule(DragInfoItem *infoitem)
 {
+    qCDebug(ClientLogger) << "CGraphicsView::ShowSchedule - checking schedule type";
     CScheduleItem *scheduleitem = dynamic_cast<CScheduleItem *>(infoitem);
-    if (scheduleitem->getType() == 1)
+    if (scheduleitem->getType() == 1) {
+        qCDebug(ClientLogger) << "Schedule is type 1, skipping show";
         return;
+    }
+    qCDebug(ClientLogger) << "Showing schedule in parent view";
     DragInfoGraphicsView::ShowSchedule(infoitem);
 }
 
 void CGraphicsView::MoveInfoProcess(DSchedule::Ptr &info, const QPointF &pos)
 {
+    qCDebug(ClientLogger) << "CGraphicsView::MoveInfoProcess - pos:" << pos;
     Q_UNUSED(pos);
 
     if (!info->allDay()) {
         qint64 offset = m_PressDate.secsTo(m_MoveDate);
+        qCDebug(ClientLogger) << "Moving schedule by" << offset << "seconds";
         info->setDtStart(info->dtStart().addSecs(offset));
         info->setDtEnd(info->dtEnd().addSecs(offset));
     } else {
+        qCDebug(ClientLogger) << "Converting all-day schedule to timed schedule";
         info->setAllDay(false);
         //提醒规则
         info->setRRuleType(DSchedule::RRule_None);
@@ -281,6 +311,7 @@ void CGraphicsView::addScheduleItem(const DSchedule::Ptr &info, QDate date, int 
                                     viewtype),
         nullptr, type);
     if (type == 1) {
+        qCDebug(ClientLogger) << "Setting item type to COTHER";
         item->setItemType(CFocusItem::COTHER);
     }
     m_Scene->addItem(item);
@@ -294,21 +325,24 @@ void CGraphicsView::addScheduleItem(const DSchedule::Ptr &info, QDate date, int 
  */
 void CGraphicsView::setSelectSearchSchedule(const DSchedule::Ptr &info)
 {
-    qCDebug(ClientLogger) << "Setting selected search schedule" 
-                         << "summary:" << info->summary() 
-                         << "start:" << info->dtStart();
+    qCDebug(ClientLogger) << "Setting selected search schedule";
     DragInfoGraphicsView::setSelectSearchSchedule(info);
     setTime(info->dtStart().time());
+    
+    int animatedCount = 0;
     for (int i = 0; i < m_vScheduleItem.size(); ++i) {
         if (m_vScheduleItem.at(i)->getType() == 1)
             continue;
         //判断是否为选中日程
         if (m_vScheduleItem.at(i)->hasSelectSchedule(info)) {
+            // qCDebug(ClientLogger) << "Found matching schedule item at index" << i << ", starting animation";
             m_vScheduleItem.at(i)->setStartValue(0);
             m_vScheduleItem.at(i)->setEndValue(10);
             m_vScheduleItem.at(i)->startAnimation();
+            animatedCount++;
         }
     }
+    qCDebug(ClientLogger) << "Started animations for" << animatedCount << "matching schedule items";
 }
 
 void CGraphicsView::clearSchedule()
@@ -325,6 +359,7 @@ void CGraphicsView::clearSchedule()
 
 void CGraphicsView::scheduleClassificationType(DSchedule::List &scheduleInfolist, QList<ScheduleclassificationInfo> &info)
 {
+    qCDebug(ClientLogger) << "CGraphicsView::scheduleClassificationType - count:" << scheduleInfolist.size();
     DSchedule::List schedulelist = scheduleInfolist;
     if (schedulelist.isEmpty())
         return;
@@ -338,9 +373,11 @@ void CGraphicsView::scheduleClassificationType(DSchedule::List &scheduleInfolist
         QDateTime begTime = schedulelist.at(k)->dtStart();
 
         if (begTime.date().daysTo(endTime.date()) == 0 && begTime.time().secsTo(endTime.time()) < m_minTime) {
+            qCDebug(ClientLogger) << "Schedule too short, extending end time";
             endTime = begTime.addSecs(m_minTime);
         }
         if (endTime.time().hour() == 0 && endTime.time().second() == 0) {
+            qCDebug(ClientLogger) << "End time is midnight, subtracting 1 second";
             endTime = endTime.addSecs(-1);
         }
         containIndex.clear();
@@ -351,12 +388,14 @@ void CGraphicsView::scheduleClassificationType(DSchedule::List &scheduleInfolist
             }
         }
         if (containIndex.count() == 0) {
+            qCDebug(ClientLogger) << "Creating new classification group for schedule" << k;
             ScheduleclassificationInfo firstschedule;
             firstschedule.begindate = schedulelist.at(k)->dtStart();
             firstschedule.enddate = endTime;
             firstschedule.vData.append(schedulelist.at(k));
             info.append(firstschedule);
         } else {
+            qCDebug(ClientLogger) << "Adding schedule" << k << "to existing classification group" << containIndex.at(0);
             ScheduleclassificationInfo &scheduleInfo = info[containIndex.at(0)];
             int index = 0;
 
@@ -378,10 +417,12 @@ void CGraphicsView::scheduleClassificationType(DSchedule::List &scheduleInfolist
             scheduleInfo.vData.append(schedulelist.at(k));
         }
     }
+    qCDebug(ClientLogger) << "Classification complete, created" << info.size() << "groups";
 }
 
 void CGraphicsView::mouseDoubleClickEvent(QMouseEvent *event)
 {
+    qCDebug(ClientLogger) << "CGraphicsView::mouseDoubleClickEvent";
     emit signalScheduleShow(false);
     DGraphicsView::mouseDoubleClickEvent(event);
     CScheduleItem *item = dynamic_cast<CScheduleItem *>(itemAt(event->pos()));
@@ -417,9 +458,11 @@ void CGraphicsView::mouseDoubleClickEvent(QMouseEvent *event)
 
 void CGraphicsView::mousePressEvent(QMouseEvent *event)
 {
+    // qCDebug(ClientLogger) << "CGraphicsView::mousePressEvent - pos:" << event->pos();
     CScheduleItem *item = dynamic_cast<CScheduleItem *>(itemAt(event->pos()));
 
     if (item != nullptr && item->getType() == 1) {
+        // qCDebug(ClientLogger) << "Clicked on '...' item, hiding schedule";
         emit signalScheduleShow(false);
         return;
     }
@@ -428,10 +471,12 @@ void CGraphicsView::mousePressEvent(QMouseEvent *event)
 
 void CGraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
+    // qCDebug(ClientLogger) << "CGraphicsView::mouseMoveEvent - pos:" << event->pos();
     if (m_DragStatus == NONE) {
         CScheduleItem *item = dynamic_cast<CScheduleItem *>(itemAt(event->pos()));
 
         if (item != nullptr && item->getType() == 1) {
+            // qCDebug(ClientLogger) << "Mouse over '...' item, showing arrow cursor";
             setCursor(Qt::ArrowCursor);
             DGraphicsView::mouseMoveEvent(event);
             return;
@@ -442,6 +487,7 @@ void CGraphicsView::mouseMoveEvent(QMouseEvent *event)
 }
 void CGraphicsView::slotDoubleEvent(int type)
 {
+    qCDebug(ClientLogger) << "CGraphicsView::slotDoubleEvent - type:" << type;
     Q_UNUSED(type);
     m_updateDflag = true;
     emit signalsUpdateSchedule();
@@ -449,11 +495,13 @@ void CGraphicsView::slotDoubleEvent(int type)
 
 void CGraphicsView::slotScrollBar()
 {
+    // qCDebug(ClientLogger) << "CGraphicsView::slotScrollBar";
     emit signalScheduleShow(false);
 }
 
 void CGraphicsView::slotUpdateScene()
 {
+    // qCDebug(ClientLogger) << "CGraphicsView::slotUpdateScene";
     this->scene()->update();
 }
 
@@ -461,6 +509,7 @@ void CGraphicsView::slotStateChange(bool bState)
 {
     qCDebug(ClientLogger) << "State change" << "state:" << bState;
     if(bState) {
+        // qCDebug(ClientLogger) << "State change to true, hiding all schedule items";
         for (int i = 0; i < m_vScheduleItem.size(); i++) {
             m_vScheduleItem[i]->setVisible(false);
         }
@@ -478,6 +527,7 @@ Others:         无
 ************************************************************************/
 void CGraphicsView::wheelEvent(QWheelEvent *event)
 {
+    // qCDebug(ClientLogger) << "CGraphicsView::wheelEvent";
     emit signalScheduleShow(false);
     //非全天部分如果滚动为左右则退出
     if (event->angleDelta().x() != 0 ) {
@@ -502,6 +552,7 @@ Others:         无
 ************************************************************************/
 void CGraphicsView::resizeEvent(QResizeEvent *event)
 {
+    // qCDebug(ClientLogger) << "CGraphicsView::resizeEvent";
     scrollBarValueChangedSlot();
     QGraphicsView::resizeEvent(event);
     viewport()->update();
@@ -518,11 +569,14 @@ Others:         无
 ************************************************************************/
 void CGraphicsView::paintEvent(QPaintEvent *event)
 {
+    // qCDebug(ClientLogger) << "CGraphicsView::paintEvent";
     QPainter t_painter(viewport());
     int t_width = viewport()->width() + 2;
     //绘制水平线
     if (m_LRFlag) {
+        // qCDebug(ClientLogger) << "Drawing horizontal lines";
         if (m_currentTimeType == 0) {
+            // qCDebug(ClientLogger) << "Drawing horizontal lines for current time type 0";
             t_painter.save();
             t_painter.setPen(m_LRPen);
 
@@ -530,6 +584,7 @@ void CGraphicsView::paintEvent(QPaintEvent *event)
                 t_painter.drawLine(QPoint(0, m_vLRLarge[i] - 1), QPoint(t_width, m_vLRLarge[i] - 1));
             t_painter.restore();
         } else {
+            // qCDebug(ClientLogger) << "Drawing horizontal lines for current time type 1";
             t_painter.save();
             t_painter.setPen(m_LRPen);
 
@@ -553,6 +608,7 @@ void CGraphicsView::paintEvent(QPaintEvent *event)
 
 void CGraphicsView::scrollBarValueChangedSlot()
 {
+    // qCDebug(ClientLogger) << "CGraphicsView::scrollBarValueChangedSlot";
     QMutexLocker locker(&m_Mutex);
     int viewHeight = viewport()->height();
     m_vLRLarge.clear();
@@ -591,6 +647,7 @@ void CGraphicsView::scrollBarValueChangedSlot()
 
 CGraphicsView::PosInItem CGraphicsView::getPosInItem(const QPoint &p, const QRectF &itemRect)
 {
+    // qCDebug(ClientLogger) << "CGraphicsView::getPosInItem - pos:" << p << "itemRect:" << itemRect;
     QPointF scenePos = this->mapToScene(p);
     QPointF itemPos = QPointF(scenePos.x() - itemRect.x(),
                               scenePos.y() - itemRect.y());
@@ -608,6 +665,7 @@ CGraphicsView::PosInItem CGraphicsView::getPosInItem(const QPoint &p, const QRec
 
 DSchedule::Ptr CGraphicsView::getScheduleInfo(const QDateTime &beginDate, const QDateTime &endDate)
 {
+    // qCDebug(ClientLogger) << "CGraphicsView::getScheduleInfo - beginDate:" << beginDate << "endDate:" << endDate;
     DSchedule::Ptr info(new DSchedule);
     if (beginDate.secsTo(endDate) > 0) {
         info->setDtStart(beginDate);
@@ -635,16 +693,19 @@ DSchedule::Ptr CGraphicsView::getScheduleInfo(const QDateTime &beginDate, const 
 
 bool CGraphicsView::IsEqualtime(const QDateTime &timeFirst, const QDateTime &timeSecond)
 {
+    // qCDebug(ClientLogger) << "CGraphicsView::IsEqualtime - timeFirst:" << timeFirst << "timeSecond:" << timeSecond;
     return !(qAbs(timeFirst.secsTo(timeSecond)) > 100);
 }
 
 bool CGraphicsView::JudgeIsCreate(const QPointF &pos)
 {
+    // qCDebug(ClientLogger) << "CGraphicsView::JudgeIsCreate - pos:" << pos;
     return qAbs(pos.x() - m_PressPos.x()) > 20 || qAbs(m_PressDate.secsTo(m_coorManage->getDate(mapToScene(pos.toPoint())))) > 300;
 }
 
 void CGraphicsView::RightClickToCreate(QGraphicsItem *listItem, const QPoint &pos)
 {
+    // qCDebug(ClientLogger) << "CGraphicsView::RightClickToCreate - listItem:" << listItem << "pos:" << pos;
     Q_UNUSED(listItem);
     m_rightMenu->clear();
     m_rightMenu->addAction(m_createAction);
@@ -655,16 +716,19 @@ void CGraphicsView::RightClickToCreate(QGraphicsItem *listItem, const QPoint &po
 
 QDateTime CGraphicsView::getDragScheduleInfoBeginTime(const QDateTime &moveDateTime)
 {
+    // qCDebug(ClientLogger) << "CGraphicsView::getDragScheduleInfoBeginTime - moveDateTime:" << moveDateTime;
     return moveDateTime.secsTo(m_InfoEndTime) < DDECalendar::ThirtyMinutesWithSec ? m_InfoEndTime.addSecs(-DDECalendar::ThirtyMinutesWithSec) : moveDateTime;
 }
 
 QDateTime CGraphicsView::getDragScheduleInfoEndTime(const QDateTime &moveDateTime)
 {
+    // qCDebug(ClientLogger) << "CGraphicsView::getDragScheduleInfoEndTime - moveDateTime:" << moveDateTime;
     return m_InfoBeginTime.secsTo(moveDateTime) < DDECalendar::ThirtyMinutesWithSec ? m_InfoBeginTime.addSecs(DDECalendar::ThirtyMinutesWithSec) : moveDateTime;
 }
 
 QDateTime CGraphicsView::TimeRounding(const QDateTime &time)
 {
+    // qCDebug(ClientLogger) << "CGraphicsView::TimeRounding - time:" << time;
     int hours = time.time().hour();
     int minnutes = 0;
     minnutes = time.time().minute() / 15;
@@ -674,6 +738,7 @@ QDateTime CGraphicsView::TimeRounding(const QDateTime &time)
 
 void CGraphicsView::centerOnScene(const QPointF &pos)
 {
+    // qCDebug(ClientLogger) << "CGraphicsView::centerOnScene - pos:" << pos;
     // view 根据鼠标下的点作为锚点来定位 scene
     setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
     centerOn(pos);
@@ -685,11 +750,13 @@ void CGraphicsView::centerOnScene(const QPointF &pos)
 
 void CGraphicsView::setSceneHeightScale(const QPointF &pos)
 {
+    // qCDebug(ClientLogger) << "CGraphicsView::setSceneHeightScale - pos:" << pos;
     m_sceneHeightScale = pos.y() / this->scene()->height();
 }
 
 void CGraphicsView::keepCenterOnScene()
 {
+    // qCDebug(ClientLogger) << "CGraphicsView::keepCenterOnScene";
     QPointF pos;
     pos.setX(this->viewport()->width() / 2);
     pos.setY(this->scene()->height() * m_sceneHeightScale);
@@ -698,6 +765,7 @@ void CGraphicsView::keepCenterOnScene()
 
 void CGraphicsView::setTime(QTime time)
 {
+    // qCDebug(ClientLogger) << "CGraphicsView::setTime - time:" << time;
     int viewWidth = viewport()->width();
     int viewHeight = viewport()->height();
     QPoint newCenter(viewWidth / 2, viewHeight / 2);
@@ -711,13 +779,16 @@ void CGraphicsView::setTime(QTime time)
  */
 void CGraphicsView::updateInfo()
 {
+    // qCDebug(ClientLogger) << "CGraphicsView::updateInfo";
     //更新选择日程状态
     DragInfoGraphicsView::updateInfo();
     switch (m_DragStatus) {
     case IsCreate:
+        // qCDebug(ClientLogger) << "Updating info show for create";
         upDateInfoShow(IsCreate, m_DragScheduleInfo);
         break;
     default:
+        // qCDebug(ClientLogger) << "Updating info show for default";
         upDateInfoShow();
         break;
     }

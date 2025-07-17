@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "cradiobutton.h"
+#include "commondef.h"
 #include <DPaletteHelper>
 #include <QPainterPath>
 #include <QPainter>
@@ -11,20 +12,24 @@ DWIDGET_USE_NAMESPACE
 
 CRadioButton::CRadioButton(QWidget *parent) : QRadioButton(parent)
 {
+    qCDebug(ClientLogger) << "CRadioButton constructor initialized";
 }
 
 void CRadioButton::setColor(const QColor &color)
 {
+    // qCDebug(ClientLogger) << "CRadioButton::setColor - Setting color to:" << color;
     m_color = color;
 }
 
 QColor CRadioButton::getColor()
 {
+    // qCDebug(ClientLogger) << "CRadioButton::getColor - Returning color:" << m_color;
     return m_color;
 }
 
 void CRadioButton::paintEvent(QPaintEvent *event)
 {
+    // qCDebug(ClientLogger) << "CRadioButton::paintEvent";
     Q_UNUSED(event);
 
     QPainter painter(this);
@@ -36,6 +41,7 @@ void CRadioButton::paintEvent(QPaintEvent *event)
     int h = height();
 
     if (!isChecked()) {
+        // qCDebug(ClientLogger) << "CRadioButton::paintEvent - Drawing unchecked state";
         // 设置画刷颜色
         painter.setBrush(m_color);
         // 绘制圆
@@ -49,6 +55,7 @@ void CRadioButton::paintEvent(QPaintEvent *event)
         painter.setBrush(c);
         painter.drawPath(path);
     } else {
+        // qCDebug(ClientLogger) << "CRadioButton::paintEvent - Drawing checked state";
         DPalette palette = DPaletteHelper::instance()->palette(this);
         QPainterPath path;
         path.addEllipse(0, 0, w, h);

@@ -1,9 +1,10 @@
-// SPDX-FileCopyrightText: 2017 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "dayhuangliview.h"
 #include "scheduledlg.h"
+#include "commondef.h"
 
 #include <DIcon>
 
@@ -18,37 +19,45 @@
 CDayHuangLiLabel::CDayHuangLiLabel(QWidget *parent)
     : DLabel(parent)
 {
+    qCDebug(ClientLogger) << "CDayHuangLiLabel::CDayHuangLiLabel";
     setContentsMargins(0, 0, 0, 0);
 }
 
 void CDayHuangLiLabel::setbackgroundColor(QColor backgroundColor)
 {
+    qCDebug(ClientLogger) << "CDayHuangLiLabel::setbackgroundColor, color:" << backgroundColor;
     m_backgroundColor = backgroundColor;
 }
 
 void CDayHuangLiLabel::setTextInfo(QColor tcolor, QFont font)
 {
+    qCDebug(ClientLogger) << "CDayHuangLiLabel::setTextInfo, color:" << tcolor;
     m_textcolor = tcolor;
     m_font = font;
 }
 
 void CDayHuangLiLabel::setHuangLiText(QStringList vhuangli, int type)
 {
+    qCDebug(ClientLogger) << "CDayHuangLiLabel::setHuangLiText, type:" << type;
     m_vHuangli = vhuangli;
     m_type = type;
     if (!vhuangli.isEmpty()) {
+        qCDebug(ClientLogger) << "Setting tooltip for Huangli text";
         QString str = vhuangli.at(0);
         for (int i = 1; i < vhuangli.count(); i++) {
             str += "." + vhuangli.at(i);
         }
         setToolTip(str);
     } else {
+        qCDebug(ClientLogger) << "Clearing tooltip for empty Huangli text";
         setToolTip(QString());
     }
     update();
 }
 void CDayHuangLiLabel::paintEvent(QPaintEvent *e)
 {
+    // This function is called frequently, so logging is commented out.
+    // qCDebug(ClientLogger) << "CDayHuangLiLabel::paintEvent";
     Q_UNUSED(e);
     int labelwidth = width();
     int labelheight = height();
@@ -95,6 +104,8 @@ void CDayHuangLiLabel::paintEvent(QPaintEvent *e)
 
 void CDayHuangLiLabel::resizeEvent(QResizeEvent *event)
 {
+    // This function is called frequently, so logging is commented out.
+    // qCDebug(ClientLogger) << "CDayHuangLiLabel::resizeEvent";
     m_leftMagin = static_cast<int>(0.0424 * width() + 0.5);
     m_topMagin = (height() - 20) / 2;
     DLabel::resizeEvent(event);

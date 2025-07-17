@@ -3,15 +3,17 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "lunarmanager.h"
+#include "commondef.h"
 
 LunarManager::LunarManager(QObject *parent) : QObject(parent)
   , m_dbusRequest(new DbusHuangLiRequest)
 {
-
+    qCDebug(ClientLogger) << "Creating LunarManager";
 }
 
 LunarManager* LunarManager::getInstace()
 {
+    // qCDebug(ClientLogger) << "Getting LunarManager instance";
     static LunarManager lunarManager;
     return &lunarManager;
 }
@@ -26,7 +28,10 @@ LunarManager* LunarManager::getInstace()
  */
 bool LunarManager::getFestivalMonth(quint32 year, quint32 month, FestivalInfo& festivalInfo)
 {
-    return m_dbusRequest->getFestivalMonth(year, month, festivalInfo);
+    // qCDebug(ClientLogger) << "Getting festival month for year:" << year << "month:" << month;
+    bool result = m_dbusRequest->getFestivalMonth(year, month, festivalInfo);
+    // qCDebug(ClientLogger) << "Get festival month result:" << result << "with" << festivalInfo.listHoliday.size() << "holidays";
+    return result;
 }
 
 /**
@@ -38,6 +43,7 @@ bool LunarManager::getFestivalMonth(quint32 year, quint32 month, FestivalInfo& f
  */
 bool LunarManager::getFestivalMonth(const QDate &date, FestivalInfo& festivalInfo)
 {
+    // qCDebug(ClientLogger) << "Getting festival month for date:" << date.toString();
     return m_dbusRequest->getFestivalMonth(quint32(date.year()), quint32(date.month()), festivalInfo);
 }
 
@@ -52,7 +58,10 @@ bool LunarManager::getFestivalMonth(const QDate &date, FestivalInfo& festivalInf
  */
 bool LunarManager::getHuangLiDay(quint32 year, quint32 month, quint32 day, CaHuangLiDayInfo &info)
 {
-    return m_dbusRequest->getHuangLiDay(year, month, day, info);
+    // qCDebug(ClientLogger) << "Getting HuangLi day for year:" << year << "month:" << month << "day:" << day;
+    bool result = m_dbusRequest->getHuangLiDay(year, month, day, info);
+    // qCDebug(ClientLogger) << "Get HuangLi day result:" << result;
+    return result;
 }
 
 /**
@@ -64,6 +73,7 @@ bool LunarManager::getHuangLiDay(quint32 year, quint32 month, quint32 day, CaHua
  */
 bool LunarManager::getHuangLiDay(const QDate &date, CaHuangLiDayInfo &info)
 {
+    // qCDebug(ClientLogger) << "Getting HuangLi day for date:" << date.toString();
     return getHuangLiDay(quint32(date.year()), quint32(date.month()), quint32(date.day()), info);
 }
 
@@ -78,7 +88,10 @@ bool LunarManager::getHuangLiDay(const QDate &date, CaHuangLiDayInfo &info)
  */
 bool LunarManager::getHuangLiMonth(quint32 year, quint32 month, CaHuangLiMonthInfo &info, bool fill)
 {
-    return m_dbusRequest->getHuangLiMonth(year, month, fill, info);
+    // qCDebug(ClientLogger) << "Getting HuangLi month for year:" << year << "month:" << month << "fill:" << fill;
+    bool result = m_dbusRequest->getHuangLiMonth(year, month, fill, info);
+    // qCDebug(ClientLogger) << "Get HuangLi month result:" << result << "with" << info.mDays << "days";
+    return result;
 }
 
 /**
@@ -90,6 +103,7 @@ bool LunarManager::getHuangLiMonth(quint32 year, quint32 month, CaHuangLiMonthIn
  */
 bool LunarManager::getHuangLiMonth(const QDate &date, CaHuangLiMonthInfo &info, bool fill)
 {
+    // qCDebug(ClientLogger) << "Getting HuangLi month for date:" << date.toString() << "fill:" << fill;
     return getHuangLiMonth(quint32(date.year()), quint32(date.month()), info, fill);
 }
 
@@ -101,8 +115,11 @@ bool LunarManager::getHuangLiMonth(const QDate &date, CaHuangLiMonthInfo &info, 
  */
 QString LunarManager::getHuangLiShortName(const QDate &date)
 {
+    qCDebug(ClientLogger) << "Getting HuangLi short name for date:" << date.toString();
     CaHuangLiDayInfo info = getHuangLiDay(date);
-    return info.mLunarMonthName + info.mLunarDayName;
+    QString shortName = info.mLunarMonthName + info.mLunarDayName;
+    qCDebug(ClientLogger) << "HuangLi short name:" << shortName;
+    return shortName;
 }
 
 /**
@@ -113,13 +130,16 @@ QString LunarManager::getHuangLiShortName(const QDate &date)
  */
 void LunarManager::queryLunarInfo(const QDate &startDate, const QDate &stopDate)
 {
+    qCDebug(ClientLogger) << "Querying lunar info from" << startDate.toString() << "to" << stopDate.toString();
     QMap<QDate, CaHuangLiDayInfo> lunarInfoMap;
     CaHuangLiMonthInfo monthInfo;
     const int offsetMonth = (stopDate.year() - startDate.year()) * 12 + stopDate.month() - startDate.month();
+    qCDebug(ClientLogger) << "Offset months:" << offsetMonth;
     //获取开始时间至结束时间所在月的农历和节假日信息
     for (int i = 0; i <= offsetMonth; ++i) {
         monthInfo.clear();
         QDate beginDate = startDate.addMonths(i);
+        // qCDebug(ClientLogger) << "Getting HuangLi month for:" << beginDate.toString();
         getHuangLiMonth(beginDate, monthInfo);
 
         QDate getDate(beginDate.year(), beginDate.month(), 1);
@@ -127,6 +147,7 @@ void LunarManager::queryLunarInfo(const QDate &startDate, const QDate &stopDate)
             lunarInfoMap[getDate.addDays(j)] = monthInfo.mCaLunarDayInfo.at(j);
         }
     }
+    qCDebug(ClientLogger) << "Lunar info query completed with" << lunarInfoMap.size() << "days";
     m_lunarInfoMap = lunarInfoMap;
 }
 
@@ -138,24 +159,29 @@ void LunarManager::queryLunarInfo(const QDate &startDate, const QDate &stopDate)
  */
 void LunarManager::queryFestivalInfo(const QDate &startDate, const QDate &stopDate)
 {
+    qCDebug(ClientLogger) << "Querying festival info from" << startDate.toString() << "to" << stopDate.toString();
     QVector<FestivalInfo> festivallist{};
 
     const int offsetMonth = (stopDate.year() - startDate.year()) * 12 + stopDate.month() - startDate.month();
+    qCDebug(ClientLogger) << "Offset months:" << offsetMonth;
 
     for (int i = 0; i <= offsetMonth; ++i) {
         FestivalInfo info;
         QDate beginDate = startDate.addMonths(i);
+        // qCDebug(ClientLogger) << "Getting festival month for:" << beginDate.toString();
         if (getFestivalMonth(beginDate, info)) {
             festivallist.push_back(info);
         }
     }
 
+    qCDebug(ClientLogger) << "Festival info query completed with" << festivallist.size() << "months";
     m_festivalDateMap.clear();
     for (FestivalInfo info : festivallist) {
         for (HolidayInfo h : info.listHoliday) {
             m_festivalDateMap[h.date] = h.status;
         }
     }
+    qCDebug(ClientLogger) << "Festival date map updated with" << m_festivalDateMap.size() << "days";
 }
 
 /**
@@ -166,11 +192,14 @@ void LunarManager::queryFestivalInfo(const QDate &startDate, const QDate &stopDa
  */
 CaHuangLiDayInfo LunarManager::getHuangLiDay(const QDate &date)
 {
+    qCDebug(ClientLogger) << "Getting HuangLi day info for date:" << date.toString();
     //首先在缓存中查找是否存在该日期的农历信息，没有则通过dbus获取
     CaHuangLiDayInfo info;
     if (m_lunarInfoMap.contains(date)) {
+        qCDebug(ClientLogger) << "Found HuangLi day info in cache";
         info = m_lunarInfoMap[date];
     } else {
+        qCDebug(ClientLogger) << "HuangLi day info not in cache, fetching via dbus";
         getHuangLiDay(date, info);
     }
     return info;
@@ -185,6 +214,7 @@ CaHuangLiDayInfo LunarManager::getHuangLiDay(const QDate &date)
  */
 QMap<QDate, CaHuangLiDayInfo> LunarManager::getHuangLiDayMap(const QDate &startDate, const QDate &stopDate)
 {
+    qCDebug(ClientLogger) << "Getting HuangLi day map from" << startDate.toString() << "to" << stopDate.toString();
     QMap<QDate, CaHuangLiDayInfo> lunarInfoMap;
     auto iterator = m_lunarInfoMap.begin();
     while(iterator != m_lunarInfoMap.end()) {
@@ -194,6 +224,7 @@ QMap<QDate, CaHuangLiDayInfo> LunarManager::getHuangLiDayMap(const QDate &startD
         }
         iterator++;
     }
+    qCDebug(ClientLogger) << "HuangLi day map contains" << lunarInfoMap.size() << "days";
     return lunarInfoMap;
 }
 
@@ -206,6 +237,7 @@ QMap<QDate, CaHuangLiDayInfo> LunarManager::getHuangLiDayMap(const QDate &startD
  */
 QMap<QDate, int> LunarManager::getFestivalInfoDateMap(const QDate &startDate, const QDate &stopDate)
 {
+    qCDebug(ClientLogger) << "Getting festival info date map from" << startDate.toString() << "to" << stopDate.toString();
     QMap<QDate, int> festivalDateMap;
     auto iterator = m_festivalDateMap.begin();
     while(iterator != m_festivalDateMap.end()) {
@@ -215,5 +247,6 @@ QMap<QDate, int> LunarManager::getFestivalInfoDateMap(const QDate &startDate, co
         }
         iterator++;
     }
+    qCDebug(ClientLogger) << "Festival date map contains" << festivalDateMap.size() << "days";
     return festivalDateMap;
 }

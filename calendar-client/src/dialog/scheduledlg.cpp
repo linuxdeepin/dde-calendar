@@ -34,6 +34,7 @@ CScheduleDlg::CScheduleDlg(int type, QWidget *parent, const bool isAllDay)
     : DCalendarDDialog(parent)
     , m_createAllDay(isAllDay)
 {
+    qCDebug(ClientLogger) << "CScheduleDlg::CScheduleDlg, type:" << type << "isAllDay:" << isAllDay;
     setContentsMargins(0, 0, 0, 0);
     m_type = type;
     initUI();
@@ -61,6 +62,7 @@ CScheduleDlg::CScheduleDlg(int type, QWidget *parent, const bool isAllDay)
     }
     setFixedSize(dialog_width, 561);
     if (!gAccountManager->getIsSupportUid()) {
+        qCDebug(ClientLogger) << "UID not supported, adjusting dialog size";
         setFixedSize(dialog_width, 561 - 36);
     }
 
@@ -70,6 +72,7 @@ CScheduleDlg::CScheduleDlg(int type, QWidget *parent, const bool isAllDay)
 
 CScheduleDlg::~CScheduleDlg()
 {
+    qCDebug(ClientLogger) << "CScheduleDlg::~CScheduleDlg";
 }
 
 void CScheduleDlg::setData(const DSchedule::Ptr &info)
@@ -104,6 +107,7 @@ void CScheduleDlg::setData(const DSchedule::Ptr &info)
     }
 
     if (m_scheduleDataInfo) {
+        qCDebug(ClientLogger) << "Setting job type number from schedule data";
         m_typeComBox->setCurrentJobTypeNo(m_scheduleDataInfo->scheduleTypeID());
     }
 
@@ -134,6 +138,7 @@ void CScheduleDlg::setData(const DSchedule::Ptr &info)
 
 void CScheduleDlg::setDate(const QDateTime &date)
 {
+    qCDebug(ClientLogger) << "CScheduleDlg::setDate, date:" << date;
     m_currentDate = date;
     int hours = date.time().hour();
     int minnutes = 0;
@@ -144,9 +149,11 @@ void CScheduleDlg::setDate(const QDateTime &date)
     minnutes = minnutes + (date.time().minute() % DDECalendar::QuarterOfAnhourWithMinute == 0 ? 0 : 15);
     if (minnutes == 60) {
         if (hours + 1 == 24) {
+            qCDebug(ClientLogger) << "Minute is 60, hour is 23, rolling over to next day";
             m_currentDate.setTime(QTime(0, 0));
             m_currentDate = m_currentDate.addDays(1);
         } else {
+            qCDebug(ClientLogger) << "Minute is 60, incrementing hour";
             m_currentDate.setTime(QTime(hours + 1, 0));
         }
     } else {
@@ -166,6 +173,7 @@ void CScheduleDlg::setDate(const QDateTime &date)
 
 void CScheduleDlg::setAllDay(bool flag)
 {
+    qCDebug(ClientLogger) << "CScheduleDlg::setAllDay, flag:" << flag;
     m_allDayCheckbox->setChecked(flag);
 }
 
@@ -175,6 +183,7 @@ void CScheduleDlg::setAllDay(bool flag)
  */
 bool CScheduleDlg::clickOkBtn()
 {
+    qCDebug(ClientLogger) << "CScheduleDlg::clickOkBtn";
     return selectScheduleType();
 }
 
@@ -185,8 +194,10 @@ bool CScheduleDlg::clickOkBtn()
  */
 bool CScheduleDlg::selectScheduleType()
 {
+    qCDebug(ClientLogger) << "CScheduleDlg::selectScheduleType";
     //编辑状态，需要创建日程
     if (m_typeComBox->isEditable()) {
+        qCDebug(ClientLogger) << "Type combobox is editable, creating new schedule type";
         DScheduleType::Ptr type;
         type.reset(new DScheduleType());
         type->setTypeID("0");
@@ -197,9 +208,11 @@ bool CScheduleDlg::selectScheduleType()
             //创建日程类型，等待回调
             m_accountItem->createJobType(type, [&](CallMessge call) {
                 if (call.code == 0) {
+                    qCDebug(ClientLogger) << "Successfully created job type, creating schedule with new type";
                     //返回值为日程类型id
                     createSchedule(call.msg.toString());
                 } else {
+                    qCWarning(ClientLogger) << "Failed to create job type, error code:" << call.code;
                     m_bCanCreateType = true;
                 }
                 //关闭本弹窗
@@ -208,9 +221,11 @@ bool CScheduleDlg::selectScheduleType()
         }
 
     } else if (m_typeComBox->currentIndex() >= 0) {
+        qCDebug(ClientLogger) << "Type combobox is not editable, using existing schedule type";
         //选择已有日程，直接创建日程
         return createSchedule(m_typeComBox->getCurrentJobTypeNo());
     }
+    qCWarning(ClientLogger) << "No schedule type selected, cannot create schedule";
     return false;
 }
 
@@ -253,8 +268,10 @@ bool CScheduleDlg::createSchedule(const QString &scheduleTypeId)
     }
 
     if (m_textEdit->toPlainText().isEmpty()) {
+        qCDebug(ClientLogger) << "Using placeholder text for summary";
         schedule->setSummary(m_textEdit->placeholderText());
     } else {
+        qCDebug(ClientLogger) << "Using user-entered text for summary";
         schedule->setSummary(m_textEdit->toPlainText().trimmed());
     }
 
@@ -342,6 +359,7 @@ bool CScheduleDlg::createSchedule(const QString &scheduleTypeId)
         qCDebug(ClientLogger) << "Updating existing schedule:" << schedule->summary();
         //如果有重复规则则将原来数据的忽略列表添加进来
         if (schedule->recurs() && m_scheduleDataInfo->recurs()) {
+            qCDebug(ClientLogger) << "Copying exDates from old schedule";
             schedule->recurrence()->setExDateTimes(m_scheduleDataInfo->recurrence()->exDateTimes());
         }
         res = _scheduleOperation.changeSchedule(schedule, m_scheduleDataInfo);
@@ -351,6 +369,7 @@ bool CScheduleDlg::createSchedule(const QString &scheduleTypeId)
 
 void CScheduleDlg::updateEndTimeListAndTimeDiff(const QDateTime &begin, const QDateTime &end)
 {
+    qCDebug(ClientLogger) << "CScheduleDlg::updateEndTimeListAndTimeDiff, begin:" << begin << "end:" << end;
     //更新是否超过一天标识
     updateIsOneMoreDay(begin, end);
     m_timeDiff = begin.msecsTo(end);
@@ -361,14 +380,18 @@ void CScheduleDlg::updateEndTimeListAndTimeDiff(const QDateTime &begin, const QD
 
 void CScheduleDlg::updateEndTimeList(const QTime &begin, bool isShowTimeInterval)
 {
+    qCDebug(ClientLogger) << "CScheduleDlg::updateEndTimeList, begin time:" << begin << "show interval:" << isShowTimeInterval;
     m_endTimeEdit->setMineTime(begin);
     m_endTimeEdit->updateListItem(isShowTimeInterval);
 }
 
 void CScheduleDlg::slotBeginTimeChange()
 {
-    if (m_currentDate.time() == m_beginTimeEdit->getTime())
+    qCDebug(ClientLogger) << "CScheduleDlg::slotBeginTimeChange";
+    if (m_currentDate.time() == m_beginTimeEdit->getTime()) {
+        qCDebug(ClientLogger) << "Begin time not changed, returning";
         return;
+    }
     //根据联动修改结束时间下拉列表内容和结束时间
     m_currentDate.setTime(m_beginTimeEdit->getTime());
     m_EndDate = m_currentDate.addMSecs(m_timeDiff);
@@ -382,7 +405,9 @@ void CScheduleDlg::slotBeginTimeChange()
 
 void CScheduleDlg::slotEndTimeChange()
 {
+    qCDebug(ClientLogger) << "CScheduleDlg::slotEndTimeChange";
     if (m_EndDate.time() == m_endTimeEdit->getTime()) {
+        qCDebug(ClientLogger) << "End time not changed, returning";
         return;
     }
     m_EndDate.setTime(m_endTimeEdit->getTime());
@@ -392,8 +417,10 @@ void CScheduleDlg::slotEndTimeChange()
         //如果时间小于一天则需要根据结束时间（time）是否大于开始时间判断计算结束日期
         QTime endTime = m_endTimeEdit->getTime();
         if (endTime < m_currentDate.time()) {
+            qCDebug(ClientLogger) << "End time is earlier than start time, setting end date to next day";
             m_EndDate.setDate(m_currentDate.date().addDays(1));
         } else {
+            qCDebug(ClientLogger) << "End time is on the same day as start time";
             m_EndDate.setDate(m_currentDate.date());
         }
         m_endDateEdit->setDate(m_EndDate.date());
@@ -403,12 +430,16 @@ void CScheduleDlg::slotEndTimeChange()
 
 void CScheduleDlg::slotEndDateChange(const QDate &date)
 {
-    if (m_EndDate.date() == date)
+    qCDebug(ClientLogger) << "CScheduleDlg::slotEndDateChange, date:" << date;
+    if (m_EndDate.date() == date) {
+        qCDebug(ClientLogger) << "End date not changed, returning";
         return;
+    }
     //修改联动时间和结束时间下拉列表内容
     m_EndDate.setDate(date);
     // 如果开始时间晚于结束时间，则将结束时间修改为开始时间
     if (m_currentDate.msecsTo(m_EndDate) < 0) {
+        qCDebug(ClientLogger) << "End date is before start date, adjusting end datetime";
         m_EndDate = m_currentDate;
     }
     updateEndTimeListAndTimeDiff(m_currentDate, m_EndDate);
@@ -416,11 +447,13 @@ void CScheduleDlg::slotEndDateChange(const QDate &date)
 
 void CScheduleDlg::slotBtClick(int buttonIndex, const QString &buttonName)
 {
+    qCDebug(ClientLogger) << "CScheduleDlg::slotBtClick, buttonIndex:" << buttonIndex << "buttonName:" << buttonName;
     Q_UNUSED(buttonName)
     //是否隐藏对话框
     switch (buttonIndex) {
     case 0: {
         //取消
+        qCDebug(ClientLogger) << "Cancel button clicked";
         close();
         break;
     }
@@ -429,6 +462,7 @@ void CScheduleDlg::slotBtClick(int buttonIndex, const QString &buttonName)
         //自动化测试会出现短时间内按钮click2次的情况。添加第一次触发后将保存按钮置灰的设置。
         //若保存按钮不启用则不处理
         if (getButton(1)->isEnabled()  && !this->isHidden()) {
+            qCDebug(ClientLogger) << "OK button clicked";
             m_setAccept = clickOkBtn();
             //若新建或编辑成功则将保存按钮置灰
             getButton(1)->setEnabled(!m_setAccept);
@@ -450,6 +484,7 @@ void CScheduleDlg::slotBtClick(int buttonIndex, const QString &buttonName)
 
 void CScheduleDlg::slotTextChange()
 {
+    qCDebug(ClientLogger) << "Text content changed";
     QString textContent = m_textEdit->toPlainText();
     int length = textContent.count();
     QString tStitlename = textContent;
@@ -457,6 +492,7 @@ void CScheduleDlg::slotTextChange()
     int maxLength = 256; // 最大字符数
     //去除回车字符
     if (tStitlename.contains("\n")) {
+        qCDebug(ClientLogger) << "Removing newline characters from text";
         //设置纯文本显示原始内容
         tStitlename.replace("\n", "");
         m_textEdit->setPlainText(tStitlename);
@@ -467,6 +503,7 @@ void CScheduleDlg::slotTextChange()
     }
     //如果长度大于最大长度则显示原来的字符
     if (length > maxLength) {
+        qCWarning(ClientLogger) << "Text exceeds maximum length:" << length << ">" << maxLength;
         m_textEdit->setPlainText(m_context);
         //将焦点移动到最后
         m_textEdit->moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
@@ -480,17 +517,20 @@ void CScheduleDlg::slotTextChange()
 
 void CScheduleDlg::slotendrepeatTextchange()
 {
+    qCDebug(ClientLogger) << "Repeat end text changed";
     setOkBtnEnabled();
 }
 
 void CScheduleDlg::slotBDateEidtInfo(const QDate &date)
 {
+    qCDebug(ClientLogger) << "Begin date changed to:" << date;
     m_endRepeatDate->setMinimumDate(date);
     m_endDateEdit->setMinimumDate(date);
     m_currentDate.setDate(m_beginDateEdit->date());
     m_EndDate.setDate(m_endDateEdit->date());
 
     if (m_EndDate < m_currentDate) {
+        qCDebug(ClientLogger) << "End date < begin date, adjusting end time";
         m_endTimeEdit->setTime(m_beginTimeEdit->getTime().addSecs(3600));
         m_EndDate.setTime(m_endTimeEdit->getTime());
     }
@@ -500,9 +540,11 @@ void CScheduleDlg::slotBDateEidtInfo(const QDate &date)
 
 void CScheduleDlg::slotallDayStateChanged(int state)
 {
+    qCDebug(ClientLogger) << "All day state changed to:" << state;
     m_rmindCombox->clear();
 
     if (!state) {
+        qCDebug(ClientLogger) << "Setting up time-specific reminder options";
         m_rmindCombox->addItem(tr("Never"));
         m_rmindCombox->addItem(tr("At time of event"));
         m_rmindCombox->addItem(tr("15 minutes before"));
@@ -516,22 +558,26 @@ void CScheduleDlg::slotallDayStateChanged(int state)
         m_endTimeEdit->setVisible(true);
 
         if (m_type == 0) {
+            qCDebug(ClientLogger) << "Restoring edit mode time values";
             m_beginDateEdit->setDate(m_scheduleDataInfo->dtStart().date());
             m_beginTimeEdit->setTime(m_scheduleDataInfo->dtStart().time());
             m_endDateEdit->setDate(m_scheduleDataInfo->dtEnd().date());
             m_endTimeEdit->setTime(m_scheduleDataInfo->dtEnd().time());
             if (m_scheduleDataInfo->dtStart().time() == m_scheduleDataInfo->dtEnd().time()
                     && m_scheduleDataInfo->dtEnd().time().toString() == "00:00:00") {
+                qCDebug(ClientLogger) << "Adjusting end time to end of day for zero time";
                 m_endTimeEdit->setTime(QTime(23, 59, 59));
             }
 
         } else {
+            qCDebug(ClientLogger) << "Setting new mode time values";
             m_beginDateEdit->setDate(m_currentDate.date());
             m_beginTimeEdit->setTime(m_currentDate.time());
             m_endDateEdit->setDate(m_EndDate.date());
             m_endTimeEdit->setTime(m_EndDate.time());
         }
     } else {
+        qCDebug(ClientLogger) << "Setting up all-day reminder options";
         m_rmindCombox->addItem(tr("Never"));
         m_rmindCombox->addItem(tr("On start day (9:00 AM)"));
         m_rmindCombox->addItem(tr("1 day before"));
@@ -542,11 +588,13 @@ void CScheduleDlg::slotallDayStateChanged(int state)
         m_endTimeEdit->setVisible(false);
 
         if (m_type == 0) {
+            qCDebug(ClientLogger) << "Setting edit mode all-day time values";
             m_beginDateEdit->setDate(m_scheduleDataInfo->dtStart().date());
             m_beginTimeEdit->setTime(QTime(0, 0));
             m_endDateEdit->setDate(m_scheduleDataInfo->dtEnd().date());
             m_endTimeEdit->setTime(QTime(23, 59));
         } else {
+            qCDebug(ClientLogger) << "Setting new mode all-day time values";
             m_beginDateEdit->setDate(m_currentDate.date());
             m_endDateEdit->setDate(m_EndDate.date());
             m_beginTimeEdit->setTime(QTime(0, 0));
@@ -557,9 +605,12 @@ void CScheduleDlg::slotallDayStateChanged(int state)
 
 void CScheduleDlg::slotbRpeatactivated(int index)
 {
+    qCDebug(ClientLogger) << "Begin repeat activated with index:" << index;
     if (index > 0) {
+        qCDebug(ClientLogger) << "Showing end repeat widget for repeat mode";
         m_endrepeatWidget->setVisible(true);
     } else {
+        qCDebug(ClientLogger) << "Hiding end repeat widget for no-repeat mode";
         m_endrepeatWidget->setVisible(false);
     }
     //不论重复日程选哪种模式，结束重复都是从不
@@ -571,10 +622,13 @@ void CScheduleDlg::slotbRpeatactivated(int index)
 
 void CScheduleDlg::sloteRpeatactivated(int index)
 {
+    qCDebug(ClientLogger) << "End repeat activated with index:" << index;
     if (index == 0) {
+        qCDebug(ClientLogger) << "Hiding repeat time settings for never-end mode";
         m_endrepeattimesWidget->setVisible(false);
         m_endRepeatDate->setVisible(false);
     } else if (index == 1) {
+        qCDebug(ClientLogger) << "Showing repeat count settings for count-based end mode";
         m_endrepeattimesWidget->setVisible(true);
         m_endRepeatDate->setVisible(false);
         QFont mlabelF;
@@ -584,6 +638,7 @@ void CScheduleDlg::sloteRpeatactivated(int index)
                                                                              m_endrepeattimesLabel->width());
         m_endrepeattimesLabel->setText(endrepeattimesStr);
     } else {
+        qCDebug(ClientLogger) << "Showing date picker for date-based end mode";
         m_endrepeattimesWidget->setVisible(false);
         m_endRepeatDate->setVisible(true);
         m_endRepeatDate->setEditCursorPos(0);
@@ -593,8 +648,10 @@ void CScheduleDlg::sloteRpeatactivated(int index)
 
 void CScheduleDlg::slotJobComboBoxEditingFinished()
 {
+    qCDebug(ClientLogger) << "Job combo box editing finished";
     if (m_typeComBox->lineEdit()->text().isEmpty()) {
         //名称为空
+        qCDebug(ClientLogger) << "Empty job name, showing alert";
         m_typeComBox->showAlertMessage(tr("Enter a name please"));
         m_typeComBox->setAlert(true);
     }
@@ -602,6 +659,7 @@ void CScheduleDlg::slotJobComboBoxEditingFinished()
 
 void CScheduleDlg::slotAccoutBoxActivated(const QString &text)
 {
+    qCDebug(ClientLogger) << "Account selected:" << text;
     m_accountItem = gAccountManager->getAccountItemByAccountName(text);
     m_typeComBox->updateJobType(m_accountItem);
     resetColor(m_accountItem);
@@ -629,12 +687,15 @@ void CScheduleDlg::signalLogout(DAccount::Type type)
 
 void CScheduleDlg::slotTypeRpeatactivated(int index)
 {
+    qCDebug(ClientLogger) << "CScheduleDlg::slotTypeRpeatactivated, index:" << index;
     Q_UNUSED(index);
     if (m_typeComBox->isEditable()) {
+        qCDebug(ClientLogger) << "Type combobox is editable, showing color selector";
         m_typeComBox->setIconSize(QSize(0, 0));
         m_colorSeletorWideget->show();
     } else {
         //若下拉选择隐藏提醒消息
+        qCDebug(ClientLogger) << "Type combobox is not editable, hiding color selector";
         m_typeComBox->hideAlertMessage();
         m_typeComBox->setIconSize(QSize(16, 16));
         m_typeEditStatus = false;
@@ -647,8 +708,10 @@ void CScheduleDlg::slotTypeRpeatactivated(int index)
 
 void CScheduleDlg::slotRadioBtnClicked(int btnId)
 {
+    qCDebug(ClientLogger) << "CScheduleDlg::slotRadioBtnClicked, btnId:" << btnId;
     //与上一次选项一致不做重置处理
     if (m_prevCheckRadioID == btnId) {
+        qCDebug(ClientLogger) << "Radio button not changed, returning";
         return;
     }
     m_prevCheckRadioID = btnId;
@@ -660,6 +723,7 @@ void CScheduleDlg::slotRadioBtnClicked(int btnId)
 
 void CScheduleDlg::slotBtnAddItemClicked()
 {
+    qCDebug(ClientLogger) << "CScheduleDlg::slotBtnAddItemClicked";
     m_colorSeletorWideget->show();
     m_typeEditStatus = true;
     //添加日程类型的时候需要判断保存按钮是否可用
@@ -669,12 +733,15 @@ void CScheduleDlg::slotBtnAddItemClicked()
 
 void CScheduleDlg::slotTypeEditTextChanged(const QString &text)
 {
+    qCDebug(ClientLogger) << "CScheduleDlg::slotTypeEditTextChanged, text:" << text;
     if (!m_typeEditStatus) {
+        qCDebug(ClientLogger) << "Type edit not active, returning";
         return;
     }
     QString tStitlename = text;
     //去除回车字符
     if (tStitlename.contains("\n")) {
+        qCDebug(ClientLogger) << "Removing newline from type text";
         //设置纯文本显示原始内容
         tStitlename.replace("\n", "");
         m_typeComBox->setEditText(tStitlename);
@@ -682,6 +749,7 @@ void CScheduleDlg::slotTypeEditTextChanged(const QString &text)
     }
     //最大限制20个字符，超出后过滤掉
     if (tStitlename.length() > 20) {
+        qCWarning(ClientLogger) << "Type text exceeds max length, reverting";
         m_typeComBox->setEditText(m_TypeContext);
         return;
     } else {
@@ -689,12 +757,14 @@ void CScheduleDlg::slotTypeEditTextChanged(const QString &text)
     }
     //如果内容不为空且去除空格内容为空表示为全空格
     if (!tStitlename.isEmpty() && tStitlename.trimmed().isEmpty()) {
+        qCDebug(ClientLogger) << "Type text contains only whitespace, showing alert";
         //名称为全空格，返回
         m_typeComBox->showAlertMessage(tr("The name can not only contain whitespaces"));
         m_typeComBox->setAlert(true);
     } else {
         //如果日程类型编辑框存在焦点（没有编辑结束）且有警告则取消警告和提示信息
         if (m_typeComBox->hasFocus() && m_typeComBox->isAlert()) {
+            qCDebug(ClientLogger) << "Hiding type combobox alert";
             m_typeComBox->hideAlertMessage();
             m_typeComBox->setAlert(false);
         }
@@ -723,6 +793,7 @@ bool CScheduleDlg::eventFilter(QObject *obj, QEvent *pEvent)
 
 void CScheduleDlg::showEvent(QShowEvent *event)
 {
+    // qCDebug(ClientLogger) << "CScheduleDlg::showEvent";
     DDialog::showEvent(event);
     //更新窗口大小
     resize();
@@ -730,17 +801,21 @@ void CScheduleDlg::showEvent(QShowEvent *event)
 
 void CScheduleDlg::closeEvent(QCloseEvent *event)
 {
+    // qCDebug(ClientLogger) << "CScheduleDlg::closeEvent";
     DDialog::closeEvent(event);
     //如果为true 这设置返回值为Accepted 否则设置为Rejected
     if (m_setAccept) {
+        qCDebug(ClientLogger) << "Dialog accepted";
         accept();
     } else {
+        qCDebug(ClientLogger) << "Dialog rejected";
         reject();
     }
 }
 
 void CScheduleDlg::changeEvent(QEvent *event)
 {
+    // qCDebug(ClientLogger) << "CScheduleDlg::changeEvent, type:" << event->type();
     Q_UNUSED(event);
     QFont mlabelF;
     mlabelF.setWeight(QFont::Medium);
@@ -799,6 +874,7 @@ void CScheduleDlg::changeEvent(QEvent *event)
  */
 void CScheduleDlg::updateDateTimeFormat()
 {
+    qCDebug(ClientLogger) << "CScheduleDlg::updateDateTimeFormat";
     m_beginDateEdit->setDisplayFormat(m_dateFormat);
     m_endDateEdit->setDisplayFormat(m_dateFormat);
     m_endRepeatDate->setDisplayFormat(m_dateFormat);
@@ -806,6 +882,7 @@ void CScheduleDlg::updateDateTimeFormat()
 
 void CScheduleDlg::initUI()
 {
+    qCDebug(ClientLogger) << "CScheduleDlg::initUI";
     const int label_Fixed_Width = 78;
     const int item_Fixed_Height = 36;
 
@@ -854,6 +931,7 @@ void CScheduleDlg::initUI()
         widget->setFixedHeight(item_Fixed_Height);
         maintlayout->addWidget(widget);
         if (!gAccountManager->getIsSupportUid()) {
+            qCDebug(ClientLogger) << "UID not supported, hiding account widget";
             widget->hide();
         }
     }
@@ -1247,6 +1325,7 @@ void CScheduleDlg::initUI()
 
 void CScheduleDlg::initConnection()
 {
+    qCDebug(ClientLogger) << "CScheduleDlg::initConnection";
     QObject::connect(DGuiApplicationHelper::instance(), &DGuiApplicationHelper::themeTypeChanged,
                      this,
                      &CScheduleDlg::setTheMe);
@@ -1284,6 +1363,7 @@ void CScheduleDlg::initConnection()
 
 void CScheduleDlg::slotAccountUpdate()
 {
+    qCDebug(ClientLogger) << "CScheduleDlg::slotAccountUpdate";
     m_accountComBox->clear();
     QList<AccountItem::Ptr> accountList = gAccountManager->getAccountList();
     for (AccountItem::Ptr p : accountList) {
@@ -1298,11 +1378,13 @@ void CScheduleDlg::slotAccountUpdate()
  */
 void CScheduleDlg::slotAccountStateChange()
 {
+    qCDebug(ClientLogger) << "CScheduleDlg::slotAccountStateChange";
     setShowState(m_lunarRadioBtn->isChecked());
 }
 
 void CScheduleDlg::initDateEdit()
 {
+    qCDebug(ClientLogger) << "CScheduleDlg::initDateEdit";
     m_beginDateEdit->setMinimumDate(QDate(DDECalendar::QueryEarliestYear, 1, 1)); // 0天
     m_beginDateEdit->setMaximumDate(QDate(DDECalendar::QueryLatestYear, 12, 31));
     m_endDateEdit->setMinimumDate(QDate(DDECalendar::QueryEarliestYear, 1, 1)); // 0天
@@ -1312,6 +1394,7 @@ void CScheduleDlg::initDateEdit()
 
 void CScheduleDlg::initJobTypeComboBox()
 {
+    qCDebug(ClientLogger) << "CScheduleDlg::initJobTypeComboBox";
     m_accountItem = gAccountManager->getAccountItemByAccountName(m_accountComBox->currentText());
     m_typeComBox->updateJobType(m_accountItem);
     resetColor(m_accountItem);
@@ -1319,15 +1402,19 @@ void CScheduleDlg::initJobTypeComboBox()
 
 void CScheduleDlg::initRmindRpeatUI()
 {
+    qCDebug(ClientLogger) << "CScheduleDlg::initRmindRpeatUI";
     //提醒规则
     if (m_scheduleDataInfo->allDay()) {
+        qCDebug(ClientLogger) << "Setting reminder for all-day event";
         m_rmindCombox->setCurrentIndex(m_scheduleDataInfo->getAlarmType() - 8);
     } else {
+        qCDebug(ClientLogger) << "Setting reminder for timed event";
         m_rmindCombox->setCurrentIndex(m_scheduleDataInfo->getAlarmType());
     }
 
     //重复规则
     if (m_scheduleDataInfo->lunnar()) {
+        qCDebug(ClientLogger) << "Setting repeat rule for lunar event";
         //如果为农历
         switch (m_scheduleDataInfo->getRRuleType()) {
         case DSchedule::RRule_Month:
@@ -1342,18 +1429,22 @@ void CScheduleDlg::initRmindRpeatUI()
         }
 
     } else {
+        qCDebug(ClientLogger) << "Setting repeat rule for solar event";
         //如果为公历
         m_beginrepeatCombox->setCurrentIndex(m_scheduleDataInfo->getRRuleType());
     }
     slotbRpeatactivated(m_beginrepeatCombox->currentIndex());
     if (m_scheduleDataInfo->recurrence()->duration() < 0) {
+        qCDebug(ClientLogger) << "Setting repeat end to 'Never'";
         //永不
         m_endrepeatCombox->setCurrentIndex(0);
     } else if (m_scheduleDataInfo->recurrence()->duration() == 0) {
+        qCDebug(ClientLogger) << "Setting repeat end to date";
         //结束于日期
         m_endrepeatCombox->setCurrentIndex(2);
         m_endRepeatDate->setDate(m_scheduleDataInfo->recurrence()->endDateTime().date());
     } else {
+        qCDebug(ClientLogger) << "Setting repeat end to count";
         //结束与次数
         m_endrepeatCombox->setCurrentIndex(1);
         m_endrepeattimes->setText(QString::number(m_scheduleDataInfo->recurrence()->duration() - 1));
@@ -1363,11 +1454,14 @@ void CScheduleDlg::initRmindRpeatUI()
 
 void CScheduleDlg::setTheMe(const int type)
 {
+    qCDebug(ClientLogger) << "CScheduleDlg::setTheMe, theme type:" << type;
     //日程标题编辑框文字颜色
     QColor titleColor;
     if (type == 2) {
+        qCDebug(ClientLogger) << "Using dark theme text color";
         titleColor = "#C0C6D4";
     } else {
+        qCDebug(ClientLogger) << "Using light theme text color";
         titleColor = "#414D68";
     }
     DPalette pa = m_textEdit->palette();
@@ -1382,6 +1476,7 @@ void CScheduleDlg::setTheMe(const int type)
  */
 void CScheduleDlg::setTabFouseOrder()
 {
+    qCDebug(ClientLogger) << "CScheduleDlg::setTabFouseOrder";
     setTabOrder(m_typeComBox, m_textEdit);
     setTabOrder(m_textEdit, m_allDayCheckbox);
     setTabOrder(m_allDayCheckbox, m_solarRadioBtn);
@@ -1396,10 +1491,13 @@ void CScheduleDlg::setTabFouseOrder()
     //结束于次数，设置tab顺序
     //如果为重复日程
     if (!m_scheduleDataInfo.isNull() && m_scheduleDataInfo->getRRuleType() != DSchedule::RRule_None) {
+        qCDebug(ClientLogger) << "Setting tab order for repeat schedule";
         //如果为结束于次数
         if (m_scheduleDataInfo->recurrence()->duration() > 0) {
+            qCDebug(ClientLogger) << "Setting tab order for repeat count";
             setTabOrder(m_endrepeatCombox, m_endrepeattimes);
         } else if (m_scheduleDataInfo->recurrence()->duration() == 0) {
+            qCDebug(ClientLogger) << "Setting tab order for repeat end date";
             setTabOrder(m_endrepeatCombox, m_endRepeatDate);
         }
     }
@@ -1407,22 +1505,28 @@ void CScheduleDlg::setTabFouseOrder()
 
 void CScheduleDlg::updateIsOneMoreDay(const QDateTime &begin, const QDateTime &end)
 {
+    qCDebug(ClientLogger) << "Checking if event spans more than one day";
     // 一天毫秒数
     static qint64 oneDayMses = 24 * 60 * 60 * 1000;
     m_isMoreThenOneDay = begin.msecsTo(end) >= oneDayMses;
+    qCDebug(ClientLogger) << "Event spans more than one day:" << m_isMoreThenOneDay;
 }
 
 void CScheduleDlg::updateRepeatCombox(bool isLunar)
 {
+    qCDebug(ClientLogger) << "Updating repeat combo box for lunar mode:" << isLunar;
     if (nullptr == m_beginrepeatCombox) {
+        qCWarning(ClientLogger) << "Repeat combo box is null, cannot update";
         return;
     }
     m_beginrepeatCombox->clear();
     if (isLunar) {
+        qCDebug(ClientLogger) << "Setting lunar repeat options";
         m_beginrepeatCombox->addItem(tr("Never"));
         m_beginrepeatCombox->addItem(tr("Monthly"));
         m_beginrepeatCombox->addItem(tr("Yearly"));
     } else {
+        qCDebug(ClientLogger) << "Setting solar repeat options";
         m_beginrepeatCombox->addItem(tr("Never"));
         m_beginrepeatCombox->addItem(tr("Daily"));
         m_beginrepeatCombox->addItem(tr("Weekdays"));
@@ -1442,7 +1546,9 @@ void CScheduleDlg::updateRepeatCombox(bool isLunar)
  */
 bool CScheduleDlg::isShowLunar()
 {
-    return QLocale::system().name().startsWith("zh_");
+    bool result = QLocale::system().name().startsWith("zh_");
+    // qCDebug(ClientLogger) << "Checking if lunar calendar should be shown based on locale:" << result;
+    return result;
 }
 
 /**
@@ -1453,24 +1559,28 @@ bool CScheduleDlg::isShowLunar()
  */
 void CScheduleDlg::setShowState(bool jobIsLunar)
 {
+    qCDebug(ClientLogger) << "Setting show state for lunar mode:" << jobIsLunar;
     m_solarRadioBtn->setEnabled(true);
     m_lunarRadioBtn->setEnabled(true);
     setWidgetEnabled(true);
     getButton(1)->setEnabled(true);
     if (!m_accountItem || !m_accountItem->isCanSyncShedule()) {
         //不可同步日程，除帐户选择外其他的控件都置灰
+        qCDebug(ClientLogger) << "Account cannot sync schedule, disabling controls";
         m_solarRadioBtn->setEnabled(false);
         m_lunarRadioBtn->setEnabled(false);
         setWidgetEnabled(false);
         getButton(1)->setEnabled(false);
     } else if (isShowLunar()) {
         //如果不显示农历
+        qCDebug(ClientLogger) << "Locale supports lunar calendar, enabling lunar radio button";
         m_lunarRadioBtn->setEnabled(true);
         m_beginDateEdit->setLunarCalendarStatus(jobIsLunar);
         m_endDateEdit->setLunarCalendarStatus(jobIsLunar);
         m_endRepeatDate->setLunarCalendarStatus(jobIsLunar);
     } else {
         //在不显示农历环境下,取消农历显示
+        qCDebug(ClientLogger) << "Locale doesn't support lunar calendar, disabling lunar features";
         m_beginDateEdit->setLunarCalendarStatus(false);
         m_endDateEdit->setLunarCalendarStatus(false);
         m_endRepeatDate->setLunarCalendarStatus(false);
@@ -1484,15 +1594,18 @@ void CScheduleDlg::setShowState(bool jobIsLunar)
 
     if (jobIsLunar) {
         //为农历日程
+        qCDebug(ClientLogger) << "Setting lunar radio button checked";
         m_lunarRadioBtn->setChecked(true);
     } else {
         //公历日程
+        qCDebug(ClientLogger) << "Setting solar radio button checked";
         m_solarRadioBtn->setChecked(true);
     }
 }
 
 void CScheduleDlg::setWidgetEnabled(bool isEnabled)
 {
+    qCDebug(ClientLogger) << "Setting all form widgets enabled:" << isEnabled;
     m_typeComBox->setEnabled(isEnabled);
     m_textEdit->setEnabled(isEnabled);
     m_allDayCheckbox->setEnabled(isEnabled);
@@ -1509,10 +1622,12 @@ void CScheduleDlg::setWidgetEnabled(bool isEnabled)
 
 void CScheduleDlg::resetColor(const AccountItem::Ptr &account)
 {
+    qCDebug(ClientLogger) << "Resetting color selector for account";
     m_colorSeletorWideget->resetColorButton(account);
     //将用户上一次选择的自定义颜色添加进去
     QString colorName = CConfigSettings::getInstance()->value("LastUserColor", "").toString();
     if (!colorName.isEmpty()) {
+        qCDebug(ClientLogger) << "Setting last user custom color:" << colorName;
         //设置颜色
         DTypeColor::Ptr typeColor;
         typeColor.reset(new DTypeColor);
@@ -1520,21 +1635,26 @@ void CScheduleDlg::resetColor(const AccountItem::Ptr &account)
         typeColor->setPrivilege(DTypeColor::PriUser);
         m_colorSeletorWideget->setUserColor(typeColor);
     }
+    
     //选中上一次选中的颜色
     QVariant colorId = CConfigSettings::getInstance()->value("LastSysColorTypeNo", -1);
     int colorNum = 0;
     if (colorId.type() == QVariant::Int) {
         //如果是int型表示为旧颜色编号
         colorNum = colorId.toInt();
+        qCDebug(ClientLogger) << "Using legacy color number:" << colorNum;
     } else {
         QString &&colorIdStr = colorId.toString();
         //如果都为空表示为初始状态，则选中第一个
         if (colorName.isEmpty() && colorIdStr.isEmpty()) {
+            qCDebug(ClientLogger) << "No saved color preferences, using default color";
             colorNum = -1;
         } else if (!colorIdStr.isEmpty()) {
             //如果颜色id不为空则表示颜色为内置颜色
             colorNum = GTypeColor.keys().indexOf(colorIdStr);
+            qCDebug(ClientLogger) << "Using built-in color with ID:" << colorIdStr << "index:" << colorNum;
         } else {
+            qCDebug(ClientLogger) << "Using user custom color (index 9)";
             colorNum = 9;
         }
     }
@@ -1543,30 +1663,37 @@ void CScheduleDlg::resetColor(const AccountItem::Ptr &account)
 
 void CScheduleDlg::resize()
 {
+    qCDebug(ClientLogger) << "Resizing dialog based on visible widgets";
     int h = 0;
     if (m_endrepeatWidget->isVisible()) {
+        qCDebug(ClientLogger) << "End repeat widget visible, adding height";
         h += 36 + 10;
     }
 
     if (m_colorSeletorWideget->isVisible()) {
+        qCDebug(ClientLogger) << "Color selector widget visible, adding height";
         h += 18 + 10;
     }
     if (!gAccountManager->getIsSupportUid()) {
+        qCDebug(ClientLogger) << "UID not supported, reducing height";
         h -= 36;
     }
 
     //573: 默认界面高度, h: 新增控件高度
+    qCDebug(ClientLogger) << "Setting dialog size:" << dialog_width << "x" << (573 + h);
     setFixedSize(dialog_width, 573 + h);
 }
 
 void CScheduleDlg::setOkBtnEnabled()
 {
+    qCDebug(ClientLogger) << "Checking if OK button should be enabled";
     QAbstractButton *m_OkBt = getButton(1);
 
     //根据类型输入框的内容判断保存按钮是否有效
     if (m_OkBt != nullptr && m_typeComBox->lineEdit() != nullptr) {
         const QString &typeStr = m_typeComBox->lineEdit()->text();
         if (typeStr.isEmpty() || typeStr.trimmed().isEmpty()) {
+            qCDebug(ClientLogger) << "Type text is empty, disabling OK button";
             m_OkBt->setEnabled(false);
             //若内容无效直接退出，不判断结束次数是否为空
             return;
@@ -1576,15 +1703,20 @@ void CScheduleDlg::setOkBtnEnabled()
     }
     //如果结束与次数为空，则保存按钮置灰
     if (m_beginrepeatCombox->currentIndex() > 0 && m_endrepeatCombox->currentIndex() == 1) {
-        m_OkBt->setEnabled(!m_endrepeattimes->text().isEmpty());
+        bool enabled = !m_endrepeattimes->text().isEmpty();
+        qCDebug(ClientLogger) << "Repeat count mode, setting OK button enabled:" << enabled;
+        m_OkBt->setEnabled(enabled);
     } else {
         //日期  //永不
+        qCDebug(ClientLogger) << "Repeat date/never mode, enabling OK button";
         m_OkBt->setEnabled(true);
     }
 
     if (!m_textEdit->toPlainText().isEmpty() && m_textEdit->toPlainText().trimmed().isEmpty()) {
+        qCDebug(ClientLogger) << "Description text contains only whitespace, disabling OK button";
         m_OkBt->setEnabled(false);
     } else {
+        qCDebug(ClientLogger) << "Description text valid, enabling OK button";
         m_OkBt->setEnabled(true);
     }
 }

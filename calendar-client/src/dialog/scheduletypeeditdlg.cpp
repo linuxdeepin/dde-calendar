@@ -22,6 +22,7 @@ ScheduleTypeEditDlg::ScheduleTypeEditDlg(QWidget *parent)
     , m_title(tr("New event type"))
     , m_dialogType(DialogNewType)
 {
+    qCDebug(ClientLogger) << "Creating new schedule type dialog";
     init();
 }
 
@@ -32,6 +33,7 @@ ScheduleTypeEditDlg::ScheduleTypeEditDlg(const DScheduleType &jobTypeOld, QWidge
     , m_title(tr("Edit event type"))
     , m_dialogType(DialogEditType)
 {
+    qCDebug(ClientLogger) << "Creating edit schedule type dialog for:" << jobTypeOld.displayName();
     init();
 }
 
@@ -114,6 +116,7 @@ void ScheduleTypeEditDlg::setAccount(AccountItem::Ptr account)
 
 void ScheduleTypeEditDlg::init()
 {
+    qCDebug(ClientLogger) << "Initializing schedule type dialog";
     initView();
     initData();
     //默认焦点在日程名称输入框中
@@ -125,10 +128,12 @@ void ScheduleTypeEditDlg::init()
     // 在编辑框变动时，设置确认按钮状态
     connect(m_lineEdit, &DLineEdit::textChanged, this, &ScheduleTypeEditDlg::slotCheckConfirmBtn);
     connect(m_fileEdit, &DLineEdit::textChanged, this, &ScheduleTypeEditDlg::slotCheckConfirmBtn);
+    qCDebug(ClientLogger) << "Schedule type dialog initialized";
 }
 
 void ScheduleTypeEditDlg::initView()
 {
+    qCDebug(ClientLogger) << "Initializing schedule type dialog view";
     setFixedSize(QSize(400, 220));
 
     m_titleLabel = new QLabel(this);
@@ -152,6 +157,7 @@ void ScheduleTypeEditDlg::initView()
     formLayout->addRow(tr("Color:"), m_colorSeletor);
 
     if (m_dialogType == DialogImportType){
+        qCDebug(ClientLogger) << "Setting up ICS import form";
         setFixedSize(QSize(400, 300));
         auto icsLabel = new QLabel(tr("<a href='https://wikipedia.org/wiki/ICalendar'>ICS</a> File:"), this);
         icsLabel->setOpenExternalLinks(true);
@@ -172,14 +178,19 @@ void ScheduleTypeEditDlg::initView()
     }
     connect(this->getButton(0), &QPushButton::clicked, this, &ScheduleTypeEditDlg::slotBtnCancel);
     connect(this->getButton(1), &QPushButton::clicked, this, &ScheduleTypeEditDlg::slotBtnNext);
+    qCDebug(ClientLogger) << "Schedule type dialog view initialized";
 }
 
 void ScheduleTypeEditDlg::initData()
 {
+    qCDebug(ClientLogger) << "Initializing schedule type dialog data";
     m_titleLabel->setText(m_title);
     m_lineEdit->setText(m_jobTypeOld.displayName());
     m_typeText = m_jobTypeOld.displayName(); //编辑时要初始化数据
-    this->getButton(1)->setEnabled(!m_jobTypeOld.displayName().isEmpty()); //如果是新增，则保存按钮默认不可用
+
+    bool saveEnabled = !m_jobTypeOld.displayName().isEmpty();
+    this->getButton(1)->setEnabled(saveEnabled); //如果是新增，则保存按钮默认不可用
+    qCDebug(ClientLogger) << "Save button initial state:" << (saveEnabled ? "enabled" : "disabled");
 }
 
 void ScheduleTypeEditDlg::slotEditTextChanged(const QString &strName)
@@ -230,8 +241,10 @@ void ScheduleTypeEditDlg::slotEditTextChanged(const QString &strName)
 
 void ScheduleTypeEditDlg::slotFocusChanged(bool onFocus)
 {
+    qCDebug(ClientLogger) << "Focus changed, has focus:" << onFocus;
     //如果焦点移出,且输入内容为空
     if (!onFocus && m_lineEdit->text().isEmpty()) {
+        qCDebug(ClientLogger) << "Focus lost with empty text, triggering editing finished";
 //        emit m_lineEdit->textChanged("");
         emit m_lineEdit->editingFinished();
     }
@@ -239,19 +252,23 @@ void ScheduleTypeEditDlg::slotFocusChanged(bool onFocus)
 
 void ScheduleTypeEditDlg::slotBtnCancel()
 {
+    qCDebug(ClientLogger) << "Cancel button clicked, rejecting dialog";
     this->reject();
 }
 
 void ScheduleTypeEditDlg::slotBtnNext()
 {
+    qCDebug(ClientLogger) << "Save button clicked, setting color and accepting dialog";
     m_jobTypeNew.setTypeColor(*m_colorSeletor->getSelectedColorInfo());
     this->accept();
 }
 
 void ScheduleTypeEditDlg::slotEditingFinished()
 {
+    qCDebug(ClientLogger) << "Editing finished, checking content";
     //如果编辑结束后内容为空则提示
     if (m_lineEdit->text().isEmpty()) {
+        qCDebug(ClientLogger) << "Empty name after editing finished, showing alert";
         //名称为空，返回
         m_lineEdit->showAlertMessage(tr("Enter a name please"));
         m_lineEdit->setAlert(true);
@@ -261,16 +278,19 @@ void ScheduleTypeEditDlg::slotEditingFinished()
 // 获取ICS文件路径
 QString ScheduleTypeEditDlg::getIcsFile()
 {
+    qCDebug(ClientLogger) << "Getting selected ICS file path:" << m_fileEdit->text();
     return m_fileEdit->text();
 }
 
 // 检查并设置‘确认按钮’的状态
 void ScheduleTypeEditDlg::slotCheckConfirmBtn()
 {
+    qCDebug(ClientLogger) << "Checking confirm button state";
     auto confirmBtn = this->getButton(1);
 
     if (m_lineEdit->text().isEmpty() || m_lineEdit->isAlert())
     {
+        qCDebug(ClientLogger) << "Name field empty or has alert, disabling confirm button";
         confirmBtn->setEnabled(false);
         return;
     }
@@ -278,10 +298,12 @@ void ScheduleTypeEditDlg::slotCheckConfirmBtn()
     {
         if (m_fileEdit->text().isEmpty() || m_fileEdit->isAlert())
         {
+            qCDebug(ClientLogger) << "File field empty or has alert, disabling confirm button";
             confirmBtn->setEnabled(false);
             return;
         }
     }
+    qCDebug(ClientLogger) << "All validations passed, enabling confirm button";
     confirmBtn->setEnabled(true);
 }
 

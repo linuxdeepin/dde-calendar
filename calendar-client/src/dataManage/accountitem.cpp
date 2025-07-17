@@ -11,11 +11,13 @@ AccountItem::AccountItem(const DAccount::Ptr &account, QObject *parent)
     , m_account(account)
     , m_dbusRequest(new DbusAccountRequest(account->dbusPath(), account->dbusInterface(), this))
 {
+    qCDebug(ClientLogger) << "Creating AccountItem for account:" << account->accountName() << "type:" << account->accountType();
     initConnect();
 }
 
 void AccountItem::initConnect()
 {
+    qCDebug(ClientLogger) << "Initializing connections for account:" << m_account->accountName();
     connect(m_dbusRequest, &DbusAccountRequest::signalGetAccountInfoFinish, this, &AccountItem::slotGetAccountInfoFinish);
     connect(m_dbusRequest, &DbusAccountRequest::signalGetScheduleTypeListFinish, this, &AccountItem::slotGetScheduleTypeListFinish);
     connect(m_dbusRequest, &DbusAccountRequest::signalGetScheduleListFinish, this, &AccountItem::slotGetScheduleListFinish);
@@ -36,12 +38,25 @@ void AccountItem::initConnect()
  */
 QString AccountItem::getSyncMsg(DAccount::AccountSyncState code)
 {
+    qCDebug(ClientLogger) << "Getting sync message for state code:" << code;
     QString msg = "";
     switch (code) {
-    case DAccount::Sync_Normal: msg = tr("Sync successful"); break;
-    case DAccount::Sync_NetworkAnomaly: msg = tr("Network error"); break;
-    case DAccount::Sync_ServerException: msg = tr("Server exception"); break;
-    case DAccount::Sync_StorageFull: msg = tr("Storage full"); break;
+    case DAccount::Sync_Normal:
+        qCDebug(ClientLogger) << "Sync state: Normal";
+        msg = tr("Sync successful");
+        break;
+    case DAccount::Sync_NetworkAnomaly:
+        qCDebug(ClientLogger) << "Sync state: Network anomaly";
+        msg = tr("Network error");
+        break;
+    case DAccount::Sync_ServerException:
+        qCDebug(ClientLogger) << "Sync state: Server exception";
+        msg = tr("Server exception");
+        break;
+    case DAccount::Sync_StorageFull:
+        qCDebug(ClientLogger) << "Sync state: Storage full";
+        msg = tr("Storage full");
+        break;
     }
     return msg;
 }
@@ -71,11 +86,13 @@ DAccount::Ptr AccountItem::getAccount()
 //获取日程
 QMap<QDate, DSchedule::List> AccountItem::getScheduleMap()
 {
+    // qCDebug(ClientLogger) << "Getting schedule map with" << m_scheduleMap.size() << "dates for account:" << m_account->accountName();
     return m_scheduleMap;
 }
 
 QMap<QDate, DSchedule::List> AccountItem::getSearchScheduleMap()
 {
+    // qCDebug(ClientLogger) << "Getting search schedule map with" << m_searchedScheduleMap.size() << "dates for account:" << m_account->accountName();
     return m_searchedScheduleMap;
 }
 
@@ -85,38 +102,47 @@ QMap<QDate, DSchedule::List> AccountItem::getSearchScheduleMap()
  */
 DScheduleType::List AccountItem::getScheduleTypeList()
 {
+    qCDebug(ClientLogger) << "Getting schedule type list for account:" << m_account->accountName();
     DScheduleType::List list;
     for (DScheduleType::Ptr p : m_scheduleTypeList) {
         if (p->privilege() != DScheduleType::None) {
             list.push_back(p);
         }
     }
+    qCDebug(ClientLogger) << "Returning" << list.size() << "schedule types";
     return list;
 }
 
 //根据类型ID获取日程类型
 DScheduleType::Ptr AccountItem::getScheduleTypeByID(const QString &typeID)
 {
+    qCDebug(ClientLogger) << "Getting schedule type by ID:" << typeID;
     for (DScheduleType::Ptr p : m_scheduleTypeList) {
         if (p->typeID() == typeID) {
+            qCDebug(ClientLogger) << "Found schedule type:" << p->displayName();
             return p;
         }
     }
+    qCDebug(ClientLogger) << "Schedule type not found for ID:" << typeID;
     return nullptr;
 }
 
 DScheduleType::Ptr AccountItem::getScheduleTypeByName(const QString &typeName)
 {
+    qCDebug(ClientLogger) << "Getting schedule type by name:" << typeName;
     for (DScheduleType::Ptr p : m_scheduleTypeList) {
         if (p->typeName() == typeName || p->displayName() == typeName) {
+            qCDebug(ClientLogger) << "Found schedule type with ID:" << p->typeID();
             return p;
         }
     }
+    qCDebug(ClientLogger) << "Schedule type not found for name:" << typeName;
     return nullptr;
 }
 
 DTypeColor::List AccountItem::getColorTypeList()
 {
+    // qCDebug(ClientLogger) << "Getting color type list with" << m_typeColorList.size() << "colors";
     return m_typeColorList;
 }
 
@@ -127,12 +153,16 @@ DTypeColor::List AccountItem::getColorTypeList()
  */
 bool AccountItem::isCanSyncShedule()
 {
+    qCDebug(ClientLogger) << "Checking if can sync schedule for account:" << m_account->accountName();
     if (getAccount()->accountType() != DAccount::Account_UnionID) {
+        qCDebug(ClientLogger) << "Not a UnionID account, can sync schedule";
         return true;
     }
     DOANetWorkDBus netManger;
-    return getAccount()->accountState().testFlag(DAccount::Account_Calendar)
+    bool canSync = getAccount()->accountState().testFlag(DAccount::Account_Calendar)
            && getAccount()->accountState().testFlag(DAccount::Account_Open) && netManger.getNetWorkState() == DOANetWorkDBus::Active;
+    qCDebug(ClientLogger) << "Can sync schedule:" << canSync;
+    return canSync;
 }
 
 /**
@@ -142,22 +172,30 @@ bool AccountItem::isCanSyncShedule()
  */
 bool AccountItem::isCanSyncSetting()
 {
+    qCDebug(ClientLogger) << "Checking if can sync settings for account:" << m_account->accountName();
     if (!getAccount().isNull() && getAccount()->accountType() != DAccount::Account_UnionID) {
+        qCDebug(ClientLogger) << "Not a UnionID account, can sync settings";
         return true;
     }
     DOANetWorkDBus netManger;
-    return getAccount()->accountState().testFlag(DAccount::Account_Setting)
+    bool canSync = getAccount()->accountState().testFlag(DAccount::Account_Setting)
            && getAccount()->accountState().testFlag(DAccount::Account_Open) && netManger.getNetWorkState() == DOANetWorkDBus::Active;
+    qCDebug(ClientLogger) << "Can sync settings:" << canSync;
+    return canSync;
 }
 
 bool AccountItem::isEnableForUosAccount()
 {
+    qCDebug(ClientLogger) << "Checking if account is enabled for UOS account:" << m_account->accountName();
     if (getAccount()->accountType() != DAccount::Account_UnionID) {
+        qCDebug(ClientLogger) << "Not a UnionID account, not enabled for UOS";
         return false;
     }
 
     DOANetWorkDBus netManger;
-    return getAccount()->accountState().testFlag(DAccount::Account_Open) && netManger.getNetWorkState() == DOANetWorkDBus::Active;
+    bool isEnabled = getAccount()->accountState().testFlag(DAccount::Account_Open) && netManger.getNetWorkState() == DOANetWorkDBus::Active;
+    qCDebug(ClientLogger) << "Is enabled for UOS account:" << isEnabled;
+    return isEnabled;
 }
 
 /**
@@ -167,12 +205,14 @@ bool AccountItem::isEnableForUosAccount()
  */
 void AccountItem::setAccountExpandStatus(bool expandStatus)
 {
+    qCDebug(ClientLogger) << "Setting account expand status to:" << expandStatus << "for account:" << m_account->accountName();
     m_account->setIsExpandDisplay(expandStatus);
     m_dbusRequest->setAccountExpandStatus(expandStatus);
 }
 
 void AccountItem::setAccountState(DAccount::AccountStates state)
 {
+    qCDebug(ClientLogger) << "Setting account state to:" << state << "for account:" << m_account->accountName();
     m_account->setAccountState(state);
     m_dbusRequest->setAccountState(state);
     emit signalAccountStateChange();
@@ -180,6 +220,7 @@ void AccountItem::setAccountState(DAccount::AccountStates state)
 
 void AccountItem::setSyncFreq(DAccount::SyncFreqType freq)
 {
+    qCDebug(ClientLogger) << "Setting sync frequency to:" << freq << "for account:" << m_account->accountName();
     m_account->setSyncFreq(freq);
     QString syncFreq = DAccount::syncFreqToJsonString(m_account);
     m_dbusRequest->setSyncFreq(syncFreq);
@@ -187,18 +228,24 @@ void AccountItem::setSyncFreq(DAccount::SyncFreqType freq)
 
 DAccount::AccountStates AccountItem::getAccountState()
 {
-    return m_dbusRequest->getAccountState();
+    DAccount::AccountStates state = m_dbusRequest->getAccountState();
+    // qCDebug(ClientLogger) << "Getting account state:" << state << "for account:" << m_account->accountName();
+    return state;
 }
 
 bool AccountItem::getSyncState()
 {
-    return m_dbusRequest->getSyncState();
+    bool syncState = m_dbusRequest->getSyncState();
+    // qCDebug(ClientLogger) << "Getting sync state:" << syncState << "for account:" << m_account->accountName();
+    return syncState;
 }
 
 DAccount::SyncFreqType AccountItem::getSyncFreq()
 {
+    qCDebug(ClientLogger) << "Getting sync frequency for account:" << m_account->accountName();
     QString syncFreq = m_dbusRequest->getSyncFreq();
     DAccount::syncFreqFromJsonString(m_account, syncFreq);
+    qCDebug(ClientLogger) << "Sync frequency:" << m_account->syncFreq();
     return m_account->syncFreq();
 }
 
@@ -263,7 +310,10 @@ void AccountItem::deleteScheduleTypeByID(const QString &typeID, CallbackFunc cal
  */
 bool AccountItem::scheduleTypeIsUsed(const QString &typeID)
 {
-    return m_dbusRequest->scheduleTypeByUsed(typeID);
+    qCDebug(ClientLogger) << "Checking if schedule type is used, ID:" << typeID;
+    bool isUsed = m_dbusRequest->scheduleTypeByUsed(typeID);
+    qCDebug(ClientLogger) << "Schedule type is used:" << isUsed;
+    return isUsed;
 }
 
 /**
@@ -294,6 +344,7 @@ void AccountItem::updateSchedule(const DSchedule::Ptr &scheduleInfo, CallbackFun
 
 DSchedule::Ptr AccountItem::getScheduleByScheduleID(const QString &scheduleID)
 {
+    // qCDebug(ClientLogger) << "Getting schedule by ID:" << scheduleID;
     return m_dbusRequest->getScheduleByScheduleID(scheduleID);
 }
 
@@ -367,6 +418,7 @@ void AccountItem::querySchedulesWithParameter(const DScheduleQueryPar::Ptr &para
 
 QString AccountItem::querySchedulesByExternal(const QString &key, const QDateTime &start, const QDateTime &end)
 {
+    qCDebug(ClientLogger) << "Querying schedules by external with key:" << key << "from" << start.toString() << "to" << end.toString() << "for account:" << m_account->accountName();
     DScheduleQueryPar::Ptr ptr;
     ptr.reset(new DScheduleQueryPar);
     ptr->setKey(key);
@@ -379,6 +431,7 @@ QString AccountItem::querySchedulesByExternal(const QString &key, const QDateTim
 
 bool AccountItem::querySchedulesByExternal(const QString &key, const QDateTime &start, const QDateTime &end, QMap<QDate, DSchedule::List> &out)
 {
+    qCDebug(ClientLogger) << "Querying schedules by external with key:" << key << "from" << start.toString() << "to" << end.toString() << "for account:" << m_account->accountName();
     DScheduleQueryPar::Ptr ptr;
     ptr.reset(new DScheduleQueryPar);
     ptr->setKey(key);
@@ -387,8 +440,10 @@ bool AccountItem::querySchedulesByExternal(const QString &key, const QDateTime &
     QString json;
     if (m_dbusRequest->querySchedulesByExternal(ptr, json)) {
         out = DSchedule::fromMapString(json);
+        qCDebug(ClientLogger) << "Successfully queried external schedules, got" << out.size() << "dates";
         return true;
     }
+    qCDebug(ClientLogger) << "Failed to query external schedules";
     return false;
 }
 
@@ -423,6 +478,7 @@ void AccountItem::slotGetScheduleTypeListFinish(DScheduleType::List scheduleType
  */
 void AccountItem::slotGetScheduleListFinish(QMap<QDate, DSchedule::List> map)
 {
+    qCDebug(ClientLogger) << "Received schedule list with" << map.size() << "dates for account:" << m_account->accountName();
     m_scheduleMap = map;
     emit signalScheduleUpdate();
 }
@@ -434,6 +490,7 @@ void AccountItem::slotGetScheduleListFinish(QMap<QDate, DSchedule::List> map)
  */
 void AccountItem::slotSearchScheduleListFinish(QMap<QDate, DSchedule::List> map)
 {
+    qCDebug(ClientLogger) << "Received search schedule list with" << map.size() << "dates for account:" << m_account->accountName();
     m_searchedScheduleMap = map;
     emit signalSearchScheduleUpdate();
 }
@@ -444,6 +501,7 @@ void AccountItem::slotSearchScheduleListFinish(QMap<QDate, DSchedule::List> map)
  */
 void AccountItem::slotGetSysColorsFinish(DTypeColor::List typeColorList)
 {
+    qCDebug(ClientLogger) << "Received" << typeColorList.size() << "system colors for account:" << m_account->accountName();
     m_typeColorList = typeColorList;
 }
 
@@ -456,13 +514,16 @@ void AccountItem::slotAccountStateChange(DAccount::AccountStates state)
 
 void AccountItem::slotSyncStateChange(DAccount::AccountSyncState state)
 {
+    qCDebug(ClientLogger) << "Sync state changed to:" << state << "for account:" << m_account->accountName();
     getAccount()->setSyncState(state);
     emit signalSyncStateChange(state);
 }
 
 QString AccountItem::getDtLastUpdate()
 {
-    return m_dbusRequest->getDtLastUpdate();
+    QString lastUpdate = m_dbusRequest->getDtLastUpdate();
+    // qCDebug(ClientLogger) << "Getting last update time:" << lastUpdate << "for account:" << m_account->accountName();
+    return lastUpdate;
 }
 
 void AccountItem::slotSearchUpdata()

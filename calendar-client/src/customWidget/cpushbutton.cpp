@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "cpushbutton.h"
+#include "commondef.h"
 #include <DPaletteHelper>
 
 #include <DGuiApplicationHelper>
@@ -13,6 +14,7 @@
 
 CPushButton::CPushButton(QWidget *parent) : QWidget(parent)
 {
+    qCDebug(ClientLogger) << "CPushButton constructor initialized";
     QHBoxLayout *layoutAddType = new QHBoxLayout();
     m_textLabel = new QLabel(tr("New event type"));
 
@@ -33,8 +35,10 @@ CPushButton::CPushButton(QWidget *parent) : QWidget(parent)
 
     //设置深浅色主题下正常状态时的文本颜色，与下拉框颜色对其
     if (DGuiApplicationHelper::instance()->themeType() == DGuiApplicationHelper::DarkType) {
+        qCDebug(ClientLogger) << "Dark theme detected, setting text color to white";
         pa.setBrush(QPalette::WindowText, QColor("#FFFFFF"));
     } else {
+        qCDebug(ClientLogger) << "Light theme detected, setting text color to black";
         pa.setBrush(QPalette::WindowText, QColor("#000000"));
     }
     m_textLabel->setPalette(pa);
@@ -45,11 +49,14 @@ CPushButton::CPushButton(QWidget *parent) : QWidget(parent)
     layoutAddType->addWidget(m_textLabel);
     setFixedHeight(34);
     setLayout(layoutAddType);
+    qCDebug(ClientLogger) << "CPushButton initialization completed";
 }
 
 void CPushButton::setHighlight(bool status)
 {
+    qCDebug(ClientLogger) << "CPushButton::setHighlight - Setting highlight status to:" << status;
     if (status == m_Highlighted) {
+        qCDebug(ClientLogger) << "Highlight status unchanged, returning";
         return;
     }
     m_Highlighted = status;
@@ -58,18 +65,22 @@ void CPushButton::setHighlight(bool status)
 
 bool CPushButton::isHighlight()
 {
+    qCDebug(ClientLogger) << "CPushButton::isHighlight - Current status:" << m_Highlighted;
     return m_Highlighted;
 }
 
 void CPushButton::mousePressEvent(QMouseEvent *event)
 {
+    // qCDebug(ClientLogger) << "CPushButton::mousePressEvent - Position:" << event->pos();
     Q_UNUSED(event);
     m_pressed = true;
 }
 
 void CPushButton::mouseReleaseEvent(QMouseEvent *event)
 {
+    // qCDebug(ClientLogger) << "CPushButton::mouseReleaseEvent - Position:" << event->pos();
     if (m_pressed && rect().contains(event->pos())){
+        qCDebug(ClientLogger) << "Mouse released within button bounds, emitting clicked signal";
         emit clicked();
     }
     m_pressed = false;
@@ -86,11 +97,13 @@ void CPushButton::paintEvent(QPaintEvent *event)
 
     m_iconButton->setIcon(QIcon::fromTheme("dde_calendar_create"));
     if (m_Highlighted) {
+        // qCDebug(ClientLogger) << "Button is highlighted, setting highlight appearance";
         //背景设置为高亮色
         m_iconButton->setIcon(QIcon(":/icons/deepin/builtin/dark/icons/dde_calendar_create_32px.svg"));
         painter.setBrush(palette.highlight());
         m_textLabel->setBackgroundRole(QPalette::Highlight);       
     } else {
+        // qCDebug(ClientLogger) << "Button is not highlighted, setting normal appearance";
         //背景透明
         painter.setBrush(QBrush("#00000000"));
         m_textLabel->setBackgroundRole(QPalette::Window);

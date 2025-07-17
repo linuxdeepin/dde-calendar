@@ -6,6 +6,7 @@
 #include "cschedulebasewidget.h"
 #include "constants.h"
 #include "units.h"
+#include "commondef.h"
 
 #include <DPaletteHelper>
 #include <QMouseEvent>
@@ -16,6 +17,7 @@ QDate SidebarCalendarKeyButton::m_displayedMonth = QDate();
 
 SidebarCalendarWidget::SidebarCalendarWidget(QWidget *parent) : QWidget(parent)
 {
+    qCDebug(ClientLogger) << "SidebarCalendarWidget constructed";
     initView();
     initConnection();
     initData();
@@ -23,6 +25,7 @@ SidebarCalendarWidget::SidebarCalendarWidget(QWidget *parent) : QWidget(parent)
 
 void SidebarCalendarWidget::initView()
 {
+    qCDebug(ClientLogger) << "Initializing SidebarCalendarWidget view";
     m_dateLabel = new QLabel();
     QFont font = m_dateLabel->font();
     font.setPixelSize(DDECalendar::FontSizeTwelve);
@@ -62,6 +65,7 @@ void SidebarCalendarWidget::initView()
     m_keyLayout->setSpacing(0);
     m_keyWidget->setLayout(m_keyLayout);
     //循坏实例化6*7个日期按键
+    qCDebug(ClientLogger) << "Creating date buttons for calendar";
     for (int i = 0; i < 42; ++i) {
         SidebarCalendarKeyButton *button = new SidebarCalendarKeyButton();
         button->setFocusPolicy(Qt::NoFocus);
@@ -85,6 +89,7 @@ void SidebarCalendarWidget::initView()
  */
 void SidebarCalendarWidget::initConnection()
 {
+    qCDebug(ClientLogger) << "Initializing SidebarCalendarWidget connections";
     connect(m_nextPage, &QPushButton::clicked, this, &SidebarCalendarWidget::slotNextPageClicked);
     connect(m_previousPage, &QPushButton::clicked, this, &SidebarCalendarWidget::slotPreviousPageClicked);
     connect(CalendarManager::getInstance(), &CalendarManager::sigNotifySidebarFirstDayChanged, this, &SidebarCalendarWidget::slotFirstDayChanged);
@@ -96,6 +101,7 @@ void SidebarCalendarWidget::initConnection()
  */
 void SidebarCalendarWidget::initData()
 {
+    qCDebug(ClientLogger) << "Initializing SidebarCalendarWidget data";
     m_firstday = CalendarManager::getInstance()->getFirstDayOfWeek();
     QDate date = QDate::currentDate();
     setDate(date);
@@ -108,6 +114,7 @@ void SidebarCalendarWidget::initData()
  */
 void SidebarCalendarWidget::setDate(QDate& date)
 {
+    qCDebug(ClientLogger) << "Setting sidebar calendar date to:" << date.toString();
     SidebarCalendarKeyButton::setSelectedDate(date);
     setKeyDate(date);
 }
@@ -119,7 +126,9 @@ void SidebarCalendarWidget::setDate(QDate& date)
  */
 void SidebarCalendarWidget::setKeyDate(QDate date)
 {
+    qCDebug(ClientLogger) << "Setting key date for calendar display to:" << date.toString();
     if(!withinTimeFrame(date)){
+        qCDebug(ClientLogger) << "Date" << date.toString() << "not within time frame, ignoring";
         return;
     }
     QString fd = "";
@@ -133,6 +142,7 @@ void SidebarCalendarWidget::setKeyDate(QDate date)
     int day = date.dayOfWeek();
     //计算当前月日历第一天该显示的时间
     date = date.addDays(-(day - m_firstday + 7) % 7);
+    qCDebug(ClientLogger) << "First date to display in calendar grid:" << date.toString();
     for (SidebarCalendarKeyButton* btn : m_keyButtonList) {
         btn->setDate(date);
         date = date.addDays(1);
@@ -148,14 +158,18 @@ void SidebarCalendarWidget::setKeyDate(QDate date)
 void SidebarCalendarWidget::slotKeyButtonClicked(SidebarCalendarKeyButton* keyButton)
 {
     QDate date = keyButton->getSelectedDate();
+    qCDebug(ClientLogger) << "Date button clicked, selected date:" << date.toString();
     if(!withinTimeFrame(date)){
+        qCDebug(ClientLogger) << "Selected date not within time frame, ignoring";
         return;
     }
     if (date.year() ==keyButton->getDisplayedMonth().year() && date.month() == keyButton->getDisplayedMonth().month()) {
         //未切换月份，只刷新界面显示
+        qCDebug(ClientLogger) << "Date is in current month, only updating display";
         update();
     } else {
         //已切换月份，重新设置选中的日期
+        qCDebug(ClientLogger) << "Date is in different month, changing displayed month";
         setDate(date);
     }
     CScheduleBaseWidget::setSelectDate(date);
@@ -167,8 +181,10 @@ void SidebarCalendarWidget::slotKeyButtonClicked(SidebarCalendarKeyButton* keyBu
  */
 void SidebarCalendarWidget::slotNextPageClicked()
 {
+    qCDebug(ClientLogger) << "Next month button clicked";
     //设置显示月份日期
     QDate date = SidebarCalendarKeyButton::getDisplayedMonth().addMonths(+1);
+    qCDebug(ClientLogger) << "Changing displayed month to:" << date.toString("yyyy-MM");
     //设置显示的日期范围
     setKeyDate(date);
 }
@@ -179,14 +195,17 @@ void SidebarCalendarWidget::slotNextPageClicked()
  */
 void SidebarCalendarWidget::slotPreviousPageClicked()
 {
+    qCDebug(ClientLogger) << "Previous month button clicked";
     //设置显示月份日期
     QDate date = SidebarCalendarKeyButton::getDisplayedMonth().addMonths(-1);
+    qCDebug(ClientLogger) << "Changing displayed month to:" << date.toString("yyyy-MM");
     //设置显示的日期范围
     setKeyDate(date);
 }
 
 void SidebarCalendarWidget::slotFirstDayChanged(int value)
 {
+    qCDebug(ClientLogger) << "First day of week changed to:" << value;
     m_firstday = value;
     setKeyDate(SidebarCalendarKeyButton::getSelectedDate());
 }
@@ -194,6 +213,7 @@ void SidebarCalendarWidget::slotFirstDayChanged(int value)
 SidebarCalendarKeyButton::SidebarCalendarKeyButton(QWidget *parent)
     : QPushButton(parent)
 {
+    qCDebug(ClientLogger) << "SidebarCalendarKeyButton constructed";
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     setMinimumSize(QSize(10, 10));
 }
@@ -205,6 +225,7 @@ SidebarCalendarKeyButton::SidebarCalendarKeyButton(QWidget *parent)
  */
 void SidebarCalendarKeyButton::setSelectedDate(const QDate& date)
 {
+    // qCDebug(ClientLogger) << "Setting static selected date to:" << date.toString();
     m_selectedData = date;
 }
 
@@ -214,6 +235,7 @@ void SidebarCalendarKeyButton::setSelectedDate(const QDate& date)
  */
 QDate SidebarCalendarKeyButton::getSelectedDate()
 {
+    // qCDebug(ClientLogger) << "Getting static selected date";
     return m_selectedData;
 }
 
@@ -224,6 +246,7 @@ QDate SidebarCalendarKeyButton::getSelectedDate()
  */
 void SidebarCalendarKeyButton::setDisplayedMonth(const QDate& date)
 {
+    // qCDebug(ClientLogger) << "Setting static displayed month to:" << date.toString("yyyy-MM");
     m_displayedMonth = date;
 }
 
@@ -233,6 +256,7 @@ void SidebarCalendarKeyButton::setDisplayedMonth(const QDate& date)
  */
 QDate SidebarCalendarKeyButton::getDisplayedMonth()
 {
+    // qCDebug(ClientLogger) << "Getting static displayed month";
     return m_displayedMonth;
 }
 
@@ -243,6 +267,7 @@ QDate SidebarCalendarKeyButton::getDisplayedMonth()
  */
 void SidebarCalendarKeyButton::setDate(const QDate& date)
 {
+    // qCDebug(ClientLogger) << "Setting static displayed date to:" << date.toString();
     this->m_displayedDate = date;
     update();
 }
@@ -253,6 +278,7 @@ void SidebarCalendarKeyButton::setDate(const QDate& date)
  */
 QDate SidebarCalendarKeyButton::getDate()
 {
+    // qCDebug(ClientLogger) << "Getting static displayed date";
     return m_displayedDate;
 }
 
@@ -262,7 +288,9 @@ QDate SidebarCalendarKeyButton::getDate()
  */
 void SidebarCalendarKeyButton::click()
 {
+    qCDebug(ClientLogger) << "Calendar key button clicked, date:" << m_displayedDate.toString();
     if(!withinTimeFrame(m_displayedDate)){
+        qCDebug(ClientLogger) << "Date not within time frame, ignoring click";
         return;
     }
     m_selectedData = m_displayedDate;
@@ -271,6 +299,7 @@ void SidebarCalendarKeyButton::click()
 
 void SidebarCalendarKeyButton::mousePressEvent(QMouseEvent *event)
 {
+    // qCDebug(ClientLogger) << "Calendar key button mouse pressed, date:" << m_displayedDate.toString();
     //判断鼠标左键按下事件
     if (event->button() == Qt::LeftButton) {
         this->pressed = true;
@@ -280,6 +309,7 @@ void SidebarCalendarKeyButton::mousePressEvent(QMouseEvent *event)
 
 void SidebarCalendarKeyButton::mouseReleaseEvent(QMouseEvent *event)
 {
+    // qCDebug(ClientLogger) << "Calendar key button mouse released, date:" << m_displayedDate.toString();
     //判断鼠标左键释放事件
     if (pressed && event->button() == Qt::LeftButton && rect().contains(event->pos())) {
         click();
@@ -293,6 +323,7 @@ void SidebarCalendarKeyButton::mouseReleaseEvent(QMouseEvent *event)
 
 void SidebarCalendarKeyButton::mouseMoveEvent(QMouseEvent *event)
 {
+    // qCDebug(ClientLogger) << "Calendar key button mouse moved, date:" << m_displayedDate.toString();
     //判断鼠标左键移动事件
     if (event->button() == Qt::LeftButton && rect().contains(event->pos())) {
         pressed = true;
@@ -303,6 +334,7 @@ void SidebarCalendarKeyButton::mouseMoveEvent(QMouseEvent *event)
 
 void SidebarCalendarKeyButton::paintEvent(QPaintEvent *event)
 {
+    // qCDebug(ClientLogger) << "Calendar key button paint event, date:" << m_displayedDate.toString();
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
@@ -317,6 +349,7 @@ void SidebarCalendarKeyButton::paintEvent(QPaintEvent *event)
     painter.setFont(font);
 
     if (m_displayedDate == m_selectedData && withinTimeFrame(m_displayedDate)) {
+        // qCDebug(ClientLogger) << "Calendar key button paint event, date:" << m_displayedDate.toString() << "is selected";
         painter.setPen(Qt::NoPen);
         painter.setBrush(DPaletteHelper::instance()->palette(this).highlight());
         //绘制高亮背景
@@ -324,6 +357,7 @@ void SidebarCalendarKeyButton::paintEvent(QPaintEvent *event)
         //设置高亮下的字体颜色
         painter.setPen(DPaletteHelper::instance()->palette(this).highlightedText().color());
     } else if (!(m_displayedDate.year() == m_displayedMonth.year() && m_displayedDate.month() == m_displayedMonth.month())){
+        // qCDebug(ClientLogger) << "Calendar key button paint event, date:" << m_displayedDate.toString() << "is not selected";
         //设置正常显示状态下的字体颜色
         painter.setOpacity(0.3);
     }

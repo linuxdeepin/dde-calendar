@@ -8,6 +8,7 @@
 #include "scheduledlg.h"
 #include "myscheduleview.h"
 #include "graphicsItem/cmonthschedulenumitem.h"
+#include "commondef.h"
 
 
 
@@ -26,6 +27,7 @@ CMonthScheduleView::CMonthScheduleView(QWidget *parent, QGraphicsScene *scene)
     : QObject(parent)
     , m_Scene(scene)
 {
+    qCDebug(ClientLogger) << "CMonthScheduleView::CMonthScheduleView";
     for (int i = 0; i < 6; ++i) {
         CWeekScheduleView *weekSchedule = new CWeekScheduleView(this);
         m_weekSchedule.append(weekSchedule);
@@ -35,10 +37,12 @@ CMonthScheduleView::CMonthScheduleView(QWidget *parent, QGraphicsScene *scene)
 
 CMonthScheduleView::~CMonthScheduleView()
 {
+    qCDebug(ClientLogger) << "CMonthScheduleView::~CMonthScheduleView";
 }
 
 void CMonthScheduleView::setallsize(int w, int h, int left, int top, int buttom, int itemHeight)
 {
+    qCDebug(ClientLogger) << "CMonthScheduleView::setallsize, width:" << w << "height:" << h;
     m_width = w;
     m_height = h;
     m_bottomMargin = buttom;
@@ -49,6 +53,7 @@ void CMonthScheduleView::setallsize(int w, int h, int left, int top, int buttom,
 
 void CMonthScheduleView::setData(QMap<QDate, DSchedule::List> &data, int currentMonth)
 {
+    qCDebug(ClientLogger) << "CMonthScheduleView::setData, data count:" << data.count() << "currentMonth:" << currentMonth;
     m_data = data;
     m_currentMonth = currentMonth;
     updateData();
@@ -56,6 +61,7 @@ void CMonthScheduleView::setData(QMap<QDate, DSchedule::List> &data, int current
 
 void CMonthScheduleView::slotFontChange()
 {
+    qCDebug(ClientLogger) << "CMonthScheduleView::slotFontChange";
     QFont font;
     DFontSizeManager::instance()->setFontGenericPixelSize(
         static_cast<quint16>(DFontSizeManager::instance()->fontPixelSize(qGuiApp->font())));
@@ -64,6 +70,7 @@ void CMonthScheduleView::slotFontChange()
     int h = fm.height();
 
     if (m_ItemHeight != h) {
+        qCDebug(ClientLogger) << "Font height changed, updating data";
         m_ItemHeight = h;
         updateData();
     }
@@ -71,7 +78,9 @@ void CMonthScheduleView::slotFontChange()
 
 void CMonthScheduleView::slotStateChange(bool bState)
 {
+    qCDebug(ClientLogger) << "CMonthScheduleView::slotStateChange, state:" << bState;
     if(bState) {
+        qCDebug(ClientLogger) << "Hiding schedule items";
         //日程显示
         for (int i = 0; i < m_weekSchedule.size(); ++i) {
             m_weekSchedule[i]->hideItem();
@@ -85,13 +94,16 @@ void CMonthScheduleView::slotStateChange(bool bState)
  */
 void CMonthScheduleView::updateData()
 {
+    qCDebug(ClientLogger) << "CMonthScheduleView::updateData";
     //清空日程显示
     for (int i = 0; i < m_weekSchedule.size(); ++i) {
         m_weekSchedule[i]->clearItem();
     }
     //保护数据防止越界
-    if (m_data.count() != DDEMonthCalendar::ItemSizeOfMonthDay || m_cNum < 1)
+    if (m_data.count() != DDEMonthCalendar::ItemSizeOfMonthDay || m_cNum < 1) {
+        qCWarning(ClientLogger) << "Data count or cNum is invalid, returning";
         return;
+    }
     //开始结束时间
     QMap<QDate, DSchedule::List>::iterator _iter = m_data.begin();
     QDate begindate = _iter.key();
@@ -109,6 +121,7 @@ void CMonthScheduleView::updateData()
 
 void CMonthScheduleView::updateHeight()
 {
+    qCDebug(ClientLogger) << "CMonthScheduleView::updateHeight";
     for (int j = 0; j < m_weekSchedule.size(); ++j) {
         for (int i = 0; i < m_weekSchedule[j]->getScheduleShowItem().count(); i++) {
             m_weekSchedule[j]->getScheduleShowItem().at(i)->update();
@@ -118,6 +131,7 @@ void CMonthScheduleView::updateHeight()
 
 QVector<QGraphicsRectItem *> CMonthScheduleView::getScheduleShowItem() const
 {
+    qCDebug(ClientLogger) << "CMonthScheduleView::getScheduleShowItem";
     QVector<QGraphicsRectItem *> m_scheduleShowItem;
 
     for (int j = 0; j < m_weekSchedule.size(); ++j) {
@@ -131,9 +145,12 @@ QVector<QGraphicsRectItem *> CMonthScheduleView::getScheduleShowItem() const
 
 void CMonthScheduleView::updateDate(const DSchedule::Ptr &info)
 {
+    qCDebug(ClientLogger) << "CMonthScheduleView::updateDate";
     for (int i = 0; i < m_weekSchedule.size(); ++i) {
         if (m_weekSchedule.at(i)->addData(info)) {
+            qCDebug(ClientLogger) << "Added data to week" << i;
         } else {
+            qCDebug(ClientLogger) << "Failed to add data to week" << i << ", clearing and updating";
             m_weekSchedule[i]->clearItem();
             m_weekSchedule[i]->updateSchedule(true);
         };
@@ -144,6 +161,7 @@ void CMonthScheduleView::updateDate(const DSchedule::Ptr &info)
 
 void CMonthScheduleView::changeDate(const DSchedule::Ptr &info)
 {
+    qCDebug(ClientLogger) << "CMonthScheduleView::changeDate";
     for (int i = 0; i < m_weekSchedule.size(); ++i) {
         m_weekSchedule.at(i)->changeDate(info);
         QVector<QVector<MScheduleDateRangeInfo>> mSchedule = m_weekSchedule[i]->getMScheduleInfo();
@@ -153,6 +171,7 @@ void CMonthScheduleView::changeDate(const DSchedule::Ptr &info)
 
 void CMonthScheduleView::updateDate(const int row, const DSchedule::Ptr &info)
 {
+    qCDebug(ClientLogger) << "CMonthScheduleView::updateDate, row:" << row;
     for (int i = 0; i < m_weekSchedule.size(); ++i) {
         if (row == i) {
             m_weekSchedule.at(i)->addData(info);
@@ -166,6 +185,7 @@ void CMonthScheduleView::updateDate(const int row, const DSchedule::Ptr &info)
 }
 void CMonthScheduleView::updateDateShow(QVector<QVector<MScheduleDateRangeInfo>> &vCMDaySchedule, QVector<QGraphicsRectItem *> &scheduleShowItem)
 {
+    // qCDebug(ClientLogger) << "CMonthScheduleView::updateDateShow";
     for (int i = 0; i < vCMDaySchedule.count(); i++) {
         for (int j = 0; j < vCMDaySchedule[i].count(); j++) {
             if (vCMDaySchedule[i].at(j).state) {
@@ -179,6 +199,7 @@ void CMonthScheduleView::updateDateShow(QVector<QVector<MScheduleDateRangeInfo>>
 
 void CMonthScheduleView::createScheduleItemWidget(MScheduleDateRangeInfo info, int cNum, QVector<QGraphicsRectItem *> &scheduleShowItem)
 {
+    // qCDebug(ClientLogger) << "CMonthScheduleView::createScheduleItemWidget";
     DSchedule::Ptr gd = info.tData;
     QPoint pos;
     int fw;
@@ -196,6 +217,7 @@ void CMonthScheduleView::createScheduleItemWidget(MScheduleDateRangeInfo info, i
 
 void CMonthScheduleView::createScheduleNumWidget(MScheduleDateRangeInfo info, int cNum, QVector<QGraphicsRectItem *> &scheduleShowItem)
 {
+    // qCDebug(ClientLogger) << "CMonthScheduleView::createScheduleNumWidget";
     int type = CScheduleDataManage::getScheduleDataManage()->getTheme();
     CMonthScheduleNumItem *gwi = new CMonthScheduleNumItem(nullptr);
     QPoint pos;
@@ -226,6 +248,7 @@ void CMonthScheduleView::createScheduleNumWidget(MScheduleDateRangeInfo info, in
 
 void CMonthScheduleView::computePos(int cNum, QDate bgeindate, QDate enddate, QPoint &pos, int &fw, int &fh)
 {
+    // qCDebug(ClientLogger) << "CMonthScheduleView::computePos";
     int brow = static_cast<int>((m_beginDate.daysTo(bgeindate)) / DDEMonthCalendar::AFewDaysOfWeek);
     int bcol = (m_beginDate.daysTo(bgeindate)) % DDEMonthCalendar::AFewDaysOfWeek;
     int ecol = (m_beginDate.daysTo(enddate)) % DDEMonthCalendar::AFewDaysOfWeek;
@@ -243,15 +266,18 @@ CWeekScheduleView::CWeekScheduleView(QObject *parent)
     , m_ScheduleHeight(22)
     , m_DayHeight(47)
 {
+    qCDebug(ClientLogger) << "CWeekScheduleView::CWeekScheduleView";
     setMaxNum();
 }
 
 CWeekScheduleView::~CWeekScheduleView()
 {
+    qCDebug(ClientLogger) << "CWeekScheduleView::~CWeekScheduleView";
 }
 
 void CWeekScheduleView::setData(QMap<QDate, DSchedule::List> &data, const QDate &startDate, const QDate &stopDate)
 {
+    qCDebug(ClientLogger) << "CWeekScheduleView::setData, from" << startDate << "to" << stopDate;
     //显示一周的日程
     Q_ASSERT(startDate.daysTo(stopDate) == 6);
     m_ScheduleInfo.clear();
@@ -280,23 +306,32 @@ void CWeekScheduleView::setData(QMap<QDate, DSchedule::List> &data, const QDate 
 
 bool CWeekScheduleView::addData(const DSchedule::Ptr &info)
 {
-    if(info.isNull()) return false;
+    qCDebug(ClientLogger) << "CWeekScheduleView::addData";
+    if(info.isNull()) {
+        qCWarning(ClientLogger) << "Info is null, returning false";
+        return false;
+    }
     if (info->dtStart().date().daysTo(endDate) >= 0 && beginDate.daysTo(info->dtEnd().date()) >= 0) {
+        qCDebug(ClientLogger) << "Schedule is within date range, updating view";
         clearItem();
         updateSchedule(false, info);
         return true;
     }
 
+    qCDebug(ClientLogger) << "Schedule is outside date range, returning false";
     return false;
 }
 
 void CWeekScheduleView::changeDate(const DSchedule::Ptr &info)
 {
+    qCDebug(ClientLogger) << "CWeekScheduleView::changeDate";
     int index = m_ScheduleInfo.indexOf(info);
 
     if (index < 0) {
+        qCDebug(ClientLogger) << "Info not found, appending to schedule list";
         m_ScheduleInfo.append(info);
     } else {
+        qCDebug(ClientLogger) << "Info found, updating schedule at index" << index;
         m_ScheduleInfo[index] = info;
     }
     clearItem();
@@ -305,6 +340,7 @@ void CWeekScheduleView::changeDate(const DSchedule::Ptr &info)
 
 void CWeekScheduleView::setHeight(const int ScheduleHeight, const int dayHeight)
 {
+    qCDebug(ClientLogger) << "CWeekScheduleView::setHeight, scheduleHeight:" << ScheduleHeight << "dayHeight:" << dayHeight;
     m_ScheduleHeight = ScheduleHeight;
     m_DayHeight = dayHeight;
     setMaxNum();
@@ -312,6 +348,7 @@ void CWeekScheduleView::setHeight(const int ScheduleHeight, const int dayHeight)
 
 void CWeekScheduleView::updateSchedule(const bool isNormalDisplay, const DSchedule::Ptr &info)
 {
+    qCDebug(ClientLogger) << "CWeekScheduleView::updateSchedule, isNormalDisplay:" << isNormalDisplay;
     DSchedule::List schedulev;
     schedulev.clear();
     schedulev = m_ScheduleInfo;
@@ -357,6 +394,7 @@ void CWeekScheduleView::updateSchedule(const bool isNormalDisplay, const DSchedu
 
 void CWeekScheduleView::clearItem()
 {
+    qCDebug(ClientLogger) << "CWeekScheduleView::clearItem";
     for (int i = 0; i < m_scheduleShowItem.count(); i++) {
         delete m_scheduleShowItem[i];
     }
@@ -365,6 +403,7 @@ void CWeekScheduleView::clearItem()
 
 void CWeekScheduleView::hideItem()
 {
+    qCDebug(ClientLogger) << "CWeekScheduleView::hideItem";
     for (int i = 0; i < m_scheduleShowItem.count(); i++) {
         m_scheduleShowItem[i]->setVisible(false);
     }
@@ -373,11 +412,13 @@ void CWeekScheduleView::hideItem()
 
 void CWeekScheduleView::setMaxNum()
 {
+    qCDebug(ClientLogger) << "CWeekScheduleView::setMaxNum";
     m_MaxNum = m_DayHeight / (m_ScheduleHeight + 1);
 }
 
 void CWeekScheduleView::mScheduleClear()
 {
+    qCDebug(ClientLogger) << "CWeekScheduleView::mScheduleClear";
     for (int i = 0; i < m_MScheduleInfo.size(); ++i) {
         m_MScheduleInfo[i].clear();
     }
@@ -386,6 +427,7 @@ void CWeekScheduleView::mScheduleClear()
 
 void CWeekScheduleView::sortAndFilter(QVector<MScheduleDateRangeInfo> &vMDaySchedule)
 {
+    qCDebug(ClientLogger) << "CWeekScheduleView::sortAndFilter";
     QVector<QVector<bool>> scheduleFill;
     QVector<bool> scheduf;
     //初始化
@@ -474,6 +516,7 @@ void CWeekScheduleView::sortAndFilter(QVector<MScheduleDateRangeInfo> &vMDaySche
 
 void CWeekScheduleView::addShowSchedule(const int &startPos, const int &endPos, const int &addRow, const DSchedule::Ptr &addInfo)
 {
+    qCDebug(ClientLogger) << "CWeekScheduleView::addShowSchedule, startPos:" << startPos << "endPos:" << endPos << "row:" << addRow;
     MScheduleDateRangeInfo scheduleInfo;
     //设置显示的开始日期
     scheduleInfo.bdate = beginDate.addDays(startPos);

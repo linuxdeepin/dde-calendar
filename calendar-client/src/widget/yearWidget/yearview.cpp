@@ -5,6 +5,7 @@
 #include "yearview.h"
 #include "constants.h"
 #include "configsettings.h"
+#include "commondef.h"
 
 
 #include <DPalette>
@@ -23,6 +24,7 @@ DGUI_USE_NAMESPACE
 CYearView::CYearView(QWidget *parent)
     : CustomFrame(parent)
 {
+    qCDebug(ClientLogger) << "CYearView constructed";
     //设置焦点类型
     setFocusPolicy(Qt::FocusPolicy::TabFocus);
     setMouseTracking(true);
@@ -76,6 +78,7 @@ CYearView::CYearView(QWidget *parent)
  */
 void CYearView::slotDoubleClickDate(const QDate &date)
 {
+    qCDebug(ClientLogger) << "Double click on date:" << date.toString();
     emit signalMousePress(date, 1);
 }
 
@@ -85,6 +88,7 @@ void CYearView::slotDoubleClickDate(const QDate &date)
  */
 void CYearView::slotPressClickDate(const QDate &date)
 {
+    qCDebug(ClientLogger) << "Press click on date:" << date.toString();
     emit signalMousePress(date, 0);
 }
 
@@ -94,6 +98,7 @@ void CYearView::slotPressClickDate(const QDate &date)
  */
 void CYearView::setTheMe(int type)
 {
+    qCDebug(ClientLogger) << "Setting theme to type:" << type;
     m_themetype = type;
 
     if (type == 0 || type == 1) {
@@ -112,6 +117,7 @@ void CYearView::setTheMe(int type)
 
 void CYearView::setShowMonthDate(const QDate &showMonth)
 {
+    qCDebug(ClientLogger) << "Setting show month date to:" << showMonth.toString();
     m_showMonthDate = QDate(showMonth.year(), showMonth.month(), 1);
     m_currentMouth->setTextStr(QLocale::system().monthName(m_showMonthDate.month(), QLocale::ShortFormat));
     m_monthView->setShowMonthDate(m_showMonthDate);
@@ -130,11 +136,13 @@ QDate CYearView::getShowMonthDate()
  */
 void CYearView::setHasScheduleSet(const QSet<QDate> &hasScheduleSet)
 {
+    qCDebug(ClientLogger) << "Setting has schedule set with" << hasScheduleSet.size() << "dates";
     m_monthView->setHasScheduleDateSet(hasScheduleSet);
 }
 
 void CYearView::setHasSearchScheduleSet(const QSet<QDate> &hasScheduleSet)
 {
+    qCDebug(ClientLogger) << "Setting has search schedule set with" << hasScheduleSet.size() << "dates";
     m_monthView->setHasSearchScheduleSet(hasScheduleSet);
 }
 
@@ -149,6 +157,7 @@ bool CYearView::getStartAndStopDate(QDate &startDate, QDate &stopDate)
     startDate = m_showMonthDate;
     stopDate = m_showMonthDate.addMonths(1);
     stopDate = stopDate.addDays(-1);
+    qCDebug(ClientLogger) << "Getting start and stop date:" << startDate.toString() << "to" << stopDate.toString();
     return true;
 }
 
@@ -160,10 +169,12 @@ bool CYearView::getStartAndStopDate(QDate &startDate, QDate &stopDate)
  */
 bool CYearView::eventFilter(QObject *o, QEvent *e)
 {
+    // qCDebug(ClientLogger) << "Event filter received for object:" << o->objectName() << "with event type:" << e->type();
     QWidget *cell = qobject_cast<QWidget *>(o);
 
     if (cell == m_currentMouth) {
         if (e->type() == QEvent::MouseButtonDblClick) {
+            qCDebug(ClientLogger) << "Double click on month header, switching to month view for:" << m_showMonthDate.toString();
             emit signalMousePress(m_showMonthDate, 2);
         }
     }
@@ -176,6 +187,7 @@ bool CYearView::eventFilter(QObject *o, QEvent *e)
  */
 void CYearView::resizeEvent(QResizeEvent *event)
 {
+    // qCDebug(ClientLogger) << "Resize event with size:" << event->size();
     int leftmagin = qFloor(width() * 0.06435 + 0.5);
     int rightmagin = leftmagin;
     int topmagin = qFloor(height() * 0.02955 + 0.5);
@@ -195,6 +207,7 @@ void CYearView::resizeEvent(QResizeEvent *event)
  */
 void CYearView::paintEvent(QPaintEvent *e)
 {
+    // qCDebug(ClientLogger) << "Paint event received";
     Q_UNUSED(e);
     int labelwidth = width() - 2 * m_borderframew;
     int labelheight = height() - 2 * m_borderframew;
@@ -221,6 +234,7 @@ void CYearView::paintEvent(QPaintEvent *e)
     painter.drawPath(painterPath);
 
     if (hasFocus()) {
+        // qCDebug(ClientLogger) << "Has focus, drawing focus";
         //有焦点，绘制焦点
         QStyleOptionFocusRect option;
         option.initFrom(this);

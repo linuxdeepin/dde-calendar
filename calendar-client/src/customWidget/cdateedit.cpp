@@ -28,10 +28,12 @@ CDateEdit::CDateEdit(QWidget *parent) : QDateEdit(parent)
 
 void CDateEdit::setDate(QDate date)
 {
+    qCDebug(ClientLogger) << "CDateEdit::setDate - Setting date to:" << date;
     QDateEdit::setDate(date);
     //只有在农历日程时，才需要获取农历信息
     QString dtFormat = m_showLunarCalendar ? m_format + getLunarName(date) : m_format;
     m_strCurrrentDate = date.toString(dtFormat);
+    qCDebug(ClientLogger) << "Updated current date string:" << m_strCurrrentDate;
 }
 
 void CDateEdit::setDisplayFormat(QString format)
@@ -44,6 +46,7 @@ void CDateEdit::setDisplayFormat(QString format)
 
 QString CDateEdit::displayFormat()
 {
+    qCDebug(ClientLogger) << "CDateEdit::displayFormat - Returning format:" << m_format;
     return m_format;
 }
 
@@ -59,6 +62,7 @@ void CDateEdit::setLunarCalendarStatus(bool status)
 
 void CDateEdit::setLunarTextFormat(QTextCharFormat format)
 {
+    qCDebug(ClientLogger) << "CDateEdit::setLunarTextFormat - Setting lunar text format";
     m_lunarTextFormat = format;
     //刷新文本样式
     slotRefreshLineEditTextFormat(text());
@@ -66,6 +70,7 @@ void CDateEdit::setLunarTextFormat(QTextCharFormat format)
 
 QTextCharFormat CDateEdit::getsetLunarTextFormat()
 {
+    // qCDebug(ClientLogger) << "CDateEdit::getsetLunarTextFormat - Returning lunar text format";
     return m_lunarTextFormat;
 }
 
@@ -79,9 +84,11 @@ void CDateEdit::setCalendarPopup(bool enable)
 
 void CDateEdit::slotDateEidtInfo(const QDate &date)
 {
+    qCDebug(ClientLogger) << "CDateEdit::slotDateEidtInfo - Setting date edit info for date:" << date;
     QString format = m_format;
 
     if (m_showLunarCalendar) {
+        qCDebug(ClientLogger) << "CDateEdit::slotDateEidtInfo - Showing lunar calendar";
         if (!showGongli()) {
             qCDebug(ClientLogger) << "Hiding Gregorian calendar due to space constraints";
             format = "yyyy/";
@@ -112,8 +119,10 @@ void CDateEdit::slotDateEidtInfo(const QDate &date)
 
     //恢复原状
     if (hasSelected) {
+        qCDebug(ClientLogger) << "Restoring selection state, section:" << section;
         setSelectedSection(section);    //设置选中节
     } else {
+        qCDebug(ClientLogger) << "Restoring cursor position:" << cPos;
         lineEdit()->setCursorPosition(cPos);    //设置光标位置
     }
     //刷新文本样式
@@ -123,6 +132,7 @@ void CDateEdit::slotDateEidtInfo(const QDate &date)
 
 void CDateEdit::slotRefreshLineEditTextFormat(const QString &text)
 {
+    qCDebug(ClientLogger) << "CDateEdit::slotRefreshLineEditTextFormat - Refreshing line edit text format for text:" << text;
     QFont font = lineEdit()->font();
     QFontMetrics fm(font);
     int textWidth = fm.horizontalAdvance(text);
@@ -135,6 +145,7 @@ void CDateEdit::slotRefreshLineEditTextFormat(const QString &text)
 
     //不显示农历时无需处理
     if (!m_showLunarCalendar) {
+        qCDebug(ClientLogger) << "CDateEdit::slotRefreshLineEditTextFormat - Not showing lunar calendar, returning";
         return;
     }
 
@@ -152,8 +163,10 @@ void CDateEdit::slotRefreshLineEditTextFormat(const QString &text)
 
 void CDateEdit::slotCursorPositionChanged(int oldPos, int newPos)
 {
+    qCDebug(ClientLogger) << "CDateEdit::slotCursorPositionChanged - Cursor position changed from:" << oldPos << "to:" << newPos;
     //不显示农历时无需处理
     if (!m_showLunarCalendar) {
+        qCDebug(ClientLogger) << "CDateEdit::slotCursorPositionChanged - Not showing lunar calendar, returning";
         return;
     }
     Q_UNUSED(oldPos);
@@ -182,8 +195,10 @@ void CDateEdit::slotCursorPositionChanged(int oldPos, int newPos)
 
 void CDateEdit::slotSelectionChanged()
 {
+    qCDebug(ClientLogger) << "CDateEdit::slotSelectionChanged - Selection changed";
     //不显示农历时无需处理
     if (!m_showLunarCalendar) {
+        qCDebug(ClientLogger) << "CDateEdit::slotSelectionChanged - Not showing lunar calendar, returning";
         return;
     }
     //全选时重新设置为只选择时间不选择农历
@@ -195,12 +210,16 @@ void CDateEdit::slotSelectionChanged()
 
 QString CDateEdit::getLunarName(const QDate &date)
 {
-    return gLunarManager->getHuangLiShortName(date);
+    QString lunarName = gLunarManager->getHuangLiShortName(date);
+    // qCDebug(ClientLogger) << "CDateEdit::getLunarName - Date:" << date << "Lunar name:" << lunarName;
+    return lunarName;
 }
 
 void CDateEdit::setLineEditTextFormat(QLineEdit *lineEdit, const QList<QTextLayout::FormatRange> &formats)
 {
+    qCDebug(ClientLogger) << "CDateEdit::setLineEditTextFormat - Setting text format for line edit";
     if (!lineEdit) {
+        qCDebug(ClientLogger) << "Line edit is null, returning";
         return;
     }
     QList<QInputMethodEvent::Attribute> attributes;
@@ -216,36 +235,45 @@ void CDateEdit::setLineEditTextFormat(QLineEdit *lineEdit, const QList<QTextLayo
     }
 
     QInputMethodEvent event(QString(), attributes);
-
+    qCDebug(ClientLogger) << "Sending input method event with" << attributes.size() << "attributes";
     QCoreApplication::sendEvent(lineEdit, &event);
 }
 
 void CDateEdit::changeEvent(QEvent *e)
 {
+    // qCDebug(ClientLogger) << "CDateEdit::changeEvent - Change event detected";
     QDateEdit::changeEvent(e);
     if (e->type() == QEvent::FontChange && m_showLunarCalendar) {
+        qCDebug(ClientLogger) << "CDateEdit::changeEvent - Font change detected, refreshing date info";
         slotDateEidtInfo(date());
     }
 }
 
 bool CDateEdit::showGongli()
 {
+    qCDebug(ClientLogger) << "CDateEdit::showGongli - Current date:" << m_strCurrrentDate;
     QString str = m_strCurrrentDate;
     QFontMetrics fontMetrice(lineEdit()->font());
     if (fontMetrice.horizontalAdvance(str) > lineEdit()->width() - 20) {
+        qCDebug(ClientLogger) << "CDateEdit::showGongli - Current date width is greater than line edit width, returning false";
         return false;
     }
+    qCDebug(ClientLogger) << "CDateEdit::showGongli - Current date width is less than line edit width, returning true";
     return true;
 }
 
 void CDateEdit::updateCalendarWidget()
 {
+    qCDebug(ClientLogger) << "CDateEdit::updateCalendarWidget - Calendar popup:" << calendarPopup() 
+                         << "Show lunar calendar:" << m_showLunarCalendar;
     if (calendarPopup()) {
         //setCalendarWidget:
         //The editor does not automatically take ownership of the calendar widget.
         if (m_showLunarCalendar) {
+            qCDebug(ClientLogger) << "Creating and setting lunar calendar widget";
             setCalendarWidget(new LunarCalendarWidget(this));
         } else {
+            qCDebug(ClientLogger) << "Creating and setting standard calendar widget";
             setCalendarWidget(new QCalendarWidget(this));
         }
     }
@@ -253,8 +281,10 @@ void CDateEdit::updateCalendarWidget()
 
 void CDateEdit::setEditCursorPos(int pos)
 {
+    qCDebug(ClientLogger) << "CDateEdit::setEditCursorPos - Setting cursor position to:" << pos;
     QLineEdit *edit = lineEdit();
     if (nullptr != edit) {
+        qCDebug(ClientLogger) << "CDateEdit::setEditCursorPos - Line edit is not null, setting cursor position to:" << pos;
         edit->setCursorPosition(pos);
     }
 }

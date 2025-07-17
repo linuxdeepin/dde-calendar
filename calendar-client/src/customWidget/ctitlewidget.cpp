@@ -6,6 +6,7 @@
 
 #include "constants.h"
 #include "configsettings.h"
+#include "commondef.h"
 
 #include <DFontSizeManager>
 
@@ -17,6 +18,7 @@
 CTitleWidget::CTitleWidget(QWidget *parent)
     : QWidget(parent)
 {
+    qCDebug(ClientLogger) << "CTitleWidget constructor";
     m_sidebarIcon = new DIconButton(this);
     m_sidebarIcon->setFixedSize(QSize(36, 36));
     m_sidebarIcon->setIconSize(QSize(19, 15));
@@ -137,12 +139,14 @@ CTitleWidget::CTitleWidget(QWidget *parent)
 
 void CTitleWidget::setShowState(CTitleWidget::Title_State state)
 {
+    qCDebug(ClientLogger) << "CTitleWidget::setShowState state:" << state;
     m_showState = state;
     stateUpdate();
 }
 
 void CTitleWidget::setSidebarStatus(bool status)
 {
+    qCDebug(ClientLogger) << "CTitleWidget::setSidebarStatus status:" << status;
     m_sidebarstatus = status;
     updateSidebarIconStatus();
     m_clickShowLeft = status;
@@ -153,11 +157,13 @@ void CTitleWidget::setSidebarStatus(bool status)
 
 void CTitleWidget::setSidebarCanDisplay(bool can)
 {
+    qCDebug(ClientLogger) << "CTitleWidget::setSidebarCanDisplay can:" << can;
     m_sidebarCanDisplay = can;
 }
 
 bool CTitleWidget::getSidevarStatus()
 {
+    qCDebug(ClientLogger) << "CTitleWidget::getSidevarStatus returning:" << m_sidebarstatus;
     return m_sidebarstatus;
 }
 
@@ -178,6 +184,7 @@ DIconButton *CTitleWidget::newScheduleBtn() const
 
 void CTitleWidget::stateUpdate()
 {
+    qCDebug(ClientLogger) << "CTitleWidget::stateUpdate showState:" << m_showState;
     switch (m_showState) {
     case Title_State_Mini: {
         //如果搜索框没有焦点且搜索框内没有内容则隐藏搜索框显示搜索图标按钮
@@ -202,6 +209,7 @@ void CTitleWidget::stateUpdate()
 
 void CTitleWidget::miniStateShowSearchEdit()
 {
+    qCDebug(ClientLogger) << "CTitleWidget::miniStateShowSearchEdit";
     m_buttonBox->hide();
     m_searchPush->hide();
     m_searchEdit->setMaximumWidth(width());
@@ -213,6 +221,7 @@ void CTitleWidget::miniStateShowSearchEdit()
 
 void CTitleWidget::normalStateUpdateSearchEditWidth()
 {
+    qCDebug(ClientLogger) << "CTitleWidget::normalStateUpdateSearchEditWidth";
     int padding = qMax(m_buttonBox->width(), m_newScheduleBtn->width());
     //更加widget宽度设置搜索框宽度
     int searchWidth = width() - 2 * padding;
@@ -229,11 +238,13 @@ void CTitleWidget::normalStateUpdateSearchEditWidth()
 
 void CTitleWidget::updateSidebarIconStatus()
 {
+    qCDebug(ClientLogger) << "CTitleWidget::updateSidebarIconStatus";
     m_sidebarIcon->setIcon(QIcon::fromTheme("dde_calendar_sidebar"));
 }
 
 void CTitleWidget::resizeEvent(QResizeEvent *event)
 {
+    // qCDebug(ClientLogger) << "CTitleWidget::resizeEvent";
     QWidget::resizeEvent(event);
     if (m_showState == Title_State_Normal) {
         normalStateUpdateSearchEditWidth();
@@ -253,6 +264,7 @@ void CTitleWidget::resizeEvent(QResizeEvent *event)
 
 void CTitleWidget::changeEvent(QEvent *e)
 {
+    // qCDebug(ClientLogger) << "CTitleWidget::changeEvent";
     QWidget::changeEvent(e);
     if (e->type() == QEvent::FontChange) {
         updateSearchEditPlaceHolder();
@@ -261,6 +273,7 @@ void CTitleWidget::changeEvent(QEvent *e)
 
 void  CTitleWidget::updateSearchEditPlaceHolder()
 {
+    qCDebug(ClientLogger) << "CTitleWidget::updateSearchEditPlaceHolder";
     QString str  = m_strPlaceHolder;
     QFontMetrics fontMetrice(m_searchEdit->font());
     if (fontMetrice.horizontalAdvance(str) > (m_searchEdit->width() - 30)) {
@@ -275,10 +288,12 @@ void  CTitleWidget::updateSearchEditPlaceHolder()
 
 bool CTitleWidget::eventFilter(QObject *o, QEvent *e)
 {
+    // qCDebug(ClientLogger) << "CTitleWidget::eventFilter";
     DButtonBoxButton *btn = qobject_cast<DButtonBoxButton *>(o);
     if (btn != nullptr && e->type() == QEvent::KeyPress) {
         QKeyEvent *keyEvent = dynamic_cast<QKeyEvent *>(e);
         if (keyEvent != nullptr && (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Space)) {
+            qCDebug(ClientLogger) << "CTitleWidget::eventFilter button key press:" << keyEvent->key();
             emit signalSetButtonFocus();
         }
     }
@@ -288,6 +303,7 @@ bool CTitleWidget::eventFilter(QObject *o, QEvent *e)
             QFocusEvent *focusOutEvent = dynamic_cast<QFocusEvent *>(e);
             //如果为tab切换焦点则发送焦点切换信号
             if (focusOutEvent->reason() == Qt::TabFocusReason) {
+                qCDebug(ClientLogger) << "CTitleWidget::eventFilter search edit tab focus out";
                 emit signalSearchFocusSwitch();
             }
             //根据焦点离开原因，决定是否隐藏搜索框
@@ -302,6 +318,7 @@ bool CTitleWidget::eventFilter(QObject *o, QEvent *e)
 
 void CTitleWidget::slotShowSearchEdit()
 {
+    qCDebug(ClientLogger) << "CTitleWidget::slotShowSearchEdit";
     miniStateShowSearchEdit();
     m_searchEdit->setFocus();
 
@@ -309,8 +326,10 @@ void CTitleWidget::slotShowSearchEdit()
 
 void CTitleWidget::slotSearchEditFocusChanged(bool onFocus)
 {
+    qCDebug(ClientLogger) << "CTitleWidget::slotSearchEditFocusChanged onFocus:" << onFocus;
     //如果获取焦点，或者搜索编辑框内容不为空则不处理
     if (onFocus || !m_searchEdit->text().isEmpty()) {
+        qCDebug(ClientLogger) << "CTitleWidget::slotSearchEditFocusChanged onFocus or search edit text is not empty, returning";
         return;
     }
     //如果为小窗口模式则隐藏部分控件
@@ -323,6 +342,7 @@ void CTitleWidget::slotSearchEditFocusChanged(bool onFocus)
 
 void CTitleWidget::slotSidebarIconClicked()
 {
+    qCDebug(ClientLogger) << "CTitleWidget::slotSidebarIconClicked";
     //获取当前侧边栏显示状态
     bool display = m_sidebarCanDisplay & m_sidebarstatus;
     //点击按钮后侧边栏状态重新恢复为可显示状态

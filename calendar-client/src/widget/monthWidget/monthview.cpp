@@ -24,12 +24,14 @@ DGUI_USE_NAMESPACE
  */
 void CMonthView::setTheMe(int type)
 {
+    qCDebug(ClientLogger) << "CMonthView::setTheMe, type:" << type;
     m_weekIndicator->setTheMe(type);
     m_monthGraphicsView->setTheMe(type);
 }
 
 CMonthView::CMonthView(QWidget *parent) : DWidget(parent)
 {
+    qCDebug(ClientLogger) << "CMonthView::CMonthView";
     m_weekIndicator = new CMonthWeekView;
     m_monthGraphicsView = new CMonthGraphicsview(this);
 
@@ -55,15 +57,18 @@ CMonthView::CMonthView(QWidget *parent) : DWidget(parent)
 
 CMonthView::~CMonthView()
 {
+    qCDebug(ClientLogger) << "CMonthView::~CMonthView";
 }
 
 void CMonthView::setSelectSchedule(const DSchedule::Ptr &scheduleInfo)
 {
+    qCDebug(ClientLogger) << "CMonthView::setSelectSchedule";
     m_monthGraphicsView->setSelectSearchSchedule(scheduleInfo);
 }
 
 void CMonthView::slotScheduleRemindWidget(const bool isShow, const DSchedule::Ptr &out)
 {
+    // qCDebug(ClientLogger) << "CMonthView::slotScheduleRemindWidget, isShow:" << isShow;
     if (isShow) {
         qCDebug(ClientLogger) << "Showing schedule reminder widget" 
                              << "summary:" << out->summary() 
@@ -84,21 +89,24 @@ void CMonthView::slotScheduleRemindWidget(const bool isShow, const DSchedule::Pt
                              << "widget width:" << m_remindWidget->width();
         if (rPos.x() < this->window()->width() / 2) {
             // 显示到右侧
+            qCDebug(ClientLogger) << "Showing reminder to the right";
             m_remindWidget->setDirection(DArrowRectangle::ArrowLeft);
             m_remindWidget->show(rPos.x()+10, rPos.y());
         } else {
             // 显示到左侧
+            qCDebug(ClientLogger) << "Showing reminder to the left";
             m_remindWidget->setDirection(DArrowRectangle::ArrowRight);
             m_remindWidget->show(rPos.x()-10, rPos.y());
         }
     } else {
-        qCDebug(ClientLogger) << "Hiding schedule reminder widget";
+        // qCDebug(ClientLogger) << "Hiding schedule reminder widget";
         m_remindWidget->hide();
     }
 }
 
 void CMonthView::resizeEvent(QResizeEvent *event)
 {
+    // qCDebug(ClientLogger) << "CMonthView::resizeEvent";
     DWidget::resizeEvent(event);
     QMargins margins = m_mainLayout->contentsMargins();
     m_weekIndicator->setFixedSize(width() - margins.left(), static_cast<int>(height() * 0.1042 + 0.5));
@@ -106,12 +114,14 @@ void CMonthView::resizeEvent(QResizeEvent *event)
 
 void CMonthView::mousePressEvent(QMouseEvent *event)
 {
+    // qCDebug(ClientLogger) << "CMonthView::mousePressEvent";
     Q_UNUSED(event);
     slotScheduleRemindWidget(false);
 }
 
 bool CMonthView::event(QEvent *event)
 {
+    // qCDebug(ClientLogger) << "CMonthView::event, type:" << event->type();
     if (event->type() == QEvent::FocusIn) {
         m_monthGraphicsView->setFocus(Qt::TabFocusReason);
         return true;

@@ -116,9 +116,11 @@ QString DScheduleQueryPar::toJsonString(const DScheduleQueryPar::Ptr &queryPar)
     jsonObj.insert("queryType", queryPar->queryType());
     switch (queryPar->queryType()) {
     case Query_Top:
+        // qCDebug(CommonLogger) << "Querying top" << queryPar->queryTop();
         jsonObj.insert("queryTop", queryPar->queryTop());
         break;
     case Query_RRule:
+        // qCDebug(CommonLogger) << "Querying rrule" << queryPar->rruleType();
         jsonObj.insert("queryRRule", queryPar->rruleType());
         break;
     default:

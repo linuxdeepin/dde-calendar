@@ -10,6 +10,7 @@
 #include "configsettings.h"
 #include "calendarglobalenv.h"
 #include "scheduledlg.h"
+#include "commondef.h"
 
 #include <DPalette>
 #include <DHorizontalLine>
@@ -30,6 +31,7 @@ DGUI_USE_NAMESPACE
 CDayMonthView::CDayMonthView(QWidget *parent)
     : CustomFrame(parent)
 {
+    qCDebug(ClientLogger) << "CDayMonthView::CDayMonthView";
     m_weeklist.append(tr("Monday"));
     m_weeklist.append(tr("Tuesday"));
     m_weeklist.append(tr("Wednesday"));
@@ -43,10 +45,12 @@ CDayMonthView::CDayMonthView(QWidget *parent)
 
 CDayMonthView::~CDayMonthView()
 {
+    qCDebug(ClientLogger) << "CDayMonthView::~CDayMonthView";
 }
 
 void CDayMonthView::setShowDate(const QVector<QDate> &showDate, const QDate &selectDate, const QDate &currentDate)
 {
+    qCDebug(ClientLogger) << "CDayMonthView::setShowDate, selectDate:" << selectDate;
     m_selectDate = selectDate;
     m_currentDate = currentDate;
     m_dayMonthWidget->setShowDate(showDate, selectDate, currentDate);
@@ -56,6 +60,7 @@ void CDayMonthView::setShowDate(const QVector<QDate> &showDate, const QDate &sel
 
 void CDayMonthView::setLunarVisible(bool visible)
 {
+    qCDebug(ClientLogger) << "CDayMonthView::setLunarVisible, visible:" << visible;
     m_huanglistate = visible;
     m_yiLabel->setVisible(visible);
     m_jiLabel->setVisible(visible);
@@ -66,9 +71,11 @@ void CDayMonthView::setLunarVisible(bool visible)
 
 void CDayMonthView::setTheMe(int type)
 {
+    qCDebug(ClientLogger) << "CDayMonthView::setTheMe, type:" << type;
     QColor todayColor = CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
     m_dayMonthWidget->setTheMe(type);
     if (type == 0 || type == 1) {
+        qCDebug(ClientLogger) << "Applying light theme";
         DPalette aniPa = this->palette();
         QColor tbColor = "#FFFFFF";
         aniPa.setColor(DPalette::Window, tbColor);
@@ -117,6 +124,7 @@ void CDayMonthView::setTheMe(int type)
         m_festivalTextColor = Qt::black;
 
     } else if (type == 2) {
+        qCDebug(ClientLogger) << "Applying dark theme";
         DPalette aniPa = this->palette();
         QColor tbColor = "#282828";
         aniPa.setColor(DPalette::Window, tbColor);
@@ -163,6 +171,7 @@ void CDayMonthView::setTheMe(int type)
 
 void CDayMonthView::setSearchFlag(bool flag)
 {
+    qCDebug(ClientLogger) << "CDayMonthView::setSearchFlag, flag:" << flag;
     m_searchflag = flag;
     update();
 }
@@ -173,17 +182,20 @@ void CDayMonthView::setSearchFlag(bool flag)
  */
 void CDayMonthView::setHuangLiInfo(const CaHuangLiDayInfo &huangLiInfo)
 {
+    qCDebug(ClientLogger) << "CDayMonthView::setHuangLiInfo";
     m_huangLiInfo = huangLiInfo;
     updateDateLunarDay();
 }
 
 void CDayMonthView::setHasScheduleFlag(const QVector<bool> &hasScheduleFlag)
 {
+    qCDebug(ClientLogger) << "CDayMonthView::setHasScheduleFlag";
     m_dayMonthWidget->setHasScheduleFlag(hasScheduleFlag);
 }
 
 void CDayMonthView::initUI()
 {
+    qCDebug(ClientLogger) << "CDayMonthView::initUI";
     m_today = new CTodayButton;
     m_today->setText(QCoreApplication::translate("today", "Today", "Today"));
     m_today->setFixedSize(80, DDEDayCalendar::D_MLabelHeight);
@@ -314,6 +326,7 @@ void CDayMonthView::initUI()
 
 void CDayMonthView::initConnection()
 {
+    qCDebug(ClientLogger) << "CDayMonthView::initConnection";
     connect(m_prevButton, &DIconButton::clicked, this, &CDayMonthView::slotprev);
     connect(m_today, &CTodayButton::clicked, this, &CDayMonthView::slottoday);
     connect(m_nextButton, &DIconButton::clicked, this, &CDayMonthView::slotnext);
@@ -325,6 +338,7 @@ void CDayMonthView::initConnection()
  */
 void CDayMonthView::updateDateShow()
 {
+    qCDebug(ClientLogger) << "CDayMonthView::updateDateShow";
     QLocale locale;
     m_currentMouth->setTextStr(locale.monthName(m_selectDate.month(), QLocale::ShortFormat));
     m_currentDay->setTextStr(QString::number(m_selectDate.day()));
@@ -345,7 +359,11 @@ void CDayMonthView::updateDateShow()
  */
 void CDayMonthView::updateDateLunarDay()
 {
-    if (!m_huanglistate) return;
+    qCDebug(ClientLogger) << "CDayMonthView::updateDateLunarDay";
+    if (!m_huanglistate) {
+        qCDebug(ClientLogger) << "Huangli state is false, returning";
+        return;
+    }
     m_currentLuna->setTextStr(m_huangLiInfo.mGanZhiYear + "年 " + "【" + m_huangLiInfo.mZodiac + "年】" + m_huangLiInfo.mGanZhiMonth + "月 " + m_huangLiInfo.mGanZhiDay + "日 ");
     QStringList yiList = m_huangLiInfo.mSuit.split(".", Qt::SkipEmptyParts);
     QStringList jiList = m_huangLiInfo.mAvoid.split(".", Qt::SkipEmptyParts);
@@ -355,20 +373,24 @@ void CDayMonthView::updateDateLunarDay()
 
 void CDayMonthView::changeSelectDate(const QDate &date)
 {
+    qCDebug(ClientLogger) << "CDayMonthView::changeSelectDate, date:" << date;
     emit signalChangeSelectDate(date);
 }
 
 void CDayMonthView::wheelEvent(QWheelEvent *event)
 {
+    // qCDebug(ClientLogger) << "CDayMonthView::wheelEvent";
     //如果是拖拽则退出
     bool isDragging = false;
     emit signalIsDragging(isDragging);
     if (isDragging)
         return;
     if (event->angleDelta().y() < 0) {
+        // qCDebug(ClientLogger) << "Wheeling down, changing to next day";
         //切换前一天
         changeSelectDate(m_selectDate.addDays(1));
     } else {
+        // qCDebug(ClientLogger) << "Wheeling up, changing to previous day";
         //切换后一天
         changeSelectDate(m_selectDate.addDays(-1));
     }
@@ -376,6 +398,7 @@ void CDayMonthView::wheelEvent(QWheelEvent *event)
 
 void CDayMonthView::paintEvent(QPaintEvent *e)
 {
+    // qCDebug(ClientLogger) << "CDayMonthView::paintEvent";
     Q_UNUSED(e);
     int labelwidth = width();
     int labelheight = height();
@@ -406,16 +429,19 @@ void CDayMonthView::paintEvent(QPaintEvent *e)
 
 void CDayMonthView::slotprev()
 {
+    qCDebug(ClientLogger) << "CDayMonthView::slotprev";
     changeSelectDate(m_selectDate.addMonths(-1));
 }
 
 void CDayMonthView::slotnext()
 {
+    qCDebug(ClientLogger) << "CDayMonthView::slotnext";
     changeSelectDate(m_selectDate.addMonths(1));
 }
 
 void CDayMonthView::slottoday()
 {
+    qCDebug(ClientLogger) << "CDayMonthView::slottoday";
     changeSelectDate(m_currentDate);
 }
 
@@ -423,6 +449,7 @@ CDayMonthWidget::CDayMonthWidget(QWidget *parent)
     : QWidget(parent)
     , m_isFocus(false)
 {
+    qCDebug(ClientLogger) << "CDayMonthWidget::CDayMonthWidget";
     m_gridLayout = new QGridLayout;
     m_gridLayout->setContentsMargins(0, 0, 0, 0);
     m_gridLayout->setSpacing(0);
@@ -443,17 +470,21 @@ CDayMonthWidget::CDayMonthWidget(QWidget *parent)
 
 CDayMonthWidget::~CDayMonthWidget()
 {
+    qCDebug(ClientLogger) << "CDayMonthWidget::~CDayMonthWidget";
 }
 
 void CDayMonthWidget::setTheMe(int type)
 {
+    qCDebug(ClientLogger) << "CDayMonthWidget::setTheMe, type:" << type;
     m_currentDayTextColor = CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
     if (type == 0 || type == 1) {
+        qCDebug(ClientLogger) << "Applying light theme";
         m_defaultTextColor = Qt::black;
         m_selectedTextColor = Qt::white;
         m_notCurrentTextColor = "#b2b2b2";
         m_ceventColor = QColor(255, 93, 0);
     } else if (type == 2) {
+        qCDebug(ClientLogger) << "Applying dark theme";
         m_defaultTextColor = "#C0C6D4";
         m_selectedTextColor = "#B8D3FF";
         m_notCurrentTextColor = "#C0C6D4";
@@ -465,6 +496,7 @@ void CDayMonthWidget::setTheMe(int type)
 
 void CDayMonthWidget::setShowDate(const QVector<QDate> &showDate, const QDate &selectDate, const QDate &currentDate)
 {
+    qCDebug(ClientLogger) << "CDayMonthWidget::setShowDate, selectDate:" << selectDate;
     m_showDays = showDate;
     m_selectDate = selectDate;
     m_currentDate = currentDate;
@@ -475,22 +507,26 @@ void CDayMonthWidget::setShowDate(const QVector<QDate> &showDate, const QDate &s
 
 void CDayMonthWidget::setHasScheduleFlag(const QVector<bool> &hasScheduleFlag)
 {
+    qCDebug(ClientLogger) << "CDayMonthWidget::setHasScheduleFlag";
     m_vlineflag = hasScheduleFlag;
     update();
 }
 
 const QString CDayMonthWidget::getCellDayNum(int pos)
 {
+    // qCDebug(ClientLogger) << "CDayMonthWidget::getCellDayNum, pos:" << pos;
     return QString::number(m_showDays[pos].day());
 }
 
 const QDate CDayMonthWidget::getCellDate(int pos)
 {
+    // qCDebug(ClientLogger) << "CDayMonthWidget::getCellDate, pos:" << pos;
     return m_showDays[pos];
 }
 
 void CDayMonthWidget::paintCell(QWidget *cell)
 {
+    // qCDebug(ClientLogger) << "CDayMonthWidget::paintCell";
     const QRect rect = cell->rect();
     const int pos = m_cellList.indexOf(cell);
     const bool isSelectedCell = pos == m_selectedCell;
@@ -547,6 +583,7 @@ void CDayMonthWidget::paintCell(QWidget *cell)
     if (m_vlineflag.count() == DDEDayCalendar::PainterCellNum) {
         if (m_vlineflag[pos]) {
             if (m_selectDate.month() == getCellDate(pos).month()) {
+                // qCDebug(ClientLogger) << "Drawing schedule indicator for cell:" << pos;
                 painter.save();
                 QPen pen;
                 pen.setWidth(2);
@@ -569,6 +606,7 @@ void CDayMonthWidget::paintCell(QWidget *cell)
 
 bool CDayMonthWidget::eventFilter(QObject *o, QEvent *e)
 {
+    // qCDebug(ClientLogger) << "CDayMonthWidget::eventFilter, event type:" << e->type();
     if (m_showDays.size() != 42)
         return false;
     QWidget *cell = qobject_cast<QWidget *>(o);
@@ -581,6 +619,7 @@ bool CDayMonthWidget::eventFilter(QObject *o, QEvent *e)
         if (e->type() == QEvent::Paint) {
             paintCell(cell);
         } else if (e->type() == QEvent::MouseButtonPress) {
+            // qCDebug(ClientLogger) << "Mouse press on cell:" << pos;
             m_dayMouseState = 1;
         } else if (e->type() == QEvent::MouseMove) {
             if (m_dayMouseState == 1) {
@@ -593,6 +632,7 @@ bool CDayMonthWidget::eventFilter(QObject *o, QEvent *e)
                 //如果m_dayCreateState为0需要判断是否离开了选择区域，否则不需要判断
                 if (m_dayCreateState == 0 && !cell->rect().contains(mouseEvent->pos())) {
                     //如果离开选择日期区域则修改鼠标显示
+                    // qCDebug(ClientLogger) << "Mouse moved out of cell, setting cursor to ClosedHandCursor";
                     setCursor(Qt::ClosedHandCursor);
                     m_dayCreateState = 1;
                 }
@@ -606,9 +646,11 @@ bool CDayMonthWidget::eventFilter(QObject *o, QEvent *e)
                         QRect rect = widget->geometry();
 
                         if (rect.contains(globalPoint)) {
+                            // qCDebug(ClientLogger) << "Mouse is within active window";
                             setCursor(Qt::ClosedHandCursor);
                             m_dayCreateState = 1;
                         } else {
+                            // qCDebug(ClientLogger) << "Mouse is outside active window";
                             setCursor(Qt::ForbiddenCursor);
                             m_dayCreateState = 2;
                         }
@@ -616,9 +658,11 @@ bool CDayMonthWidget::eventFilter(QObject *o, QEvent *e)
                 }
             }
         } else if (e->type() == QEvent::MouseButtonRelease) {
+            // qCDebug(ClientLogger) << "Mouse release on cell:" << pos;
             QMouseEvent *mouseEvent = dynamic_cast<QMouseEvent *>(e);
             //
             if (m_dayCreateState == 1) {
+                // qCDebug(ClientLogger) << "Creating new schedule on release";
                 //新建日程
                 const int pos = m_cellList.indexOf(cell);
                 QDate date = m_showDays.at(pos);
@@ -634,6 +678,7 @@ bool CDayMonthWidget::eventFilter(QObject *o, QEvent *e)
                 //如果不在点击区域内则不跳转日期
                 //跳转日期
                 if (mouseEvent->button() == Qt::LeftButton && cell->rect().contains(mouseEvent->pos())) {
+                    // qCDebug(ClientLogger) << "Cell clicked, changing selection";
                     cellClicked(cell);
                 }
             }
@@ -648,6 +693,7 @@ bool CDayMonthWidget::eventFilter(QObject *o, QEvent *e)
 
 void CDayMonthWidget::resizeEvent(QResizeEvent *event)
 {
+    // qCDebug(ClientLogger) << "CDayMonthWidget::resizeEvent";
     //获取每个时间widget的高度和宽度
     qreal width = this->width() / 7;
     qreal height = this->height() / 6;
@@ -659,6 +705,7 @@ void CDayMonthWidget::resizeEvent(QResizeEvent *event)
 
 void CDayMonthWidget::focusInEvent(QFocusEvent *event)
 {
+    // qCDebug(ClientLogger) << "CDayMonthWidget::focusInEvent, reason:" << event->reason();
     switch (event->reason()) {
     case Qt::TabFocusReason:
     case Qt::BacktabFocusReason:
@@ -674,6 +721,7 @@ void CDayMonthWidget::focusInEvent(QFocusEvent *event)
 
 void CDayMonthWidget::focusOutEvent(QFocusEvent *event)
 {
+    // qCDebug(ClientLogger) << "CDayMonthWidget::focusOutEvent";
     Q_UNUSED(event)
     m_isFocus = false;
     update();
@@ -681,18 +729,23 @@ void CDayMonthWidget::focusOutEvent(QFocusEvent *event)
 
 void CDayMonthWidget::keyPressEvent(QKeyEvent *event)
 {
+    // qCDebug(ClientLogger) << "CDayMonthWidget::keyPressEvent, key:" << event->key();
     if (m_isFocus) {
         switch (event->key()) {
         case Qt::Key_Left:
+            qCDebug(ClientLogger) << "Moving to previous day";
             emit signalChangeSelectDate(m_selectDate.addDays(-1));
             break;
         case Qt::Key_Right:
+            qCDebug(ClientLogger) << "Moving to next day";
             emit signalChangeSelectDate(m_selectDate.addDays(1));
             break;
         case Qt::Key_Up:
+            qCDebug(ClientLogger) << "Moving to previous week";
             emit signalChangeSelectDate(m_selectDate.addDays(-7));
             break;
         case Qt::Key_Down:
+            qCDebug(ClientLogger) << "Moving to next week";
             emit signalChangeSelectDate(m_selectDate.addDays(7));
             break;
         default:
@@ -705,6 +758,7 @@ void CDayMonthWidget::keyPressEvent(QKeyEvent *event)
 
 void CDayMonthWidget::mousePressEvent(QMouseEvent *event)
 {
+    // qCDebug(ClientLogger) << "CDayMonthWidget::mousePressEvent";
     QWidget::mousePressEvent(event);
     m_isFocus = false;
     if (event->button() & Qt::LeftButton)
@@ -713,15 +767,21 @@ void CDayMonthWidget::mousePressEvent(QMouseEvent *event)
 
 void CDayMonthWidget::cellClicked(QWidget *cell)
 {
+    qCDebug(ClientLogger) << "CDayMonthWidget::cellClicked";
     const int pos = m_cellList.indexOf(cell);
-    if (pos == -1)
+    if (pos == -1) {
+        qCWarning(ClientLogger) << "Invalid cell clicked";
         return;
+    }
     setSelectedCell(pos);
 }
 
 void CDayMonthWidget::setSelectedCell(int index)
 {
-    if (m_selectedCell == index)
+    qCDebug(ClientLogger) << "CDayMonthWidget::setSelectedCell, index:" << index;
+    if (m_selectedCell == index) {
+        qCDebug(ClientLogger) << "Cell already selected, returning";
         return;
+    }
     emit signalChangeSelectDate(m_showDays.at(index));
 }

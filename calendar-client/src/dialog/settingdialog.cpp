@@ -158,6 +158,7 @@ static CalendarSettingSetting setting_general = {
 };
 CSettingDialog::CSettingDialog(QWidget *parent) : DSettingsDialog(parent)
 {
+    qCDebug(ClientLogger) << "Creating settings dialog";
     m_controlCenterProxy = new ControlCenterProxy(ControlCenterDBusName,
                                                   ControlCenterDBusPath,
                                                   QDBusConnection::sessionBus(),
@@ -167,10 +168,12 @@ CSettingDialog::CSettingDialog(QWidget *parent) : DSettingsDialog(parent)
     initData();
     initWidgetDisplayStatus();
     initView();
+    qCDebug(ClientLogger) << "Settings dialog initialization complete";
 }
 
 void CSettingDialog::initView()
 {
+    qCDebug(ClientLogger) << "Initializing settings dialog view";
     setIcon(CDynamicIcon::getInstance()->getPixmap());
     setFixedSize(682, 506);
     widgetFactory()->registerWidget("login",              UserloginWidget::createloginButton);
@@ -182,6 +185,7 @@ void CSettingDialog::initView()
     widgetFactory()->registerWidget("SyncTagRadioButton", std::bind(&CSettingDialog::createSyncTagRadioButton,    this, std::placeholders::_1));
     widgetFactory()->registerWidget("SyncTimeCombobox",   std::bind(&CSettingDialog::createSyncFreqCombobox,      this, std::placeholders::_1));
     widgetFactory()->registerWidget("ManualSyncButton",   std::bind(&CSettingDialog::createManualSyncButton,      this, std::placeholders::_1));
+    qCDebug(ClientLogger) << "Registered all custom widgets";
     QString strJson;
 
     CalendarSettingSettings calendarSettings;
@@ -271,6 +275,7 @@ void CSettingDialog::initView()
 
 void CSettingDialog::initWidget()
 {
+    qCDebug(ClientLogger) << "Initializing settings dialog widgets";
     initFirstDayofWeekWidget();
     initTimeTypeWidget();
     initAccountComboBoxWidget();
@@ -278,10 +283,12 @@ void CSettingDialog::initWidget()
     initTypeAddWidget();
     initSyncFreqWidget();
     initManualSyncButton();
+    qCDebug(ClientLogger) << "Settings dialog widgets initialized";
 }
 
 void CSettingDialog::initConnect()
 {
+    qCDebug(ClientLogger) << "Initializing settings dialog connections";
     connect(gAccountManager, &AccountManager::signalGeneralSettingsUpdate, this, &CSettingDialog::slotGeneralSettingsUpdate);
     connect(gAccountManager, &AccountManager::signalAccountUpdate, this, &CSettingDialog::slotAccountUpdate);
     connect(gAccountManager, &AccountManager::signalLogout, this, &CSettingDialog::slotLogout);
@@ -298,6 +305,7 @@ void CSettingDialog::initConnect()
     connect(m_syncFreqComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &CSettingDialog::slotSetUosSyncFreq);
     connect(m_syncBtn, &QPushButton::clicked, this, &CSettingDialog::slotUosManualSync);
     connect(m_ptrNetworkState, &DOANetWorkDBus::sign_NetWorkChange, this, &CSettingDialog::slotNetworkStateChange);
+    qCDebug(ClientLogger) << "Settings dialog connections initialized";
 }
 
 void CSettingDialog::slotNetworkStateChange(DOANetWorkDBus::NetWorkState state)
@@ -313,6 +321,7 @@ void CSettingDialog::slotNetworkStateChange(DOANetWorkDBus::NetWorkState state)
 
 void CSettingDialog::initData()
 {
+    qCDebug(ClientLogger) << "Initializing settings dialog data";
     //通用设置数据初始化
     slotGeneralSettingsUpdate();
     //初始化账户信息
@@ -320,15 +329,18 @@ void CSettingDialog::initData()
     //日程类型添加按钮初始化
     m_typeAddBtn->setEnabled(m_scheduleTypeWidget->canAdd());
     m_typeImportBtn->setEnabled(m_scheduleTypeWidget->canAdd());
+    qCDebug(ClientLogger) << "Schedule type add button enabled:" << m_scheduleTypeWidget->canAdd();
     //同步频率数据初始化
     {
         int index = 0;
         if (gUosAccountItem) {
             index = m_syncFreqComboBox->findData(gUosAccountItem->getAccount()->syncFreq());
+            qCDebug(ClientLogger) << "Setting sync frequency index to:" << index << "for account ID:" << gUosAccountItem->getAccount()->accountID();
         }
         m_syncFreqComboBox->setCurrentIndex(index);
     }
     slotAccountStateChange();
+    qCDebug(ClientLogger) << "Settings dialog data initialized";
 }
 
 void CSettingDialog::initWidgetDisplayStatus()
@@ -496,14 +508,18 @@ void CSettingDialog::slotTimeTypeCurrentChanged(int index)
 
 void CSettingDialog::slotAccountCurrentChanged(int index)
 {
+    qCDebug(ClientLogger) << "Account changed to index:" << index;
     if (m_scheduleTypeWidget) {
-        m_scheduleTypeWidget->updateCalendarAccount(m_accountComboBox->itemData(index).toString());
+        QString accountId = m_accountComboBox->itemData(index).toString();
+        qCDebug(ClientLogger) << "Updating calendar account to ID:" << accountId;
+        m_scheduleTypeWidget->updateCalendarAccount(accountId);
         setTypeEnable(index);
     }
 }
 
 void CSettingDialog::slotTypeAddBtnClickded()
 {
+    qCDebug(ClientLogger) << "Add schedule type button clicked";
     if (m_scheduleTypeWidget) {
         m_scheduleTypeWidget->slotAddScheduleType();
     }
@@ -511,6 +527,7 @@ void CSettingDialog::slotTypeAddBtnClickded()
 
 void CSettingDialog::slotTypeImportBtnClickded()
 {
+    qCDebug(ClientLogger) << "Import schedule type button clicked";
     if (m_scheduleTypeWidget) {
         m_scheduleTypeWidget->slotImportScheduleType();
     }
@@ -518,9 +535,12 @@ void CSettingDialog::slotTypeImportBtnClickded()
 
 void CSettingDialog::slotSetUosSyncFreq(int freq)
 {
+    qCDebug(ClientLogger) << "Setting UOS sync frequency to:" << freq;
     QComboBox *com = qobject_cast<QComboBox *>(sender());
-    if (!com || !gUosAccountItem)
+    if (!com || !gUosAccountItem) {
+        qCDebug(ClientLogger) << "No combo box or UOS account item, skipping sync frequency update";
         return;
+    }
     
     qCDebug(ClientLogger) << "Setting UOS sync frequency to:" << freq;
     gUosAccountItem->setSyncFreq(DAccount::SyncFreqType(com->itemData(freq).toInt()));
@@ -528,16 +548,22 @@ void CSettingDialog::slotSetUosSyncFreq(int freq)
 
 void CSettingDialog::slotUosManualSync()
 {
-    if (!gUosAccountItem)
+    qCDebug(ClientLogger) << "Manual sync requested";
+    if (!gUosAccountItem) {
+        qCDebug(ClientLogger) << "No UOS account item, skipping manual sync";
         return;
+    }
     qCDebug(ClientLogger) << "Manual sync requested for account:" << gUosAccountItem->getAccount()->accountID();
     gAccountManager->downloadByAccountID(gUosAccountItem->getAccount()->accountID());
 }
 
 void CSettingDialog::slotSyncTagButtonUpdate()
 {
-    if (!gUosAccountItem)
+    qCDebug(ClientLogger) << "Updating sync tag buttons";
+    if (!gUosAccountItem) {
+        qCDebug(ClientLogger) << "No UOS account item, skipping sync tag button update";
         return;
+    }
 
     auto state = gUosAccountItem->getAccount()->accountState();
     qCDebug(ClientLogger) << "Updating sync tag buttons for account state:" << state;
@@ -550,8 +576,11 @@ void CSettingDialog::slotSyncTagButtonUpdate()
 
 void CSettingDialog::slotSyncAccountStateUpdate(bool status)
 {
-    if (!gUosAccountItem)
+    qCDebug(ClientLogger) << "Updating sync account state";
+    if (!gUosAccountItem) {
+        qCDebug(ClientLogger) << "No UOS account item, skipping sync account state update";
         return;
+    }
 
     auto state = gUosAccountItem->getAccountState();
 
@@ -567,6 +596,7 @@ void CSettingDialog::slotSyncAccountStateUpdate(bool status)
 
     gUosAccountItem->setAccountState(state);
     if (status) {
+        qCDebug(ClientLogger) << "Manual sync requested";
         slotUosManualSync();
     }
 }
@@ -588,7 +618,9 @@ void CSettingDialog::slotLastSyncTimeUpdate(const QString &datetime)
 
 void CSettingDialog::slotAccountStateChange()
 {
+    qCDebug(ClientLogger) << "Updating account state change";
     if (!gUosAccountItem) {
+        qCDebug(ClientLogger) << "No UOS account item, skipping account state change";
         return;
     }
     if (m_syncBtn) {
@@ -607,24 +639,31 @@ void CSettingDialog::slotAccountStateChange()
         }
     }
     if (m_accountComboBox && m_typeAddBtn) {
+        qCDebug(ClientLogger) << "Updating type enable";
         setTypeEnable(m_accountComboBox->currentIndex());
     }
 }
 
 void CSettingDialog::setFirstDayofWeek(int value)
 {
+    qCDebug(ClientLogger) << "Setting first day of week";
     if (!m_firstDayofWeekCombobox) {
+        qCDebug(ClientLogger) << "No first day of week combobox, skipping";
         return;
     }
     auto sourceSystem =
         gAccountManager->getFirstDayofWeekSource() == DCalendarGeneralSettings::Source_System;
 
     if (sourceSystem) {
+        qCDebug(ClientLogger) << "Setting first day of week to system default";
         m_firstDayofWeekCombobox->setCurrentIndex(m_firstDayofWeekCombobox->count() - 1);
     } else {
+        qCDebug(ClientLogger) << "Setting first day of week to:" << value;
         if (value == 1) {
+            qCDebug(ClientLogger) << "Setting first day of week to Monday";
             m_firstDayofWeekCombobox->setCurrentIndex(1);
         } else {
+            qCDebug(ClientLogger) << "Setting first day of week to Sunday";
             m_firstDayofWeekCombobox->setCurrentIndex(0);
         }
     }
@@ -634,18 +673,23 @@ void CSettingDialog::setFirstDayofWeek(int value)
 
 void CSettingDialog::setTimeType(int value)
 {
+    qCDebug(ClientLogger) << "Setting time type";
     if (!m_timeTypeCombobox) {
+        qCDebug(ClientLogger) << "No time type combobox, skipping";
         return;
     }
     if (value > 1 || value < 0) {
+        qCDebug(ClientLogger) << "Invalid time type, setting to 0";
         value = 0;
     }
     auto sourceSystem =
         gAccountManager->getTimeFormatTypeSource() == DCalendarGeneralSettings::Source_System;
     // 设置时间显示格式并刷新界面
     if (sourceSystem) {
+        qCDebug(ClientLogger) << "Setting time type to system default";
         m_timeTypeCombobox->setCurrentIndex(m_firstDayofWeekCombobox->count() - 1);
     } else {
+        qCDebug(ClientLogger) << "Setting time type to:" << value;
         m_timeTypeCombobox->setCurrentIndex(value);
     }
     gCalendarManager->setTimeShowType(value, true);
@@ -653,39 +697,53 @@ void CSettingDialog::setTimeType(int value)
 
 void CSettingDialog::accountUpdate()
 {
+    qCDebug(ClientLogger) << "Updating account list in settings dialog";
     if (nullptr == m_accountComboBox) {
+        qCWarning(ClientLogger) << "Account combo box is null, cannot update";
         return;
     }
     QVariant oldAccountID = m_accountComboBox->currentData();
+    qCDebug(ClientLogger) << "Current account ID:" << oldAccountID;
     m_accountComboBox->blockSignals(true);
     m_accountComboBox->clear();
     for (auto account : gAccountManager->getAccountList()) {
+        // qCDebug(ClientLogger) << "Adding account:" << account->getAccount()->accountName() << "ID:" << account->getAccount()->accountID();
         m_accountComboBox->addItem(account->getAccount()->accountName(), account->getAccount()->accountID());
     }
     m_accountComboBox->setCurrentIndex(m_accountComboBox->findData(oldAccountID));
-    if (m_accountComboBox->currentIndex() < 0)
+    if (m_accountComboBox->currentIndex() < 0) {
+        qCDebug(ClientLogger) << "Previous account not found, resetting to first account";
         m_accountComboBox->setCurrentIndex(0);
+    }
     m_accountComboBox->blockSignals(false);
 
     m_syncFreqComboBox->setCurrentIndex(1);  //每次登录的时候 默认15分钟
     slotAccountCurrentChanged(m_accountComboBox->currentIndex());
+    qCDebug(ClientLogger) << "Account list updated successfully";
 }
 
 void CSettingDialog::setTypeEnable(int index)
 {
-    if (!gUosAccountItem) return;
+    qCDebug(ClientLogger) << "Setting type enable for account index:" << index;
+    if (!gUosAccountItem) {
+        qCDebug(ClientLogger) << "No UOS account item, cannot enable type editing";
+        return;
+    }
 
     QString accountId = m_accountComboBox->itemData(index).toString();
+    qCDebug(ClientLogger) << "Account ID:" << accountId;
 
     AccountItem::Ptr account = gAccountManager->getAccountItemByAccountId(accountId);
 
     if (account->getAccount()->accountType() == DAccount::Account_Local || gUosAccountItem->isCanSyncShedule()) {
         if (account->getScheduleTypeList().count() < 20) {
+            qCDebug(ClientLogger) << "Schedule type count below limit, enabling editing";
             m_typeAddBtn->setEnabled(true);
             m_typeImportBtn->setEnabled(true);
             m_scheduleTypeWidget->setItemEnabled(true);
         }
     } else {
+        qCDebug(ClientLogger) << "Non-local account or sync disabled, disabling type editing";
         m_typeAddBtn->setEnabled(false);
         m_typeImportBtn->setEnabled(false);
         m_scheduleTypeWidget->setItemEnabled(false);
@@ -694,6 +752,7 @@ void CSettingDialog::setTypeEnable(int index)
 
 QPair<QWidget *, QWidget *> CSettingDialog::createFirstDayofWeekWidget(QObject *obj)
 {
+    qCDebug(ClientLogger) << "Creating first day of week widget";
     auto option = qobject_cast<DTK_CORE_NAMESPACE::DSettingsOption *>(obj);
 
     QPair<QWidget *, QWidget *> optionWidget = DSettingsWidgetFactory::createStandardItem(QByteArray(), option, m_firstDayofWeekWidget);
@@ -704,6 +763,7 @@ QPair<QWidget *, QWidget *> CSettingDialog::createFirstDayofWeekWidget(QObject *
 
 QPair<QWidget *, QWidget *> CSettingDialog::createTimeTypeWidget(QObject *obj)
 {
+    qCDebug(ClientLogger) << "Creating time type widget";
     auto option = qobject_cast<DTK_CORE_NAMESPACE::DSettingsOption *>(obj);
     QPair<QWidget *, QWidget *> optionWidget = DSettingsWidgetFactory::createStandardItem(QByteArray(), option, m_timeTypeWidget);
     // 获取初始值
@@ -713,6 +773,7 @@ QPair<QWidget *, QWidget *> CSettingDialog::createTimeTypeWidget(QObject *obj)
 
 QPair<QWidget *, QWidget *> CSettingDialog::createAccountCombobox(QObject *obj)
 {
+    qCDebug(ClientLogger) << "Creating account combobox";
     auto option = qobject_cast<DTK_CORE_NAMESPACE::DSettingsOption *>(obj);
     QPair<QWidget *, QWidget *> optionWidget = DSettingsWidgetFactory::createStandardItem(QByteArray(), option, m_accountComboBox);
     return optionWidget;
@@ -720,6 +781,7 @@ QPair<QWidget *, QWidget *> CSettingDialog::createAccountCombobox(QObject *obj)
 
 QPair<QWidget *, QWidget *> CSettingDialog::createSyncFreqCombobox(QObject *obj)
 {
+    qCDebug(ClientLogger) << "Creating sync frequency combobox";
     auto option = qobject_cast<DTK_CORE_NAMESPACE::DSettingsOption *>(obj);
     QPair<QWidget *, QWidget *> optionWidget = DSettingsWidgetFactory::createStandardItem(QByteArray(), option, m_syncFreqComboBox);
     return optionWidget;
@@ -727,6 +789,7 @@ QPair<QWidget *, QWidget *> CSettingDialog::createSyncFreqCombobox(QObject *obj)
 
 QPair<QWidget *, QWidget *> CSettingDialog::createSyncTagRadioButton(QObject *obj)
 {
+    qCDebug(ClientLogger) << "Creating sync tag radio button";
     auto option = qobject_cast<DTK_CORE_NAMESPACE::DSettingsOption *>(obj);
     DAccount::AccountState type = DAccount::Account_Calendar;
     if (option->key().endsWith("Account_Calendar"))
@@ -761,21 +824,25 @@ QPair<QWidget *, QWidget *> CSettingDialog::createSyncTagRadioButton(QObject *ob
 
 QWidget *CSettingDialog::createManualSyncButton(QObject *obj)
 {
+    // qCDebug(ClientLogger) << "Creating manual sync button";
     return m_manualSyncWidget;
 }
 
 QWidget *CSettingDialog::createJobTypeListView(QObject *)
 {
+    // qCDebug(ClientLogger) << "Creating job type list view";
     return m_scheduleTypeWidget;
 }
 
 DIconButton *CSettingDialog::createTypeAddButton()
 {
+    // qCDebug(ClientLogger) << "Creating type add button";
     return m_typeAddBtn;
 }
 
 QWidget *CSettingDialog::createControlCenterLink(QObject *obj)
 {
+    qCDebug(ClientLogger) << "Creating control center link";
     DLabel *myLabel = new DLabel(tr("Please go to the <a href='/'>Control Center</a> to change system settings"), this);
     myLabel->setTextFormat(Qt::RichText);
     myLabel->setFixedHeight(36);

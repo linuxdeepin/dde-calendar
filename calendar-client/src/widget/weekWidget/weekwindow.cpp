@@ -26,6 +26,7 @@ CWeekWindow::CWeekWindow(QWidget *parent)
     : CScheduleBaseWidget(parent)
     , m_today(new CTodayButton)
 {
+    qCDebug(ClientLogger) << "CWeekWindow constructed";
     setContentsMargins(0, 0, 0, 0);
     initUI();
     initConnection();
@@ -34,7 +35,7 @@ CWeekWindow::CWeekWindow(QWidget *parent)
 
 CWeekWindow::~CWeekWindow()
 {
-
+    qCDebug(ClientLogger) << "CWeekWindow destroyed";
 }
 
 /**
@@ -54,6 +55,7 @@ void CWeekWindow::setLunarVisible(bool state)
  */
 void CWeekWindow::initUI()
 {
+    qCDebug(ClientLogger) << "Initializing UI for CWeekWindow";
     m_today->setText(QCoreApplication::translate("today", "Today", "Today"));
     m_today->setFixedSize(DDEWeekCalendar::WTodayWindth, DDEWeekCalendar::WTodayHeight);
 
@@ -162,6 +164,7 @@ void CWeekWindow::initUI()
 
     setTabOrder(m_weekview, m_today);
     setTabOrder(m_today, m_scheduleView);
+    qCDebug(ClientLogger) << "UI initialization completed for CWeekWindow";
 }
 
 /**
@@ -169,6 +172,7 @@ void CWeekWindow::initUI()
  */
 void CWeekWindow::initConnection()
 {
+    qCDebug(ClientLogger) << "Initializing connections for CWeekWindow";
     connect(m_today, &CTodayButton::clicked, this, &CWeekWindow::slottoday);
     //周数信息区域前按钮点击事件关联触发前一周
     connect(m_weekview, &CWeekView::signalBtnPrev, this, &CWeekWindow::slotprev);
@@ -263,6 +267,7 @@ void CWeekWindow::setSearchWFlag(bool flag)
  */
 void CWeekWindow::updateHeight()
 {
+    qCDebug(ClientLogger) << "Updating schedule view height";
     m_scheduleView->updateHeight();
 }
 
@@ -271,6 +276,7 @@ void CWeekWindow::updateHeight()
  */
 void CWeekWindow::setYearData()
 {
+    qCDebug(ClientLogger) << "Setting year data";
     if (getSelectDate() == getCurrendDateTime().date()) {
         m_today->setText(QCoreApplication::translate("today", "Today", "Today"));
     } else {
@@ -321,6 +327,7 @@ void CWeekWindow::updateShowDate(const bool isUpdateBar)
  */
 void CWeekWindow::updateShowSchedule()
 {
+    qCDebug(ClientLogger) << "Updating show schedule from" << m_startDate.toString() << "to" << m_stopDate.toString();
     m_scheduleView->setShowScheduleInfo(gScheduleManager->getScheduleMap(m_startDate, m_stopDate));
 }
 
@@ -329,6 +336,7 @@ void CWeekWindow::updateShowSchedule()
  */
 void CWeekWindow::updateShowLunar()
 {
+    qCDebug(ClientLogger) << "Updating show lunar information";
     getLunarInfo();
     m_YearLunarLabel->setText(m_lunarYear);
     QMap<QDate, CaHuangLiDayInfo> weekHuangLiInfo = gLunarManager->getHuangLiDayMap(m_startDate, m_stopDate);
@@ -337,6 +345,7 @@ void CWeekWindow::updateShowLunar()
 
 void CWeekWindow::updateSearchScheduleInfo()
 {
+    qCDebug(ClientLogger) << "Updating search schedule information";
     m_scheduleView->slotUpdateScene();
 }
 
@@ -346,9 +355,7 @@ void CWeekWindow::updateSearchScheduleInfo()
  */
 void CWeekWindow::setSelectSearchScheduleInfo(const DSchedule::Ptr &info)
 {
-    qCDebug(ClientLogger) << "Setting selected search schedule" 
-                         << "summary:" << info->summary() 
-                         << "start:" << info->dtStart();
+    qCDebug(ClientLogger) << "Setting selected search schedule";
     m_scheduleView->setSelectSchedule(info);
 }
 
@@ -357,6 +364,7 @@ void CWeekWindow::setSelectSearchScheduleInfo(const DSchedule::Ptr &info)
  */
 void CWeekWindow::deleteselectSchedule()
 {
+    qCDebug(ClientLogger) << "Deleting selected schedule";
     m_scheduleView->slotDeleteitem();
 }
 
@@ -385,11 +393,13 @@ void CWeekWindow::slotViewSelectDate(const QDate &date)
 
 void CWeekWindow::slotSwitchPrePage()
 {
+    qCDebug(ClientLogger) << "Switching to previous page";
     slotprev();
 }
 
 void CWeekWindow::slotSwitchNextPage()
 {
+    qCDebug(ClientLogger) << "Switching to next page";
     slotnext();
 }
 
@@ -398,8 +408,11 @@ void CWeekWindow::slotSwitchNextPage()
  */
 void CWeekWindow::slotprev()
 {
-    if (m_isSwitchStatus)
+    qCDebug(ClientLogger) << "Switching to previous week";
+    if (m_isSwitchStatus) {
+        qCDebug(ClientLogger) << "Switching to previous week is already in progress";
         return;
+    }
 
     qCDebug(ClientLogger) << "Switching to previous week";
     m_isSwitchStatus = true;
@@ -415,8 +428,11 @@ void CWeekWindow::slotprev()
  */
 void CWeekWindow::slotnext()
 {
-    if (m_isSwitchStatus)
+    qCDebug(ClientLogger) << "Switching to next week";
+    if (m_isSwitchStatus) {
+        qCDebug(ClientLogger) << "Switching to next week is already in progress";
         return;
+    }
 
     qCDebug(ClientLogger) << "Switching to next week";
     m_isSwitchStatus = true;
@@ -457,7 +473,9 @@ void CWeekWindow::slotAngleDelta(int delta)
     qCDebug(ClientLogger) << "Handling angle delta" << "delta:" << delta;
     //如果为拖拽状态则退出
     if (!m_scheduleView->IsDragging()) {
+        qCDebug(ClientLogger) << "Not dragging, handling angle delta";
         if (delta > 0) {
+            qCDebug(ClientLogger) << "Delta is positive, switching to previous week";
             slotprev();
         } else if (delta < 0) {
             slotnext();
@@ -476,6 +494,7 @@ void CWeekWindow::switchDate(const QDate &date)
     slotScheduleHide();
     //设置选择时间
     if (setSelectDate(date, true)) {
+        qCDebug(ClientLogger) << "Switching date successfully, updating data";
         updateData();
     }
 }
@@ -495,13 +514,16 @@ void CWeekWindow::slotScheduleHide()
  */
 void CWeekWindow::resizeEvent(QResizeEvent *event)
 {
+    // qCDebug(ClientLogger) << "Week window resize event" << "size:" << event->size();
     qreal dw = width() * 0.4186 + 0.5;
     int dh = 36;
 
     //添加1个按钮的宽度 36。原来m_weekview 不包含前后按钮(若加2个按钮的宽度，会导致窗口缩小的时候按钮显示不全)
     if (!m_searchFlag) {
+        // qCDebug(ClientLogger) << "Setting week view size to:" << qRound(dw + 36) << "x" << dh;
         m_weekview->setFixedSize(qRound(dw + 36), dh);
     } else {
+        // qCDebug(ClientLogger) << "Setting week view size to:" << qRound(dw - 100 + 36) << "x" << dh;
         m_weekview->setFixedSize(qRound(dw - 100 + 36), dh);
     }
     QWidget::resizeEvent(event);
@@ -513,6 +535,7 @@ void CWeekWindow::resizeEvent(QResizeEvent *event)
  */
 void CWeekWindow::mousePressEvent(QMouseEvent *event)
 {
+    // qCDebug(ClientLogger) << "Mouse press event received";
     Q_UNUSED(event);
     slotScheduleHide();
 }
