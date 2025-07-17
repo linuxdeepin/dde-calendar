@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "ddatabase.h"
+#include "commondef.h"
 
 #include <QDateTime>
 #include <QUuid>
@@ -17,9 +18,11 @@ static QMutex DbpathMutexMapMutex;               //DbpathMutexMap的锁
  */
 SqliteMutex &getDbMutexRef(const QString &dbpath)
 {
+    qCDebug(ServiceLogger) << "Getting database mutex reference for path:" << dbpath;
     QMutexLocker locker(&DbpathMutexMapMutex);
 
     if (!DbpathMutexMap.contains(dbpath)) {
+        qCDebug(ServiceLogger) << "Creating new mutex for database path:" << dbpath;
         DbpathMutexMap.insert(dbpath, SqliteMutex());
     }
     return DbpathMutexMap[dbpath];
@@ -146,52 +149,64 @@ DDataBase::DDataBase(QObject *parent)
     , m_DBPath("")
     , m_connectionName("")
 {
+    qCDebug(ServiceLogger) << "Creating DDataBase instance";
 }
 
 DDataBase::~DDataBase()
 {
+    qCDebug(ServiceLogger) << "Destroying DDataBase instance";
 }
 
 QString DDataBase::getDBPath() const
 {
+    // qCDebug(ServiceLogger) << "Getting database path:" << m_DBPath;
     return m_DBPath;
 }
 
 void DDataBase::setDBPath(const QString &DBPath)
 {
+    // qCDebug(ServiceLogger) << "Setting database path to:" << DBPath;
     m_DBPath = DBPath;
 }
 
 QString DDataBase::createUuid()
 {
+    qCDebug(ServiceLogger) << "Creating new UUID";
     return QUuid::createUuid().toString(QUuid::WithoutBraces);
 }
 
 QString DDataBase::getConnectionName() const
 {
+    // qCDebug(ServiceLogger) << "Getting connection name:" << m_connectionName;
     return m_connectionName;
 }
 
 void DDataBase::setConnectionName(const QString &connectionName)
 {
+    // qCDebug(ServiceLogger) << "Setting connection name to:" << connectionName;
     m_connectionName = connectionName;
 }
 
 void DDataBase::initDBData()
 {
+    qCDebug(ServiceLogger) << "Initializing database data";
     createDB();
 }
 
 void DDataBase::dbOpen()
 {
+    qCDebug(ServiceLogger) << "Opening database connection";
     QStringList cntNames = QSqlDatabase::connectionNames();
     if (cntNames.contains(getConnectionName())) {
+        qCDebug(ServiceLogger) << "Using existing database connection:" << getConnectionName();
         m_database = QSqlDatabase::database(getConnectionName());
         //如果数据库不一致则设置新的数据库
         if (m_database.databaseName() != getDBPath()) {
+            qCDebug(ServiceLogger) << "Database path mismatch, updating to:" << getDBPath();
             m_database.setDatabaseName(getDBPath());
         }
     } else {
+        qCDebug(ServiceLogger) << "Creating new database connection:" << getConnectionName();
         m_database = QSqlDatabase::addDatabase("QSQLITE", getConnectionName());
         m_database.setDatabaseName(getDBPath());
         m_database.open();
@@ -200,93 +215,117 @@ void DDataBase::dbOpen()
 
 bool DDataBase::dbFileExists()
 {
+    qCDebug(ServiceLogger) << "Checking if database file exists:" << getDBPath();
     QFile file;
     file.setFileName(getDBPath());
-    return file.exists();
+    bool exists = file.exists();
+    qCDebug(ServiceLogger) << "Database file exists:" << exists;
+    return exists;
 }
 
 void DDataBase::removeDB()
 {
+    qCDebug(ServiceLogger) << "Removing database file:" << getDBPath();
     QFile::remove(getDBPath());
 }
 
 void SqliteMutex::lock()
 {
+    // qCDebug(ServiceLogger) << "Attempting to lock SQLite mutex";
     if (transactionLocked && transactionThreadId == qint64(QThread::currentThreadId())) {
+        // qCDebug(ServiceLogger) << "Transaction already locked by current thread, skipping lock";
         return;
     }
+    // qCDebug(ServiceLogger) << "Acquiring SQLite mutex lock";
     m.lock();
 }
 
 void SqliteMutex::unlock()
 {
+    // qCDebug(ServiceLogger) << "Attempting to unlock SQLite mutex";
     if (transactionLocked && transactionThreadId == qint64(QThread::currentThreadId())) {
+        // qCDebug(ServiceLogger) << "Transaction locked by current thread, skipping unlock";
         return;
     }
+    // qCDebug(ServiceLogger) << "Releasing SQLite mutex lock";
     m.unlock();
 }
 
 void SqliteMutex::transactionLock()
 {
+    qCDebug(ServiceLogger) << "Acquiring transaction lock";
     m.lock();
     transactionLocked = true;
     transactionThreadId = qint64(QThread::currentThreadId());
+    qCDebug(ServiceLogger) << "Transaction lock acquired for thread:" << transactionThreadId;
 }
 
 void SqliteMutex::transactionUnlock()
 {
+    qCDebug(ServiceLogger) << "Releasing transaction lock for thread:" << transactionThreadId;
     transactionLocked = false;
     transactionThreadId = 0;
     m.unlock();
+    qCDebug(ServiceLogger) << "Transaction lock released";
 }
 
 SqliteQuery::SqliteQuery(QSqlDatabase db)
     : QSqlQuery(db)
     , _db(db)
 {
+    qCDebug(ServiceLogger) << "Creating SqliteQuery with database connection";
 }
 
 SqliteQuery::SqliteQuery(const QString &connectionName)
     : SqliteQuery(QSqlDatabase::database(connectionName))
 {
+    qCDebug(ServiceLogger) << "Creating SqliteQuery with connection name:" << connectionName;
 }
 
 SqliteQuery::SqliteQuery(const QString &query, QSqlDatabase db)
     : QSqlQuery(query, db)
     , _db(db)
 {
+    qCDebug(ServiceLogger) << "Creating SqliteQuery with query:" << query;
 }
 
 bool SqliteQuery::exec(QString sql)
 {
+    qCDebug(ServiceLogger) << "Executing SQL query:" << sql;
     getDbMutexRef(_db.databaseName()).lock();
     bool f = QSqlQuery::exec(sql);
+    qCDebug(ServiceLogger) << "SQL query execution result:" << f;
     getDbMutexRef(_db.databaseName()).unlock();
     return f;
 }
 
 bool SqliteQuery::exec()
 {
+    qCDebug(ServiceLogger) << "Executing prepared SQL query";
     getDbMutexRef(_db.databaseName()).lock();
     bool f = QSqlQuery::exec();
+    qCDebug(ServiceLogger) << "Prepared SQL query execution result:" << f;
     getDbMutexRef(_db.databaseName()).unlock();
     return f;
 }
 
 void SqliteQuery::transaction()
 {
+    qCDebug(ServiceLogger) << "Starting database transaction";
     getDbMutexRef(_db.databaseName()).transactionLock();
     _db.transaction();
 }
 
 void SqliteQuery::commit()
 {
+    qCDebug(ServiceLogger) << "Committing database transaction";
     _db.commit();
     getDbMutexRef(_db.databaseName()).transactionUnlock();
 }
 
 void SqliteQuery::rollback()
 {
+    qCDebug(ServiceLogger) << "Rolling back database transaction";
     _db.rollback();
     getDbMutexRef(_db.databaseName()).transactionUnlock();
 }
@@ -294,10 +333,12 @@ void SqliteQuery::rollback()
 
 void SqliteMutex::UnCopyMutex::lock()
 {
+    // qCDebug(ServiceLogger) << "Acquiring UnCopyMutex lock";
     m.lock();
 }
 
 void SqliteMutex::UnCopyMutex::unlock()
 {
+    // qCDebug(ServiceLogger) << "Releasing UnCopyMutex lock";
     m.unlock();
 }

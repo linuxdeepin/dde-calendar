@@ -11,11 +11,12 @@
 Dbuscloudsync::Dbuscloudsync(QObject *parent)
     : DServiceBase(serviceBasePath + "/CloudSync", serviceBaseName + ".CloudSync", parent)
 {
-
+    qCDebug(ServiceLogger) << "Creating Dbuscloudsync";
 }
 
 void Dbuscloudsync::MsgCallBack(const QByteArray &msg)
 {
+    qCDebug(ServiceLogger) << "MsgCallBack";
     //msg信息处理
     QJsonObject json;
     json = QJsonDocument::fromJson(msg).object();

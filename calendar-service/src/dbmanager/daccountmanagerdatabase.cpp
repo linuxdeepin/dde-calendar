@@ -15,17 +15,20 @@
 DAccountManagerDataBase::DAccountManagerDataBase(QObject *parent)
     : DDataBase(parent)
 {
+    qCDebug(ServiceLogger) << "DAccountManagerDataBase constructor";
     setConnectionName(NameAccountManager);
 }
 
 void DAccountManagerDataBase::initDBData()
 {
+    qCDebug(ServiceLogger) << "Initializing account manager database";
     createDB();
     initAccountManagerDB();
 }
 
 DAccount::List DAccountManagerDataBase::getAccountList()
 {
+    qCDebug(ServiceLogger) << "Getting account list";
     DAccount::List accountList;
     QString strSql("SELECT accountID,accountName, displayName, accountState, accountAvatar,               \
                    accountDescription, accountType, dbName,dBusPath,dBusInterface, dtCreate, expandStatus, dtDelete, dtUpdate, isDeleted         \
@@ -56,11 +59,13 @@ DAccount::List DAccountManagerDataBase::getAccountList()
 
 DAccount::Ptr DAccountManagerDataBase::getAccountByID(const QString &accountID)
 {
+    qCDebug(ServiceLogger) << "Getting account by ID:" << accountID;
     QString strSql("SELECT accountName, displayName, accountState, accountAvatar,               \
                    accountDescription, accountType, dbName,dBusPath,dBusInterface, dtCreate, dtDelete, dtUpdate, expandStatus, isDeleted         \
                    FROM accountManager WHERE accountID = ?");
     SqliteQuery query(m_database);
     if (query.prepare(strSql)) {
+        qCDebug(ServiceLogger) << "Preparing query for account ID:" << accountID;
         query.addBindValue(accountID);
         if (query.exec() && query.next()) {
             DAccount::Type type = static_cast<DAccount::Type>(query.value("accountType").toInt());
@@ -93,6 +98,7 @@ QString DAccountManagerDataBase::addAccountInfo(const DAccount::Ptr &accountInfo
     SqliteQuery query(m_database);
     //生成唯一标识
     if (accountInfo->accountID().isEmpty()) {
+        qCDebug(ServiceLogger) << "Generating new account ID";
         accountInfo->setAccountID(DDataBase::createUuid());
         qCDebug(ServiceLogger) << "Generated new account ID:" << accountInfo->accountID();
     }

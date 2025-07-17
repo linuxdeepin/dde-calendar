@@ -11,6 +11,7 @@ Syncoperation::Syncoperation(QObject *parent)
     : QObject(parent)
     , m_syncInter(new SyncInter(SYNC_DBUS_PATH, SYNC_DBUS_INTERFACE, QDBusConnection::sessionBus(), this))
 {
+    qCDebug(ServiceLogger) << "Syncoperation constructor";
 
     if (!QDBusConnection::sessionBus().connect(SYNC_DBUS_PATH,
                                                SYNC_DBUS_INTERFACE,
@@ -32,17 +33,19 @@ Syncoperation::Syncoperation(QObject *parent)
 
 Syncoperation::~Syncoperation()
 {
-
+    qCDebug(ServiceLogger) << "Syncoperation destructor";
 }
 
 void Syncoperation::optlogin()
 {
+    qCDebug(ServiceLogger) << "Optlogin";
     //异步调用无需等待结果,由后续LoginStatus触发处理
     m_syncInter->login();
 }
 
 void Syncoperation::optlogout()
 {
+    qCDebug(ServiceLogger) << "Optlogout";
     //异步调用无需等待结果,由后续LoginStatus触发处理
     m_syncInter->logout();
 }
@@ -275,6 +278,7 @@ void Syncoperation::slotDbusCall(const QDBusMessage &msg)
 
 void Syncoperation::onPropertiesChanged(const QString &interfaceName, const QVariantMap &changedProperties, const QStringList &invalidatedProperties)
 {
+    // qCDebug(ServiceLogger) << "onPropertiesChanged";
     Q_UNUSED(interfaceName);
     Q_UNUSED(invalidatedProperties);
     if (!changedProperties.contains("UserData"))

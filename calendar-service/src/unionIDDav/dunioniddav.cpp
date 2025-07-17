@@ -28,6 +28,7 @@
 
 bool SyncAccount::defaultScheduleType()
 {
+    qCDebug(ServiceLogger) << "Setting default schedule type for account:" << _accountID;
     //工作类型
     QDateTime currentTime = QDateTime::currentDateTime();
     DScheduleType::Ptr workType(new DScheduleType(_accountID));
@@ -87,6 +88,7 @@ bool SyncAccount::defaultScheduleType()
 
 bool SyncAccount::defaultTypeColor()
 {
+    qCDebug(ServiceLogger) << "Setting default type color for account:" << _accountID;
     QDateTime currentTime = QDateTime::currentDateTime();
     int index = -10;
     //使用与本地一致的颜色id
@@ -107,6 +109,7 @@ bool SyncAccount::defaultTypeColor()
 
 bool SyncAccount::insertToScheduleType(const DScheduleType::Ptr &scheduleType)
 {
+    qCDebug(ServiceLogger) << "Inserting schedule type:" << scheduleType->typeName() << "for account:" << _accountID;
     QString strSql("INSERT INTO scheduleType (                      \
                    typeID, typeName, typeDisplayName, typePath,     \
                    typeColorID, description, privilege, showState,  \
@@ -135,6 +138,7 @@ bool SyncAccount::insertToScheduleType(const DScheduleType::Ptr &scheduleType)
 
 bool SyncAccount::insertToTypeColor(const DTypeColor &typeColor)
 {
+    qCDebug(ServiceLogger) << "Inserting type color:" << typeColor.colorID() << "for account:" << _accountID;
     SqliteQuery query(_connectionName);
     QString strSql("INSERT INTO TypeColor                   \
                    (ColorID, ColorHex, privilege,dtCreate)           \
@@ -151,7 +155,9 @@ bool SyncAccount::insertToTypeColor(const DTypeColor &typeColor)
 
 void DUIDSynDataWorker::syncData(SyncStack syncType)
 {
+    qCDebug(ServiceLogger) << "Syncing data for account:" << syncType.accountId;
     if (nullptr == mSyncTimer) {
+        qCDebug(ServiceLogger) << "Creating sync timer";
         mSyncTimer = new QTimer(this);
         mSyncTimer->setSingleShot(true);
         connect(mSyncTimer, &QTimer::timeout, this, &DUIDSynDataWorker::slotSync);
@@ -163,6 +169,7 @@ void DUIDSynDataWorker::syncData(SyncStack syncType)
 
 void DUIDSynDataWorker::slotSync()
 {
+    qCDebug(ServiceLogger) << "Syncing data";
     bool next = false;
     for (int k = mSyncList.count() - 1; k >= 0; k--) {
         if (k == mSyncList.count() - 1) {
@@ -185,6 +192,7 @@ void DUIDSynDataWorker::slotSync()
 
 void DUIDSynDataWorker::startUpdate()
 {
+    qCDebug(ServiceLogger) << "Starting update";
     /*
      * A为本地数据库
      * B为云端下载的临时数据库
@@ -214,11 +222,13 @@ void DUIDSynDataWorker::startUpdate()
     SqlTransactionLocker transactionLocker({mSync.dbname_account_thread, mSync.dbname_manager_thread, mSync.dbname_sync_thread});
     //本地数据迁移到临时文件中
     if (errCode == 0) {
+        qCDebug(ServiceLogger) << "Loading local data to temporary file";
         errCode =  mSync.loadToTmp();
     }
 
     //将临时文件数据迁移到本地中
     if (errCode == 0 && mSync.syncType.testFlag(DDataSyncBase::SyncType::Sync_Download)) {
+        qCDebug(ServiceLogger) << "Loading temporary data to local";
         errCode =  mSync.tmpToLoad(updateType);
     }
 
@@ -255,12 +265,14 @@ DUnionIDDav::DUnionIDDav()
     : DDataSyncBase()
     , d(new DUIDSynDataPrivate())
 {
+    qCDebug(ServiceLogger) << "DUnionIDDav constructor";
     connect(d, &DUIDSynDataPrivate::signalUpdate, this, &DUnionIDDav::signalUpdate);
     connect(d, &DUIDSynDataPrivate::signalSyncState, this, &DUnionIDDav::signalSyncState);
 }
 
 DUnionIDDav::~DUnionIDDav()
 {
+    qCDebug(ServiceLogger) << "DUnionIDDav destructor";
     delete d;
 }
 
@@ -403,16 +415,20 @@ int SyncStack::loadToTmp()
     return 0;
 }
 
-bool SyncStack::needUpdateSettingValue() {
+bool SyncStack::needUpdateSettingValue()
+{
+    qCDebug(ServiceLogger) << "Checking if setting values need to be updated";
     int mangerdayweek = selectValue("vch_value", "calendargeneralsettings", "vch_key", "firstDayOfWeek", dbname_manager_thread).toInt();
     int syncdayweek = selectValue("vch_value", "calendargeneralsettings", "vch_key", "firstDayOfWeek", dbname_sync_thread).toInt();
     if(mangerdayweek != syncdayweek) {
+        qCDebug(ServiceLogger) << "Manger day week:" << mangerdayweek << "Sync day week:" << syncdayweek;
         return  true;
     }
 
     int mangerTimeShow = selectValue("vch_value", "calendargeneralsettings", "vch_key", "timeShowType", dbname_manager_thread).toInt();
     int syncTimeShow = selectValue("vch_value", "calendargeneralsettings", "vch_key", "timeShowType", dbname_sync_thread).toInt();
     if(mangerTimeShow != syncTimeShow) {
+        qCDebug(ServiceLogger) << "Manger time show:" << mangerTimeShow << "Sync time show:" << syncTimeShow;
         return  true;
     }
 
@@ -421,6 +437,7 @@ bool SyncStack::needUpdateSettingValue() {
 
 int SyncStack::tmpToLoad(DDataSyncBase::UpdateTypes &updateType)
 {
+    qCDebug(ServiceLogger) << "Updating schedules, schedule types, and type colors from sync DB to account DB.";
     if (accountState & DAccount::Account_Calendar) {
         qCInfo(ServiceLogger) << "Updating schedules, schedule types, and type colors from sync DB to account DB.";
         if (!syncIntoTable("schedules", dbname_sync_thread, dbname_account_thread)){
@@ -469,6 +486,7 @@ void SyncStack::deleteTmpData(SyncFileManage &fileManger)
 
 QString SyncStack::prepareQuest(int count)
 {
+    // qCDebug(ServiceLogger) << "Preparing question marks for count:" << count;
     QString r;
     while (count--) {
         r += "?,";
@@ -479,12 +497,14 @@ QString SyncStack::prepareQuest(int count)
 
 void SyncStack::prepareBinds(QSqlQuery &query, QSqlRecord source)
 {
+    qCDebug(ServiceLogger) << "Preparing binds for count:" << source.count();
     for (int k = 0; k < source.count(); k++)
         query.addBindValue(source.value(k));
 }
 
 bool SyncStack::syncIntoTable(const QString &table_name, const QString &connection_name_source, const QString &connection_name_target)
 {
+    qCDebug(ServiceLogger) << "Syncing into table:" << table_name << "from:" << connection_name_source << "to:" << connection_name_target;
     SqliteQuery source(QSqlDatabase::database(connection_name_source));
     SqliteQuery target(QSqlDatabase::database(connection_name_target));
     if (!target.exec(" delete from " + table_name)){
@@ -505,6 +525,7 @@ bool SyncStack::syncIntoTable(const QString &table_name, const QString &connecti
 
 QSqlRecord SyncStack::selectRecord(const QString &table_name, const QString &key_name, const QVariant &key_value, const QString &connection_name)
 {
+    qCDebug(ServiceLogger) << "Selecting record from table:" << table_name << "with key:" << key_name << "and value:" << key_value;
     SqliteQuery query(connection_name);
     query.prepare("select * from " + table_name + " where " + key_name + " = ?");
     query.addBindValue(key_value);
@@ -516,8 +537,11 @@ QSqlRecord SyncStack::selectRecord(const QString &table_name, const QString &key
 
 bool SyncStack::replaceIntoRecord(const QString &table_name, QSqlRecord record, const QString &connection_name)
 {
-    if (record.isEmpty())
+    qCDebug(ServiceLogger) << "Replacing into record:" << record.count() << "into table:" << table_name;
+    if (record.isEmpty()) {
+        qCDebug(ServiceLogger) << "Record is empty, returning true";
         return true;
+    }
     SqliteQuery query(connection_name);
     query.prepare("replace into " + table_name + " values(" + prepareQuest(record.count()) + ")");
     prepareBinds(query, record);
@@ -526,6 +550,7 @@ bool SyncStack::replaceIntoRecord(const QString &table_name, QSqlRecord record, 
 
 QVariant SyncStack::selectValue(const QString &value_name, const QString &table_name, const QString &key_name, const QVariant &key_value, const QString &connection_name)
 {
+    qCDebug(ServiceLogger) << "Selecting value:" << value_name << "from table:" << table_name << "with key:" << key_name << "and value:" << key_value;
     SqliteQuery query(connection_name);
     query.prepare("select " + value_name + " from " + table_name + " where " + key_name + " = ?");
     query.addBindValue(key_value);
@@ -536,6 +561,7 @@ QVariant SyncStack::selectValue(const QString &value_name, const QString &table_
 
 QVariant SyncStack::selectValue(const QString &sql, const QString &connection_name)
 {
+    qCDebug(ServiceLogger) << "Selecting value from SQL:" << sql;
     SqliteQuery query(connection_name);
     query.exec(sql);
     query.next();
@@ -544,6 +570,7 @@ QVariant SyncStack::selectValue(const QString &sql, const QString &connection_na
 
 bool SyncStack::deleteTableLine(const QString &table_name, const QString &key_name, const QVariant &key_value, const QString &connection_name)
 {
+    qCDebug(ServiceLogger) << "Deleting table line from table:" << table_name << "with key:" << key_name << "and value:" << key_value;
     SqliteQuery query(connection_name);
     query.prepare("delete from " + table_name + " where " + key_name + " = ?");
     query.addBindValue(key_value);
@@ -552,6 +579,7 @@ bool SyncStack::deleteTableLine(const QString &table_name, const QString &key_na
 
 bool SyncStack::deleteTable(const QString &table_name, const QString &connection_name)
 {
+    qCDebug(ServiceLogger) << "Deleting table:" << table_name << "from:" << connection_name;
     SqliteQuery query(connection_name);
     if (!query.exec("delete from " + table_name)) {
         qCInfo(ServiceLogger) << query.lastError();
@@ -562,6 +590,7 @@ bool SyncStack::deleteTable(const QString &table_name, const QString &connection
 
 bool SyncStack::repairTable(const QString &table_name, const QString &connection_name_local, const QString &connection_name_server)
 {
+    qCDebug(ServiceLogger) << "Repairing table:" << table_name << "from:" << connection_name_local << "to:" << connection_name_server;
     QMap<QString, QString> local_header_info;
     QMap<QString, QString> server_header_info;
     SqliteQuery query_local(connection_name_local);
@@ -619,6 +648,7 @@ bool SyncStack::repairTable(const QString &table_name, const QString &connection
 
 DUnionIDDav::DUIDSynDataPrivate::DUIDSynDataPrivate()
 {
+    qCDebug(ServiceLogger) << "DUIDSynDataPrivate constructor";
     mThread = new QThread(this);
     DUIDSynDataWorker *mWorker = new DUIDSynDataWorker;
     qRegisterMetaType<SyncStack>("SyncStack");
@@ -635,7 +665,9 @@ DUnionIDDav::DUIDSynDataPrivate::DUIDSynDataPrivate()
 
 DUnionIDDav::DUIDSynDataPrivate::~DUIDSynDataPrivate()
 {
+    qCDebug(ServiceLogger) << "DUIDSynDataPrivate destructor";
     if (mThread->isRunning()) {
+        qCDebug(ServiceLogger) << "Quitting thread";
         mThread->quit();
         mThread->wait();
     }
@@ -643,5 +675,6 @@ DUnionIDDav::DUIDSynDataPrivate::~DUIDSynDataPrivate()
 
 void DUnionIDDav::DUIDSynDataPrivate::syncData(QString accountId, QString accountName, int accountState, DDataSyncBase::SyncTypes syncType)
 {
+    qCDebug(ServiceLogger) << "Syncing data for account:" << accountId;
     emit signalSyncData(SyncStack{accountId, accountName, accountState, syncType});
 }

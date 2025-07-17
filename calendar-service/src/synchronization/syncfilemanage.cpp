@@ -15,12 +15,12 @@ SyncFileManage::SyncFileManage(QObject *parent)
     , m_syncoperation(new Syncoperation)
     , m_account(new DAccount(DAccount::Account_UnionID))
 {
-
+    qCDebug(ServiceLogger) << "SyncFileManage constructor";
 }
 
 SyncFileManage::~SyncFileManage()
 {
-
+    qCDebug(ServiceLogger) << "SyncFileManage destructor";
 }
 
 bool SyncFileManage::SyncDataDownload(const QString &uid, QString &filepath, int &errorcode)
@@ -194,13 +194,16 @@ DAccount::Ptr SyncFileManage::getuserInfo()
 
 Syncoperation *SyncFileManage::getSyncoperation()
 {
+    // qCDebug(ServiceLogger) << "Getting sync operation";
     return m_syncoperation;
 }
 
 void SyncFileManage::UserSyncDirectory(const QString &dir)
 {
+    qCDebug(ServiceLogger) << "Creating user sync directory:" << dir;
     QDir udir(dir);
     if (!udir.exists()) {
+        qCDebug(ServiceLogger) << "User sync directory does not exist, creating it";
         udir.mkdir(dir);
     }
 }

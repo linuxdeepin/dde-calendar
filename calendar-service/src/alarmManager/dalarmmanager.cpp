@@ -27,6 +27,7 @@ static QString layoutHM("15:04");
 DAlarmManager::DAlarmManager(QObject *parent)
     : QObject(parent)
 {
+    qCDebug(ServiceLogger) << "DAlarmManager constructor called.";
     m_dbusnotify = new DBusNotify("org.deepin.dde.Notification1",
                                   "/org/deepin/dde/Notification1",
                                   "org.deepin.dde.Notification1",
@@ -69,6 +70,7 @@ void DAlarmManager::updateRemind(const DRemindData::List &remindList)
         info.triggerTimer = remind->dtRemind();
         infoVector.append(info);
     }
+    qCDebug(ServiceLogger) << "Building systemd timer configuration for" << infoVector.size() << "reminders.";
     systemdTimerControl.buildingConfiggure(infoVector);
 }
 
@@ -90,11 +92,13 @@ void DAlarmManager::notifyJobsChanged(const DRemindData::List &remindList)
         info.triggerTimer = remind->dtRemind();
         infoVector.append(info);
     }
+    qCDebug(ServiceLogger) << "Stopping systemd timers for" << infoVector.size() << "changed jobs.";
     systemdTimerControl.stopSystemdTimerByJobInfos(infoVector);
 }
 
 void DAlarmManager::notifyMsgHanding(const DRemindData::Ptr &remindData, const int operationNum)
 {
+    qCDebug(ServiceLogger) << "Notifying message handling for alarm:" << remindData->alarmID();
     switch (operationNum) {
     case 1:
         qCDebug(ServiceLogger) << "Opening calendar UI for alarm:" << remindData->alarmID();
@@ -122,6 +126,7 @@ void DAlarmManager::remindLater(const DRemindData::Ptr &remindData, const int op
     SystemDInfo info;
     info.accountID = remindData->accountID();
     info.alarmID = remindData->alarmID();
+    qCDebug(ServiceLogger) << "Reminding later for alarm:" << info.alarmID << "account:" << info.accountID << "operation:" << operationNum;
     
     //如果是稍后提醒则设置对应的重复次数
     if (operationNum == 2) {
@@ -133,6 +138,7 @@ void DAlarmManager::remindLater(const DRemindData::Ptr &remindData, const int op
     info.triggerTimer = remindData->dtRemind();
     
     //停止相应的任务
+    qCDebug(ServiceLogger) << "Stopping original systemd timer.";
     systemdTimerControl.stopSystemdTimerByJobInfo(info);
 
     if (operationNum != 2) {
@@ -144,6 +150,7 @@ void DAlarmManager::remindLater(const DRemindData::Ptr &remindData, const int op
     QVector<SystemDInfo> infoVector;
     infoVector.append(info);
     //开启新任务
+    qCDebug(ServiceLogger) << "Building new systemd timer configuration for reminded job.";
     systemdTimerControl.buildingConfiggure(infoVector);
 }
 
@@ -227,16 +234,19 @@ int DAlarmManager::remindJob(const DRemindData::Ptr &remindData, const DSchedule
                           << "Actions:" << actionlist.size();
 
     int notifyid = m_dbusnotify->Notify(argumentList);
+    qCDebug(ServiceLogger) << "Notification sent, ID:" << notifyid;
     return notifyid;
 }
 
 DBusNotify *DAlarmManager::getdbusnotify()
 {
+    // qCDebug(ServiceLogger) << "Getting DBusNotify instance.";
     return  m_dbusnotify;
 }
 
 QString DAlarmManager::getRemindBody(const DSchedule::Ptr &schedule)
 {
+    qCDebug(ServiceLogger) << "Generating reminder body for schedule:" << schedule->summary();
     QDateTime tm = QDateTime::currentDateTime();
     QString msgStart;
     QString msgEnd;
@@ -283,6 +293,7 @@ QString DAlarmManager::getBodyTimePart(const QDateTime &nowtime, const QDateTime
     //ToDo 需确认规则，需根据isstart确认是否为开始时间单独处理
     QString strmsg;
     qint64 diff = nowtime.daysTo(jobtime); //jobtime只可能大于等于当前remind任务执行的当前时间
+    qCDebug(ServiceLogger) << "Generating body time part. Diff days:" << diff << "All day:" << allday;
     if (allday) {
         //全天日程，只展示日期，即date
         //日程开始时间距离现在超过两天
@@ -321,11 +332,13 @@ QString DAlarmManager::getBodyTimePart(const QDateTime &nowtime, const QDateTime
 
 int DAlarmManager::getRemindLaterDuration(int count, qint64 &duration)
 {
+    qCDebug(ServiceLogger) << "Calculating remind later duration for count:" << count;
     bool bmax = false;
     duration = (10 + ((count - 1) * 5)) * Minute; //下一次提醒距离现在的时间间隔，单位毫秒
     if (duration >= Hour) {
         bmax = true;
         duration = Hour;
     }
+    qCDebug(ServiceLogger) << "Calculated duration:" << duration << "ms. Max reached:" << bmax;
     return bmax;
 }

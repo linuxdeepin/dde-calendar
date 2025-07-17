@@ -11,17 +11,21 @@
 #include <QDBusError>
 #include <QTranslator>
 #include <QCoreApplication>
+#include <QTimer>
 
 
 bool loadTranslator(QCoreApplication *app, QList<QLocale> localeFallback = QList<QLocale>() << QLocale::system())
 {
+    qCDebug(ServiceLogger) << "Loading translator...";
     bool bsuccess = false;
     QString CalendarServiceTranslationsDir = QStandardPaths::locate(QStandardPaths::GenericDataLocation,
                                                   		    QString("dde-calendar/translations"),
 								    QStandardPaths::LocateDirectory);
+    qCDebug(ServiceLogger) << "Translations directory:" << CalendarServiceTranslationsDir;
     for (auto &locale : localeFallback) {
         QString translateFilename = QString("%1_%2").arg(app->applicationName()).arg(locale.name());
         QString translatePath = QString("%1/%2.qm").arg(CalendarServiceTranslationsDir).arg(translateFilename);
+        // qCDebug(ServiceLogger) << "Attempting to load translation file:" << translatePath;
         if (QFile(translatePath).exists()) {
             QTranslator *translator = new QTranslator(app);
             translator->load(translatePath);
@@ -32,6 +36,7 @@ bool loadTranslator(QCoreApplication *app, QList<QLocale> localeFallback = QList
         if (parseLocalNameList.length() > 0 && !bsuccess) {
             translateFilename = QString("%1_%2").arg(app->applicationName()).arg(parseLocalNameList.at(0));
             QString parseTranslatePath = QString("%1/%2.qm").arg(CalendarServiceTranslationsDir).arg(translateFilename);
+            // qCDebug(ServiceLogger) << "Attempting to load fallback translation file:" << parseTranslatePath;
             if (QFile::exists(parseTranslatePath)) {
                 QTranslator *translator = new QTranslator(app);
                 translator->load(parseTranslatePath);
@@ -53,21 +58,29 @@ int main(int argc, char *argv[])
     Dtk::Core::DLogManager::registerConsoleAppender();
     Dtk::Core::DLogManager::registerFileAppender();
     Dtk::Core::DLogManager::registerJournalAppender();
+    qCInfo(ServiceLogger) << "Log appenders registered.";
 
     //加载翻译
     if (!loadTranslator(&a)) {
         qCWarning(ServiceLogger) << "Translation load failed.";
     }
 
+    qCDebug(ServiceLogger) << "Initializing DDataBaseManagement...";
     DDataBaseManagement dbManagement;
+    qCDebug(ServiceLogger) << "DDataBaseManagement initialized.";
 
+    qCDebug(ServiceLogger) << "Initializing DServiceManager...";
     DServiceManager serviceManager;
+    qCDebug(ServiceLogger) << "DServiceManager initialized.";
 
     //如果存在迁移，则更新提醒
     if(dbManagement.hasTransfer()){
+        qCInfo(ServiceLogger) << "Database transfer detected, scheduling remind job update.";
         //延迟处理
         QTimer::singleShot(0,[&](){
+          qCDebug(ServiceLogger) << "Executing delayed remind job update.";
           serviceManager.updateRemindJob();
+          qCDebug(ServiceLogger) << "Delayed remind job update finished.";
         });
     }
     qCInfo(ServiceLogger) << "dde-calendar-service start.";

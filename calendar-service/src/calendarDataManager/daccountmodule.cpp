@@ -30,6 +30,7 @@ DAccountModule::DAccountModule(const DAccount::Ptr &account, QObject *parent)
     , m_alarm(new DAlarmManager)
     , m_dataSync(DSyncDataFactory::createDataSync(m_account))
 {
+    qCDebug(ServiceLogger) << "DAccountModule constructor called for account:" << account->accountID();
     QString newDbPath = getDBPath();
     m_accountDB->setDBPath(newDbPath + "/" + account->dbName());
     m_accountDB->initDBData();
@@ -43,10 +44,12 @@ DAccountModule::DAccountModule(const DAccount::Ptr &account, QObject *parent)
     }
     //关联关闭提醒弹窗
     connect(this, &DAccountModule::signalCloseNotification, m_alarm->getdbusnotify(), &DBusNotify::closeNotification);
+    qCDebug(ServiceLogger) << "DAccountModule constructed for account:" << account->accountID();
 }
 
 DAccountModule::~DAccountModule()
 {
+    qCDebug(ServiceLogger) << "DAccountModule destructor called for account:" << (m_account ? m_account->accountID() : "unknown");
     if (m_dataSync != nullptr) {
         delete m_dataSync;
         m_dataSync = nullptr;
@@ -55,6 +58,7 @@ DAccountModule::~DAccountModule()
 
 QString DAccountModule::getAccountInfo()
 {
+    // qCDebug(ServiceLogger) << "Getting account info for:" << m_account->accountID();
     QString accountInfo;
     DAccount::toJsonString(m_account, accountInfo);
     return accountInfo;
@@ -62,11 +66,13 @@ QString DAccountModule::getAccountInfo()
 
 bool DAccountModule::getExpand()
 {
+    // qCDebug(ServiceLogger) << "Getting expand state for account:" << m_account->accountID();
     return m_account->isExpandDisplay();
 }
 
 void DAccountModule::setExpand(const bool &isExpand)
 {
+    qCDebug(ServiceLogger) << "Setting expand state to" << isExpand << "for account:" << m_account->accountID();
     if (m_account->isExpandDisplay() != isExpand) {
         m_account->setIsExpandDisplay(isExpand);
         m_accountDB->updateAccountInfo();
@@ -75,11 +81,13 @@ void DAccountModule::setExpand(const bool &isExpand)
 
 int DAccountModule::getAccountState()
 {
+    // qCDebug(ServiceLogger) << "Getting account state for:" << m_account->accountID();
     return int(m_account->accountState());
 }
 
 void DAccountModule::setAccountState(const int accountState)
 {
+    qCDebug(ServiceLogger) << "Setting account state to" << accountState << "for account:" << m_account->accountID();
     if (int(m_account->accountState()) != accountState) {
         m_account->setAccountState(static_cast<DAccount::AccountState>(accountState));
         m_accountDB->updateAccountInfo();
@@ -88,16 +96,19 @@ void DAccountModule::setAccountState(const int accountState)
 
 int DAccountModule::getSyncState()
 {
+    // qCDebug(ServiceLogger) << "Getting sync state for account:" << m_account->accountID();
     return m_account->syncState();
 }
 
 QString DAccountModule::getSyncFreq()
 {
+    // qCDebug(ServiceLogger) << "Getting sync frequency for account:" << m_account->accountID();
     return DAccount::syncFreqToJsonString(m_account);
 }
 
 void DAccountModule::setSyncFreq(const QString &freq)
 {
+    qCDebug(ServiceLogger) << "Setting sync frequency for account:" << m_account->accountID() << "freq:" << freq;
     DAccount::SyncFreqType syncType = m_account->syncFreq();
     DAccount::syncFreqFromJsonString(m_account, freq);
     if (syncType == m_account->syncFreq()) {
@@ -110,6 +121,7 @@ void DAccountModule::setSyncFreq(const QString &freq)
 
 QString DAccountModule::getScheduleTypeList()
 {
+    qCDebug(ServiceLogger) << "Getting schedule type list for account:" << m_account->accountID();
     DScheduleType::List typeList = m_accountDB->getScheduleTypeList();
     //排序
     std::sort(typeList.begin(), typeList.end());
@@ -120,6 +132,7 @@ QString DAccountModule::getScheduleTypeList()
 
 QString DAccountModule::getScheduleTypeByID(const QString &typeID)
 {
+    qCDebug(ServiceLogger) << "Getting schedule type by ID:" << typeID << "for account:" << m_account->accountID();
     DScheduleType::Ptr scheduleType = m_accountDB->getScheduleTypeByID(typeID);
     QString typeStr;
     DScheduleType::toJsonString(scheduleType, typeStr);
@@ -128,6 +141,7 @@ QString DAccountModule::getScheduleTypeByID(const QString &typeID)
 
 QString DAccountModule::createScheduleType(const QString &typeInfo)
 {
+    qCDebug(ServiceLogger) << "Creating schedule type for account:" << m_account->accountID() << "with info:" << typeInfo;
     DScheduleType::Ptr scheduleType;
     DScheduleType::fromJsonString(scheduleType, typeInfo);
     //如果颜色为用户自定义则需要在数据库中记录
@@ -168,8 +182,10 @@ QString DAccountModule::createScheduleType(const QString &typeInfo)
 
 bool DAccountModule::deleteScheduleTypeByID(const QString &typeID)
 {
+    qCDebug(ServiceLogger) << "Deleting schedule type by ID:" << typeID << "for account:" << m_account->accountID();
     //如果日程类型被使用需要删除对应到日程信息
     if (m_accountDB->scheduleTypeByUsed(typeID)) {
+        qCDebug(ServiceLogger) << "Schedule type" << typeID << "is in use, deleting associated schedules.";
         QStringList scheduleIDList = m_accountDB->getScheduleIDListByTypeID(typeID);
         foreach (auto scheduleID, scheduleIDList) {
             closeNotification(scheduleID);
@@ -234,11 +250,13 @@ bool DAccountModule::deleteScheduleTypeByID(const QString &typeID)
 
 bool DAccountModule::scheduleTypeByUsed(const QString &typeID)
 {
+    // qCDebug(ServiceLogger) << "Checking if schedule type" << typeID << "is used for account:" << m_account->accountID();
     return m_accountDB->scheduleTypeByUsed(typeID);
 }
 
 bool DAccountModule::updateScheduleType(const QString &typeInfo)
 {
+    qCDebug(ServiceLogger) << "Updating schedule type for account:" << m_account->accountID() << "with info:" << typeInfo;
     DScheduleType::Ptr scheduleType;
     DScheduleType::fromJsonString(scheduleType, typeInfo);
     DScheduleType::Ptr oldScheduleType = m_accountDB->getScheduleTypeByID(scheduleType->typeID());
@@ -246,6 +264,7 @@ bool DAccountModule::updateScheduleType(const QString &typeInfo)
     if (oldScheduleType.isNull()) {
         qCWarning(ServiceLogger) << "get oldScheduleType error,typeID:" << scheduleType->typeID();
     } else {
+        qCDebug(ServiceLogger) << "oldScheduleType:" << oldScheduleType->typeID();
         if (oldScheduleType->typeColor() != scheduleType->typeColor()) {
             if (!oldScheduleType->typeColor().isSysColorInfo()) {
                 m_accountDB->deleteTypeColor(oldScheduleType->typeColor().colorID());
@@ -279,6 +298,7 @@ bool DAccountModule::updateScheduleType(const QString &typeInfo)
     bool isSucc = m_accountDB->updateScheduleType(scheduleType);
 
     if (isSucc) {
+        qCDebug(ServiceLogger) << "Schedule type updated successfully";
         if (m_account->isNetWorkAccount()) {
             DUploadTaskData::Ptr uploadTask(new DUploadTaskData);
             uploadTask->setTaskType(DUploadTaskData::TaskType::Modify);
@@ -290,17 +310,21 @@ bool DAccountModule::updateScheduleType(const QString &typeInfo)
         }
         //如果不是修改显示状态则发送日程类型改变信号
         if (oldScheduleType->showState() == scheduleType->showState()) {
+            qCDebug(ServiceLogger) << "Schedule type show state unchanged";
             emit signalScheduleTypeUpdate();
         } else {
+            qCDebug(ServiceLogger) << "Schedule type show state changed";
             //日程改变信号
             emit signalScheduleUpdate();
         }
     }
+    qCDebug(ServiceLogger) << "Schedule type update result:" << isSucc;
     return isSucc;
 }
 
 QString DAccountModule::createSchedule(const QString &scheduleInfo)
 {
+    qCDebug(ServiceLogger) << "Creating schedule for account:" << m_account->accountID() << "with info:" << scheduleInfo;
     DSchedule::Ptr schedule;
     DSchedule::fromJsonString(schedule, scheduleInfo);
     schedule->setCreated(QDateTime::currentDateTime());
@@ -308,6 +332,7 @@ QString DAccountModule::createSchedule(const QString &scheduleInfo)
     QString scheduleID = m_accountDB->createSchedule(schedule);
     //根据是否为网络帐户判断是否需要更新任务列表
     if (m_account->isNetWorkAccount()) {
+        qCDebug(ServiceLogger) << "Schedule type is network account";
         DUploadTaskData::Ptr uploadTask(new DUploadTaskData);
         uploadTask->setTaskType(DUploadTaskData::TaskType::Create);
         uploadTask->setTaskObject(DUploadTaskData::Task_Schedule);
@@ -329,6 +354,7 @@ QString DAccountModule::createSchedule(const QString &scheduleInfo)
 
 bool DAccountModule::updateSchedule(const QString &scheduleInfo)
 {
+    qCDebug(ServiceLogger) << "Updating schedule for account:" << m_account->accountID() << "with info:" << scheduleInfo;
     //根据是否为提醒日程更新提醒任务
     DSchedule::Ptr schedule;
     DSchedule::fromJsonString(schedule, scheduleInfo);
@@ -338,6 +364,7 @@ bool DAccountModule::updateSchedule(const QString &scheduleInfo)
 
     //如果旧日程为提醒日程
     if (oldSchedule->alarms().size() > 0) {
+        qCDebug(ServiceLogger) << "Old schedule had alarms, checking for reminders to update/delete.";
         //根据日程ID获取提醒日程信息
         DRemindData::List remindList = m_accountDB->getRemindByScheduleID(schedule->schedulingID());
 
@@ -368,6 +395,7 @@ bool DAccountModule::updateSchedule(const QString &scheduleInfo)
                 }
             }
         } else {
+            qCDebug(ServiceLogger) << "Not a repeat schedule";
             //不是重复日程
             if (remindList.size() > 0 && remindList.at(0)->notifyid() > 0) {
                 deleteRemind.append(remindList.at(0));
@@ -388,6 +416,7 @@ bool DAccountModule::updateSchedule(const QString &scheduleInfo)
     emit signalScheduleUpdate();
     //根据是否为网络帐户判断是否需要更新任务列表
     if (m_account->isNetWorkAccount()) {
+        qCDebug(ServiceLogger) << "Schedule is network account";
         DUploadTaskData::Ptr uploadTask(new DUploadTaskData);
         uploadTask->setTaskType(DUploadTaskData::TaskType::Modify);
         uploadTask->setTaskObject(DUploadTaskData::Task_Schedule);
@@ -401,6 +430,7 @@ bool DAccountModule::updateSchedule(const QString &scheduleInfo)
 
 QString DAccountModule::getScheduleByScheduleID(const QString &scheduleID)
 {
+    qCDebug(ServiceLogger) << "Getting schedule by ID:" << scheduleID << "for account:" << m_account->accountID();
     DSchedule::Ptr schedule = m_accountDB->getScheduleByScheduleID(scheduleID);
     QString scheduleStr;
     DSchedule::toJsonString(schedule, scheduleStr);
@@ -409,10 +439,12 @@ QString DAccountModule::getScheduleByScheduleID(const QString &scheduleID)
 
 bool DAccountModule::deleteScheduleByScheduleID(const QString &scheduleID)
 {
+    qCDebug(ServiceLogger) << "Deleting schedule by ID:" << scheduleID << "for account:" << m_account->accountID();
     //根据是否为网络判断是否需要弱删除
     bool isOK;
     DSchedule::Ptr schedule = m_accountDB->getScheduleByScheduleID(scheduleID);
     if (m_account->isNetWorkAccount()) {
+        qCDebug(ServiceLogger) << "Schedule is network account";
         isOK = m_accountDB->deleteScheduleByScheduleID(scheduleID);
         //更新上传任务表
         DUploadTaskData::Ptr uploadTask(new DUploadTaskData);
@@ -423,10 +455,12 @@ bool DAccountModule::deleteScheduleByScheduleID(const QString &scheduleID)
         //开启任务
         uploadNetWorkAccountData();
     } else {
+        qCDebug(ServiceLogger) << "Schedule is not network account";
         isOK = m_accountDB->deleteScheduleByScheduleID(scheduleID, 1);
     }
     //如果删除的是提醒日程
     if (schedule->alarms().size() > 0) {
+        qCDebug(ServiceLogger) << "Schedule has alarms, closing notification and updating remind schedules";
         //关闭提醒消息和对应的通知弹框
         closeNotification(scheduleID);
         updateRemindSchedules(false);
@@ -437,34 +471,42 @@ bool DAccountModule::deleteScheduleByScheduleID(const QString &scheduleID)
 
 QString DAccountModule::querySchedulesWithParameter(const QString &params)
 {
+    qCDebug(ServiceLogger) << "Querying schedules for account:" << m_account->accountID() << "with params:" << params;
     DScheduleQueryPar::Ptr queryPar = DScheduleQueryPar::fromJsonString(params);
     if (queryPar.isNull()) {
+        qCWarning(ServiceLogger) << "Failed to parse query parameters.";
         return QString();
     }
     DSchedule::List scheduleList;
     if (queryPar->queryType() == DScheduleQueryPar::Query_RRule) {
+        qCDebug(ServiceLogger) << "Querying schedules by RRule";
         scheduleList = m_accountDB->querySchedulesByRRule(queryPar->key(), queryPar->rruleType());
     } else if (queryPar->queryType() == DScheduleQueryPar::Query_ScheduleID) {
+        qCDebug(ServiceLogger) << "Querying schedule by ScheduleID";
         DSchedule::Ptr schedule = m_accountDB->getScheduleByScheduleID(queryPar->key());
         if (schedule.isNull()) {
             return QString();
         }
         scheduleList.append(schedule);
     } else {
+        qCDebug(ServiceLogger) << "Querying schedules by key";
         scheduleList = m_accountDB->querySchedulesByKey(queryPar->key());
     }
 
     bool extend = queryPar->queryType() == DScheduleQueryPar::Query_None;
     //根据条件判断是否需要添加节假日日程
     if (isChineseEnv() && extend && m_account->accountType() == DAccount::Account_Local) {
+        qCDebug(ServiceLogger) << "Querying festival schedules";
         scheduleList.append(getFestivalSchedule(queryPar->dtStart(), queryPar->dtEnd(), queryPar->key()));
     }
 
+    qCDebug(ServiceLogger) << "Querying schedules result:" << scheduleList.size();
     return DSchedule::toListString(params, scheduleList);
 }
 
 DSchedule::List DAccountModule::getRemindScheduleList(const QDateTime &dtStart, const QDateTime &dtEnd)
 {
+    qCDebug(ServiceLogger) << "Getting remind schedule list for account:" << m_account->accountID() << "from" << dtStart << "to" << dtEnd;
     //获取范围内需要提醒的日程信息
     DSchedule::List scheduleList;
     //当前最多提前一周提醒。所以结束时间+8天
@@ -478,11 +520,13 @@ DSchedule::List DAccountModule::getRemindScheduleList(const QDateTime &dtStart, 
             }
         }
     }
+    qCDebug(ServiceLogger) << "Remind schedule list size:" << scheduleList.size();
     return scheduleList;
 }
 
 QString DAccountModule::getSysColors()
 {
+    qCDebug(ServiceLogger) << "Getting system colors for account:" << m_account->accountID();
     DTypeColor::List colorList = m_accountDB->getSysColor();
     std::sort(colorList.begin(), colorList.end());
     return DTypeColor::toJsonString(colorList);
@@ -490,11 +534,13 @@ QString DAccountModule::getSysColors()
 
 DAccount::Ptr DAccountModule::account() const
 {
+    // qCDebug(ServiceLogger) << "Getting account object.";
     return m_account;
 }
 
 void DAccountModule::updateRemindSchedules(bool isClear)
 {
+    qCDebug(ServiceLogger) << "Updating remind schedules for account:" << m_account->accountID() << "isClear:" << isClear;
     //因为全天的当前提醒日程会在开始时间延后9小时提醒
     QDateTime dtCurrent = QDateTime::currentDateTime();
     QDateTime dtStart = dtCurrent.addSecs(-9*60*60);
@@ -535,6 +581,7 @@ void DAccountModule::updateRemindSchedules(bool isClear)
     }
 
     if (isClear) {
+        qCDebug(ServiceLogger) << "Clearing remind job database";
         //清空数据库
         m_accountDB->clearRemindJobDatabase();
 
@@ -553,10 +600,12 @@ void DAccountModule::updateRemindSchedules(bool isClear)
 
 void DAccountModule::notifyMsgHanding(const QString &alarmID, const qint32 operationNum)
 {
+    qCDebug(ServiceLogger) << "Handling notification message for alarm:" << alarmID << "operation:" << operationNum;
     DRemindData::Ptr remindData = m_accountDB->getRemindData(alarmID);
     remindData->setAccountID(m_account->accountID());
     //如果相应的日程被删除,则不做处理
     if (remindData.isNull()) {
+        qCDebug(ServiceLogger) << "Remind data is null, skipping notification handling";
         return;
     }
     //如果为稍后提醒操作则需要更新对应的重复次数和提醒时间
@@ -610,6 +659,7 @@ void DAccountModule::notifyMsgHanding(const QString &alarmID, const qint32 opera
 
 void DAccountModule::remindJob(const QString &alarmID)
 {
+    qCDebug(ServiceLogger) << "Executing remind job for alarm:" << alarmID;
     DRemindData::Ptr remindData = m_accountDB->getRemindData(alarmID);
     remindData->setAccountID(m_account->accountID());
     DSchedule::Ptr schedule = getScheduleByRemind(remindData);
@@ -621,6 +671,7 @@ void DAccountModule::remindJob(const QString &alarmID)
 
 void DAccountModule::accountDownload()
 {
+    qCDebug(ServiceLogger) << "Account download triggered for account:" << m_account->accountID();
     if (m_dataSync != nullptr) {
         qCInfo(ServiceLogger) << "Starting data download for account:" << m_account->accountID();
         m_dataSync->syncData(this->account()->accountID(), this->account()->accountName(), 
@@ -634,6 +685,7 @@ void DAccountModule::accountDownload()
 
 void DAccountModule::uploadNetWorkAccountData()
 {
+    qCDebug(ServiceLogger) << "Upload network account data triggered for account:" << m_account->accountID();
     if (m_dataSync != nullptr) {
         qCInfo(ServiceLogger) << "Starting data upload for account:" << m_account->accountID();
         m_dataSync->syncData(this->account()->accountID(), this->account()->accountName(), 
@@ -647,11 +699,13 @@ void DAccountModule::uploadNetWorkAccountData()
 
 QString DAccountModule::getDtLastUpdate()
 {
+    // qCDebug(ServiceLogger) << "Getting last update time for account:" << m_account->accountID();
     return dtToString(m_account->dtLastSync());
 }
 
 void DAccountModule::removeDB()
 {
+    qCDebug(ServiceLogger) << "Removing database for account:" << m_account->accountID();
     m_accountDB->removeDB();
     //如果为uid帐户退出则清空目录下所有关于uid的数据库文件
     //解决在某些条件下数据库没有被移除的问题（自测未发现）
@@ -659,6 +713,7 @@ void DAccountModule::removeDB()
         QString dbPatch = getHomeConfigPath().append(QString("/deepin/dde-calendar-service/"));
         QDir dir(dbPatch);
         if (dir.exists()) {
+            qCDebug(ServiceLogger) << "Removing all UID account DB files from:" << dbPatch;
             QStringList filters;
             filters << QString("account_uid_*");
             dir.setFilter(QDir::Files | QDir::NoSymLinks);
@@ -672,6 +727,7 @@ void DAccountModule::removeDB()
 
 QMap<QDate, DSchedule::List> DAccountModule::getScheduleTimesOn(const QDateTime &dtStart, const QDateTime &dtEnd, const DSchedule::List &scheduleList, bool extend)
 {
+    qCDebug(ServiceLogger) << "Getting scheduled times on for" << scheduleList.size() << "schedules, from" << dtStart << "to" << dtEnd << "extend:" << extend;
     QMap<QDate, DSchedule::List> m_scheduleMap;
     //相差多少天
     int days = static_cast<int>(dtStart.daysTo(dtEnd));
@@ -751,11 +807,13 @@ QMap<QDate, DSchedule::List> DAccountModule::getScheduleTimesOn(const QDateTime 
             }
         }
     }
+    qCDebug(ServiceLogger) << "Getting scheduled times on result:" << m_scheduleMap.size();
     return m_scheduleMap;
 }
 
 DSchedule::List DAccountModule::getFestivalSchedule(const QDateTime &dtStart, const QDateTime &dtEnd, const QString &key)
 {
+    qCDebug(ServiceLogger) << "Getting festival schedules from" << dtStart << "to" << dtEnd << "with key:" << key;
     QList<stDayFestival> festivaldays = GetFestivalsInRange(dtStart, dtEnd);
     if (!key.isEmpty()) {
         festivaldays = FilterDayFestival(festivaldays, key);
@@ -776,17 +834,21 @@ DSchedule::List DAccountModule::getFestivalSchedule(const QDateTime &dtStart, co
             }
         }
     }
+    qCDebug(ServiceLogger) << "Getting festival schedules result:" << scheduleList.size();
     return scheduleList;
 }
 
 void DAccountModule::extendRecurrence(DSchedule::Map &scheduleMap, const DSchedule::Ptr &schedule, const QDateTime &dtStart, const QDateTime &dtEnd, bool extend)
 {
+    // qCDebug(ServiceLogger) << "Extending recurrence for schedule:" << schedule->summary() << "from" << dtStart << "to" << dtEnd << "extend:" << extend;
     QDateTime queryDtStart = dtStart;
     //如果日程为全天日程，则查询的开始时间设置为0点，因为全天日程的开始和结束时间都是0点
     if(schedule->allDay()){
+        qCDebug(ServiceLogger) << "Schedule is all day";
         queryDtStart.setTime(QTime(0,0,0));
     }
     if (schedule->recurs()) {
+        qCDebug(ServiceLogger) << "Schedule is recursive";
         //获取日程的开始结束时间差
         qint64 interval = schedule->dtStart().secsTo(schedule->dtEnd());
         QList<QDateTime> dtList = schedule->recurrence()->timesInInterval(queryDtStart, dtEnd);
@@ -811,6 +873,7 @@ void DAccountModule::extendRecurrence(DSchedule::Map &scheduleMap, const DSchedu
             }
         }
     } else {
+        qCDebug(ServiceLogger) << "Schedule is not recursive";
         if (!(schedule->dtStart() > dtEnd || schedule->dtEnd() < queryDtStart)) {
             scheduleMap[schedule->dtStart().date()].append(schedule);
         }
@@ -819,6 +882,7 @@ void DAccountModule::extendRecurrence(DSchedule::Map &scheduleMap, const DSchedu
 
 void DAccountModule::closeNotification(const QString &scheduleId)
 {
+    qCDebug(ServiceLogger) << "Closing notifications for schedule ID:" << scheduleId;
     //根据日程ID获取提醒日程信息
     DRemindData::List remindList = m_accountDB->getRemindByScheduleID(scheduleId);
     foreach (auto remind, remindList) {
@@ -829,6 +893,7 @@ void DAccountModule::closeNotification(const QString &scheduleId)
 
 DSchedule::Ptr DAccountModule::getScheduleByRemind(const DRemindData::Ptr &remindData)
 {
+    // qCDebug(ServiceLogger) << "Getting schedule by reminder data for schedule ID:" << remindData->scheduleID();
     DSchedule::Ptr schedule = m_accountDB->getScheduleByScheduleID(remindData->scheduleID());
     if (!schedule.isNull() && schedule->dtStart() != remindData->dtStart()) {
         schedule->setDtStart(remindData->dtStart());
@@ -840,13 +905,16 @@ DSchedule::Ptr DAccountModule::getScheduleByRemind(const DRemindData::Ptr &remin
 
 void DAccountModule::downloadTaskhanding(int index)
 {
+    qCDebug(ServiceLogger) << "Handling download task for account:" << m_account->accountID() << "index:" << index;
     //index: 0:帐户登录 1：修改同步频率 2：帐户登出
     CSystemdTimerControl sysControl;
     if (index > 0) {
+        qCDebug(ServiceLogger) << "Stopping download task for account:" << m_account->accountID();
         //修改和停止都需要停止定时任务
         sysControl.stopDownloadTask(m_account->accountID());
     }
     if (index != 2) {
+        qCDebug(ServiceLogger) << "Starting download task for account:" << m_account->accountID();
         //如果帐户刚刚登录开启定时任务
         //设置同步频率
         if (m_account->isNetWorkAccount()) {
@@ -876,12 +944,15 @@ void DAccountModule::downloadTaskhanding(int index)
 
 void DAccountModule::uploadTaskHanding(int open)
 {
+    qCDebug(ServiceLogger) << "Handling upload task for account:" << m_account->accountID() << "open:" << open;
     CSystemdTimerControl sysControl;
     if (1 == open) {
+        qCDebug(ServiceLogger) << "Starting upload task for account:" << m_account->accountID();
         sysControl.startUploadTask(15);
         return;
     }
     if (0 == open) {
+        qCDebug(ServiceLogger) << "Stopping upload task for account:" << m_account->accountID();
         //TODO:需要考虑多个帐户情况
         sysControl.stopUploadTask();
         return;
@@ -890,6 +961,7 @@ void DAccountModule::uploadTaskHanding(int open)
 
 void DAccountModule::slotOpenCalendar(const QString &alarmID)
 {
+    qCDebug(ServiceLogger) << "Slot: Open calendar requested for alarm ID:" << alarmID;
     DbusUIOpenSchedule openCalendar("com.deepin.Calendar",
                                     "/com/deepin/Calendar",
                                     QDBusConnection::sessionBus(),
@@ -909,6 +981,7 @@ void DAccountModule::slotOpenCalendar(const QString &alarmID)
 
 void DAccountModule::slotSyncState(const int syncState)
 {
+    qCDebug(ServiceLogger) << "Slot: Sync state changed for account:" << m_account->accountID() << "New state:" << syncState;
     m_account->setDtLastSync(QDateTime::currentDateTime());
     switch (syncState) {
     case 0:
@@ -944,13 +1017,17 @@ void DAccountModule::slotSyncState(const int syncState)
 
 void DAccountModule::slotDateUpdate(const DDataSyncBase::UpdateTypes updateType)
 {
+    qCDebug(ServiceLogger) << "Slot: Data update notification received. Type:" << updateType;
     if (updateType.testFlag(DDataSyncBase::Update_Setting)) {
+        qCDebug(ServiceLogger) << "Updating setting change";
         emit signalSettingChange();
     }
     if (updateType.testFlag(DDataSyncBase::Update_Schedule)) {
+        qCDebug(ServiceLogger) << "Updating schedule change";
         emit signalScheduleUpdate();
     }
     if (updateType.testFlag(DDataSyncBase::Update_ScheduleType)) {
+        qCDebug(ServiceLogger) << "Updating schedule type change";
         emit signalScheduleTypeUpdate();
     }
 }
@@ -958,6 +1035,7 @@ void DAccountModule::slotDateUpdate(const DDataSyncBase::UpdateTypes updateType)
 // 导入日程
 bool DAccountModule::importSchedule(const QString &icsFilePath, const QString &typeID, const bool cleanExists)
 {
+    qCDebug(ServiceLogger) << "Importing schedules from" << icsFilePath << "into type" << typeID << "Clean exists:" << cleanExists;
     KCalendarCore::ICalFormat icalformat;
     QTimeZone timezone = QDateTime::currentDateTime().timeZone();
     KCalendarCore::MemoryCalendar::Ptr cal(new KCalendarCore::MemoryCalendar(timezone));
@@ -968,6 +1046,7 @@ bool DAccountModule::importSchedule(const QString &icsFilePath, const QString &t
     }
     auto events = cal->events();
     if (cleanExists) {
+        qCDebug(ServiceLogger) << "Cleaning existing schedules for type:" << typeID;
         ok = m_accountDB->deleteSchedulesByScheduleTypeID(typeID, true);
         if (!ok) {
             qCWarning(ServiceLogger) << "Failed to clean existing schedules for type:" << typeID;
@@ -990,6 +1069,7 @@ bool DAccountModule::importSchedule(const QString &icsFilePath, const QString &t
 // 导出日程
 bool DAccountModule::exportSchedule(const QString &icsFilePath, const QString &typeID)
 {
+    qCDebug(ServiceLogger) << "Exporting schedules to" << icsFilePath << "from type" << typeID;
     auto typeInfo = m_accountDB->getScheduleTypeByID(typeID);
     KCalendarCore::MemoryCalendar::Ptr cal(new KCalendarCore::MemoryCalendar(nullptr));
     // 附加扩展信息
@@ -1003,6 +1083,7 @@ bool DAccountModule::exportSchedule(const QString &icsFilePath, const QString &t
         auto schedule = m_accountDB->getScheduleByScheduleID(id);
         cal->addEvent(schedule);
     }
+    qCDebug(ServiceLogger) << "Exporting" << cal->events().count() << "schedules.";
     KCalendarCore::ICalFormat icalformat;
     return icalformat.save(cal, icsFilePath);
 }

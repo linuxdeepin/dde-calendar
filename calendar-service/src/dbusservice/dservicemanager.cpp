@@ -18,6 +18,7 @@
 DServiceManager::DServiceManager(QObject *parent)
     : QObject(parent)
 {
+    qCDebug(ServiceLogger) << "DServiceManager constructor";
     //注册服务
     QDBusConnection sessionBus = QDBusConnection::sessionBus();
     qCDebug(ServiceLogger) << "Registering service:" << serviceBaseName;
@@ -90,7 +91,9 @@ DServiceManager::DServiceManager(QObject *parent)
 
 void DServiceManager::updateRemindJob()
 {
+    qCDebug(ServiceLogger) << "Updating remind job";
     if(nullptr != m_accountManagerService){
+        qCDebug(ServiceLogger) << "Updating remind job for account manager service";
         m_accountManagerService->updateRemindJob(false);
     }
 }

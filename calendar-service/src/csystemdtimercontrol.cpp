@@ -20,11 +20,13 @@ const QString UPLOADTASK_TIMER = "uploadNetWorkAccountData_calendar.timer";
 CSystemdTimerControl::CSystemdTimerControl(QObject *parent)
     : QObject(parent)
 {
+    qCDebug(ServiceLogger) << "Creating CSystemdTimerControl";
     createPath();
 }
 
 CSystemdTimerControl::~CSystemdTimerControl()
 {
+    qCDebug(ServiceLogger) << "Destroying CSystemdTimerControl";
 }
 
 void CSystemdTimerControl::buildingConfiggure(const QVector<SystemDInfo> &infoVector)
@@ -105,6 +107,7 @@ void CSystemdTimerControl::removeFile(const QStringList &fileName)
 
 void CSystemdTimerControl::stopAllRemindSystemdTimer(const QString &accountID)
 {
+    qCInfo(ServiceLogger) << "Stopping all remind systemd timer for accountID:" << accountID;
     execLinuxCommand(QString("systemctl --user stop calendar-remind-%1-*.timer").arg(accountID.mid(0,8)));
 }
 
@@ -129,6 +132,7 @@ void CSystemdTimerControl::removeRemindFile(const QString &accountID)
 
 void CSystemdTimerControl::startCalendarServiceSystemdTimer()
 {
+    qCInfo(ServiceLogger) << "Starting calendar service systemd timer";
     // 清理玲珑包的残留
     QFile(m_systemdPath + "com.dde.calendarserver.calendar.service").remove();
     QFile(m_systemdPath + "com.dde.calendarserver.calendar.timer").remove();
@@ -187,6 +191,7 @@ void CSystemdTimerControl::startDownloadTask(const QString &accountID, const int
 
 void CSystemdTimerControl::stopDownloadTask(const QString &accountID)
 {
+    qCInfo(ServiceLogger) << "Stopping download task for accountID:" << accountID;
     QString fileName;
     fileName = m_systemdPath + accountID + "_calendar.timer";
     QString command("systemctl --user stop ");
@@ -249,6 +254,7 @@ void CSystemdTimerControl::startUploadTask(const int minute)
 
 void CSystemdTimerControl::stopUploadTask()
 {
+    qCInfo(ServiceLogger) << "Stopping upload task";
     QString fileName;
     fileName = m_systemdPath + UPLOADTASK_TIMER;
     QString command("systemctl --user stop ");
@@ -261,6 +267,7 @@ void CSystemdTimerControl::stopUploadTask()
 
 void CSystemdTimerControl::createPath()
 {
+    qCInfo(ServiceLogger) << "Creating systemd path";
     m_systemdPath = getHomeConfigPath().append("/systemd/user/");
     // 如果位于玲珑环境, 更改systemd path路径
     QString linglongAppID = qgetenv("LINGLONG_APPID");

@@ -29,33 +29,42 @@ DDataBaseManagement::DDataBaseManagement()
     : m_newDatabaseName("accountmanager.db")
     , m_oldDatabaseName("scheduler.db")
 {
+    qCDebug(ServiceLogger) << "Creating DDataBaseManagement instance";
     //旧文件路径
+    qCDebug(ServiceLogger) << "Setting up database paths";
     QString oldDbPath = getHomeConfigPath().append("/deepin/dde-daemon/calendar");
     setOldDatabasePath(oldDbPath);
     //新文件路径
     QString newDbPath = getDBPath();
     setNewDatabasePath(newDbPath);
     QString newDB(newDatabasePath() + "/" + m_newDatabaseName);
+    qCDebug(ServiceLogger) << "New database path:" << newDB;
     //如果新数据库不存在
     if (!databaseExists(newDatabasePath())) {
+        qCDebug(ServiceLogger) << "New database does not exist, creating initial setup";
         QString localAccountDB(newDatabasePath() + "/" + localDBName);
+        qCDebug(ServiceLogger) << "Initializing account manager database";
         DAccountManagerDataBase accountManager;
         accountManager.setDBPath(newDB);
         accountManager.setLoaclDB(localDBName);
         accountManager.initDBData();
 
+        qCDebug(ServiceLogger) << "Getting account list";
         DAccount::List accountList = accountManager.getAccountList();
         DAccount::Ptr localAccount;
         for (auto account : accountList) {
             if (account->accountType() == DAccount::Account_Local) {
+                qCDebug(ServiceLogger) << "Found local account:" << account->accountName();
                 localAccount = account;
                 break;
             }
         }
+        qCDebug(ServiceLogger) << "Initializing local account database";
         DAccountDataBase localDB(localAccount);
         localDB.setDBPath(localAccountDB);
         localDB.initDBData();
 
+        qCDebug(ServiceLogger) << "Getting system color list";
         DTypeColor::List  sysColorList = localDB.getSysColor();
 
         QMap<QString,int > oldSysColor={
@@ -70,91 +79,118 @@ DDataBaseManagement::DDataBaseManagement()
             ,{"#717171",9}
         };
 
+        qCDebug(ServiceLogger) << "Mapping system colors";
         foreach (const auto &sysColor, sysColorList) {
             if(oldSysColor.contains(sysColor->colorCode())){
+                // qCDebug(ServiceLogger) << "Mapping color:" << sysColor->colorCode() << "to ID:" << sysColor->colorID();
                 m_sysColorID.insert(oldSysColor[sysColor->colorCode()],sysColor->colorID());
             }
         }
 
         //判断是否存在旧的数据库
         QString oldDBFile(oldDatabasePath() + "/" + m_oldDatabaseName);
+        qCDebug(ServiceLogger) << "Checking for old database at:" << oldDBFile;
         if (databaseExists(oldDBFile)) {
             qCDebug(ServiceLogger) << "Found old database, starting migration from:" << oldDBFile;
             //对数据进行迁移
+            qCDebug(ServiceLogger) << "Opening old database for migration";
             QSqlDatabase oldDB = QSqlDatabase::addDatabase("QSQLITE", "oldDB");
             oldDB.setDatabaseName(oldDBFile);
             oldDB.open();
 
+            qCDebug(ServiceLogger) << "Setting up default type mappings";
             m_typeMap.insert(1, "107c369e-b13a-4d45-9ff3-de4eb3c0475b");
             m_typeMap.insert(2, "24cf3ae3-541d-487f-83df-f068416b56b6");
             m_typeMap.insert(3, "403bf009-2005-4679-9c76-e73d9f83a8b4");
 
             //获取类型
+            qCDebug(ServiceLogger) << "Checking if old database has type table";
             if (hasTypeDB(oldDB)) {
+                qCDebug(ServiceLogger) << "Old database has type table, migrating types";
                 DScheduleType::List typeList = queryOldJobTypeData(oldDB);
                 foreach (auto &type, typeList) {
                     int &&typeid_int = type->typeID().toInt();
                     QString &&type_ID = localDB.createScheduleType(type);
+                    qCDebug(ServiceLogger) << "Mapped old type ID" << typeid_int << "to new ID" << type_ID;
                     m_typeMap.insert(typeid_int, type_ID);
                 }
 
                 //获取颜色
+                qCDebug(ServiceLogger) << "Migrating old type colors";
                 QVector<DTypeColor> colorList = queryOldTypeColorData(oldDB);
                 foreach (auto color, colorList) {
                     localDB.addTypeColor(color);
                 }
             }
 
+            qCDebug(ServiceLogger) << "Migrating schedule data";
             DSchedule::List scheduleList = queryOldJobData(oldDB, hasLunnarField(oldDB));
             //将原数据库中日程编号与当前日程编号匹配上
             foreach (auto schedule, scheduleList) {
                 int scheduleID = schedule->uid().toInt();
-                m_schedule.insert(scheduleID, localDB.createSchedule(schedule));
+                QString newScheduleID = localDB.createSchedule(schedule);
+                // qCDebug(ServiceLogger) << "Mapped old schedule ID" << scheduleID << "to new ID" << newScheduleID;
+                m_schedule.insert(scheduleID, newScheduleID);
             }
 
             //提醒任务
+            qCDebug(ServiceLogger) << "Checking if old database has reminder table";
             if (hasRemindDB(oldDB)) {
+                qCDebug(ServiceLogger) << "Migrating reminder data";
                 DRemindData::List remindList = querOldRemindData(oldDB);
                 foreach (auto remind, remindList) {
                     remind->setAccountID(localAccount->accountID());
                     localDB.createRemindInfo(remind);
                 }
+                qCDebug(ServiceLogger) << "Migrated" << remindList.size() << "reminder entries";
             }
 
+            qCDebug(ServiceLogger) << "Database migration completed successfully";
             m_hasTransfer = true;
+        } else {
+            qCDebug(ServiceLogger) << "No old database found, skipping migration";
         }
+    } else {
+        qCDebug(ServiceLogger) << "New database already exists, skipping initialization";
     }
 }
 
 QString DDataBaseManagement::newDatabasePath() const
 {
+    // qCDebug(ServiceLogger) << "Getting new database path:" << m_newDatabasePath;
     return m_newDatabasePath;
 }
 
 void DDataBaseManagement::setNewDatabasePath(const QString &newDatabasePath)
 {
+    // qCDebug(ServiceLogger) << "Setting new database path to:" << newDatabasePath;
     m_newDatabasePath = newDatabasePath;
 }
 
 QString DDataBaseManagement::oldDatabasePath() const
 {
+    // qCDebug(ServiceLogger) << "Getting old database path:" << m_oldDatabasePath;
     return m_oldDatabasePath;
 }
 
 void DDataBaseManagement::setOldDatabasePath(const QString &oldDatabasePath)
 {
+    // qCDebug(ServiceLogger) << "Setting old database path to:" << oldDatabasePath;
     m_oldDatabasePath = oldDatabasePath;
 }
 
 bool DDataBaseManagement::databaseExists(const QString &databasePath, bool create)
 {
+    qCDebug(ServiceLogger) << "Checking if database exists:" << databasePath << "create:" << create;
     QDir dir;
     bool exist = false;
     if (dir.exists(databasePath)) {
         exist = true;
         qCDebug(ServiceLogger) << "Database path exists:" << databasePath;
     } else {
+        qCDebug(ServiceLogger) << "Database path does not exist:" << databasePath;
         if (create) {
+            qCDebug(ServiceLogger) << "Creating database path:" << databasePath;
             dir.mkpath(databasePath);
         }
     }
@@ -163,6 +199,7 @@ bool DDataBaseManagement::databaseExists(const QString &databasePath, bool creat
 
 bool DDataBaseManagement::hasLunnarField(QSqlDatabase &db)
 {
+    qCDebug(ServiceLogger) << "Checking if database has lunar field";
     SqliteQuery query(db);
     bool haslunnar = false;
     QString hasIsLunarField = "select count(1) from sqlite_master where type='table' and "
@@ -175,6 +212,7 @@ bool DDataBaseManagement::hasLunnarField(QSqlDatabase &db)
         qCWarning(ServiceLogger) << "Failed to check lunar field:" << query.lastError().text();
     }
     if (query.isActive()) {
+        qCDebug(ServiceLogger) << "Finishing query";
         query.finish();
     }
     return haslunnar;
@@ -182,6 +220,7 @@ bool DDataBaseManagement::hasLunnarField(QSqlDatabase &db)
 
 bool DDataBaseManagement::hasTypeDB(QSqlDatabase &db)
 {
+    qCDebug(ServiceLogger) << "Checking if database has JobType table";
     SqliteQuery query(db);
     bool hasType = false;
     QString strSql = "select count(1) from sqlite_master where type='table' and "
@@ -194,6 +233,7 @@ bool DDataBaseManagement::hasTypeDB(QSqlDatabase &db)
         qCWarning(ServiceLogger) << "Failed to check type table:" << query.lastError().text();
     }
     if (query.isActive()) {
+        qCDebug(ServiceLogger) << "Finishing query";
         query.finish();
     }
     return hasType;
@@ -201,6 +241,7 @@ bool DDataBaseManagement::hasTypeDB(QSqlDatabase &db)
 
 bool DDataBaseManagement::hasRemindDB(QSqlDatabase &db)
 {
+    qCDebug(ServiceLogger) << "Checking if database has jobsReminder table";
     SqliteQuery query(db);
     bool hasRemind = false;
     QString strSql = "select count(1) from sqlite_master where type='table' and "
@@ -213,6 +254,7 @@ bool DDataBaseManagement::hasRemindDB(QSqlDatabase &db)
         qCWarning(ServiceLogger) << "Failed to check reminder table:" << query.lastError().text();
     }
     if (query.isActive()) {
+        qCDebug(ServiceLogger) << "Finishing query";
         query.finish();
     }
     return hasRemind;
@@ -220,6 +262,7 @@ bool DDataBaseManagement::hasRemindDB(QSqlDatabase &db)
 
 DScheduleType::List DDataBaseManagement::queryOldJobTypeData(QSqlDatabase &db)
 {
+    qCDebug(ServiceLogger) << "Querying old job type data";
     SqliteQuery query(db);
     //旧数据日程默认包含一个节假日日程类型,其他的都为用户创建的类型
     QString strSql("SELECT TypeNo, TypeName, ColorTypeNo, CreateTime, Authority                 \
@@ -237,9 +280,11 @@ DScheduleType::List DDataBaseManagement::queryOldJobTypeData(QSqlDatabase &db)
             int oldColorTypeID = query.value("ColorTypeNo").toInt();
             //如果为系统色
             if(oldColorTypeID <10){
+                // qCDebug(ServiceLogger) << "Using system color for type:" << type->typeName();
                 type->setColorID(m_sysColorID[oldColorTypeID]);
             }else {
                 //如果为用户自定义颜色
+                // qCDebug(ServiceLogger) << "Using custom color for type:" << type->typeName();
                 if (!m_typeColorID.contains(oldColorTypeID)) {
                     m_typeColorID[oldColorTypeID] = DDataBase::createUuid();
                 }
@@ -256,13 +301,16 @@ DScheduleType::List DDataBaseManagement::queryOldJobTypeData(QSqlDatabase &db)
 
 DSchedule::List DDataBaseManagement::queryOldJobData(QSqlDatabase &db, const bool haslunar)
 {
+    qCDebug(ServiceLogger) << "Querying old job data, has lunar field:" << haslunar;
     SqliteQuery query(db);
     QString strSql;
     if (haslunar) {
+        qCDebug(ServiceLogger) << "Using SQL query with lunar field";
         strSql = "SELECT id, created_at, \"type\", title, description, all_day,                     \
                 \"start\", \"end\", r_rule, remind, \"ignore\", title_pinyin, is_Lunar          \
                FROM jobs;";
     } else {
+        qCDebug(ServiceLogger) << "Using SQL query without lunar field";
         strSql = "SELECT id, created_at, \"type\", title, description, all_day,                     \
                 \"start\", \"end\", r_rule, remind, \"ignore\", title_pinyin                    \
                FROM jobs;";
@@ -280,10 +328,13 @@ DSchedule::List DDataBaseManagement::queryOldJobData(QSqlDatabase &db, const boo
             schedule->setDtEnd(dtFromString(query.value("end").toString()));
             //如果有农历信息则设置相关信息
             if(haslunar){
-                schedule->setLunnar(query.value("is_Lunar").toBool());
+                bool isLunar = query.value("is_Lunar").toBool();
+                // qCDebug(ServiceLogger) << "Setting lunar info for schedule:" << schedule->summary() << "isLunar:" << isLunar;
+                schedule->setLunnar(isLunar);
             }
             QString rrule = query.value("r_rule").toString();
             if (!rrule.isEmpty()) {
+                qCDebug(ServiceLogger) << "Processing recurrence rule for schedule:" << schedule->summary();
                 //重复规则
                 KCalendarCore::Recurrence *recurrence = schedule->recurrence();
                 KCalendarCore::ICalFormat ical;
@@ -292,10 +343,13 @@ DSchedule::List DDataBaseManagement::queryOldJobData(QSqlDatabase &db, const boo
                 if (ical.fromString(rule, query.value("r_rule").toString())) {
                     recurrence->addRRule(rule);
                     qCDebug(ServiceLogger) << "Added recurrence rule for schedule:" << schedule->summary();
+                } else {
+                    qCWarning(ServiceLogger) << "Failed to parse recurrence rule for schedule:" << schedule->summary();
                 }
 
                 //添加忽略列表
                 QJsonArray ignore = query.value("Ignore").toJsonArray();
+                qCDebug(ServiceLogger) << "Processing" << ignore.size() << "ignore entries for schedule:" << schedule->summary();
                 foreach (auto ignoreTime, ignore) {
                     if (schedule->allDay()) {
                         recurrence->addExDate(dtFromString(ignoreTime.toString()).date());
@@ -306,17 +360,20 @@ DSchedule::List DDataBaseManagement::queryOldJobData(QSqlDatabase &db, const boo
             }
             QString remind = query.value("remind").toString();
             if (!remind.isEmpty()) {
+                qCDebug(ServiceLogger) << "Processing reminder for schedule:" << schedule->summary();
                 //提醒规则
                 QStringList strList = remind.split(";", Qt::SkipEmptyParts);
                 int remindNum = strList.at(0).toInt();
                 //小于0表示不提醒
                 if (remindNum >= 0) {
+                    qCDebug(ServiceLogger) << "Setting up reminder with offset:" << remindNum;
                     KCalendarCore::Alarm::Ptr alarm = KCalendarCore::Alarm::Ptr(new KCalendarCore::Alarm(schedule.data()));
                     alarm->setEnabled(true);
                     alarm->setType(KCalendarCore::Alarm::Display);
                     alarm->setDisplayAlarm(schedule->summary());
 
                     if (schedule->allDay()) {
+                        qCDebug(ServiceLogger) << "Setting all-day reminder for schedule:" << schedule->summary();
                         //提前多少秒
                         int offset = 0;
                         if (strList.size() > 1) {
@@ -326,6 +383,7 @@ DSchedule::List DDataBaseManagement::queryOldJobData(QSqlDatabase &db, const boo
                         KCalendarCore::Duration duration(-(24 * 60 * 60 * remindNum - offset));
                         alarm->setStartOffset(duration);
                     } else {
+                        qCDebug(ServiceLogger) << "Setting timed reminder for schedule:" << schedule->summary();
                         KCalendarCore::Duration duration(-(60 * remindNum));
                         alarm->setStartOffset(duration);
                     }
@@ -334,6 +392,7 @@ DSchedule::List DDataBaseManagement::queryOldJobData(QSqlDatabase &db, const boo
             }
             int type = query.value("type").toInt();
             if (m_typeMap.contains(type)) {
+                qCDebug(ServiceLogger) << "Setting schedule type for:" << schedule->summary() << "type:" << type;
                 schedule->setScheduleTypeID(m_typeMap[type]);
             } else {
                 qCWarning(ServiceLogger) << "Cannot find type mapping for type:" << type << "in schedule:" << schedule->summary();
@@ -350,6 +409,7 @@ DSchedule::List DDataBaseManagement::queryOldJobData(QSqlDatabase &db, const boo
 
 QVector<DTypeColor> DDataBaseManagement::queryOldTypeColorData(QSqlDatabase &db)
 {
+    qCDebug(ServiceLogger) << "Querying old type color data";
     SqliteQuery query(db);
     QVector<DTypeColor> colorVector;
     //获取用户创建颜色
@@ -362,10 +422,13 @@ QVector<DTypeColor> DDataBaseManagement::queryOldTypeColorData(QSqlDatabase &db)
             int oldTpyeID = query.value("TypeNo").toInt();
             //如果包含则添加,没有则丢弃
             if (m_typeColorID.contains(oldTpyeID)) {
+                // qCDebug(ServiceLogger) << "Migrating color with type ID:" << oldTpyeID;
                 color.setColorID(m_typeColorID[oldTpyeID]);
                 color.setColorCode(query.value("ColorHex").toString());
                 color.setPrivilege(DTypeColor::PriUser);
                 colorVector.append(color);
+            } else {
+                // qCDebug(ServiceLogger) << "Skipping color with unmapped type ID:" << oldTpyeID;
             }
         }
     }
@@ -377,6 +440,7 @@ QVector<DTypeColor> DDataBaseManagement::queryOldTypeColorData(QSqlDatabase &db)
 
 DRemindData::List DDataBaseManagement::querOldRemindData(QSqlDatabase &db)
 {
+    qCDebug(ServiceLogger) << "Querying old reminder data";
     SqliteQuery query(db);
     DRemindData::List remindList;
     QString strSql("SELECT jobid, recurid, remindCount, notifyid, remindTime, jobStartTime, jobEndTime FROM jobsReminder;");
@@ -385,6 +449,7 @@ DRemindData::List DDataBaseManagement::querOldRemindData(QSqlDatabase &db)
         while (query.next()) {
             int jobid = query.value("jobid").toInt();
             if (m_schedule.contains(jobid)) {
+                qCDebug(ServiceLogger) << "Migrating reminder for job ID:" << jobid;
                 DRemindData::Ptr remind = DRemindData::Ptr(new DRemindData);
                 remind->setScheduleID(m_schedule[jobid]);
                 remind->setRemindCount(query.value("remindCount").toInt());
@@ -396,9 +461,12 @@ DRemindData::List DDataBaseManagement::querOldRemindData(QSqlDatabase &db)
                 int recurid = query.value("recurid").toInt();
                 //如果重复id大于0，则表示为重复日程的提醒，设置提醒id为日程开始时间
                 if (recurid > 0) {
+                    // qCDebug(ServiceLogger) << "Setting recurrence ID for reminder";
                     remind->setRecurrenceId(remind->dtStart());
                 }
                 remindList.append(remind);
+            } else {
+                // qCDebug(ServiceLogger) << "Skipping reminder for unmapped job ID:" << jobid;
             }
         }
     }
@@ -410,5 +478,6 @@ DRemindData::List DDataBaseManagement::querOldRemindData(QSqlDatabase &db)
 
 bool DDataBaseManagement::hasTransfer() const
 {
+    // qCDebug(ServiceLogger) << "Checking transfer status:" << m_hasTransfer;
     return m_hasTransfer;
 }
