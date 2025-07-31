@@ -852,7 +852,7 @@ QWidget *CSettingDialog::createControlCenterLink(QObject *obj)
         auto ver = DSysInfo::majorVersion().toInt();
         if (ver > 23) {
             // v25 control center has changed the datetime page.
-            datePage = "system/timeAndLang";
+            datePage = "system/datetime";
             qCDebug(ClientLogger) << "Using v25+ control center page:" << datePage;
         }
         this->m_controlCenterProxy->ShowPage(datePage);

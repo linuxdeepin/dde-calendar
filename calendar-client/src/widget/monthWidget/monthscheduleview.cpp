@@ -71,7 +71,7 @@ void CMonthScheduleView::slotFontChange()
 
     if (m_ItemHeight != h) {
         qCDebug(ClientLogger) << "Font height changed, updating data";
-        m_ItemHeight = h;
+        m_ItemHeight = h + 1;
         updateData();
     }
 }
@@ -254,7 +254,7 @@ void CMonthScheduleView::computePos(int cNum, QDate bgeindate, QDate enddate, QP
     int ecol = (m_beginDate.daysTo(enddate)) % DDEMonthCalendar::AFewDaysOfWeek;
 
     fw = static_cast<int>((ecol - bcol + 1) * ((m_width - m_leftMargin) / 7.0) - 11);
-    fh = m_ItemHeight;
+    fh = m_ItemHeight + 2;
     int x = static_cast<int>(m_leftMargin + bcol * ((m_width - m_leftMargin) / 7.0) + 5);
     //根据UI图调整item坐标
     int y = static_cast<int>(m_topMargin + ((m_height - m_topMargin - m_bottomMargin) / 6.0) * brow + schedule_Item_Y + (cNum - 1) * fh);
