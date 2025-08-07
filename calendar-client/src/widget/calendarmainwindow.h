@@ -26,6 +26,8 @@
 #include <QObject>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QDBusConnection>
+#include <memory>
 
 DWIDGET_USE_NAMESPACE
 class CYearWindow;
@@ -38,6 +40,7 @@ class AnimationStackedWidget;
 class CScheduleDataManage;
 class CTitleWidget;
 class CMyScheduleView;
+class ExportedInterface;
 
 class Calendarmainwindow : public DMainWindow
 {
@@ -143,6 +146,9 @@ private:
 
     CMyScheduleView *m_dlg = Q_NULLPTR;
 
+    // ExportedInterface 成员变量
+    std::unique_ptr<ExportedInterface> m_exportedInterface;
+    QDBusConnection m_dbusConnection;
 };
 
 #endif // CALENDARMAINWINDOW_H

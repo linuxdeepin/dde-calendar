@@ -81,6 +81,7 @@ const int Calendar_Default_Height = 634; //默认高度
 Calendarmainwindow::Calendarmainwindow(int index, QWidget *w)
     : DMainWindow(w)
     , m_defaultIndex(index)
+    , m_dbusConnection(QDBusConnection::sessionBus())
 {
     setContentsMargins(QMargins(0, 0, 0, 0));
 
@@ -145,6 +146,15 @@ Calendarmainwindow::Calendarmainwindow(int index, QWidget *w)
 
 Calendarmainwindow::~Calendarmainwindow()
 {
+    // 清理 DBus 资源
+    if (m_dbusConnection.isConnected()) {
+        m_dbusConnection.unregisterObject("/com/deepin/Calendar");
+        m_dbusConnection.unregisterService("com.deepin.Calendar");
+    }
+
+    // 释放 ExportedInterface，std::unique_ptr 会自动清理
+    m_exportedInterface.reset();
+
     CDynamicIcon::releaseInstance();
 }
 
@@ -271,18 +281,21 @@ void Calendarmainwindow::initLater()
     initConnection();
     initData();
 
-    ExportedInterface einterface(this);
-    einterface.registerAction("CREATE", "create a new schedule");
-    einterface.registerAction("VIEW", "check a date on calendar");
-    einterface.registerAction("QUERY", "find a schedule information");
-    einterface.registerAction("CANCEL", "cancel a schedule");
-    QDBusConnection dbus = QDBusConnection::sessionBus();
+    // 初始化 ExportedInterface 作为成员变量，确保生命周期正确
+    m_exportedInterface.reset(new ExportedInterface(this));
+    m_exportedInterface->registerAction("CREATE", "create a new schedule");
+    m_exportedInterface->registerAction("VIEW", "check a date on calendar");
+    m_exportedInterface->registerAction("QUERY", "find a schedule information");
+    m_exportedInterface->registerAction("CANCEL", "cancel a schedule");
+
+    // 初始化 DBus 连接并注册服务
+    m_dbusConnection = QDBusConnection::sessionBus();
     //如果注册失败打印出失败信息
-    if (!dbus.registerService("com.deepin.Calendar")) {
-        qCWarning(calendar_client) << "registerService Error:" << dbus.lastError();
+    if (!m_dbusConnection.registerService("com.deepin.Calendar")) {
+        qCWarning(calendar_client) << "registerService Error:" << m_dbusConnection.lastError();
     }
-    if (!dbus.registerObject("/com/deepin/Calendar", this)) {
-        qCWarning(calendar_client) << "registerObject Error:" << dbus.lastError();
+    if (!m_dbusConnection.registerObject("/com/deepin/Calendar", this)) {
+        qCWarning(calendar_client) << "registerObject Error:" << m_dbusConnection.lastError();
     }
 
     m_hasInit = true;
