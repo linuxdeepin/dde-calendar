@@ -19,6 +19,7 @@ build*/
 *.autosave
 # qm file is auto generate from .ts file
 *.qm
+obj-x86_64-linux-gnu
 
 # vim tmp file
 *.swp
