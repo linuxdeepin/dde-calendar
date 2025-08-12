@@ -6,22 +6,22 @@
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="46"/>
         <source>Sync successful</source>
-        <translation>ລូຫ្នបញ្ហាសម្របជាស័្ថិត</translation>
+        <translation>ຊິງສຳເລັດ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="50"/>
         <source>Network error</source>
-        <translation>បញ្ហាអេრូវិក</translation>
+        <translation>ຂໍ້ຜິດພາດເຄືອຂ່າຍ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="54"/>
         <source>Server exception</source>
-        <translation>ប្រតិបត្តិការទូទៅលេចឡាំង</translation>
+        <translation>ຂໍ້ຜິດພາດເຊີບເວີ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="58"/>
         <source>Storage full</source>
-        <translation>ផ្ទុកទៅដល់ពេញ</translation>
+        <translation>ພື້ນທີ່ເກັບຂໍ້ມູນເຕັມ</translation>
     </message>
 </context>
 <context>
@@ -29,12 +29,12 @@
     <message>
         <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="273"/>
         <source>Local account</source>
-        <translation>គណន៌លេខាសម្ព័ន្ធ</translation>
+        <translation>ບັນຊີທ້ອງຖິ່ນ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="276"/>
         <source>Event types</source>
-        <translation>ប្រភេទសកម្មភាព</translation>
+        <translation>ປະເພດເຫດການ</translation>
     </message>
 </context>
 <context>
@@ -42,19 +42,19 @@
     <message>
         <location filename="../calendar-client/src/customWidget/colorWidget/colorpickerWidget.cpp" line="83"/>
         <source>Color</source>
-        <translation>ពណ៌</translation>
+        <translation>ສີ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/colorWidget/colorpickerWidget.cpp" line="96"/>
         <source>Cancel</source>
         <comment>button</comment>
-        <translation>បំបាក់ចេញ</translation>
+        <translation>ຍົກເລີກ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/colorWidget/colorpickerWidget.cpp" line="98"/>
         <source>Save</source>
         <comment>button</comment>
-        <translation>រក្សា</translation>
+        <translation>ບັນທຶກ</translation>
     </message>
 </context>
 <context>
@@ -62,37 +62,37 @@
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="35"/>
         <source>Monday</source>
-        <translation>ថ្ងៃចំពោះទុក្រ</translation>
+        <translation>ວັນຈັນ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="36"/>
         <source>Tuesday</source>
-        <translation>ថ្ងៃចំពោះទុក្រម្បែរ</translation>
+        <translation>ວັນອັງຄານ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="37"/>
         <source>Wednesday</source>
-        <translation>ថ្ងៃចំពោះទុក្រព្រាហាន</translation>
+        <translation>ວັນພຸດ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="38"/>
         <source>Thursday</source>
-        <translation>ថ្ងៃចំពោះទុក្រចុងសបាំ</translation>
+        <translation>ວັນພະຫັດ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="39"/>
         <source>Friday</source>
-        <translation>ថ្ងៃចំពោះទុក្រអាទិតិ</translation>
+        <translation>ວັນສຸກ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="40"/>
         <source>Saturday</source>
-        <translation>ថ្ងៃចំពោះទុក្រសុបាំ</translation>
+        <translation>ວັນເສົາ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="41"/>
         <source>Sunday</source>
-        <translation>ສົ້ນදາວ</translation>
+        <translation>ວັນອາທິດ</translation>
     </message>
 </context>
 <context>
@@ -100,22 +100,22 @@
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daywindow.cpp" line="127"/>
         <source>Y</source>
-        <translation>ຍ</translation>
+        <translation>ປີ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daywindow.cpp" line="128"/>
         <source>M</source>
-        <translation>ມ</translation>
+        <translation>ເດືອນ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daywindow.cpp" line="129"/>
         <source>D</source>
-        <translation>ថ</translation>
+        <translation>ວັນ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daywindow.cpp" line="190"/>
         <source>Lunar</source>
-        <translation>ເດືອນສົ້ນ</translation>
+        <translation>ປະຕິທິນຈັນທະຄະຕິ</translation>
     </message>
 </context>
 <context>
@@ -123,7 +123,7 @@
     <message>
         <location filename="../calendar-client/src/view/graphicsview.cpp" line="686"/>
         <source>New Event</source>
-        <translation>ໃຫ້ເພີ່ມຫຼົງການ</translation>
+        <translation>ເຫດການໃໝ່</translation>
     </message>
 </context>
 <context>
@@ -131,7 +131,7 @@
     <message>
         <location filename="../calendar-client/src/view/graphicsItem/cmonthschedulenumitem.cpp" line="88"/>
         <source>%1 more</source>
-        <translation>%1 ངໍ້າຍ</translation>
+        <translation>ອີກ %1</translation>
     </message>
 </context>
 <context>
@@ -139,12 +139,12 @@
     <message>
         <location filename="../calendar-client/src/widget/monthWidget/monthview.cpp" line="52"/>
         <source>New event</source>
-        <translation>ໃຫ້ເພີ່ມຫຼົງການ</translation>
+        <translation>ເຫດການໃໝ່</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/monthWidget/monthview.cpp" line="240"/>
         <source>New Event</source>
-        <translation>ໃຫ້ເພີ່ມຫຼົງການ</translation>
+        <translation>ເຫດການໃໝ່</translation>
     </message>
 </context>
 <context>
@@ -152,7 +152,7 @@
     <message>
         <location filename="../calendar-client/src/widget/monthWidget/monthwindow.cpp" line="102"/>
         <source>Y</source>
-        <translation>ຍ</translation>
+        <translation>ປີ</translation>
     </message>
 </context>
 <context>
@@ -160,19 +160,19 @@
     <message>
         <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="305"/>
         <source>My Event</source>
-        <translation>ຫຼົງການຂອງຂ້ອຍ</translation>
+        <translation>ເຫດການຂອງຂ້ອຍ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="347"/>
         <source>OK</source>
         <comment>button</comment>
-        <translation>ຕົວຢ່າງ</translation>
+        <translation>ຕົກລົງ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="352"/>
         <source>Delete</source>
         <comment>button</comment>
-        <translation>ລົບ</translation>
+        <translation>ລຶບ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="353"/>
@@ -186,7 +186,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/cpushbutton.cpp" line="19"/>
         <source>New event type</source>
-        <translation>ເຫດທີ່ມີການເພີ່ມຫຼົງການ</translation>
+        <translation>ປະເພດເຫດການໃໝ່</translation>
     </message>
 </context>
 <context>
@@ -196,23 +196,23 @@
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="683"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="999"/>
         <source>New Event</source>
-        <translation>ເຫດថ្មិតថ្មិតថ្មិត</translation>
+        <translation>ເຫດການໃໝ່</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="61"/>
         <source>Edit Event</source>
-        <translation>កំណត់ເຫດថ្មិត</translation>
+        <translation>ແກ້ໄຂເຫດການ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="287"/>
         <source>End time must be greater than start time</source>
-        <translation>ពេលបញ្ចប់ត្រូវតែធ្លើជាងពេលចាប់ផ្តើម</translation>
+        <translation>ເວລາສິ້ນສຸດຕ້ອງຫຼາຍກວ່າເວລາເລີ່ມຕົ້ນ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="288"/>
         <source>OK</source>
         <comment>button</comment>
-        <translation>យល់</translation>
+        <translation>ຕົກລົງ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="548"/>
@@ -222,50 +222,50 @@
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1525"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1530"/>
         <source>Never</source>
-        <translation>សំណាល់</translation>
+        <translation>ບໍ່ເຄີຍ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="549"/>
         <source>At time of event</source>
-        <translation>នៅពេលເຫດកើតឡើង</translation>
+        <translation>ໃນເວລາເຫດການ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="550"/>
         <source>15 minutes before</source>
-        <translation>មួយម៉ែនបឹងមុន</translation>
+        <translation>15 ນາທີກ່ອນ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="551"/>
         <source>30 minutes before</source>
-        <translation>30នាទីមុន</translation>
+        <translation>30 ນາທີກ່ອນ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="552"/>
         <source>1 hour before</source>
-        <translation>មួយម៉ែនមុន</translation>
+        <translation>1 ຊົ່ວໂມງກ່ອນ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="553"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="583"/>
         <source>1 day before</source>
-        <translation>មួយថ្ងៃមុន</translation>
+        <translation>1 ມື້ກ່ອນ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="554"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="584"/>
         <source>2 days before</source>
-        <translation>ពីរថ្ងៃមុន</translation>
+        <translation>2 ມື້ກ່ອນ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="555"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="585"/>
         <source>1 week before</source>
-        <translation>មួយសប្តាហ់មុន</translation>
+        <translation>1 ອາທິດກ່ອນ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="582"/>
         <source>On start day (9:00 AM)</source>
-        <translation>នៅថ្ងៃចាប់ផ្តើម (9:00)</translation>
+        <translation>ໃນມື້ເລີ່ມຕົ້ນ (9:00 ຕອນເຊົ້າ)</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="637"/>
@@ -273,17 +273,17 @@
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1267"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1268"/>
         <source>time(s)</source>
-        <translation>ពេល</translation>
+        <translation>ຄັ້ງ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="655"/>
         <source>Enter a name please</source>
-        <translation>សូមបញ្ចូលឈ្មោះ</translation>
+        <translation>ກະລຸນາໃສ່ຊື່</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="762"/>
         <source>The name can not only contain whitespaces</source>
-        <translation>ຊື່ບໍ່ສາມາດມີພຽບຢາງເທີໃແນະພາຍ</translation>
+        <translation>ຊື່ບໍ່ສາມາດປະກອບດ້ວຍຊ່ອງວ່າງເທົ່ານັ້ນ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="824"/>
@@ -295,7 +295,7 @@
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="829"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="984"/>
         <source>Description:</source>
-        <translation>ອະທິບາຍ:</translation>
+        <translation>ລາຍລະອຽດ:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="834"/>
@@ -307,19 +307,19 @@
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="839"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1087"/>
         <source>Starts:</source>
-        <translation>ເລົາເລົ່າ:</translation>
+        <translation>ເລີ່ມຕົ້ນ:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="844"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1128"/>
         <source>Ends:</source>
-        <translation>ສົ່ງເຖິງ:</translation>
+        <translation>ສິ້ນສຸດ:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="849"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1168"/>
         <source>Remind Me:</source>
-        <translation>ຈຸດປະສົງ:</translation>
+        <translation>ແຈ້ງເຕືອນ:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="854"/>
@@ -336,12 +336,12 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="917"/>
         <source>Calendar account:</source>
-        <translation>ບົດບາດສະບິມ སາງຄໆນານ:</translation>
+        <translation>ບັນຊີປະຕິທິນ:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="918"/>
         <source>Calendar account</source>
-        <translation>ບົດບາດສະບິມ སາງຄໆນານ</translation>
+        <translation>ບັນຊີປະຕິທິນ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="946"/>
@@ -351,7 +351,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="988"/>
         <source>Description</source>
-        <translation>ອະທິບາຍ</translation>
+        <translation>ລາຍລະອຽດ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1018"/>
@@ -366,32 +366,32 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1043"/>
         <source>Time</source>
-        <translation>ថ្តូល</translation>
+        <translation>ເວລາ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1050"/>
         <source>Solar</source>
-        <translation>ថ្មើង</translation>
+        <translation>ປະຕິທິນສຸລິຍະຄະຕິ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1051"/>
         <source>Lunar</source>
-        <translation>ខេពី</translation>
+        <translation>ປະຕິທິນຈັນທະຄະຕິ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1084"/>
         <source>Starts</source>
-        <translation>ចាប់ផ្តើម</translation>
+        <translation>ເລີ່ມຕົ້ນ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1125"/>
         <source>Ends</source>
-        <translation>បញ្ចប់</translation>
+        <translation>ສິ້ນສຸດ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1170"/>
         <source>Remind Me</source>
-        <translation>ជួយជម្ល់ខ្លឹប</translation>
+        <translation>ແຈ້ງເຕືອນ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1197"/>
@@ -402,60 +402,60 @@
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1212"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1531"/>
         <source>Daily</source>
-        <translation>ប្រចាំថ្ងៃ</translation>
+        <translation>ທຸກມື້</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1213"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1532"/>
         <source>Weekdays</source>
-        <translation>ថ្ងៃធ្វើការ</translation>
+        <translation>ວັນທຳການ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1214"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1533"/>
         <source>Weekly</source>
-        <translation>ប្រចាំសប្តាហ់</translation>
+        <translation>ທຸກອາທິດ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1215"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1526"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1534"/>
         <source>Monthly</source>
-        <translation>ប្រចាំខែ</translation>
+        <translation>ທຸກເດືອນ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1216"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1527"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1535"/>
         <source>Yearly</source>
-        <translation>ប្រចាំឆ្នាំ</translation>
+        <translation>ທຸກປີ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1236"/>
         <source>End Repeat</source>
-        <translation>បញ្ចប់ការ повторить</translation>
+        <translation>ສິ້ນສຸດການຊ້ຳ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1247"/>
         <source>After</source>
-        <translation>បន្ទាប់ពី</translation>
+        <translation>ຫຼັງຈາກ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1248"/>
         <source>On</source>
-        <translation>បុរាណ</translation>
+        <translation>ໃນວັນທີ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1318"/>
         <source>Cancel</source>
         <comment>button</comment>
-        <translation>បatal</translation>
+        <translation>ຍົກເລີກ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1319"/>
         <source>Save</source>
         <comment>button</comment>
-        <translation>ບຶར</translation>
+        <translation>ບັນທຶກ</translation>
     </message>
 </context>
 <context>
@@ -463,13 +463,13 @@
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="74"/>
         <source>All occurrences of a repeating event must have the same all-day status.</source>
-        <translation>ທຸກການເກີດຂຶ້ນຂອງເຫດການທີ່ຊ້ຳຕ້ອງມີສະຖານະການຕະຫຼອດມື້ຄືກັນ.</translation>
+        <translation>ທຸກການເກີດຂຶ້ນຂອງເຫດການທີ່ຊ້ຳກັນຕ້ອງມີສະຖານະຕະຫຼອດມື້ຄືກັນ.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="75"/>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="95"/>
         <source>Do you want to change all occurrences?</source>
-        <translation>ທ່ານຕ້ອງການແກ້ໄຂທຸກການເກີດຂຶ້ນບໍ?</translation>
+        <translation>ທ່ານຕ້ອງການປ່ຽນແປງທຸກການເກີດຂຶ້ນບໍ?</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="76"/>
@@ -487,12 +487,12 @@
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="77"/>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="97"/>
         <source>Change All</source>
-        <translation>ແກ້ໄຂທັງໝົດ</translation>
+        <translation>ປ່ຽນທັງໝົດ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="94"/>
         <source>You are changing the repeating rule of this event.</source>
-        <translation>ທ່ານກຳລັງແກ້ໄຂກົດການຊ້ຳຂອງເຫດການນີ້.</translation>
+        <translation>ທ່ານກຳລັງປ່ຽນກົດການຊ້ຳຂອງເຫດການນີ້.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="127"/>
@@ -504,7 +504,7 @@
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="128"/>
         <source>Are you sure you want to delete this event?</source>
-        <translation>ທ່ານແນ່ໃຈບໍທີ່ຈະລຶບເຫດການນີ້?</translation>
+        <translation>ທ່ານແນ່ໃຈບໍວ່າຈະລຶບເຫດການນີ້?</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="130"/>
@@ -515,7 +515,7 @@
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="150"/>
         <source>Do you want to delete all occurrences of this event, or only the selected occurrence?</source>
-        <translation>ທ່ານຕ້ອງການລຶບທຸກການເກີດຂຶ້ນຂອງເຫດການນີ້ ຫຼືສະເພາະອັນທີ່ເລືອກ?</translation>
+        <translation>ທ່ານຕ້ອງການລຶບທຸກການເກີດຂຶ້ນຂອງເຫດການນີ້ ຫຼື ເພີງແຕ່ອັນທີ່ເລືອກ?</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="152"/>
@@ -526,60 +526,60 @@
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="153"/>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="176"/>
         <source>Delete Only This Event</source>
-        <translation>ລຶບສະເພາະເຫດການນີ້</translation>
+        <translation>ລຶບເຫດການນີ້ເທົ່ານັ້ນ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="173"/>
         <source>Do you want to delete this and all future occurrences of this event, or only the selected occurrence?</source>
-        <translation>ທ່ານຕ້ອງການລຶບເຫດການນີ້ແລະທຸກການເກີດຂຶ້ນໃນອະນາຄົດ ຫຼືສະເພາະອັນທີ່ເລືອກ?</translation>
+        <translation>ທ່ານຕ້ອງການລຶບເຫດການນີ້ແລະທຸກການເກີດຂຶ້ນໃນອະນາຄົດ ຫຼື ເພີງແຕ່ອັນທີ່ເລືອກ?</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="175"/>
         <source>Delete All Future Events</source>
-        <translation>ລຶບທຸກເຫດການໃນອະນາຄົດ</translation>
+        <translation>ລຶບເຫດການທັງໝົດໃນອະນາຄົດ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="255"/>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="288"/>
         <source>You are changing a repeating event.</source>
-        <translation>ທ່ານກຳລັງແກ້ໄຂເຫດການທີ່ຊ້ຳ.</translation>
+        <translation>ທ່ານກຳລັງປ່ຽນແປງເຫດການທີ່ຊ້ຳກັນ.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="257"/>
         <source>Do you want to change only this occurrence of the event, or all occurrences?</source>
-        <translation>ທ່ານຕ້ອງການແກ້ໄຂພຽນນີ້ແນວນີ້ແນໍ, ຫຼືທີ່ນີ້ແລະທີ່ອີງກັບພວກມັນທີ່ມາອີງ?</translation>
+        <translation>ທ່ານຕ້ອງການປ່ຽນແປງພຽງແຕ່ການເກີດຂຶ້ນນີ້ ຫຼື ທຸກການເກີດຂຶ້ນ?</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="260"/>
         <source>All</source>
-        <translation>ທີ່ທີ່ອີງກັບພວກມັນທີ່ມາອີງ</translation>
+        <translation>ທັງໝົດ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="261"/>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="294"/>
         <source>Only This Event</source>
-        <translation>ພຽນນີ້ແນໍແນໍ</translation>
+        <translation>ເຫດການນີ້ເທົ່ານັ້ນ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="290"/>
         <source>Do you want to change only this occurrence of the event, or this and all future occurrences?</source>
-        <translation>ທ່ານຕ້ອງການແກ້ໄຂພຽນນີ້ແນວນີ້ແນໍ, ຫຼືພຽນນີ້ແນວນີ້ແລະທີ່ອີງກັບພວກມັນທີ່ມາອີງອະນາຄ຤ມ?</translation>
+        <translation>ທ່ານຕ້ອງການປ່ຽນແປງພຽງແຕ່ການເກີດຂຶ້ນນີ້ ຫຼື ການເກີດຂຶ້ນນີ້ແລະທຸກການເກີດຂຶ້ນໃນອະນາຄົດ?</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="293"/>
         <source>All Future Events</source>
-        <translation>ທີ່ອີງກັບພວກມັນທີ່ມາອີງອະນາຄ຤ມ</translation>
+        <translation>ເຫດການທັງໝົດໃນອະນາຄົດ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="416"/>
         <source>You have selected a leap month, and will be reminded according to the rules of the lunar calendar.</source>
-        <translation>ທ່ານໄດ້ເລືອກເດືອນຫຼື, ແລະຈະຖືກຈັບ່ງຕາມເຫຼົ່າກົນໄກ່ເດືອນເຕົ່າ.</translation>
+        <translation>ທ່ານໄດ້ເລືອກເດືອນອຸດທິ ແລະຈະໄດ້ຮັບການແຈ້ງເຕືອນຕາມກົດຂອງປະຕິທິນຈັນທະຄະຕິ.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="417"/>
         <source>OK</source>
         <comment>button</comment>
-        <translation>ຕົວຢ່າງ</translation>
+        <translation>ຕົກລົງ</translation>
     </message>
 </context>
 <context>
@@ -587,7 +587,7 @@
     <message>
         <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="972"/>
         <source>Y</source>
-        <translation>&apos;ຍ&apos;</translation>
+        <translation>ປີ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="972"/>
@@ -610,12 +610,12 @@
     <message>
         <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="45"/>
         <source>Delete</source>
-        <translation>ລກ້າງ</translation>
+        <translation>ລຶບ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="287"/>
         <source>All Day</source>
-        <translation>ເລົ່າງວັນທີ້າງວຳງ</translation>
+        <translation>ຕະຫຼອດມື້</translation>
     </message>
 </context>
 <context>
@@ -623,7 +623,7 @@
     <message>
         <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="694"/>
         <source>No search results</source>
-        <translation>ບໍ່ມີຜົນການຄີກຄົວ</translation>
+        <translation>ບໍ່ມີຜົນການຊອກຫາ</translation>
     </message>
 </context>
 <context>
@@ -631,7 +631,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/scheduleview.cpp" line="347"/>
         <source>ALL DAY</source>
-        <translation>ທີ່ທີ່ແລ້ງ</translation>
+        <translation>ຕະຫຼອດມື້</translation>
     </message>
 </context>
 <context>
@@ -639,73 +639,73 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="357"/>
         <source>Sunday</source>
-        <translation>ອາທີ་ຫວານ</translation>
+        <translation>ວັນອາທິດ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="358"/>
         <source>Monday</source>
-        <translation>ຈະນີ້</translation>
-    </message>
-    <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="376"/>
-        <source>24-hour clock</source>
-        <translation>ໂມງ 24 ຊີ໅</translation>
-    </message>
-    <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="377"/>
-        <source>12-hour clock</source>
-        <translation>ໂມງ 12 ຊີ໅</translation>
-    </message>
-    <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="415"/>
-        <source>Manual</source>
-        <translation>ມຸນຸນ</translation>
-    </message>
-    <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="416"/>
-        <source>15 mins</source>
-        <translation>15 ປ຿ນ</translation>
-    </message>
-    <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="417"/>
-        <source>30 mins</source>
-        <translation>30 ປ຿ນ</translation>
-    </message>
-    <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="418"/>
-        <source>1 hour</source>
-        <translation>1 ຊີ໅</translation>
-    </message>
-    <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="419"/>
-        <source>24 hours</source>
-        <translation>24 ຊີ໅</translation>
-    </message>
-    <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="430"/>
-        <source>Sync Now</source>
-        <translation>ອັດເັນຄໍ້ນຕອນ</translation>
-    </message>
-    <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="615"/>
-        <source>Last sync</source>
-        <translation>ຄົວນັກດື່ງຊົງສັງກັບຄວາມປັບປຸງລ່າສັ້ນ</translation>
-    </message>
-    <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="401"/>
-        <source>import ICS file</source>
-        <translation>ອັດເັນໄດ້ໄົ້ກົນໄດ້ໄກ້</translation>
+        <translation>ວັນຈັນ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="359"/>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="378"/>
         <source>Use System Setting</source>
-        <translation>ນີ້ແມ່ນການຕິດຕັ້ງຂອງລະບຸບລະບຸບ</translation>
+        <translation>ໃຊ້ການຕັ້ງຄ່າລະບົບ</translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="376"/>
+        <source>24-hour clock</source>
+        <translation>ໂມງ 24 ຊົ່ວໂມງ</translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="377"/>
+        <source>12-hour clock</source>
+        <translation>ໂມງ 12 ຊົ່ວໂມງ</translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="401"/>
+        <source>import ICS file</source>
+        <translation>ນຳເຂົ້າໄຟລ໌ ICS</translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="415"/>
+        <source>Manual</source>
+        <translation>ດ້ວຍຕົນເອງ</translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="416"/>
+        <source>15 mins</source>
+        <translation>15 ນາທີ</translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="417"/>
+        <source>30 mins</source>
+        <translation>30 ນາທີ</translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="418"/>
+        <source>1 hour</source>
+        <translation>1 ຊົ່ວໂມງ</translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="419"/>
+        <source>24 hours</source>
+        <translation>24 ຊົ່ວໂມງ</translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="430"/>
+        <source>Sync Now</source>
+        <translation>ຊິງຄ໌ຕອນນີ້</translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="615"/>
+        <source>Last sync</source>
+        <translation>ຊິງຄ໌ຄັ້ງຫຼ້າສຸດ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="846"/>
         <source>Please go to the &lt;a href=&apos;/&apos;&gt;Control Center&lt;/a&gt; to change system settings</source>
-        <translation>ກະລຸນາໄປຫາ &lt;a href=&apos;/&apos;&gt;ກົມະສານຈັດການ&lt;/a&gt; ສັງເກດການຕິດຕັ້ງລະບຸບ</translation>
+        <translation>ກະລຸນາໄປທີ່ &lt;a href=&apos;/&apos;&gt;ສູນການຄວບຄຸມ&lt;/a&gt; ເພື່ອປ່ຽນການຕັ້ງຄ່າລະບົບ</translation>
     </message>
 </context>
 <context>
@@ -713,17 +713,17 @@
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="79"/>
         <source>(%1 mins)</source>
-        <translation>(%1 មែន)</translation>
+        <translation>(%1 ນາທີ)</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="81"/>
         <source>(%1 hour)</source>
-        <translation>(%1 ម៉ែន)</translation>
+        <translation>(%1 ຊົ່ວໂມງ)</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="83"/>
         <source>(%1 hours)</source>
-        <translation>(%1 ម៉ែន)</translation>
+        <translation>(%1 ຊົ່ວໂມງ)</translation>
     </message>
 </context>
 <context>
@@ -731,28 +731,28 @@
     <message>
         <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="32"/>
         <source>Y</source>
-        <translation>&apos;ཡ&apos;</translation>
+        <translation>ປີ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="44"/>
         <source>M</source>
-        <translation>M</translation>
+        <translation>ເດືອນ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="52"/>
         <source>W</source>
-        <translation>W</translation>
+        <translation>ອາທິດ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="60"/>
         <source>D</source>
-        <translation>D</translation>
+        <translation>ວັນ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="94"/>
         <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="95"/>
         <source>Search events and festivals</source>
-        <translation>ស្វែងរកអាជីវកម្មនិងប្រាសាប់មហាយូរ</translation>
+        <translation>ຄົ້ນຫາເຫດການແລະງານບຸນ</translation>
     </message>
 </context>
 <context>
@@ -760,12 +760,12 @@
     <message>
         <location filename="../calendar-client/src/widget/weekWidget/weekwindow.cpp" line="92"/>
         <source>Week</source>
-        <translation>សបា</translation>
+        <translation>ອາທິດ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/weekWidget/weekwindow.cpp" line="286"/>
         <source>Y</source>
-        <translation>&apos;ཡ&apos;</translation>
+        <translation>ປີ</translation>
     </message>
 </context>
 <context>
@@ -774,12 +774,12 @@
         <location filename="../calendar-client/src/widget/yearWidget/yearscheduleview.cpp" line="309"/>
         <location filename="../calendar-client/src/widget/yearWidget/yearscheduleview.cpp" line="312"/>
         <source>All Day</source>
-        <translation>ទាំងមូល</translation>
+        <translation>ຕະຫລອດມື້</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/yearWidget/yearscheduleview.cpp" line="330"/>
         <source>No event</source>
-        <translation>គ្មានអាជីវកម្ម</translation>
+        <translation>ບໍ່ມີເຫດການ</translation>
     </message>
 </context>
 <context>
@@ -787,7 +787,7 @@
     <message>
         <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="661"/>
         <source>Y</source>
-        <translation>&apos;ཡ&apos;</translation>
+        <translation>ປີ</translation>
     </message>
 </context>
 <context>
@@ -795,12 +795,12 @@
     <message>
         <location filename="../calendar-client/src/main.cpp" line="66"/>
         <source>Calendar</source>
-        <translation>ខំបំណ្តើរ</translation>
+        <translation>ປະຕິທິນ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/main.cpp" line="69"/>
         <source>Calendar is a tool to view dates, and also a smart daily planner to schedule all things in life. </source>
-        <translation>ខំបំណ្តើរគឺជាដំបូងមុខដើម្បីមើលថ្ងៃប្រវត្តិសាស្ត្រនិងក៏ជាដំបូងមុខប្រចាំថ្ងៃដើម្បីរៀបចំទាំងអ្វីក៏ប៉ុណ្ណោះ។</translation>
+        <translation>ປະຕິທິນແມ່ນເຄື່ອງມືໃນການເບິ່ງວັນທີ, ແລະຍັງເປັນເຄື່ອງມືວາງແຜນປະຈຳວັນທີ່ສະຫລາດເພື່ອກຳນົດເວລາທຸກສິ່ງໃນຊີວິດ. </translation>
     </message>
 </context>
 <context>
@@ -808,7 +808,7 @@
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="90"/>
         <source>Calendar</source>
-        <translation>ເລནියා</translation>
+        <translation>ປະຕິທິນ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="387"/>
@@ -818,22 +818,22 @@
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="394"/>
         <source>Privacy Policy</source>
-        <translation>ຄວາມເປັນໄຍຂ້ອງຄວາມສະ່ວນຮ່ວມ</translation>
+        <translation>ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="1025"/>
         <source>Syncing...</source>
-        <translation>ກັບຄຸນສະ່ວນ...</translation>
+        <translation>ກຳລັງຊິງຄ໌...</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="1036"/>
         <source>Sync successful</source>
-        <translation>ກັບຄຸນສະ່ວນສຳເລັດ</translation>
+        <translation>ຊິງຄ໌ສຳເລັດ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="1045"/>
         <source>Sync failed, please try later</source>
-        <translation>ກັບຄຸນສະ່ວນລີເຊັນ, མີ່ນ མາພະຍາຍາມອີກຄັ້ງ</translation>
+        <translation>ຊິງຄ໌ລົ້ມເຫລວ, ກະລຸນາລອງໃໝ່ພາຍຫຼັງ</translation>
     </message>
 </context>
 <context>
@@ -841,7 +841,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="193"/>
         <source>All Day</source>
-        <translation>ນັ້ນວັນໄກ</translation>
+        <translation>ຕະຫລອດມື້</translation>
     </message>
 </context>
 <context>
@@ -849,17 +849,17 @@
     <message>
         <location filename="../calendar-service/src/dbmanager/daccountdatabase.cpp" line="1155"/>
         <source>Work</source>
-        <translation>ງານງານ</translation>
+        <translation>ວຽກ</translation>
     </message>
     <message>
         <location filename="../calendar-service/src/dbmanager/daccountdatabase.cpp" line="1157"/>
         <source>Life</source>
-        <translation>ຊີວ຿ດຕິດ</translation>
+        <translation>ຊີວິດ</translation>
     </message>
     <message>
         <location filename="../calendar-service/src/dbmanager/daccountdatabase.cpp" line="1159"/>
         <source>Other</source>
-        <translation>ອື່ນໍ</translation>
+        <translation>ອື່ນໆ</translation>
     </message>
 </context>
 <context>
@@ -871,61 +871,61 @@
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="219"/>
         <source>Close</source>
         <comment>button</comment>
-        <translation>ປຸງປະສິດທິພາບ</translation>
+        <translation>ປິດ</translation>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="198"/>
         <source>One day before start</source>
-        <translation>ເລົ່ານັ້ນວັນເລິ່ງເລົ່າ</translation>
+        <translation>ໜຶ່ງວັນກ່ອນເລີ່ມ</translation>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="204"/>
         <source>Remind me tomorrow</source>
-        <translation>ເຕືອນຂ້ອງຂ້ອງອີງຕອບ</translation>
+        <translation>ແຈ້ງເຕືອນຂ້ອຍມື້ອື່ນ</translation>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="209"/>
         <source>Remind me later</source>
-        <translation>ເຕືອນຂ້ອງຂ້ອງອີກຄັ້ງ</translation>
+        <translation>ແຈ້ງເຕືອນຂ້ອຍພາຍຫຼັງ</translation>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="211"/>
         <source>15 mins later</source>
-        <translation>15 ཐົວທີ່ອີກ</translation>
+        <translation>15 ນາທີພາຍຫຼັງ</translation>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="212"/>
         <source>1 hour later</source>
-        <translation>មួយម៉ែនៗ បន្ទាប់</translation>
+        <translation>1 ຊົ່ວໂມງພາຍຫຼັງ</translation>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="213"/>
         <source>4 hours later</source>
-        <translation>ប្រាំម៉ែនៗ បន្ទាប់</translation>
+        <translation>4 ຊົ່ວໂມງພາຍຫຼັງ</translation>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="214"/>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="311"/>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="324"/>
         <source>Tomorrow</source>
-        <translation>ស្វាល់ថ្មី</translation>
+        <translation>ມື້ອື່ນ</translation>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="222"/>
         <source>Schedule Reminder</source>
-        <translation>ការជួបជុំកម្មវិធី</translation>
+        <translation>ການແຈ້ງເຕືອນກຳນົດເວລາ</translation>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="268"/>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="280"/>
         <source>%1 to %2</source>
-        <translation>%1 ដល់ %2</translation>
+        <translation>%1 ຫາ %2</translation>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="307"/>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="320"/>
         <source>Today</source>
-        <translation>ថ្ងៃនេះ</translation>
+        <translation>ມື້ນີ້</translation>
     </message>
 </context>
 <context>
@@ -933,123 +933,123 @@
     <message>
         <location filename="../calendar-client/src/view/draginfographicsview.cpp" line="49"/>
         <source>Edit</source>
-        <translation>កំណត់</translation>
+        <translation>ແກ້ໄຂ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/view/draginfographicsview.cpp" line="50"/>
         <source>Delete</source>
-        <translation>លើយ៉ាងច្រើន</translation>
+        <translation>ລຶບ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/view/draginfographicsview.cpp" line="51"/>
         <source>New event</source>
-        <translation>ការជួបជុំថ្មី</translation>
+        <translation>ເຫດການໃໝ່</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/view/draginfographicsview.cpp" line="844"/>
         <source>New Event</source>
-        <translation>ការជួបជុំថ្មី</translation>
+        <translation>ເຫດການໃໝ່</translation>
     </message>
 </context>
 <context>
     <name>JobTypeListView</name>
     <message>
+        <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="149"/>
+        <source>export</source>
+        <translation>ສົ່ງອອກ</translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="232"/>
+        <source>import ICS file</source>
+        <translation>ນຳເຂົ້າໄຟລ໌ ICS</translation>
+    </message>
+    <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="470"/>
         <source>You are deleting an event type.</source>
-        <translation>អ្នកកំពុងលើយ៉ាងច្រើនប្រភេទការជួបជុំ.</translation>
+        <translation>ທ່ານກຳລັງລຶບປະເພດເຫດການ.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="471"/>
         <source>All events under this type will be deleted and cannot be recovered.</source>
-        <translation>ទាំងអ្នកជួបជុំទាំងអស់ដែលមានប្រភេទនេះនឹងត្រូវលើយ៉ាងច្រើនហើយមិនអាចសង្ឃឹមត្រូវស្វែងរកបានឡើយ.</translation>
+        <translation>ເຫດການທັງໝົດໃນປະເພດນີ້ຈະຖືກລຶບແລະບໍ່ສາມາດກູ້ຄືນໄດ້.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="472"/>
         <source>Cancel</source>
         <comment>button</comment>
-        <translation>បំផុត</translation>
+        <translation>ຍົກເລີກ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="473"/>
         <source>Delete</source>
         <comment>button</comment>
-        <translation>លើយ៉ាងច្រើន</translation>
-    </message>
-    <message>
-        <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="149"/>
-        <source>export</source>
-        <translation>ចំណាយចេញ</translation>
-    </message>
-    <message>
-        <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="232"/>
-        <source>import ICS file</source>
-        <translation>นำเข้าไฟล์ ICS</translation>
+        <translation>ລຶບ</translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="38"/>
-        <source>Account settings</source>
-        <translation>ตั้งค่าบัญชี</translation>
-    </message>
-    <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="42"/>
-        <source>Account</source>
-        <translation>บัญชี</translation>
-    </message>
-    <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="53"/>
-        <source>Select items to be synced</source>
-        <translation>เลือกข้อมูลที่ต้องการซิงค์</translation>
-    </message>
-    <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="56"/>
-        <source>Events</source>
-        <translation>เหตุการณ์</translation>
-    </message>
-    <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="63"/>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="146"/>
-        <source>General settings</source>
-        <translation>ตั้งค่าทั่วไป</translation>
-    </message>
-    <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="74"/>
-        <source>Sync interval</source>
-        <translation>ระยะเวลาซิงค์ข้อมูล</translation>
-    </message>
-    <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="96"/>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="127"/>
         <source>Manage calendar</source>
-        <translation>จัดการปฏิทิน</translation>
-    </message>
-    <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="104"/>
-        <source>Calendar account</source>
-        <translation>บัญชีปฏิทิน</translation>
+        <translation>ຈັດການປະຕິທິນ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="112"/>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="131"/>
         <source>Event types</source>
-        <translation>ประเภทเหตุการณ์</translation>
+        <translation>ປະເພດເຫດການ</translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="38"/>
+        <source>Account settings</source>
+        <translation>ການຕັ້ງຄ່າບັນຊີ</translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="42"/>
+        <source>Account</source>
+        <translation>ບັນຊີ</translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="53"/>
+        <source>Select items to be synced</source>
+        <translation>ເລືອກລາຍການທີ່ຈະຊິງຄ໌</translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="56"/>
+        <source>Events</source>
+        <translation>ເຫດການ</translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="63"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="146"/>
+        <source>General settings</source>
+        <translation>ການຕັ້ງຄ່າທົ່ວໄປ</translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="74"/>
+        <source>Sync interval</source>
+        <translation>ຊ່ວງເວລາຊິງຄ໌</translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="104"/>
+        <source>Calendar account</source>
+        <translation>ບັນຊີປະຕິທິນ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="150"/>
         <source>General</source>
-        <translation>ทั่วไป</translation>
+        <translation>ທົ່ວໄປ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="152"/>
         <source>First day of week</source>
-        <translation>วันแรกของสัปดาห์</translation>
+        <translation>ວັນທຳອິດຂອງອາທິດ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="153"/>
         <source>Time</source>
-        <translation>เวลา</translation>
+        <translation>ເວລາ</translation>
     </message>
 </context>
 <context>
@@ -1058,7 +1058,7 @@
         <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="657"/>
         <source>Today</source>
         <comment>Return</comment>
-        <translation>วันนี้</translation>
+        <translation>ມື້ນີ້</translation>
     </message>
 </context>
 <context>
@@ -1069,7 +1069,7 @@
         <location filename="../calendar-client/src/widget/weekWidget/weekwindow.cpp" line="283"/>
         <source>Today</source>
         <comment>Return Today</comment>
-        <translation>ມີນາ</translation>
+        <translation>ມື້ນີ້</translation>
     </message>
 </context>
 <context>
@@ -1078,12 +1078,17 @@
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="22"/>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="50"/>
         <source>New event type</source>
-        <translation>ປະຫົວການເຫຼົ່າໃຫ້</translation>
+        <translation>ປະເພດເຫດການໃໝ່</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="33"/>
         <source>Edit event type</source>
-        <translation>ແກ້ໄດ້ປະຫົວການເຫຼົ່າ</translation>
+        <translation>ແກ້ໄຂປະເພດເຫດການ</translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="45"/>
+        <source>Import ICS file</source>
+        <translation>ນຳເຂົ້າໄຟລ໌ ICS</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="156"/>
@@ -1093,7 +1098,12 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="157"/>
         <source>Color:</source>
-        <translation>ສີ່ນ:</translation>
+        <translation>ສີ:</translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="162"/>
+        <source>&lt;a href=&apos;https://wikipedia.org/wiki/ICalendar&apos;&gt;ICS&lt;/a&gt; File:</source>
+        <translation>ໄຟລ໌ &lt;a href=&apos;https://wikipedia.org/wiki/ICalendar&apos;&gt;ICS&lt;/a&gt;:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="173"/>
@@ -1105,27 +1115,17 @@
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="174"/>
         <source>Save</source>
         <comment>button</comment>
-        <translation>ບົດບຳນຍ</translation>
+        <translation>ບັນທຶກ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="230"/>
         <source>The name can not only contain whitespaces</source>
-        <translation>ຊື່ບໍ່ສາມາດມີພຽນຄວໍ່ພຽນຫວ່າງເທີ່ງເປຨ້ນ</translation>
+        <translation>ຊື່ບໍ່ສາມາດມີພຽງແຕ່ຊ່ອງຫວ່າງໄດ້</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="273"/>
         <source>Enter a name please</source>
         <translation>ກະລຸນາປ້ອນຊື່</translation>
-    </message>
-    <message>
-        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="45"/>
-        <source>Import ICS file</source>
-        <translation>ອກົບຸລົມICSໄດ້</translation>
-    </message>
-    <message>
-        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="162"/>
-        <source>&lt;a href=&apos;https://wikipedia.org/wiki/ICalendar&apos;&gt;ICS&lt;/a&gt; File:</source>
-        <translation>&lt;a href=&apos;https://wikipedia.org/wiki/ICalendar&apos;&gt;ICS&lt;/a&gt; ກະນຼາມ:</translation>
     </message>
 </context>
 <context>
@@ -1133,37 +1133,37 @@
     <message>
         <location filename="../calendar-client/src/shortcut.cpp" line="18"/>
         <source>Help</source>
-        <translation>ຊ່ວຍເບ຺້ມ</translation>
+        <translation>ຊ່ວຍເຫຼືອ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/shortcut.cpp" line="19"/>
         <source>Delete event</source>
-        <translation>ລກງການເຫຼົ່າ</translation>
+        <translation>ລຶບເຫດການ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/shortcut.cpp" line="22"/>
         <source>Copy</source>
-        <translation>ຄຸນມາະນະ</translation>
+        <translation>ຄັດລອກ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/shortcut.cpp" line="23"/>
         <source>Cut</source>
-        <translation>ກຳນົດ</translation>
+        <translation>ຕັດ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/shortcut.cpp" line="24"/>
         <source>Paste</source>
-        <translation>ຳນົດ</translation>
+        <translation>ວາງ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/shortcut.cpp" line="27"/>
         <source>Delete</source>
-        <translation>លិច</translation>
+        <translation>ລຶບ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/shortcut.cpp" line="28"/>
         <source>Select all</source>
-        <translation>ເລືອກທີ່ງານ</translation>
+        <translation>ເລືອກທັງໝົດ</translation>
     </message>
 </context>
 <context>
@@ -1171,12 +1171,12 @@
     <message>
         <location filename="../calendar-client/src/widget/sidebarWidget/sidebarcalendarwidget.cpp" line="135"/>
         <source>Y</source>
-        <translation>&apos;ཡ&apos;</translation>
+        <translation>ປີ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/sidebarWidget/sidebarcalendarwidget.cpp" line="135"/>
         <source>M</source>
-        <translation>M</translation>
+        <translation>ເດືອນ</translation>
     </message>
 </context>
 <context>
@@ -1185,7 +1185,7 @@
         <location filename="../calendar-client/src/dialog/timejumpdialog.cpp" line="32"/>
         <source>Go</source>
         <comment>button</comment>
-        <translation>ເດີ໔</translation>
+        <translation>ໄປ</translation>
     </message>
 </context>
 <context>
@@ -1194,13 +1194,13 @@
         <location filename="../calendar-client/src/widget/settingWidget/userloginwidget.cpp" line="51"/>
         <source>Sign In</source>
         <comment>button</comment>
-        <translation>ເຂົ້າສົ່ງ</translation>
+        <translation>ເຂົ້າສູ່ລະບົບ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/settingWidget/userloginwidget.cpp" line="52"/>
         <source>Sign Out</source>
         <comment>button</comment>
-        <translation>ອອກສົ່ງ</translation>
+        <translation>ອອກຈາກລະບົບ</translation>
     </message>
 </context>
 <context>
@@ -1208,7 +1208,7 @@
     <message>
         <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="998"/>
         <source>Y</source>
-        <translation>&apos;ཡ&apos;</translation>
+        <translation>ປີ</translation>
     </message>
 </context>
 <context>
@@ -1224,7 +1224,7 @@
         <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="655"/>
         <source>Today</source>
         <comment>Today</comment>
-        <translation>ມີນາ</translation>
+        <translation>ມື້ນີ້</translation>
     </message>
 </context>
 </TS>
