@@ -31,3 +31,4 @@ Makefile
 !debian/[source,changelog,compat,control,copyright,rules]
 CMakeLists.txt.user
 *.user.*
+release/

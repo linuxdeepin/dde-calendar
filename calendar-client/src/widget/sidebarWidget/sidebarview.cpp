@@ -84,6 +84,7 @@ void SidebarView::initData()
     initUnionAccountItem();
     //刷新列表展开状态
     initExpandStatus();
+    slotScheduleTypeUpdate();
 }
 
 /**
