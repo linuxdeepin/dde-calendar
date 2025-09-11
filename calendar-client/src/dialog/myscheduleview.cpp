@@ -146,7 +146,7 @@ void CMyScheduleView::slotAccountStateChange()
         return;
     }
     bool canSync = item->isCanSyncShedule();
-    qCDebug(ClientLogger) << "Account sync state changed for schedule:" << m_scheduleInfo->summary() 
+    qCDebug(ClientLogger) << "Account sync state changed for schedule:" << m_scheduleInfo->summary()
                           << "can sync:" << canSync;
     //根据可同步状态设置删除按钮是否可用
     getButtons()[0]->setEnabled(canSync);
@@ -281,6 +281,7 @@ void CMyScheduleView::slotBtClick(int buttonIndex, const QString &buttonName)
             accept();
         } else {
             qCDebug(ClientLogger) << "Schedule edit cancelled";
+            close();
         }
         return;
     }
@@ -296,14 +297,14 @@ void CMyScheduleView::initUI()
     setOnButtonClickedClose(false);
 
     m_Title = new QLabel(this);
-    m_Title->setFixedSize(108, 51);
+    m_Title->setFixedSize(220, 51);
     m_Title->setAlignment(Qt::AlignCenter);
     DFontSizeManager::instance()->bind(m_Title, DFontSizeManager::T5, QFont::DemiBold);
     //设置日期图标
     QIcon t_icon(CDynamicIcon::getInstance()->getPixmap());
     setIcon(t_icon);
     m_Title->setText(tr("My Event"));
-    m_Title->move(137, 0);
+    m_Title->move(90, 0); // center x: (400-220)/2
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->setContentsMargins(0, 0, 0, 0);

@@ -118,6 +118,7 @@ CTitleWidget::CTitleWidget(QWidget *parent)
     {
         QHBoxLayout *layout = new QHBoxLayout;
         layout->setContentsMargins(0, 0, 0, 0);
+        layout->addSpacing(10);
         layout->addWidget(m_sidebarIcon, Qt::AlignLeft);
         layout->addSpacing(4);
         layout->addWidget(m_buttonBox, Qt::AlignLeft);

@@ -854,7 +854,7 @@
     <message>
         <location filename="../calendar-service/src/dbmanager/daccountdatabase.cpp" line="1157"/>
         <source>Life</source>
-        <translation>ຊີວ຿ດຕິດ</translation>
+        <translation>ຊີວິດ</translation>
     </message>
     <message>
         <location filename="../calendar-service/src/dbmanager/daccountdatabase.cpp" line="1159"/>
