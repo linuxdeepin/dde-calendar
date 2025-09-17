@@ -7,13 +7,13 @@ version: "1"
 package:
   id: org.dde.calendar
   name: dde-calendar
-  version: 6.5.21.1
+  version: 6.5.22.1
   kind: app
   description: |
     calendar for deepin os.
 
-base: org.deepin.base/25.2.0/x86_64
-runtime: org.deepin.runtime.dtk/25.2.0/x86_64
+base: org.deepin.base/25.2.1/x86_64
+runtime: org.deepin.runtime.dtk/25.2.1/x86_64
 
 command:
   - dde-calendar
