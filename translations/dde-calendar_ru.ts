@@ -14,7 +14,7 @@
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="42"/>
         <source>Server exception</source>
-        <translation>Исключение сервера</translation>
+        <translation>Ошибка сервера</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="43"/>
@@ -121,7 +121,7 @@
     <message>
         <location filename="../calendar-client/src/view/graphicsview.cpp" line="592"/>
         <source>New Event</source>
-        <translation>Новое Событие</translation>
+        <translation>Новое событие</translation>
     </message>
 </context>
 <context>
@@ -158,7 +158,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="267"/>
         <source>My Event</source>
-        <translation>Моё событие</translation>
+        <translation>Мое событие</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="308"/>
@@ -252,7 +252,7 @@
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="487"/>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="513"/>
         <source>2 days before</source>
-        <translation>За 2 дня до этого</translation>
+        <translation>За 2 дня до</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="488"/>
@@ -263,7 +263,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="511"/>
         <source>On start day (9:00 AM)</source>
-        <translation>В день начала (9:00)</translation>
+        <translation>В начале дня (9:00 утра)</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="558"/>
@@ -736,12 +736,12 @@
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="74"/>
         <source>(%1 hour)</source>
-        <translation>(%1 час)</translation>
+        <translation>(%1 ч.)</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="76"/>
         <source>(%1 hours)</source>
-        <translation>(%1 часов)</translation>
+        <translation>(%1 ч.)</translation>
     </message>
 </context>
 <context>
