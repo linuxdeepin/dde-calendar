@@ -369,7 +369,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="947"/>
         <source>Solar</source>
-        <translation>Солнечно</translation>
+        <translation>Солнечный</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="948"/>
@@ -534,7 +534,7 @@
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="168"/>
         <source>Delete All Future Events</source>
-        <translation>Удалить Все Будущие События</translation>
+        <translation>Удалить все будущие события</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="235"/>
@@ -556,7 +556,7 @@
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="241"/>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="271"/>
         <source>Only This Event</source>
-        <translation>Только Это Событие</translation>
+        <translation>Только это событие</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="267"/>
@@ -566,7 +566,7 @@
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="270"/>
         <source>All Future Events</source>
-        <translation>Только Будущие События</translation>
+        <translation>Все будущие события</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="382"/>
@@ -613,7 +613,7 @@
     <message>
         <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="267"/>
         <source>All Day</source>
-        <translation>Весь День</translation>
+        <translation>Весь день</translation>
     </message>
 </context>
 <context>
@@ -621,7 +621,7 @@
     <message>
         <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="645"/>
         <source>No search results</source>
-        <translation>Поиск результатов не дал</translation>
+        <translation>Ничего не найдено</translation>
     </message>
 </context>
 <context>
@@ -713,7 +713,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="418"/>
         <source>Sync Now</source>
-        <translation>Синхронизировать Сейчас</translation>
+        <translation>Синхронизировать сейчас</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="576"/>
@@ -830,7 +830,7 @@
         <location filename="../calendar-client/src/widget/yearWidget/yearscheduleview.cpp" line="268"/>
         <location filename="../calendar-client/src/widget/yearWidget/yearscheduleview.cpp" line="271"/>
         <source>All Day</source>
-        <translation>Весь День</translation>
+        <translation>Весь день</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/yearWidget/yearscheduleview.cpp" line="288"/>
@@ -983,7 +983,7 @@
     <message>
         <location filename="../calendar-client/src/view/draginfographicsview.cpp" line="737"/>
         <source>New Event</source>
-        <translation>Новое Событие</translation>
+        <translation>Новое событие</translation>
     </message>
 </context>
 <context>
@@ -1198,7 +1198,7 @@
     <message>
         <location filename="../calendar-client/src/shortcut.cpp" line="26"/>
         <source>Select all</source>
-        <translation>Выбрать всё</translation>
+        <translation>Выбрать все</translation>
     </message>
 </context>
 <context>
