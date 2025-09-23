@@ -405,7 +405,7 @@
     </message>
     <message>
         <source>Delete All Future Events</source>
-        <translation type="vanished">Удалить Все Будущие События</translation>
+        <translation type="vanished">Удалить все будущие события</translation>
     </message>
     <message>
         <source>You are changing a repeating event.</source>
@@ -421,7 +421,7 @@
     </message>
     <message>
         <source>Only This Event</source>
-        <translation type="vanished">Только Это Событие</translation>
+        <translation type="vanished">Только это событие</translation>
     </message>
     <message>
         <source>Do you want to change only this occurrence of the event, or this and all future occurrences?</source>
@@ -429,7 +429,7 @@
     </message>
     <message>
         <source>All Future Events</source>
-        <translation type="vanished">Только Будущие События</translation>
+        <translation type="vanished">Только будущие события</translation>
     </message>
     <message>
         <source>You have selected a leap month, and will be reminded according to the rules of the lunar calendar.</source>
@@ -468,14 +468,14 @@
     </message>
     <message>
         <source>All Day</source>
-        <translation type="vanished">Весь День</translation>
+        <translation type="vanished">Весь день</translation>
     </message>
 </context>
 <context>
     <name>CScheduleSearchView</name>
     <message>
         <source>No search results</source>
-        <translation type="vanished">Поиск результатов не дал</translation>
+        <translation type="vanished">Ничего не найдено</translation>
     </message>
 </context>
 <context>
@@ -509,7 +509,7 @@
     </message>
     <message>
         <source>Sync Now</source>
-        <translation type="vanished">Синхронизировать Сейчас</translation>
+        <translation type="vanished">Синхронизировать сейчас</translation>
     </message>
     <message>
         <source>Last sync</source>
@@ -556,15 +556,15 @@
     <name>CTimeEdit</name>
     <message>
         <source>(%1 mins)</source>
-        <translation type="vanished">(%1 минут)</translation>
+        <translation type="vanished">(%1 мин.)</translation>
     </message>
     <message>
         <source>(%1 hour)</source>
-        <translation type="vanished">(%1 час)</translation>
+        <translation type="vanished">(%1 ч.)</translation>
     </message>
     <message>
         <source>(%1 hours)</source>
-        <translation type="vanished">(%1 часов)</translation>
+        <translation type="vanished">(%1 ч.)</translation>
     </message>
 </context>
 <context>
@@ -774,7 +774,7 @@
     </message>
     <message>
         <source>New Event</source>
-        <translation type="vanished">Новое Событие</translation>
+        <translation type="vanished">Новое событие</translation>
     </message>
 </context>
 <context>
