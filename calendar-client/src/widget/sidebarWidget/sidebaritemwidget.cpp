@@ -147,6 +147,7 @@ void SidebarTypeItemWidget::initView()
     labelF.setWeight(QFont::Normal);
     m_titleLabel->setFont(labelF);
     m_titleLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    m_titleLabel->setTextFormat(Qt::PlainText);
     m_titleLabel->setText(m_scheduleType->displayName());
     m_titleLabel->setToolTip(m_scheduleType->displayName());
 

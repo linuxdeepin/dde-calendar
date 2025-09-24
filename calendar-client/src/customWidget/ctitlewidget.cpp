@@ -21,7 +21,7 @@ CTitleWidget::CTitleWidget(QWidget *parent)
     qCDebug(ClientLogger) << "CTitleWidget constructor";
     m_sidebarIcon = new DIconButton(this);
     m_sidebarIcon->setFixedSize(QSize(36, 36));
-    m_sidebarIcon->setIconSize(QSize(19, 15));
+    m_sidebarIcon->setIconSize(QSize(19, 19));
     connect(m_sidebarIcon, &DIconButton::clicked, this, &CTitleWidget::slotSidebarIconClicked);
 
     m_buttonBox = new CButtonBox(this);
