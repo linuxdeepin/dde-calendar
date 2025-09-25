@@ -46,7 +46,6 @@ CYearView::CYearView(QWidget *parent)
     separatorLineLayout->addWidget(m_currentMouth);
     separatorLineLayout->addStretch();
 
-    m_currentMouth->show();
     m_currentMouth->installEventFilter(this);
 
     m_weekWidget = new CWeekWidget(this);
