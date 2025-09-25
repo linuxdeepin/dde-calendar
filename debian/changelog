@@ -1,3 +1,11 @@
+dde-calendar (6.5.23) unstable; urgency=medium
+
+  * chore: Update version to 6.5.23
+  * fix: Fix twinkling issues.
+  * fix: Adjust sidebar icon size and set text format for title label.
+
+ -- re2zero <yangwu@uniontech.com>  Thu, 25 Sep 2025 16:37:55 +0800
+
 dde-calendar (6.5.22) unstable; urgency=medium
 
   * chore: Update linglong base and runtime
