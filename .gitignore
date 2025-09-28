@@ -40,3 +40,5 @@ build
 .cursorindexingignore
 .cursor
 .specstory
+.promptx/
+.spec-workflow/

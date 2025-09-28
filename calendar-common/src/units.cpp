@@ -11,6 +11,9 @@
 #include <QStandardPaths>
 #include <QLocale>
 #include <QSharedPointer>
+#include <QDBusInterface>
+#include <QDBusConnection>
+#include <QDebug>
 
 QString dtToString(const QDateTime &dt)
 {
@@ -96,5 +99,51 @@ bool withinTimeFrame(const QDate &date)
 {
     // qCDebug(CommonLogger) << "Checking if date" << date << "is within time frame.";
     return date.isValid() && (date.year() >= 1900 && date.year() <=2100);
+}
+
+bool isCommunityEdition()
+{
+    // Add static cache, query only once    
+    static bool cachedResult = false;
+    static bool hasQueried = false;
+    qCDebug(CommonLogger) << "isCommunityEdition";
+
+    // If already queried, return cached result
+    if (hasQueried) {
+        qCDebug(CommonLogger) << "isCommunityEdition cached";
+        return cachedResult;
+    }
+
+    QDBusInterface interface("org.deepin.dde.SystemInfo1",
+                            "/org/deepin/dde/SystemInfo1",
+                            "org.deepin.dde.SystemInfo1",
+                            QDBusConnection::sessionBus());
+
+    if(!interface.isValid()) {
+        qCDebug(CommonLogger) << "SystemInfo DBus interface invalid";
+        hasQueried = true;
+        return cachedResult;
+    }
+
+    QVariant distroID = interface.property("DistroID");
+    if(!distroID.isValid()) {
+        qCDebug(CommonLogger) << "Failed to get DistroID property";
+        hasQueried = true;
+        return cachedResult;
+    }
+
+    QString distroIDStr = distroID.toString();
+    if(distroIDStr.isEmpty()) {
+        qCDebug(CommonLogger) << "DistroID property is empty";
+        hasQueried = true;
+        return cachedResult;
+    }
+
+    // Check if DistroID is "Deepin" (case insensitive)
+    qCDebug(CommonLogger) << "DistroID:" << distroIDStr;
+    cachedResult = (distroIDStr.toLower() == "deepin");
+    hasQueried = true;
+    qCDebug(CommonLogger) << "Is community edition (Deepin):" << cachedResult;
+    return cachedResult;
 }
 

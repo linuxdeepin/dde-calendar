@@ -982,15 +982,15 @@ void Calendarmainwindow::slotShowPrivacy()
     QString url = "";
     QLocale locale;
     QLocale::Country country = locale.country();
-    bool isCommunityEdition = DSysInfo::isCommunityEdition();
+    bool isCommunity = isCommunityEdition();
     if (country == QLocale::China) {
-        if (isCommunityEdition) {
+        if (isCommunity) {
             url = "https://www.deepin.org/zh/agreement/privacy/";
         } else {
             url = "https://www.uniontech.com/agreement/privacy-cn";
         }
     } else {
-        if (isCommunityEdition) {
+        if (isCommunity) {
             url = "https://www.deepin.org/en/agreement/privacy/";
         } else {
             url = "https://www.uniontech.com/agreement/privacy-en";

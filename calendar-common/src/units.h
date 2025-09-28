@@ -51,7 +51,8 @@ QDateTime dtConvert(const QDateTime &datetime);
 //是否在显示时间范围内1900-2100
 bool withinTimeFrame(const QDate &date);
 
-//TODO:获取系统版本(专业版，社区版等)
+// Check if current system is community edition (Deepin)
+bool isCommunityEdition();
 
 
 #endif // UNITS_H
