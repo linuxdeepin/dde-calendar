@@ -278,26 +278,44 @@ void JobTypeListView::slotImportScheduleType()
     // 显示等待对话框
     m_waitDialog->show();
 
-    DScheduleType::Ptr type(new DScheduleType());
-    type->setColorCode(typeColor);
-    type->setDisplayName(typeName);
+    // Check if schedule type with same name already exists
+    DScheduleType::List existingTypes = account->getScheduleTypeList();
+    bool typeExists = false;
+    for (const DScheduleType::Ptr& existingType : existingTypes) {
+        if (existingType->displayName() == typeName) {
+            typeID = existingType->typeID();
+            typeExists = true;
+            qCDebug(ClientLogger) << "Schedule type already exists with ID:" << typeID << "name:" << typeName;
+            break;
+        }
+    }
 
     QEventLoop event;
-    // 创建日程类型
-    account->createJobType(type, [&event, &typeID](CallMessge msg) {
-        if (msg.code == 0) {
-            // 记录创建的类型ID
-            typeID = msg.msg.toString();
-            qCDebug(ClientLogger) << "Created schedule type with ID:" << typeID;
-        } else {
-            qCWarning(ClientLogger) << "Failed to create schedule type:" << msg.msg.toString();
-        }
-        // 延迟一秒后再退出
-        // 一来可以避免导入小文件时，进度过快引起等待对话框闪烁
-        // 二来在导入大文件时堵塞dbus调用，延迟可以避免客户端在日程类型更新信号执行的槽函数被堵塞。
-        QTimer::singleShot(1000, &event, &QEventLoop::quit);
-    });
 
+    if (!typeExists) {
+        // Create new schedule type if it doesn't exist
+        DScheduleType::Ptr type(new DScheduleType());
+        type->setColorCode(typeColor);
+        type->setDisplayName(typeName);
+
+        // 创建日程类型
+        account->createJobType(type, [&event, &typeID](CallMessge msg) {
+            if (msg.code == 0) {
+                // 记录创建的类型ID
+                typeID = msg.msg.toString();
+                qCDebug(ClientLogger) << "Created schedule type with ID:" << typeID;
+            } else {
+                qCWarning(ClientLogger) << "Failed to create schedule type:" << msg.msg.toString();
+            }
+            // 延迟一秒后再退出
+            // 一来可以避免导入小文件时，进度过快引起等待对话框闪烁
+            // 二来在导入大文件时堵塞dbus调用，延迟可以避免客户端在日程类型更新信号执行的槽函数被堵塞。
+            QTimer::singleShot(1000, &event, &QEventLoop::quit);
+        });
+    } else {
+        // If type exists, just delay for UI consistency
+        QTimer::singleShot(1000, &event, &QEventLoop::quit);
+    }
     // 等待日程创建完毕
     event.exec();
     // 导入ics文件
