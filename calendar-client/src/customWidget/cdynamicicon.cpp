@@ -121,7 +121,9 @@ void CDynamicIcon::setIcon()
         qApp->aboutDialog()->setProductIcon(icon);
     }
 
-    m_Titlebar->setIcon(icon);
+    if (m_Titlebar != nullptr) {
+        m_Titlebar->setIcon(icon);
+    }
 }
 
 void CDynamicIcon::setTitlebar(DTitlebar *titlebar)

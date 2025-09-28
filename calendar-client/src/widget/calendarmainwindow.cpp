@@ -371,18 +371,21 @@ void Calendarmainwindow::initUI()
     //1.5秒更新当前时间
     m_currentDateUpdateTimer->start(1500);
 
-    CDynamicIcon::getInstance()->setTitlebar(this->titlebar());
+    auto titleBar = this->titlebar();
+    // disable dynamic icon titlebar
+    // CDynamicIcon::getInstance()->setTitlebar(titleBar);
     CDynamicIcon::getInstance()->setIcon();
 
     m_titleWidget = new CTitleWidget(this);
     m_titleWidget->setFocusPolicy(Qt::TabFocus);
-    this->titlebar()->setCustomWidget(m_titleWidget);
-    setTabOrder(this->titlebar(), m_titleWidget);
+    titleBar->setCustomWidget(m_titleWidget);
+    setTabOrder(titleBar, m_titleWidget);
     //设置状态栏焦点代理为标题窗口
-    this->titlebar()->setFocusProxy(m_titleWidget);
+    titleBar->setFocusProxy(m_titleWidget);
+    titleBar->setIcon(QIcon::fromTheme("dde-calendar"));
 
-    this->titlebar()->setQuitMenuVisible(true);//先设置后，才可以获取menu内容。因为setQuitMenuVisible接口中进行了action的添加操作
-    QMenu *menuTitleBar = this->titlebar()->menu();
+    titleBar->setQuitMenuVisible(true);//先设置后，才可以获取menu内容。因为setQuitMenuVisible接口中进行了action的添加操作
+    QMenu *menuTitleBar = titleBar->menu();
 
     QAction *pSetting = new QAction(tr("Manage"), menuTitleBar);
     //menuTitleBar->addAction(pSetting);
