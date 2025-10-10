@@ -1,3 +1,12 @@
+dde-calendar (6.5.24) unstable; urgency=medium
+
+  * chore: Update version to 6.5.24
+  * fix: Fix title bar icon not sync with system theme
+  * fix: Prevent duplicate schedule type creation
+  * fix: Implement community edition detection and update privacy URL logic
+
+ -- re2zero <yangwu@uniontech.com>  Fri, 10 Oct 2025 11:29:06 +0800
+
 dde-calendar (6.5.23) unstable; urgency=medium
 
   * chore: Update version to 6.5.23

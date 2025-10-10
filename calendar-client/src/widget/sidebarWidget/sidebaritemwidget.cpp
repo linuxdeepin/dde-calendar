@@ -149,7 +149,7 @@ void SidebarTypeItemWidget::initView()
     m_titleLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     m_titleLabel->setTextFormat(Qt::PlainText);
     m_titleLabel->setText(m_scheduleType->displayName());
-    m_titleLabel->setToolTip(m_scheduleType->displayName());
+    m_titleLabel->setToolTip("<p style='white-space:pre;'>" + m_scheduleType->displayName().toHtmlEscaped());
 
     vLayout->addSpacing(2);
     vLayout->addWidget(m_checkBox);
