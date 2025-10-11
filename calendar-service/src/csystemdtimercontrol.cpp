@@ -128,7 +128,7 @@ void CSystemdTimerControl::startDownloadTask(const QString &accountID, const int
         content += "[Unit]\n";
         content += "Description = schedule download task.\n";
         content += "[Service]\n";
-        content += QString(" %1 \n").arg(remindCMD);
+        content += QString("ExecStart = %1\n").arg(remindCMD);
         content += "[Install]\n";
         content += "WantedBy=user-session.target\n";
         createFile(fileName, content);
