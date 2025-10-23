@@ -1,3 +1,10 @@
+dde-calendar (6.5.26) unstable; urgency=medium
+
+  * chore: Update version to 6.5.26
+  * feat: Enhance DDE Calendar configuration and logging
+
+ -- re2zero <yangwu@uniontech.com>  Thu, 23 Oct 2025 20:11:49 +0800
+
 dde-calendar (6.5.25) unstable; urgency=medium
 
   * chore: Update version to 6.5.25
