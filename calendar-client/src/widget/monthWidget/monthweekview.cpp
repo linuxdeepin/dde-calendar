@@ -125,7 +125,7 @@ void CMonthWeekView::paintEvent(QPaintEvent *event)
 WeekRect::WeekRect()
     : m_showLine(false)
 {
-    qCDebug(ClientLogger) << "WeekRect::WeekRect";
+    // qCDebug(ClientLogger) << "WeekRect::WeekRect";
     m_font.setWeight(QFont::Medium);
     m_font.setPixelSize(DDECalendar::FontSizeSixteen);
 }
@@ -172,13 +172,13 @@ void WeekRect::paintRect(QPainter &painter)
 
 void WeekRect::setTheMe(int type)
 {
-    qCDebug(ClientLogger) << "WeekRect::setTheMe, type:" << type;
+    // qCDebug(ClientLogger) << "WeekRect::setTheMe, type:" << type;
     m_activeColor = CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
     if (type == 0 || type == 1) {
-        qCDebug(ClientLogger) << "Applying light theme";
+        // qCDebug(ClientLogger) << "Applying light theme";
         m_testColor = "#6F6F6F";
     } else {
-        qCDebug(ClientLogger) << "Applying dark theme";
+        // qCDebug(ClientLogger) << "Applying dark theme";
         m_testColor = "#C0C6D4";
     }
 }

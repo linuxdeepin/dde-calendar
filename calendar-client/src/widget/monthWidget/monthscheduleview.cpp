@@ -37,7 +37,7 @@ CMonthScheduleView::CMonthScheduleView(QWidget *parent, QGraphicsScene *scene)
 
 CMonthScheduleView::~CMonthScheduleView()
 {
-    qCDebug(ClientLogger) << "CMonthScheduleView::~CMonthScheduleView";
+    // qCDebug(ClientLogger) << "CMonthScheduleView::~CMonthScheduleView";
 }
 
 void CMonthScheduleView::setallsize(int w, int h, int left, int top, int buttom, int itemHeight)
@@ -272,7 +272,7 @@ CWeekScheduleView::CWeekScheduleView(QObject *parent)
 
 CWeekScheduleView::~CWeekScheduleView()
 {
-    qCDebug(ClientLogger) << "CWeekScheduleView::~CWeekScheduleView";
+    // qCDebug(ClientLogger) << "CWeekScheduleView::~CWeekScheduleView";
 }
 
 void CWeekScheduleView::setData(QMap<QDate, DSchedule::List> &data, const QDate &startDate, const QDate &stopDate)
@@ -394,7 +394,7 @@ void CWeekScheduleView::updateSchedule(const bool isNormalDisplay, const DSchedu
 
 void CWeekScheduleView::clearItem()
 {
-    qCDebug(ClientLogger) << "CWeekScheduleView::clearItem";
+    // qCDebug(ClientLogger) << "CWeekScheduleView::clearItem";
     for (int i = 0; i < m_scheduleShowItem.count(); i++) {
         delete m_scheduleShowItem[i];
     }
@@ -412,7 +412,7 @@ void CWeekScheduleView::hideItem()
 
 void CWeekScheduleView::setMaxNum()
 {
-    qCDebug(ClientLogger) << "CWeekScheduleView::setMaxNum";
+    // qCDebug(ClientLogger) << "CWeekScheduleView::setMaxNum";
     m_MaxNum = m_DayHeight / (m_ScheduleHeight + 1);
 }
 

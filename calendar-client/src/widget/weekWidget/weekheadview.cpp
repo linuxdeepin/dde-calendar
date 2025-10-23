@@ -74,11 +74,11 @@ CWeekHeadView::~CWeekHeadView()
  */
 void CWeekHeadView::setTheMe(int type)
 {
-    qCDebug(ClientLogger) << "Setting theme to type:" << type;
+    // qCDebug(ClientLogger) << "Setting theme to type:" << type;
     m_themetype = type;
 
     if (type == 0 || type == 1) {
-        qCDebug(ClientLogger) << "Setting theme to light";
+        // qCDebug(ClientLogger) << "Setting theme to light";
         QColor textC = "#000000";
         QColor textBC(230, 238, 242);
 
@@ -97,7 +97,7 @@ void CWeekHeadView::setTheMe(int type)
         m_backgroundColor = "#E6EEF2";
         m_solofestivalLunarColor = "#4DFF7272";
     } else if (type == 2) {
-        qCDebug(ClientLogger) << "Setting theme to dark";
+        // qCDebug(ClientLogger) << "Setting theme to dark";
         QColor textBC = "#82AEC1";
         textBC.setAlphaF(0.1);
         m_monthLabel->setBColor(textBC);

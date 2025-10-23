@@ -24,7 +24,7 @@ DGUI_USE_NAMESPACE
 CYearView::CYearView(QWidget *parent)
     : CustomFrame(parent)
 {
-    qCDebug(ClientLogger) << "CYearView constructed";
+    // qCDebug(ClientLogger) << "CYearView constructed";
     //设置焦点类型
     setFocusPolicy(Qt::FocusPolicy::TabFocus);
     setMouseTracking(true);
@@ -97,7 +97,7 @@ void CYearView::slotPressClickDate(const QDate &date)
  */
 void CYearView::setTheMe(int type)
 {
-    qCDebug(ClientLogger) << "Setting theme to type:" << type;
+    // qCDebug(ClientLogger) << "Setting theme to type:" << type;
     m_themetype = type;
 
     if (type == 0 || type == 1) {
@@ -141,7 +141,7 @@ void CYearView::setHasScheduleSet(const QSet<QDate> &hasScheduleSet)
 
 void CYearView::setHasSearchScheduleSet(const QSet<QDate> &hasScheduleSet)
 {
-    qCDebug(ClientLogger) << "Setting has search schedule set with" << hasScheduleSet.size() << "dates";
+    // qCDebug(ClientLogger) << "Setting has search schedule set with" << hasScheduleSet.size() << "dates";
     m_monthView->setHasSearchScheduleSet(hasScheduleSet);
 }
 

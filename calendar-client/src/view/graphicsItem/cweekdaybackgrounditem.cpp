@@ -14,18 +14,18 @@ CWeekDayBackgroundItem::CWeekDayBackgroundItem(QGraphicsItem *parent)
     , m_drawDividingLine(false)
     , m_showFocus(false)
 {
-    qCDebug(ClientLogger) << "CWeekDayBackgroundItem constructor";
+    // qCDebug(ClientLogger) << "CWeekDayBackgroundItem constructor";
 }
 
 void CWeekDayBackgroundItem::setTheMe(int type)
 {
-    qCDebug(ClientLogger) << "CWeekDayBackgroundItem::setTheMe - type:" << type;
+    // qCDebug(ClientLogger) << "CWeekDayBackgroundItem::setTheMe - type:" << type;
     if (type == 0 || type == 1) {
-        qCDebug(ClientLogger) << "Setting light theme colors";
+        // qCDebug(ClientLogger) << "Setting light theme colors";
         m_weekColor = "#00429A";
         m_weekColor.setAlphaF(0.05);
     } else {
-        qCDebug(ClientLogger) << "Setting dark theme colors";
+        // qCDebug(ClientLogger) << "Setting dark theme colors";
         m_weekColor = "#4F9BFF";
         m_weekColor.setAlphaF(0.1);
     }

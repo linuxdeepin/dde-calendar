@@ -5,14 +5,16 @@
 #include "dservicemanager.h"
 #include "ddatabasemanagement.h"
 #include "commondef.h"
-#include <DLog>
+#include "logger.h"
 
 #include <QDBusConnection>
 #include <QDBusError>
 #include <QTranslator>
 #include <QCoreApplication>
 #include <QTimer>
+#include <DLog>
 
+DCORE_USE_NAMESPACE
 
 bool loadTranslator(QCoreApplication *app, QList<QLocale> localeFallback = QList<QLocale>() << QLocale::system())
 {
@@ -50,15 +52,16 @@ bool loadTranslator(QCoreApplication *app, QList<QLocale> localeFallback = QList
 
 int main(int argc, char *argv[])
 {
+    // 日志处理要放在app之前，否则QApplication内部可能进行了日志打印，导致环境变量设置不生效
+    CalendarLogger();
+    
     qCInfo(ServiceLogger) << "Starting dde-calendar-service.";
     QCoreApplication a(argc, argv);
     a.setOrganizationName("deepin");
     a.setApplicationName("dde-calendar-service");
 
-    Dtk::Core::DLogManager::registerConsoleAppender();
-    Dtk::Core::DLogManager::registerFileAppender();
-    Dtk::Core::DLogManager::registerJournalAppender();
-    qCInfo(ServiceLogger) << "Log appenders registered.";
+    // Initialize logging system
+    CalendarLogger::initLogger();
 
     //加载翻译
     if (!loadTranslator(&a)) {

@@ -20,7 +20,7 @@ CSceneBackgroundItem::CSceneBackgroundItem(ItemOnView view, QGraphicsItem *paren
     , m_showItemIndex(-1)
     , m_itemOfView(view)
 {
-    qCDebug(ClientLogger) << "CSceneBackgroundItem constructor - view:" << view;
+    // qCDebug(ClientLogger) << "CSceneBackgroundItem constructor - view:" << view;
     //设置item类型为背景显示
     setItemType(CBACK);
 }
@@ -31,7 +31,7 @@ CSceneBackgroundItem::CSceneBackgroundItem(ItemOnView view, QGraphicsItem *paren
  */
 CFocusItem *CSceneBackgroundItem::setNextItemFocusAndGetNextItem()
 {
-    qCDebug(ClientLogger) << "CSceneBackgroundItem::setNextItemFocusAndGetNextItem - current showItemIndex:" << m_showItemIndex 
+    qCDebug(ClientLogger) << "CSceneBackgroundItem::setNextItemFocusAndGetNextItem - current showItemIndex:" << m_showItemIndex
                          << "items count:" << m_item.size();
     CFocusItem *NextFocus = this;
     //若该区域没有item
@@ -100,19 +100,19 @@ bool compareItemData(const CFocusItem *itemfirst, const CFocusItem *itemsecond)
  */
 void CSceneBackgroundItem::updateShowItem()
 {
-    qCDebug(ClientLogger) << "CSceneBackgroundItem::updateShowItem for background:" << m_backgroundNum;
+    // qCDebug(ClientLogger) << "CSceneBackgroundItem::updateShowItem for background:" << m_backgroundNum;
     m_item.clear();
     //缩小背景矩阵,防止获取到其他背景上的item
     QRectF offsetRect = this->rect().marginsRemoved(QMarginsF(1, 1, 1, 1));
     QList<QGraphicsItem *> mlistitem = this->scene()->items(offsetRect);
-    qCDebug(ClientLogger) << "Found" << mlistitem.count() << "items in background area";
+    // qCDebug(ClientLogger) << "Found" << mlistitem.count() << "items in background area";
     for (int i = 0; i < mlistitem.count(); ++i) {
         CFocusItem *item = dynamic_cast<CFocusItem *>(mlistitem.at(i));
         if (item != nullptr && item->getItemType() != CBACK) {
             m_item.append(item);
         }
     }
-    qCDebug(ClientLogger) << "Added" << m_item.size() << "focus items to background";
+    // qCDebug(ClientLogger) << "Added" << m_item.size() << "focus items to background";
     std::sort(m_item.begin(), m_item.end(), compareItemData);
     updateCurrentItemShow();
 }
@@ -197,64 +197,64 @@ CFocusItem *CSceneBackgroundItem::getFocusItem()
 
 CSceneBackgroundItem *CSceneBackgroundItem::getLeftItem() const
 {
-    // qCDebug(ClientLogger) << "CSceneBackgroundItem::getLeftItem - returning:" 
+    // qCDebug(ClientLogger) << "CSceneBackgroundItem::getLeftItem - returning:"
     //                      << (m_leftItem ? "item" : "nullptr");
     return m_leftItem;
 }
 
 void CSceneBackgroundItem::setLeftItem(CSceneBackgroundItem *leftItem)
 {
-    // qCDebug(ClientLogger) << "CSceneBackgroundItem::setLeftItem - item:" 
+    // qCDebug(ClientLogger) << "CSceneBackgroundItem::setLeftItem - item:"
     //                     << (leftItem ? "set" : "nullptr");
     m_leftItem = leftItem;
 }
 
 CSceneBackgroundItem *CSceneBackgroundItem::getRightItem() const
 {
-    // qCDebug(ClientLogger) << "CSceneBackgroundItem::getRightItem - returning:" 
+    // qCDebug(ClientLogger) << "CSceneBackgroundItem::getRightItem - returning:"
     //                      << (m_rightItem ? "item" : "nullptr");
     return m_rightItem;
 }
 
 void CSceneBackgroundItem::setRightItem(CSceneBackgroundItem *rightItem)
 {
-    // qCDebug(ClientLogger) << "CSceneBackgroundItem::setRightItem - item:" 
+    // qCDebug(ClientLogger) << "CSceneBackgroundItem::setRightItem - item:"
     //                      << (rightItem ? "set" : "nullptr");
     m_rightItem = rightItem;
 }
 
 CSceneBackgroundItem *CSceneBackgroundItem::getUpItem() const
 {
-    // qCDebug(ClientLogger) << "CSceneBackgroundItem::getUpItem - returning:" 
+    // qCDebug(ClientLogger) << "CSceneBackgroundItem::getUpItem - returning:"
     //                      << (m_upItem ? "item" : "nullptr");
     return m_upItem;
 }
 
 void CSceneBackgroundItem::setUpItem(CSceneBackgroundItem *upItem)
 {
-    // qCDebug(ClientLogger) << "CSceneBackgroundItem::setUpItem - item:" 
+    // qCDebug(ClientLogger) << "CSceneBackgroundItem::setUpItem - item:"
     //                      << (upItem ? "set" : "nullptr");
     m_upItem = upItem;
 }
 
 CSceneBackgroundItem *CSceneBackgroundItem::getDownItem() const
 {
-    // qCDebug(ClientLogger) << "CSceneBackgroundItem::getDownItem - returning:" 
+    // qCDebug(ClientLogger) << "CSceneBackgroundItem::getDownItem - returning:"
     //                      << (m_downItem ? "item" : "nullptr");
     return m_downItem;
 }
 
 void CSceneBackgroundItem::setDownItem(CSceneBackgroundItem *downItem)
 {
-    // qCDebug(ClientLogger) << "CSceneBackgroundItem::setDownItem - item:" 
+    // qCDebug(ClientLogger) << "CSceneBackgroundItem::setDownItem - item:"
     //                      << (downItem ? "set" : "nullptr");
     m_downItem = downItem;
 }
 
 void CSceneBackgroundItem::updateCurrentItemShow()
 {
-    qCDebug(ClientLogger) << "CSceneBackgroundItem::updateCurrentItemShow - showItemIndex:" << m_showItemIndex 
-                         << "items count:" << m_item.size();
+    // qCDebug(ClientLogger) << "CSceneBackgroundItem::updateCurrentItemShow - showItemIndex:" << m_showItemIndex
+    //                      << "items count:" << m_item.size();
     if (m_showItemIndex >= 0) {
         if (m_item.size() > 0) {
             qCDebug(ClientLogger) << "Setting focus to item at index:" << m_showItemIndex;

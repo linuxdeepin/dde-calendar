@@ -10,7 +10,7 @@
 #include "tabletconfig.h"
 #include "schedulemanager.h"
 #include "commondef.h"
-#include <LogManager.h>
+#include "logger.h"
 
 #include <DApplication>
 #include <DLog>
@@ -19,13 +19,17 @@
 #include <QDBusConnection>
 
 DWIDGET_USE_NAMESPACE
+DCORE_USE_NAMESPACE
 
 int main(int argc, char *argv[])
 {
-    qCDebug(ClientLogger) << "Starting dde-calendar application";
+    // 日志处理要放在app之前，否则QApplication内部可能进行了日志打印，导致环境变量设置不生效
+    CalendarLogger();
+
+    // qCDebug(ClientLogger) << "Starting dde-calendar application";
     //在root下或者非deepin/uos环境下运行不会发生异常，需要加上XDG_CURRENT_DESKTOP=Deepin环境变量；
     if (!QString(qgetenv("XDG_CURRENT_DESKTOP")).toLower().startsWith("deepin")) {
-        qCInfo(ClientLogger) << "Setting XDG_CURRENT_DESKTOP to Deepin environment";
+        // qCInfo(ClientLogger) << "Setting XDG_CURRENT_DESKTOP to Deepin environment";
         setenv("XDG_CURRENT_DESKTOP", "Deepin", 1);
     }
     QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
@@ -45,7 +49,7 @@ int main(int argc, char *argv[])
 #endif
 
     if (DGuiApplicationHelper::setSingleInstance(app->applicationName(), DGuiApplicationHelper::UserScope)) {
-        qCDebug(ClientLogger) << "Initializing application as single instance";
+        // qCDebug(ClientLogger) << "Initializing application as single instance";
         //准备数据
         gAccountManager->resetAccount();
 
@@ -56,7 +60,7 @@ int main(int argc, char *argv[])
 #ifdef QT_DEBUG
         // 在开发调试时使用项目内的翻译文件
         auto tf = "../translations/dde-calendar_zh_CN";
-        qCDebug(ClientLogger) << "load translate" << tf;
+        // qCDebug(ClientLogger) << "load translate" << tf;
         QTranslator translator;
         translator.load(tf);
         app->installTranslator(&translator);
@@ -77,13 +81,13 @@ int main(int argc, char *argv[])
 
         app->setAutoActivateWindows(true);
 
+        // Initialize logging system
+        CalendarLogger::initLogger();
+        
         bool isOk = false;
         int viewtype = CConfigSettings::getInstance()->value("base.view").toInt(&isOk);
         if (!isOk)
             viewtype = 2;
-        DLogManager::registerConsoleAppender();
-        DLogManager::registerFileAppender();
-        DLogManager::registerJournalAppender();
         //为了与老版本配置兼容
         Calendarmainwindow ww(viewtype - 1);
         ExportedInterface einterface(&ww);

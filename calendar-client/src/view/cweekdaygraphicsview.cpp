@@ -53,7 +53,7 @@ CWeekDayGraphicsview::~CWeekDayGraphicsview()
 
 void CWeekDayGraphicsview::setRange(int w, int h, QDate begindate, QDate enddate, int rightmagin)
 {
-    qCDebug(ClientLogger) << "CWeekDayGraphicsview::setRange - w:" << w << "h:" << h 
+    qCDebug(ClientLogger) << "CWeekDayGraphicsview::setRange - w:" << w << "h:" << h
                          << "begindate:" << begindate << "enddate:" << enddate << "rightmagin:" << rightmagin;
     m_MoveDate.setDate(begindate.addMonths(-2));
     m_beginDate = begindate;
@@ -101,8 +101,8 @@ CScheduleCoorManage *CWeekDayGraphicsview::getCoorManage() const
 
 void CWeekDayGraphicsview::setCurrentFocusItem(const QDate &focusDate, bool setItemFocus)
 {
-    qCDebug(ClientLogger) << "CWeekDayGraphicsview::setCurrentFocusItem - focusDate:" << focusDate 
-                         << "setItemFocus:" << setItemFocus;
+    // qCDebug(ClientLogger) << "CWeekDayGraphicsview::setCurrentFocusItem - focusDate:" << focusDate 
+    //                      << "setItemFocus:" << setItemFocus;
     qint64 offset = m_backgroundItem.first()->getDate().daysTo(focusDate);
     if (offset >= 0 && offset < m_backgroundItem.size()) {
         qCDebug(ClientLogger) << "Setting current focus item at offset:" << offset;
@@ -118,12 +118,12 @@ void CWeekDayGraphicsview::setCurrentFocusItem(const QDate &focusDate, bool setI
 
 void CWeekDayGraphicsview::setSceneRect(qreal x, qreal y, qreal w, qreal h)
 {
-    qCDebug(ClientLogger) << "CWeekDayGraphicsview::setSceneRect - x:" << x << "y:" << y << "w:" << w << "h:" << h;
+    // qCDebug(ClientLogger) << "CWeekDayGraphicsview::setSceneRect - x:" << x << "y:" << y << "w:" << w << "h:" << h;
     m_Scene->setSceneRect(x, y, w, h);
     const qreal backgroundItemHeight = h;
     const qreal backgroundItemWidth = w / m_backgroundItem.size();
-    qCDebug(ClientLogger) << "Setting background item dimensions - width:" << backgroundItemWidth 
-                         << "height:" << backgroundItemHeight;
+    // qCDebug(ClientLogger) << "Setting background item dimensions - width:" << backgroundItemWidth
+    //                      << "height:" << backgroundItemHeight;
     for (int i = 0; i < m_backgroundItem.size(); ++i) {
         m_backgroundItem.at(i)->setDate(m_beginDate.addDays(i));
         m_backgroundItem.at(i)->setRect(x + backgroundItemWidth * i, 0, backgroundItemWidth, backgroundItemHeight);
@@ -157,7 +157,7 @@ void CWeekDayGraphicsview::createBackgroundItem()
             item->setZValue(-1);
             if (m_backgroundItem.size() > 0) {
                 //设置对应左右和下一个关系
-                qCDebug(ClientLogger) << "Setting navigation relationships for background item" << i;
+                // qCDebug(ClientLogger) << "Setting navigation relationships for background item" << i;
                 m_backgroundItem.last()->setNextFocusItem(item);
                 m_backgroundItem.last()->setRightItem(item);
                 item->setLeftItem(m_backgroundItem.last());
@@ -166,7 +166,7 @@ void CWeekDayGraphicsview::createBackgroundItem()
             item->setDrawDividingLine(true);
             //如果为非全天则设置背景焦点获取显示
             if (m_viewType == PartTimeView) {
-                qCDebug(ClientLogger) << "Setting part time view focus for week item" << i;
+                // qCDebug(ClientLogger) << "Setting part time view focus for week item" << i;
                 item->setShowFocus(true);
             }
             //设置编号

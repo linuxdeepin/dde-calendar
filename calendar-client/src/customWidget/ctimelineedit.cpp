@@ -126,7 +126,7 @@ void CTimeLineEdit::slotTextEdited(const QString &text)
  */
 CTimeLineEdit::StepEnabled CTimeLineEdit::stepEnabled() const
 {
-    qCDebug(ClientLogger) << "CTimeLineEdit::stepEnabled returning:" << m_stepEnable;
+    // qCDebug(ClientLogger) << "CTimeLineEdit::stepEnabled returning:" << m_stepEnable;
     return m_stepEnable;
 }
 

@@ -363,7 +363,7 @@ CMonthRect         *CMonthRect::m_SelectRect = nullptr;
 CMonthRect::CMonthRect(QWidget *parent)
     : m_parentWidget(parent)
 {
-    qCDebug(ClientLogger) << "CMonthRect::CMonthRect";
+    // qCDebug(ClientLogger) << "CMonthRect::CMonthRect";
     m_dayNumFont.setPixelSize(DDECalendar::FontSizeSixteen);
     m_dayNumFont.setWeight(QFont::Light);
 }

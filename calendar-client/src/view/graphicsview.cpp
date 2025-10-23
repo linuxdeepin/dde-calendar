@@ -66,7 +66,7 @@ CGraphicsView::CGraphicsView(QWidget *parent, ViewPosition Type)
 
 CGraphicsView::~CGraphicsView()
 {
-    qCDebug(ClientLogger) << "CGraphicsView destructor";
+    // qCDebug(ClientLogger) << "CGraphicsView destructor";
     m_timer->stop();
     m_timer->deleteLater();
     clearSchedule();
@@ -74,8 +74,8 @@ CGraphicsView::~CGraphicsView()
 
 void CGraphicsView::setMargins(int left, int top, int right, int bottom)
 {
-    qCDebug(ClientLogger) << "CGraphicsView::setMargins - left:" << left << "top:" << top 
-                         << "right:" << right << "bottom:" << bottom;
+    // qCDebug(ClientLogger) << "CGraphicsView::setMargins - left:" << left << "top:" << top
+    //                      << "right:" << right << "bottom:" << bottom;
     Q_UNUSED(top)
     m_margins = QMargins(left, 0, right, bottom);
     setViewportMargins(m_margins);
@@ -182,7 +182,7 @@ void CGraphicsView::upDateInfoShow(const CGraphicsView::DragStatus &status, cons
     qint64 beginoffset = 0, endoffset = 0;
     DSchedule::List currentInfo;
 
-    // qCDebug(ClientLogger) << "Processing date range from" << m_beginDate << "to" << m_endDate 
+    // qCDebug(ClientLogger) << "Processing date range from" << m_beginDate << "to" << m_endDate
     //                      << "(" << count << "days)";
     for (int i = 0; i <= count; ++i) {
         currentDate = m_beginDate.addDays(i);
@@ -217,7 +217,7 @@ void CGraphicsView::upDateInfoShow(const CGraphicsView::DragStatus &status, cons
                 //如果为周视图则要显示一个位置显示日程的数目
                 if (m_viewPos == WeekPos) {
                     if (tNum > m_sMaxNum) {
-                        // qCDebug(ClientLogger) << "Week view: too many schedules (" << tNum 
+                        // qCDebug(ClientLogger) << "Week view: too many schedules (" << tNum
                         //                     << "), showing only" << m_sMaxNum;
                         tNum = m_sMaxNum;
                         for (int n = 0; n < tNum - 1; n++) {
@@ -300,10 +300,10 @@ void CGraphicsView::MoveInfoProcess(DSchedule::Ptr &info, const QPointF &pos)
 
 void CGraphicsView::addScheduleItem(const DSchedule::Ptr &info, QDate date, int index, int totalNum, int type, int viewtype, int maxnum)
 {
-    qCDebug(ClientLogger) << "Adding schedule item" 
-                         << "date:" << date 
-                         << "index:" << index 
-                         << "total:" << totalNum 
+    qCDebug(ClientLogger) << "Adding schedule item"
+                         << "date:" << date
+                         << "index:" << index
+                         << "total:" << totalNum
                          << "type:" << type;
     CScheduleItem *item = new CScheduleItem(
         m_coorManage->getDrawRegion(date, info->dtStart(),
@@ -328,7 +328,7 @@ void CGraphicsView::setSelectSearchSchedule(const DSchedule::Ptr &info)
     qCDebug(ClientLogger) << "Setting selected search schedule";
     DragInfoGraphicsView::setSelectSearchSchedule(info);
     setTime(info->dtStart().time());
-    
+
     int animatedCount = 0;
     for (int i = 0; i < m_vScheduleItem.size(); ++i) {
         if (m_vScheduleItem.at(i)->getType() == 1)
@@ -347,7 +347,7 @@ void CGraphicsView::setSelectSearchSchedule(const DSchedule::Ptr &info)
 
 void CGraphicsView::clearSchedule()
 {
-    qCDebug(ClientLogger) << "Clearing schedule items" << "count:" << m_vScheduleItem.size();
+    // qCDebug(ClientLogger) << "Clearing schedule items" << "count:" << m_vScheduleItem.size();
     for (int i = 0; i < m_vScheduleItem.size(); i++) {
         m_Scene->removeItem(m_vScheduleItem.at(i));
         delete m_vScheduleItem[i];

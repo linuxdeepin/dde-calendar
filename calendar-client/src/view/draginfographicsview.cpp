@@ -80,7 +80,7 @@ DragInfoGraphicsView::DragInfoGraphicsView(DWidget *parent)
     setFocusPolicy(Qt::StrongFocus);
     //日程类型发生改变，刷新界面
     connect(gAccountManager, &AccountManager::signalScheduleTypeUpdate, [&]() {
-        qCDebug(ClientLogger) << "Schedule type updated, refreshing view";
+        // qCDebug(ClientLogger) << "Schedule type updated, refreshing view";
         this->viewport()->update();
     });
 }

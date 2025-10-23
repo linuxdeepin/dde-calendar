@@ -422,9 +422,9 @@ void CYearWindow::initConnection()
  */
 void CYearWindow::setTheMe(int type)
 {
-    qCDebug(ClientLogger) << "Setting theme to type:" << type;
+    // qCDebug(ClientLogger) << "Setting theme to type:" << type;
     if (type == 0 || type == 1) {
-        qCDebug(ClientLogger) << "Setting theme to light";
+        // qCDebug(ClientLogger) << "Setting theme to light";
         DPalette todayPa = m_today->palette();
         todayPa.setColor(DPalette::WindowText, QColor("#000000"));
         todayPa.setColor(DPalette::Window, Qt::white);
@@ -447,7 +447,7 @@ void CYearWindow::setTheMe(int type)
         m_yearLunarDayLabel->setPalette(LunaPa);
         m_yearLunarDayLabel->setForegroundRole(DPalette::WindowText);
     } else if (type == 2) {
-        qCDebug(ClientLogger) << "Setting theme to dark";
+        // qCDebug(ClientLogger) << "Setting theme to dark";
         DPalette todayPa = m_today->palette();
         todayPa.setColor(DPalette::WindowText, QColor("#C0C6D4"));
         QColor tbColor = "#414141";
@@ -496,7 +496,7 @@ void CYearWindow::setSearchWFlag(bool flag)
  */
 void CYearWindow::updateShowDate(const bool isUpdateBar)
 {
-    qCDebug(ClientLogger) << "Updating show date, isUpdateBar:" << isUpdateBar;
+    // qCDebug(ClientLogger) << "Updating show date, isUpdateBar:" << isUpdateBar;
     Q_UNUSED(isUpdateBar);
     m_scheduleView->setTimeFormat((m_calendarManager->getTimeShowType()?"AP ":"") + m_calendarManager->getTimeFormat());
     m_yearWidget->setShowDate(getSelectDate());
@@ -761,7 +761,7 @@ void CYearWindow::wheelEvent(QWheelEvent *event)
 YearFrame::YearFrame(DWidget *parent)
     : QWidget(parent)
 {
-    qCDebug(ClientLogger) << "YearFrame constructed";
+    // qCDebug(ClientLogger) << "YearFrame constructed";
     QGridLayout *gridLayout = new QGridLayout;
     gridLayout->setContentsMargins(0, 0, 0, 0);
     gridLayout->setSpacing(8);
@@ -838,7 +838,7 @@ YearFrame::~YearFrame()
  */
 void YearFrame::setShowDate(const QDate &selectDate)
 {
-    qCDebug(ClientLogger) << "Setting show date for YearFrame to:" << selectDate.toString();
+    // qCDebug(ClientLogger) << "Setting show date for YearFrame to:" << selectDate.toString();
     QDate _showMonth(selectDate.year(), 1, 1);
     for (int i = 0; i < DDEYearCalendar::FrameSizeOfEveryYear; i++) {
         QDate _setShowMonth = _showMonth.addMonths(i);

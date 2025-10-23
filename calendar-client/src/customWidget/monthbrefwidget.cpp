@@ -21,7 +21,7 @@ MonthBrefWidget::MonthBrefWidget(QWidget *parent)
     : QWidget(parent)
     , m_globalData(new GlobalData)
 {
-    qCDebug(ClientLogger) << "MonthBrefWidget constructor";
+    // qCDebug(ClientLogger) << "MonthBrefWidget constructor";
     QGridLayout *gridLayout = new QGridLayout(this);
     gridLayout->setSpacing(0);
     gridLayout->setContentsMargins(0, 0, 0, 0);
@@ -40,7 +40,7 @@ MonthBrefWidget::MonthBrefWidget(QWidget *parent)
 
 MonthBrefWidget::~MonthBrefWidget()
 {
-    qCDebug(ClientLogger) << "MonthBrefWidget destructor";
+    // qCDebug(ClientLogger) << "MonthBrefWidget destructor";
     delete m_globalData;
 }
 
@@ -97,7 +97,7 @@ void MonthBrefWidget::setHasScheduleDateSet(const QSet<QDate> &hasScheduleSet)
  */
 void MonthBrefWidget::setHasSearchScheduleSet(const QSet<QDate> &hasScheduleSet)
 {
-    qCDebug(ClientLogger) << "MonthBrefWidget::setHasSearchScheduleSet, size:" << hasScheduleSet.size();
+    // qCDebug(ClientLogger) << "MonthBrefWidget::setHasSearchScheduleSet, size:" << hasScheduleSet.size();
     //清空原有标识
     for (int i = 0; i < 32; ++i) {
         m_globalData->m_searchedDateFlag[i]  = false;
@@ -165,7 +165,7 @@ void MonthBrefWidget::mouseMoveEvent(QMouseEvent *event)
 CMonthDayRectWidget::CMonthDayRectWidget(MonthBrefWidget::GlobalData* globalData, QWidget *parent) : QPushButton(parent)
   , m_globaldata(globalData)
 {
-    qCDebug(ClientLogger) << "CMonthDayRectWidget constructor";
+    // qCDebug(ClientLogger) << "CMonthDayRectWidget constructor";
     setMinimumSize(10, 10);
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     setFocusPolicy(Qt::NoFocus);
@@ -182,13 +182,13 @@ CMonthDayRectWidget::CMonthDayRectWidget(MonthBrefWidget::GlobalData* globalData
  */
 void CMonthDayRectWidget::setTheMe(int type)
 {
-    qCDebug(ClientLogger) << "CMonthDayRectWidget::setTheMe with type:" << type;
+    // qCDebug(ClientLogger) << "CMonthDayRectWidget::setTheMe with type:" << type;
     CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
     if (type == 0 || type == 1) {
-        qCDebug(ClientLogger) << "Setting light theme color";
+        // qCDebug(ClientLogger) << "Setting light theme color";
         m_ceventColor = QColor(255, 93, 0);
     } else if (type == 2) {
-        qCDebug(ClientLogger) << "Setting dark theme color";
+        // qCDebug(ClientLogger) << "Setting dark theme color";
         m_ceventColor = QColor(204, 77, 3);
     }
     update();

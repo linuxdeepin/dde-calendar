@@ -12,7 +12,7 @@
 CalendarManager *CalendarManager::m_scheduleManager = nullptr;
 CalendarManager *CalendarManager::getInstance()
 {
-    qCDebug(ClientLogger) << "Getting CalendarManager instance";
+    // qCDebug(ClientLogger) << "Getting CalendarManager instance";
     CaHuangLiDayInfo::registerMetaType();
     if (m_scheduleManager == nullptr) {
         m_scheduleManager = new  CalendarManager;
@@ -25,7 +25,7 @@ CalendarManager *CalendarManager::getInstance()
 
 void CalendarManager::releaseInstance()
 {
-    qCDebug(ClientLogger) << "Releasing CalendarManager instance";
+    // qCDebug(ClientLogger) << "Releasing CalendarManager instance";
     if (m_scheduleManager != nullptr) {
         delete m_scheduleManager;
         m_scheduleManager = nullptr;
@@ -235,9 +235,9 @@ void CalendarManager::setYearBeginAndEndDate(const int year)
     m_showDateRange.startDate = getFirstDayOfWeek(_firstDayOfJan);
     QDate _firstDayOfDec(year, 12, 1);
     m_showDateRange.stopDate = getFirstDayOfWeek(_firstDayOfDec).addDays(42 - 1);
-    
+
     qCDebug(ClientLogger) << "Date range set to:" << m_showDateRange.startDate.toString() << "to" << m_showDateRange.stopDate.toString();
-    
+
     //更新日程
     gScheduleManager->resetSchedule(m_showDateRange.startDate.startOfDay(), m_showDateRange.stopDate.startOfDay());
     if (m_showLunar) {

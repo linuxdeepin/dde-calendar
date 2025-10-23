@@ -213,7 +213,7 @@ void SidebarCalendarWidget::slotFirstDayChanged(int value)
 SidebarCalendarKeyButton::SidebarCalendarKeyButton(QWidget *parent)
     : QPushButton(parent)
 {
-    qCDebug(ClientLogger) << "SidebarCalendarKeyButton constructed";
+    // qCDebug(ClientLogger) << "SidebarCalendarKeyButton constructed";
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     setMinimumSize(QSize(10, 10));
 }

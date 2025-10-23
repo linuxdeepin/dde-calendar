@@ -12,12 +12,12 @@ CKeyPressDealBase::CKeyPressDealBase(Qt::Key key, QGraphicsScene *scene)
     : m_key(key)
     , m_scene(scene)
 {
-    qCDebug(ClientLogger) << "CKeyPressDealBase constructor initialized with key:" << key;
+    // qCDebug(ClientLogger) << "CKeyPressDealBase constructor initialized with key:" << key;
 }
 
 CKeyPressDealBase::~CKeyPressDealBase()
 {
-    qCDebug(ClientLogger) << "CKeyPressDealBase destructor called for key:" << m_key;
+    // qCDebug(ClientLogger) << "CKeyPressDealBase destructor called for key:" << m_key;
 }
 
 /**
@@ -31,18 +31,18 @@ Qt::Key CKeyPressDealBase::getKey() const
 
 bool CKeyPressDealBase::dealEvent()
 {
-    qCDebug(ClientLogger) << "CKeyPressDealBase::dealEvent - Processing key event for key:" << m_key;
+    // qCDebug(ClientLogger) << "CKeyPressDealBase::dealEvent - Processing key event for key:" << m_key;
     CGraphicsScene *scene = qobject_cast<CGraphicsScene *>(m_scene);
     if (scene != nullptr) {
         CSceneBackgroundItem *item = dynamic_cast<CSceneBackgroundItem *>(scene->getCurrentFocusItem());
         if (item != nullptr) {
-            qCDebug(ClientLogger) << "Found focus item, delegating to focusItemDeal for date:" << item->getDate();
+            // qCDebug(ClientLogger) << "Found focus item, delegating to focusItemDeal for date:" << item->getDate();
             return focusItemDeal(item, scene);
         } else {
-            qCDebug(ClientLogger) << "No focus item found";
+            // qCDebug(ClientLogger) << "No focus item found";
             return false;
         }
     }
-    qCDebug(ClientLogger) << "Scene is null";
+    // qCDebug(ClientLogger) << "Scene is null";
     return false;
 }

@@ -81,7 +81,7 @@ bool CScheduleBaseWidget::setSelectDate(const QDate &selectDate, const QWidget *
  */
 QDate CScheduleBaseWidget::getSelectDate()
 {
-    qCDebug(ClientLogger) << "CScheduleBaseWidget::getSelectDate";
+    // qCDebug(ClientLogger) << "CScheduleBaseWidget::getSelectDate";
     return m_calendarManager->getSelectDate();
 }
 

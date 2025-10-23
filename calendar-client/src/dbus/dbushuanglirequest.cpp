@@ -103,7 +103,7 @@ bool DbusHuangLiRequest::getHuangLiMonth(quint32 year,
                                          bool fill,
                                          CaHuangLiMonthInfo &info)
 {
-    qCDebug(ClientLogger) << "Requesting HuangLi month info for" << year << month << "fill:" << fill;
+    // qCDebug(ClientLogger) << "Requesting HuangLi month info for" << year << month << "fill:" << fill;
     QDBusPendingReply<QString> reply =
         call("getHuangLiMonth", QVariant(year), QVariant(month), QVariant(fill));
     if (reply.isError()) {

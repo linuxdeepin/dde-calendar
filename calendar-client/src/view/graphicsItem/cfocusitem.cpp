@@ -16,7 +16,7 @@ CFocusItem::CFocusItem(QGraphicsItem *parent)
     , m_itemType(CITEM)
     , m_isFocus(false)
 {
-    qCDebug(ClientLogger) << "CFocusItem constructor";
+    // qCDebug(ClientLogger) << "CFocusItem constructor";
 }
 
 /**

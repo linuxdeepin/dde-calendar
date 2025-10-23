@@ -150,14 +150,14 @@ void CYearScheduleView::showWindow()
 
 void CYearScheduleView::setTheMe(int type)
 {
-    qCDebug(ClientLogger) << "Setting theme to type:" << type;
+    // qCDebug(ClientLogger) << "Setting theme to type:" << type;
     if (type == 0 || type == 1) {
-        qCDebug(ClientLogger) << "Setting theme to light";
+        // qCDebug(ClientLogger) << "Setting theme to light";
         m_btimecolor = "#414D68";
         m_btimecolor.setAlphaF(0.7);
         m_btTextColor = "#414D68";
     } else if (type == 2) {
-        qCDebug(ClientLogger) << "Setting theme to dark";
+        // qCDebug(ClientLogger) << "Setting theme to dark";
         m_btimecolor = "#C0C6D4";
         m_btimecolor.setAlphaF(0.7);
         m_btTextColor = "#C0C6D4";

@@ -213,7 +213,7 @@ int DScheduleType::deleted() const
 
 void DScheduleType::setDeleted(int deleted)
 {
-    qCDebug(CommonLogger) << "Setting deleted status to:" << deleted;
+    // qCDebug(CommonLogger) << "Setting deleted status to:" << deleted;
     m_deleted = deleted;
 }
 
@@ -337,7 +337,7 @@ bool DScheduleType::toJsonString(const DScheduleType::Ptr &scheduleType, QString
 
 bool DScheduleType::fromJsonListString(DScheduleType::List &stList, const QString &jsonStr)
 {
-    qCDebug(CommonLogger) << "Parsing schedule type list from JSON string";
+    // qCDebug(CommonLogger) << "Parsing schedule type list from JSON string";
     QJsonParseError jsonError;
     QJsonDocument jsonDoc(QJsonDocument::fromJson(jsonStr.toLocal8Bit(), &jsonError));
     if (jsonError.error != QJsonParseError::NoError) {
@@ -351,7 +351,7 @@ bool DScheduleType::fromJsonListString(DScheduleType::List &stList, const QStrin
         for (auto ja : jsonArray) {
             QJsonObject typeObject = ja.toObject();
             DScheduleType::Ptr scheduleType = DScheduleType::Ptr(new DScheduleType);
-            
+
             if (typeObject.contains("accountID")) {
                 scheduleType->setAccountID(typeObject.value("accountID").toString());
             }
@@ -417,7 +417,7 @@ bool DScheduleType::fromJsonListString(DScheduleType::List &stList, const QStrin
             stList.append(scheduleType);
         }
     }
-    qCDebug(CommonLogger) << "Successfully parsed" << stList.count() << "schedule types from JSON list.";
+    // qCDebug(CommonLogger) << "Successfully parsed" << stList.count() << "schedule types from JSON list.";
     return true;
 }
 

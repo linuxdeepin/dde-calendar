@@ -16,7 +16,7 @@ DGUI_USE_NAMESPACE
 CustomFrame::CustomFrame(QWidget *parent)
     : QFrame(parent)
 {
-    qCDebug(ClientLogger) << "CustomFrame constructor";
+    // qCDebug(ClientLogger) << "CustomFrame constructor";
     m_font.setWeight(QFont::Medium);
     m_font.setPixelSize(DDECalendar::FontSizeFourteen);
     this->setAttribute(Qt::WA_TranslucentBackground);//设置窗口背景透明
@@ -26,7 +26,7 @@ CustomFrame::CustomFrame(QWidget *parent)
 
 void CustomFrame::setBColor(QColor normalC)
 {
-    qCDebug(ClientLogger) << "CustomFrame::setBColor";
+    // qCDebug(ClientLogger) << "CustomFrame::setBColor";
     m_bnormalColor = normalC;
     m_bflag = true;
     update();
@@ -34,8 +34,8 @@ void CustomFrame::setBColor(QColor normalC)
 
 void CustomFrame::setRoundState(bool lstate, bool tstate, bool rstate, bool bstate)
 {
-    qCDebug(ClientLogger) << "CustomFrame::setRoundState lstate:" << lstate << "tstate:" << tstate 
-                          << "rstate:" << rstate << "bstate:" << bstate;
+    // qCDebug(ClientLogger) << "CustomFrame::setRoundState lstate:" << lstate << "tstate:" << tstate 
+    //                       << "rstate:" << rstate << "bstate:" << bstate;
     m_lstate = lstate;
     m_tstate = tstate;
     m_rstate = rstate;
@@ -44,7 +44,7 @@ void CustomFrame::setRoundState(bool lstate, bool tstate, bool rstate, bool bsta
 
 void CustomFrame::setTextStr(const QFont &font, const QColor &tc, const QString &strc, int flag)
 {
-    qCDebug(ClientLogger) << "CustomFrame::setTextStr text:" << strc << "flag:" << flag;
+    // qCDebug(ClientLogger) << "CustomFrame::setTextStr text:" << strc << "flag:" << flag;
     m_font = font;
     m_tnormalColor = tc;
     m_text = strc;
@@ -53,7 +53,7 @@ void CustomFrame::setTextStr(const QFont &font, const QColor &tc, const QString 
 
 void CustomFrame::setTextStr(const QString &strc)
 {
-    qCDebug(ClientLogger) << "CustomFrame::setTextStr text:" << strc;
+    // qCDebug(ClientLogger) << "CustomFrame::setTextStr text:" << strc;
     m_text = strc;
 
     if (!m_fixsizeflag) {
@@ -66,14 +66,14 @@ void CustomFrame::setTextStr(const QString &strc)
 
 void CustomFrame::setTextColor(QColor tc)
 {
-    qCDebug(ClientLogger) << "CustomFrame::setTextColor";
+    // qCDebug(ClientLogger) << "CustomFrame::setTextColor";
     m_tnormalColor = tc;
     update();
 }
 
 void CustomFrame::setTextFont(const QFont &font)
 {
-    qCDebug(ClientLogger) << "CustomFrame::setTextFont";
+    // qCDebug(ClientLogger) << "CustomFrame::setTextFont";
     m_font = font;
 
     if (!m_fixsizeflag) {
@@ -85,25 +85,25 @@ void CustomFrame::setTextFont(const QFont &font)
 
 void CustomFrame::setTextAlign(int flag)
 {
-    qCDebug(ClientLogger) << "CustomFrame::setTextAlign flag:" << flag;
+    // qCDebug(ClientLogger) << "CustomFrame::setTextAlign flag:" << flag;
     m_textflag = flag;
 }
 
 void CustomFrame::setRadius(int radius)
 {
-    qCDebug(ClientLogger) << "CustomFrame::setRadius radius:" << radius;
+    // qCDebug(ClientLogger) << "CustomFrame::setRadius radius:" << radius;
     m_radius = radius;
 }
 
 void CustomFrame::setboreder(int framew)
 {
-    qCDebug(ClientLogger) << "CustomFrame::setboreder framew:" << framew;
+    // qCDebug(ClientLogger) << "CustomFrame::setboreder framew:" << framew;
     m_borderframew = framew;
 }
 
 void CustomFrame::setFixedSize(int w, int h)
 {
-    qCDebug(ClientLogger) << "CustomFrame::setFixedSize w:" << w << "h:" << h;
+    // qCDebug(ClientLogger) << "CustomFrame::setFixedSize w:" << w << "h:" << h;
     m_fixsizeflag = true;
     QFrame::setFixedSize(w, h);
 }

@@ -13,7 +13,7 @@
 CWeekWidget::CWeekWidget(QWidget *parent) : QPushButton(parent)
   , m_firstDay(CalendarManager::getInstance()->getFirstDayOfWeek())
 {
-    qCDebug(ClientLogger) << "CWeekWidget constructor";
+    // qCDebug(ClientLogger) << "CWeekWidget constructor";
     setMinimumHeight(10);
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     setFocusPolicy(Qt::NoFocus);
@@ -21,20 +21,20 @@ CWeekWidget::CWeekWidget(QWidget *parent) : QPushButton(parent)
 
 void CWeekWidget::setFirstDay(Qt::DayOfWeek first)
 {
-    qCDebug(ClientLogger) << "CWeekWidget::setFirstDay first:" << first;
+    // qCDebug(ClientLogger) << "CWeekWidget::setFirstDay first:" << first;
     m_firstDay = first;
     setAutoFirstDay(true);
 }
 
 void CWeekWidget::setAutoFirstDay(bool is)
 {
-    qCDebug(ClientLogger) << "CWeekWidget::setAutoFirstDay is:" << is;
+    // qCDebug(ClientLogger) << "CWeekWidget::setAutoFirstDay is:" << is;
     m_autoFirstDay = is;
 }
 
 void CWeekWidget::setAutoFontSizeByWindow(bool is)
 {
-    qCDebug(ClientLogger) << "CWeekWidget::setAutoFontSizeByWindow is:" << is;
+    // qCDebug(ClientLogger) << "CWeekWidget::setAutoFontSizeByWindow is:" << is;
     m_autoFontSizeByWindow = is;
 }
 

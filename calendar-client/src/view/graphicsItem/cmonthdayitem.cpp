@@ -18,7 +18,7 @@ CMonthDayItem::CMonthDayItem(QGraphicsItem *parent)
     , m_DayLunar("")
     , m_DayStatus(H_NONE)
 {
-    qCDebug(ClientLogger) << "CMonthDayItem constructor";
+    // qCDebug(ClientLogger) << "CMonthDayItem constructor";
     //设置字体
     m_dayNumFont.setPixelSize(DDECalendar::FontSizeTwentyfour);
     m_dayNumFont.setWeight(QFont::Light);
@@ -29,7 +29,7 @@ CMonthDayItem::CMonthDayItem(QGraphicsItem *parent)
 
 CMonthDayItem::~CMonthDayItem()
 {
-    qCDebug(ClientLogger) << "CMonthDayItem destructor";
+    // qCDebug(ClientLogger) << "CMonthDayItem destructor";
 }
 
 /**
@@ -58,11 +58,11 @@ void CMonthDayItem::setStatus(const CMonthDayItem::HolidayStatus &status)
  */
 void CMonthDayItem::setTheMe(int type)
 {
-    qCDebug(ClientLogger) << "CMonthDayItem::setTheMe - type:" << type;
+    // qCDebug(ClientLogger) << "CMonthDayItem::setTheMe - type:" << type;
     m_themetype = type;
 
     if (type == 0 || type == 1) {
-        qCDebug(ClientLogger) << "Setting light theme colors";
+        // qCDebug(ClientLogger) << "Setting light theme colors";
         m_dayNumColor = "#000000";
         m_dayNumCurrentColor = "#FFFFFF";
 
@@ -78,7 +78,7 @@ void CMonthDayItem::setTheMe(int type)
         m_BorderColor = "#000000";
         m_BorderColor.setAlphaF(0.05);
     } else if (type == 2) {
-        qCDebug(ClientLogger) << "Setting dark theme colors";
+        // qCDebug(ClientLogger) << "Setting dark theme colors";
         m_dayNumColor = "#C0C6D4";
         m_dayNumCurrentColor = "#B8D3FF";
 

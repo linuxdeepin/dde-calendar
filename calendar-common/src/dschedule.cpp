@@ -24,7 +24,7 @@ DSchedule::DSchedule()
     , m_scheduleTypeID("")
     , m_compatibleID(0)
 {
-    qCDebug(CommonLogger) << "DSchedule constructor called.";
+    // qCDebug(CommonLogger) << "DSchedule constructor called.";
 }
 
 DSchedule::DSchedule(const DSchedule &schedule)
@@ -33,7 +33,7 @@ DSchedule::DSchedule(const DSchedule &schedule)
     , m_scheduleTypeID("")
     , m_compatibleID(0)
 {
-    qCDebug(CommonLogger) << "DSchedule copy constructor called for schedule:" << schedule.summary();
+    // qCDebug(CommonLogger) << "DSchedule copy constructor called for schedule:" << schedule.summary();
     this->setScheduleTypeID(schedule.scheduleTypeID());
 }
 
@@ -43,7 +43,7 @@ DSchedule::DSchedule(const KCalendarCore::Event &event)
     , m_scheduleTypeID("")
     , m_compatibleID(0)
 {
-    qCDebug(CommonLogger) << "DSchedule constructor from KCalendarCore::Event called for event:" << event.summary();
+    // qCDebug(CommonLogger) << "DSchedule constructor from KCalendarCore::Event called for event:" << event.summary();
 }
 
 DSchedule *DSchedule::clone() const

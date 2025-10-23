@@ -37,7 +37,7 @@ AccountManager::~AccountManager()
 
 AccountManager *AccountManager::getInstance()
 {
-    qCDebug(ClientLogger) << "Getting AccountManager instance";
+    // qCDebug(ClientLogger) << "Getting AccountManager instance";
     static AccountManager m_accountManager;
     return &m_accountManager;
 }
