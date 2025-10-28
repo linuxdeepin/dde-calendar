@@ -1,8 +1,36 @@
 <node>
-  <interface name="com.deepin.dde.Calendar">
+  <interface name="com.deepin.Calendar">
 	  <method name="RaiseWindow" />
       <method name="OpenSchedule">
          <arg direction="in" type="s" name="job">
+      </method>
+      <!-- DBus APIs for AI Integration -->
+      <method name="QuerySchedules">
+         <arg direction="in" type="s" name="query"/>
+         <arg direction="out" type="s" name="result"/>
+      </method>
+      <method name="CreateSchedule">
+         <arg direction="in" type="s" name="scheduleData"/>
+         <arg direction="out" type="s" name="scheduleId"/>
+      </method>
+      <method name="ModifySchedule">
+         <arg direction="in" type="s" name="scheduleId"/>
+         <arg direction="in" type="s" name="operation"/>
+         <arg direction="in" type="s" name="data"/>
+         <arg direction="out" type="b" name="success"/>
+      </method>
+      <method name="GetCalendarView">
+         <arg direction="in" type="s" name="viewType"/>
+         <arg direction="in" type="s" name="date"/>
+         <arg direction="out" type="s" name="viewData"/>
+      </method>
+      <method name="GetLunarInfo">
+         <arg direction="in" type="s" name="date"/>
+         <arg direction="out" type="s" name="lunarData"/>
+      </method>
+      <method name="GetReminders">
+         <arg direction="in" type="i" name="hours"/>
+         <arg direction="out" type="s" name="reminders"/>
       </method>
   </interface>
 </node>
