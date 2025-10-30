@@ -1,3 +1,11 @@
+dde-calendar (6.5.27) unstable; urgency=medium
+
+  * chore: Update version to 6.5.27
+  * feat: [dbus]Enhance Calendar DBus API with AI-friendly methods
+  * fix: Improve account management for community edition
+
+ -- re2zero <yangwu@uniontech.com>  Thu, 30 Oct 2025 19:21:38 +0800
+
 dde-calendar (6.5.26) unstable; urgency=medium
 
   * chore: Update version to 6.5.26
