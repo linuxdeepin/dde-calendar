@@ -245,7 +245,9 @@ void CSettingDialog::initView()
         bk->setBackgroundRole(QPalette::Base);
     }
     //首次显示JobTypeListView时，更新日程类型
-    m_scheduleTypeWidget->updateCalendarAccount(m_accountComboBox->currentData().toString());
+    if (m_scheduleTypeWidget && m_accountComboBox) {
+        m_scheduleTypeWidget->updateCalendarAccount(m_accountComboBox->currentData().toString());
+    }
 
 
     //账户登出登入时，隐藏显示相关界面

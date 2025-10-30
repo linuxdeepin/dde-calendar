@@ -4,6 +4,7 @@
 
 #include "accountmanager.h"
 #include "commondef.h"
+#include "units.h"
 
 AccountManager *AccountManager::m_accountManager = nullptr;
 AccountManager::AccountManager(QObject *parent)
@@ -13,7 +14,11 @@ AccountManager::AccountManager(QObject *parent)
     qCDebug(ClientLogger) << "Creating AccountManager";
     initConnect();
     m_dbusRequest->clientIsShow(true);
-    m_isSupportUid  = m_dbusRequest->getIsSupportUid();
+    if (isCommunityEdition()) {
+        m_isSupportUid = false;
+    } else {
+        m_isSupportUid = m_dbusRequest->getIsSupportUid();
+    }
 }
 
 void AccountManager::initConnect()
@@ -282,7 +287,7 @@ void AccountManager::slotGetAccountListFinish(DAccount::List accountList)
             }
             m_localAccountItem->resetAccount();
 
-        } else if (account->accountType() == DAccount::Account_UnionID) {
+        } else if (account->accountType() == DAccount::Account_UnionID && !isCommunityEdition()) {
             qCDebug(ClientLogger) << "Processing UnionID account:" << account->accountName();
             hasUnionAccount = true;
             if (!m_unionAccountItem) {
