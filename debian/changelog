@@ -1,3 +1,11 @@
+dde-calendar (6.5.28) unstable; urgency=medium
+
+  * chore: Update version to 6.5.28
+  * feat: Support mips64 linglong build (#283)
+  * feat(calendar): add 2026 Chinese holiday data and download script
+
+ -- zhanghongyuan <zhanghongyuan@uniontech.com>  Thu, 13 Nov 2025 15:30:51 +0800
+
 dde-calendar (6.5.27) unstable; urgency=medium
 
   * chore: Update version to 6.5.27
