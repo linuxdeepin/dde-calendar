@@ -9,6 +9,8 @@
 #include "huangliData/lunardatastruct.h"
 #include "huangliData/dbusdatastruct.h"
 #include "lunarandfestival.h"
+#include <QJsonDocument>
+#include <QSettings>
 
 class DHuangLiDataBase : public DDataBase
 {
@@ -19,6 +21,12 @@ public:
     QList<stHuangLi> queryHuangLiByDays(const QList<stDay> &days);
 
     void initDBData() override;
+
+private:
+    QJsonDocument readJSON(QString filename, bool cache);
+    QHash<QString, QJsonDocument> readJSONCache;
+    void updateFestivalList();
+    QSettings m_settings;
 
 protected:
     //创建数据库

@@ -7,6 +7,9 @@
 #include <QTimeZone>
 #include <QStandardPaths>
 #include <QLocale>
+#include <QDir>
+#include <QProcess>
+#include <QSharedPointer>
 
 QString dtToString(const QDateTime &dt)
 {
@@ -56,6 +59,24 @@ QString getHomeConfigPath()
         configPath = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
     }
     return configPath;
+}
+
+QDir getAppConfigDir()
+{
+    return QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
+}
+
+QDir getAppCacheDir()
+{
+    return QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+}
+
+QSharedPointer<QProcess> DownloadFile(QString url, QString filename)
+{
+    auto process = QSharedPointer<QProcess>::create();
+    process->setEnvironment({"LANGUAGE=en"});
+    process->start("wget", { "-c", "-N", "-O", filename, url });
+    return process;
 }
 
 bool withinTimeFrame(const QDate &date)

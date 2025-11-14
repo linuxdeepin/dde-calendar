@@ -8,6 +8,10 @@
 #include <QString>
 #include <QDateTime>
 #include <QMap>
+#include <QDir>
+#include <QSharedPointer>
+
+class QProcess;
 
 const QString serviceBaseName = "com.deepin.dataserver.Calendar";
 const QString serviceBasePath = "/com/deepin/dataserver/Calendar";
@@ -44,6 +48,15 @@ QDateTime dtConvert(const QDateTime &datetime);
 
 //是否在显示时间范围内1900-2100
 bool withinTimeFrame(const QDate &date);
+
+//获取应用配置目录
+QDir getAppConfigDir();
+
+//获取应用缓存目录
+QDir getAppCacheDir();
+
+//下载文件
+QSharedPointer<QProcess> DownloadFile(QString url, QString filename);
 
 //TODO:获取系统版本(专业版，社区版等)
 
