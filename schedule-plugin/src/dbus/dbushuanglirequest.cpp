@@ -73,7 +73,7 @@ void DbusHuangLiRequest::getLunarMonthCalendar(quint32 year, quint32 month, bool
 void DbusHuangLiRequest::slotCallFinished(CDBusPendingCallWatcher *call)
 {
     if (call->isError()) {
-        qCWarning(CommonLogger) << call->reply().member() << call->error().message();
+        qCWarning(PluginLogger) << call->reply().member() << call->error().message();
         return;
     }
 

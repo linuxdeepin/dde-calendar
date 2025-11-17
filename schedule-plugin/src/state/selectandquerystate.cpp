@@ -39,30 +39,30 @@ scheduleState::Filter_Flag SelectAndQueryState::eventFilter(const JsonData *json
     }
 
     if (jsonData->getPropertyStatus() == JsonData::LAST) {
-        qCDebug(CommonLogger) << "Event filter: Normal state detected for LAST property status";
+        qCDebug(PluginLogger) << "Event filter: Normal state detected for LAST property status";
         return Fileter_Normal;
     }
 
     JsonData *queryData = const_cast<JsonData *>(jsonData);
     changejsondata *mchangeJsonData = dynamic_cast<changejsondata *>(queryData);
     if (mchangeJsonData->fromDateTime().suggestDatetime.size() > 0) {
-        qCDebug(CommonLogger) << "Event filter: Initial state detected due to fromDateTime";
+        qCDebug(PluginLogger) << "Event filter: Initial state detected due to fromDateTime";
         return Filter_Flag::Fileter_Init;
     }
     //根据列表编号判断
     if (m_localData->getOffet() < 0 && jsonData->offset() < 0) {
-        qCDebug(CommonLogger) << "Event filter: Error state detected - invalid offset combination";
+        qCDebug(PluginLogger) << "Event filter: Error state detected - invalid offset combination";
         return Fileter_Err;
     }
 
     bool showOpenWidget = m_localData->scheduleInfoVector().size() > ITEM_SHOW_NUM;
     const int showcount = showOpenWidget ? ITEM_SHOW_NUM : m_localData->scheduleInfoVector().size();
     if (jsonData->offset() > showcount) {
-        qCDebug(CommonLogger) << "Event filter: Error state detected - offset exceeds show count";
+        qCDebug(PluginLogger) << "Event filter: Error state detected - offset exceeds show count";
         return Fileter_Err;
     }
 
-    qCDebug(CommonLogger) << "Event filter: Normal state detected";
+    qCDebug(PluginLogger) << "Event filter: Normal state detected";
     return Fileter_Normal;
 }
 
@@ -81,11 +81,11 @@ Reply SelectAndQueryState::normalEvent(const JsonData *jsonData)
 
     //获取第N个日程
     if (jsonData->getPropertyStatus() == JsonData::LAST) {
-        qCDebug(CommonLogger) << "Processing LAST property status, using showcount as offset:" << showcount;
+        qCDebug(PluginLogger) << "Processing LAST property status, using showcount as offset:" << showcount;
         offset = showcount;
     } else {
         offset = jsonData->offset();
-        qCDebug(CommonLogger) << "Using provided offset:" << offset;
+        qCDebug(PluginLogger) << "Using provided offset:" << offset;
     }
 
     if (offset > 0) {
@@ -106,7 +106,7 @@ Reply SelectAndQueryState::normalEvent(const JsonData *jsonData)
         }
         return m_Task->getReplyBySelectSchedule(m_localData->SelectInfo());
     } else {
-        qCWarning(CommonLogger) << "Invalid offset value:" << offset;
+        qCWarning(PluginLogger) << "Invalid offset value:" << offset;
         Reply reply;
         REPLY_ONLY_TTS(reply, G_ERR_TTS, G_ERR_TTS, false);
         return reply;

@@ -53,7 +53,7 @@ bool loadTranslator(QCoreApplication *app, QList<QLocale> localeFallback = QList
 int main(int argc, char *argv[])
 {
     // 日志处理要放在app之前，否则QApplication内部可能进行了日志打印，导致环境变量设置不生效
-    CalendarLogger();
+    CalendarLogger("org.deepin.dde.calendar.service");
     
     qCInfo(ServiceLogger) << "Starting dde-calendar-service.";
     QCoreApplication a(argc, argv);

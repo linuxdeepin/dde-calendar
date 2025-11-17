@@ -17,10 +17,10 @@ QString DScheduleDataManager::createSchedule(const DSchedule::Ptr &schedule)
 {
     AccountItem::Ptr account = gAccounManager->getLocalAccountItem();
     if (account.isNull()) {
-        qCWarning(CommonLogger) << "Failed to create schedule: Local account is null";
+        qCWarning(PluginLogger) << "Failed to create schedule: Local account is null";
         return QString();
     }
-    qCInfo(CommonLogger) << "Creating new schedule with ID:" << schedule->uid() << "Title:" << schedule->summary();
+    qCInfo(PluginLogger) << "Creating new schedule with ID:" << schedule->uid() << "Title:" << schedule->summary();
     return account->createSchedule(schedule);
 }
 
@@ -29,10 +29,10 @@ DSchedule::Ptr DScheduleDataManager::queryScheduleByScheduleID(const QString &sc
     DSchedule::Ptr schedule;
     AccountItem::Ptr account = gAccounManager->getLocalAccountItem();
     if (account.isNull()) {
-        qCWarning(CommonLogger) << "Failed to query schedule: Local account is null";
+        qCWarning(PluginLogger) << "Failed to query schedule: Local account is null";
         return nullptr;
     }
-    qCDebug(CommonLogger) << "Querying schedule with ID:" << scheduleID;
+    qCDebug(PluginLogger) << "Querying schedule with ID:" << scheduleID;
     return account->getScheduleByID(scheduleID);
 }
 
@@ -40,10 +40,10 @@ bool DScheduleDataManager::deleteScheduleByScheduleID(const QString &scheduleID)
 {
     AccountItem::Ptr account = gAccounManager->getLocalAccountItem();
     if (account.isNull()) {
-        qCWarning(CommonLogger) << "Failed to delete schedule: Local account is null";
+        qCWarning(PluginLogger) << "Failed to delete schedule: Local account is null";
         return false;
     }
-    qCInfo(CommonLogger) << "Deleting schedule with ID:" << scheduleID;
+    qCInfo(PluginLogger) << "Deleting schedule with ID:" << scheduleID;
     account->deleteScheduleByID(scheduleID);
     return true;
 }
@@ -52,10 +52,10 @@ bool DScheduleDataManager::updateSchedule(const DSchedule::Ptr &schedule)
 {
     AccountItem::Ptr account = gAccounManager->getLocalAccountItem();
     if (account.isNull()) {
-        qCWarning(CommonLogger) << "Failed to update schedule: Local account is null";
+        qCWarning(PluginLogger) << "Failed to update schedule: Local account is null";
         return false;
     }
-    qCInfo(CommonLogger) << "Updating schedule with ID:" << schedule->uid() << "Title:" << schedule->summary();
+    qCInfo(PluginLogger) << "Updating schedule with ID:" << schedule->uid() << "Title:" << schedule->summary();
     account->updateSchedule(schedule);
     return true;
 }
@@ -74,7 +74,7 @@ DSchedule::Map DScheduleDataManager::querySchedulesWithParameter(const DSchedule
 
 DSchedule::Map DScheduleDataManager::queryScheduleByRRule(const QDateTime &dtStart, const QDateTime &dtEnd, const DScheduleQueryPar::RRuleType &rrultTyep)
 {
-    qCDebug(CommonLogger) << "Querying schedules by RRule - Start:" << dtStart << "End:" << dtEnd << "RRuleType:" << rrultTyep;
+    qCDebug(PluginLogger) << "Querying schedules by RRule - Start:" << dtStart << "End:" << dtEnd << "RRuleType:" << rrultTyep;
     DScheduleQueryPar::Ptr queryPar(new DScheduleQueryPar);
     queryPar->setDtStart(dtStart);
     queryPar->setDtEnd(dtEnd);
@@ -85,7 +85,7 @@ DSchedule::Map DScheduleDataManager::queryScheduleByRRule(const QDateTime &dtSta
 
 DSchedule::Map DScheduleDataManager::queryScheduleByLimit(const QDateTime &dtStart, const QDateTime &dtEnd, int topNum)
 {
-    qCDebug(CommonLogger) << "Querying schedules by limit - Start:" << dtStart << "End:" << dtEnd << "Top:" << topNum;
+    qCDebug(PluginLogger) << "Querying schedules by limit - Start:" << dtStart << "End:" << dtEnd << "Top:" << topNum;
     DScheduleQueryPar::Ptr queryPar(new DScheduleQueryPar);
     queryPar->setDtStart(dtStart);
     queryPar->setDtEnd(dtEnd);
@@ -96,7 +96,7 @@ DSchedule::Map DScheduleDataManager::queryScheduleByLimit(const QDateTime &dtSta
 
 DSchedule::Map DScheduleDataManager::queryScheduleBySummary(const QDateTime &dtStart, const QDateTime &dtEnd, const QString &summary)
 {
-    qCDebug(CommonLogger) << "Querying schedules by summary - Start:" << dtStart << "End:" << dtEnd << "Summary:" << summary;
+    qCDebug(PluginLogger) << "Querying schedules by summary - Start:" << dtStart << "End:" << dtEnd << "Summary:" << summary;
     DScheduleQueryPar::Ptr queryPar(new DScheduleQueryPar);
     queryPar->setDtStart(dtStart);
     queryPar->setDtEnd(dtEnd);

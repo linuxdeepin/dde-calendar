@@ -114,5 +114,23 @@ install(FILES ${APP_QM_FILES} DESTINATION ${CMAKE_INSTALL_DATADIR}/dde-calendar/
 
 # ##### Translation end #####
 
-# 安装日志搜集工具的配置
-install(FILES "org.deepin.calendar.json" DESTINATION ${CMAKE_INSTALL_DATADIR}/deepin-log-viewer/deepin-log.conf.d/)
+# Install log json config file.
+install(FILES configs/logconfig/dde-calendar.json DESTINATION ${CMAKE_INSTALL_PREFIX}/share/deepin-log-viewer/deepin-log.conf.d/)
+
+# Install debugmode json config file.
+install(FILES configs/debugconfig/org.deepin.dde.calendar.json DESTINATION ${CMAKE_INSTALL_PREFIX}/share/deepin-debug-config/deepin-debug-config.d/)
+
+# 安装 DConfig 配置文件，1040及以下的默认DTK环境不支持DConfig
+set(DCONFIG_APPID org.deepin.dde.calendar)
+file(GLOB DCONFIG_FILES "${CMAKE_CURRENT_SOURCE_DIR}/configs/dconfig/*.json")
+if(DEFINED DSG_DATA_DIR)
+    if (DTK_VERSION_MAJOR EQUAL "6")
+        dtk_add_config_meta_files(APPID ${DCONFIG_APPID} FILES ${DCONFIG_FILES})
+    else()
+        dconfig_meta_files(APPID ${DCONFIG_APPID} FILES ${DCONFIG_FILES})
+    endif()
+    message("-- DConfig is supported by DTK")
+else()
+    install(FILES ${DCONFIG_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/dsg/configs/${DCONFIG_APPID})
+    message("-- DConfig is not supported by DTK")
+endif()

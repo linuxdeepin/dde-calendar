@@ -36,24 +36,24 @@ Reply queryScheduleState::normalEvent(const JsonData *jsonData)
     queryScheduleProxy m_querySchedule(queryData);
     m_scheduleInfo = m_querySchedule.scheduleMapToList(m_querySchedule.querySchedule());
     if (m_querySchedule.getTimeIsExpired()) {
-        qCDebug(CommonLogger) << "Schedule time is expired, processing overdue schedule";
+        qCDebug(PluginLogger) << "Schedule time is expired, processing overdue schedule";
         return m_Task->overdueScheduleProcess();
     } else {
         changejsondata *mchangeJsonData = dynamic_cast<changejsondata *>(queryData);
         if (mchangeJsonData != nullptr) {
-            qCDebug(CommonLogger) << "Processing change data for schedule";
+            qCDebug(PluginLogger) << "Processing change data for schedule";
             if (m_localData.isNull()) {
-                qCDebug(CommonLogger) << "Creating new local data";
+                qCDebug(PluginLogger) << "Creating new local data";
                 m_localData = CLocalData::Ptr(new CLocalData());
             }
 
             if (mchangeJsonData->toDateTime().suggestDatetime.size() > 0) {
-                qCDebug(CommonLogger) << "Updating schedule with new datetime";
+                qCDebug(PluginLogger) << "Updating schedule with new datetime";
                 m_localData->setToTime(mchangeJsonData->toDateTime());
             }
 
             if (!mchangeJsonData->toPlaceStr().isEmpty()) {
-                qCDebug(CommonLogger) << "Updating schedule with new title:" << mchangeJsonData->toPlaceStr();
+                qCDebug(PluginLogger) << "Updating schedule with new title:" << mchangeJsonData->toPlaceStr();
                 m_localData->setToTitleName(mchangeJsonData->toPlaceStr());
             }
         }
@@ -66,13 +66,13 @@ scheduleState::Filter_Flag queryScheduleState::eventFilter(const JsonData *jsonD
 {
     if (jsonData->getPropertyStatus() == JsonData::LAST
         || jsonData->getPropertyStatus() == JsonData::PRO_THIS) {
-        qCDebug(CommonLogger) << "Event filter: Error state - Invalid property status:" 
+        qCDebug(PluginLogger) << "Event filter: Error state - Invalid property status:" 
                              << jsonData->getPropertyStatus();
         return Fileter_Err;
     }
 
     if (jsonData->offset() > -1 && jsonData->getPropertyStatus() == JsonData::PRO_NONE) {
-        qCDebug(CommonLogger) << "Event filter: Error state - Invalid offset:" << jsonData->offset() 
+        qCDebug(PluginLogger) << "Event filter: Error state - Invalid offset:" << jsonData->offset() 
                              << "with property status:" << jsonData->getPropertyStatus();
         return Fileter_Err;
     }

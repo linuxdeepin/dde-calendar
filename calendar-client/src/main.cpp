@@ -24,7 +24,7 @@ DCORE_USE_NAMESPACE
 int main(int argc, char *argv[])
 {
     // 日志处理要放在app之前，否则QApplication内部可能进行了日志打印，导致环境变量设置不生效
-    CalendarLogger();
+    CalendarLogger("org.deepin.dde.calendar.client");
 
     // qCDebug(ClientLogger) << "Starting dde-calendar application";
     //在root下或者非deepin/uos环境下运行不会发生异常，需要加上XDG_CURRENT_DESKTOP=Deepin环境变量；

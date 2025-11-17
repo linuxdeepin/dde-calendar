@@ -43,8 +43,8 @@ Files: calendar-client/assets/dde-calendar/calendar/common/*.svg calendar-client
 Copyright: None
 License: CC0-1.0
 
-# sh
-Files: *.sh
+# sh py
+Files: *.sh *.py
 Copyright: None
 License: CC0-1.0
 

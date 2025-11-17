@@ -1,0 +1,20 @@
+{
+  "name": "dde-calendar",
+  "group": "",
+  "submodules": [
+    {
+      "name": "dde-calendar-client",
+      "exec": "dde-calendar-client_debug.sh"
+    },
+    {
+      "name": "dde-calendar-service",
+      "exec": "dde-calendar-service_debug.sh"
+    },
+    {
+      "name": "dde-calendar-plugin",
+      "exec": "dde-calendar-plugin_debug.sh"
+    }
+  ],
+  "reboot": 0,
+  "version": "V1.0"
+}

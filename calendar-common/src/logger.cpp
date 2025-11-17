@@ -12,7 +12,7 @@
 
 DCORE_USE_NAMESPACE
 
-CalendarLogger::CalendarLogger(QObject *parent)
+CalendarLogger::CalendarLogger(const QString &configId, QObject *parent)
     : QObject(parent), m_rules(""), m_config(nullptr)
 {
     QByteArray logRules = qgetenv("QT_LOGGING_RULES");
@@ -23,7 +23,7 @@ CalendarLogger::CalendarLogger(QObject *parent)
     m_rules = logRules;
 
     // read dconfig (which contains default configuration)
-    m_config = DConfig::create("org.deepin.dde-calendar", "org.deepin.dde-calendar");
+    m_config = DConfig::create("org.deepin.dde.calendar", configId);
     if (m_config) {
         // DConfig contains default values, just read and append them
         logRules = m_config->value("log_rules").toByteArray();
@@ -38,7 +38,7 @@ CalendarLogger::CalendarLogger(QObject *parent)
             }
         });
     } else {
-        qCWarning(CommonLogger) << "Failed to create DConfig for org.deepin.dde-calendar";
+        qCWarning(CommonLogger) << "Failed to create DConfig for org.deepin.dde.calendar";
         setRules(m_rules);
     }
 }

@@ -25,7 +25,7 @@ Reply scheduleState::process(const JsonData *jsonData)
 
     //如果时间无效
     if (jsonData->getDateTimeInvalid()) {
-        qCDebug(CommonLogger) << "DateTime is invalid, transitioning to queryScheduleState";
+        qCDebug(PluginLogger) << "DateTime is invalid, transitioning to queryScheduleState";
         scheduleState *nextState = new queryScheduleState(m_Task);
         setNextState(nextState);
         REPLY_ONLY_TTS(reply, DATETIME_ERR_TTS, DATETIME_ERR_TTS, true);
@@ -33,19 +33,19 @@ Reply scheduleState::process(const JsonData *jsonData)
     }
 
     Filter_Flag filterResult = eventFilter(jsonData);
-    qCDebug(CommonLogger) << "Event filter result:" << filterResult;
+    qCDebug(PluginLogger) << "Event filter result:" << filterResult;
 
     switch (filterResult) {
     case Fileter_Err: {
-        qCDebug(CommonLogger) << "Processing error event";
+        qCDebug(PluginLogger) << "Processing error event";
         reply = ErrEvent();
     } break;
     case Fileter_Normal: {
-        qCDebug(CommonLogger) << "Processing normal event";
+        qCDebug(PluginLogger) << "Processing normal event";
         reply = normalEvent(jsonData);
     } break;
     case Fileter_Init: {
-        qCDebug(CommonLogger) << "Processing init event";
+        qCDebug(PluginLogger) << "Processing init event";
         reply = initEvent(jsonData);
     } break;
     }
@@ -91,13 +91,13 @@ scheduleState::Filter_Flag scheduleState::changeDateErrJudge(const JsonData *jso
         bool noChangeDate = mchangeJsonData->fromDateTime().suggestDatetime.size() == 0
                             && mchangeJsonData->TitleName().isEmpty();
         if (hasChangeToData && noChangeDate) {
-            qCDebug(CommonLogger) << "Invalid change data detected - has change to but no change from";
+            qCDebug(PluginLogger) << "Invalid change data detected - has change to but no change from";
             resultFlag = Filter_Flag::Fileter_Err;
         }
     } else {
-        qCDebug(CommonLogger) << "Not a change data type, using default flag";
+        qCDebug(PluginLogger) << "Not a change data type, using default flag";
     }
 
-    qCDebug(CommonLogger) << "Date change error judgment result:" << resultFlag;
+    qCDebug(PluginLogger) << "Date change error judgment result:" << resultFlag;
     return resultFlag;
 }

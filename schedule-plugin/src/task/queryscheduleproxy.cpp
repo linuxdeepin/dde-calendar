@@ -31,76 +31,76 @@ DSchedule::Map queryScheduleProxy::querySchedule()
     scheduleInfo.clear();
     switch (m_queryJsonData->getRepeatStatus()) {
     case JsonData::RepeatStatus::NONE:
-        qCDebug(CommonLogger) << "Querying non-repeating schedules";
+        qCDebug(PluginLogger) << "Querying non-repeating schedules";
         scheduleInfo = queryNonRepeatingSchedule();
         break;
     case JsonData::RepeatStatus::EVED: {
-        qCDebug(CommonLogger) << "Querying daily repeating schedules";
+        qCDebug(PluginLogger) << "Querying daily repeating schedules";
         TIME_FRAME_IN_THE_NEXT_SIX_MONTHT
         scheduleInfo = queryEveryDaySchedule(beginTime, endTime);
         if (!m_queryJsonData->TitleName().isEmpty()) {
-            qCDebug(CommonLogger) << "Filtering daily schedules by title:" << m_queryJsonData->TitleName();
+            qCDebug(PluginLogger) << "Filtering daily schedules by title:" << m_queryJsonData->TitleName();
             scheduleInfo = scheduleFileterByTitleName(scheduleInfo, m_queryJsonData->TitleName());
         }
     } break;
     case JsonData::RepeatStatus::EVEW: {
-        qCDebug(CommonLogger) << "Querying weekly repeating schedules";
+        qCDebug(PluginLogger) << "Querying weekly repeating schedules";
         TIME_FRAME_IN_THE_NEXT_SIX_MONTHT
         int beginW = 0;
         int endW = 0;
         if (m_queryJsonData->getRepeatNum().size() == 0) {
-            qCDebug(CommonLogger) << "No specific week days specified";
+            qCDebug(PluginLogger) << "No specific week days specified";
         } else if (m_queryJsonData->getRepeatNum().size() == 1) {
             beginW = m_queryJsonData->getRepeatNum().at(0);
             endW = m_queryJsonData->getRepeatNum().at(0);
-            qCDebug(CommonLogger) << "Querying single week day:" << beginW;
+            qCDebug(PluginLogger) << "Querying single week day:" << beginW;
         } else {
             beginW = m_queryJsonData->getRepeatNum().at(0);
             endW = m_queryJsonData->getRepeatNum().at(1);
-            qCDebug(CommonLogger) << "Querying week day range:" << beginW << "to" << endW;
+            qCDebug(PluginLogger) << "Querying week day range:" << beginW << "to" << endW;
         }
         scheduleInfo = queryWeeklySchedule(beginTime, endTime, beginW, endW);
         SemanticsDateTime queryDatetime = getQueryDateTime(m_queryJsonData);
         TimeLimit fileterTime = getTimeFileterByTimeInfo(queryDatetime);
         if (!fileterTime.isInvalid) {
-            qCDebug(CommonLogger) << "Filtering weekly schedules by time range";
+            qCDebug(PluginLogger) << "Filtering weekly schedules by time range";
             scheduleInfo = scheduleFileterByTime(scheduleInfo, fileterTime.beginTime, fileterTime.endTime);
         }
         if (!m_queryJsonData->TitleName().isEmpty()) {
-            qCDebug(CommonLogger) << "Filtering weekly schedules by title:" << m_queryJsonData->TitleName();
+            qCDebug(PluginLogger) << "Filtering weekly schedules by title:" << m_queryJsonData->TitleName();
             scheduleInfo = scheduleFileterByTitleName(scheduleInfo, m_queryJsonData->TitleName());
         }
     } break;
     case JsonData::RepeatStatus::EVEM: {
-        qCDebug(CommonLogger) << "Querying monthly repeating schedules";
+        qCDebug(PluginLogger) << "Querying monthly repeating schedules";
         TIME_FRAME_IN_THE_NEXT_SIX_MONTHT
         int beginM = 0;
         int endM = 0;
         if (m_queryJsonData->getRepeatNum().size() == 0) {
-            qCDebug(CommonLogger) << "No specific month days specified";
+            qCDebug(PluginLogger) << "No specific month days specified";
         } else if (m_queryJsonData->getRepeatNum().size() == 1) {
             beginM = m_queryJsonData->getRepeatNum().at(0);
             endM = m_queryJsonData->getRepeatNum().at(0);
-            qCDebug(CommonLogger) << "Querying single month day:" << beginM;
+            qCDebug(PluginLogger) << "Querying single month day:" << beginM;
         } else {
             beginM = m_queryJsonData->getRepeatNum().at(0);
             endM = m_queryJsonData->getRepeatNum().at(1);
-            qCDebug(CommonLogger) << "Querying month day range:" << beginM << "to" << endM;
+            qCDebug(PluginLogger) << "Querying month day range:" << beginM << "to" << endM;
         }
         scheduleInfo = queryMonthlySchedule(beginTime, endTime, beginM, endM);
         if (!m_queryJsonData->TitleName().isEmpty()) {
-            qCDebug(CommonLogger) << "Filtering monthly schedules by title:" << m_queryJsonData->TitleName();
+            qCDebug(PluginLogger) << "Filtering monthly schedules by title:" << m_queryJsonData->TitleName();
             scheduleInfo = scheduleFileterByTitleName(scheduleInfo, m_queryJsonData->TitleName());
         }
     } break;
     case JsonData::RepeatStatus::EVEY: {
-        qCDebug(CommonLogger) << "Querying yearly repeating schedules";
+        qCDebug(PluginLogger) << "Querying yearly repeating schedules";
         TIME_FRAME_IN_THE_NEXT_SIX_MONTHT
         scheduleInfo = queryEveryYearSchedule(beginTime, endTime);
         SemanticsDateTime queryDatetime = getQueryDateTime(m_queryJsonData);
         //查询每年的日程中包含日期
         if (queryDatetime.suggestDatetime.size() == 1) {
-            qCDebug(CommonLogger) << "Filtering yearly schedules by specific date";
+            qCDebug(PluginLogger) << "Filtering yearly schedules by specific date";
             //查询的日期
             QDate beginD = queryDatetime.suggestDatetime.at(0).datetime.date();
             QDate endD = endTime.date();
@@ -110,30 +110,30 @@ DSchedule::Map queryScheduleProxy::querySchedule()
         //获取查询的具体时间
         TimeLimit fileterTime = getTimeFileterByTimeInfo(queryDatetime);
         if (!fileterTime.isInvalid) {
-            qCDebug(CommonLogger) << "Filtering yearly schedules by time range";
+            qCDebug(PluginLogger) << "Filtering yearly schedules by time range";
             //过滤包含查询时间的日程
             scheduleInfo = scheduleFileterByTime(scheduleInfo, fileterTime.beginTime, fileterTime.endTime);
         }
         if (!m_queryJsonData->TitleName().isEmpty()) {
-            qCDebug(CommonLogger) << "Filtering yearly schedules by title:" << m_queryJsonData->TitleName();
+            qCDebug(PluginLogger) << "Filtering yearly schedules by title:" << m_queryJsonData->TitleName();
             scheduleInfo = scheduleFileterByTitleName(scheduleInfo, m_queryJsonData->TitleName());
         }
     } break;
     case JsonData::RepeatStatus::RESTD: {
-        qCDebug(CommonLogger) << "Querying rest day schedules";
+        qCDebug(PluginLogger) << "Querying rest day schedules";
         TIME_FRAME_IN_THE_NEXT_SIX_MONTHT
         scheduleInfo = queryWeeklySchedule(beginTime, endTime, 6, 7);
         if (!m_queryJsonData->TitleName().isEmpty()) {
-            qCDebug(CommonLogger) << "Filtering rest day schedules by title:" << m_queryJsonData->TitleName();
+            qCDebug(PluginLogger) << "Filtering rest day schedules by title:" << m_queryJsonData->TitleName();
             scheduleInfo = scheduleFileterByTitleName(scheduleInfo, m_queryJsonData->TitleName());
         }
     } break;
     case JsonData::RepeatStatus::WORKD: {
-        qCDebug(CommonLogger) << "Querying work day schedules";
+        qCDebug(PluginLogger) << "Querying work day schedules";
         TIME_FRAME_IN_THE_NEXT_SIX_MONTHT
         scheduleInfo = queryWorkingDaySchedule(beginTime, endTime);
         if (!m_queryJsonData->TitleName().isEmpty()) {
-            qCDebug(CommonLogger) << "Filtering work day schedules by title:" << m_queryJsonData->TitleName();
+            qCDebug(PluginLogger) << "Filtering work day schedules by title:" << m_queryJsonData->TitleName();
             scheduleInfo = scheduleFileterByTitleName(scheduleInfo, m_queryJsonData->TitleName());
         }
     } break;
@@ -223,12 +223,12 @@ DSchedule::Map queryScheduleProxy::queryNonRepeatingSchedule()
     SemanticsDateTime queryDatetime = getQueryDateTime(m_queryJsonData);
     //如果开始时间大于结束时间则退出
     if (!timeFrameIsValid(queryDatetime)) {
-        qCWarning(CommonLogger) << "Invalid time frame for non-repeating schedule query";
+        qCWarning(PluginLogger) << "Invalid time frame for non-repeating schedule query";
         return mScheduleInfoVector;
     }
     switch (m_queryJsonData->getPropertyStatus()) {
     case JsonData::PropertyStatus::ALL: {
-        qCDebug(CommonLogger) << "Querying all schedules";
+        qCDebug(PluginLogger) << "Querying all schedules";
         //查询所有日程
         DateTimeLimit timeLimit = getTimeLimitByTimeInfo(queryDatetime);
         if (!getTimeIsExpired()) {
@@ -236,16 +236,16 @@ DSchedule::Map queryScheduleProxy::queryNonRepeatingSchedule()
         }
     } break;
     case JsonData::PropertyStatus::NEXT: {
-        qCDebug(CommonLogger) << "Querying next schedule";
+        qCDebug(PluginLogger) << "Querying next schedule";
         //查询下个日程
         TIME_FRAME_IN_THE_NEXT_SIX_MONTHT
         mScheduleInfoVector = queryNextNumSchedule(beginTime, endTime, 1);
     } break;
     case JsonData::PropertyStatus::LAST: {
-        qCDebug(CommonLogger) << "Querying last schedule (not implemented)";
+        qCDebug(PluginLogger) << "Querying last schedule (not implemented)";
     } break;
     default: {
-        qCDebug(CommonLogger) << "Querying schedules with default property status";
+        qCDebug(PluginLogger) << "Querying schedules with default property status";
         //NONE
         //查询所有日程
         DateTimeLimit timeLimit = getTimeLimitByTimeInfo(queryDatetime);
@@ -435,7 +435,7 @@ DSchedule::Map queryScheduleProxy::scheduleFileterByDate(DSchedule::Map &schedul
 
 DSchedule::Map queryScheduleProxy::scheduleFileterByTitleName(DSchedule::Map &scheduleInfo, const QString &strName)
 {
-    qCDebug(CommonLogger) << "Filtering schedules by title:" << strName;
+    qCDebug(PluginLogger) << "Filtering schedules by title:" << strName;
     DSchedule::Map mScheduleFileter {};
     DSchedule::Map::const_iterator iter = scheduleInfo.constBegin();
     for (; iter != scheduleInfo.constEnd(); ++iter) {
@@ -449,7 +449,7 @@ DSchedule::Map queryScheduleProxy::scheduleFileterByTitleName(DSchedule::Map &sc
             mScheduleFileter[iter.key()] = scheduleList;
         }
     }
-    qCDebug(CommonLogger) << "Title filter completed - Found" << mScheduleFileter.size() << "schedule groups";
+    qCDebug(PluginLogger) << "Title filter completed - Found" << mScheduleFileter.size() << "schedule groups";
     return mScheduleFileter;
 }
 
@@ -485,24 +485,24 @@ SemanticsDateTime queryScheduleProxy::getQueryDateTime(JsonData *jsonData)
 
 queryScheduleProxy::DateTimeLimit queryScheduleProxy::getTimeLimitByTimeInfo(const SemanticsDateTime &timeInfoVect)
 {
-    qCDebug(CommonLogger) << "Getting time limit from time info - Suggestions:" << timeInfoVect.suggestDatetime.size();
+    qCDebug(PluginLogger) << "Getting time limit from time info - Suggestions:" << timeInfoVect.suggestDatetime.size();
     DateTimeLimit timeLimit;
     setTimeIsExpired(false);
     if (timeInfoVect.suggestDatetime.size() == 0) {
-        qCDebug(CommonLogger) << "No time suggestions, using default time frame";
+        qCDebug(PluginLogger) << "No time suggestions, using default time frame";
         TIME_FRAME_IN_THE_NEXT_SIX_MONTHT
         timeLimit.beginTime = beginTime;
         timeLimit.endTime = endTime;
     } else if (timeInfoVect.suggestDatetime.size() == 1) {
         if (timeInfoVect.suggestDatetime.at(0).datetime.date() < QDateTime::currentDateTime().date()
                 || timeInfoVect.suggestDatetime.at(0).datetime.date() > QDateTime::currentDateTime().addDays(MAXIMUM_DAYS_IN_THE_FUTURE).date()) {
-            qCWarning(CommonLogger) << "Time suggestion is outside valid range";
+            qCWarning(PluginLogger) << "Time suggestion is outside valid range";
             setTimeIsExpired(true);
             return timeLimit;
         }
         if (timeInfoVect.suggestDatetime.at(0).hasTime) {
             if (timeInfoVect.suggestDatetime.at(0).datetime < QDateTime::currentDateTime()) {
-                qCWarning(CommonLogger) << "Time suggestion is in the past";
+                qCWarning(PluginLogger) << "Time suggestion is in the past";
                 setTimeIsExpired(true);
             } else {
                 timeLimit.beginTime = timeInfoVect.suggestDatetime.at(0).datetime;
@@ -510,28 +510,28 @@ queryScheduleProxy::DateTimeLimit queryScheduleProxy::getTimeLimitByTimeInfo(con
             }
         } else {
             if (timeInfoVect.suggestDatetime.at(0).datetime.date() == QDateTime::currentDateTime().date()) {
-                qCDebug(CommonLogger) << "Time suggestion is today, using current time to end of day";
+                qCDebug(PluginLogger) << "Time suggestion is today, using current time to end of day";
                 timeLimit.beginTime = QDateTime::currentDateTime();
                 timeLimit.endTime.setDate(timeLimit.beginTime.date());
                 timeLimit.endTime.setTime(QTime(23, 59, 59));
             } else {
-                qCDebug(CommonLogger) << "Time suggestion is future date, using full day";
+                qCDebug(PluginLogger) << "Time suggestion is future date, using full day";
                 timeLimit.beginTime = timeInfoVect.suggestDatetime.at(0).datetime;
                 timeLimit.endTime.setDate(timeLimit.beginTime.date());
                 timeLimit.endTime.setTime(QTime(23, 59, 59));
             }
         }
     } else {
-        qCDebug(CommonLogger) << "Processing time range suggestion";
+        qCDebug(PluginLogger) << "Processing time range suggestion";
         QDateTime maxDay = QDateTime::currentDateTime().addDays(MAXIMUM_DAYS_IN_THE_FUTURE);
         if (timeInfoVect.suggestDatetime.at(1).datetime.date() < QDateTime::currentDateTime().date()
                 || timeInfoVect.suggestDatetime.at(0).datetime.date() > maxDay.date()) {
-            qCWarning(CommonLogger) << "Time range suggestion is outside valid range";
+            qCWarning(PluginLogger) << "Time range suggestion is outside valid range";
             setTimeIsExpired(true);
             return timeLimit;
         }
         if (timeInfoVect.suggestDatetime.at(0).datetime < QDateTime::currentDateTime()) {
-            qCDebug(CommonLogger) << "Adjusting begin time to current time";
+            qCDebug(PluginLogger) << "Adjusting begin time to current time";
             timeLimit.beginTime = QDateTime::currentDateTime();
         } else {
             timeLimit.beginTime = timeInfoVect.suggestDatetime.at(0).datetime;
@@ -543,12 +543,12 @@ queryScheduleProxy::DateTimeLimit queryScheduleProxy::getTimeLimitByTimeInfo(con
             timeLimit.endTime.setTime(QTime(23, 59, 59));
         }
         if (timeLimit.endTime.date() > maxDay.date()) {
-            qCDebug(CommonLogger) << "Adjusting end time to maximum allowed date";
+            qCDebug(PluginLogger) << "Adjusting end time to maximum allowed date";
             timeLimit.endTime.setDate(maxDay.date());
             timeLimit.endTime.setTime(QTime(23, 59, 59));
         }
     }
-    qCDebug(CommonLogger) << "Time limit set - Begin:" << timeLimit.beginTime << "End:" << timeLimit.endTime;
+    qCDebug(PluginLogger) << "Time limit set - Begin:" << timeLimit.beginTime << "End:" << timeLimit.endTime;
     return timeLimit;
 }
 
@@ -583,12 +583,12 @@ void queryScheduleProxy::setTimeIsExpired(const bool timeisExp)
 
 bool queryScheduleProxy::timeFrameIsValid(const SemanticsDateTime &timeInfoVect)
 {
-    qCDebug(CommonLogger) << "Validating time frame";
+    qCDebug(PluginLogger) << "Validating time frame";
     //如果开始时间大于结束时间则返回false
     if (timeInfoVect.suggestDatetime.size() > 1 && timeInfoVect.suggestDatetime.at(0).datetime > timeInfoVect.suggestDatetime.at(1).datetime) {
-        qCWarning(CommonLogger) << "Invalid time frame - Begin time is after end time";
+        qCWarning(PluginLogger) << "Invalid time frame - Begin time is after end time";
         return false;
     }
-    qCDebug(CommonLogger) << "Time frame is valid";
+    qCDebug(PluginLogger) << "Time frame is valid";
     return true;
 }

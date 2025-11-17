@@ -11,7 +11,7 @@ DbusRequestBase::DbusRequestBase(const QString &path, const QString &interface, 
 {
     //关联后端dbus触发信号
     if (!QDBusConnection::sessionBus().connect(this->service(), this->path(), this->interface(), "", this, SLOT(slotDbusCall(QDBusMessage)))) {
-        qCWarning(CommonLogger) << "the connection was fail!"
+        qCWarning(PluginLogger) << "the connection was fail!"
                    << "path: " << this->path() << "interface: " << this->interface();
     };
 }

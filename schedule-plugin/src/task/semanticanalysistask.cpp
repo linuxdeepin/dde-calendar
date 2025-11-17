@@ -34,22 +34,22 @@ bool semanticAnalysisTask::resolveTaskJson(const QString &semantic)
     QJsonDocument doc = QJsonDocument::fromJson(semantic.toUtf8(), &jsonError);
 
     if (!doc.isNull() && (jsonError.error == QJsonParseError::NoError)) {
-        qCDebug(CommonLogger) << "JSON parsed successfully";
+        qCDebug(PluginLogger) << "JSON parsed successfully";
         auto rootObject = doc.object();
         if (!(rootObject.contains("intent")
               && rootObject["intent"].isObject())) {
-            qCWarning(CommonLogger) << "Invalid JSON structure - missing or invalid intent object";
+            qCWarning(PluginLogger) << "Invalid JSON structure - missing or invalid intent object";
             return false;
         }
 
         auto intentObject = rootObject["intent"].toObject();
         if (intentObject.empty()) {
-            qCWarning(CommonLogger) << "Empty intent object";
+            qCWarning(PluginLogger) << "Empty intent object";
             return false;
         }
 
         if (intentObject.contains("semantic") && intentObject["semantic"].isArray()) {
-            qCDebug(CommonLogger) << "Processing semantic array";
+            qCDebug(PluginLogger) << "Processing semantic array";
             auto semanticObjArr = intentObject["semantic"].toArray();
             for (int i = 0; i < semanticObjArr.size(); ++i) {
                 auto semanticObj = semanticObjArr[i].toObject();
@@ -58,14 +58,14 @@ bool semanticAnalysisTask::resolveTaskJson(const QString &semantic)
                 }
                 m_JsonData = createJsonDataFactory(Intent());
                 if (m_JsonData != nullptr) {
-                    qCDebug(CommonLogger) << "Created JSON data handler for intent:" << Intent();
+                    qCDebug(PluginLogger) << "Created JSON data handler for intent:" << Intent();
                     m_JsonData->JosnResolve(semanticObj);
                 }
             }
         }
 
         if (intentObject.contains("voice_answer") && intentObject["voice_answer"].isArray()) {
-            qCDebug(CommonLogger) << "Processing voice answer array";
+            qCDebug(PluginLogger) << "Processing voice answer array";
             auto voiceAnsObjArr = intentObject["voice_answer"].toArray();
             for (int i = 0; i < voiceAnsObjArr.size(); ++i) {
                 auto voiceAnsObj = voiceAnsObjArr[i].toObject();
@@ -87,11 +87,11 @@ bool semanticAnalysisTask::resolveTaskJson(const QString &semantic)
         if (intentObject.contains("shouldEndSession") && intentObject["shouldEndSession"].isBool()) {
             setShouldEndSession(intentObject["shouldEndSession"].toBool());
         } else {
-            qCDebug(CommonLogger) << "No shouldEndSession specified, defaulting to true";
+            qCDebug(PluginLogger) << "No shouldEndSession specified, defaulting to true";
             setShouldEndSession(true);
         }
     } else {
-        qCWarning(CommonLogger) << "JSON parse error:" << jsonError.errorString();
+        qCWarning(PluginLogger) << "JSON parse error:" << jsonError.errorString();
         return false;
     }
     return true;
@@ -115,7 +115,7 @@ JsonData *semanticAnalysisTask::getJsonData() const
 void semanticAnalysisTask::deleteJsonData()
 {
     if (m_JsonData != nullptr) {
-        qCDebug(CommonLogger) << "Deleting JSON data handler";
+        qCDebug(PluginLogger) << "Deleting JSON data handler";
         delete m_JsonData;
         m_JsonData = nullptr;
     }
@@ -123,26 +123,26 @@ void semanticAnalysisTask::deleteJsonData()
 
 JsonData *semanticAnalysisTask::createJsonDataFactory(const QString &Intent)
 {
-    qCDebug(CommonLogger) << "Creating JSON data handler for intent:" << Intent;
+    qCDebug(PluginLogger) << "Creating JSON data handler for intent:" << Intent;
     JsonData *data = nullptr;
     if (Intent == JSON_CREATE) {
         //创建
-        qCDebug(CommonLogger) << "Creating CreateJsonData handler";
+        qCDebug(PluginLogger) << "Creating CreateJsonData handler";
         data = new CreateJsonData();
     } else if (Intent == JSON_VIEW) {
         //查询
-        qCDebug(CommonLogger) << "Creating QueryJsonData handler";
+        qCDebug(PluginLogger) << "Creating QueryJsonData handler";
         data = new QueryJsonData();
     } else if (Intent == JSON_CANCEL) {
         //取消
-        qCDebug(CommonLogger) << "Creating cancelJsonData handler";
+        qCDebug(PluginLogger) << "Creating cancelJsonData handler";
         data = new cancelJsonData();
     } else if (Intent == JSON_CHANGE) {
         //改变
-        qCDebug(CommonLogger) << "Creating changejsondata handler";
+        qCDebug(PluginLogger) << "Creating changejsondata handler";
         data = new changejsondata();
     } else {
-        qCWarning(CommonLogger) << "Unknown intent type:" << Intent;
+        qCWarning(PluginLogger) << "Unknown intent type:" << Intent;
     }
     return data;
 }
@@ -150,7 +150,7 @@ JsonData *semanticAnalysisTask::createJsonDataFactory(const QString &Intent)
 void semanticAnalysisTask::setShouldEndSession(bool isEnd)
 {
     if (m_JsonData != nullptr) {
-        qCDebug(CommonLogger) << "Setting shouldEndSession to:" << isEnd;
+        qCDebug(PluginLogger) << "Setting shouldEndSession to:" << isEnd;
         m_JsonData->setShouldEndSession(isEnd);
     }
 }

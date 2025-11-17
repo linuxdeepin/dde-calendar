@@ -37,7 +37,7 @@ void scheduleitemwidget::addscheduleitem()
 
     if (m_scheduleInfo.count() == 1) {
         //单个日程
-        qCDebug(CommonLogger) << "Creating single schedule item";
+        qCDebug(PluginLogger) << "Creating single schedule item";
         scheduleitem *m_scheduleitem = new scheduleitem();
         connect(m_scheduleitem, &scheduleitem::signalItemPress, this, &scheduleitemwidget::signalItemPress);
         m_scheduleitem->setPositon(ItemWidget::ItemOnly);
@@ -46,7 +46,7 @@ void scheduleitemwidget::addscheduleitem()
         mainlayout->addWidget(m_scheduleitem);
     } else if (m_scheduleInfo.count() > 1) {
         //多个日程
-        qCDebug(CommonLogger) << "Creating multiple schedule items - Count:" << m_scheduleInfo.count();
+        qCDebug(PluginLogger) << "Creating multiple schedule items - Count:" << m_scheduleInfo.count();
         for (int i = 0; i < m_scheduleInfo.count(); i++) {
             scheduleitem *m_scheduleitem = new scheduleitem();
             connect(m_scheduleitem, &scheduleitem::signalItemPress, this, &scheduleitemwidget::signalItemPress);

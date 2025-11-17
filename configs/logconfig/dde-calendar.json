@@ -1,0 +1,29 @@
+{
+    "name": "dde-calendar",
+    "group": "",
+    "submodules": [
+      {
+        "name": "client",
+        "filter": "org.deepin.dde.calendar.client",
+        "exec": "/usr/bin/dde-calendar",
+        "logType": "journal",
+        "logPath": "~/.cache/deepin/dde-calendar/dde-calendar.log"
+      },
+      {
+        "name": "service",
+        "filter": "org.deepin.dde.calendar.service",
+        "exec": "/usr/lib/deepin-daemon/dde-calendar-service",
+        "logType": "journal",
+        "logPath": "~/.cache/deepin/dde-calendar-service/dde-calendar-service.log"
+      },
+      {
+        "name": "plugin",
+        "filter": "org.deepin.dde.calendar.plugin",
+        "exec": "",
+        "logType": "journal",
+        "logPath": ""
+      }
+    ],
+    "visible": true,
+    "version": "V2.0"
+}

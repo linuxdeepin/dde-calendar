@@ -16,7 +16,7 @@ class CalendarLogger : public QObject
 {
     Q_OBJECT
 public:
-    explicit CalendarLogger(QObject *parent = nullptr);
+    explicit CalendarLogger(const QString &configId, QObject *parent = nullptr);
     ~CalendarLogger();
 
     static void initLogger();
