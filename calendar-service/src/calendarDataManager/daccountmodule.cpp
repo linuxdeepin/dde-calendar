@@ -1053,17 +1053,29 @@ bool DAccountModule::importSchedule(const QString &icsFilePath, const QString &t
             return false;
         }
     };
+    int importedCount = 0;
     foreach (auto event, events) {
         auto data = event.data();
         auto sch = DSchedule::Ptr(new DSchedule(*data));
         sch->setScheduleTypeID(typeID);
-        qCDebug(ServiceLogger) << "Imported schedule:" << data->summary() 
-                               << "Start:" << data->dtStart().toString() 
-                               << "ID:" << m_accountDB->createSchedule(sch);
+        QString scheduleID = m_accountDB->createSchedule(sch);
+        if (!scheduleID.isEmpty()) {
+            importedCount++;
+            qCDebug(ServiceLogger) << "Successfully imported schedule:" << data->summary()
+                                   << "Start:" << data->dtStart().toString()
+                                   << "ID:" << scheduleID;
+        } else {
+            qCWarning(ServiceLogger) << "Failed to import schedule:" << data->summary()
+                                     << "Start:" << data->dtStart().toString();
+        }
     };
+    qCInfo(ServiceLogger) << "Import completed: " << importedCount << " out of " << events.size() << " events successfully imported for type " << typeID;
+    if (importedCount == 0 && !events.isEmpty()) {
+        qCWarning(ServiceLogger) << "WARNING: No schedules were successfully imported, despite having " << events.size() << " events in ICS file: " << icsFilePath;
+    }
     // 发送日程更新信号
     emit signalScheduleUpdate();
-    return true;
+    return importedCount > 0 || events.isEmpty(); // 如果没有事件或者至少导入了一个事件，则认为成功
 }
 
 // 导出日程

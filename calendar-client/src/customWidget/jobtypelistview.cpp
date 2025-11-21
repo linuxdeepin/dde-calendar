@@ -251,6 +251,13 @@ void JobTypeListView::slotImportScheduleType()
     KCalendarCore::ICalFormat icalformat;
     QTimeZone timezone = QDateTime::currentDateTime().timeZone();
     KCalendarCore::MemoryCalendar::Ptr cal(new KCalendarCore::MemoryCalendar(timezone));
+    // 先加载ICS文件内容，才能读取到自定义属性
+    auto ok = icalformat.load(cal, filename);
+    if (!ok) {
+        qCWarning(ClientLogger) << "can not load ics file from" << filename;
+        return;
+    }
+
     auto typeID = cal->nonKDECustomProperty("X-DDE-CALENDAR-TYPE-ID");
     auto typeName = cal->nonKDECustomProperty("X-DDE-CALENDAR-TYPE-NAME");
     auto typeColor = cal->nonKDECustomProperty("X-DDE-CALENDAR-TYPE-COLOR");
