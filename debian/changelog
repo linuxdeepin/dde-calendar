@@ -1,3 +1,11 @@
+dde-calendar (6.5.29) unstable; urgency=medium
+
+  * chore: Update version to 6.5.29
+  * fix: revert prevent duplicate schedule type creation
+  * chore: enhance logging configuration and refactor DConfig setup
+
+ -- zhanghongyuan <zhanghongyuan@uniontech.com>  Fri, 21 Nov 2025 09:00:08 +0800
+
 dde-calendar (6.5.28) unstable; urgency=medium
 
   * chore: Update version to 6.5.28
