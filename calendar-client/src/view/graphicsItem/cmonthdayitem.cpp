@@ -173,37 +173,96 @@ void CMonthDayItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
                       QString::number(m_Date.day()));
     painter->restore();
     //绘制农历
-    if (m_LunarVisible) {
-        // qCDebug(ClientLogger) << "Drawing lunar text:" << m_DayLunar;
+    if (m_LunarVisible)
+    {
         QFontMetrics metrics(m_LunerFont);
         int Lunarwidth = metrics.horizontalAdvance(m_DayLunar);
-        qreal filleRectX = this->rect().width() - 12 - 3 - (58 + Lunarwidth) / 2;
-        const QSize iconSize = QSize(14, 14);
-        QRect fillRectT(QPoint(this->rect().x() + filleRectX, this->rect().y() + 9), iconSize);
+        
+        // 判断是否需要换行显示（四个字的农历且有补班/休状态）
+        bool needWrap = (m_DayLunar.length() >= 4 && m_DayStatus != H_NONE);
 
-        if (filleRectX > hh) {
+        if (needWrap)
+        {
+            // 换行显示模式：补班/休图标和前两个字在第一行，后两个字在第二行
+            // 绘制补班/休图标（与数字日期顶部对齐）
+            QRectF fillRectT(this->rect().x() + this->rect().width() - 55,
+                             this->rect().y() + 10,
+                             12,
+                             12);
             painter->setRenderHint(QPainter::Antialiasing);
-            // Use QIcon replace DIcon in order to fix image non-clear issue
-            switch (m_DayStatus) {
-            case H_WORK: {
-                // qCDebug(ClientLogger) << "Drawing work day icon";
+            switch (m_DayStatus)
+            {
+            case H_WORK:
+            {
+                const QSize iconSize = QSize(12, 12);
                 QPixmap pixmap = QIcon(":/icons/deepin/builtin/icons/dde_calendar_ban_32px.svg").pixmap(iconSize);
-                painter->drawPixmap(fillRectT, pixmap);
-            } break;
-            case H_REST: {
-                // qCDebug(ClientLogger) << "Drawing rest day icon";
+                painter->drawPixmap(fillRectT.toRect(), pixmap);
+            }
+            break;
+            case H_REST:
+            {
+                const QSize iconSize = QSize(12, 12);
                 QPixmap pixmap = QIcon(":/icons/deepin/builtin/icons/dde_calendar_xiu.svg").pixmap(iconSize);
-                painter->drawPixmap(fillRectT, pixmap);
-            } break;
+                painter->drawPixmap(fillRectT.toRect(), pixmap);
+            }
+            break;
             default:
                 break;
             }
+
+            // 绘制农历文本（拆分为两行）
+            painter->setFont(m_LunerFont);
+            painter->setPen(m_LunerColor);
+            QString firstLine = m_DayLunar.mid(0, 2); // 前两个字
+            QString secondLine = m_DayLunar.mid(2);   // 后面的字
+
+            // 第一行：补班/休图标右侧显示前两个字（与数字日期顶部对齐）
+            painter->drawText(QRectF(this->rect().x() + this->rect().width() - 38,
+                                     this->rect().y() + 6, 40, 18),
+                              Qt::AlignLeft | Qt::AlignVCenter, firstLine);
+
+            // 第二行：显示剩余的字
+            painter->drawText(QRectF(this->rect().x() + this->rect().width() - 56,
+                                     this->rect().y() + 22, 58, 18),
+                              Qt::AlignCenter, secondLine);
         }
-        painter->setFont(m_LunerFont);
-        painter->setPen(m_LunerColor);
-        painter->drawText(QRectF(this->rect().x() + this->rect().width() - 58,
-                                 this->rect().y() + 6, 58, 18),
-                          Qt::AlignCenter, m_DayLunar);
+        else
+        {
+            // 原有的单行显示模式
+            qreal filleRectX = this->rect().width() - 12 - 3 - (58 + Lunarwidth) / 2;
+            const QSize iconSize = QSize(14, 14);
+            QRect fillRectT(QPoint(this->rect().x() + filleRectX, this->rect().y() + 9), iconSize);
+
+            if (filleRectX > hh)
+            {
+                painter->setRenderHint(QPainter::Antialiasing);
+                // Use QIcon replace DIcon in order to fix image non-clear issue
+                switch (m_DayStatus)
+                {
+                case H_WORK:
+                {
+                    // qCDebug(ClientLogger) << "Drawing work day icon";
+                    QPixmap pixmap = QIcon(":/icons/deepin/builtin/icons/dde_calendar_ban_32px.svg").pixmap(iconSize);
+                    painter->drawPixmap(fillRectT, pixmap);
+                }
+                break;
+                case H_REST:
+                {
+                    // qCDebug(ClientLogger) << "Drawing rest day icon";
+                    QPixmap pixmap = QIcon(":/icons/deepin/builtin/icons/dde_calendar_xiu.svg").pixmap(iconSize);
+                    painter->drawPixmap(fillRectT, pixmap);
+                }
+                break;
+                default:
+                    break;
+                }
+            }
+            painter->setFont(m_LunerFont);
+            painter->setPen(m_LunerColor);
+            painter->drawText(QRectF(this->rect().x() + this->rect().width() - 58,
+                                     this->rect().y() + 6, 58, 18),
+                              Qt::AlignCenter, m_DayLunar);
+        }
     }
     //如果有焦点则绘制焦点效果
     if (getItemFocus()) {
