@@ -1,3 +1,10 @@
+dde-calendar (6.5.30) unstable; urgency=medium
+
+  * chore: Update version to 6.5.30
+  * fix: (calendar)improve lunar display with line wrapping for long texts
+
+ -- zhanghongyuan <zhanghongyuan@uniontech.com>  Thu, 27 Nov 2025 16:54:09 +0800
+
 dde-calendar (6.5.29) unstable; urgency=medium
 
   * chore: Update version to 6.5.29
