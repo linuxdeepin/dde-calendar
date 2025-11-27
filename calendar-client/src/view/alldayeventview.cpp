@@ -391,7 +391,7 @@ void CAllDayEventWeekView::updateDateShow()
 {
     qCDebug(ClientLogger) << "CAllDayEventWeekView::updateDateShow called";
     qreal sceneHeight;
-    qreal itemsHeight = (itemHeight + 1) * m_vlistData.size();
+    qreal itemsHeight = (itemHeight + 2) * m_vlistData.size();
     if (itemsHeight < 32) {
         sceneHeight = 29;
     } else {
@@ -406,7 +406,7 @@ void CAllDayEventWeekView::updateDateShow()
         delete m_baseShowItem[i];
     }
     m_baseShowItem.clear();
-    qCDebug(ClientLogger) << "Creating" << m_vlistData.size() << "item widgets";
+    qCDebug(ClientLogger) << "Creating" << m_vlistData.size() << "item widgets"; 
     for (int i = 0; i < m_vlistData.size(); ++i) {
         createItemWidget(i);
     }
@@ -422,7 +422,7 @@ void CAllDayEventWeekView::createItemWidget(int index, bool average)
         const DSchedule::Ptr &info = m_vlistData[index].at(i);
         QRectF drawrect = m_coorManage->getAllDayDrawRegion(info->dtStart().date(), info->dtEnd().date());
         drawrect.setY(2 + (itemHeight + 1) * index);
-        drawrect.setHeight(itemHeight);
+        drawrect.setHeight(itemHeight + 1);
 
         CAllDayScheduleItem *gwi = new CAllDayScheduleItem(drawrect, nullptr);
         gwi->setData(m_vlistData[index].at(i));
@@ -451,7 +451,7 @@ void CAllDayEventWeekView::updateItemHeightByFontSize()
         static_cast<quint16>(DFontSizeManager::instance()->fontPixelSize(qGuiApp->font())));
     font = DFontSizeManager::instance()->t8(font);
     QFontMetrics fm(font);
-    int h = fm.height();
+    int h = fm.height() + 1;
     if (itemHeight != h) {
         qCDebug(ClientLogger) << "Item height updated from" << itemHeight << "to" << h;
         itemHeight = h;

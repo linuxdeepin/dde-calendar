@@ -82,10 +82,12 @@ void CAllDayScheduleItem::paintBackground(QPainter *painter, const QRectF &rect,
     QString tSTitleName = m_vScheduleInfo->summary();
     tSTitleName.replace("\n", "");
     QString str = tSTitleName;
+    //左侧偏移13右侧偏移8
+    qreal textWidth = fillRect.width() - 13 - 8 - m_offset * 2;
     QString tStr;
     int _rightOffset = fm.horizontalAdvance("...");
-    //显示宽度  左侧偏移13右侧偏移8
-    qreal _showWidth = fillRect.width() - 13 - 8 - m_offset * 2;
+    //显示宽度
+    qreal _showWidth = textWidth;
     // qCDebug(ClientLogger) << "Schedule title:" << str << "available width:" << _showWidth;
     //如果标题总长度大于显示长度则显示长度须减去"..."的长度
     if (fm.horizontalAdvance(str) > _showWidth) {
@@ -108,7 +110,7 @@ void CAllDayScheduleItem::paintBackground(QPainter *painter, const QRectF &rect,
     }
     // qCDebug(ClientLogger) << "Final display text:" << tStr;
 
-    painter->drawText(QRectF(fillRect.topLeft().x() + 13, fillRect.y(), fillRect.width(), fillRect.height()),
+    painter->drawText(QRectF(fillRect.topLeft().x() + 13, fillRect.y() - 1, textWidth, fillRect.height() - 1),
                       Qt::AlignLeft | Qt::AlignVCenter, tStr);
     if (m_vHoverflag && !m_vSelectflag) {
         // qCDebug(ClientLogger) << "Drawing hover effect";
