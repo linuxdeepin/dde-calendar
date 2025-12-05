@@ -1,3 +1,10 @@
+dde-calendar (6.5.31) unstable; urgency=medium
+
+  * chore: Update version to 6.5.31
+  * fix: [ui]adjust all-day event item heights and text positioning
+
+ -- zhanghongyuan <zhanghongyuan@uniontech.com>  Fri, 05 Dec 2025 15:55:19 +0800
+
 dde-calendar (6.5.30) unstable; urgency=medium
 
   * chore: Update version to 6.5.30
