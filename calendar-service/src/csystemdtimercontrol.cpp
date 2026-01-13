@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2022 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -13,6 +13,7 @@
 #include <QStandardPaths>
 #include <QProcess>
 #include <QFile>
+#include <QFileDevice>
 
 const QString UPLOADTASK_SERVICE = "uploadNetWorkAccountData_calendar.service";
 const QString UPLOADTASK_TIMER = "uploadNetWorkAccountData_calendar.timer";
@@ -39,10 +40,19 @@ void CSystemdTimerControl::buildingConfiggure(const QVector<SystemDInfo> &infoVe
     QStringList fileNameList{};
     foreach (auto info, infoVector) {
         fileNameList.append(QString("calendar-remind-%1-%2-%3").arg(info.accountID.mid(0,8)).arg(info.alarmID.mid(0, 8)).arg(info.laterCount));
-        createService(fileNameList.last(), info);
-        createTimer(fileNameList.last(), info.triggerTimer);
+        // 构建提醒命令
+        QString remindCMD = QString("dbus-send --session --print-reply --dest=com.deepin.dataserver.Calendar "
+                                    "/com/deepin/dataserver/Calendar/AccountManager "
+                                    "com.deepin.dataserver.Calendar.AccountManager.remindJob string:%1 string:%2")
+                            .arg(info.accountID)
+                            .arg(info.alarmID);
+
+        // 使用模板方法创建服务和定时器
+        createServiceFromTemplate(fileNameList.last(), remindCMD);
+        createTimerFromTemplate(fileNameList.last(), info.triggerTimer);
     }
-    execLinuxCommand("systemctl --user daemon-reload");
+    // 使用新的QProcess方式
+    execSystemdCommand(QStringList() << "daemon-reload");
     startSystemdTimer(fileNameList);
 }
 
@@ -70,30 +80,42 @@ void CSystemdTimerControl::stopSystemdTimerByJobInfo(const SystemDInfo &info)
 void CSystemdTimerControl::startSystemdTimer(const QStringList &timerName)
 {
     qCInfo(ServiceLogger) << "Starting systemd timers. TimerNames:" << timerName.join(",");
-    QString command_stop("systemctl --user stop ");
-    foreach (auto str, timerName) {
-        command_stop += QString(" %1.timer").arg(str);
+    if (timerName.isEmpty()) {
+        qCDebug(ServiceLogger) << "No timers to start";
+        return;
     }
-    qCDebug(ServiceLogger) << "Stopping timers (if active) via command:" << command_stop;
-    execLinuxCommand(command_stop);
 
-    QString command("systemctl --user start ");
+    // 构建完整的单元名称列表
+    QStringList stopUnits;
+    QStringList startUnits;
     foreach (auto str, timerName) {
-        command += QString(" %1.timer").arg(str);
+        stopUnits << QString("%1.timer").arg(str);
+        startUnits << QString("%1.timer").arg(str);
     }
-    qCDebug(ServiceLogger) << "Starting timers via command:" << command;
-    execLinuxCommand(command);
+
+    // 批量停止所有定时器（一条命令）
+    execSystemdCommand(QStringList() << "stop" << stopUnits);
+
+    // 批量启动所有定时器（一条命令）
+    execSystemdCommand(QStringList() << "start" << startUnits);
 }
 
 void CSystemdTimerControl::stopSystemdTimer(const QStringList &timerName)
 {
     qCInfo(ServiceLogger) << "Stopping systemd timers. TimerNames:" << timerName.join(",");
-    QString command("systemctl --user stop ");
-    foreach (auto str, timerName) {
-        command += QString(" %1.timer").arg(str);
+    if (timerName.isEmpty()) {
+        qCDebug(ServiceLogger) << "No timers to stop";
+        return;
     }
-    qCDebug(ServiceLogger) << "Stopping timers via command:" << command;
-    execLinuxCommand(command);
+
+    // 构建完整的单元名称列表
+    QStringList stopUnits;
+    foreach (auto str, timerName) {
+        stopUnits << QString("%1.timer").arg(str);
+    }
+
+    // 批量停止所有定时器（一条命令）
+    execSystemdCommand(QStringList() << "stop" << stopUnits);
 }
 
 void CSystemdTimerControl::removeFile(const QStringList &fileName)
@@ -108,7 +130,8 @@ void CSystemdTimerControl::removeFile(const QStringList &fileName)
 void CSystemdTimerControl::stopAllRemindSystemdTimer(const QString &accountID)
 {
     qCInfo(ServiceLogger) << "Stopping all remind systemd timer for accountID:" << accountID;
-    execLinuxCommand(QString("systemctl --user stop calendar-remind-%1-*.timer").arg(accountID.mid(0,8)));
+    // 注意：这里使用通配符停止所有匹配的定时器
+    execSystemdCommand(QStringList() << "stop" << QString("calendar-remind-%1-*.timer").arg(accountID.mid(0,8)));
 }
 
 void CSystemdTimerControl::removeRemindFile(const QString &accountID)
@@ -139,8 +162,8 @@ void CSystemdTimerControl::startCalendarServiceSystemdTimer()
     QFileInfo fileInfo(m_systemdPath + "timers.target.wants/com.dde.calendarserver.calendar.timer");
     //如果没有设置定时任务则开启定时任务
     if (!fileInfo.exists()) {
-        execLinuxCommand("systemctl --user enable com.dde.calendarserver.calendar.timer");
-        execLinuxCommand("systemctl --user start com.dde.calendarserver.calendar.timer");
+        execSystemdCommand(QStringList() << "enable" << "com.dde.calendarserver.calendar.timer");
+        execSystemdCommand(QStringList() << "start" << "com.dde.calendarserver.calendar.timer");
     }
 }
 
@@ -148,58 +171,33 @@ void CSystemdTimerControl::startDownloadTask(const QString &accountID, const int
 {
     qCInfo(ServiceLogger) << "Starting download task for accountID:" << accountID << "Minute:" << minute;
     {
-        //.service
-        QString fileName;
+        //.service - 使用模板创建
         QString remindCMD = QString("dbus-send --session --print-reply --dest=com.deepin.dataserver.Calendar "
                                     "/com/deepin/dataserver/Calendar/AccountManager "
                                     "com.deepin.dataserver.Calendar.AccountManager.downloadByAccountID string:%1 ")
                             .arg(accountID);
-        fileName = m_systemdPath + accountID + "_calendar.service";
-        qCDebug(ServiceLogger) << "Creating download service file:" << fileName << "Command:" << remindCMD;
-        QString content;
-        content += "[Unit]\n";
-        content += "Description = schedule download task.\n";
-        content += "[Service]\n";
-        content += QString("ExecStart = /bin/bash -c \"%1\"\n").arg(remindCMD);
-        content += "[Install]\n";
-        content += "WantedBy=user-session.target\n";
-        createFile(fileName, content);
+        QString serviceName = accountID + "_calendar";
+        createServiceFromTemplate(serviceName, remindCMD);
     }
 
     {
-        //timer
-        QString fileName;
-        fileName = m_systemdPath + accountID + "_calendar.timer";
-        qCDebug(ServiceLogger) << "Creating download timer file:" << fileName << "Minute:" << minute;
-        QString content;
-        content += "[Unit]\n";
-        content += "Description = schedule download task.\n";
-        content += "[Timer]\n";
-        content += "OnActiveSec = 1s\n";
-        content += QString("OnUnitInactiveSec = %1m\n").arg(minute);
-        content += "AccuracySec = 1us\n";
-        content += "RandomizedDelaySec = 0\n";
-        content += "[Install]\n";
-        content += "WantedBy = timers.target\n";
-        createFile(fileName, content);
+        //timer - 使用周期性定时器
+        QString timerName = accountID + "_calendar";
+        createPeriodicTimerFromTemplate(timerName, minute);
 
         const QString accountTimer = accountID + "_calendar.timer";
-        execLinuxCommand("systemctl --user enable " + accountTimer);
-        execLinuxCommand("systemctl --user start " + accountTimer);
+        execSystemdCommand(QStringList() << "enable" << accountTimer);
+        execSystemdCommand(QStringList() << "start" << accountTimer);
     }
 }
 
 void CSystemdTimerControl::stopDownloadTask(const QString &accountID)
 {
     qCInfo(ServiceLogger) << "Stopping download task for accountID:" << accountID;
-    QString fileName;
-    fileName = m_systemdPath + accountID + "_calendar.timer";
-    QString command("systemctl --user stop ");
-    command += accountID + "_calendar.timer";
-    execLinuxCommand(command);
-    QFile::remove(fileName);
-    QString fileServiceName = m_systemdPath + accountID + "_calendar.service";
-    QFile::remove(fileServiceName);
+    QString timerName = accountID + "_calendar.timer";
+    execSystemdCommand(QStringList() << "stop" << timerName);
+    QFile::remove(m_systemdPath + accountID + "_calendar.timer");
+    QFile::remove(m_systemdPath + accountID + "_calendar.service");
 }
 
 void CSystemdTimerControl::startUploadTask(const int minute)
@@ -207,62 +205,41 @@ void CSystemdTimerControl::startUploadTask(const int minute)
     qCInfo(ServiceLogger) << "Starting upload task. Minute:" << minute;
     {
         //如果定时器为激活状态则退出
-        QString cmd = "systemctl --user is-active " + UPLOADTASK_SERVICE;
-        qCDebug(ServiceLogger) << "Checking if upload task is active via command:" << cmd;
-        QString isActive = execLinuxCommand(cmd);
-        if (isActive == "active") {
+        QStringList checkArgs;
+        checkArgs << "is-active" << UPLOADTASK_SERVICE;
+        QString isActive = execSystemdCommand(checkArgs);
+        if (isActive.trimmed() == "active") {
             qCInfo(ServiceLogger) << "Upload task is already active, skipping start.";
             return;
         }
     }
     {
-        //.service
-        QString fileName;
+        //.service - 使用模板创建
         QString remindCMD = QString("dbus-send --session --print-reply --dest=com.deepin.dataserver.Calendar "
                                     "/com/deepin/dataserver/Calendar/AccountManager "
                                     "com.deepin.dataserver.Calendar.AccountManager.uploadNetWorkAccountData ");
-        fileName = m_systemdPath + UPLOADTASK_SERVICE;
-        qCDebug(ServiceLogger) << "Creating upload service file:" << fileName << "Command:" << remindCMD;
-        QString content;
-        content += "[Unit]\n";
-        content += "Description = schedule uploadNetWorkAccountData task.\n";
-        content += "[Service]\n";
-        content += QString("ExecStart = /bin/bash -c \"%1\"\n").arg(remindCMD);
-        createFile(fileName, content);
+        QString serviceName = UPLOADTASK_SERVICE.chopped(8); // 移除 ".service" 后缀
+        createServiceFromTemplate(serviceName, remindCMD);
     }
 
     {
-        //timer
-        QString fileName;
-        fileName = m_systemdPath + UPLOADTASK_TIMER;
-        qCDebug(ServiceLogger) << "Creating upload timer file:" << fileName << "Minute:" << minute;
-        QString content;
-        content += "[Unit]\n";
-        content += "Description = schedule uploadNetWorkAccountData task.\n";
-        content += "[Timer]\n";
-        content += "OnActiveSec = 1s\n";
-        content += QString("OnUnitInactiveSec = %1m\n").arg(minute);
-        content += "AccuracySec = 1us\n";
-        content += "RandomizedDelaySec = 0\n";
-        createFile(fileName, content);
+        //timer - 使用周期性定时器
+        QString timerName = UPLOADTASK_TIMER.chopped(6); // 移除 ".timer" 后缀
+        createPeriodicTimerFromTemplate(timerName, minute);
 
         qCInfo(ServiceLogger) << "Enabling and starting upload timer:" << UPLOADTASK_TIMER;
-        execLinuxCommand("systemctl --user enable " + UPLOADTASK_TIMER);
-        execLinuxCommand("systemctl --user start " + UPLOADTASK_TIMER);
+        execSystemdCommand(QStringList() << "enable" << UPLOADTASK_TIMER);
+        execSystemdCommand(QStringList() << "start" << UPLOADTASK_TIMER);
     }
 }
 
 void CSystemdTimerControl::stopUploadTask()
 {
     qCInfo(ServiceLogger) << "Stopping upload task";
-    QString fileName;
-    fileName = m_systemdPath + UPLOADTASK_TIMER;
-    QString command("systemctl --user stop ");
-    command += UPLOADTASK_TIMER;
-    execLinuxCommand(command);
-    QFile::remove(fileName);
-    QString fileServiceName = m_systemdPath + UPLOADTASK_SERVICE;
-    QFile::remove(fileServiceName);
+    execSystemdCommand(QStringList() << "stop" << UPLOADTASK_TIMER);
+    
+    QFile::remove(m_systemdPath + UPLOADTASK_TIMER);
+    QFile::remove(m_systemdPath + UPLOADTASK_SERVICE);
 }
 
 void CSystemdTimerControl::createPath()
@@ -285,50 +262,38 @@ void CSystemdTimerControl::createPath()
     }
 }
 
-QString CSystemdTimerControl::execLinuxCommand(const QString &command)
+QString CSystemdTimerControl::execDirectCommand(const QString &program, const QStringList &args)
 {
-    qCDebug(ServiceLogger) << "Executing linux command:" << command;
+    qCDebug(ServiceLogger) << "Executing command:" << program << "with args:" << args;
     QProcess process;
-    process.start("/bin/bash", QStringList() << "-c" << command);
-    process.waitForFinished();
-    QString strResult = process.readAllStandardOutput();
+
+    // 直接启动程序，不通过 shell
+    process.start(program, args);
+
+    // 设置超时时间（30秒）
+    if (!process.waitForStarted(5000)) {
+        qCWarning(ServiceLogger) << "Failed to start process:" << program << "Error:" << process.errorString();
+        return QString();
+    }
+
+    if (!process.waitForFinished(30000)) {
+        qCWarning(ServiceLogger) << "Process timeout:" << program;
+        process.terminate();
+        process.waitForFinished(1000);
+        return QString();
+    }
+
+    QString strResult = QString::fromUtf8(process.readAllStandardOutput());
     qCDebug(ServiceLogger) << "Command output:" << strResult;
     return strResult;
 }
 
-void CSystemdTimerControl::createService(const QString &name, const SystemDInfo &info)
+QString CSystemdTimerControl::execSystemdCommand(const QStringList &args)
 {
-    qCInfo(ServiceLogger) << "Creating service for name:" << name << "AccountID:" << info.accountID << "AlarmID:" << info.alarmID;
-    QString fileName;
-    QString remindCMD = QString("dbus-send --session --print-reply --dest=com.deepin.dataserver.Calendar "
-                                "/com/deepin/dataserver/Calendar/AccountManager "
-                                "com.deepin.dataserver.Calendar.AccountManager.remindJob string:%1 string:%2")
-                        .arg(info.accountID)
-                        .arg(info.alarmID);
-    fileName = m_systemdPath + name + ".service";
-    qCDebug(ServiceLogger) << "Creating service file:" << fileName << "Command:" << remindCMD;
-    QString content;
-    content += "[Unit]\n";
-    content += "Description = schedule reminder task.\n";
-    content += "[Service]\n";
-    content += QString("ExecStart = /bin/bash -c \"%1\"\n").arg(remindCMD);
-    createFile(fileName, content);
-}
-
-void CSystemdTimerControl::createTimer(const QString &name, const QDateTime &triggerTimer)
-{
-    qCInfo(ServiceLogger) << "Creating timer for name:" << name << "TriggerTimer:" << triggerTimer.toString("yyyy-MM-dd hh:mm:ss");
-    QString fileName;
-    fileName = m_systemdPath + name + ".timer";
-    qCDebug(ServiceLogger) << "Creating timer file:" << fileName;
-    QString content;
-    content += "[Unit]\n";
-    content += "Description = schedule reminder task.\n";
-    content += "[Timer]\n";
-    content += "AccuracySec = 1ms\n";
-    content += "RandomizedDelaySec = 0\n";
-    content += QString("OnCalendar = %1 \n").arg(triggerTimer.toString("yyyy-MM-dd hh:mm:ss"));
-    createFile(fileName, content);
+    // 使用 systemctl --user 模式
+    QStringList fullArgs;
+    fullArgs << "--user" << args;
+    return execDirectCommand("systemctl", fullArgs);
 }
 
 void CSystemdTimerControl::createFile(const QString &fileName, const QString &content)
@@ -339,4 +304,76 @@ void CSystemdTimerControl::createFile(const QString &fileName, const QString &co
     file.open(QIODevice::ReadWrite | QIODevice::Text);
     file.write(content.toLatin1());
     file.close();
+}
+QString CSystemdTimerControl::loadTemplateFile(const QString &templatePath)
+{
+    qCDebug(ServiceLogger) << "Loading template file from resources:" << templatePath;
+    QFile file(":/" + templatePath);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qCWarning(ServiceLogger) << "Failed to open template file:" << templatePath;
+        return QString();
+    }
+    
+    QString content = QString::fromLatin1(file.readAll());
+    file.close();
+    qCDebug(ServiceLogger) << "Template loaded successfully, size:" << content.size();
+    return content;
+}
+
+void CSystemdTimerControl::createServiceFromTemplate(const QString &name, const QString &command)
+{
+    qCInfo(ServiceLogger) << "Creating service from template for name:" << name;
+    QString fileName = m_systemdPath + name + ".service";
+    
+    // Load template and replace placeholder
+    QString templateContent = loadTemplateFile("systemd-service-template.service");
+    if (templateContent.isEmpty()) {
+        qCWarning(ServiceLogger) << "Template is empty, using fallback";
+        templateContent = "[Unit]\nDescription=Calendar Schedule Task\n[Service]\nExecStart=@COMMAND@\n";
+    }
+    
+    // Replace @COMMAND@ placeholder
+    QString content = templateContent.replace("@COMMAND@", command);
+    qCDebug(ServiceLogger) << "Creating service file:" << fileName << "with command:" << command;
+    createFile(fileName, content);
+}
+
+void CSystemdTimerControl::createTimerFromTemplate(const QString &name, const QDateTime &triggerTimer)
+{
+    qCInfo(ServiceLogger) << "Creating timer from template for name:" << name << "TriggerTimer:" << triggerTimer.toString("yyyy-MM-dd hh:mm:ss");
+    QString fileName = m_systemdPath + name + ".timer";
+    
+    // Load template and replace placeholder
+    QString templateContent = loadTemplateFile("systemd-timer-template.timer");
+    if (templateContent.isEmpty()) {
+        qCWarning(ServiceLogger) << "Template is empty, using fallback";
+        templateContent = "[Unit]\nDescription=Calendar Schedule Timer\n[Timer]\nAccuracySec=1ms\nRandomizedDelaySec=0\nOnCalendar=@SCHEDULE@\n[Install]\nWantedBy=timers.target\n";
+    }
+    
+    // Replace @SCHEDULE@ placeholder
+    QString schedule = triggerTimer.toString("yyyy-MM-dd hh:mm:ss");
+    QString content = templateContent.replace("@SCHEDULE@", schedule);
+    qCDebug(ServiceLogger) << "Creating timer file:" << fileName << "with schedule:" << schedule;
+    createFile(fileName, content);
+}
+
+void CSystemdTimerControl::createPeriodicTimerFromTemplate(const QString &name, int intervalMinutes)
+{
+    qCInfo(ServiceLogger) << "Creating periodic timer from template for name:" << name << "Interval:" << intervalMinutes << "minutes";
+    QString fileName = m_systemdPath + name + ".timer";
+    
+    // Create periodic timer content (based on old implementation)
+    QString content;
+    content += "[Unit]\n";
+    content += "Description=Calendar Periodic Task\n";
+    content += "[Timer]\n";
+    content += "OnActiveSec=1s\n";
+    content += QString("OnUnitInactiveSec=%1m\n").arg(intervalMinutes);
+    content += "AccuracySec=1us\n";
+    content += "RandomizedDelaySec=0\n";
+    content += "[Install]\n";
+    content += "WantedBy=timers.target\n";
+    
+    qCDebug(ServiceLogger) << "Creating periodic timer file:" << fileName << "with interval:" << intervalMinutes << "minutes";
+    createFile(fileName, content);
 }

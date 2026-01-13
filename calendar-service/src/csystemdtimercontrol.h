@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2022 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -90,27 +90,53 @@ private:
     void createPath();
 
     /**
-     * @brief execLinuxCommand      执行linux命令
-     * @param command
-     * @return
+     * @brief loadTemplateFile   从Qt资源文件加载模板内容
+     * @param templatePath       模板文件路径
+     * @return                   模板内容
      */
-    QString execLinuxCommand(const QString &command);
+    QString loadTemplateFile(const QString &templatePath);
 
     /**
-     * @brief createService
-     * 创建 .service文件
+     * @brief createServiceFromTemplate   从模板创建服务文件
+     * @param name                         服务名称
+     * @param command                      要执行的命令
      */
-    void createService(const QString &name, const SystemDInfo &info);
+    void createServiceFromTemplate(const QString &name, const QString &command);
+
     /**
-     * @brief createTimer
-     * 创建 .timer文件
+     * @brief createTimerFromTemplate   从模板创建定时器文件（一次性提醒）
+     * @param name                      定时器名称
+     * @param triggerTimer              触发时间
      */
-    void createTimer(const QString &name, const QDateTime &triggerTimer);
+    void createTimerFromTemplate(const QString &name, const QDateTime &triggerTimer);
+
+    /**
+     * @brief createPeriodicTimerFromTemplate   从模板创建周期性定时器文件（用于下载/上传任务）
+     * @param name                              定时器名称
+     * @param minuteMinutes                     重复间隔（分钟）
+     */
+    void createPeriodicTimerFromTemplate(const QString &name, int intervalMinutes);
+
+    /**
+     * @brief execSystemdCommand   执行systemctl命令，使用QProcess直接调用，不依赖shell
+     * @param args                systemctl命令的参数列表
+     * @return                    命令输出
+     */
+    QString execSystemdCommand(const QStringList &args);
+
+    /**
+     * @brief execDirectCommand    直接执行命令，不使用shell
+     * @param program              程序名
+     * @param args                 参数列表
+     * @return                     命令输出
+     */
+    QString execDirectCommand(const QString &program, const QStringList &args = QStringList());
 
     /**
      * @brief createFile        创建文件
      * @param fileName          文件名称
      * @param content           内容
+     * @note 此方法为内部辅助方法，供模板方法使用
      */
     void createFile(const QString &fileName, const QString &content);
 signals:

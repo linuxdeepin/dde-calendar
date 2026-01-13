@@ -9,5 +9,7 @@
         <file>holiday-cn/2024.json</file>
         <file>holiday-cn/2025.json</file>
         <file>holiday-cn/2026.json</file>
+        <file>systemd-service-template.service</file>
+        <file>systemd-timer-template.timer</file>
     </qresource>
 </RCC>

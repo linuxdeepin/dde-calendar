@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -181,7 +181,7 @@ int DAlarmManager::remindJob(const DRemindData::Ptr &remindData, const DSchedule
 
     auto argMake = [&](int operationNum, const QString & text, const QString & transText) {
         actionlist << text << transText;
-        hints.insert("x-deepin-action-" + text, QString("/bin/bash,-c,%1 int32:%2").arg(cmd).arg(operationNum));
+        hints.insert("x-deepin-action-" + text, QString("%1 int32:%2").arg(cmd).arg(operationNum));
     };
 
     QDateTime tm = QDateTime::currentDateTime();

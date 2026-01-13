@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -609,10 +609,14 @@ void DAccountManageModule::slotClientIsOpen()
     // qCDebug(ServiceLogger) << "Checking if client is open...";
     //如果日历界面不存在则退出
     QProcess process;
-    process.start("/bin/bash", QStringList() << "-c"
-                  << "pidof dde-calendar");
-    process.waitForFinished();
-    QString strResult = process.readAllStandardOutput();
+    process.start("pidof", QStringList() << "dde-calendar");
+
+    if (!process.waitForFinished(5000)) {
+        qCWarning(ServiceLogger) << "pidof command timeout";
+        return;
+    }
+
+    QString strResult = QString::fromUtf8(process.readAllStandardOutput()).trimmed();
 
     static QString preResult = "";
 

@@ -1,0 +1,7 @@
+[Unit]
+Description=Calendar Schedule Task
+
+[Service]
+ExecStart=@COMMAND@
+Restart=on-failure
+RestartSec=5s
