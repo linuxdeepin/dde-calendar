@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2019 - 2024 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -21,7 +21,13 @@ void ColorSeletorWidget::init()
     initView();
     m_colorGroup = new QButtonGroup(this);
     m_colorGroup->setExclusive(true);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
     connect(m_colorGroup, &QButtonGroup::idClicked, this, &ColorSeletorWidget::slotButtonClicked);
+#else
+    // Qt5.11.3 兼容：使用 buttonClicked 信号
+    connect(m_colorGroup, QOverload<QAbstractButton*>::of(&QButtonGroup::buttonClicked),
+            this, &ColorSeletorWidget::slotButtonClickedCompat);
+#endif
 
     m_colorInfo.reset(new DTypeColor());
     qCDebug(ClientLogger) << "ColorSeletorWidget initialization completed";
@@ -222,6 +228,15 @@ void ColorSeletorWidget::slotButtonClicked(int butId)
         qCDebug(ClientLogger) << "Color unchanged";
     }
 }
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+void ColorSeletorWidget::slotButtonClickedCompat(QAbstractButton *button)
+{
+    // Qt5.11.3 兼容：从 button 获取 id 并调用原函数
+    int butId = m_colorGroup->id(button);
+    slotButtonClicked(butId);
+}
+#endif
 
 void ColorSeletorWidget::slotAddColorButClicked()
 {

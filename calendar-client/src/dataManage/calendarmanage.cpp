@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -239,7 +239,13 @@ void CalendarManager::setYearBeginAndEndDate(const int year)
     qCDebug(ClientLogger) << "Date range set to:" << m_showDateRange.startDate.toString() << "to" << m_showDateRange.stopDate.toString();
 
     //更新日程
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+    // Qt5.12+: QDate 有 startOfDay() 方法
     gScheduleManager->resetSchedule(m_showDateRange.startDate.startOfDay(), m_showDateRange.stopDate.startOfDay());
+#else
+    // Qt5.11.3 兼容：使用 QDateTime 构造函数将 QDate 转为 QDateTime（时间设为 00:00:00）
+    gScheduleManager->resetSchedule(QDateTime(m_showDateRange.startDate), QDateTime(m_showDateRange.stopDate));
+#endif
     if (m_showLunar) {
         qCDebug(ClientLogger) << "Updating lunar and festival info for new date range";
         //刷新农历和节假日信息

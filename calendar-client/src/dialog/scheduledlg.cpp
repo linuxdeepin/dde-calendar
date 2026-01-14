@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2017 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2017 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -1341,18 +1341,34 @@ void CScheduleDlg::initConnection()
             &CScheduleDlg::sloteRpeatactivated);
     connect(m_typeComBox, QOverload<int>::of(&QComboBox::activated), this,
             &CScheduleDlg::slotTypeRpeatactivated);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    // Qt5.14+: 使用 textActivated 信号
     connect(m_accountComBox, &QComboBox::textActivated, this,
             &CScheduleDlg::slotAccoutBoxActivated);
+#else
+    // Qt5.11.3 兼容：使用 activated 信号，需指定 const QString& 版本
+    void (QComboBox::*activatedSignal)(const QString &) = &QComboBox::activated;
+    connect(m_accountComBox, activatedSignal, this, &CScheduleDlg::slotAccoutBoxActivated);
+#endif
     connect(m_beginDateEdit, &DDateEdit::userDateChanged, this, &CScheduleDlg::slotBDateEidtInfo);
     QShortcut *shortcut = new QShortcut(this);
     shortcut->setKey(QKeySequence(QLatin1String("ESC")));
     connect(shortcut, SIGNAL(activated()), this, SLOT(close()));
 
-    connect(m_beginTimeEdit, &CTimeEdit::signaleditingFinished, this,
-            &CScheduleDlg::slotBeginTimeChange);
+    connect(m_beginTimeEdit, &CTimeEdit::signaleditingFinished, this, &CScheduleDlg::slotBeginTimeChange);
     connect(m_endTimeEdit, &CTimeEdit::signaleditingFinished, this, &CScheduleDlg::slotEndTimeChange);
     connect(m_endDateEdit, &QDateEdit::userDateChanged, this, &CScheduleDlg::slotEndDateChange);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+    // Qt5.15+: 使用 idClicked 信号（推荐方式）
     connect(m_calendarCategoryRadioGroup, &QButtonGroup::idClicked, this, &CScheduleDlg::slotRadioBtnClicked);
+#else
+    // Qt5.11.3 兼容：使用 buttonClicked 信号，手动获取按钮ID
+    void (QButtonGroup::*buttonClickedSignal)(QAbstractButton *) = &QButtonGroup::buttonClicked;
+    connect(m_calendarCategoryRadioGroup, buttonClickedSignal, this,
+            [this](QAbstractButton *button) {
+                slotRadioBtnClicked(m_calendarCategoryRadioGroup->id(button));
+            });
+#endif
     connect(m_typeComBox, &JobTypeComboBox::signalAddTypeBtnClicked, this, &CScheduleDlg::slotBtnAddItemClicked);
     connect(m_typeComBox, &JobTypeComboBox::editTextChanged, this, &CScheduleDlg::slotTypeEditTextChanged);
     connect(m_typeComBox, &JobTypeComboBox::editingFinished, this, &CScheduleDlg::slotJobComboBoxEditingFinished);

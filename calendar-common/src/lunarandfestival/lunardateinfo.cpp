@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -201,7 +201,7 @@ LunarDateInfo::LunnarRRule LunarDateInfo::ParseRRule(const QString &rule)
     //局部变量初始化
     qCDebug(CommonLogger) << "Parsing recurrence rule:" << rule;
     LunnarRRule options = RRule_None;
-    QStringList rruleslist = rule.split(";", Qt::SkipEmptyParts);
+    QStringList rruleslist = rule.split(";", QT_SKIP_EMPTY_PARTS);
     //rpeat重复规则 0 无  1 每天 2 每个工作日 3 每周 4每月 5每年
     //type结束重复类型 0 永不 1  多少次结束  2 结束日期
     if (rruleslist.contains("FREQ=MONTHLY")) {

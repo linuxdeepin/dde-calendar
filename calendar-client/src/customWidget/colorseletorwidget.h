@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -68,6 +68,10 @@ signals:
 public slots:
     //色彩控件点击信号
     void slotButtonClicked(int butId);
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+    // Qt5.11.3 兼容槽函数
+    void slotButtonClickedCompat(QAbstractButton *button);
+#endif
     //添加自定义色彩控件点击信号
     void slotAddColorButClicked();
 

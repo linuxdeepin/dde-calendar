@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -362,7 +362,7 @@ DSchedule::List DDataBaseManagement::queryOldJobData(QSqlDatabase &db, const boo
             if (!remind.isEmpty()) {
                 qCDebug(ServiceLogger) << "Processing reminder for schedule:" << schedule->summary();
                 //提醒规则
-                QStringList strList = remind.split(";", Qt::SkipEmptyParts);
+                QStringList strList = remind.split(";", QT_SKIP_EMPTY_PARTS);
                 int remindNum = strList.at(0).toInt();
                 //小于0表示不提醒
                 if (remindNum >= 0) {

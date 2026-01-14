@@ -33,6 +33,13 @@
 #include <QDebug>
 #include <QString>
 
+// Qt5/Qt6 兼容性宏
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    #define QT_SKIP_EMPTY_PARTS Qt::SkipEmptyParts
+#else
+    #define QT_SKIP_EMPTY_PARTS QString::SkipEmptyParts
+#endif
+
 using namespace KCalendarCore;
 
 static const char APP_NAME_FOR_XPROPERTIES[] = "KCALCORE";
@@ -1747,7 +1754,7 @@ void ICalFormatImpl::readIncidence(icalcomponent *parent, const Incidence::Ptr &
             // We can't change that -- in order to retain backwards compatibility.
             text = icalproperty_get_categories(p);
             const QString val = QString::fromUtf8(text);
-            const QStringList lstVal = val.split(QLatin1Char(','), Qt::SkipEmptyParts);
+            const QStringList lstVal = val.split(QLatin1Char(','), QT_SKIP_EMPTY_PARTS);
             for (const QString &cat : lstVal) {
                 // ensure no duplicates
                 if (!categories.contains(cat)) {

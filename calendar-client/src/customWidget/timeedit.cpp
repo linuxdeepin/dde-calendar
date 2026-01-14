@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2015 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2015 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -196,8 +196,15 @@ void CTimeEdit::initConnection()
     connect(m_timeEdit, &CCustomTimeEdit::signalUpdateFocus, this, &CTimeEdit::slotFocusDraw);
     connect(m_timeEdit->getLineEdit(), &QLineEdit::editingFinished, this,
             &CTimeEdit::slotEditingFinished);
-    connect(this, &CTimeEdit::textActivated, this,
-            &CTimeEdit::slotActivated);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    // Qt5.14+: 使用 textActivated 信号
+    connect(this, &CTimeEdit::textActivated, this, &CTimeEdit::slotActivated);
+#else
+    // Qt5.11.3 兼容：使用 activated 信号
+    // 注意：需要强制转换为 void (QComboBox::*)(const QString &) 以解决重载歧义
+    void (QComboBox::*activatedSignal)(const QString &) = &QComboBox::activated;
+    connect(this, activatedSignal, this, &CTimeEdit::slotActivated);
+#endif
 }
 
 void CTimeEdit::showPopup()

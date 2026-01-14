@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -621,8 +621,13 @@ bool SyncStack::repairTable(const QString &table_name, const QString &connection
     };
 
     //本地数据的字段 都需要 在服务端数据库里
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
     auto local_header_info_keys = QSet<QString>(local_header_info.keys().begin(),local_header_info.keys().end());
     auto server_header_info_keys = QSet<QString>(server_header_info.keys().begin(),server_header_info.keys().end());
+#else
+    auto local_header_info_keys = QSet<QString>::fromList(local_header_info.keys());
+    auto server_header_info_keys = QSet<QString>::fromList(server_header_info.keys());
+#endif
     QSet<QString> header_ready = exceptFunc(local_header_info_keys, server_header_info_keys);
     if (header_ready.isEmpty())
         return true;

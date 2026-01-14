@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -324,7 +324,12 @@ bool changeScheduleTask::getNewInfo()
             qCDebug(PluginLogger) << "Processing start and end time changes";
             if (m_ToTime.at(0).hasDate) {
                 //设置修改的开始日期
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
                 m_NewInfo->setDtStart(m_ToTime.at(0).m_Date.startOfDay());
+#else
+                // Qt5.11.3 兼容：QDate::startOfDay() 从 Qt5.12+ 开始
+                m_NewInfo->setDtStart(QDateTime(m_ToTime.at(0).m_Date));
+#endif
             }
             //如果修改的DateTime带时间则设置该时间，否则保持原来的时间点
             if (m_ToTime.at(0).hasTime) {
@@ -333,7 +338,12 @@ bool changeScheduleTask::getNewInfo()
             //如果存在日期信息
             if (m_ToTime.at(1).hasDate) {
                 //设置修改的结束日期
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
                 m_NewInfo->setDtEnd(m_ToTime.at(1).m_Date.startOfDay());
+#else
+                // Qt5.11.3 兼容：QDate::startOfDay() 从 Qt5.12+ 开始
+                m_NewInfo->setDtEnd(QDateTime(m_ToTime.at(1).m_Date));
+#endif
             }
             //如果修改的DateTime带时间则设置该时间，否则保持原来的时间点
             if (m_ToTime.at(1).hasTime)

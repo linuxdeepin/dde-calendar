@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -9,6 +9,7 @@
 #include "lunarmanager.h"
 #include "scheduledatamanage.h"
 #include "schedulemanager.h"
+#include "commondef.h"
 
 #include <QWidget>
 #include <QtCore/QByteArray>
@@ -585,7 +586,7 @@ QString CalendarAdaptor::GetLunarInfo(const QString &date)
         QJsonArray yiArray;
         if (!huangLiInfo.mSuit.isEmpty()) {
             QStringList suitList =
-                huangLiInfo.mSuit.split(QRegularExpression("[,，、\\s]+"), Qt::SkipEmptyParts);
+                huangLiInfo.mSuit.split(QRegularExpression("[,，、\\s]+"), QT_SKIP_EMPTY_PARTS);
             for (const QString &yi : suitList) {
                 if (!yi.trimmed().isEmpty()) {
                     yiArray.append(yi.trimmed());
@@ -596,7 +597,7 @@ QString CalendarAdaptor::GetLunarInfo(const QString &date)
         QJsonArray jiArray;
         if (!huangLiInfo.mAvoid.isEmpty()) {
             QStringList avoidList =
-                huangLiInfo.mAvoid.split(QRegularExpression("[,，、\\s]+"), Qt::SkipEmptyParts);
+                huangLiInfo.mAvoid.split(QRegularExpression("[,，、\\s]+"), QT_SKIP_EMPTY_PARTS);
             for (const QString &ji : avoidList) {
                 if (!ji.trimmed().isEmpty()) {
                     jiArray.append(ji.trimmed());

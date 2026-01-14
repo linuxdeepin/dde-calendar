@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -807,10 +807,20 @@ QPair<QWidget *, QWidget *> CSettingDialog::createSyncTagRadioButton(QObject *ob
     //iconLabel
     QLabel *iconLabel = new QLabel;
     iconLabel->setFixedSize(24, 24);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
     if (DAccount::Account_Calendar == type)
         iconLabel->setPixmap(DIcon::loadNxPixmap(":/icons/deepin/builtin/icons/dde_calendar_sync_schedule_32px.svg"));
     if (DAccount::Account_Setting == type)
         iconLabel->setPixmap(DIcon::loadNxPixmap(":/icons/deepin/builtin/icons/dde_calendar_sync_setting_32px.svg"));
+#else
+    // Qt5.11.3 兼容：使用 QIcon 直接加载（DTK5.4 及以下版本）
+    QIcon icon;
+    if (DAccount::Account_Calendar == type)
+        icon = QIcon(":/icons/deepin/builtin/icons/dde_calendar_sync_schedule_32px.svg");
+    if (DAccount::Account_Setting == type)
+        icon = QIcon(":/icons/deepin/builtin/icons/dde_calendar_sync_setting_32px.svg");
+    iconLabel->setPixmap(icon.pixmap(24, 24));
+#endif
 
     //iconWidget
     QHBoxLayout *layout = new QHBoxLayout;

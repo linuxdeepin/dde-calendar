@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2022 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -157,12 +157,22 @@ bool JobTypeListView::viewportEvent(QEvent *event)
                         return true;
                     }
                     auto actionEdit = new DViewItemAction(Qt::AlignVCenter, QSize(20, 20), QSize(20, 20), true);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
                     actionEdit->setIcon(DIcon::loadNxPixmap(":/icons/deepin/builtin/icons/dde_calendar_edit_32px.svg"));
+#else
+                    // Qt5.11.3 兼容：旧版 DTK 不支持 loadNxPixmap，使用 QIcon 直接加载
+                    actionEdit->setIcon(QIcon(":/icons/deepin/builtin/icons/dde_calendar_edit_32px.svg"));
+#endif
                     actionEdit->setParent(this);
                     connect(actionEdit, &QAction::triggered, this, &JobTypeListView::slotUpdateJobType);
 
                     auto actionDelete = new DViewItemAction(Qt::AlignVCenter, QSize(20, 20), QSize(20, 20), true);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
                     actionDelete->setIcon(DIcon::loadNxPixmap(":/icons/deepin/builtin/icons/dde_calendar_delete_32px.svg"));
+#else
+                    // Qt5.11.3 兼容：旧版 DTK 不支持 loadNxPixmap，使用 QIcon 直接加载
+                    actionDelete->setIcon(QIcon(":/icons/deepin/builtin/icons/dde_calendar_delete_32px.svg"));
+#endif
                     actionDelete->setParent(this);
                     connect(actionDelete, &QAction::triggered, this, &JobTypeListView::slotDeleteJobType);
 

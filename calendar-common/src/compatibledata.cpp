@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -103,7 +103,7 @@ void DDE_Calendar::setAlarmByOldRemind(const DSchedule::Ptr &schedule, const QSt
 {
     qCDebug(CommonLogger) << "DDE_Calendar::setAlarmByOldRemind, remind:" << remind;
     //提醒规则
-    QStringList strList = remind.split(";", Qt::SkipEmptyParts);
+    QStringList strList = remind.split(";", QT_SKIP_EMPTY_PARTS);
 
     int remindNum = strList.at(0).toInt();
     //小于0表示不提醒

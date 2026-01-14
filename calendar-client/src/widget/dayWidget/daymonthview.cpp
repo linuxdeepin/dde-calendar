@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2015 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2015 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -365,8 +365,8 @@ void CDayMonthView::updateDateLunarDay()
         return;
     }
     m_currentLuna->setTextStr(m_huangLiInfo.mGanZhiYear + "年 " + "【" + m_huangLiInfo.mZodiac + "年】" + m_huangLiInfo.mGanZhiMonth + "月 " + m_huangLiInfo.mGanZhiDay + "日 ");
-    QStringList yiList = m_huangLiInfo.mSuit.split(".", Qt::SkipEmptyParts);
-    QStringList jiList = m_huangLiInfo.mAvoid.split(".", Qt::SkipEmptyParts);
+    QStringList yiList = m_huangLiInfo.mSuit.split(".", QT_SKIP_EMPTY_PARTS);
+    QStringList jiList = m_huangLiInfo.mAvoid.split(".", QT_SKIP_EMPTY_PARTS);
     m_yiLabel->setHuangLiText(yiList);
     m_jiLabel->setHuangLiText(jiList, 1);
 }

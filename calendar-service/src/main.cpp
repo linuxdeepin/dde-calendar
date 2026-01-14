@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -34,7 +34,7 @@ bool loadTranslator(QCoreApplication *app, QList<QLocale> localeFallback = QList
             app->installTranslator(translator);
             bsuccess = true;
         }
-        QStringList parseLocalNameList = locale.name().split("_", Qt::SkipEmptyParts);
+        QStringList parseLocalNameList = locale.name().split("_", QT_SKIP_EMPTY_PARTS);
         if (parseLocalNameList.length() > 0 && !bsuccess) {
             translateFilename = QString("%1_%2").arg(app->applicationName()).arg(parseLocalNameList.at(0));
             QString parseTranslatePath = QString("%1/%2.qm").arg(CalendarServiceTranslationsDir).arg(translateFilename);
