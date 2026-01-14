@@ -41,17 +41,17 @@ inline const char *getTimedateInterface()
     return "com.deepin.daemon.Timedate";
 }
 
-#define NETWORK_DBUS_INTEERFACENAME getTimedateInterface()
-#define NETWORK_DBUS_NAME getTimedateService()
-#define NETWORK_DBUS_PATH getTimedatePath()
+#define TIMEDATE_DBUS_INTERFACE getTimedateInterface()
+#define TIMEDATE_DBUS_SERVICE getTimedateService()
+#define TIMEDATE_DBUS_PATH getTimedatePath()
 
 DBusTimedate::DBusTimedate(QObject *parent)
-    : QDBusAbstractInterface(NETWORK_DBUS_NAME, NETWORK_DBUS_PATH, NETWORK_DBUS_INTEERFACENAME, QDBusConnection::sessionBus(), parent)
+    : QDBusAbstractInterface(TIMEDATE_DBUS_SERVICE, TIMEDATE_DBUS_PATH, TIMEDATE_DBUS_INTERFACE, QDBusConnection::sessionBus(), parent)
 {
     qCDebug(CommonLogger) << "DBusTimedate::DBusTimedate";
     //关联后端dbus触发信号
-    if (!QDBusConnection::sessionBus().connect(NETWORK_DBUS_NAME,
-                                               NETWORK_DBUS_PATH,
+    if (!QDBusConnection::sessionBus().connect(TIMEDATE_DBUS_SERVICE,
+                                               TIMEDATE_DBUS_PATH,
                                                "org.freedesktop.DBus.Properties",
                                                QLatin1String("PropertiesChanged"), this,
                                                SLOT(propertiesChanged(QDBusMessage)))) {
@@ -124,8 +124,8 @@ QVariant DBusTimedate::getPropertyByName(const char *porpertyName)
 bool DBusTimedate::getHasDateTimeFormat()
 {
     qCDebug(CommonLogger) << "DBusTimedate::getHasDateTimeFormat";
-    QDBusMessage msg = QDBusMessage::createMethodCall(NETWORK_DBUS_NAME,
-                                                      NETWORK_DBUS_PATH,
+    QDBusMessage msg = QDBusMessage::createMethodCall(TIMEDATE_DBUS_SERVICE,
+                                                      TIMEDATE_DBUS_PATH,
                                                       "org.freedesktop.DBus.Introspectable",
                                                       QStringLiteral("Introspect"));
 

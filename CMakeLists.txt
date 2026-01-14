@@ -7,18 +7,22 @@ endif()
 
 include(GNUInstallDirs)
 
-# check Qt version, support Qt5 default
-find_package(Qt6 QUIET)
+# Find Qt version
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
+message("   >>> Found Qt version: ${QT_VERSION_MAJOR}")
+# 检查并设置环境变量
+if(NOT DEFINED ENV{QT_SELECT})
+  set(ENV{QT_SELECT} "qt${QT_VERSION_MAJOR}")
+endif()
+message("   >>> Build with Qt version: $ENV{QT_SELECT}")
 
-if(Qt6_FOUND)
+if (QT_VERSION_MAJOR MATCHES 6)
   set(SUPPORT_QT6 TRUE)
-  set(QT_VERSION_MAJOR 6)
   set(DTK_VERSION_MAJOR 6)
 else()
-  set(QT_VERSION_MAJOR 5)
+  set(DTK_VERSION_MAJOR "")
 endif()
-
-message(STATUS "--- Enable Qt6: ${ENABLE_Qt6} Current use Qt Version: ${QT_VERSION_MAJOR}")
+message("   >>> Build with DTK: ${DTK_VERSION_MAJOR}")
 
 # compile flags
 if(CMAKE_BUILD_TYPE MATCHES Debug)

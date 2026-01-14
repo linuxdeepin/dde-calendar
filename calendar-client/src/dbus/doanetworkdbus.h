@@ -6,10 +6,7 @@
 #define DOANETWORKDBUS_H
 
 #include <QDBusAbstractInterface>
-
-#define NETWORK_DBUS_INTEERFACENAME "org.deepin.dde.Network1"
-#define NETWORK_DBUS_NAME "org.deepin.dde.Network1"
-#define NETWORK_DBUS_PATH "/org/deepin/dde/Network1"
+#include <QMetaType>
 
 class DOANetWorkDBus : public QDBusAbstractInterface
 {
@@ -41,5 +38,8 @@ public slots:
 private:
     QVariant getPropertyByName(const char *porpertyName);
 };
+
+// Declare the enum as a meta type for use in Qt signal/slot connections
+Q_DECLARE_METATYPE(DOANetWorkDBus::NetWorkState)
 
 #endif // DOANETWORKDBUS_H

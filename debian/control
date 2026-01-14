@@ -6,15 +6,14 @@ Build-Depends:
  debhelper-compat (=11),
  cmake,
  pkg-config,
-# deepin
  deepin-gettext-tools,
- libdtk6gui-dev,
- libdtk6widget-dev,
-# qt
- qt6-base-dev,
- qt6-tools-dev,
- qt6-tools-dev-tools,
- qt6-svg-dev,
+ qt6-base-dev | qtbase5-dev,
+ qt6-tools-dev | qttools5-dev,
+ qt6-tools-dev-tools | qttools5-dev-tools,
+ qt6-svg-dev | libqt5svg5-dev,
+ libdtk6gui-dev | libdtkgui-dev,
+ libdtk6widget-dev | libdtkwidget-dev,
+ libdtk6core-dev | libdtkcore-dev,
  libgtest-dev,
  libical-dev,
  libgcrypt20-dev
