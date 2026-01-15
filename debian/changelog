@@ -1,3 +1,12 @@
+dde-calendar (6.5.32) unstable; urgency=medium
+
+  * chore: Update version to 6.5.32
+  * fix: Fix Qt5/Qt6 build compatibility.
+  * fix: update Qt version detection and D-Bus interface configuration
+  * feat: remove bash codes add systemd template support.
+
+ -- re2zero <yangwu@uniontech.com>  Thu, 15 Jan 2026 19:07:09 +0800
+
 dde-calendar (6.5.31) unstable; urgency=medium
 
   * chore: Update version to 6.5.31
