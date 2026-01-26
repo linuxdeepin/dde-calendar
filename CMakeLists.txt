@@ -45,6 +45,8 @@ if(CMAKE_COVERAGE_ARG STREQUAL "CMAKE_COVERAGE_ARG_ON")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -fprofile-arcs -ftest-coverage")
 endif()
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
+
 macro(SUBDIRLIST result curdir)
   file(GLOB children RELATIVE ${curdir} ${curdir}/*)
   set(dirlist "")
@@ -68,53 +70,11 @@ ADD_SUBDIRECTORY(schedule-plugin)
 # ADD_SUBDIRECTORY(tests)
 
 # ##### Translation #####
-# There are translations on both the front and back ends, so take the translations to a higher level
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS LinguistTools)
-
-# In fact, it only makes sense to manually translate .ts files without automatic translation,
-# and you can create TS files with different language names, the same below
-if (SUPPORT_QT6)
-    get_target_property(LUPDATE_EXECUTABLE Qt6::lupdate LOCATION)
-    get_target_property(LRELEASE_EXECUTABLE Qt6::lrelease LOCATION)
-else()
-    find_program(LUPDATE_EXECUTABLE lupdate)
-    find_program(LRELEASE_EXECUTABLE lrelease)
-endif()
-
-set(TS_FILES "${CMAKE_CURRENT_SOURCE_DIR}/translations/${PROJECT_NAME}_en_US.ts")
-set(TS_SERVICEFILES "${CMAKE_CURRENT_SOURCE_DIR}/translations/${PROJECT_NAME}-service_en_US.ts")
-
-foreach(_ts_file ${TS_FILES})
-  execute_process(
-    COMMAND ${LUPDATE_EXECUTABLE} -recursive ${CMAKE_CURRENT_SOURCE_DIR}/calendar-client -ts ${_ts_file})
-endforeach()
-
-foreach(_ts_file ${TS_SERVICEFILES})
-  execute_process(
-    COMMAND ${LUPDATE_EXECUTABLE} -recursive ${CMAKE_CURRENT_SOURCE_DIR}/calendar-service -ts ${_ts_file})
-endforeach()
-
-file(GLOB DTNG_TS_FILES translations/*.ts)
-
-foreach(_ts_file ${DTNG_TS_FILES})
-  execute_process(COMMAND ${LRELEASE_EXECUTABLE} ${_ts_file})
-endforeach()
-
-# lrelease end
-if(SUPPORT_QT6)
-  qt_create_translation(DTNG_QM_FILES
-    ${DTNG_TS_FILES}
-    ${DTNG_QM_FILES}
-  )
-else()
-  qt5_create_translation(DTNG_QM_FILES
-    ${DTNG_TS_FILES}
-    ${DTNG_QM_FILES}
-  )
-endif()
-
-file(GLOB APP_QM_FILES "translations/*.qm")
-install(FILES ${APP_QM_FILES} DESTINATION ${CMAKE_INSTALL_DATADIR}/dde-calendar/translations)
+include(translation-generate)
+TRANSLATION_GENERATE(QM_FILES ${CMAKE_CURRENT_SOURCE_DIR}/translations)
+add_custom_target(${PROJECT_NAME}_qm_files DEPENDS ${QM_FILES})
+add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_qm_files)
+install(FILES ${QM_FILES} DESTINATION ${CMAKE_INSTALL_DATADIR}/dde-calendar/translations)
 
 # ##### Translation end #####
 

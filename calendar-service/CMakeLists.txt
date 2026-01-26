@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.7)
+include(qt-version-macros)
 project(dde-calendar-service)
 
 set(CMAKE_CXX_STANDARD 11)
@@ -34,11 +35,7 @@ endforeach()
 file(GLOB_RECURSE CALENDARSERVICE_SRCS ${CMAKE_CURRENT_LIST_DIR}/src/*.cpp)
 
 # 添加资源文件
-if(SUPPORT_QT6)
-    QT_ADD_RESOURCES(CALENDARSERVICE_SRCS ${APP_QRC})
-else()
-    QT5_ADD_RESOURCES(CALENDARSERVICE_SRCS ${APP_QRC})
-endif()
+QT_ADD_RESOURCES_MACRO(CALENDARSERVICE_SRCS ${APP_QRC})
 
 # 后端程序自动退出宏控制
 if(NOT(CMAKE_BUILD_TYPE MATCHES Debug))

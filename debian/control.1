@@ -7,13 +7,13 @@ Build-Depends:
  cmake,
  pkg-config,
  deepin-gettext-tools,
- qt6-base-dev,
- qt6-tools-dev,
- qt6-tools-dev-tools,
- qt6-svg-dev,
- libdtk6gui-dev,
- libdtk6widget-dev,
- libdtk6core-dev,
+ qtbase5-dev,
+ qttools5-dev,
+ qttools5-dev-tools,
+ libqt5svg5-dev,
+ libdtkgui-dev,
+ libdtkwidget-dev,
+ libdtkcore-dev,
  libgtest-dev,
  libical-dev,
  libgcrypt20-dev
@@ -25,7 +25,6 @@ Rules-Requires-Root: no
 Package: dde-calendar
 Architecture: linux-any
 Depends:
- dde-qt6integration,
  dde-api,
  ${misc:Depends},
  ${shlibs:Depends},

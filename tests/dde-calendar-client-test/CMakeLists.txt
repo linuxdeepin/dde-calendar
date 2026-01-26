@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.7)
+include(../qt-version-macros)
 
 # common resource names
 project(dde-calendar-client-test)
@@ -42,11 +43,7 @@ foreach(subdir ${all_src})
     include_directories(${APP_COMMON_DIR}/src/${subdir})
 endforeach()
 
-if(SUPPORT_QT6)
-    include_directories(${Qt6Gui_PRIVATE_INCLUDE_DIRS})
-else()
-    include_directories(${Qt5Gui_PRIVATE_INCLUDE_DIRS})
-endif()
+QT_INCLUDE_GUI_PRIVATE_DIRS()
 
 file(GLOB_RECURSE Calendar_CLIENTSRC ${APP_CLIENT_DIR}/src/*.cpp)
 file(GLOB_RECURSE Calendar_COMMONSRC ${APP_COMMON_DIR}/src/*.cpp)

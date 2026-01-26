@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.7)
+include(qt-version-macros)
 
 if(NOT DEFINED VERSION)
     if(SUPPORT_QT6)
@@ -67,13 +68,8 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Gui Widgets Svg DBus Netw
 
 set_source_files_properties(src/dbus/org.deepin.dde.ControlCenter.xml PROPERTIES CLASSNAME ControlCenterProxy)
 
-if(SUPPORT_QT6)
-    qt_add_dbus_interface(Calendar_SRC src/dbus/org.deepin.dde.ControlCenter.xml controlCenterProxy)
-    include_directories(${Qt6Gui_PRIVATE_INCLUDE_DIRS})
-else()
-    qt5_add_dbus_interface(Calendar_SRC src/dbus/org.deepin.dde.ControlCenter.xml controlCenterProxy)
-    include_directories(${Qt5Gui_PRIVATE_INCLUDE_DIRS})
-endif()
+QT_ADD_DBUS_INTERFACE(Calendar_SRC src/dbus/org.deepin.dde.ControlCenter.xml controlCenterProxy)
+QT_INCLUDE_GUI_PRIVATE_DIRS()
 
 # Tell CMake to create the executable
 add_executable(${PROJECT_NAME} ${Calendar_SRC} ${APP_QRC})

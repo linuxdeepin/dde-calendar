@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.7)
+include(qt-version-macros)
 
 if(NOT DEFINED VERSION)
     set(VERSION 1.2.2)
@@ -70,11 +71,7 @@ find_package(PkgConfig REQUIRED)
 find_package(Dtk${DTK_VERSION_MAJOR} REQUIRED COMPONENTS Widget)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Svg DBus)
 
-if(SUPPORT_QT6)
-    include_directories(${Qt6Gui_PRIVATE_INCLUDE_DIRS})
-else()
-    include_directories(${Qt5Gui_PRIVATE_INCLUDE_DIRS})
-endif()
+QT_INCLUDE_GUI_PRIVATE_DIRS()
 
 # Tell CMake to create the lib
 add_library(${PROJECT_NAME} SHARED ${Schedule_Plugin_SRC} ${APP_QRC} src/interface/service.h)
