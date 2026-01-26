@@ -14,10 +14,14 @@ AccountManager::AccountManager(QObject *parent)
     qCDebug(ClientLogger) << "Creating AccountManager";
     initConnect();
     m_dbusRequest->clientIsShow(true);
+
     if (isCommunityEdition()) {
         m_isSupportUid = false;
+        m_isSupportUidLoaded = true;
     } else {
-        m_isSupportUid = m_dbusRequest->getIsSupportUid();
+        m_isSupportUid = true;
+        m_isSupportUidLoaded = false;
+        m_dbusRequest->getIsSupportUidAsync();
     }
 }
 
@@ -26,12 +30,30 @@ void AccountManager::initConnect()
     qCDebug(ClientLogger) << "Initializing connections";
     connect(m_dbusRequest, &DbusAccountManagerRequest::signalGetAccountListFinish, this, &AccountManager::slotGetAccountListFinish);
     connect(m_dbusRequest, &DbusAccountManagerRequest::signalGetGeneralSettingsFinish, this, &AccountManager::slotGetGeneralSettingsFinish);
+    connect(m_dbusRequest, &DbusAccountManagerRequest::signalGetIsSupportUidFinish, this, &AccountManager::slotGetIsSupportUidFinish);
 }
 
 bool AccountManager::getIsSupportUid() const
 {
     qCDebug(ClientLogger) << "Getting isSupportUid:" << m_isSupportUid;
     return m_isSupportUid;
+}
+
+void AccountManager::slotGetIsSupportUidFinish(bool supported)
+{
+    m_isSupportUid = supported;
+    m_isSupportUidLoaded = true;
+
+    if (m_localAccountItem) {
+        auto account = m_localAccountItem->getAccount();
+        if (account) {
+            const QString expectedName = m_isSupportUid ? tr("Local account") : tr("Event types");
+            if (account->accountName() != expectedName) {
+                account->setAccountName(expectedName);
+                emit signalAccountUpdate();
+            }
+        }
+    }
 }
 
 AccountManager::~AccountManager()

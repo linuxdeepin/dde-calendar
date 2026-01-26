@@ -32,8 +32,7 @@ CYearWindow::CYearWindow(QWidget *parent)
     grabGesture(Qt::TapGesture);
     grabGesture(Qt::TapAndHoldGesture);
     grabGesture(Qt::PanGesture);
-    //设置年份显示
-    setYearData();
+    QTimer::singleShot(0, this, &CYearWindow::setYearData);
 }
 
 CYearWindow::~CYearWindow()
@@ -414,6 +413,7 @@ void CYearWindow::initConnection()
     connect(m_firstYearWidget, &YearFrame::signalMousePress, this, &CYearWindow::slotMousePress);
     connect(m_secondYearWidget, &YearFrame::signalMousePress, this, &CYearWindow::slotMousePress);
     connect(m_scheduleView, &CYearScheduleOutView::signalsViewSelectDate, this, &CYearWindow::slotMousePress);
+    connect(gLunarManager, &LunarManager::huangLiDayReady, this, &CYearWindow::onLunarInfoReady);
 }
 
 /**
@@ -659,14 +659,28 @@ void CYearWindow::setYearData()
     //如果是中文环境
     if (getShowLunar()) {
         m_yearLabel->setText(QString::number(getSelectDate().year()) + tr("Y"));
-        //获取农历信息
-        //获取农历信息
-        getLunarInfo();
-        //显示农历信息
-        setLunarShow();
+        gLunarManager->getHuangLiDayAsync(getSelectDate());
     } else {
         m_yearLabel->setText(QString::number(getSelectDate().year()));
     }
+}
+
+/**
+ * @brief CYearWindow::onLunarInfoReady 异步农历数据返回回调
+ * @param date 请求的日期
+ * @param info 返回的农历信息
+ */
+void CYearWindow::onLunarInfoReady(const QDate &date, const CaHuangLiDayInfo &info)
+{
+    //只处理当前选中日期的数据
+    if (date != getSelectDate()) {
+        return;
+    }
+    //更新成员变量
+    m_lunarYear = QString("-%0%1年-").arg(info.mGanZhiYear).arg(info.mZodiac);
+    m_lunarDay = QString("-农历%0%1-").arg(info.mLunarMonthName).arg(info.mLunarDayName);
+    //显示农历信息
+    setLunarShow();
 }
 
 /**

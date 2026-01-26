@@ -81,6 +81,8 @@ private slots:
     void slotnext();
     //返回到当前时间
     void slottoday();
+    //处理异步农历数据返回
+    void onLunarInfoReady(const QDate &date, const CaHuangLiDayInfo &info);
 public slots:
     //隐藏日程浮框
     void slotSetScheduleHide();

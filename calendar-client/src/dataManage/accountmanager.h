@@ -75,6 +75,8 @@ public slots:
     void slotGetAccountListFinish(DAccount::List accountList);
     //获取通用设置完成事件
     void slotGetGeneralSettingsFinish(DCalendarGeneralSettings::Ptr ptr);
+    //获取是否支持UID完成事件
+    void slotGetIsSupportUidFinish(bool supported);
 
 protected:
     explicit AccountManager(QObject *parent = nullptr);
@@ -90,6 +92,7 @@ private:
 
     DbusAccountManagerRequest *m_dbusRequest;
     bool m_isSupportUid = false;
+    bool m_isSupportUidLoaded = false;
 };
 
 #define gAccountManager AccountManager::getInstance()

@@ -64,7 +64,7 @@ file(GLOB_RECURSE Calendar_SRC ${CMAKE_CURRENT_LIST_DIR}/src/*.cpp)
 
 find_package(PkgConfig REQUIRED)
 find_package(Dtk${DTK_VERSION_MAJOR} REQUIRED Core Gui Widget)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Gui Widgets Svg DBus Network)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Gui Widgets Svg DBus Network Concurrent)
 
 set_source_files_properties(src/dbus/org.deepin.dde.ControlCenter.xml PROPERTIES CLASSNAME ControlCenterProxy)
 
@@ -84,6 +84,7 @@ target_link_libraries(${PROJECT_NAME}
     Qt${QT_VERSION_MAJOR}::Svg
     Qt${QT_VERSION_MAJOR}::DBus
     Qt${QT_VERSION_MAJOR}::Network
+    Qt${QT_VERSION_MAJOR}::Concurrent
 )
 
 # 修改dbus服务文件

@@ -33,6 +33,7 @@ int main(int argc, char *argv[])
         setenv("XDG_CURRENT_DESKTOP", "Deepin", 1);
     }
     QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+    QApplication::setAttribute(Qt::AA_ForceRasterWidgets, true);
     //适配deepin-turbo启动加速
     DApplication *app = nullptr;
 #if(DTK_VERSION < DTK_VERSION_CHECK(5,4,0,0))

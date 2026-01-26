@@ -4,6 +4,8 @@
 
 #include "lunarmanager.h"
 #include "commondef.h"
+#include <QFutureWatcher>
+#include <QtConcurrent>
 
 LunarManager::LunarManager(QObject *parent) : QObject(parent)
   , m_dbusRequest(new DbusHuangLiRequest)
@@ -131,57 +133,72 @@ QString LunarManager::getHuangLiShortName(const QDate &date)
 void LunarManager::queryLunarInfo(const QDate &startDate, const QDate &stopDate)
 {
     qCDebug(ClientLogger) << "Querying lunar info from" << startDate.toString() << "to" << stopDate.toString();
-    QMap<QDate, CaHuangLiDayInfo> lunarInfoMap;
-    CaHuangLiMonthInfo monthInfo;
     const int offsetMonth = (stopDate.year() - startDate.year()) * 12 + stopDate.month() - startDate.month();
-    qCDebug(ClientLogger) << "Offset months:" << offsetMonth;
-    //获取开始时间至结束时间所在月的农历和节假日信息
-    for (int i = 0; i <= offsetMonth; ++i) {
-        monthInfo.clear();
-        QDate beginDate = startDate.addMonths(i);
-        // qCDebug(ClientLogger) << "Getting HuangLi month for:" << beginDate.toString();
-        getHuangLiMonth(beginDate, monthInfo);
+    
+    QFutureWatcher<QMap<QDate, CaHuangLiDayInfo>> *w = new QFutureWatcher<QMap<QDate, CaHuangLiDayInfo>>(this);
+    QFuture<QMap<QDate, CaHuangLiDayInfo>> future = QtConcurrent::run([offsetMonth, startDate]() -> QMap<QDate, CaHuangLiDayInfo> {
+        auto dbus = new DbusHuangLiRequest();
+        QMap<QDate, CaHuangLiDayInfo> lunarInfoMap;
+        CaHuangLiMonthInfo monthInfo;
+        //获取开始时间至结束时间所在月的农历和节假日信息
+        for (int i = 0; i <= offsetMonth; ++i) {
+            monthInfo.clear();
+            QDate beginDate = startDate.addMonths(i);
+            dbus->getHuangLiMonth(beginDate.year(), beginDate.month(), false, monthInfo);
 
-        QDate getDate(beginDate.year(), beginDate.month(), 1);
-        for (int j = 0; j < monthInfo.mDays; ++j) {
-            lunarInfoMap[getDate.addDays(j)] = monthInfo.mCaLunarDayInfo.at(j);
+            QDate getDate(beginDate.year(), beginDate.month(), 1);
+            for (int j = 0; j < monthInfo.mDays; ++j) {
+                lunarInfoMap[getDate.addDays(j)] = monthInfo.mCaLunarDayInfo.at(j);
+            }
         }
-    }
-    qCDebug(ClientLogger) << "Lunar info query completed with" << lunarInfoMap.size() << "days";
-    m_lunarInfoMap = lunarInfoMap;
+        delete dbus;
+        return lunarInfoMap;
+    });
+    connect(w, &QFutureWatcher<QMap<QDate, CaHuangLiDayInfo>>::finished, this, [this, w]() {
+        m_lunarInfoMap = w->result();
+        qCDebug(ClientLogger) << "Lunar info query completed with" << m_lunarInfoMap.size() << "days";
+        w->deleteLater();
+    });
+    w->setFuture(future);
 }
 
 /**
  * @brief LunarManager::queryFestivalInfo
- * 查询节假日信息
+ * 查询节假日信息（异步）
  * @param startDate 开始时间
  * @param stopDate 结束时间
  */
 void LunarManager::queryFestivalInfo(const QDate &startDate, const QDate &stopDate)
 {
     qCDebug(ClientLogger) << "Querying festival info from" << startDate.toString() << "to" << stopDate.toString();
-    QVector<FestivalInfo> festivallist{};
-
     const int offsetMonth = (stopDate.year() - startDate.year()) * 12 + stopDate.month() - startDate.month();
-    qCDebug(ClientLogger) << "Offset months:" << offsetMonth;
-
-    for (int i = 0; i <= offsetMonth; ++i) {
-        FestivalInfo info;
-        QDate beginDate = startDate.addMonths(i);
-        // qCDebug(ClientLogger) << "Getting festival month for:" << beginDate.toString();
-        if (getFestivalMonth(beginDate, info)) {
-            festivallist.push_back(info);
+    
+    QFutureWatcher<QVector<FestivalInfo>> *w = new QFutureWatcher<QVector<FestivalInfo>>(this);
+    QFuture<QVector<FestivalInfo>> future = QtConcurrent::run([offsetMonth, startDate]() -> QVector<FestivalInfo> {
+        auto dbus = new DbusHuangLiRequest();
+        QVector<FestivalInfo> festivallist{};
+        for (int i = 0; i <= offsetMonth; ++i) {
+            FestivalInfo info;
+            QDate beginDate = startDate.addMonths(i);
+            if (dbus->getFestivalMonth(quint32(beginDate.year()), quint32(beginDate.month()), info)) {
+                festivallist.push_back(info);
+            }
         }
-    }
-
-    qCDebug(ClientLogger) << "Festival info query completed with" << festivallist.size() << "months";
-    m_festivalDateMap.clear();
-    for (FestivalInfo info : festivallist) {
-        for (HolidayInfo h : info.listHoliday) {
-            m_festivalDateMap[h.date] = h.status;
+        delete dbus;
+        return festivallist;
+    });
+    connect(w, &QFutureWatcher<QVector<FestivalInfo>>::finished, this, [this, w]() {
+        auto festivallist = w->result();
+        m_festivalDateMap.clear();
+        for (const FestivalInfo &info : festivallist) {
+            for (const HolidayInfo &h : info.listHoliday) {
+                m_festivalDateMap[h.date] = h.status;
+            }
         }
-    }
-    qCDebug(ClientLogger) << "Festival date map updated with" << m_festivalDateMap.size() << "days";
+        qCDebug(ClientLogger) << "Festival date map updated with" << m_festivalDateMap.size() << "days";
+        w->deleteLater();
+    });
+    w->setFuture(future);
 }
 
 /**
@@ -203,6 +220,40 @@ CaHuangLiDayInfo LunarManager::getHuangLiDay(const QDate &date)
         getHuangLiDay(date, info);
     }
     return info;
+}
+
+/**
+ * @brief LunarManager::getHuangLiDayAsync
+ * 异步获取农历信息，避免阻塞 UI
+ * @param date 获取日期
+ */
+void LunarManager::getHuangLiDayAsync(const QDate &date)
+{
+    qCDebug(ClientLogger) << "Getting HuangLi day info async for date:" << date.toString();
+    if (m_lunarInfoMap.contains(date)) {
+        qCDebug(ClientLogger) << "Found HuangLi day info in cache, emitting directly";
+        emit huangLiDayReady(date, m_lunarInfoMap[date]);
+        return;
+    }
+    
+    //异步获取农历数据
+    QFutureWatcher<CaHuangLiDayInfo> *w = new QFutureWatcher<CaHuangLiDayInfo>(this);
+    QFuture<CaHuangLiDayInfo> future = QtConcurrent::run([date]() -> CaHuangLiDayInfo {
+        auto dbus = new DbusHuangLiRequest();
+        CaHuangLiDayInfo info;
+        dbus->getHuangLiDay(date.year(), date.month(), date.day(), info);
+        delete dbus;
+        return info;
+    });
+    connect(w, &QFutureWatcher<CaHuangLiDayInfo>::finished, this, [this, w, date]() {
+        CaHuangLiDayInfo info = w->result();
+        //缓存结果
+        m_lunarInfoMap[date] = info;
+        qCDebug(ClientLogger) << "Async HuangLi day info ready for date:" << date.toString();
+        emit huangLiDayReady(date, info);
+        w->deleteLater();
+    });
+    w->setFuture(future);
 }
 
 /**

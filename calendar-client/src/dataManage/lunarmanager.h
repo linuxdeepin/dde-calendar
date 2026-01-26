@@ -43,8 +43,12 @@ public:
     CaHuangLiDayInfo getHuangLiDay(const QDate &date);
     //获取一定时间范围内的农历数据
     QMap<QDate, CaHuangLiDayInfo> getHuangLiDayMap(const QDate &startDate, const QDate &stopDate);
+    //异步获取当天农历数据
+    void getHuangLiDayAsync(const QDate &date);
 
 signals:
+    //异步获取农历数据完成信号
+    void huangLiDayReady(const QDate &date, const CaHuangLiDayInfo &info);
 
 public slots:
 

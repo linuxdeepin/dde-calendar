@@ -5,9 +5,8 @@
 #include "dbusaccountrequest.h"
 #include "commondef.h"
 #include <QDBusInterface>
-
+#include <QDBusMessage>
 #include <QDBusReply>
-#include <QDBusInterface>
 #include <QtDebug>
 
 DbusAccountRequest::DbusAccountRequest(const QString &path, const QString &interface, QObject *parent)
@@ -32,8 +31,14 @@ void DbusAccountRequest::getAccountInfo()
 void DbusAccountRequest::setAccountExpandStatus(bool expandStatus)
 {
     qCDebug(ClientLogger) << "Setting account expand status to:" << expandStatus << "for path:" << this->path();
-    QDBusInterface interface(this->service(), this->path(), this->interface(), QDBusConnection::sessionBus(), this);
-    interface.setProperty("isExpand", QVariant(expandStatus));
+    QDBusMessage msg = QDBusMessage::createMethodCall(
+        this->service(),
+        this->path(),
+        "org.freedesktop.DBus.Properties",
+        "Set"
+    );
+    msg << this->interface() << "isExpand" << QVariant::fromValue(QDBusVariant(expandStatus));
+    QDBusConnection::sessionBus().asyncCall(msg);
 }
 
 void DbusAccountRequest::setAccountState(DAccount::AccountStates state)

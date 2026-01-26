@@ -41,6 +41,8 @@ public:
     void clientIsShow(bool isShow);
     //获取是否支持云同步
     bool getIsSupportUid();
+    //异步获取是否支持云同步
+    void getIsSupportUidAsync();
 
     //帐户登录
     void login();
@@ -52,6 +54,8 @@ signals:
     void signalGetAccountListFinish(DAccount::List accountList);
     //获取通用设置完成信号
     void signalGetGeneralSettingsFinish(DCalendarGeneralSettings::Ptr ptr);
+    //获取是否支持UID完成信号
+    void signalGetIsSupportUidFinish(bool supported);
 
 public slots:
     //dbus调用完成事件

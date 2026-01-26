@@ -175,6 +175,11 @@ bool DbusAccountManagerRequest::getIsSupportUid()
     }
 }
 
+void DbusAccountManagerRequest::getIsSupportUidAsync()
+{
+    asyncCall("isSupportUid");
+}
+
 /**
  * @brief DbusAccountManagerRequest::slotCallFinished
  * dbus调用完成事件
@@ -217,6 +222,10 @@ void DbusAccountManagerRequest::slotCallFinished(CDBusPendingCallWatcher *call)
             qCWarning(ClientLogger) << "Failed to parse calendar general settings JSON";
             ret = 2;
         }
+    } else if (call->getmember() == "isSupportUid") {
+        QDBusPendingReply<bool> reply = *call;
+        const bool supported = reply.argumentAt<0>();
+        emit signalGetIsSupportUidFinish(supported);
     } else if (call->getmember() == "setCalendarGeneralSettings") {
         qCDebug(ClientLogger) << "Processing setCalendarGeneralSettings response";
         canCall = false;

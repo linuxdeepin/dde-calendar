@@ -59,6 +59,8 @@ private:
     void initUI();
     void initConnection();
     void initData();
+    void initLater(); 
+    void startDeferredViewDataInit();
     //创建视图
     void createview();
     //重置界面大小
@@ -70,6 +72,7 @@ protected:
     void changeEvent(QEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
     bool event(QEvent *event) override;
+    void paintEvent(QPaintEvent *event) override;
 private slots:
     //获取程序状态
     void slotapplicationStateChanged(Qt::ApplicationState state);
@@ -139,7 +142,10 @@ private:
     QPoint m_startPos;
 
     CMyScheduleView *m_dlg = Q_NULLPTR;
-
+    
+    bool m_firstPaintDone = false; 
+    bool m_deferredViewDataInitDone = false;
+    bool m_hasInit = false;
 };
 
 #endif // CALENDARMAINWINDOW_H

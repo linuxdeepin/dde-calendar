@@ -83,9 +83,9 @@ Calendarmainwindow::Calendarmainwindow(int index, QWidget *w)
 {
     qCDebug(ClientLogger) << "Calendarmainwindow::Calendarmainwindow, index:" << index;
     setContentsMargins(QMargins(0, 0, 0, 0));
-    initUI();
-    initConnection();
-    initData();
+    //初始化窗口数据
+    QTimer::singleShot(0, this, &Calendarmainwindow::initLater);
+
     setMinimumSize(CalendarMWidth, CalendarMHeight);
     setWindowTitle(tr("Calendar"));
     new CalendarAdaptor(this);
@@ -145,6 +145,16 @@ Calendarmainwindow::Calendarmainwindow(int index, QWidget *w)
     CalendarGlobalEnv::getGlobalEnv()->registerKey(DDECalendar::CursorPointKey, QPoint());
     //保存主窗口指针
     CalendarGlobalEnv::getGlobalEnv()->registerKey("MainWindow", QVariant::fromValue(static_cast<void *>(this)));
+}
+
+void Calendarmainwindow::initLater()
+{
+    initUI();
+    initConnection();
+    initData();
+    m_hasInit = true;
+    resizeView();
+    slotTheme(DGuiApplicationHelper::instance()->themeType());
 }
 
 Calendarmainwindow::~Calendarmainwindow()
@@ -284,6 +294,9 @@ void Calendarmainwindow::setSearchWidth(int w)
 void Calendarmainwindow::slotTheme(int type)
 {
     qCDebug(ClientLogger) << "Setting application theme" << "type:" << type;
+    if (!m_contentBackground || !m_transparentFrame) {
+        return;
+    }
     if (type == 0) {
         type = DGuiApplicationHelper::instance()->themeType();
     }
@@ -316,11 +329,11 @@ void Calendarmainwindow::slotTheme(int type)
         m_transparentFrame->setBackgroundRole(DPalette::Window);
     }
     CScheduleDataManage::getScheduleDataManage()->setTheMe(type);
-    m_yearwindow->setTheMe(type);
-    m_monthWindow->setTheMe(type);
-    m_weekWindow->setTheMe(type);
-    m_DayWindow->setTheMe(type);
-    m_scheduleSearchView->setTheMe(type);
+    if (m_yearwindow) m_yearwindow->setTheMe(type);
+    if (m_monthWindow) m_monthWindow->setTheMe(type);
+    if (m_weekWindow) m_weekWindow->setTheMe(type);
+    if (m_DayWindow) m_DayWindow->setTheMe(type);
+    if (m_scheduleSearchView) m_scheduleSearchView->setTheMe(type);
 }
 
 void Calendarmainwindow::slotOpenSchedule(QString job)
@@ -521,20 +534,16 @@ void Calendarmainwindow::createview()
     m_yearwindow = new CYearWindow(this);
     m_yearwindow->setObjectName("yearwindow");
     m_yearwindow->setAccessibleName("yearwindow");
-    m_yearwindow->updateData();
     m_stackWidget->addWidget(m_yearwindow);
     m_monthWindow = new CMonthWindow(this);
     m_monthWindow->setObjectName("monthWindow");
     m_monthWindow->setAccessibleName("monthWindow");
-    m_monthWindow->updateData();
     m_stackWidget->addWidget(m_monthWindow);
 
     m_weekWindow  = new CWeekWindow(this);
-    m_weekWindow->updateData();
     m_stackWidget->addWidget(m_weekWindow);
 
     m_DayWindow = new CDayWindow;
-    m_DayWindow->updateData();
     m_stackWidget->addWidget(m_DayWindow);
 
     //如果默认视图不在范围内则设置为月窗口显示
@@ -544,15 +553,56 @@ void Calendarmainwindow::createview()
     }
     m_stackWidget->setCurrentIndex(m_defaultIndex);
     m_buttonBox->button(m_defaultIndex)->setChecked(true);
-    //如果为日视图则设置非全天时间定位
-    if (m_defaultIndex == DDECalendar::CalendarDayWindow) {
-        qCDebug(ClientLogger) << "Default view is DayWindow, setting time";
-        m_DayWindow->setTime();
+}
+
+void Calendarmainwindow::startDeferredViewDataInit()
+{
+    if (m_deferredViewDataInitDone) {
+        return;
     }
+    m_deferredViewDataInitDone = true;
+
+    // Keep startup responsive: update current view first, then other views in small batches.
+    auto updateCurrentView = [this] {
+        const int idx = m_stackWidget ? m_stackWidget->currentIndex() : -1;
+        switch (idx) {
+        case DDECalendar::CalendarYearWindow:
+            if (m_yearwindow) m_yearwindow->updateData();
+            break;
+        case DDECalendar::CalendarMonthWindow:
+            if (m_monthWindow) m_monthWindow->updateData();
+            break;
+        case DDECalendar::CalendarWeekWindow:
+            if (m_weekWindow) m_weekWindow->updateData();
+            break;
+        case DDECalendar::CalendarDayWindow:
+            if (m_DayWindow) {
+                m_DayWindow->updateData();
+                // Default day view needs time positioning after data is ready.
+                m_DayWindow->setTime();
+            }
+            break;
+        default:
+            break;
+        }
+    };
+
+    updateCurrentView();
+
+    QTimer::singleShot(10, this, [this] {
+        const int idx = m_stackWidget ? m_stackWidget->currentIndex() : -1;
+        if (idx != DDECalendar::CalendarYearWindow && m_yearwindow) m_yearwindow->updateData();
+        if (idx != DDECalendar::CalendarMonthWindow && m_monthWindow) m_monthWindow->updateData();
+        if (idx != DDECalendar::CalendarWeekWindow && m_weekWindow) m_weekWindow->updateData();
+        if (idx != DDECalendar::CalendarDayWindow && m_DayWindow) m_DayWindow->updateData();
+    });
 }
 
 void Calendarmainwindow::resizeView()
 {
+    if (!m_titleWidget) {
+        return;
+    }
     // qCDebug(ClientLogger) << "Calendarmainwindow::resizeView";
     //帐户列表窗口（A），视图窗口(B),搜索结果窗口(C)
     //窗口由大变小先隐藏A，在隐藏B
@@ -617,10 +667,14 @@ void Calendarmainwindow::resizeView()
 void Calendarmainwindow::setScheduleHide()
 {
     // qCDebug(ClientLogger) << "Calendarmainwindow::setScheduleHide";
-    m_yearwindow->slotSetScheduleHide();
-    m_monthWindow->slotScheduleHide();
-    m_weekWindow->slotScheduleHide();
-    m_DayWindow->slotScheduleHide();
+    if (m_yearwindow)
+        m_yearwindow->slotSetScheduleHide();
+    if (m_monthWindow)
+        m_monthWindow->slotScheduleHide();
+    if (m_weekWindow)
+        m_weekWindow->slotScheduleHide();
+    if (m_DayWindow)
+        m_DayWindow->slotScheduleHide();
 }
 
 void Calendarmainwindow::resizeEvent(QResizeEvent *event)
@@ -767,6 +821,10 @@ void Calendarmainwindow::slotSearchSelectSchedule(const DSchedule::Ptr &schedule
 void Calendarmainwindow::slotViewtransparentFrame(const bool isShow)
 {
     qCDebug(ClientLogger) << "Calendarmainwindow::slotViewtransparentFrame, isShow:" << isShow;
+    if (!m_transparentFrame) {
+        qCWarning(ClientLogger) << "Calendarmainwindow's not inited,be careful!" << isShow;
+        return;
+    }
     if (isShow) {
         m_transparentFrame->resize(width(), height() - 50);
         m_transparentFrame->move(0, 50);
@@ -1060,5 +1118,14 @@ void Calendarmainwindow::slotAccountUpdate()
     AccountItem::Ptr uidAccount = gUosAccountItem;
     if (!uidAccount.isNull()) {
         connect(uidAccount.get(), &AccountItem::signalSyncStateChange, this, &Calendarmainwindow::slotShowSyncToast);
+    }
+}
+
+void Calendarmainwindow::paintEvent(QPaintEvent *event)
+{
+    DMainWindow::paintEvent(event);
+    if (!m_firstPaintDone) {
+        m_firstPaintDone = true;
+        QTimer::singleShot(0, this, &Calendarmainwindow::startDeferredViewDataInit);
     }
 }
