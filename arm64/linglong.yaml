@@ -21,6 +21,9 @@ command:
 build: |
   bash ./install_dep linglong/sources "${PREFIX}"
 
+  # 修改路径
+  sed -i 's|set(QT_LRELEASE "/lib/qt${QT_VERSION_MAJOR}/bin/lrelease")|set(QT_LRELEASE "lrelease")|g' cmake/translation-generate.cmake
+
   VERSION=$(head -1 debian/changelog | awk -F'[()]' '{print $2}')
   cmake -B build ${conf_args} \
         -DCMAKE_SAFETYTEST_ARG="CMAKE_SAFETYTEST_ARG_OFF" \
