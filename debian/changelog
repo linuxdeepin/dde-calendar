@@ -1,3 +1,12 @@
+dde-calendar (6.5.33) unstable; urgency=medium
+
+  * chore: Update compiler flags for security enhancements
+  * fix: Fix linglong build fail
+  * fix: Enhance asynchronous data handling in calendar client
+  * build(cmake): refactor Qt version compatibility
+
+ -- wangrong <wangrong@uniontech.com>  Wed, 04 Feb 2026 17:16:58 +0800
+
 dde-calendar (6.5.32) unstable; urgency=medium
 
   * chore: Update version to 6.5.32
