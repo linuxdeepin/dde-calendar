@@ -72,11 +72,15 @@ macro(SUBDIRLIST result curdir)
   set(${result} ${dirlist})
 endmacro()
 
+option(WITH_AIASSISTANT_PLUGIN "Build with AI assistant (schedule-plugin) support" ON)
+
 ADD_SUBDIRECTORY(3rdparty/kcalendarcore)
 ADD_SUBDIRECTORY(calendar-common)
 ADD_SUBDIRECTORY(calendar-client)
 ADD_SUBDIRECTORY(calendar-service)
-ADD_SUBDIRECTORY(schedule-plugin)
+if(WITH_AIASSISTANT_PLUGIN)
+    ADD_SUBDIRECTORY(schedule-plugin)
+endif()
 
 # FIXME: Unit tests have not been maintained for a long time
 # ADD_SUBDIRECTORY(tests)
