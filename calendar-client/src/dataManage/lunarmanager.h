@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -49,6 +49,10 @@ public:
 signals:
     //异步获取农历数据完成信号
     void huangLiDayReady(const QDate &date, const CaHuangLiDayInfo &info);
+    //农历信息查询完成信号
+    void lunarInfoReady();
+    //节假日信息查询完成信号
+    void festivalInfoReady();
 
 public slots:
 

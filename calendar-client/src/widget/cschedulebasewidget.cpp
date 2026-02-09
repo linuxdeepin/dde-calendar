@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -39,6 +39,8 @@ void CScheduleBaseWidget::initConnect()
     qCDebug(ClientLogger) << "CScheduleBaseWidget::initConnect";
     connect(ScheduleManager::getInstace(), &ScheduleManager::signalScheduleUpdate, this, &CScheduleBaseWidget::slotScheduleUpdate);
     connect(ScheduleManager::getInstace(), &ScheduleManager::signalSearchScheduleUpdate, this, &CScheduleBaseWidget::slotSearchedScheduleUpdate);
+    connect(gLunarManager, &LunarManager::lunarInfoReady, this, &CScheduleBaseWidget::slotLunarInfoReady);
+    connect(gLunarManager, &LunarManager::festivalInfoReady, this, &CScheduleBaseWidget::slotFestivalInfoReady);
 }
 
 /**
@@ -192,4 +194,22 @@ void CScheduleBaseWidget::slotSearchedScheduleUpdate()
 {
     qCDebug(ClientLogger) << "CScheduleBaseWidget::slotSearchedScheduleUpdate";
     updateSearchScheduleInfo();
+}
+
+void CScheduleBaseWidget::slotLunarInfoReady()
+{
+    qCDebug(ClientLogger) << "CScheduleBaseWidget::slotLunarInfoReady";
+    if (getShowLunar()) {
+        updateShowLunar();
+        update();
+    }
+}
+
+void CScheduleBaseWidget::slotFestivalInfoReady()
+{
+    qCDebug(ClientLogger) << "CScheduleBaseWidget::slotFestivalInfoReady";
+    if (getShowLunar()) {
+        updateShowDate();
+        update();
+    }
 }
