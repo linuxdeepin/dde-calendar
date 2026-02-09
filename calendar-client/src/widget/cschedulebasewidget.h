@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -57,6 +57,10 @@ signals:
 public slots:
     void slotScheduleUpdate();
     void slotSearchedScheduleUpdate();
+    //农历信息加载完成
+    void slotLunarInfoReady();
+    //节假日信息加载完成
+    void slotFestivalInfoReady();
 
 private:
     void initConnect();

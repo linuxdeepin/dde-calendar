@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -158,6 +158,7 @@ void LunarManager::queryLunarInfo(const QDate &startDate, const QDate &stopDate)
         m_lunarInfoMap = w->result();
         qCDebug(ClientLogger) << "Lunar info query completed with" << m_lunarInfoMap.size() << "days";
         w->deleteLater();
+        emit lunarInfoReady();
     });
     w->setFuture(future);
 }
@@ -197,6 +198,7 @@ void LunarManager::queryFestivalInfo(const QDate &startDate, const QDate &stopDa
         }
         qCDebug(ClientLogger) << "Festival date map updated with" << m_festivalDateMap.size() << "days";
         w->deleteLater();
+        emit festivalInfoReady();
     });
     w->setFuture(future);
 }
