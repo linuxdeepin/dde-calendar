@@ -134,6 +134,21 @@ void CScheduleBaseWidget::updateData()
 }
 
 /**
+ * @brief CScheduleBaseWidget::ensureLunarDataLoaded  确保农历数据已加载
+ * @param startDate 开始日期
+ * @param endDate 结束日期
+ *
+ * Delegates to LunarManager which maintains a global query cache.
+ */
+void CScheduleBaseWidget::ensureLunarDataLoaded(const QDate &startDate, const QDate &endDate)
+{
+    if (!getShowLunar()) {
+        return;
+    }
+    gLunarManager->ensureLunarDataLoaded(startDate, endDate);
+}
+
+/**
  * @brief CScheduleBaseWidget::updateDBusData           更新一年的dbus数据
  */
 void CScheduleBaseWidget::updateDBusData()

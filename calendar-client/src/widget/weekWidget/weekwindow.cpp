@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2015 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2015 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -304,8 +304,8 @@ void CWeekWindow::updateShowDate(const bool isUpdateBar)
     m_stopDate = _weekShowData.last();
     //如果时间无效则打印log
     if (m_startDate.isNull() || m_stopDate.isNull()) {
-        qCWarning(ClientLogger) << "Week start or stop date error" 
-                               << "start date:" << m_startDate 
+        qCWarning(ClientLogger) << "Week start or stop date error"
+                               << "start date:" << m_startDate
                                << "stop date:" << m_stopDate;
     }
     //设置全天和非全天显示时间范围
@@ -337,6 +337,10 @@ void CWeekWindow::updateShowSchedule()
 void CWeekWindow::updateShowLunar()
 {
     qCDebug(ClientLogger) << "Updating show lunar information";
+
+    // Ensure lunar data is loaded for the current view range
+    ensureLunarDataLoaded(m_startDate, m_stopDate);
+
     getLunarInfo();
     m_YearLunarLabel->setText(m_lunarYear);
     QMap<QDate, CaHuangLiDayInfo> weekHuangLiInfo = gLunarManager->getHuangLiDayMap(m_startDate, m_stopDate);

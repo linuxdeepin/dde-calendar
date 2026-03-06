@@ -113,8 +113,8 @@ QString CalendarManager::getWeekDayFormat() const
 //返回显示的年份,开始和结束时间
 ShowDateRange CalendarManager::getShowDateRange() const
 {
-    // qCDebug(ClientLogger) << "Getting show date range for year:" << m_showDateRange.showYear 
-    //                       << "from" << m_showDateRange.startDate.toString() 
+    // qCDebug(ClientLogger) << "Getting show date range for year:" << m_showDateRange.showYear
+    //                       << "from" << m_showDateRange.startDate.toString()
     //                       << "to" << m_showDateRange.stopDate.toString();
     return m_showDateRange;
 }
@@ -246,12 +246,8 @@ void CalendarManager::setYearBeginAndEndDate(const int year)
     // Qt5.11.3 兼容：使用 QDateTime 构造函数将 QDate 转为 QDateTime（时间设为 00:00:00）
     gScheduleManager->resetSchedule(QDateTime(m_showDateRange.startDate), QDateTime(m_showDateRange.stopDate));
 #endif
-    if (m_showLunar) {
-        qCDebug(ClientLogger) << "Updating lunar and festival info for new date range";
-        //刷新农历和节假日信息
-        gLunarManager->queryLunarInfo(m_showDateRange.startDate, m_showDateRange.stopDate);
-        gLunarManager->queryFestivalInfo(m_showDateRange.startDate, m_showDateRange.stopDate);
-    }
+    // No longer query the entire year's lunar data here; each view queries on demand instead
+    // This reduces DBus queries at startup and improves launch speed
 }
 
 /**

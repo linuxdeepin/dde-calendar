@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -31,6 +31,7 @@ CDayWindow::~CDayWindow()
 {
     qCDebug(ClientLogger) << "CDayWindow::~CDayWindow";
 }
+
 void CDayWindow::setTheMe(int type)
 {
     qCDebug(ClientLogger) << "CDayWindow::setTheMe, type:" << type;
@@ -186,6 +187,11 @@ void CDayWindow::updateShowSchedule()
 void CDayWindow::updateShowLunar()
 {
     qCDebug(ClientLogger) << "CDayWindow::updateShowLunar";
+
+    QDate currentDate = getSelectDate();
+    // Ensure lunar data is loaded for the current date
+    ensureLunarDataLoaded(currentDate, currentDate);
+
     CaHuangLiDayInfo _huangLiInfo = getLunarInfo();
     m_LunarLabel->setText(tr("Lunar") + _huangLiInfo.mLunarMonthName + _huangLiInfo.mLunarDayName);
     m_daymonthView->setHuangLiInfo(_huangLiInfo);

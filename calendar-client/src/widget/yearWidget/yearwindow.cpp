@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -519,6 +519,15 @@ void CYearWindow::updateShowSchedule()
 void CYearWindow::updateShowLunar()
 {
     qCDebug(ClientLogger) << "Updating show lunar information";
+
+    // Query lunar data for the current year view range on demand (entire year)
+    if (getShowLunar()) {
+        QDate yearStart(getSelectDate().year(), 1, 1);
+        QDate yearEnd(getSelectDate().year(), 12, 31);
+        gLunarManager->queryLunarInfo(yearStart, yearEnd);
+        gLunarManager->queryFestivalInfo(yearStart, yearEnd);
+    }
+
     //获取农历信息
     getLunarInfo();
     m_yearWidget->setLunarYearDate(m_lunarYear);

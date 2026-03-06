@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2017 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2017 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -51,8 +51,6 @@ int main(int argc, char *argv[])
 
     if (DGuiApplicationHelper::setSingleInstance(app->applicationName(), DGuiApplicationHelper::UserScope)) {
         // qCDebug(ClientLogger) << "Initializing application as single instance";
-        //准备数据
-        gAccountManager->resetAccount();
 
         app->setOrganizationName("deepin");
         app->setApplicationName("dde-calendar");
@@ -84,7 +82,7 @@ int main(int argc, char *argv[])
 
         // Initialize logging system
         CalendarLogger::initLogger();
-        
+
         bool isOk = false;
         int viewtype = CConfigSettings::getInstance()->value("base.view").toInt(&isOk);
         if (!isOk)
@@ -97,7 +95,7 @@ int main(int argc, char *argv[])
         einterface.registerAction("QUERY", "find a schedule information");
         einterface.registerAction("CANCEL", "cancel a schedule");
         qCDebug(ClientLogger) << "DBus actions registered: CREATE, VIEW, QUERY, CANCEL";
-        
+
         QDBusConnection dbus = QDBusConnection::sessionBus();
         //如果注册失败打印出失败信息
         if (!dbus.registerService("com.deepin.Calendar")) {
@@ -108,6 +106,10 @@ int main(int argc, char *argv[])
         }
         ww.slotTheme(DGuiApplicationHelper::instance()->themeType());
         ww.show();
+
+        // Defer account data loading to event loop for faster startup
+        QMetaObject::invokeMethod(gAccountManager, &AccountManager::resetAccount,
+                                   Qt::QueuedConnection);
 
         qCInfo(ClientLogger) << "dde-calendar application started successfully";
         return app->exec();

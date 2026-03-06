@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2017 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2017 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -59,10 +59,18 @@ private:
     void initUI();
     void initConnection();
     void initData();
-    void initLater(); 
+    // [[deprecated("Use constructor initialization instead")]]
+    void initLater();
     void startDeferredViewDataInit();
     //创建视图
     void createview();
+    //Create a single view by index
+    void createViewByIndex(int index);
+    //Ensure helpers - create view if not exists and return pointer
+    CYearWindow* ensureYearWindow();
+    CMonthWindow* ensureMonthWindow();
+    CWeekWindow* ensureWeekWindow();
+    CDayWindow* ensureDayWindow();
     //重置界面大小
     void resizeView();
     void removeSyncToast();
@@ -142,8 +150,8 @@ private:
     QPoint m_startPos;
 
     CMyScheduleView *m_dlg = Q_NULLPTR;
-    
-    bool m_firstPaintDone = false; 
+
+    bool m_firstPaintDone = false;
     bool m_deferredViewDataInitDone = false;
     bool m_hasInit = false;
 };

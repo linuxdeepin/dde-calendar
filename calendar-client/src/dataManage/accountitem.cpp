@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2019 - 2024 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -68,7 +68,26 @@ QString AccountItem::getSyncMsg(DAccount::AccountSyncState code)
 void AccountItem::resetAccount()
 {
     qCDebug(ClientLogger) << "Resetting account data for:" << m_account->accountName();
-    querySchedulesWithParameter(QDate().currentDate().year());
+
+    // Optimization: Load only 3 months before and after the current month instead of the entire year
+    // Use symmetric range: first day of month -3 to last day of month +3
+    QDate currentDate = QDate::currentDate();
+    if (!currentDate.isValid()) {
+        qCWarning(ClientLogger) << "Current system date is invalid, aborting data load";
+        return;
+    }
+
+    QDate startMonth = currentDate.addMonths(-3);
+    QDate endMonth = currentDate.addMonths(3);
+    QDate startDate(startMonth.year(), startMonth.month(), 1);
+    QDate endDate(endMonth.year(), endMonth.month(), endMonth.daysInMonth());
+
+    QDateTime start(startDate, QTime(0, 0, 0));
+    QDateTime end(endDate, QTime(23, 59, 59));
+
+    qCDebug(ClientLogger) << "Loading schedules from" << start.toString() << "to" << end.toString();
+    querySchedulesWithParameter(start, end);
+
     m_dbusRequest->getScheduleTypeList();
     m_dbusRequest->getSysColors();
 }

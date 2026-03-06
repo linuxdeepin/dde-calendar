@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2015 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2015 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -93,6 +93,7 @@ void CMonthWindow::setTheMe(int type)
 void CMonthWindow::setYearData()
 {
     qCDebug(ClientLogger) << "CMonthWindow::setYearData";
+
     if (getSelectDate() == getCurrendDateTime().date()) {
         m_today->setText(QCoreApplication::translate("today", "Today", "Today"));
     } else {
@@ -112,6 +113,7 @@ void CMonthWindow::setYearData()
 void CMonthWindow::updateShowDate(const bool isUpdateBar)
 {
     qCDebug(ClientLogger) << "CMonthWindow::updateShowDate, isUpdateBar:" << isUpdateBar;
+
     setYearData();
     const QDate _selectDate = m_calendarManager->getSelectDate();
     Qt::DayOfWeek _firstWeek = m_calendarManager->getFirstDayOfWeek();
@@ -170,6 +172,10 @@ void CMonthWindow::updateShowSchedule()
 void CMonthWindow::updateShowLunar()
 {
     qCDebug(ClientLogger) << "CMonthWindow::updateShowLunar";
+
+    // Ensure lunar data is loaded for the current view range
+    ensureLunarDataLoaded(m_startDate, m_stopDate);
+
     getLunarInfo();
     m_YearLunarLabel->setText(m_lunarYear);
     QMap<QDate, int> _monthFestivalInfo = gLunarManager->getFestivalInfoDateMap(m_startDate, m_stopDate);

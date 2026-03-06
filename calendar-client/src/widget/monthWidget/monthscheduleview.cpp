@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2017 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2017 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -99,9 +99,9 @@ void CMonthScheduleView::updateData()
     for (int i = 0; i < m_weekSchedule.size(); ++i) {
         m_weekSchedule[i]->clearItem();
     }
-    //保护数据防止越界
+    // Protect against invalid data during initialization
     if (m_data.count() != DDEMonthCalendar::ItemSizeOfMonthDay || m_cNum < 1) {
-        qCWarning(ClientLogger) << "Data count or cNum is invalid, returning";
+        qCDebug(ClientLogger) << "Data count or cNum is invalid, returning";
         return;
     }
     //开始结束时间
