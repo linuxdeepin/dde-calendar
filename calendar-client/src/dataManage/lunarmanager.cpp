@@ -6,6 +6,9 @@
 #include "commondef.h"
 #include <QFutureWatcher>
 #include <QtConcurrent>
+#include <iterator>
+
+static constexpr int MAX_CACHED_RANGES = 10;
 
 LunarManager::LunarManager(QObject *parent) : QObject(parent)
   , m_dbusRequest(new DbusHuangLiRequest)
@@ -302,4 +305,46 @@ QMap<QDate, int> LunarManager::getFestivalInfoDateMap(const QDate &startDate, co
     }
     qCDebug(ClientLogger) << "Festival date map contains" << festivalDateMap.size() << "days";
     return festivalDateMap;
+}
+
+/**
+ * @brief LunarManager::ensureLunarDataLoaded
+ * 确保农历数据已加载（带缓存机制，避免重复查询）
+ * @param startDate 开始日期
+ * @param endDate 结束日期
+ */
+void LunarManager::ensureLunarDataLoaded(const QDate &startDate, const QDate &endDate)
+{
+    // Input validation
+    if (!startDate.isValid() || !endDate.isValid() || startDate > endDate) {
+        qCWarning(ClientLogger) << "Invalid date range:" << startDate.toString() << "to" << endDate.toString();
+        return;
+    }
+
+    // Check if this range (or a superset) has already been queried
+    for (const auto &range : m_queriedRanges) {
+        if (startDate >= range.first && endDate <= range.second) {
+            // Range is already covered by a previous query
+            return;
+        }
+    }
+
+    // Verify data completeness from the cache using QMap's ordered iteration
+    int expectedDays = startDate.daysTo(endDate) + 1;
+    auto startIt = m_lunarInfoMap.lowerBound(startDate);
+    auto endIt = m_lunarInfoMap.upperBound(endDate);
+    int cachedDays = std::distance(startIt, endIt);
+
+    if (cachedDays < expectedDays) {
+        qCDebug(ClientLogger) << "Querying lunar data for range" << startDate.toString() << "to" << endDate.toString()
+                               << "expected:" << expectedDays << "cached:" << cachedDays;
+        queryLunarInfo(startDate, endDate);
+        queryFestivalInfo(startDate, endDate);
+    }
+
+    // Cache this range (limit cache size to prevent memory growth)
+    if (m_queriedRanges.size() >= MAX_CACHED_RANGES) {
+        m_queriedRanges.removeFirst();
+    }
+    m_queriedRanges.append({startDate, endDate});
 }

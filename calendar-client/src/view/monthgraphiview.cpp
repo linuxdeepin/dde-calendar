@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -252,7 +252,10 @@ void CMonthGraphicsview::updateInfo()
     m_MonthScheduleView->setallsize(this->viewport()->width(),
                                     this->viewport()->height(),
                                     0, 0, 0, h);
-    m_MonthScheduleView->setData(m_schedulelistdata, 1);
+    // Only update schedule data when it's valid (42 days for month view)
+    if (m_schedulelistdata.count() == DDEMonthCalendar::ItemSizeOfMonthDay) {
+        m_MonthScheduleView->setData(m_schedulelistdata, 1);
+    }
 
     switch (m_DragStatus) {
     case IsCreate:

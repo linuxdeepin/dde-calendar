@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2017 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2017 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -83,8 +83,6 @@ Calendarmainwindow::Calendarmainwindow(int index, QWidget *w)
 {
     qCDebug(ClientLogger) << "Calendarmainwindow::Calendarmainwindow, index:" << index;
     setContentsMargins(QMargins(0, 0, 0, 0));
-    //初始化窗口数据
-    QTimer::singleShot(0, this, &Calendarmainwindow::initLater);
 
     setMinimumSize(CalendarMWidth, CalendarMHeight);
     setWindowTitle(tr("Calendar"));
@@ -145,16 +143,34 @@ Calendarmainwindow::Calendarmainwindow(int index, QWidget *w)
     CalendarGlobalEnv::getGlobalEnv()->registerKey(DDECalendar::CursorPointKey, QPoint());
     //保存主窗口指针
     CalendarGlobalEnv::getGlobalEnv()->registerKey("MainWindow", QVariant::fromValue(static_cast<void *>(this)));
-}
 
-void Calendarmainwindow::initLater()
-{
+    // Initialize UI immediately to avoid showing blank window
     initUI();
     initConnection();
     initData();
     m_hasInit = true;
     resizeView();
     slotTheme(DGuiApplicationHelper::instance()->themeType());
+
+    // Load default view data immediately to avoid blank display
+    startDeferredViewDataInit();
+
+    // Defer timer start and dynamic icon generation
+    QTimer::singleShot(100, this, [this]() {
+        if (m_currentDateUpdateTimer) {
+            m_currentDateUpdateTimer->start(1500);
+        }
+
+        // Defer dynamic icon generation to avoid blocking startup
+        CDynamicIcon::getInstance()->setDate(QDate::currentDate());
+        CDynamicIcon::getInstance()->setIcon();
+    });
+}
+
+void Calendarmainwindow::initLater()
+{
+    // This method is deprecated; initialization logic has been moved to the constructor
+    // Kept for backward compatibility in case of external calls
 }
 
 Calendarmainwindow::~Calendarmainwindow()
@@ -189,7 +205,7 @@ void Calendarmainwindow::slotCurrentDateUpdate()
     //获取当前时间
     const QDateTime _currentDate = QDateTime::currentDateTime();
     //设置当前时间
-    m_DayWindow->setCurrentDateTime(_currentDate);
+    if (m_DayWindow) m_DayWindow->setCurrentDateTime(_currentDate);
     //如果当前日期与动态图标日期不一样则重新生成动态图标
     if (_currentDate.date() != CDynamicIcon::getInstance()->getDate()) {
         qCDebug(ClientLogger) << "Updating dynamic icon date" << "new date:" << QDate::currentDate();
@@ -198,12 +214,12 @@ void Calendarmainwindow::slotCurrentDateUpdate()
         //更新视图数据显示
         for (int i = 0; i < m_stackWidget->count(); ++i) {
             CScheduleBaseWidget *widget = qobject_cast<CScheduleBaseWidget *>(m_stackWidget->widget(i));
-            widget->updateData();
+            if (widget) widget->updateData();
         }
         //设置年视图年数据时间显示
-        m_yearwindow->setYearData();
+        if (m_yearwindow) m_yearwindow->setYearData();
         //更新月视图当前周横线绘制
-        m_monthWindow->setCurrentDateTime(_currentDate);
+        if (m_monthWindow) m_monthWindow->setCurrentDateTime(_currentDate);
     }
 }
 
@@ -229,6 +245,10 @@ void Calendarmainwindow::viewWindow(int type, const bool showAnimation)
         qCWarning(ClientLogger) << "Invalid view type:" << type;
         return;
     }
+
+    // Ensure the target view is created
+    createViewByIndex(type);
+
     if (showAnimation) {
         m_stackWidget->setCurrent(type);
     } else {
@@ -242,17 +262,20 @@ void Calendarmainwindow::viewWindow(int type, const bool showAnimation)
     switch (type) {
     case DDECalendar::CalendarYearWindow: {
         qCDebug(ClientLogger) << "Updating year window display";
-        m_yearwindow->updateData();
+        ensureYearWindow()->updateData();
     } break;
     case DDECalendar::CalendarMonthWindow: {
         qCDebug(ClientLogger) << "Switching to month window";
+        ensureMonthWindow()->updateData();
     } break;
     case DDECalendar::CalendarWeekWindow: {
         qCDebug(ClientLogger) << "Switching to week window";
+        ensureWeekWindow()->updateData();
     } break;
     case DDECalendar::CalendarDayWindow: {
         qCDebug(ClientLogger) << "Switching to day window";
-        m_DayWindow->setTime();
+        ensureDayWindow()->setTime();
+        ensureDayWindow()->updateData();
         m_searchflag = true;
     } break;
     }
@@ -277,10 +300,10 @@ void Calendarmainwindow::updateHeight()
     case DDECalendar::CalendarMonthWindow: {
     } break;
     case DDECalendar::CalendarWeekWindow: {
-        m_weekWindow->updateHeight();
+        if (m_weekWindow) m_weekWindow->updateHeight();
     } break;
     case DDECalendar::CalendarDayWindow: {
-        m_DayWindow->updateHeight();
+        if (m_DayWindow) m_DayWindow->updateHeight();
     } break;
     }
 }
@@ -352,6 +375,8 @@ void Calendarmainwindow::slotOpenSchedule(QString job)
     m_buttonBox->button(DDECalendar::CalendarDayWindow)->setFocus();
     //切换到日视图
     m_stackWidget->setCurrentIndex(DDECalendar::CalendarDayWindow);
+    // Ensure day window exists before using it
+    ensureDayWindow();
     //设置选择时间
     m_DayWindow->setSelectDate(out->dtStart().date());
     //更新界面显示
@@ -381,13 +406,15 @@ void Calendarmainwindow::initUI()
     this->setAccessibleName("MainWindow");
     this->setAccessibleDescription("This is the main window");
     m_currentDateUpdateTimer = new QTimer(this);
-    //1.5秒更新当前时间
-    m_currentDateUpdateTimer->start(1500);
+    // Timer is started later; deferred startup in constructor
 
     auto titleBar = this->titlebar();
-    // disable dynamic icon titlebar
+    // Dynamic icon generation is deferred to avoid blocking startup
     // CDynamicIcon::getInstance()->setTitlebar(titleBar);
-    CDynamicIcon::getInstance()->setIcon();
+    // CDynamicIcon::getInstance()->setIcon();
+
+    // Use static icon; defer dynamic icon generation
+    titleBar->setIcon(QIcon::fromTheme("dde-calendar"));
 
     m_titleWidget = new CTitleWidget(this);
     m_titleWidget->setFocusPolicy(Qt::TabFocus);
@@ -531,20 +558,18 @@ void Calendarmainwindow::initData()
 void Calendarmainwindow::createview()
 {
     qCDebug(ClientLogger) << "Calendarmainwindow::createview";
-    m_yearwindow = new CYearWindow(this);
-    m_yearwindow->setObjectName("yearwindow");
-    m_yearwindow->setAccessibleName("yearwindow");
-    m_stackWidget->addWidget(m_yearwindow);
-    m_monthWindow = new CMonthWindow(this);
-    m_monthWindow->setObjectName("monthWindow");
-    m_monthWindow->setAccessibleName("monthWindow");
-    m_stackWidget->addWidget(m_monthWindow);
 
-    m_weekWindow  = new CWeekWindow(this);
-    m_stackWidget->addWidget(m_weekWindow);
-
-    m_DayWindow = new CDayWindow;
-    m_stackWidget->addWidget(m_DayWindow);
+    // Startup optimization: Create only the default view; defer others
+    // Reserve space for all view positions
+    for (int i = 0; i < 4; ++i) {
+        if (i == m_defaultIndex) {
+            // Create default view immediately
+            createViewByIndex(i);
+        } else {
+            // Add empty widget placeholders for other view positions
+            m_stackWidget->addWidget(new QWidget());
+        }
+    }
 
     //如果默认视图不在范围内则设置为月窗口显示
     if (m_defaultIndex < 0 || m_defaultIndex >= m_stackWidget->count()) {
@@ -553,6 +578,97 @@ void Calendarmainwindow::createview()
     }
     m_stackWidget->setCurrentIndex(m_defaultIndex);
     m_buttonBox->button(m_defaultIndex)->setChecked(true);
+
+    // Defer creation of other views to avoid blocking startup
+    QTimer::singleShot(200, this, [this]() {
+        for (int i = 0; i < 4; ++i) {
+            if (i != m_defaultIndex) {
+                createViewByIndex(i);
+            }
+        }
+    });
+}
+
+/**
+ * @brief Calendarmainwindow::createViewByIndex Create a single view by index
+ * @param index View index
+ */
+void Calendarmainwindow::createViewByIndex(int index)
+{
+    qCDebug(ClientLogger) << "Creating view at index:" << index;
+
+    // Helper lambda to create and setup a view with common initialization logic
+    auto setupView = [this, index](auto *&viewPtr, auto creator,
+                                     const QString &objName = QString(),
+                                     const QString &accName = QString()) {
+        if (viewPtr) return;
+
+        viewPtr = creator();
+        if (!objName.isEmpty()) viewPtr->setObjectName(objName);
+        if (!accName.isEmpty()) viewPtr->setAccessibleName(accName);
+
+        if (QWidget *oldWidget = m_stackWidget->widget(index)) {
+            m_stackWidget->removeWidget(oldWidget);
+            oldWidget->deleteLater();  // Safe deletion in Qt event loop
+        }
+        m_stackWidget->insertWidget(index, viewPtr);
+
+        if (m_hasInit) {
+            viewPtr->setTheMe(DGuiApplicationHelper::instance()->themeType());
+        }
+    };
+
+    switch (index) {
+        case DDECalendar::CalendarYearWindow:
+            setupView(m_yearwindow, [this]() { return new CYearWindow(this); },
+                      "yearwindow", "yearwindow");
+            break;
+        case DDECalendar::CalendarMonthWindow:
+            setupView(m_monthWindow, [this]() { return new CMonthWindow(this); },
+                      "monthWindow", "monthWindow");
+            break;
+        case DDECalendar::CalendarWeekWindow:
+            setupView(m_weekWindow, [this]() { return new CWeekWindow(this); });
+            break;
+        case DDECalendar::CalendarDayWindow:
+            setupView(m_DayWindow, []() { return new CDayWindow; });
+            break;
+        default:
+            qCWarning(ClientLogger) << "Invalid view index:" << index;
+            break;
+    }
+}
+
+CYearWindow* Calendarmainwindow::ensureYearWindow()
+{
+    if (!m_yearwindow) {
+        createViewByIndex(DDECalendar::CalendarYearWindow);
+    }
+    return m_yearwindow;
+}
+
+CMonthWindow* Calendarmainwindow::ensureMonthWindow()
+{
+    if (!m_monthWindow) {
+        createViewByIndex(DDECalendar::CalendarMonthWindow);
+    }
+    return m_monthWindow;
+}
+
+CWeekWindow* Calendarmainwindow::ensureWeekWindow()
+{
+    if (!m_weekWindow) {
+        createViewByIndex(DDECalendar::CalendarWeekWindow);
+    }
+    return m_weekWindow;
+}
+
+CDayWindow* Calendarmainwindow::ensureDayWindow()
+{
+    if (!m_DayWindow) {
+        createViewByIndex(DDECalendar::CalendarDayWindow);
+    }
+    return m_DayWindow;
 }
 
 void Calendarmainwindow::startDeferredViewDataInit()
@@ -562,7 +678,8 @@ void Calendarmainwindow::startDeferredViewDataInit()
     }
     m_deferredViewDataInitDone = true;
 
-    // Keep startup responsive: update current view first, then other views in small batches.
+    // Startup responsiveness optimization: Update only the current (default) view's data
+    // Other views are created and loaded on-demand during switching
     auto updateCurrentView = [this] {
         const int idx = m_stackWidget ? m_stackWidget->currentIndex() : -1;
         switch (idx) {
@@ -578,7 +695,7 @@ void Calendarmainwindow::startDeferredViewDataInit()
         case DDECalendar::CalendarDayWindow:
             if (m_DayWindow) {
                 m_DayWindow->updateData();
-                // Default day view needs time positioning after data is ready.
+                // Day view requires time positioning after data is ready
                 m_DayWindow->setTime();
             }
             break;
@@ -587,15 +704,11 @@ void Calendarmainwindow::startDeferredViewDataInit()
         }
     };
 
+    // Update current view immediately
     updateCurrentView();
 
-    QTimer::singleShot(10, this, [this] {
-        const int idx = m_stackWidget ? m_stackWidget->currentIndex() : -1;
-        if (idx != DDECalendar::CalendarYearWindow && m_yearwindow) m_yearwindow->updateData();
-        if (idx != DDECalendar::CalendarMonthWindow && m_monthWindow) m_monthWindow->updateData();
-        if (idx != DDECalendar::CalendarWeekWindow && m_weekWindow) m_weekWindow->updateData();
-        if (idx != DDECalendar::CalendarDayWindow && m_DayWindow) m_DayWindow->updateData();
-    });
+    // No longer defer updates for other views since they are not created yet
+    // Other views will be created and loaded on-demand during view switching
 }
 
 void Calendarmainwindow::resizeView()
@@ -656,7 +769,9 @@ void Calendarmainwindow::resizeView()
         m_contentBackground->setVisible(m_opensearchflag);
     }
     // 额外减去20 是因为ui走查控件之间的space=10，两个间隔
-    m_scheduleSearchView->setMaxWidth(m_scheduleSearchViewMaxWidth - 20);
+    if (m_scheduleSearchView) {
+        m_scheduleSearchView->setMaxWidth(m_scheduleSearchViewMaxWidth - 20);
+    }
     setSearchWidth(m_scheduleSearchViewMaxWidth - 20);
     setScheduleHide();
 }
@@ -703,7 +818,7 @@ void Calendarmainwindow::slotstackWClicked(QAbstractButton *bt)
 void Calendarmainwindow::slotWUpdateSchedule()
 {
     qCDebug(ClientLogger) << "Calendarmainwindow::slotWUpdateSchedule";
-    if (m_opensearchflag && !m_searchEdit->text().isEmpty()) {
+    if (m_opensearchflag && !m_searchEdit->text().isEmpty() && m_scheduleSearchView) {
         m_scheduleSearchView->slotsetSearch(m_searchEdit->text());
     }
     updateHeight();
@@ -720,7 +835,9 @@ void Calendarmainwindow::slotSreturnPressed()
     //如果为搜索状态
     m_contentBackground->setVisible(m_opensearchflag);
 
-    m_scheduleSearchView->slotsetSearch(m_searchEdit->text());
+    if (m_scheduleSearchView) {
+        m_scheduleSearchView->slotsetSearch(m_searchEdit->text());
+    }
     updateHeight();
     resizeView();
 }
@@ -730,17 +847,17 @@ void Calendarmainwindow::slotStextChanged()
     qCDebug(ClientLogger) << "Calendarmainwindow::slotStextChanged";
     if (!m_searchEdit->text().isEmpty()) {
         qCDebug(ClientLogger) << "Search text not empty, enabling search flags";
-        m_yearwindow->setSearchWFlag(true);
-        m_weekWindow->setSearchWFlag(true);
-        m_monthWindow->setSearchWFlag(true);
-        m_DayWindow->setSearchWFlag(true);
+        if (m_yearwindow) m_yearwindow->setSearchWFlag(true);
+        if (m_weekWindow) m_weekWindow->setSearchWFlag(true);
+        if (m_monthWindow) m_monthWindow->setSearchWFlag(true);
+        if (m_DayWindow) m_DayWindow->setSearchWFlag(true);
     } else {
         qCDebug(ClientLogger) << "Search text empty, clearing search";
-        m_scheduleSearchView->clearSearch();
-        m_yearwindow->setSearchWFlag(false);
-        m_monthWindow->setSearchWFlag(false);
-        m_weekWindow->setSearchWFlag(false);
-        m_DayWindow->setSearchWFlag(false);
+        if (m_scheduleSearchView) m_scheduleSearchView->clearSearch();
+        if (m_yearwindow) m_yearwindow->setSearchWFlag(false);
+        if (m_monthWindow) m_monthWindow->setSearchWFlag(false);
+        if (m_weekWindow) m_weekWindow->setSearchWFlag(false);
+        if (m_DayWindow) m_DayWindow->setSearchWFlag(false);
         m_contentBackground->setVisible(false);
         m_stackWidget->setVisible(true);
         m_opensearchflag = false;
@@ -807,7 +924,7 @@ void Calendarmainwindow::slotSearchSelectSchedule(const DSchedule::Ptr &schedule
             });
         }
         //如果当前界面不为年试图则更新年视图数据
-        if (_showWidget != m_yearwindow) {
+        if (_showWidget != m_yearwindow && m_yearwindow) {
             qCDebug(ClientLogger) << "Current view is not year view, updating year window data";
             m_yearwindow->updateData();
         }
@@ -888,7 +1005,8 @@ void Calendarmainwindow::slotNewSchedule()
 {
     qCDebug(ClientLogger) << "Calendarmainwindow::slotNewSchedule";
     //设置日程开始时间
-    QDateTime _beginTime(m_yearwindow->getSelectDate(), QTime::currentTime());
+    QDate selectDate = m_yearwindow ? m_yearwindow->getSelectDate() : QDate::currentDate();
+    QDateTime _beginTime(selectDate, QTime::currentTime());
     //新建日程对话框
     CScheduleDlg _scheduleDig(1, this, false);
     //设置开始时间
@@ -899,7 +1017,7 @@ void Calendarmainwindow::slotNewSchedule()
 void Calendarmainwindow::slotDeleteitem()
 {
     qCDebug(ClientLogger) << "Deleting selected item";
-    if (m_scheduleSearchView->getHasScheduleShow() && m_scheduleSearchView->getScheduleStatus()) {
+    if (m_scheduleSearchView && m_scheduleSearchView->getHasScheduleShow() && m_scheduleSearchView->getScheduleStatus()) {
         qCDebug(ClientLogger) << "Deleting selected schedule from search view";
         //删除选中的schedule
         m_scheduleSearchView->deleteSchedule();

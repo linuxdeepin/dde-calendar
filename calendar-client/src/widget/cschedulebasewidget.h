@@ -43,6 +43,8 @@ public:
     virtual void updateShowSchedule() = 0;
     //更新农历信息显示
     virtual void updateShowLunar() = 0;
+    //确保农历数据已加载（检查完整性，不足则查询）
+    void ensureLunarDataLoaded(const QDate &startDate, const QDate &endDate);
     //设置选中搜索日程
     virtual void setSelectSearchScheduleInfo(const DSchedule::Ptr &info) = 0;
     //删除选中日程
