@@ -1,3 +1,9 @@
+dde-calendar (6.5.36) unstable; urgency=medium
+
+  * fix: optimize application launch speed with lazy loading
+
+ -- Wang Yu <wangyu@uniontech.com>  Fri, 13 Mar 2026 14:25:49 +0800
+
 dde-calendar (6.5.35) unstable; urgency=medium
 
   * chore: Unify linglong.yaml
