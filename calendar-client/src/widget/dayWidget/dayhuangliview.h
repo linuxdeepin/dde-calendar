@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2017 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2017 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -28,8 +28,11 @@ private:
     QColor m_textcolor;
     QFont m_font;
     int m_type = 0;
-    int m_leftMagin = 14;
-    int m_topMagin = 18;
+    int m_leftMargin = 14;
+    int m_topMargin = 18;
+    QPixmap m_yiPixmap;      // Cached pixmap for "Yi" icon
+    QPixmap m_jiPixmap;      // Cached pixmap for "Ji" icon
+    qreal m_cachedDpr = 0.0; // DPR when pixmaps were cached
 };
 
 #endif // DAYHUANGLILABEL_H
