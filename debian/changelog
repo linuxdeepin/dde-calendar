@@ -1,3 +1,10 @@
+dde-calendar (6.5.37) unstable; urgency=medium
+
+  * fix: prevent icon scaling at high DPI zoom levels
+  * chore: update version to 6.5.36
+
+ -- Wang Yu <wangyu@uniontech.com>  Wed, 18 Mar 2026 12:25:32 +0800
+
 dde-calendar (6.5.36) unstable; urgency=medium
 
   * fix: optimize application launch speed with lazy loading
