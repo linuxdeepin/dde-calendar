@@ -723,7 +723,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="770"/>
         <source>Please go to the &lt;a href=&apos;/&apos;&gt;Control Center&lt;/a&gt; to change system settings</source>
-        <translation>Acesse a &lt;a href=&apos;/&apos;&gt;Central de Controle&lt;/a&gt; para alterar as configurações do sistema</translation>
+        <translation>Acesse as &lt;a href=&apos;/&apos;&gt;Configurações&lt;/a&gt; para alterar as configurações do sistema</translation>
     </message>
 </context>
 <context>
