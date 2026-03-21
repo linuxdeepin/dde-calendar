@@ -380,7 +380,7 @@
     </message>
     <message>
         <source>Are you sure you want to delete this event?</source>
-        <translation type="vanished">Você tem certeza que quer deletar este evento?</translation>
+        <translation type="vanished">Excluir este evento?</translation>
     </message>
     <message>
         <source>Delete</source>
