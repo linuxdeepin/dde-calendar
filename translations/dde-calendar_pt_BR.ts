@@ -25,12 +25,12 @@
 <context>
     <name>AccountManager</name>
     <message>
-        <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="223"/>
+        <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="227"/>
         <source>Local account</source>
         <translation>Conta local</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="225"/>
+        <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="229"/>
         <source>Event types</source>
         <translation>Tipos de eventos</translation>
     </message>
@@ -140,7 +140,7 @@
         <translation>Novo evento</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/monthWidget/monthview.cpp" line="209"/>
+        <location filename="../calendar-client/src/widget/monthWidget/monthview.cpp" line="211"/>
         <source>New Event</source>
         <translation>Novo evento</translation>
     </message>
@@ -364,7 +364,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="940"/>
         <source>Time</source>
-        <translation>Horário</translation>
+        <translation>Formato de hora</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="947"/>
@@ -518,7 +518,7 @@
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="148"/>
         <source>Delete All</source>
-        <translation>Excluir Tudo</translation>
+        <translation>Excluir tudo</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="149"/>
@@ -534,7 +534,7 @@
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="168"/>
         <source>Delete All Future Events</source>
-        <translation>Excluir Todos os Eventos Futuros</translation>
+        <translation>Excluir todos os eventos futuros</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="235"/>
@@ -673,12 +673,12 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="364"/>
         <source>24-hour clock</source>
-        <translation>Formato de 24 horas</translation>
+        <translation>24 horas</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="365"/>
         <source>12-hour clock</source>
-        <translation>Formato de 12 horas</translation>
+        <translation>12 horas</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="389"/>
@@ -877,17 +877,17 @@
         <translation>Política de privacidade</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="940"/>
+        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="939"/>
         <source>Syncing...</source>
         <translation>Sincronizando...</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="950"/>
+        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="949"/>
         <source>Sync successful</source>
         <translation>Sincronização bem-sucedida</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="958"/>
+        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="957"/>
         <source>Sync failed, please try later</source>
         <translation>A sincronização falhou, tente novamente mais tarde</translation>
     </message>
@@ -989,12 +989,12 @@
 <context>
     <name>JobTypeListView</name>
     <message>
-        <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="142"/>
+        <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="143"/>
         <source>export</source>
         <translation>exportar</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="213"/>
+        <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="214"/>
         <source>import ICS file</source>
         <translation>importar arquivo ICS</translation>
     </message>
@@ -1084,7 +1084,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="153"/>
         <source>Time</source>
-        <translation>Horário</translation>
+        <translation>Formato de hora</translation>
     </message>
 </context>
 <context>
@@ -1241,7 +1241,7 @@
 <context>
     <name>YearFrame</name>
     <message>
-        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="925"/>
+        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="929"/>
         <source>Y</source>
         <translation>A</translation>
     </message>
