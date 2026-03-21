@@ -1059,7 +1059,7 @@
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="63"/>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="146"/>
         <source>General settings</source>
-        <translation>Definições gerais</translation>
+        <translation>Configurações gerais</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="74"/>
