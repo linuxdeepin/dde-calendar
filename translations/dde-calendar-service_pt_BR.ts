@@ -393,7 +393,7 @@
     </message>
     <message>
         <source>Delete All</source>
-        <translation type="vanished">Excluir Tudo</translation>
+        <translation type="vanished">Excluir tudo</translation>
     </message>
     <message>
         <source>Delete Only This Event</source>
@@ -405,7 +405,7 @@
     </message>
     <message>
         <source>Delete All Future Events</source>
-        <translation type="vanished">Excluir Todos os Eventos Futuros</translation>
+        <translation type="vanished">Excluir todos os eventos futuros</translation>
     </message>
     <message>
         <source>You are changing a repeating event.</source>
