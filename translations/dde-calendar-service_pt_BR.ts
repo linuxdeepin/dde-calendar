@@ -818,7 +818,7 @@
     </message>
     <message>
         <source>General settings</source>
-        <translation type="vanished">Definições gerais</translation>
+        <translation type="vanished">Configurações gerais</translation>
     </message>
     <message>
         <source>Sync interval</source>
