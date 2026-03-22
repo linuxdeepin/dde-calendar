@@ -806,7 +806,7 @@
     </message>
     <message>
         <source>Account</source>
-        <translation type="vanished">Conta</translation>
+        <translation type="vanished">Contas</translation>
     </message>
     <message>
         <source>Select items to be synced</source>
