@@ -1043,7 +1043,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="42"/>
         <source>Account</source>
-        <translation>Conta</translation>
+        <translation>Contas</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="53"/>
