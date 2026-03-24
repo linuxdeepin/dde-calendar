@@ -29,9 +29,6 @@ DAccountManagerService::DAccountManagerService(QObject *parent)
 QString DAccountManagerService::getAccountList()
 {
     DServiceExitControl exitControl;
-    if (!clientWhite(0)) {
-        return QString();
-    }
     return m_accountManager->getAccountList();
 }
 
@@ -70,27 +67,18 @@ void DAccountManagerService::uploadNetWorkAccountData()
 QString DAccountManagerService::getCalendarGeneralSettings()
 {
     DServiceExitControl exitControl;
-    if (!clientWhite(0)) {
-        return QString();
-    }
     return m_accountManager->getCalendarGeneralSettings();
 }
 
 void DAccountManagerService::setCalendarGeneralSettings(const QString &cgSet)
 {
     DServiceExitControl exitControl;
-    if (!clientWhite(0)) {
-        return;
-    }
     m_accountManager->setCalendarGeneralSettings(cgSet);
 }
 
 void DAccountManagerService::calendarIsShow(const bool &isShow)
 {
     DServiceExitControl exitControl;
-    if (!clientWhite(0)) {
-        return;
-    }
     exitControl.setClientIsOpen(isShow);
     m_accountManager->calendarOpen(isShow);
 }
@@ -98,27 +86,18 @@ void DAccountManagerService::calendarIsShow(const bool &isShow)
 void DAccountManagerService::login()
 {
     DServiceExitControl exitControl;
-    if (!clientWhite(0)) {
-        return;
-    }
     m_accountManager->login();
 }
 
 void DAccountManagerService::logout()
 {
     DServiceExitControl exitControl;
-    if (!clientWhite(0)) {
-        return;
-    }
     m_accountManager->logout();
 }
 
 bool DAccountManagerService::isSupportUid()
 {
     DServiceExitControl exitControl;
-    if (!clientWhite(0)) {
-        return false;
-    }
     return m_accountManager->isSupportUid();
 }
 

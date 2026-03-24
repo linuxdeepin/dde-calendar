@@ -21,8 +21,6 @@ public:
     QString getInterface() const;
 
 protected:
-    QString getClientName();
-    bool clientWhite(const int index);
     void notifyPropertyChanged(const QString &interface, const QString &propertyName);
 
 private:

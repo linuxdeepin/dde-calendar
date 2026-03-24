@@ -21,7 +21,6 @@
 #define SYNC_Internal_Error             7500            /*内部错误*/
 #define SYNC_Parameter_Error            7501            /*参数错误*/
 #define SYNC_Login_Expired              7502            /*未登录或登录过期*/
-#define SYNC_No_Access                  7503            /*禁止访问，不在白名单内*/
 #define SYNC_Data_Not_Exist             7504            /*数据不存在*/
 #define SYNC_File_Operation_Failed      7505            /*文件操作失败*/
 #define SYNC_Network_Request_Error      7506            /*网络请求出错错误*/
