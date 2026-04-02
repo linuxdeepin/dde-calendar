@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="ca">
+<?xml version="1.0" ?><!DOCTYPE TS><TS version="2.1" language="ca">
 <context>
     <name>AccountItem</name>
     <message>
@@ -34,7 +32,7 @@
     <message>
         <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="229"/>
         <source>Event types</source>
-        <translation>Tipus d'esdeveniment</translation>
+        <translation>Tipus d&apos;esdeveniment</translation>
     </message>
 </context>
 <context>
@@ -166,7 +164,7 @@
         <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="326"/>
         <source>OK</source>
         <comment>button</comment>
-        <translation>D'acord</translation>
+        <translation>D&apos;acord</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="331"/>
@@ -186,7 +184,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/cpushbutton.cpp" line="17"/>
         <source>New event type</source>
-        <translation>Tipus d'esdeveniment nou</translation>
+        <translation>Tipus d&apos;esdeveniment nou</translation>
     </message>
 </context>
 <context>
@@ -199,18 +197,18 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="60"/>
         <source>Edit Event</source>
-        <translation>Edita l'esdeveniment</translation>
+        <translation>Edita l&apos;esdeveniment</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="270"/>
         <source>End time must be greater than start time</source>
-        <translation>L'hora d'acabament ha de ser superior a l'hora d'inici.</translation>
+        <translation>L&apos;hora d&apos;acabament ha de ser superior a l&apos;hora d&apos;inici.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="271"/>
         <source>OK</source>
         <comment>button</comment>
-        <translation>D'acord</translation>
+        <translation>D&apos;acord</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="506"/>
@@ -220,7 +218,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="507"/>
         <source>At time of event</source>
-        <translation>Al moment de l'esdeveniment</translation>
+        <translation>Al moment de l&apos;esdeveniment</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="508"/>
@@ -255,7 +253,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="536"/>
         <source>On start day (9:00 AM)</source>
-        <translation>El dia d'inici (9:00)</translation>
+        <translation>El dia d&apos;inici (9:00)</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="583"/>
@@ -300,7 +298,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="774"/>
         <source>Remind Me:</source>
-        <translation>Recorda-m'ho:</translation>
+        <translation>Recorda-m&apos;ho:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="779"/>
@@ -370,7 +368,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1092"/>
         <source>Remind Me</source>
-        <translation>Recorda-m'ho</translation>
+        <translation>Recorda-m&apos;ho</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1119"/>
@@ -435,7 +433,7 @@
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="74"/>
         <source>All occurrences of a repeating event must have the same all-day status.</source>
-        <translation>Totes les ocurrències d'un esdeveniment repetitiu han de tenir el mateix estat de tot el dia.</translation>
+        <translation>Totes les ocurrències d&apos;un esdeveniment repetitiu han de tenir el mateix estat de tot el dia.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="75"/>
@@ -456,7 +454,7 @@
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="94"/>
         <source>You are changing the repeating rule of this event.</source>
-        <translation>Canvieu la regla de repetició d'aquest esdeveniment.</translation>
+        <translation>Canvieu la regla de repetició d&apos;aquest esdeveniment.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="127"/>
@@ -477,7 +475,7 @@
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="150"/>
         <source>Do you want to delete all occurrences of this event, or only the selected occurrence?</source>
-        <translation>Voleu eliminar totes les ocurrències d'aquest esdeveniment o només la seleccionada?</translation>
+        <translation>Voleu eliminar totes les ocurrències d&apos;aquest esdeveniment o només la seleccionada?</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="152"/>
@@ -492,7 +490,7 @@
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="173"/>
         <source>Do you want to delete this and all future occurrences of this event, or only the selected occurrence?</source>
-        <translation>Voleu eliminar aquesta i totes les ocurrències futures d'aquest esdeveniment o només la seleccionada?</translation>
+        <translation>Voleu eliminar aquesta i totes les ocurrències futures d&apos;aquest esdeveniment o només la seleccionada?</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="175"/>
@@ -507,7 +505,7 @@
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="257"/>
         <source>Do you want to change only this occurrence of the event, or all occurrences?</source>
-        <translation>Voleu canviar només aquesta ocurrència de l'esdeveniment o totes?</translation>
+        <translation>Voleu canviar només aquesta ocurrència de l&apos;esdeveniment o totes?</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="260"/>
@@ -522,7 +520,7 @@
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="290"/>
         <source>Do you want to change only this occurrence of the event, or this and all future occurrences?</source>
-        <translation>Voleu canviar només aquesta ocurrència de l'esdeveniment, o aquesta i totes les ocurrències futures?</translation>
+        <translation>Voleu canviar només aquesta ocurrència de l&apos;esdeveniment, o aquesta i totes les ocurrències futures?</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="293"/>
@@ -538,7 +536,7 @@
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="417"/>
         <source>OK</source>
         <comment>button</comment>
-        <translation>D'acord</translation>
+        <translation>D&apos;acord</translation>
     </message>
 </context>
 <context>
@@ -598,7 +596,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="389"/>
         <source>import ICS file</source>
-        <translation>Importar fitxer ICS</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="403"/>
@@ -638,7 +636,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="779"/>
         <source>Please go to the Control Center to change system settings</source>
-        <translation>Si us plau, aneu al Centre de Control per canviar les configuracions del sistema</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="346"/>
@@ -653,7 +651,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="347"/>
         <source>Use System Setting</source>
-        <translation>Utilitza configuració del sistema</translation>
+        <translation>Usa la configuració del sistema</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="365"/>
@@ -829,17 +827,17 @@
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="191"/>
         <source>One day before start</source>
-        <translation>Un dia abans de l'inici</translation>
+        <translation>Un dia abans de l&apos;inici</translation>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="197"/>
         <source>Remind me tomorrow</source>
-        <translation>Recorda-m'ho demà.</translation>
+        <translation>Recorda-m&apos;ho demà.</translation>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="202"/>
         <source>Remind me later</source>
-        <translation>Recorda-m'ho més tard.</translation>
+        <translation>Recorda-m&apos;ho més tard.</translation>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="204"/>
@@ -905,22 +903,22 @@
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="144"/>
         <source>export</source>
-        <translation>exportar</translation>
+        <translation>exporta</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="219"/>
         <source>import ICS file</source>
-        <translation>importar fitxer ICS</translation>
+        <translation>Importa un fitxer ICS</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="450"/>
         <source>You are deleting an event type.</source>
-        <translation>Elimineu un tipus d'esdeveniment.</translation>
+        <translation>Elimineu un tipus d&apos;esdeveniment.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="451"/>
         <source>All events under this type will be deleted and cannot be recovered.</source>
-        <translation>Tots els esdeveniments d'aquest tipus s'eliminaran i no es podran recuperar.</translation>
+        <translation>Tots els esdeveniments d&apos;aquest tipus s&apos;eliminaran i no es podran recuperar.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="452"/>
@@ -980,7 +978,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="112"/>
         <source>Event types</source>
-        <translation>Tipus d'esdeveniment</translation>
+        <translation>Tipus d&apos;esdeveniment</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="150"/>
@@ -1021,17 +1019,17 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="22"/>
         <source>New event type</source>
-        <translation>Tipus d'esdeveniment nou</translation>
+        <translation>Tipus d&apos;esdeveniment nou</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="32"/>
         <source>Edit event type</source>
-        <translation>Edita el tipus d'esdeveniment</translation>
+        <translation>Edita el tipus d&apos;esdeveniment</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="43"/>
         <source>Import ICS file</source>
-        <translation>Importar fitxer ICS</translation>
+        <translation>Importa un fitxer ICS</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="151"/>
@@ -1046,7 +1044,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="156"/>
         <source>ICS File:</source>
-        <translation>Fitxer ICS:</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="167"/>
@@ -1081,7 +1079,7 @@
     <message>
         <location filename="../calendar-client/src/shortcut.cpp" line="17"/>
         <source>Delete event</source>
-        <translation>Suprimeix l'esdeveniment</translation>
+        <translation>Suprimeix l&apos;esdeveniment</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/shortcut.cpp" line="20"/>
