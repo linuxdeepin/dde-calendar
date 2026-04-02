@@ -1,0 +1,244 @@
+// SPDX-FileCopyrightText: 2015 - 2026 UnionTech Software Technology Co., Ltd.
+//
+// SPDX-License-Identifier: LGPL-3.0-or-later
+
+#include "monthview.h"
+#include "scheduledlg.h"
+#include "scheduledatamanage.h"
+#include "calendarglobalenv.h"
+#include "commondef.h"
+
+#include <DPalette>
+
+#include <QPainter>
+#include <QEvent>
+#include <QTime>
+#include <QApplication>
+#include <QMouseEvent>
+
+DGUI_USE_NAMESPACE
+
+/**
+ * @brief setTheMe  根据系统主题类型设置颜色
+ * @param type      系统主题类型
+ */
+void CMonthView::setTheMe(int type)
+{
+    qCDebug(ClientLogger) << "CMonthView::setTheMe, type:" << type;
+    m_weekIndicator->setTheMe(type);
+    m_monthGraphicsView->setTheMe(type);
+}
+
+CMonthView::CMonthView(QWidget *parent) : DWidget(parent)
+{
+    qCDebug(ClientLogger) << "CMonthView::CMonthView";
+    m_weekIndicator = new CMonthWeekView;
+    m_monthGraphicsView = new CMonthGraphicsview(this);
+
+    connect(m_monthGraphicsView, &CMonthGraphicsview::signalsViewSelectDate, this, &CMonthView::signalsViewSelectDate);
+    connect(m_monthGraphicsView, &CMonthGraphicsview::signalScheduleShow, this, &CMonthView::slotScheduleRemindWidget);
+    connect(m_monthGraphicsView, &CMonthGraphicsview::signalAngleDelta, this, &CMonthView::signalAngleDelta);
+    connect(m_monthGraphicsView, &CMonthGraphicsview::signalSwitchPrePage, this, &CMonthView::signalSwitchPrePage);
+    connect(m_monthGraphicsView, &CMonthGraphicsview::signalSwitchNextPage, this, &CMonthView::signalSwitchNextPage);
+    connect(m_monthGraphicsView, &CMonthGraphicsview::signalGotoDayView, this, &CMonthView::signalsViewSelectDate);
+    //新建最终布局
+    m_mainLayout = new QVBoxLayout;
+    m_mainLayout->setContentsMargins(0, 0, 0, 0);
+    m_mainLayout->setSpacing(0);
+    m_mainLayout->addWidget(m_weekIndicator);
+    m_mainLayout->addWidget(m_monthGraphicsView);
+
+    setLayout(m_mainLayout);
+    m_createAction = new QAction(tr("New event"), this);
+
+    m_remindWidget = new ScheduleRemindWidget(this);
+    setMouseTracking(true);
+}
+
+CMonthView::~CMonthView()
+{
+    qCDebug(ClientLogger) << "CMonthView::~CMonthView";
+}
+
+void CMonthView::setSelectSchedule(const DSchedule::Ptr &scheduleInfo)
+{
+    qCDebug(ClientLogger) << "CMonthView::setSelectSchedule";
+    m_monthGraphicsView->setSelectSearchSchedule(scheduleInfo);
+}
+
+void CMonthView::slotScheduleRemindWidget(const bool isShow, const DSchedule::Ptr &out)
+{
+    // qCDebug(ClientLogger) << "CMonthView::slotScheduleRemindWidget, isShow:" << isShow;
+    if (isShow) {
+        qCDebug(ClientLogger) << "Showing schedule reminder widget" 
+                             << "summary:" << out->summary() 
+                             << "type:" << out->scheduleTypeID();
+        //获取当前鼠标位置
+        QVariant variant;
+        CalendarGlobalEnv::getGlobalEnv()->getValueByKey(DDECalendar::CursorPointKey, variant);
+        QPoint remindPos = variant.value<QPoint>();
+        //根据类型获取颜色
+        CSchedulesColor gdColor = CScheduleDataManage::getScheduleDataManage()->getScheduleColorByType(out->scheduleTypeID());
+        m_remindWidget->setData(out, gdColor);
+        // 因为将提示框从window改为widget，要转换为相对窗口的坐标
+        auto rPos = this->mapFromGlobal(remindPos);
+        //根据提示框在屏幕的位置设置箭头方向
+        qCDebug(ClientLogger) << "Reminder widget position" 
+                             << "window width:" << this->window()->width() 
+                             << "relative pos:" << rPos 
+                             << "widget width:" << m_remindWidget->width();
+        if (rPos.x() < this->window()->width() / 2) {
+            // 显示到右侧
+            qCDebug(ClientLogger) << "Showing reminder to the right";
+            m_remindWidget->setDirection(DArrowRectangle::ArrowLeft);
+            m_remindWidget->show(rPos.x()+10, rPos.y());
+        } else {
+            // 显示到左侧
+            qCDebug(ClientLogger) << "Showing reminder to the left";
+            m_remindWidget->setDirection(DArrowRectangle::ArrowRight);
+            m_remindWidget->show(rPos.x()-10, rPos.y());
+        }
+    } else {
+        // qCDebug(ClientLogger) << "Hiding schedule reminder widget";
+        m_remindWidget->hide();
+    }
+}
+
+void CMonthView::resizeEvent(QResizeEvent *event)
+{
+    // qCDebug(ClientLogger) << "CMonthView::resizeEvent";
+    DWidget::resizeEvent(event);
+    QMargins margins = m_mainLayout->contentsMargins();
+    m_weekIndicator->setFixedSize(width() - margins.left(), static_cast<int>(height() * 0.1042 + 0.5));
+}
+
+void CMonthView::mousePressEvent(QMouseEvent *event)
+{
+    // qCDebug(ClientLogger) << "CMonthView::mousePressEvent";
+    Q_UNUSED(event);
+    slotScheduleRemindWidget(false);
+}
+
+bool CMonthView::event(QEvent *event)
+{
+    // qCDebug(ClientLogger) << "CMonthView::event, type:" << event->type();
+    if (event->type() == QEvent::FocusIn) {
+        m_monthGraphicsView->setFocus(Qt::TabFocusReason);
+        return true;
+    }
+    return DWidget::event(event);
+}
+
+/**
+ * @brief setFirstWeekday   设置每周的第一天是周几
+ * @param weekday           周几
+ */
+void CMonthView::setFirstWeekday(Qt::DayOfWeek weekday)
+{
+    qCDebug(ClientLogger) << "Setting first weekday" << "weekday:" << weekday;
+    m_firstWeekDay = weekday;
+    m_weekIndicator->setFirstDay(weekday);
+}
+
+/**
+ * @brief CMonthView::setShowDate       设置显示日期
+ * @param showDate
+ */
+void CMonthView::setShowDate(const QVector<QDate> &showDate)
+{
+    qCDebug(ClientLogger) << "Setting show dates" << "count:" << showDate.size();
+    m_showDate = showDate;
+    m_monthGraphicsView->setDate(m_showDate);
+}
+
+/**
+ * @brief CMonthView::setHuangLiInfo        设置黄历信息
+ * @param huangLiInfo
+ */
+void CMonthView::setHuangLiInfo(const QMap<QDate, CaHuangLiDayInfo> &huangLiInfo)
+{
+    qCDebug(ClientLogger) << "Setting HuangLi info" << "count:" << huangLiInfo.size();
+    m_monthGraphicsView->setLunarInfo(huangLiInfo);
+}
+
+/**
+ * @brief CMonthView::setFestival       设置班休信息
+ * @param festivalInfo
+ */
+void CMonthView::setFestival(const QMap<QDate, int> &festivalInfo)
+{
+    qCDebug(ClientLogger) << "Setting festival info" << "count:" << festivalInfo.size();
+    m_monthGraphicsView->setFestival(festivalInfo);
+}
+
+/**
+ * @brief CMonthView::setScheduleInfo       设置显示日程
+ * @param scheduleInfo
+ */
+void CMonthView::setScheduleInfo(const QMap<QDate, DSchedule::List> &scheduleInfo)
+{
+    qCDebug(ClientLogger) << "Setting schedule info" << "date count:" << scheduleInfo.size();
+    m_monthGraphicsView->setScheduleInfo(scheduleInfo);
+}
+
+/**
+ * @brief CMonthView::setSearchScheduleInfo     设置搜索日程
+ * @param searchScheduleInfo
+ */
+void CMonthView::setSearchScheduleInfo(const DSchedule::List &searchScheduleInfo)
+{
+    qCDebug(ClientLogger) << "Setting search schedule info" << "count:" << searchScheduleInfo.size();
+    m_monthGraphicsView->setSearchScheduleInfo(searchScheduleInfo);
+}
+
+/**
+ * @brief CMonthView::setCurrentDate        设置当前时间
+ * @param currentDate
+ */
+void CMonthView::setCurrentDate(const QDate &currentDate)
+{
+    qCDebug(ClientLogger) << "Setting current date" << "date:" << currentDate;
+    m_weekIndicator->setCurrentDate(currentDate);
+    m_monthGraphicsView->setCurrentDate(currentDate);
+}
+
+void CMonthView::setRemindWidgetTimeFormat(QString timeformat)
+{
+    qCDebug(ClientLogger) << "Setting reminder widget time format" << "format:" << timeformat;
+    m_remindWidget->setTimeFormat(timeformat);
+}
+
+/**
+ * @brief CMonthView::deleteSelectSchedule 快捷键删除日程
+ */
+void CMonthView::deleteSelectSchedule()
+{
+    qCDebug(ClientLogger) << "Deleting selected schedule";
+    m_monthGraphicsView->slotDeleteItem();
+}
+
+void CMonthView::setLunarVisible(bool visible)
+{
+    qCDebug(ClientLogger) << "Setting lunar visibility" << "visible:" << visible;
+    m_monthGraphicsView->setLunarVisible(visible);
+}
+
+DSchedule::Ptr CMonthView::getScheduleInfo(const QDate &beginDate, const QDate &endDate)
+{
+    qCDebug(ClientLogger) << "Getting schedule info" 
+                         << "begin date:" << beginDate 
+                         << "end date:" << endDate;
+    DSchedule::Ptr info;
+    info.reset(new DSchedule());
+    if (beginDate.daysTo(endDate) > 0) {
+        info->setDtStart(QDateTime(beginDate, QTime(0, 0, 0)));
+        info->setDtEnd(QDateTime(endDate, QTime(23, 59, 59)));
+    } else {
+        info->setDtStart(QDateTime(endDate, QTime(0, 0, 0)));
+        info->setDtEnd(QDateTime(beginDate, QTime(23, 59, 00)));
+    }
+    info->setSummary(tr("New Event"));
+    info->setAllDay(true);
+    info->setAlarmType(DSchedule::Alarm_15Hour_Front);
+    return info;
+}

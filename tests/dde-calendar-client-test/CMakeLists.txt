@@ -6,8 +6,8 @@ project(dde-calendar-client-test)
 
 ADD_COMPILE_OPTIONS(-fno-access-control)
 
-set(APP_CLIENT_DIR "${CMAKE_SOURCE_DIR}/calendar-client")
-set(APP_COMMON_DIR "${CMAKE_SOURCE_DIR}/calendar-common")
+set(APP_CLIENT_DIR "${CMAKE_SOURCE_DIR}/src/calendar-client")
+set(APP_COMMON_DIR "${CMAKE_SOURCE_DIR}/src/calendar-common")
 set(APP_3PARTY_DIR "${CMAKE_SOURCE_DIR}/3rdparty/kcalendarcore")
 
 # set(APP_RES_DIR "${APP_CLIENT_DIR}/assets")

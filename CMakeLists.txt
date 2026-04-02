@@ -75,11 +75,11 @@ endmacro()
 option(WITH_AIASSISTANT_PLUGIN "Build with AI assistant (schedule-plugin) support" ON)
 
 ADD_SUBDIRECTORY(3rdparty/kcalendarcore)
-ADD_SUBDIRECTORY(calendar-common)
-ADD_SUBDIRECTORY(calendar-client)
-ADD_SUBDIRECTORY(calendar-service)
+ADD_SUBDIRECTORY(src/calendar-common)
+ADD_SUBDIRECTORY(src/calendar-client)
+ADD_SUBDIRECTORY(src/calendar-service)
 if(WITH_AIASSISTANT_PLUGIN)
-    ADD_SUBDIRECTORY(schedule-plugin)
+    ADD_SUBDIRECTORY(src/schedule-plugin)
 endif()
 
 # FIXME: Unit tests have not been maintained for a long time
@@ -95,14 +95,14 @@ install(FILES ${QM_FILES} DESTINATION ${CMAKE_INSTALL_DATADIR}/dde-calendar/tran
 # ##### Translation end #####
 
 # Install log json config file.
-install(FILES configs/logconfig/dde-calendar.json DESTINATION ${CMAKE_INSTALL_PREFIX}/share/deepin-log-viewer/deepin-log.conf.d/)
+install(FILES misc/configs/logconfig/dde-calendar.json DESTINATION ${CMAKE_INSTALL_PREFIX}/share/deepin-log-viewer/deepin-log.conf.d/)
 
 # Install debugmode json config file.
-install(FILES configs/debugconfig/org.deepin.dde.calendar.json DESTINATION ${CMAKE_INSTALL_PREFIX}/share/deepin-debug-config/deepin-debug-config.d/)
+install(FILES misc/configs/debugconfig/org.deepin.dde.calendar.json DESTINATION ${CMAKE_INSTALL_PREFIX}/share/deepin-debug-config/deepin-debug-config.d/)
 
 # 安装 DConfig 配置文件，1040及以下的默认DTK环境不支持DConfig
 set(DCONFIG_APPID org.deepin.dde.calendar)
-file(GLOB DCONFIG_FILES "${CMAKE_CURRENT_SOURCE_DIR}/configs/dconfig/*.json")
+file(GLOB DCONFIG_FILES "${CMAKE_CURRENT_SOURCE_DIR}/misc/configs/dconfig/*.json")
 if(DEFINED DSG_DATA_DIR)
     if (DTK_VERSION_MAJOR EQUAL "6")
         dtk_add_config_meta_files(APPID ${DCONFIG_APPID} FILES ${DCONFIG_FILES})
