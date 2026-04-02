@@ -1,12 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="ar">
+<?xml version="1.0" ?><!DOCTYPE TS><TS version="2.1" language="ar">
 <context>
     <name>AccountItem</name>
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="41"/>
         <source>Sync successful</source>
-        <translation>تم التزامن بنجاح</translation>
+        <translation>التزامن بنجاح</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="42"/>
@@ -21,7 +19,7 @@
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="44"/>
         <source>Storage full</source>
-        <translation>التخزين ممتلئ</translation>
+        <translation>مساحة التخزين ممتلئة</translation>
     </message>
 </context>
 <context>
@@ -115,7 +113,7 @@
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daywindow.cpp" line="170"/>
         <source>Lunar</source>
-        <translation>الهجري</translation>
+        <translation>التقويم القمري</translation>
     </message>
 </context>
 <context>
@@ -265,12 +263,12 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="598"/>
         <source>Enter a name please</source>
-        <translation>أدخل اسمًا من فضلك</translation>
+        <translation>أدخل اسمًا يرجى</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="693"/>
         <source>The name can not only contain whitespaces</source>
-        <translation>لا يمكن أن يحتوي الاسم فقط على المسافات البيضاء</translation>
+        <translation>لا يمكن أن يتضمن الاسم سوى المسافات trắng</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="749"/>
@@ -350,12 +348,12 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="972"/>
         <source>Solar</source>
-        <translation>السولي</translation>
+        <translation>التقويم الشمسي</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="973"/>
         <source>Lunar</source>
-        <translation>الهجري</translation>
+        <translation>التقويم القمري</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1006"/>
@@ -532,7 +530,7 @@
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="416"/>
         <source>You have selected a leap month, and will be reminded according to the rules of the lunar calendar.</source>
-        <translation>لقد اخترت شهرًا شراريًا، وستتم إخبارك وفقًا للقواعد الخاصة بالتقويم الهجري.</translation>
+        <translation>لقد قمت باختيار شهر قمري قمري، وسوف يتم تذكيرك وفقًا لقواعد التقويم القمري.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="417"/>
@@ -598,7 +596,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="389"/>
         <source>import ICS file</source>
-        <translation>استيراد ملف ICS</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="403"/>
@@ -628,17 +626,17 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="418"/>
         <source>Sync Now</source>
-        <translation>مزامن الآن</translation>
+        <translation>التزامن الآن</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="585"/>
         <source>Last sync</source>
-        <translation>المزامن السابق</translation>
+        <translation>آخر مزامنة</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="779"/>
         <source>Please go to the Control Center to change system settings</source>
-        <translation>يرجى الانتقال لـ مركز التحكم لتغيير إعدادات النظام</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="346"/>
@@ -653,17 +651,17 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="347"/>
         <source>Use System Setting</source>
-        <translation>استخدم إعداد النظام</translation>
+        <translation>استخدم الإعداد النظام</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="365"/>
         <source>12-hour clock</source>
-        <translation>الساعة 12 ساعة</translation>
+        <translation>ساعة 12 ساعة</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="364"/>
         <source>24-hour clock</source>
-        <translation>الساعة 24 ساعة</translation>
+        <translation>ساعة 24 ساعة</translation>
     </message>
 </context>
 <context>
@@ -671,17 +669,17 @@
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="71"/>
         <source>(%1 mins)</source>
-        <translation>(%1 دقيقة)</translation>
+        <translation>(%1 دقيقة),</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="73"/>
         <source>(%1 hour)</source>
-        <translation>(%1 ساعة)</translation>
+        <translation>(%1 ساعة),</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="75"/>
         <source>(%1 hours)</source>
-        <translation>(%1 ساعات)</translation>
+        <translation>(%1 ساعات),</translation>
     </message>
 </context>
 <context>
@@ -709,7 +707,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="92"/>
         <source>Search events and festivals</source>
-        <translation>ابحث عن الأحداث والاحتفالات</translation>
+        <translation>ابحث عن الأحداث والمهرجانات</translation>
     </message>
 </context>
 <context>
@@ -769,7 +767,7 @@
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="372"/>
         <source>Manage</source>
-        <translation>الإدارة</translation>
+        <translation>إدارة</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="379"/>
@@ -784,12 +782,12 @@
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="973"/>
         <source>Sync successful</source>
-        <translation>تم التزامن بنجاح</translation>
+        <translation>عملية توحيد ناجحة</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="982"/>
         <source>Sync failed, please try later</source>
-        <translation>فشل التزامن، من فضلك حاول لاحقًا</translation>
+        <translation>عملية التوحيد رسحت، يرجى المحاولة لاحقاً</translation>
     </message>
 </context>
 <context>
@@ -854,7 +852,7 @@
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="206"/>
         <source>4 hours later</source>
-        <translation>بعد 4 ساعات</translation>
+        <translation>بعد أربع ساعات</translation>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="207"/>
@@ -869,7 +867,7 @@
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="258"/>
         <source>%1 to %2</source>
-        <translation>'%1 إلى %2'</translation>
+        <translation>&apos;%1 إلى %2&apos;</translation>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="296"/>
@@ -910,17 +908,17 @@
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="219"/>
         <source>import ICS file</source>
-        <translation>استيراد ملف ICS</translation>
+        <translation>تحميل ملف ICS</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="450"/>
         <source>You are deleting an event type.</source>
-        <translation>أنت ت Deleting نوع حدث.</translation>
+        <translation>أنت تقوم إزالة نوع حدث.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="451"/>
         <source>All events under this type will be deleted and cannot be recovered.</source>
-        <translation>جميع الأحداث تحت هذا النوع سيتم حذفها ولا يمكن استعادتها.</translation>
+        <translation>ستتم إزالة جميع الأحداث لهذا النوع وسيكون أيًا منها غير قابل للإعادة.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="452"/>
@@ -950,7 +948,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="53"/>
         <source>Select items to be synced</source>
-        <translation>اختر العناصر التي سيتم تزامنها</translation>
+        <translation>حدد العناصر التي سيتم مزامنتها</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="56"/>
@@ -965,12 +963,12 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="74"/>
         <source>Sync interval</source>
-        <translation>فترة التزامن</translation>
+        <translation>فاصل التزامن</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="96"/>
         <source>Manage calendar</source>
-        <translation>إدارة التقويم</translation>
+        <translation>إدارة الجدول الزمني</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="104"/>
@@ -990,7 +988,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="152"/>
         <source>First day of week</source>
-        <translation>اليوم الأول من الأسبوع</translation>
+        <translation>أول يوم في الأسبوع</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="153"/>
@@ -1041,12 +1039,12 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="152"/>
         <source>Color:</source>
-        <translation>'اللون:'</translation>
+        <translation>اللون :</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="156"/>
         <source>ICS File:</source>
-        <translation>'ملف ICS:'</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="167"/>
@@ -1063,12 +1061,12 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="219"/>
         <source>The name can not only contain whitespaces</source>
-        <translation>لا يمكن أن يحتوي الاسم فقط على المسافات البيضاء</translation>
+        <translation>لا يمكن أن تحتوي الأسماء على مسافات فقط</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="256"/>
         <source>Enter a name please</source>
-        <translation>أدخل اسمًا من فضلك</translation>
+        <translation>أدخل اسمًا، يرجى</translation>
     </message>
 </context>
 <context>
