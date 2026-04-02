@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -7,7 +7,7 @@
 #include "../third-party_stub/stub.h"
 #include "gtest/gtest.h"
 #include "view/cgraphicsscene.h"
-#include "KeyPress/ckeyupdeal.h"
+#include "keypress/ckeyupdeal.h"
 #include "view/graphicsItem/cweekdaybackgrounditem.h"
 #include "keypressstub.h"
 

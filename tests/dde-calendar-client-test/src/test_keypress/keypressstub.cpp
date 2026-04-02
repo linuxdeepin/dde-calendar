@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -6,7 +6,7 @@
 
 #include "view/graphicsItem/cweekdaybackgrounditem.h"
 #include "view/cgraphicsscene.h"
-#include "KeyPress/cscenetabkeydeal.h"
+#include "keypress/cscenetabkeydeal.h"
 
 #include <QDebug>
 

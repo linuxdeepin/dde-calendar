@@ -1,0 +1,113 @@
+version = 1
+
+# REUSE.toml itself
+[[annotations]]
+path = ["REUSE.toml"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 UnionTech Software Technology Co., Ltd."
+SPDX-License-Identifier = "CC0-1.0"
+
+# ci
+[[annotations]]
+path = [".github/**", ".obs/workflows.yml"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 UnionTech Software Technology Co., Ltd."
+SPDX-License-Identifier = "CC0-1.0"
+
+# gitignore
+[[annotations]]
+path = [".gitignore", ".clang-format"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 UnionTech Software Technology Co., Ltd."
+SPDX-License-Identifier = "CC0-1.0"
+
+# xml toml json conf yaml sh py misc
+[[annotations]]
+path = ["**/*.toml", "**/*.json", "**/*.conf", "**/*.yaml", "**/*.sh", "**/*.py", "misc/**", ".tx/**"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 UnionTech Software Technology Co., Ltd."
+SPDX-License-Identifier = "CC0-1.0"
+
+# debian
+[[annotations]]
+path = ["debian/**"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 UnionTech Software Technology Co., Ltd."
+SPDX-License-Identifier = "CC0-1.0"
+
+# rpm
+[[annotations]]
+path = ["rpm/**"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 UnionTech Software Technology Co., Ltd."
+SPDX-License-Identifier = "CC0-1.0"
+
+# cmake
+[[annotations]]
+path = ["cmake/**", "**/CMakeLists.txt", "**/*.cmake"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 UnionTech Software Technology Co., Ltd."
+SPDX-License-Identifier = "CC0-1.0"
+
+# README
+[[annotations]]
+path = ["README*", "CHANGELOG.md"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 UnionTech Software Technology Co., Ltd."
+SPDX-License-Identifier = "CC-BY-4.0"
+
+# docs
+[[annotations]]
+path = ["docs/**"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 UnionTech Software Technology Co., Ltd."
+SPDX-License-Identifier = "CC-BY-4.0"
+
+# src
+[[annotations]]
+path = ["src/**"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 UnionTech Software Technology Co., Ltd."
+SPDX-License-Identifier = "GPL-3.0-or-later"
+
+# translations
+[[annotations]]
+path = ["translations/**"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 UnionTech Software Technology Co., Ltd."
+SPDX-License-Identifier = "GPL-3.0-or-later"
+
+# tests
+[[annotations]]
+path = ["tests/**"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 UnionTech Software Technology Co., Ltd."
+SPDX-License-Identifier = "GPL-3.0-or-later"
+
+# 3rdparty
+[[annotations]]
+path = ["3rdparty/**"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 UnionTech Software Technology Co., Ltd."
+SPDX-License-Identifier = "LGPL-2.0-or-later"
+
+# toolGenerate
+[[annotations]]
+path = ["toolGenerate/**"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 UnionTech Software Technology Co., Ltd."
+SPDX-License-Identifier = "CC0-1.0"
+
+# images
+[[annotations]]
+path = ["**/*.png", "**/*.svg", "**/*.jpg", "**/*.gif"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 UnionTech Software Technology Co., Ltd."
+SPDX-License-Identifier = "CC0-1.0"
+
+# linglong
+[[annotations]]
+path = ["install_dep", "deploy_dep", "linglong.yaml", "LICENSE", ".project.json"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 UnionTech Software Technology Co., Ltd."
+SPDX-License-Identifier = "GPL-3.0-or-later"

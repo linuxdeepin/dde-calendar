@@ -8,7 +8,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(APP_BIN_NAME "dde-calendar-service-test")
-set(APP_SERVICE_DIR "${CMAKE_SOURCE_DIR}/calendar-service")
+set(APP_SERVICE_DIR "${CMAKE_SOURCE_DIR}/src/calendar-service")
 set(APP_SERVICE_RES_DIR "${APP_SERVICE_DIR}/assets")
 set(APP_QRC "${APP_SERVICE_RES_DIR}/resources.qrc")
 

@@ -15,7 +15,7 @@ workdir=$(cd ../$(dirname $0)/$utdir; pwd)
 mkdir -p report
 lcov -d $workdir -c -o ./report/coverage.info
 
-lcov --extract ./report/coverage.info '*/calendar-basicstruct/*' '*/calendar-client/*' '*/calendar-service/*' '*/schedule-plugin/*' -o ./report/coverage.info
+lcov --extract ./report/coverage.info '*/calendar-basicstruct/*' '*/src/calendar-client/*' '*/src/calendar-service/*' '*/src/schedule-plugin/*' -o ./report/coverage.info
 lcov --remove ./report/coverage.info '*/tests/*' -o  ./report/coverage.info
 
 genhtml -o ./report ./report/coverage.info

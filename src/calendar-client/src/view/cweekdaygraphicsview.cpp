@@ -1,0 +1,244 @@
+// SPDX-FileCopyrightText: 2019 - 2026 UnionTech Software Technology Co., Ltd.
+//
+// SPDX-License-Identifier: LGPL-3.0-or-later
+
+#include "cweekdaygraphicsview.h"
+#include "commondef.h"
+
+#include "constants.h"
+#include "schedulecoormanage.h"
+#include "cweekdayscenetabkeydeal.h"
+#include "ckeyenabledeal.h"
+#include "ckeyleftdeal.h"
+#include "ckeyrightdeal.h"
+#include "calldaykeyleftdeal.h"
+#include "calldaykeyrightdeal.h"
+
+#include <QDebug>
+
+CWeekDayGraphicsview::CWeekDayGraphicsview(QWidget *parent, ViewPosition viewPos, ViewType viewtype)
+    : DragInfoGraphicsView(parent)
+    , m_viewPos(viewPos)
+    , m_viewType(viewtype)
+    , m_coorManage(new CScheduleCoorManage)
+    , m_rightmagin(0)
+{
+    qCDebug(ClientLogger) << "CWeekDayGraphicsview constructor - viewPos:" << viewPos << "viewType:" << viewtype;
+    createBackgroundItem();
+    m_Scene->setFirstFocusItem(m_backgroundItem.first());
+    //添加键盘事件处理
+    CKeyPressPrxy *m_keyPrxy = new CKeyPressPrxy();
+    m_keyPrxy->addkeyPressDeal(new CWeekDaySceneTabKeyDeal(m_Scene));
+    m_keyPrxy->addkeyPressDeal(new CKeyEnableDeal(m_Scene));
+    if (m_viewType == ALLDayView) {
+        qCDebug(ClientLogger) << "Adding ALL day key handlers";
+        m_keyPrxy->addkeyPressDeal(new CAllDayKeyLeftDeal(m_Scene));
+        m_keyPrxy->addkeyPressDeal(new CAllDayKeyRightDeal(m_Scene));
+    } else {
+        qCDebug(ClientLogger) << "Adding part time key handlers";
+        m_keyPrxy->addkeyPressDeal(new CKeyLeftDeal(m_Scene));
+        m_keyPrxy->addkeyPressDeal(new CKeyRightDeal(m_Scene));
+    }
+    m_Scene->setKeyPressPrxy(m_keyPrxy);
+    connect(m_Scene, &CGraphicsScene::signalSwitchView, this, &CWeekDayGraphicsview::slotSwitchView);
+    connect(m_Scene, &CGraphicsScene::signalViewFocusInit, this, &CWeekDayGraphicsview::signalViewFocusInit);
+}
+
+CWeekDayGraphicsview::~CWeekDayGraphicsview()
+{
+    qCDebug(ClientLogger) << "CWeekDayGraphicsview destructor";
+    delete m_coorManage;
+    m_coorManage = nullptr;
+}
+
+void CWeekDayGraphicsview::setRange(int w, int h, QDate begindate, QDate enddate, int rightmagin)
+{
+    qCDebug(ClientLogger) << "CWeekDayGraphicsview::setRange - w:" << w << "h:" << h
+                         << "begindate:" << begindate << "enddate:" << enddate << "rightmagin:" << rightmagin;
+    m_MoveDate.setDate(begindate.addMonths(-2));
+    m_beginDate = begindate;
+    m_endDate = enddate;
+    //如果为全天区域
+    if (m_viewType == ALLDayView) {
+        qCDebug(ClientLogger) << "Adjusting width for ALL day view";
+        w -= 2;
+    } else {
+        qCDebug(ClientLogger) << "Adjusting width for part time view";
+        w = w - rightmagin - 2;
+    }
+    setBackgroundDate();
+    m_coorManage->setRange(w, h, begindate, enddate, rightmagin);
+    setSceneRect(0, 0, w, h);
+    m_rightmagin = rightmagin;
+}
+
+void CWeekDayGraphicsview::setRange(QDate begin, QDate end)
+{
+    qCDebug(ClientLogger) << "CWeekDayGraphicsview::setRange - begin:" << begin << "end:" << end;
+    m_MoveDate.setDate(begin.addMonths(-2));
+    m_beginDate = begin;
+    m_endDate = end;
+    setBackgroundDate();
+    getCoorManage()->setDateRange(begin, end);
+    this->scene()->update();
+}
+
+void CWeekDayGraphicsview::setTheMe(int type)
+{
+    qCDebug(ClientLogger) << "CWeekDayGraphicsview::setTheMe - type:" << type;
+    for (int i = 0; i < m_backgroundItem.size(); ++i) {
+        m_backgroundItem.at(i)->setTheMe(type);
+    }
+    DragInfoGraphicsView::setTheMe(type);
+    this->viewport()->update();
+}
+
+CScheduleCoorManage *CWeekDayGraphicsview::getCoorManage() const
+{
+    qCDebug(ClientLogger) << "CWeekDayGraphicsview::getCoorManage called";
+    return m_coorManage;
+}
+
+void CWeekDayGraphicsview::setCurrentFocusItem(const QDate &focusDate, bool setItemFocus)
+{
+    // qCDebug(ClientLogger) << "CWeekDayGraphicsview::setCurrentFocusItem - focusDate:" << focusDate 
+    //                      << "setItemFocus:" << setItemFocus;
+    qint64 offset = m_backgroundItem.first()->getDate().daysTo(focusDate);
+    if (offset >= 0 && offset < m_backgroundItem.size()) {
+        qCDebug(ClientLogger) << "Setting current focus item at offset:" << offset;
+        m_Scene->setCurrentFocusItem(m_backgroundItem.at(static_cast<int>(offset)));
+        m_Scene->setIsShowCurrentItem(setItemFocus);
+    } else {
+        qCWarning(ClientLogger) << "Failed to set current focus item" 
+                               << "offset:" << offset 
+                               << "focus date:" << focusDate 
+                               << "first item date:" << m_backgroundItem.first()->getDate();
+    }
+}
+
+void CWeekDayGraphicsview::setSceneRect(qreal x, qreal y, qreal w, qreal h)
+{
+    // qCDebug(ClientLogger) << "CWeekDayGraphicsview::setSceneRect - x:" << x << "y:" << y << "w:" << w << "h:" << h;
+    m_Scene->setSceneRect(x, y, w, h);
+    const qreal backgroundItemHeight = h;
+    const qreal backgroundItemWidth = w / m_backgroundItem.size();
+    // qCDebug(ClientLogger) << "Setting background item dimensions - width:" << backgroundItemWidth
+    //                      << "height:" << backgroundItemHeight;
+    for (int i = 0; i < m_backgroundItem.size(); ++i) {
+        m_backgroundItem.at(i)->setDate(m_beginDate.addDays(i));
+        m_backgroundItem.at(i)->setRect(x + backgroundItemWidth * i, 0, backgroundItemWidth, backgroundItemHeight);
+    }
+}
+
+void CWeekDayGraphicsview::createBackgroundItem()
+{
+    qCDebug(ClientLogger) << "CWeekDayGraphicsview::createBackgroundItem called - viewPos:" << m_viewPos;
+    if (m_viewPos == DayPos) {
+        //日视图
+        qCDebug(ClientLogger) << "Creating day view background item";
+        CWeekDayBackgroundItem *backgroundItem = new CWeekDayBackgroundItem();
+        connect(backgroundItem, &CWeekDayBackgroundItem::signalPosOnView, this, &CWeekDayGraphicsview::slotPosOnView);
+        backgroundItem->setZValue(-1);
+        m_backgroundItem.append(backgroundItem);
+        m_Scene->addItem(backgroundItem);
+        //如果为非全天则设置背景焦点获取显示
+        if (m_viewType == PartTimeView) {
+            qCDebug(ClientLogger) << "Setting part time view focus for day view";
+            backgroundItem->setShowFocus(true);
+        }
+        //设置编号
+        backgroundItem->setBackgroundNum(0);
+    } else {
+        //周视图
+        qCDebug(ClientLogger) << "Creating week view background items";
+        for (int i = 0; i < DDEWeekCalendar::AFewDaysofWeek; ++i) {
+            CWeekDayBackgroundItem *item = new CWeekDayBackgroundItem();
+            connect(item, &CWeekDayBackgroundItem::signalPosOnView, this, &CWeekDayGraphicsview::slotPosOnView);
+            item->setZValue(-1);
+            if (m_backgroundItem.size() > 0) {
+                //设置对应左右和下一个关系
+                // qCDebug(ClientLogger) << "Setting navigation relationships for background item" << i;
+                m_backgroundItem.last()->setNextFocusItem(item);
+                m_backgroundItem.last()->setRightItem(item);
+                item->setLeftItem(m_backgroundItem.last());
+            }
+            //设置背景直接分隔符
+            item->setDrawDividingLine(true);
+            //如果为非全天则设置背景焦点获取显示
+            if (m_viewType == PartTimeView) {
+                // qCDebug(ClientLogger) << "Setting part time view focus for week item" << i;
+                item->setShowFocus(true);
+            }
+            //设置编号
+            item->setBackgroundNum(i);
+            m_backgroundItem.append(item);
+            m_Scene->addItem(item);
+        }
+    }
+    qCDebug(ClientLogger) << "Created" << m_backgroundItem.size() << "background items";
+}
+
+void CWeekDayGraphicsview::setSceneCurrentItemFocus(const QDate &focusDate)
+{
+    qCDebug(ClientLogger) << "CWeekDayGraphicsview::setSceneCurrentItemFocus - focusDate:" << focusDate;
+    int offset = static_cast<int>(m_backgroundItem.first()->getDate().daysTo(focusDate));
+    if (offset >= 0 && offset < m_backgroundItem.size()) {
+        qCDebug(ClientLogger) << "Setting scene current focus item at offset:" << offset;
+        m_Scene->setCurrentFocusItem(m_backgroundItem.at(offset));
+        m_Scene->currentFocusItemUpdate();
+    } else {
+        qCWarning(ClientLogger) << "Failed to set scene current item focus" 
+                               << "focus date:" << focusDate 
+                               << "first item date:" << m_backgroundItem.first()->getDate() 
+                               << "offset:" << offset;
+    }
+}
+
+/**
+ * @brief CWeekDayGraphicsview::updateBackgroundShowItem        更新背景上显示的item
+ */
+void CWeekDayGraphicsview::updateBackgroundShowItem()
+{
+    qCDebug(ClientLogger) << "CWeekDayGraphicsview::updateBackgroundShowItem called";
+    for (int i = 0; i < m_backgroundItem.size(); ++i) {
+        m_backgroundItem.at(i)->updateShowItem();
+    }
+}
+
+/**
+ * @brief CWeekDayGraphicsview::setBackgroundDate       设置背景时间
+ */
+void CWeekDayGraphicsview::setBackgroundDate()
+{
+    qCDebug(ClientLogger) << "CWeekDayGraphicsview::setBackgroundDate called";
+    for (int i = 0; i < m_backgroundItem.size(); ++i) {
+        m_backgroundItem.at(i)->setDate(m_beginDate.addDays(i));
+    }
+}
+
+void CWeekDayGraphicsview::slotSwitchView(const QDate &focusDate, bool setItemFocus)
+{
+    qCDebug(ClientLogger) << "CWeekDayGraphicsview::slotSwitchView - focusDate:" << focusDate 
+                         << "setItemFocus:" << setItemFocus << "current viewType:" << m_viewType;
+    if (m_viewType == ALLDayView) {
+        qCDebug(ClientLogger) << "Switching from ALLDayView to PartTimeView";
+        emit signaleSwitchToView(focusDate, PartTimeView, setItemFocus);
+    } else {
+        qCDebug(ClientLogger) << "Switching from PartTimeView to ALLDayView";
+        emit signaleSwitchToView(focusDate, ALLDayView, setItemFocus);
+    }
+}
+
+void CWeekDayGraphicsview::slotViewInit()
+{
+    qCDebug(ClientLogger) << "CWeekDayGraphicsview::slotViewInit called";
+    m_Scene->currentItemInit();
+}
+
+void CWeekDayGraphicsview::slotPosOnView(const qreal y)
+{
+    qCDebug(ClientLogger) << "CWeekDayGraphicsview::slotPosOnView - y:" << y;
+    //定位到当前焦点的item
+    QPointF point(m_Scene->width() / 2, y);
+    centerOn(point);
+}
