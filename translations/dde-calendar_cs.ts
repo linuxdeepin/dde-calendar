@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="cs">
+<?xml version="1.0" ?><!DOCTYPE TS><TS version="2.1" language="cs">
 <context>
     <name>AccountItem</name>
     <message>
@@ -608,7 +606,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="347"/>
         <source>Use System Setting</source>
-        <translation>Použít nastavení systému</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="364"/>
@@ -662,8 +660,8 @@
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="779"/>
-        <source>Please go to the &lt;a href='/'&gt;Control Center&lt;/a&gt; to change system settings</source>
-        <translation>Prosím, přejděte na &lt;a href='/'&gt;Centrum ovládání&lt;/a&gt;, abyste změnili nastavení systému</translation>
+        <source>Please go to the Control Center to change system settings</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -910,7 +908,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="219"/>
         <source>import ICS file</source>
-        <translation type="unfinished">naimportovat ICS soubor</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="450"/>
@@ -1045,8 +1043,8 @@
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="156"/>
-        <source>&lt;a href='https://wikipedia.org/wiki/ICalendar'&gt;ICS&lt;/a&gt; File:</source>
-        <translation>&lt;a href='https://wikipedia.org/wiki/ICalendar'&gt;ICS&lt;/a&gt; soubor:</translation>
+        <source>ICS File:</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="167"/>
