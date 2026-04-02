@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="ur">
+<?xml version="1.0" ?><!DOCTYPE TS><TS version="2.1" language="ur">
 <context>
     <name>AccountItem</name>
     <message>
@@ -722,7 +720,7 @@
     <message>
         <location filename="../calendar-client/src/widget/weekWidget/weekwindow.cpp" line="280"/>
         <source>Y</source>
-        <translation>'ج'</translation>
+        <translation>&apos;ج&apos;</translation>
     </message>
 </context>
 <context>
@@ -743,7 +741,7 @@
     <message>
         <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="615"/>
         <source>Y</source>
-        <translation>'ج'</translation>
+        <translation>&apos;ج&apos;</translation>
     </message>
 </context>
 <context>
@@ -869,7 +867,7 @@
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="258"/>
         <source>%1 to %2</source>
-        <translation>'%1 تا %2'</translation>
+        <translation>&apos;%1 تا %2&apos;</translation>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="296"/>
