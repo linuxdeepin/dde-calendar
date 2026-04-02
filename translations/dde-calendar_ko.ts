@@ -1,27 +1,25 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="ko">
+<?xml version="1.0" ?><!DOCTYPE TS><TS version="2.1" language="ko">
 <context>
     <name>AccountItem</name>
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="41"/>
         <source>Sync successful</source>
-        <translation>동기화 성공</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="42"/>
         <source>Network error</source>
-        <translation>네트워크 오류</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="43"/>
         <source>Server exception</source>
-        <translation>서버 예외</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="44"/>
         <source>Storage full</source>
-        <translation>저장소가 가득 참</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -29,12 +27,12 @@
     <message>
         <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="227"/>
         <source>Local account</source>
-        <translation>로컬 계정</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="229"/>
         <source>Event types</source>
-        <translation>이벤트 유형</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -115,7 +113,7 @@
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daywindow.cpp" line="170"/>
         <source>Lunar</source>
-        <translation>음력</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -186,7 +184,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/cpushbutton.cpp" line="17"/>
         <source>New event type</source>
-        <translation>새로운 이벤트 유형</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -265,12 +263,12 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="598"/>
         <source>Enter a name please</source>
-        <translation>이름을 입력해 주세요</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="693"/>
         <source>The name can not only contain whitespaces</source>
-        <translation>이름은 공백 문자만 포함할 수 없습니다</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="749"/>
@@ -315,12 +313,12 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="840"/>
         <source>Calendar account:</source>
-        <translation>달력 계정:</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="841"/>
         <source>Calendar account</source>
-        <translation>달력 계정</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="868"/>
@@ -340,7 +338,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="964"/>
         <source>Time:</source>
-        <translation>시간:</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="965"/>
@@ -350,12 +348,12 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="972"/>
         <source>Solar</source>
-        <translation>양력</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="973"/>
         <source>Lunar</source>
-        <translation>음력</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1006"/>
@@ -532,7 +530,7 @@
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="416"/>
         <source>You have selected a leap month, and will be reminded according to the rules of the lunar calendar.</source>
-        <translation>당신은 윤달을 선택했습니다. 월력 달력의 규칙에 따라 알림을 받게 됩니다.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="417"/>
@@ -608,22 +606,22 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="347"/>
         <source>Use System Setting</source>
-        <translation>시스템 설정 사용</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="364"/>
         <source>24-hour clock</source>
-        <translation>24시간 시계</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="365"/>
         <source>12-hour clock</source>
-        <translation>12시간 시계</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="389"/>
         <source>import ICS file</source>
-        <translation>ICS 파일 불러오기</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="403"/>
@@ -633,12 +631,12 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="404"/>
         <source>15 mins</source>
-        <translation>15분</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="405"/>
         <source>30 mins</source>
-        <translation>30분</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="406"/>
@@ -648,22 +646,22 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="407"/>
         <source>24 hours</source>
-        <translation>24시간</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="418"/>
         <source>Sync Now</source>
-        <translation>즉시 동기화</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="585"/>
         <source>Last sync</source>
-        <translation>마지막 동기화</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="779"/>
         <source>Please go to the Control Center to change system settings</source>
-        <translation>시스템 설정을 변경하려면 제어 센터로 이동해 주세요</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -671,17 +669,17 @@
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="71"/>
         <source>(%1 mins)</source>
-        <translation>(%1 분)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="73"/>
         <source>(%1 hour)</source>
-        <translation>(%1 시간)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="75"/>
         <source>(%1 hours)</source>
-        <translation>(%1 시간)</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -709,7 +707,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="92"/>
         <source>Search events and festivals</source>
-        <translation>이벤트 및 축제 검색</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -769,7 +767,7 @@
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="372"/>
         <source>Manage</source>
-        <translation>관리</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="379"/>
@@ -784,12 +782,12 @@
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="973"/>
         <source>Sync successful</source>
-        <translation>동기화 성공</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="982"/>
         <source>Sync failed, please try later</source>
-        <translation>동기화 실패, 나중에 다시 시도해 주세요</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -844,17 +842,17 @@
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="204"/>
         <source>15 mins later</source>
-        <translation>15분 후</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="205"/>
         <source>1 hour later</source>
-        <translation>1시간 후</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="206"/>
         <source>4 hours later</source>
-        <translation>4시간 후</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="207"/>
@@ -869,7 +867,7 @@
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="258"/>
         <source>%1 to %2</source>
-        <translation>'%1부터 %2까지'</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="296"/>
@@ -905,22 +903,22 @@
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="144"/>
         <source>export</source>
-        <translation>내보내기</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="219"/>
         <source>import ICS file</source>
-        <translation>ICS 파일 가져오기</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="450"/>
         <source>You are deleting an event type.</source>
-        <translation>이 이벤트 유형을 삭제하고 있습니다.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="451"/>
         <source>All events under this type will be deleted and cannot be recovered.</source>
-        <translation>이 유형 아래의 모든 이벤트가 삭제되고 복구할 수 없습니다.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="452"/>
@@ -940,17 +938,17 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="96"/>
         <source>Manage calendar</source>
-        <translation>달력 관리</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="112"/>
         <source>Event types</source>
-        <translation>이벤트 유형</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="38"/>
         <source>Account settings</source>
-        <translation>계정 설정</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="42"/>
@@ -960,27 +958,27 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="53"/>
         <source>Select items to be synced</source>
-        <translation>동기화할 항목 선택</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="56"/>
         <source>Events</source>
-        <translation>이벤트</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="63"/>
         <source>General settings</source>
-        <translation>일반 설정</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="74"/>
         <source>Sync interval</source>
-        <translation>동기화 간격</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="104"/>
         <source>Calendar account</source>
-        <translation>달력 계정</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="150"/>
@@ -990,7 +988,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="152"/>
         <source>First day of week</source>
-        <translation>주간 시작 요일</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="153"/>
@@ -1021,17 +1019,17 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="22"/>
         <source>New event type</source>
-        <translation>새로운 이벤트 유형</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="32"/>
         <source>Edit event type</source>
-        <translation>이벤트 유형 수정</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="43"/>
         <source>Import ICS file</source>
-        <translation>ICS 파일 가져오기</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="151"/>
@@ -1041,12 +1039,12 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="152"/>
         <source>Color:</source>
-        <translation>'색상:'</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="156"/>
         <source>ICS File:</source>
-        <translation>'ICS 파일:'</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="167"/>
@@ -1063,12 +1061,12 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="219"/>
         <source>The name can not only contain whitespaces</source>
-        <translation>이름은 공백 문자열만 포함할 수 없습니다</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="256"/>
         <source>Enter a name please</source>
-        <translation>이름을 입력해 주세요</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
