@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="mr">
+<?xml version="1.0" ?><!DOCTYPE TS><TS version="2.1" language="mr">
 <context>
     <name>AccountItem</name>
     <message>
@@ -869,7 +867,7 @@
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="258"/>
         <source>%1 to %2</source>
-        <translation>'%1 ते %2'</translation>
+        <translation>&apos;%1 ते %2&apos;</translation>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="296"/>
