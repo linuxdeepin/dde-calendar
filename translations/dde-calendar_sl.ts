@@ -1,27 +1,25 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="sl">
+<?xml version="1.0" ?><!DOCTYPE TS><TS version="2.1" language="sl">
 <context>
     <name>AccountItem</name>
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="41"/>
         <source>Sync successful</source>
-        <translation>Sinhronizacija uspešna</translation>
+        <translation>Sinkronizacija je uspešna</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="42"/>
         <source>Network error</source>
-        <translation>Napaka omrežja</translation>
+        <translation>Napaka s omrežjem</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="43"/>
         <source>Server exception</source>
-        <translation>Izjema strežnika</translation>
+        <translation>Napaka strežnika</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="44"/>
         <source>Storage full</source>
-        <translation>Shranjevje je polno</translation>
+        <translation>Pomnilnik je poln</translation>
     </message>
 </context>
 <context>
@@ -115,7 +113,7 @@
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daywindow.cpp" line="170"/>
         <source>Lunar</source>
-        <translation>Lunarni</translation>
+        <translation>Lunarski</translation>
     </message>
 </context>
 <context>
@@ -186,7 +184,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/cpushbutton.cpp" line="17"/>
         <source>New event type</source>
-        <translation>Novi tip dogodka</translation>
+        <translation>Nova vrsta dogodka</translation>
     </message>
 </context>
 <context>
@@ -265,12 +263,12 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="598"/>
         <source>Enter a name please</source>
-        <translation>Vnesite ime, prosim</translation>
+        <translation>Vnesite ime, molim vas</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="693"/>
         <source>The name can not only contain whitespaces</source>
-        <translation>Ime ne more vsebovati le presledkov</translation>
+        <translation>Ime ne more vsebuje samo presledkov</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="749"/>
@@ -350,12 +348,12 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="972"/>
         <source>Solar</source>
-        <translation>Sončni</translation>
+        <translation>Solarski</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="973"/>
         <source>Lunar</source>
-        <translation>Lunarni</translation>
+        <translation>Lunarski</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1006"/>
@@ -532,7 +530,7 @@
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="416"/>
         <source>You have selected a leap month, and will be reminded according to the rules of the lunar calendar.</source>
-        <translation>Ste izbrali skokovni meseč, in boste opozornjeni glede na pravila lunarnega kalendara.</translation>
+        <translation>Izberli ste prestopni mesec, in bo vas opozoril glede na pravila lunarskega kalendara.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="417"/>
@@ -613,17 +611,17 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="364"/>
         <source>24-hour clock</source>
-        <translation>24-urni sat</translation>
+        <translation>24-urni urnik</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="365"/>
         <source>12-hour clock</source>
-        <translation>12-urni sat</translation>
+        <translation>12-urni urnik</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="389"/>
         <source>import ICS file</source>
-        <translation>Uvozi datoteko ICS</translation>
+        <translation> vnesev datoteke ICS</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="403"/>
@@ -633,12 +631,12 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="404"/>
         <source>15 mins</source>
-        <translation>15 minut</translation>
+        <translation>15 min</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="405"/>
         <source>30 mins</source>
-        <translation>30 minut</translation>
+        <translation>30 min</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="406"/>
@@ -663,7 +661,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="779"/>
         <source>Please go to the Control Center to change system settings</source>
-        <translation>Prosim, se prijavite v Nastavni center, da spremenite nastavitve sistema</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -671,12 +669,12 @@
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="71"/>
         <source>(%1 mins)</source>
-        <translation>(%1 minut)</translation>
+        <translation>(%1 min)</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="73"/>
         <source>(%1 hour)</source>
-        <translation>(%1 ura)</translation>
+        <translation>(%1 ur)</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="75"/>
@@ -709,7 +707,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="92"/>
         <source>Search events and festivals</source>
-        <translation>Iskanje dogodkov in praznovanj</translation>
+        <translation>Išči dogodke in festivalje</translation>
     </message>
 </context>
 <context>
@@ -789,7 +787,7 @@
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="982"/>
         <source>Sync failed, please try later</source>
-        <translation>Sinhronizacija je spodletela, poskusite kasneje</translation>
+        <translation>Sinhronizacija ni uspešna, poskusi znova pozneje</translation>
     </message>
 </context>
 <context>
@@ -844,17 +842,17 @@
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="204"/>
         <source>15 mins later</source>
-        <translation>15 minut pozneje</translation>
+        <translation>15 min pozneje</translation>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="205"/>
         <source>1 hour later</source>
-        <translation>1 ura pozneje</translation>
+        <translation>1 ur pozneje</translation>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="206"/>
         <source>4 hours later</source>
-        <translation>4 ura pozneje</translation>
+        <translation>4 uri pozneje</translation>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="207"/>
@@ -905,22 +903,22 @@
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="144"/>
         <source>export</source>
-        <translation>izvoz</translation>
+        <translation>izvozi</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="219"/>
         <source>import ICS file</source>
-        <translation>uvoz ICS datoteke</translation>
+        <translation>vključi datoteko ICS</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="450"/>
         <source>You are deleting an event type.</source>
-        <translation>Brisanje vrste dogodka.</translation>
+        <translation>Brisate vrsto dogodka.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="451"/>
         <source>All events under this type will be deleted and cannot be recovered.</source>
-        <translation>Vsi dogodki pod temi vrstmi bodo izbrisani in ne bodo mogoče obnoviti.</translation>
+        <translation>Vsakič dogodek pod to vrsto bo bilo izbrisan in ne bo lahko obnovljen.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="452"/>
@@ -940,17 +938,17 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="96"/>
         <source>Manage calendar</source>
-        <translation>Upravljaj s kalendarjem</translation>
+        <translation>Upravljaj z kalendrom</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="112"/>
         <source>Event types</source>
-        <translation>Vrste dogodka</translation>
+        <translation>Vrste dogodkov</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="38"/>
         <source>Account settings</source>
-        <translation>Nastavitve računa</translation>
+        <translation>Nastavitve naloge</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="42"/>
@@ -970,17 +968,17 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="63"/>
         <source>General settings</source>
-        <translation>Splošne nastavitve</translation>
+        <translation>Zasebek v zasebnosti</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="74"/>
         <source>Sync interval</source>
-        <translation>Interval sinhronizacije</translation>
+        <translation>Interval za sinhronizacijo</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="104"/>
         <source>Calendar account</source>
-        <translation>Račun kalendarja</translation>
+        <translation>Račun za kalendar</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="150"/>
@@ -990,7 +988,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="152"/>
         <source>First day of week</source>
-        <translation>Prvi dan teden</translation>
+        <translation>Prvi dan v tednu</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="153"/>
@@ -1021,7 +1019,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="22"/>
         <source>New event type</source>
-        <translation>Nova vrsta dogodka</translation>
+        <translation>Nov vrstica dogodka</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="32"/>
@@ -1031,7 +1029,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="43"/>
         <source>Import ICS file</source>
-        <translation>Uvoz ICS datoteke</translation>
+        <translation>Uveljavi datoteko ICS</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="151"/>
@@ -1046,7 +1044,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="156"/>
         <source>ICS File:</source>
-        <translation>ICS Datoteka:</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="167"/>
@@ -1063,12 +1061,12 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="219"/>
         <source>The name can not only contain whitespaces</source>
-        <translation>Ime ne sme vsebovati le presledkov</translation>
+        <translation>Ime ne sme vsebovati le prostora</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="256"/>
         <source>Enter a name please</source>
-        <translation>Vnesite ime, prosim</translation>
+        <translation>Vnesite, lطفا، ime</translation>
     </message>
 </context>
 <context>
@@ -1128,7 +1126,7 @@
         <location filename="../calendar-client/src/dialog/timejumpdialog.cpp" line="29"/>
         <source>Go</source>
         <comment>button</comment>
-        <translation>Izvedi</translation>
+        <translation>Prenesem</translation>
     </message>
 </context>
 <context>
