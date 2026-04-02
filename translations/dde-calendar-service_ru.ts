@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="ru">
+<?xml version="1.0" ?><!DOCTYPE TS><TS version="2.1" language="ru">
 <context>
     <name>AccountItem</name>
     <message>
@@ -34,7 +32,7 @@
     <message>
         <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="229"/>
         <source>Event types</source>
-        <translation type="unfinished">Типы событий</translation>
+        <translation>Типы событий</translation>
     </message>
 </context>
 <context>
@@ -305,7 +303,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="779"/>
         <source>Repeat:</source>
-        <translation>Повторять:</translation>
+        <translation>Повтор:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="784"/>
@@ -497,7 +495,7 @@
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="175"/>
         <source>Delete All Future Events</source>
-        <translation>Удалить Все Будущие События</translation>
+        <translation>Удалить все будущие события</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="255"/>
@@ -517,7 +515,7 @@
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="261"/>
         <source>Only This Event</source>
-        <translation>Только Это Событие</translation>
+        <translation>Только это событие</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="290"/>
@@ -527,7 +525,7 @@
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="293"/>
         <source>All Future Events</source>
-        <translation>Только Будущие События</translation>
+        <translation>Только будущие события</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="416"/>
@@ -574,7 +572,7 @@
     <message>
         <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="267"/>
         <source>All Day</source>
-        <translation>Весь День</translation>
+        <translation>Весь день</translation>
     </message>
 </context>
 <context>
@@ -582,7 +580,7 @@
     <message>
         <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="648"/>
         <source>No search results</source>
-        <translation>Поиск результатов не дал</translation>
+        <translation>Ничего не найдено</translation>
     </message>
 </context>
 <context>
@@ -598,7 +596,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="389"/>
         <source>import ICS file</source>
-        <translation>импорт файла ICS</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="403"/>
@@ -628,7 +626,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="418"/>
         <source>Sync Now</source>
-        <translation>Синхронизировать Сейчас</translation>
+        <translation>Синхронизировать сейчас</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="585"/>
@@ -638,7 +636,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="779"/>
         <source>Please go to the Control Center to change system settings</source>
-        <translation>Пожалуйста, перейдите в Центр управления, чтобы изменить системные настройки</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="346"/>
@@ -671,17 +669,17 @@
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="71"/>
         <source>(%1 mins)</source>
-        <translation>(%1 минут)</translation>
+        <translation>(%1 мин.)</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="73"/>
         <source>(%1 hour)</source>
-        <translation>(%1 час)</translation>
+        <translation>(%1 ч.)</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="75"/>
         <source>(%1 hours)</source>
-        <translation>(%1 часов)</translation>
+        <translation>(%1 ч.)</translation>
     </message>
 </context>
 <context>
@@ -769,7 +767,7 @@
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="372"/>
         <source>Manage</source>
-        <translation>Управление</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="379"/>
@@ -797,7 +795,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="174"/>
         <source>All Day</source>
-        <translation>Весь День:</translation>
+        <translation>Весь день:</translation>
     </message>
 </context>
 <context>
@@ -897,7 +895,7 @@
     <message>
         <location filename="../calendar-client/src/view/draginfographicsview.cpp" line="759"/>
         <source>New Event</source>
-        <translation>Новое Событие</translation>
+        <translation>Новое событие</translation>
     </message>
 </context>
 <context>
@@ -905,12 +903,12 @@
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="144"/>
         <source>export</source>
-        <translation>экспорт</translation>
+        <translation>Экспорт</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="219"/>
         <source>import ICS file</source>
-        <translation>импорт файла ICS</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="450"/>
@@ -970,7 +968,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="96"/>
         <source>Manage calendar</source>
-        <translation>Управление календарем</translation>
+        <translation>Управление календарём</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="104"/>
@@ -1031,7 +1029,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="43"/>
         <source>Import ICS file</source>
-        <translation>Импорт файла ICS</translation>
+        <translation>импорт файла ICS</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="151"/>
@@ -1046,7 +1044,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="156"/>
         <source>ICS File:</source>
-        <translation>Файл ICS:</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="167"/>
