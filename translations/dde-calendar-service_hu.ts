@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="hu">
+<?xml version="1.0" ?><!DOCTYPE TS><TS version="2.1" language="hu">
 <context>
     <name>AccountItem</name>
     <message>
@@ -435,7 +433,7 @@
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="74"/>
         <source>All occurrences of a repeating event must have the same all-day status.</source>
-        <translation>Az ismétlődő események valamennyiének "egész nap" állapotúnak kell lennie.</translation>
+        <translation>Az ismétlődő események valamennyiének &quot;egész nap&quot; állapotúnak kell lennie.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="75"/>
@@ -598,7 +596,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="389"/>
         <source>import ICS file</source>
-        <translation>ICS fájl importálása</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="403"/>
@@ -638,7 +636,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="779"/>
         <source>Please go to the Control Center to change system settings</source>
-        <translation>Kérem, változtassa meg a rendszertárgyak beállításait a vezérlőközpontban</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="346"/>
@@ -653,7 +651,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="347"/>
         <source>Use System Setting</source>
-        <translation>Rendszerbeállítás használata</translation>
+        <translation>Rendszerbeállítások használata</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="365"/>
@@ -905,7 +903,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="144"/>
         <source>export</source>
-        <translation>export</translation>
+        <translation>Exportálás</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="219"/>
@@ -1046,7 +1044,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="156"/>
         <source>ICS File:</source>
-        <translation>ICS Fájl:</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="167"/>
