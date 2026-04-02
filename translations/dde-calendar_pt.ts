@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="pt">
+<?xml version="1.0" ?><!DOCTYPE TS><TS version="2.1" language="pt">
 <context>
     <name>AccountItem</name>
     <message>
@@ -608,7 +606,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="347"/>
         <source>Use System Setting</source>
-        <translation>Usar Configuração do Sistema</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="364"/>
@@ -662,8 +660,8 @@
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="779"/>
-        <source>Please go to the &lt;a href='/'&gt;Control Center&lt;/a&gt; to change system settings</source>
-        <translation>Por favor, acesse o &lt;a href='/'&gt;Centro de Controle&lt;/a&gt; para alterar as configurações do sistema</translation>
+        <source>Please go to the Control Center to change system settings</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -1045,8 +1043,8 @@
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="156"/>
-        <source>&lt;a href='https://wikipedia.org/wiki/ICalendar'&gt;ICS&lt;/a&gt; File:</source>
-        <translation>Ficheiro &lt;a href='https://wikipedia.org/wiki/ICalendar'&gt;ICS&lt;/a&gt; :</translation>
+        <source>ICS File:</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="167"/>
