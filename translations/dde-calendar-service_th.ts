@@ -1,27 +1,25 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="th">
+<?xml version="1.0" ?><!DOCTYPE TS><TS version="2.1" language="th">
 <context>
     <name>AccountItem</name>
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="41"/>
         <source>Sync successful</source>
-        <translation>การซิงค์สำเร็จ</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="42"/>
         <source>Network error</source>
-        <translation>ข้อผิดพลาดของเครือข่าย</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="43"/>
         <source>Server exception</source>
-        <translation>ข้อผิดพลาดของเซิร์ฟเวอร์</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="44"/>
         <source>Storage full</source>
-        <translation>พื้นที่จัดเก็บเต็ม</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -29,12 +27,12 @@
     <message>
         <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="227"/>
         <source>Local account</source>
-        <translation>บัญชีท้องถิ่น</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="229"/>
         <source>Event types</source>
-        <translation>ประเภทเหตุการณ์</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -42,7 +40,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/colorWidget/colorpickerWidget.cpp" line="77"/>
         <source>Color</source>
-        <translation>สี</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/colorWidget/colorpickerWidget.cpp" line="90"/>
@@ -115,7 +113,7 @@
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daywindow.cpp" line="170"/>
         <source>Lunar</source>
-        <translation>ปฏิทินจันทรค력</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -186,7 +184,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/cpushbutton.cpp" line="17"/>
         <source>New event type</source>
-        <translation>ประเภทเหตุการณ์ใหม่</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -265,12 +263,12 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="598"/>
         <source>Enter a name please</source>
-        <translation>กรุณาป้อนชื่อ</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="693"/>
         <source>The name can not only contain whitespaces</source>
-        <translation>ชื่อนั้นไม่สามารถประกอบด้วยช่องว่างเพียงอย่างเดียว</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="749"/>
@@ -315,12 +313,12 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="840"/>
         <source>Calendar account:</source>
-        <translation>บัญชีปฏิทิน:</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="841"/>
         <source>Calendar account</source>
-        <translation>บัญชีปฏิทิน</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="868"/>
@@ -340,22 +338,22 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="964"/>
         <source>Time:</source>
-        <translation>เวลา:</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="965"/>
         <source>Time</source>
-        <translation>เวลา</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="972"/>
         <source>Solar</source>
-        <translation>ปฏิทินสุริยค력</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="973"/>
         <source>Lunar</source>
-        <translation>ปฏิทินจันทรค력</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1006"/>
@@ -415,7 +413,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1170"/>
         <source>On</source>
-        <translation>เปิด</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1240"/>
@@ -532,7 +530,7 @@
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="416"/>
         <source>You have selected a leap month, and will be reminded according to the rules of the lunar calendar.</source>
-        <translation>คุณได้เลือกเดือนที่เพิ่มเติม และจะถูกเตือนตามกฎของปฏิทินจันทรค력</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="417"/>
@@ -598,7 +596,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="389"/>
         <source>import ICS file</source>
-        <translation>นำเข้าไฟล์ ICS</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="403"/>
@@ -608,37 +606,37 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="404"/>
         <source>15 mins</source>
-        <translation>15 นาที</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="405"/>
         <source>30 mins</source>
-        <translation>30 นาที</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="406"/>
         <source>1 hour</source>
-        <translation>1 ชั่วโมง</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="407"/>
         <source>24 hours</source>
-        <translation>24 ชั่วโมง</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="418"/>
         <source>Sync Now</source>
-        <translation>ซิงค์ตอนนี้</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="585"/>
         <source>Last sync</source>
-        <translation>การซิงค์ครั้งสุดท้าย</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="779"/>
         <source>Please go to the Control Center to change system settings</source>
-        <translation>กรุณาไปที่ ศูนย์ควบคุม เพื่อเปลี่ยนตั้งค่าระบบ</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="346"/>
@@ -653,17 +651,17 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="347"/>
         <source>Use System Setting</source>
-        <translation>ใช้การตั้งค่าระบบ</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="365"/>
         <source>12-hour clock</source>
-        <translation>นาฬิกาแบบ 12 ชั่วโมง</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="364"/>
         <source>24-hour clock</source>
-        <translation>นาฬิกาแบบ 24 ชั่วโมง</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -671,17 +669,17 @@
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="71"/>
         <source>(%1 mins)</source>
-        <translation>(%1 นาที)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="73"/>
         <source>(%1 hour)</source>
-        <translation>(%1 ชั่วโมง)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="75"/>
         <source>(%1 hours)</source>
-        <translation>(%1 ชั่วโมง)</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -699,7 +697,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="50"/>
         <source>W</source>
-        <translation>W</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="58"/>
@@ -709,7 +707,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="92"/>
         <source>Search events and festivals</source>
-        <translation>ค้นหาเหตุการณ์และงานเทศกาล</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -769,27 +767,27 @@
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="372"/>
         <source>Manage</source>
-        <translation>จัดการ</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="379"/>
         <source>Privacy Policy</source>
-        <translation>นโยบายความเป็นส่วนตัว</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="962"/>
         <source>Syncing...</source>
-        <translation>กำลังซิงค์...</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="973"/>
         <source>Sync successful</source>
-        <translation>ซิงค์สำเร็จ</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="982"/>
         <source>Sync failed, please try later</source>
-        <translation>การซิงค์ล้มเหลว กรุณาลองใหม่ในภายหลัง</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -829,47 +827,47 @@
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="191"/>
         <source>One day before start</source>
-        <translation>หนึ่งวันก่อนเริ่มต้น</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="197"/>
         <source>Remind me tomorrow</source>
-        <translation>เตือนฉันพรุ่งนี้</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="202"/>
         <source>Remind me later</source>
-        <translation>เตือนฉันในภายหลัง</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="204"/>
         <source>15 mins later</source>
-        <translation>15 นาทีต่อมา</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="205"/>
         <source>1 hour later</source>
-        <translation>1 ชั่วโมงต่อมา</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="206"/>
         <source>4 hours later</source>
-        <translation>4 ชั่วโมงต่อมา</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="207"/>
         <source>Tomorrow</source>
-        <translation>พรุ่งนี้</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="215"/>
         <source>Schedule Reminder</source>
-        <translation>กำหนดเวลาเตือน</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="258"/>
         <source>%1 to %2</source>
-        <translation>'%1 ถึง %2'</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="296"/>
@@ -905,22 +903,22 @@
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="144"/>
         <source>export</source>
-        <translation>ส่งออก</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="219"/>
         <source>import ICS file</source>
-        <translation>นำเข้าไฟล์ ICS</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="450"/>
         <source>You are deleting an event type.</source>
-        <translation>คุณกำลังลบประเภทเหตุการณ์</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="451"/>
         <source>All events under this type will be deleted and cannot be recovered.</source>
-        <translation>เหตุการณ์ทั้งหมดภายใต้ประเภทนี้จะถูกลบและไม่สามารถกู้คืนได้</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="452"/>
@@ -940,47 +938,47 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="38"/>
         <source>Account settings</source>
-        <translation>ตั้งค่าบัญชี</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="42"/>
         <source>Account</source>
-        <translation>บัญชี</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="53"/>
         <source>Select items to be synced</source>
-        <translation>เลือกข้อมูลที่ต้องการซิงค์</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="56"/>
         <source>Events</source>
-        <translation>เหตุการณ์</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="63"/>
         <source>General settings</source>
-        <translation>ตั้งค่าทั่วไป</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="74"/>
         <source>Sync interval</source>
-        <translation>ช่วงเวลาซิงค์</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="96"/>
         <source>Manage calendar</source>
-        <translation>จัดการปฏิทิน</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="104"/>
         <source>Calendar account</source>
-        <translation>บัญชีปฏิทิน</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="112"/>
         <source>Event types</source>
-        <translation>ประเภทเหตุการณ์</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="150"/>
@@ -990,12 +988,12 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="152"/>
         <source>First day of week</source>
-        <translation>วันแรกของสัปดาห์</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="153"/>
         <source>Time</source>
-        <translation>เวลา</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -1021,32 +1019,32 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="22"/>
         <source>New event type</source>
-        <translation>ประเภทเหตุการณ์ใหม่</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="32"/>
         <source>Edit event type</source>
-        <translation>แก้ไขประเภทเหตุการณ์</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="43"/>
         <source>Import ICS file</source>
-        <translation>นำเข้าไฟล์ ICS</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="151"/>
         <source>Name:</source>
-        <translation>ชื่อ:</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="152"/>
         <source>Color:</source>
-        <translation>สี:</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="156"/>
         <source>ICS File:</source>
-        <translation>ไฟล์ ICS:</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="167"/>
@@ -1063,12 +1061,12 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="219"/>
         <source>The name can not only contain whitespaces</source>
-        <translation>ชื่อนี้ไม่สามารถมีเฉพาะช่องว่างได้</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="256"/>
         <source>Enter a name please</source>
-        <translation>กรุณาป้อนชื่อ</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -1128,7 +1126,7 @@
         <location filename="../calendar-client/src/dialog/timejumpdialog.cpp" line="29"/>
         <source>Go</source>
         <comment>button</comment>
-        <translation>ไป</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -1137,13 +1135,13 @@
         <location filename="../calendar-client/src/widget/settingWidget/userloginwidget.cpp" line="48"/>
         <source>Sign In</source>
         <comment>button</comment>
-        <translation>เข้าสู่ระบบ</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/settingWidget/userloginwidget.cpp" line="49"/>
         <source>Sign Out</source>
         <comment>button</comment>
-        <translation>ออกจากระบบ</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
