@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="id">
+<?xml version="1.0" ?><!DOCTYPE TS><TS version="2.1" language="id">
 <context>
     <name>AccountItem</name>
     <message>
@@ -82,7 +80,7 @@
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="37"/>
         <source>Friday</source>
-        <translation>Jum'at</translation>
+        <translation>Jum&apos;at</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="38"/>
@@ -350,7 +348,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="972"/>
         <source>Solar</source>
-        <translation>Solar</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="973"/>
@@ -502,37 +500,37 @@
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="255"/>
         <source>You are changing a repeating event.</source>
-        <translation>Anda mengubah acara berulang.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="257"/>
         <source>Do you want to change only this occurrence of the event, or all occurrences?</source>
-        <translation>Apakah Anda ingin mengubah hanya pengulangan acara ini, atau semua pengulangan?</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="260"/>
         <source>All</source>
-        <translation>Semua</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="261"/>
         <source>Only This Event</source>
-        <translation>Hanya Acara Ini</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="290"/>
         <source>Do you want to change only this occurrence of the event, or this and all future occurrences?</source>
-        <translation>Apakah Anda ingin mengubah hanya pengulangan acara ini, atau ini dan semua pengulangan masa depan?</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="293"/>
         <source>All Future Events</source>
-        <translation>Semua Acara Masa Depan</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="416"/>
         <source>You have selected a leap month, and will be reminded according to the rules of the lunar calendar.</source>
-        <translation>Anda telah memilih bulan luar, dan akan diberi ingat sesuai dengan aturan kalender bulan.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="417"/>
@@ -590,7 +588,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/scheduleview.cpp" line="316"/>
         <source>ALL DAY</source>
-        <translation>SEHARI PENUH</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -598,7 +596,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="389"/>
         <source>import ICS file</source>
-        <translation>import file ICS</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="403"/>
@@ -608,12 +606,12 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="404"/>
         <source>15 mins</source>
-        <translation>15 menit</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="405"/>
         <source>30 mins</source>
-        <translation>30 menit</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="406"/>
@@ -623,22 +621,22 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="407"/>
         <source>24 hours</source>
-        <translation>24 jam</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="418"/>
         <source>Sync Now</source>
-        <translation>Sinkron Sekarang</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="585"/>
         <source>Last sync</source>
-        <translation>Sinkron Terakhir</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="779"/>
         <source>Please go to the Control Center to change system settings</source>
-        <translation>Silakan pergi ke Pusat Kontrol untuk mengubah pengaturan sistem</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="346"/>
@@ -653,17 +651,17 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="347"/>
         <source>Use System Setting</source>
-        <translation>Gunakan Pengaturan Sistem</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="365"/>
         <source>12-hour clock</source>
-        <translation>Jam 12 jam</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="364"/>
         <source>24-hour clock</source>
-        <translation>Jam 24 jam</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -671,17 +669,17 @@
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="71"/>
         <source>(%1 mins)</source>
-        <translation>(%1 menit)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="73"/>
         <source>(%1 hour)</source>
-        <translation>(%1 jam)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="75"/>
         <source>(%1 hours)</source>
-        <translation>(%1 jam)</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -699,7 +697,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="50"/>
         <source>W</source>
-        <translation>W</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="58"/>
@@ -709,7 +707,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="92"/>
         <source>Search events and festivals</source>
-        <translation>Cari acara dan festival</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -717,7 +715,7 @@
     <message>
         <location filename="../calendar-client/src/widget/weekWidget/weekwindow.cpp" line="90"/>
         <source>Week</source>
-        <translation>Minggu</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/weekWidget/weekwindow.cpp" line="280"/>
@@ -735,7 +733,7 @@
     <message>
         <location filename="../calendar-client/src/widget/yearWidget/yearscheduleview.cpp" line="288"/>
         <source>No event</source>
-        <translation>Tidak ada acara</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -756,7 +754,7 @@
     <message>
         <location filename="../calendar-client/src/main.cpp" line="69"/>
         <source>Calendar is a tool to view dates, and also a smart daily planner to schedule all things in life. </source>
-        <translation>Kalender adalah alat untuk melihat tanggal, serta pengaturan harian cerdas untuk mengatur segala hal dalam kehidupan.</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -769,12 +767,12 @@
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="372"/>
         <source>Manage</source>
-        <translation>Kelola</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="379"/>
         <source>Privacy Policy</source>
-        <translation>Kebijakan Privasi</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="962"/>
@@ -789,7 +787,7 @@
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="982"/>
         <source>Sync failed, please try later</source>
-        <translation>Sinkron gagal, silakan coba lagi</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -829,32 +827,32 @@
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="191"/>
         <source>One day before start</source>
-        <translation>Satu hari sebelum dimulai</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="197"/>
         <source>Remind me tomorrow</source>
-        <translation>Ingatkan saya besok</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="202"/>
         <source>Remind me later</source>
-        <translation>Ingatkan saya nanti</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="204"/>
         <source>15 mins later</source>
-        <translation>15 menit kemudian</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="205"/>
         <source>1 hour later</source>
-        <translation>1 jam kemudian</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="206"/>
         <source>4 hours later</source>
-        <translation>4 jam kemudian</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="207"/>
@@ -864,12 +862,12 @@
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="215"/>
         <source>Schedule Reminder</source>
-        <translation>Jadwalkan Pengingat</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="258"/>
         <source>%1 to %2</source>
-        <translation>'%1 sampai %2'</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="296"/>
@@ -905,22 +903,22 @@
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="144"/>
         <source>export</source>
-        <translation>ekspor</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="219"/>
         <source>import ICS file</source>
-        <translation>impor file ICS</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="450"/>
         <source>You are deleting an event type.</source>
-        <translation>Anda sedang menghapus jenis acara.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="451"/>
         <source>All events under this type will be deleted and cannot be recovered.</source>
-        <translation>Semua acara di bawah jenis ini akan dihapus dan tidak dapat dipulihkan.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="452"/>
@@ -940,7 +938,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="38"/>
         <source>Account settings</source>
-        <translation>Pengaturan akun</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="42"/>
@@ -950,27 +948,27 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="53"/>
         <source>Select items to be synced</source>
-        <translation>Pilih item yang akan disinkronkan</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="56"/>
         <source>Events</source>
-        <translation>Acara</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="63"/>
         <source>General settings</source>
-        <translation>Pengaturan umum</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="74"/>
         <source>Sync interval</source>
-        <translation>Interval sinkronisasi</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="96"/>
         <source>Manage calendar</source>
-        <translation>Kelola kalender</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="104"/>
@@ -990,7 +988,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="152"/>
         <source>First day of week</source>
-        <translation>Hari pertama dalam seminggu</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="153"/>
@@ -1026,12 +1024,12 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="32"/>
         <source>Edit event type</source>
-        <translation>Sunting jenis acara</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="43"/>
         <source>Import ICS file</source>
-        <translation>Impor file ICS</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="151"/>
@@ -1041,12 +1039,12 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="152"/>
         <source>Color:</source>
-        <translation>'Warna:'</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="156"/>
         <source>ICS File:</source>
-        <translation>'File ICS:'</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="167"/>
@@ -1081,7 +1079,7 @@
     <message>
         <location filename="../calendar-client/src/shortcut.cpp" line="17"/>
         <source>Delete event</source>
-        <translation>Hapus acara</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/shortcut.cpp" line="20"/>
@@ -1128,7 +1126,7 @@
         <location filename="../calendar-client/src/dialog/timejumpdialog.cpp" line="29"/>
         <source>Go</source>
         <comment>button</comment>
-        <translation>Go</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
