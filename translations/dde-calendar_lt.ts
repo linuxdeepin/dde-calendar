@@ -1,12 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="lt">
+<?xml version="1.0" ?><!DOCTYPE TS><TS version="2.1" language="lt">
 <context>
     <name>AccountItem</name>
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="41"/>
         <source>Sync successful</source>
-        <translation>Sinhronizacija sėjo</translation>
+        <translation>Sincronizacija sėkminga</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="42"/>
@@ -16,12 +14,12 @@
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="43"/>
         <source>Server exception</source>
-        <translation>Serverio klaida</translation>
+        <translation>Klaida svetainėje</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="44"/>
         <source>Storage full</source>
-        <translation>Talpinis pilnas</translation>
+        <translation>Saugykloje yra neteisingas duomenys</translation>
     </message>
 </context>
 <context>
@@ -29,12 +27,12 @@
     <message>
         <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="227"/>
         <source>Local account</source>
-        <translation>Vietinė paskyra</translation>
+        <translation> vietinis paskyra</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="229"/>
         <source>Event types</source>
-        <translation>Įvykių tipai</translation>
+        <translation>Eidavimo tipai</translation>
     </message>
 </context>
 <context>
@@ -115,7 +113,7 @@
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daywindow.cpp" line="170"/>
         <source>Lunar</source>
-        <translation>Mėnesinis</translation>
+        <translation>Lūnai</translation>
     </message>
 </context>
 <context>
@@ -160,7 +158,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="284"/>
         <source>My Event</source>
-        <translation>Mano įvykis</translation>
+        <translation>Mano eida</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="326"/>
@@ -186,7 +184,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/cpushbutton.cpp" line="17"/>
         <source>New event type</source>
-        <translation>Naujas įvykio tipas</translation>
+        <translation>Naujas eidavimo tipas</translation>
     </message>
 </context>
 <context>
@@ -199,12 +197,12 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="60"/>
         <source>Edit Event</source>
-        <translation>Redaguoti įvykį</translation>
+        <translation>Redaguoti eida</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="270"/>
         <source>End time must be greater than start time</source>
-        <translation>Pabaigos laikas turi būti didesnis už pradžios laiką</translation>
+        <translation>Pabaigos laikas turi būti didesnis pradžios laike</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="271"/>
@@ -220,22 +218,22 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="507"/>
         <source>At time of event</source>
-        <translation>Prie įvykio laiko</translation>
+        <translation>Eidavimo metu</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="508"/>
         <source>15 minutes before</source>
-        <translation>15 minučių prieš</translation>
+        <translation>15 valčių prieš</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="509"/>
         <source>30 minutes before</source>
-        <translation>30 minučių prieš</translation>
+        <translation>30 valčių prieš</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="510"/>
         <source>1 hour before</source>
-        <translation>1 valandą prieš</translation>
+        <translation>1 valandos prieš</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="511"/>
@@ -245,22 +243,22 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="512"/>
         <source>2 days before</source>
-        <translation>2 dienas prieš</translation>
+        <translation>2 dienomis prieš</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="513"/>
         <source>1 week before</source>
-        <translation>1 savaitę prieš</translation>
+        <translation>1 savoje prieš</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="536"/>
         <source>On start day (9:00 AM)</source>
-        <translation>Pradžios dieną (9:00 AM)</translation>
+        <translation>Pradžios dienos (9:00 val.),</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="583"/>
         <source>time(s)</source>
-        <translation>laikas(ai)</translation>
+        <translation>laikas(s),,</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="598"/>
@@ -270,7 +268,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="693"/>
         <source>The name can not only contain whitespaces</source>
-        <translation>Vardas negali būti sudarytas tik iš tarpu</translation>
+        <translation>Vardas gali turėti tik tarpus</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="749"/>
@@ -285,12 +283,12 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="759"/>
         <source>All Day:</source>
-        <translation>Visą dieną:</translation>
+        <translation>Visa diena:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="764"/>
         <source>Starts:</source>
-        <translation>Prasideda:</translation>
+        <translation>Pradeda:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="769"/>
@@ -300,7 +298,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="774"/>
         <source>Remind Me:</source>
-        <translation>Priminimai:</translation>
+        <translation>Atimykite man:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="779"/>
@@ -310,7 +308,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="784"/>
         <source>End Repeat:</source>
-        <translation>Baigti pakartoti:</translation>
+        <translation>Pabaigos pakartojimas:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="840"/>
@@ -335,7 +333,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="940"/>
         <source>All Day</source>
-        <translation>Visą dieną</translation>
+        <translation>Viso dienos</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="964"/>
@@ -355,7 +353,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="973"/>
         <source>Lunar</source>
-        <translation>Mėnesinė</translation>
+        <translation>Mėnulio</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1006"/>
@@ -370,7 +368,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1092"/>
         <source>Remind Me</source>
-        <translation>Primink man</translation>
+        <translation>Atimykite man</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1119"/>
@@ -385,27 +383,27 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1135"/>
         <source>Weekdays</source>
-        <translation>Perkėlimo dienas</translation>
+        <translation>Kiekvieną darbo dieną</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1136"/>
         <source>Weekly</source>
-        <translation>Savaitės</translation>
+        <translation>Kiekvieną savaitę</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1137"/>
         <source>Monthly</source>
-        <translation>Mėnesio</translation>
+        <translation>Kiekvieną mėnesį</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1138"/>
         <source>Yearly</source>
-        <translation>Metų</translation>
+        <translation>Kiekvieną metus</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1158"/>
         <source>End Repeat</source>
-        <translation>Baigti kartojimą</translation>
+        <translation>Pabaigoje pakartoti</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1169"/>
@@ -435,12 +433,12 @@
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="74"/>
         <source>All occurrences of a repeating event must have the same all-day status.</source>
-        <translation>Visos pasikartojančios įvykio klausimai turi būti taisyklingos visų dienų būklės.</translation>
+        <translation>Pakartojamo įvykio visos kintamos dienos statusai turi būti tautiniai.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="75"/>
         <source>Do you want to change all occurrences?</source>
-        <translation>Ar norite pakeist visus įvykius?</translation>
+        <translation>Ar norite pakeisti visus pasikartojimus?</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="76"/>
@@ -456,12 +454,12 @@
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="94"/>
         <source>You are changing the repeating rule of this event.</source>
-        <translation>Jūs keičiate šio įvykio pasikartojamą taisyklę.</translation>
+        <translation>Jūs pakeičiate šio įvykio pakartojimo taisyklę.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="127"/>
         <source>You are deleting an event.</source>
-        <translation>Jūs šalinate įvykį.</translation>
+        <translation>Jūs ištrijate įvykį.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="128"/>
@@ -477,62 +475,62 @@
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="150"/>
         <source>Do you want to delete all occurrences of this event, or only the selected occurrence?</source>
-        <translation>Ar norite pašalinti visus šio įvykio įvykius, ar tik pasirinktą įvykį?</translation>
+        <translation>Ar norite ištrinti visus šio įvykio pasikartojimus arba tik pasirinktą pasikartojimą?</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="152"/>
         <source>Delete All</source>
-        <translation>Pašalinti visus</translation>
+        <translation>Ištrinti visus</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="153"/>
         <source>Delete Only This Event</source>
-        <translation>Pašalinti tik šį įvykį</translation>
+        <translation>Ištrinti tik šį įvykį</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="173"/>
         <source>Do you want to delete this and all future occurrences of this event, or only the selected occurrence?</source>
-        <translation>Ar norite pašalinti šį įvykį ir visus ateities įvykius, ar tik pasirinktą įvykį?</translation>
+        <translation>Ar谷titekstele šį ir visus ateityvius šio eveneto išvykimus, arba tik pažymėtą išvykimą?</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="175"/>
         <source>Delete All Future Events</source>
-        <translation>Pašalinti visus ateities įvykius</translation>
+        <translation>Ištrinti visus ateityvius evenetų išvykimus</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="255"/>
         <source>You are changing a repeating event.</source>
-        <translation>Jūs keičiate pasikartojantį įvykį.</translation>
+        <translation>Keičiama atkaklo evenetas.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="257"/>
         <source>Do you want to change only this occurrence of the event, or all occurrences?</source>
-        <translation>Ar norite pakeisti tik šį įvykio klausimą, ar visus įvykius?</translation>
+        <translation>Ar norite keisti tik šį eveneto išvykimą, arba visus išvykus?</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="260"/>
         <source>All</source>
-        <translation>Visi</translation>
+        <translation>Viskas</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="261"/>
         <source>Only This Event</source>
-        <translation>Tik šis įvykis</translation>
+        <translation>Tik šis evenetas</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="290"/>
         <source>Do you want to change only this occurrence of the event, or this and all future occurrences?</source>
-        <translation>Ar norite pakeisti tik šį įvykio klausimą, ar šį ir visus ateities įvykius?</translation>
+        <translation>Ar norite keisti tik šį eveneto išvykimą, arba šį ir visus ateityvius išvykus?</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="293"/>
         <source>All Future Events</source>
-        <translation>Visi ateities įvykiai</translation>
+        <translation>Visi ateityvūs išvykmai</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="416"/>
         <source>You have selected a leap month, and will be reminded according to the rules of the lunar calendar.</source>
-        <translation>Jūs pasirinkote kelionio mėnesį, ir bus priminta pagal mėnesinės kalendoriaus taisykles.</translation>
+        <translation>Pasirinkėte lankstų mėnesį, ir jums atsiminska bus pagal luno kalendorio taisykles.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="417"/>
@@ -590,7 +588,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/scheduleview.cpp" line="316"/>
         <source>ALL DAY</source>
-        <translation>VISĄ DIENĄ</translation>
+        <translation>VISI DIENOS LAIKAI</translation>
     </message>
 </context>
 <context>
@@ -608,22 +606,22 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="347"/>
         <source>Use System Setting</source>
-        <translation>Naudoti sistemos nustatymus</translation>
+        <translation>Naudoti sistemines nustatymus</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="364"/>
         <source>24-hour clock</source>
-        <translation>24 valandų pievelė</translation>
+        <translation>24 valandos laikrodžio</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="365"/>
         <source>12-hour clock</source>
-        <translation>12 valandų pievelė</translation>
+        <translation>12 valandos laikrodžio</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="389"/>
         <source>import ICS file</source>
-        <translation>importuoti ICS failą</translation>
+        <translation>Importuoti ICS failą</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="403"/>
@@ -653,17 +651,17 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="418"/>
         <source>Sync Now</source>
-        <translation>Synchronizuoti dabar</translation>
+        <translation>Sincronizuoti dabar</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="585"/>
         <source>Last sync</source>
-        <translation>Paskutinis sinchronizavimas</translation>
+        <translation>Paskutinė sinchronizacija</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="779"/>
         <source>Please go to the Control Center to change system settings</source>
-        <translation>Pereikite į Valdymo centras, kad pakeistumėte sistemos nustatymus</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -676,12 +674,12 @@
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="73"/>
         <source>(%1 hour)</source>
-        <translation>(%1 valandą)</translation>
+        <translation>(%1 valandas)</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="75"/>
         <source>(%1 hours)</source>
-        <translation>(%1 valandų)</translation>
+        <translation>(%1 valandas),</translation>
     </message>
 </context>
 <context>
@@ -709,7 +707,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="92"/>
         <source>Search events and festivals</source>
-        <translation>Paieška įvykių ir šventės</translation>
+        <translation> ieškoti evenų ir festivalių</translation>
     </message>
 </context>
 <context>
@@ -730,12 +728,12 @@
     <message>
         <location filename="../calendar-client/src/widget/yearWidget/yearscheduleview.cpp" line="268"/>
         <source>All Day</source>
-        <translation>Visą dieną</translation>
+        <translation>Visos dienos</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/yearWidget/yearscheduleview.cpp" line="288"/>
         <source>No event</source>
-        <translation>Nėra įvykio</translation>
+        <translation>Nėra įvyko</translation>
     </message>
 </context>
 <context>
@@ -756,7 +754,7 @@
     <message>
         <location filename="../calendar-client/src/main.cpp" line="69"/>
         <source>Calendar is a tool to view dates, and also a smart daily planner to schedule all things in life. </source>
-        <translation>Kalendorius yra įrankis datos peržiūrai, taip pat inteligentiškas kasdienis planavimo įrankis, skirtas planuoti viską gyvenime.</translation>
+        <translation>Kalendorius yra įrankis, skirtas patikrinti datos, o taip pat lankstus dieninio planavimo sistemą, kuria galima planuoti visus gyvenimo aspektus.</translation>
     </message>
 </context>
 <context>
@@ -769,7 +767,7 @@
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="372"/>
         <source>Manage</source>
-        <translation>Valdyti</translation>
+        <translation>Valdymas</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="379"/>
@@ -784,12 +782,12 @@
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="973"/>
         <source>Sync successful</source>
-        <translation>Sinchronizavimas sėkmingas</translation>
+        <translation>Sincronizacija sėkminga</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="982"/>
         <source>Sync failed, please try later</source>
-        <translation>Sinchronizavimas nepavyko, bandykite vėliau</translation>
+        <translation>Sincronizavimas nepavyko, bandykite vėliau</translation>
     </message>
 </context>
 <context>
@@ -797,7 +795,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="174"/>
         <source>All Day</source>
-        <translation>Visą dieną</translation>
+        <translation>Visos dienos</translation>
     </message>
 </context>
 <context>
@@ -849,12 +847,12 @@
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="205"/>
         <source>1 hour later</source>
-        <translation>1 valandą vėliau</translation>
+        <translation>1 valandos vėliau</translation>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="206"/>
         <source>4 hours later</source>
-        <translation>4 valandų vėliau</translation>
+        <translation>4 valandos vėliau</translation>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="207"/>
@@ -905,7 +903,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="144"/>
         <source>export</source>
-        <translation>eksporavimas</translation>
+        <translation>ekspортuoti</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="219"/>
@@ -915,12 +913,12 @@
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="450"/>
         <source>You are deleting an event type.</source>
-        <translation>Jūs pašalinate įvykio tipą.</translation>
+        <translation>Jūs ištrinkite eveno tipą.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="451"/>
         <source>All events under this type will be deleted and cannot be recovered.</source>
-        <translation>Visi įvykiai šiame tipo požyme bus pašalinti ir negalės būti atkurti.</translation>
+        <translation>Visi šio tipo evenai bus ištrinti ir nebus atgauti.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="452"/>
@@ -945,7 +943,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="112"/>
         <source>Event types</source>
-        <translation>Įvykio tipai</translation>
+        <translation>Evenų tipai</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="38"/>
@@ -960,27 +958,27 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="53"/>
         <source>Select items to be synced</source>
-        <translation>Pasirinkite elementus, kurie bus sinchronizuoti</translation>
+        <translation>Pasirinkite objektus, kurie turėtų būti atsinaujinti</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="56"/>
         <source>Events</source>
-        <translation>Įvykiai</translation>
+        <translation>Evenai</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="63"/>
         <source>General settings</source>
-        <translation>Bendrai nustatymai</translation>
+        <translation>Pagrindinės nustatymai</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="74"/>
         <source>Sync interval</source>
-        <translation>Sinchronizavimo intervalas</translation>
+        <translation>Atsinaujinimo intervalas</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="104"/>
         <source>Calendar account</source>
-        <translation type="unfinished">Kalendoriaus paskyra</translation>
+        <translation>Kalendorio paskyra</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="150"/>
@@ -990,7 +988,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="152"/>
         <source>First day of week</source>
-        <translation>Savaitės pirmasis diena</translation>
+        <translation>Pirmadienys savaitėje</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="153"/>
@@ -1021,12 +1019,12 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="22"/>
         <source>New event type</source>
-        <translation>Naujas įvykio tipas</translation>
+        <translation>Naujas evenčio tipo pavadinimas</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="32"/>
         <source>Edit event type</source>
-        <translation>Redaguoti įvykio tipą</translation>
+        <translation>Redaguoti evenčio tipo pavadinimą</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="43"/>
@@ -1046,7 +1044,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="156"/>
         <source>ICS File:</source>
-        <translation>ICS failas:</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="167"/>
@@ -1063,12 +1061,12 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="219"/>
         <source>The name can not only contain whitespaces</source>
-        <translation>Pavadinimas negali tikrai sudaryti iš tarstų</translation>
+        <translation>Pavadinime negali būti tik tarpai</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="256"/>
         <source>Enter a name please</source>
-        <translation>Įveskite pavadinimą, prašom</translation>
+        <translation>Įveskite pavadinimą, lūčio</translation>
     </message>
 </context>
 <context>
@@ -1128,7 +1126,7 @@
         <location filename="../calendar-client/src/dialog/timejumpdialog.cpp" line="29"/>
         <source>Go</source>
         <comment>button</comment>
-        <translation>Eiti</translation>
+        <translation>Perduoti</translation>
     </message>
 </context>
 <context>
