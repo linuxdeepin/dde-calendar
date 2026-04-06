@@ -596,7 +596,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="389"/>
         <source>import ICS file</source>
-        <translation type="unfinished"/>
+        <translation>Importa un fitxer ICS</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="403"/>
