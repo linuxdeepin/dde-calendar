@@ -157,9 +157,13 @@ void LunarManager::queryLunarInfo(const QDate &startDate, const QDate &stopDate)
         delete dbus;
         return lunarInfoMap;
     });
-    connect(w, &QFutureWatcher<QMap<QDate, CaHuangLiDayInfo>>::finished, this, [this, w]() {
-        m_lunarInfoMap = w->result();
-        qCDebug(ClientLogger) << "Lunar info query completed with" << m_lunarInfoMap.size() << "days";
+    connect(w, &QFutureWatcher<QMap<QDate, CaHuangLiDayInfo>>::finished, this, [this, w, startDate, stopDate]() {
+        auto result = w->result();
+        for (auto it = result.constBegin(); it != result.constEnd(); ++it) {
+            m_lunarInfoMap[it.key()] = it.value();
+        }
+        m_pendingQueries.remove(qMakePair(startDate, stopDate));
+        qCDebug(ClientLogger) << "Lunar info query completed, total cached:" << m_lunarInfoMap.size() << "days";
         w->deleteLater();
         emit lunarInfoReady();
     });
@@ -191,14 +195,14 @@ void LunarManager::queryFestivalInfo(const QDate &startDate, const QDate &stopDa
         delete dbus;
         return festivallist;
     });
-    connect(w, &QFutureWatcher<QVector<FestivalInfo>>::finished, this, [this, w]() {
+    connect(w, &QFutureWatcher<QVector<FestivalInfo>>::finished, this, [this, w, startDate, stopDate]() {
         auto festivallist = w->result();
-        m_festivalDateMap.clear();
         for (const FestivalInfo &info : festivallist) {
             for (const HolidayInfo &h : info.listHoliday) {
                 m_festivalDateMap[h.date] = h.status;
             }
         }
+        m_pendingQueries.remove(qMakePair(startDate, stopDate));
         qCDebug(ClientLogger) << "Festival date map updated with" << m_festivalDateMap.size() << "days";
         w->deleteLater();
         emit festivalInfoReady();
@@ -274,7 +278,7 @@ QMap<QDate, CaHuangLiDayInfo> LunarManager::getHuangLiDayMap(const QDate &startD
     QMap<QDate, CaHuangLiDayInfo> lunarInfoMap;
     auto iterator = m_lunarInfoMap.begin();
     while(iterator != m_lunarInfoMap.end()) {
-        if (iterator.key() >= startDate || iterator.key() <= stopDate) {
+        if (iterator.key() >= startDate && iterator.key() <= stopDate) {
             iterator.value();
             lunarInfoMap[iterator.key()] = iterator.value();
         }
@@ -297,7 +301,7 @@ QMap<QDate, int> LunarManager::getFestivalInfoDateMap(const QDate &startDate, co
     QMap<QDate, int> festivalDateMap;
     auto iterator = m_festivalDateMap.begin();
     while(iterator != m_festivalDateMap.end()) {
-        if (iterator.key() >= startDate || iterator.key() <= stopDate) {
+        if (iterator.key() >= startDate && iterator.key() <= stopDate) {
             iterator.value();
             festivalDateMap[iterator.key()] = iterator.value();
         }
@@ -321,6 +325,12 @@ void LunarManager::ensureLunarDataLoaded(const QDate &startDate, const QDate &en
         return;
     }
 
+    // Prevent re-entrant queries for the same range while DBus call is in flight
+    auto key = qMakePair(startDate, endDate);
+    if (m_pendingQueries.contains(key)) {
+        return;
+    }
+
     // Check if this range (or a superset) has already been queried
     for (const auto &range : m_queriedRanges) {
         if (startDate >= range.first && endDate <= range.second) {
@@ -338,6 +348,7 @@ void LunarManager::ensureLunarDataLoaded(const QDate &startDate, const QDate &en
     if (cachedDays < expectedDays) {
         qCDebug(ClientLogger) << "Querying lunar data for range" << startDate.toString() << "to" << endDate.toString()
                                << "expected:" << expectedDays << "cached:" << cachedDays;
+        m_pendingQueries.insert(key);
         queryLunarInfo(startDate, endDate);
         queryFestivalInfo(startDate, endDate);
     }

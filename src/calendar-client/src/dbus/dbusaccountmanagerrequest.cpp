@@ -6,6 +6,7 @@
 #include "commondef.h"
 #include "dcalendargeneralsettings.h"
 #include <QDBusInterface>
+#include <QDBusReply>
 #include <QDebug>
 
 DbusAccountManagerRequest::DbusAccountManagerRequest(QObject *parent)
@@ -192,9 +193,43 @@ void DbusAccountManagerRequest::slotCallFinished(CDBusPendingCallWatcher *call)
     
     //错误处理
     if (call->isError()) {
-        qCWarning(ClientLogger) << "DBus call error - Method:" << call->reply().member() 
+        qCWarning(ClientLogger) << "DBus call error - Method:" << call->reply().member()
                                << "Error:" << call->error().message();
-        ret = 1;
+        // Retry critical calls synchronously on failure
+        if (call->getmember() == "getAccountList") {
+            qCInfo(ClientLogger) << "Retrying getAccountList synchronously";
+            QDBusReply<QString> reply = callWithArgumentList(QDBus::Block, "getAccountList", QList<QVariant>());
+            if (reply.isValid()) {
+                DAccount::List accountList;
+                if (DAccount::fromJsonListString(accountList, reply.value())) {
+                    emit signalGetAccountListFinish(accountList);
+                    canCall = false;
+                }
+            }
+            if (canCall) ret = 1;
+        } else if (call->getmember() == "getCalendarGeneralSettings") {
+            qCInfo(ClientLogger) << "Retrying getCalendarGeneralSettings synchronously";
+            QDBusReply<QString> reply = callWithArgumentList(QDBus::Block, "getCalendarGeneralSettings", QList<QVariant>());
+            if (reply.isValid()) {
+                DCalendarGeneralSettings::Ptr ptr;
+                ptr.reset(new DCalendarGeneralSettings());
+                if (DCalendarGeneralSettings::fromJsonString(ptr, reply.value())) {
+                    emit signalGetGeneralSettingsFinish(ptr);
+                    canCall = false;
+                }
+            }
+            if (canCall) ret = 1;
+        } else if (call->getmember() == "isSupportUid") {
+            qCInfo(ClientLogger) << "Retrying isSupportUid synchronously";
+            QDBusReply<bool> reply = callWithArgumentList(QDBus::Block, "isSupportUid", QList<QVariant>());
+            if (reply.isValid()) {
+                emit signalGetIsSupportUidFinish(reply.value());
+                canCall = false;
+            }
+            if (canCall) ret = 1;
+        } else {
+            ret = 1;
+        }
     } else if (call->getmember() == "getAccountList") {
         qCDebug(ClientLogger) << "Processing getAccountList response";
         QDBusPendingReply<QString> reply = *call;
