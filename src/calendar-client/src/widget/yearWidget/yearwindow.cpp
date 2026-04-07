@@ -524,8 +524,7 @@ void CYearWindow::updateShowLunar()
     if (getShowLunar()) {
         QDate yearStart(getSelectDate().year(), 1, 1);
         QDate yearEnd(getSelectDate().year(), 12, 31);
-        gLunarManager->queryLunarInfo(yearStart, yearEnd);
-        gLunarManager->queryFestivalInfo(yearStart, yearEnd);
+        gLunarManager->ensureLunarDataLoaded(yearStart, yearEnd);
     }
 
     //获取农历信息

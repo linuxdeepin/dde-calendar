@@ -63,6 +63,7 @@ private:
     QMap<QDate, CaHuangLiDayInfo> m_lunarInfoMap;   //缓存的农历数据
     QMap<QDate, int> m_festivalDateMap;     //缓存的节假日数据
     QList<QPair<QDate, QDate>> m_queriedRanges;  //已查询的日期范围缓存
+    QSet<QPair<QDate, QDate>> m_pendingQueries;   //正在查询中的范围，防止重入
 
 };
 #define gLunarManager LunarManager::getInstace()

@@ -204,22 +204,23 @@ void Calendarmainwindow::slotCurrentDateUpdate()
     // qCDebug(ClientLogger) << "Calendarmainwindow::slotCurrentDateUpdate";
     //获取当前时间
     const QDateTime _currentDate = QDateTime::currentDateTime();
-    //设置当前时间
-    if (m_DayWindow) m_DayWindow->setCurrentDateTime(_currentDate);
+    //只对日视图更新当前时间（用于时间线绘制），仅当日视图可见时
+    if (m_DayWindow && m_stackWidget->currentIndex() == DDECalendar::CalendarDayWindow)
+        m_DayWindow->setCurrentDateTime(_currentDate);
     //如果当前日期与动态图标日期不一样则重新生成动态图标
     if (_currentDate.date() != CDynamicIcon::getInstance()->getDate()) {
         qCDebug(ClientLogger) << "Updating dynamic icon date" << "new date:" << QDate::currentDate();
         CDynamicIcon::getInstance()->setDate(QDate::currentDate());
         CDynamicIcon::getInstance()->setIcon();
-        //更新视图数据显示
-        for (int i = 0; i < m_stackWidget->count(); ++i) {
-            CScheduleBaseWidget *widget = qobject_cast<CScheduleBaseWidget *>(m_stackWidget->widget(i));
-            if (widget) widget->updateData();
-        }
+        //更新当前可见视图数据显示
+        CScheduleBaseWidget *currentWidget = qobject_cast<CScheduleBaseWidget *>(m_stackWidget->currentWidget());
+        if (currentWidget) currentWidget->updateData();
         //设置年视图年数据时间显示
         if (m_yearwindow) m_yearwindow->setYearData();
         //更新月视图当前周横线绘制
         if (m_monthWindow) m_monthWindow->setCurrentDateTime(_currentDate);
+        //日期变化时也要更新日视图时间
+        if (m_DayWindow) m_DayWindow->setCurrentDateTime(_currentDate);
     }
 }
 
