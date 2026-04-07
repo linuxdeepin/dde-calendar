@@ -1,3 +1,10 @@
+dde-calendar (6.5.38) unstable; urgency=medium
+
+  * fix: resolve high CPU usage and account loading failures
+  * chore: reorganize project directory structure
+
+ -- Wang Yu <wangyu@uniontech.com>  Tue, 07 Apr 2026 15:03:02 +0800
+
 dde-calendar (6.5.37) unstable; urgency=medium
 
   * fix: prevent icon scaling at high DPI zoom levels
