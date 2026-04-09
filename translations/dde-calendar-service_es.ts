@@ -596,7 +596,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="389"/>
         <source>import ICS file</source>
-        <translation type="unfinished"/>
+        <translation>Importar archivo ICS</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="403"/>
@@ -636,7 +636,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="779"/>
         <source>Please go to the Control Center to change system settings</source>
-        <translation>Diríjase al Centro de control para cambiar la configuración del sistema.</translation>
+        <translation>Vaya al Centro de control para cambiar la configuración del sistema.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="346"/>
