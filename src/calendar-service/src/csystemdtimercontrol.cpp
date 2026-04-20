@@ -376,4 +376,9 @@ void CSystemdTimerControl::createPeriodicTimerFromTemplate(const QString &name, 
     
     qCDebug(ServiceLogger) << "Creating periodic timer file:" << fileName << "with interval:" << intervalMinutes << "minutes";
     createFile(fileName, content);
+}    content += "[Install]\n";
+    content += "WantedBy=timers.target\n";
+    
+    qCDebug(ServiceLogger) << "Creating periodic timer file:" << fileName << "with interval:" << intervalMinutes << "minutes";
+    createFile(fileName, content);
 }
