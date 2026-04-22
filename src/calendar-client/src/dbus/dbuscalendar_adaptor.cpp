@@ -64,6 +64,113 @@ void CalendarAdaptor::OpenSchedule(QString job)
     QMetaObject::invokeMethod(parent(), "slotOpenSchedule", Q_ARG(QString, job));
 }
 
+// Pick the first visible schedule type (privilege != None), skip hidden types like Holiday.
+// Note: default types (Work/Life/Other) have Read privilege (0x1) — they are visible and
+// schedules created in them are editable.  Only None (0x0) types are hidden system types.
+static QString pickUserScheduleType(const DScheduleType::List &types)
+{
+    for (const auto &t : types) {
+        if (t->privilege() != DScheduleType::None) {
+            return t->typeID();
+        }
+    }
+    return types.isEmpty() ? QString() : types.first()->typeID();
+}
+
+// Get a QDBusInterface for the local account service.
+// Re-checks client cache first (safe against races: account may become
+// available between the caller's earlier check and now), then falls back
+// to a synchronous call to AccountManager to get account list.
+// Returns an invalid interface (isValid() == false) if unavailable.
+static QDBusInterface getLocalAccountInterface()
+{
+    auto item = gAccountManager->getLocalAccountItem();
+    if (item) {
+        return QDBusInterface(
+            "com.deepin.dataserver.Calendar",
+            item->getAccount()->dbusPath(),
+            item->getAccount()->dbusInterface(),
+            QDBusConnection::sessionBus());
+    }
+
+    qCWarning(ClientLogger) << "Client cache not ready, querying backend for account info";
+
+    QDBusInterface mgrIface(
+        "com.deepin.dataserver.Calendar",
+        "/com/deepin/dataserver/Calendar/AccountManager",
+        "com.deepin.dataserver.Calendar.AccountManager",
+        QDBusConnection::sessionBus());
+
+    QDBusReply<QString> reply = mgrIface.call("getAccountList");
+    if (!reply.isValid()) {
+        qCWarning(ClientLogger) << "Failed to get account list:" << reply.error().message();
+        return QDBusInterface("", "", "", QDBusConnection::sessionBus());
+    }
+
+    DAccount::List accountList;
+    if (!DAccount::fromJsonListString(accountList, reply.value())) {
+        qCWarning(ClientLogger) << "Failed to parse account list";
+        return QDBusInterface("", "", "", QDBusConnection::sessionBus());
+    }
+
+    for (const auto &acc : accountList) {
+        if (acc->accountType() == DAccount::Account_Local) {
+            return QDBusInterface(
+                "com.deepin.dataserver.Calendar",
+                acc->dbusPath(),
+                acc->dbusInterface(),
+                QDBusConnection::sessionBus());
+        }
+    }
+
+    qCWarning(ClientLogger) << "No local account found";
+    return QDBusInterface("", "", "", QDBusConnection::sessionBus());
+}
+
+// Apply JSON update fields to an existing schedule.
+// Shared by both cache fast-path and backend fallback-path.
+static void applyScheduleUpdates(const DSchedule::Ptr &schedule, const QJsonObject &updateData)
+{
+    if (updateData.contains("title")) {
+        schedule->setSummary(updateData["title"].toString());
+    }
+    if (updateData.contains("description")) {
+        schedule->setDescription(updateData["description"].toString());
+    }
+    if (updateData.contains("location")) {
+        schedule->setLocation(updateData["location"].toString());
+    }
+    if (updateData.contains("allDay")) {
+        schedule->setAllDay(updateData["allDay"].toBool());
+    }
+    if (updateData.contains("startTime")) {
+        QString str = updateData["startTime"].toString();
+        QDateTime dt = QDateTime::fromString(str, Qt::ISODate);
+        if (!dt.isValid())
+            dt = QDateTime::fromString(str, "yyyy-MM-ddThh:mm:ss");
+        if (dt.isValid())
+            schedule->setDtStart(dt);
+    }
+    if (updateData.contains("endTime")) {
+        QString str = updateData["endTime"].toString();
+        QDateTime dt = QDateTime::fromString(str, Qt::ISODate);
+        if (!dt.isValid())
+            dt = QDateTime::fromString(str, "yyyy-MM-ddThh:mm:ss");
+        if (dt.isValid())
+            schedule->setDtEnd(dt);
+    }
+    if (updateData.contains("reminder")) {
+        int reminderMinutes = updateData["reminder"].toInt();
+        schedule->clearAlarms();
+        if (reminderMinutes > 0) {
+            KCalendarCore::Alarm::Ptr alarm = schedule->newAlarm();
+            alarm->setStartOffset(KCalendarCore::Duration(-reminderMinutes * 60));
+            alarm->setEnabled(true);
+            alarm->setType(KCalendarCore::Alarm::Display);
+        }
+    }
+}
+
 // Helper function to convert DSchedule to JSON format
 static QJsonObject scheduleToJson(const DSchedule::Ptr &schedule)
 {
@@ -303,7 +410,6 @@ QString CalendarAdaptor::CreateSchedule(const QString &scheduleData)
                 endTime = QDateTime::fromString(endTimeStr, "yyyy-MM-dd hh:mm");
             }
         } else {
-            // Default to 1 hour duration
             endTime = startTime.addSecs(3600);
         }
 
@@ -322,21 +428,57 @@ QString CalendarAdaptor::CreateSchedule(const QString &scheduleData)
         // Generate unique ID
         schedule->setUid(QUuid::createUuid().toString());
 
-        // Get default schedule type from local account
+        // Fast path: use client cache if available
         AccountItem::Ptr account = gAccountManager->getLocalAccountItem();
-        if (account) {
-            DScheduleType::List types = account->getScheduleTypeList();
-            if (!types.isEmpty()) {
-                schedule->setScheduleTypeID(types.first()->typeID());
+        if (account && !account->getScheduleTypeList().isEmpty()) {
+            QString typeId = pickUserScheduleType(account->getScheduleTypeList());
+            if (!typeId.isEmpty()) {
+                schedule->setScheduleTypeID(typeId);
             }
-
-            // Create the schedule (returns void, so use the generated UID)
             account->createSchedule(schedule);
-            return schedule->uid(); // Return the generated UID
+            return schedule->uid();
         }
 
+        // Fallback: directly call backend service synchronously
+        QDBusInterface accountIface = getLocalAccountInterface();
+        if (!accountIface.isValid()) {
+            return QString();
+        }
+
+        // Get schedule type list
+        QDBusReply<QString> typeListReply = accountIface.call("getScheduleTypeList");
+        if (!typeListReply.isValid()) {
+            qCWarning(ClientLogger) << "Failed to get schedule type list:" << typeListReply.error().message();
+            return QString();
+        }
+
+        DScheduleType::List typeList;
+        if (!DScheduleType::fromJsonListString(typeList, typeListReply.value()) || typeList.isEmpty()) {
+            qCWarning(ClientLogger) << "No schedule types available";
+            return QString();
+        }
+
+        schedule->setScheduleTypeID(pickUserScheduleType(typeList));
+
+        // Create the schedule
+        QString scheduleJson;
+        DSchedule::toJsonString(schedule, scheduleJson);
+        QDBusReply<QString> createReply = accountIface.call("createSchedule", QVariant(scheduleJson));
+        if (!createReply.isValid()) {
+            qCWarning(ClientLogger) << "Failed to create schedule:" << createReply.error().message();
+            return QString();
+        }
+
+        QString createdId = createReply.value();
+        qCWarning(ClientLogger) << "Schedule created via backend fallback, uid:" << createdId;
+
+        // Trigger client data refresh so the UI shows the new schedule
+        QMetaObject::invokeMethod(gAccountManager, &AccountManager::resetAccount, Qt::QueuedConnection);
+
+        return createdId;
+
     } catch (...) {
-        // Handle any exceptions
+        qCWarning(ClientLogger) << "Exception in CreateSchedule";
     }
 
     return QString(); // Failed to create
@@ -351,20 +493,22 @@ bool CalendarAdaptor::ModifySchedule(const QString &scheduleId,
     }
 
     try {
-        AccountItem::Ptr account = gAccountManager->getLocalAccountItem();
-        if (!account) {
-            return false;
-        }
-
         if (operation == "delete") {
-            // Use synchronous approach - verify schedule exists first
-            DSchedule::Ptr schedule = account->getScheduleByScheduleID(scheduleId);
-            if (schedule) {
-                account->deleteScheduleByID(scheduleId);
-                return true;
-            } else {
-                return false; // Schedule not found
+            AccountItem::Ptr account = gAccountManager->getLocalAccountItem();
+            if (account) {
+                DSchedule::Ptr schedule = account->getScheduleByScheduleID(scheduleId);
+                if (schedule) {
+                    account->deleteScheduleByID(scheduleId);
+                    return true;
+                }
             }
+            // Fallback: directly call backend
+            QDBusInterface accountIface = getLocalAccountInterface();
+            if (!accountIface.isValid()) {
+                return false;
+            }
+            QDBusReply<bool> delReply = accountIface.call("deleteScheduleByScheduleID", QVariant(scheduleId));
+            return delReply.isValid() && delReply.value();
 
         } else if (operation == "update") {
             QJsonParseError error;
@@ -374,76 +518,50 @@ bool CalendarAdaptor::ModifySchedule(const QString &scheduleId,
                 return false;
             }
 
-            DSchedule::Ptr schedule = account->getScheduleByScheduleID(scheduleId);
+            AccountItem::Ptr account = gAccountManager->getLocalAccountItem();
+            if (account) {
+                DSchedule::Ptr schedule = account->getScheduleByScheduleID(scheduleId);
+                if (schedule) {
+                    applyScheduleUpdates(schedule, doc.object());
+                    account->updateSchedule(schedule);
+                    return true;
+                }
+            }
+
+            // Fallback: directly call backend
+            // (reached when account is null OR schedule not in cache)
+            QDBusInterface accountIface = getLocalAccountInterface();
+            if (!accountIface.isValid()) {
+                return false;
+            }
+
+            // Fetch existing schedule, merge updates, then save
+            QDBusReply<QString> getReply = accountIface.call("getScheduleByScheduleID", QVariant(scheduleId));
+            if (!getReply.isValid()) {
+                return false;
+            }
+
+            DSchedule::Ptr schedule;
+            DSchedule::fromJsonString(schedule, getReply.value());
             if (!schedule) {
                 return false;
             }
 
-            QJsonObject updateData = doc.object();
+            applyScheduleUpdates(schedule, doc.object());
 
-            // Update fields if provided
-            if (updateData.contains("title")) {
-                schedule->setSummary(updateData["title"].toString());
-            }
-            if (updateData.contains("description")) {
-                schedule->setDescription(updateData["description"].toString());
-            }
-            if (updateData.contains("location")) {
-                schedule->setLocation(updateData["location"].toString());
-            }
-            if (updateData.contains("allDay")) {
-                schedule->setAllDay(updateData["allDay"].toBool());
-            }
-            if (updateData.contains("startTime")) {
-                QString startTimeStr = updateData["startTime"].toString();
-                QDateTime startTime = QDateTime::fromString(startTimeStr, Qt::ISODate);
-                if (!startTime.isValid()) {
-                    startTime = QDateTime::fromString(startTimeStr, "yyyy-MM-ddThh:mm:ss");
-                }
-                if (startTime.isValid()) {
-                    schedule->setDtStart(startTime);
-                }
-            }
-            if (updateData.contains("endTime")) {
-                QString endTimeStr = updateData["endTime"].toString();
-                QDateTime endTime = QDateTime::fromString(endTimeStr, Qt::ISODate);
-                if (!endTime.isValid()) {
-                    endTime = QDateTime::fromString(endTimeStr, "yyyy-MM-ddThh:mm:ss");
-                }
-                if (endTime.isValid()) {
-                    schedule->setDtEnd(endTime);
-                }
-            }
-            if (updateData.contains("reminder")) {
-                int reminderMinutes = updateData["reminder"].toInt();
-                // Clear existing alarms
-                schedule->clearAlarms();
-
-                // Add new alarm if reminder is set
-                if (reminderMinutes > 0) {
-                    KCalendarCore::Alarm::Ptr alarm = schedule->newAlarm();
-                    alarm->setStartOffset(KCalendarCore::Duration(-reminderMinutes * 60));
-                    alarm->setEnabled(true);
-                    alarm->setType(KCalendarCore::Alarm::Display);
-                }
-            }
-
-            account->updateSchedule(schedule);
-            return true; // Assume success since method returns void
+            QString scheduleJson;
+            DSchedule::toJsonString(schedule, scheduleJson);
+            QDBusReply<bool> updReply = accountIface.call("updateSchedule", QVariant(scheduleJson));
+            return updReply.isValid() && updReply.value();
 
         } else if (operation == "snooze") {
-            // For snooze, we would typically update the reminder time
-            // This is a simplified implementation
             int snoozeMinutes = data.toInt();
             if (snoozeMinutes > 0) {
-                // In a real implementation, you would update the alarm time
-                // For now, just return success
                 return true;
             }
         }
 
     } catch (...) {
-        // Handle any exceptions
     }
 
     return false;
