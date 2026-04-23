@@ -1,3 +1,13 @@
+dde-calendar (6.5.39) unstable; urgency=medium
+
+  * chore: Update version to 6.5.39
+  * i18n: Translate dde-calendar-service_en_US.ts in fi
+  * i18n: Translate dde-calendar_en_US.ts in pt_BR
+  * i18n: Translate dde-calendar-service_en_US.ts in pt_BR
+  * fix(dbus): add backend fallback for schedule CRUD operations
+
+ -- zhanghongyuan <zhanghongyuan@uniontech.com>  Thu, 23 Apr 2026 17:25:57 +0800
+
 dde-calendar (6.5.38) unstable; urgency=medium
 
   * fix: resolve high CPU usage and account loading failures
