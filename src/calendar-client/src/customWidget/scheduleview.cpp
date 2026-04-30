@@ -21,9 +21,6 @@
 #include <QShortcut>
 #include <QVBoxLayout>
 #include <QApplication>
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-#include <QDesktopWidget>
-#endif
 
 DGUI_USE_NAMESPACE
 
@@ -539,23 +536,19 @@ void CScheduleView::slotScheduleShow(const bool isShow, const DSchedule::Ptr &ou
         CSchedulesColor gdColor = CScheduleDataManage::getScheduleDataManage()->getScheduleColorByType(
             out->scheduleTypeID());
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-        QScreen *screen = QGuiApplication::primaryScreen();
-        QRect screenGeometry = screen->geometry();
-#else
-        QDesktopWidget *w = QApplication::desktop();
-        QRect screenGeometry = w->screenGeometry();
-#endif
         m_ScheduleRemindWidget->setData(out, gdColor);
+        // pos22: 全局屏幕坐标; rPos: 转换后的控件逻辑坐标
+        const auto rPos = this->mapFromGlobal(pos22);
+        const int offsetPx = 15; // 逻辑像素偏移，与 rPos 同一坐标系
 
-        if ((pos22.x() + m_ScheduleRemindWidget->width() + 15) > screenGeometry.width()) {
+        if ((rPos.x() + m_ScheduleRemindWidget->width() + offsetPx) > this->window()->width()) {
             qCDebug(ClientLogger) << "Positioning widget to the right";
             m_ScheduleRemindWidget->setDirection(DArrowRectangle::ArrowRight);
-            m_ScheduleRemindWidget->show(pos22.x() - 15, pos22.y());
+            m_ScheduleRemindWidget->show(rPos.x() - offsetPx, rPos.y());
         } else {
             qCDebug(ClientLogger) << "Positioning widget to the left";
             m_ScheduleRemindWidget->setDirection(DArrowRectangle::ArrowLeft);
-            m_ScheduleRemindWidget->show(pos22.x() + 15, pos22.y());
+            m_ScheduleRemindWidget->show(rPos.x() + offsetPx, rPos.y());
         }
     } else {
         // qCDebug(ClientLogger) << "Hiding schedule widget";
