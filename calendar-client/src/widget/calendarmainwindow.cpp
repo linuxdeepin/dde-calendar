@@ -85,7 +85,8 @@ Calendarmainwindow::Calendarmainwindow(int index, QWidget *w)
 {
     setContentsMargins(QMargins(0, 0, 0, 0));
 
-    QTimer::singleShot(10, this, &Calendarmainwindow::initLater);
+    //直接初始化UI，避免show()时窗口为空导致白屏
+    initLater();
 
     setMinimumSize(CalendarMWidth, CalendarMHeight);
     setWindowTitle(tr("Calendar"));
