@@ -237,6 +237,7 @@ void Calendarmainwindow::viewWindow(int type, const bool showAnimation)
     case DDECalendar::CalendarMonthWindow: {
     } break;
     case DDECalendar::CalendarWeekWindow: {
+        m_weekWindow->updateShowLunar();
     } break;
     case DDECalendar::CalendarDayWindow: {
         m_DayWindow->setTime();
