@@ -20,7 +20,7 @@ set(APP_SERVICE_IN "${APP_RES_DIR}/dbus/com.deepin.Calendar.service.in")
 
 project(${APP_BIN_NAME})
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
