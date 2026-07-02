@@ -95,6 +95,7 @@ private:
     QColor m_btimecolor = "#526A7F";
     QColor m_btTextColor = "#414D68";
     QFont m_textfont;
+    QFont m_timefont;
     QString m_timeFormat = "h:mm";
     QVector<QRect> m_drawRect;
 };

@@ -23,6 +23,8 @@ CYearScheduleView::CYearScheduleView(QWidget *parent)
     qCDebug(ClientLogger) << "CYearScheduleView constructed";
     m_textfont.setWeight(QFont::Medium);
     m_textfont.setPixelSize(DDECalendar::FontSizeTwelve);
+    m_timefont = m_textfont;
+    m_timefont.setWeight(QFont::Normal);
 }
 
 CYearScheduleView::~CYearScheduleView()
@@ -153,14 +155,16 @@ void CYearScheduleView::setTheMe(int type)
     // qCDebug(ClientLogger) << "Setting theme to type:" << type;
     if (type == 0 || type == 1) {
         // qCDebug(ClientLogger) << "Setting theme to light";
-        m_btimecolor = "#414D68";
-        m_btimecolor.setAlphaF(0.7);
-        m_btTextColor = "#414D68";
+        m_btimecolor = "#000000";
+        m_btimecolor.setAlphaF(0.6);
+        m_btTextColor = "#000000";
+        m_btTextColor.setAlphaF(0.7);
     } else if (type == 2) {
         // qCDebug(ClientLogger) << "Setting theme to dark";
-        m_btimecolor = "#C0C6D4";
-        m_btimecolor.setAlphaF(0.7);
-        m_btTextColor = "#C0C6D4";
+        m_btimecolor = "#FFFFFF";
+        m_btimecolor.setAlphaF(0.6);
+        m_btTextColor = "#FFFFFF";
+        m_btTextColor.setAlphaF(0.7);
     }
 }
 
@@ -304,7 +308,7 @@ void CYearScheduleView::paintItem(QPainter &painter, DSchedule::Ptr info, int in
             //右边时间
             painter.save();
             painter.setPen(m_btimecolor);
-            painter.setFont(m_textfont);
+            painter.setFont(m_timefont);
             if (info->allDay()) {
                 str = tr("All Day");
             } else {

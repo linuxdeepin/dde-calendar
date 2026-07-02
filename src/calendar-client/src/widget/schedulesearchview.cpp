@@ -108,10 +108,10 @@ void CScheduleSearchItem::setTheMe(int type)
 
         m_hovercolor.background = "#FFFFFF";
         m_hovercolor.background.setAlphaF(0.2);
-        m_hovercolor.timeColor = "#6D7C88";
-        m_hovercolor.timeColor.setAlphaF(1);
-        m_hovercolor.textColor = "#C0C6D4";
-        m_hovercolor.textColor.setAlphaF(1);
+        m_hovercolor.timeColor = "#FFFFFF";
+        m_hovercolor.timeColor.setAlphaF(0.6);
+        m_hovercolor.textColor = "#FFFFFF";
+        m_hovercolor.textColor.setAlphaF(0.7);
     } else {
         qCDebug(ClientLogger) << "Applying light theme";
         m_presscolor.background = CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
@@ -123,10 +123,10 @@ void CScheduleSearchItem::setTheMe(int type)
 
         m_hovercolor.background = "#000000";
         m_hovercolor.background.setAlphaF(0.2);
-        m_hovercolor.timeColor = "#526A7F";
-        m_hovercolor.timeColor.setAlphaF(1);
-        m_hovercolor.textColor = "#414D68";
-        m_hovercolor.textColor.setAlphaF(1);
+        m_hovercolor.timeColor = "#000000";
+        m_hovercolor.timeColor.setAlphaF(0.6);
+        m_hovercolor.textColor = "#000000";
+        m_hovercolor.textColor.setAlphaF(0.7);
     }
 }
 
@@ -517,16 +517,20 @@ void CScheduleSearchView::setTheMe(int type)
         qCDebug(ClientLogger) << "Applying light theme";
         m_bBackgroundcolor = "#000000";
         m_bBackgroundcolor.setAlphaF(0.03);
-        m_btimecolor = "#526A7F";
-        m_btTextColor = "#414D68";
+        m_btimecolor = "#000000";
+        m_btimecolor.setAlphaF(0.6);
+        m_btTextColor = "#000000";
+        m_btTextColor.setAlphaF(0.7);
         m_lBackgroundcolor = Qt::white;
         m_lTextColor = "#001A2E";
     } else if (type == 2) {
         qCDebug(ClientLogger) << "Applying dark theme";
         m_bBackgroundcolor = "#FFFFFF";
         m_bBackgroundcolor.setAlphaF(0.05);
-        m_btimecolor = "#6D7C88";
-        m_btTextColor = "#C0C6D4";
+        m_btimecolor = "#FFFFFF";
+        m_btimecolor.setAlphaF(0.6);
+        m_btTextColor = "#FFFFFF";
+        m_btTextColor.setAlphaF(0.7);
         m_lBackgroundcolor = "#FFFFFF";
         m_lBackgroundcolor.setAlphaF(0.0);
         m_lTextColor = "#C0C6D4";
@@ -729,9 +733,11 @@ void CScheduleSearchView::createItemWidget(DSchedule::Ptr info, QDate date, int 
     font.setWeight(QFont::Normal);
     gwi->setBackgroundColor(m_bBackgroundcolor);
     gwi->setText(m_btTextColor, font);
-    font.setPixelSize(DDECalendar::FontSizeTwelve);
+    QFont timeFont = font;
+    timeFont.setPixelSize(DDECalendar::FontSizeTwelve);
+    timeFont.setWeight(QFont::Light);
 
-    gwi->setTimeC(m_btimecolor, font);
+    gwi->setTimeC(m_btimecolor, timeFont);
     gwi->setFixedSize(m_maxWidth - 15, 35);
     gwi->setData(gd, date);
     gwi->setRoundtype(rtype);

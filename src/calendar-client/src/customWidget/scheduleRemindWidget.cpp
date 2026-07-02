@@ -99,17 +99,15 @@ void CenterWidget::setTheMe(const int type)
 {
     qCDebug(ClientLogger) << "CenterWidget::setTheMe with type:" << type;
     if (type == 2) {
-        qCDebug(ClientLogger) << "Setting dark theme colors";
-        timeColor = QColor("#C0C6D4");
-        timeColor.setAlphaF(0.7);
-        textColor = QColor("#C0C6D4");
-        textColor.setAlphaF(1);
+        timeColor = QColor("#FFFFFF");
+        timeColor.setAlphaF(0.6);
+        textColor = QColor("#FFFFFF");
+        textColor.setAlphaF(0.7);
     } else {
-        qCDebug(ClientLogger) << "Setting light theme colors";
-        timeColor = QColor("#414D68");
-        timeColor.setAlphaF(0.7);
-        textColor = QColor("#414D68");
-        textColor.setAlphaF(1);
+        timeColor = QColor("#000000");
+        timeColor.setAlphaF(0.6);
+        textColor = QColor("#000000");
+        textColor.setAlphaF(0.7);
     }
     update();
 }
@@ -178,6 +176,7 @@ void CenterWidget::paintEvent(QPaintEvent *e)
     int x = 40 - 13;
     QFont timeFont;
     timeFont.setPixelSize(DDECalendar::FontSizeTwelve);
+    timeFont.setWeight(QFont::Normal);
     QPainter painter(this);
     //draw time
     QPen pen;
