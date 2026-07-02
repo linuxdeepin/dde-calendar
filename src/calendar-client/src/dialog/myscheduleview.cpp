@@ -166,13 +166,15 @@ void CMyScheduleView::setLabelTextColor(const int type)
     //时间显示颜色
     QColor timeColor;
     if (type == 2) {
-        titleColor = "#C0C6D4";
+        titleColor = "#FFFFFF";
+        titleColor.setAlphaF(0.85);
         scheduleTitleColor = "#FFFFFF";
         timeColor = "#FFFFFF";
         timeColor.setAlphaF(0.7);
         qCDebug(ClientLogger) << "Using dark theme colors";
     } else {
-        titleColor = "#001A2E";
+        titleColor = "#000000";
+        titleColor.setAlphaF(0.85);
         scheduleTitleColor = "#000000";
         scheduleTitleColor.setAlphaF(0.9);
         timeColor = "#000000";
@@ -347,7 +349,7 @@ void CMyScheduleView::initUI()
         qCDebug(ClientLogger) << "Adding OK button for festival schedule";
         addButton(tr("OK", "button"), false, DDialog::ButtonNormal);
         QAbstractButton *button_ok = getButton(0);
-        button_ok->setFixedSize(360, 36);
+        button_ok->setFixedSize(380, 36);
     } else {
         qCDebug(ClientLogger) << "Adding Delete and Edit buttons for regular schedule";
         addButton(tr("Delete", "button"), false, DDialog::ButtonNormal);
