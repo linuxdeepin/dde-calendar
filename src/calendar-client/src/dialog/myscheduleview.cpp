@@ -347,14 +347,14 @@ void CMyScheduleView::initUI()
         qCDebug(ClientLogger) << "Adding OK button for festival schedule";
         addButton(tr("OK", "button"), false, DDialog::ButtonNormal);
         QAbstractButton *button_ok = getButton(0);
-        button_ok->setFixedSize(360, 36);
+        button_ok->setFixedSize(380, 36);
     } else {
         qCDebug(ClientLogger) << "Adding Delete and Edit buttons for regular schedule";
         addButton(tr("Delete", "button"), false, DDialog::ButtonNormal);
         addButton(tr("Edit", "button"), false, DDialog::ButtonRecommend);
         for (int i = 0; i < buttonCount(); i++) {
             QAbstractButton *button = getButton(i);
-            button->setFixedSize(165, 36);
+            button->setFixedSize(180, 36);
         }
         //TODO:如果为不可修改日程则设置删除按钮无效
     }
