@@ -49,6 +49,7 @@ private:
     //界面初始化
     void initUI();
     void initConnection();
+    void updateDialogIcon();
     //设置label文字颜色
     void setLabelTextColor(const int type);
     //设置调色板颜色
