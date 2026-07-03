@@ -95,16 +95,21 @@ void CMyScheduleView::slotAutoFeed(const QFont &font)
         resultStr += str;
     }
 
-    if (strList.count() * h > 100) {
+    const int scheduleContentH = strList.count() * h;
+    const bool needScroll = scheduleContentH > 100;
+    if (needScroll) {
         m_scheduleLabelH = 100;
     } else {
         int minH = 17;
-        m_scheduleLabelH = strList.count() * h;
+        m_scheduleLabelH = scheduleContentH;
         m_scheduleLabelH = m_scheduleLabelH >= minH ? m_scheduleLabelH : minH;
     }
     //更新控件高度
     area->setFixedHeight(m_scheduleLabelH);
+    area->setVerticalScrollBarPolicy(needScroll ? Qt::ScrollBarAsNeeded : Qt::ScrollBarAlwaysOff);
+    area->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_scheduleLabel->setText(resultStr);
+    m_scheduleLabel->setFixedHeight(needScroll ? scheduleContentH : m_scheduleLabelH);
 
     m_timeLabelH = 26;
     if (m_scheduleInfo->lunnar()) {
@@ -183,6 +188,11 @@ void CMyScheduleView::setLabelTextColor(const int type)
     setPaletteTextColor(m_Title, titleColor);
     setPaletteTextColor(m_scheduleLabel, scheduleTitleColor);
     setPaletteTextColor(m_timeLabel, timeColor);
+}
+
+void CMyScheduleView::updateDialogIcon()
+{
+    setIcon(QIcon::fromTheme("dde-calendar"));
 }
 
 /**
@@ -301,8 +311,7 @@ void CMyScheduleView::initUI()
     m_Title->setAlignment(Qt::AlignCenter);
     DFontSizeManager::instance()->bind(m_Title, DFontSizeManager::T5, QFont::DemiBold);
     //设置日期图标
-    QIcon t_icon(CDynamicIcon::getInstance()->getPixmap());
-    setIcon(t_icon);
+    updateDialogIcon();
     m_Title->setText(tr("My Event"));
     m_Title->move(90, 0); // center x: (400-220)/2
 
@@ -315,6 +324,8 @@ void CMyScheduleView::initUI()
     area->setFocusPolicy(Qt::FocusPolicy::NoFocus);
     area->setFrameShape(QFrame::NoFrame);
     area->setFixedWidth(363);
+    area->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    area->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     area->setBackgroundRole(QPalette::Window);
     area->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
     area->setWidgetResizable(true);
@@ -379,6 +390,9 @@ void CMyScheduleView::initConnection()
     QObject::connect(DGuiApplicationHelper::instance(), &DGuiApplicationHelper::themeTypeChanged,
                      this,
                      &CMyScheduleView::setLabelTextColor);
+    QObject::connect(DGuiApplicationHelper::instance(), &DGuiApplicationHelper::themeTypeChanged,
+                     this,
+                     &CMyScheduleView::updateDialogIcon);
     //如果为节假日日程
     if (CScheduleOperation::isFestival(m_scheduleInfo)) {
         qCDebug(ClientLogger) << "Adding close button for festival schedule";
