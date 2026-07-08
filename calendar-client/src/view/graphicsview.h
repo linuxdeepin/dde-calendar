@@ -28,6 +28,7 @@ typedef struct _tagScheduleclassificationInfo {
 
 class CScheduleCoorManage;
 class CScheduleItem;
+class QTimer;
 class CGraphicsView : public CWeekDayGraphicsview
 {
     Q_OBJECT
@@ -116,6 +117,7 @@ private:
     QColor m_currenttimecolor = "#F74444";
     int m_currentTimeType = 0;
     QTimer *m_timer = nullptr;
+    QTimer *m_resizeUpdateTimer = nullptr;
     QMutex m_Mutex;
     bool m_updateDflag = false;
     DSchedule::List m_scheduleInfo;

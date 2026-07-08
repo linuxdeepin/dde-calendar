@@ -17,6 +17,7 @@ DWIDGET_USE_NAMESPACE
 #define ScheduleViewPos CWeekDayGraphicsview::ViewPosition
 class CAllDayEventWeekView;
 class QVBoxLayout;
+class QTimer;
 class CScheduleView : public DFrame
 {
     Q_OBJECT
@@ -103,6 +104,7 @@ private:
     touchGestureOperation m_touchGesture;
     QColor              m_outerBorderColor;             //外边框背景色
     QString m_timeFormat;
+    QTimer *m_resizeUpdateTimer = nullptr;
 };
 
 #endif // SCHEDULEVIEW_H

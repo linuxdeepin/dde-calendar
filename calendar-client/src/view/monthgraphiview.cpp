@@ -16,9 +16,11 @@
 #include "ckeyupdeal.h"
 #include "ckeydowndeal.h"
 #include "ddlogClient.h"
+#include "resizeupdatehelper.h"
 
 #include <QShortcut>
 #include <QMouseEvent>
+#include <QTimer>
 
 using namespace DDLOG_CLIENT;
 
@@ -30,6 +32,14 @@ CMonthGraphicsview::CMonthGraphicsview(QWidget *parent)
 
     m_MonthScheduleView = new CMonthScheduleView(this, m_Scene);
     connect(this, &CMonthGraphicsview::signalFontChange, m_MonthScheduleView, &CMonthScheduleView::slotFontChange);
+
+    m_resizeUpdateTimer = new QTimer(this);
+    m_resizeUpdateTimer->setSingleShot(true);
+    m_resizeUpdateTimer->setInterval(DDECalendar::ResizeUpdateDelay);
+    connect(m_resizeUpdateTimer, &QTimer::timeout, this, [this]() {
+        updateSize();
+        updateInfo();
+    });
 
     for (int i = 0; i < DDEMonthCalendar::ItemSizeOfMonthDay; ++i) {
         CMonthDayItem *item = new CMonthDayItem();
@@ -404,8 +414,12 @@ void CMonthGraphicsview::mouseDoubleClickEvent(QMouseEvent *event)
 void CMonthGraphicsview::resizeEvent(QResizeEvent *event)
 {
     DragInfoGraphicsView::resizeEvent(event);
-    updateSize();
-    updateInfo();
+    if (!DDECalendar::shouldDelayResizeUpdate()) {
+        updateSize();
+        updateInfo();
+        return;
+    }
+    m_resizeUpdateTimer->start();
 }
 void CMonthGraphicsview::changeEvent(QEvent *event)
 {

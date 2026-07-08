@@ -11,6 +11,7 @@
 #include "myscheduleview.h"
 #include "constants.h"
 #include "ddlogClient.h"
+#include "resizeupdatehelper.h"
 
 #include <DHiDPIHelper>
 #include <DPalette>
@@ -30,6 +31,7 @@
 using namespace DDLOG_CLIENT;
 
 DGUI_USE_NAMESPACE
+
 CGraphicsView::CGraphicsView(QWidget *parent, ViewPosition Type)
     : CWeekDayGraphicsview(parent, Type, ViewType::PartTimeView)
 {
@@ -50,6 +52,16 @@ CGraphicsView::CGraphicsView(QWidget *parent, ViewPosition Type)
     m_timer = new QTimer(this);
     connect(m_timer, SIGNAL(timeout()), this, SLOT(scrollBarValueChangedSlot()));
     m_timer->start(60000);
+
+    m_resizeUpdateTimer = new QTimer(this);
+    m_resizeUpdateTimer->setSingleShot(true);
+    m_resizeUpdateTimer->setInterval(DDECalendar::ResizeUpdateDelay);
+    connect(m_resizeUpdateTimer, &QTimer::timeout, this, [this]() {
+        scrollBarValueChangedSlot();
+        viewport()->update();
+        update();
+    });
+
     setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 
     connect(this->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(scrollBarValueChangedSlot()));
@@ -468,10 +480,16 @@ Others:         无
 ************************************************************************/
 void CGraphicsView::resizeEvent(QResizeEvent *event)
 {
-    scrollBarValueChangedSlot();
+    if (!DDECalendar::shouldDelayResizeUpdate()) {
+        scrollBarValueChangedSlot();
+        QGraphicsView::resizeEvent(event);
+        viewport()->update();
+        update();
+        return;
+    }
+
     QGraphicsView::resizeEvent(event);
-    viewport()->update();
-    update();
+    m_resizeUpdateTimer->start();
 }
 
 /************************************************************************

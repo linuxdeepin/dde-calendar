@@ -11,6 +11,7 @@
 #include "constants.h"
 #include "calendarmanage.h"
 #include "calendarglobalenv.h"
+#include "resizeupdatehelper.h"
 
 #include <DPalette>
 #include <DHorizontalLine>
@@ -21,11 +22,13 @@
 #include <QVBoxLayout>
 #include <QApplication>
 #include <QDesktopWidget>
+#include <QTimer>
 
 DGUI_USE_NAMESPACE
 
 static int hourTextWidth = 50;
 static int hourTextHeight = 20;
+
 CScheduleView::CScheduleView(QWidget *parent, ScheduleViewPos viewType)
     : DFrame(parent)
     , m_viewPos(viewType)
@@ -33,6 +36,25 @@ CScheduleView::CScheduleView(QWidget *parent, ScheduleViewPos viewType)
     , m_timeFormat(CalendarManager::getInstance()->getTimeFormat())
 {
     initUI();
+    m_resizeUpdateTimer = new QTimer(this);
+    m_resizeUpdateTimer->setSingleShot(true);
+    m_resizeUpdateTimer->setInterval(DDECalendar::ResizeUpdateDelay);
+    connect(m_resizeUpdateTimer, &QTimer::timeout, this, [this]() {
+        if (m_viewPos == ScheduleViewPos::WeekPos) {
+            m_sMaxNum = ((width() - m_leftMargin) / 7) / 27;
+            if (m_sMaxNum < 4) {
+                m_sMaxNum = 4;
+            }
+        }
+        m_graphicsView->setMaxNum(m_sMaxNum);
+        m_graphicsView->setRange(width() - m_leftMargin,
+                                 scheduleViewHeight(), m_beginDate, m_endDate, m_rightMargin);
+        m_alldaylist->setRange(width() - m_leftMargin, 22, m_beginDate, m_endDate, m_rightMargin);
+        update();
+        updateAllday();
+        m_graphicsView->updateInfo();
+        m_graphicsView->keepCenterOnScene();
+    });
     initConnection();
     setLineWidth(0);
     setFocusPolicy(Qt::TabFocus);
@@ -341,21 +363,27 @@ void CScheduleView::paintEvent(QPaintEvent *event)
 
 void CScheduleView::resizeEvent(QResizeEvent *event)
 {
-    if (m_viewPos == ScheduleViewPos::WeekPos) {
-        m_sMaxNum = ((width() - m_leftMargin) / 7) / 27;
-        if (m_sMaxNum < 4) {
-            m_sMaxNum = 4;
+    if (!DDECalendar::shouldDelayResizeUpdate()) {
+        if (m_viewPos == ScheduleViewPos::WeekPos) {
+            m_sMaxNum = ((width() - m_leftMargin) / 7) / 27;
+            if (m_sMaxNum < 4) {
+                m_sMaxNum = 4;
+            }
         }
+        m_graphicsView->setMaxNum(m_sMaxNum);
+        m_graphicsView->setRange(width() - m_leftMargin,
+                                 scheduleViewHeight(), m_beginDate, m_endDate, m_rightMargin);
+        m_alldaylist->setRange(width() - m_leftMargin, 22, m_beginDate, m_endDate, m_rightMargin);
+        update();
+        QFrame::resizeEvent(event);
+        updateAllday();
+        m_graphicsView->updateInfo();
+        m_graphicsView->keepCenterOnScene();
+        return;
     }
-    m_graphicsView->setMaxNum(m_sMaxNum);
-    m_graphicsView->setRange(width() - m_leftMargin,
-                             scheduleViewHeight(), m_beginDate, m_endDate, m_rightMargin);
-    m_alldaylist->setRange(width() - m_leftMargin, 22, m_beginDate, m_endDate, m_rightMargin);
-    update();
+
     QFrame::resizeEvent(event);
-    updateAllday();
-    m_graphicsView->updateInfo();
-    m_graphicsView->keepCenterOnScene();
+    m_resizeUpdateTimer->start();
 }
 
 void CScheduleView::wheelEvent(QWheelEvent *e)

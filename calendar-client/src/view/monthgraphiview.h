@@ -24,6 +24,7 @@
 DWIDGET_USE_NAMESPACE
 
 class CMonthScheduleView;
+class QTimer;
 
 class CMonthGraphicsview : public DragInfoGraphicsView
 {
@@ -97,5 +98,6 @@ private:
     int                                 m_currentMonth;
     CMonthScheduleView                  *m_MonthScheduleView = nullptr;
     QMap<QDate, DSchedule::List> m_schedulelistdata;
+    QTimer                              *m_resizeUpdateTimer = nullptr;
 };
 #endif // MONTHGRAPHIVIEW_H
