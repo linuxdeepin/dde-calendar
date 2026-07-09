@@ -1,3 +1,12 @@
+dde-calendar (6.5.41) unstable; urgency=medium
+
+  * chore: Update version to 6.5.41
+  * fix(dialog): align my schedule dialog title and action button spacing
+  * fix(client): align schedule tooltip text styles with themes
+  * fix(build): require C++14 for calendar client
+
+ -- zhanghongyuan <zhanghongyuan@uniontech.com>  Thu, 09 Jul 2026 13:24:43 +0800
+
 dde-calendar (6.5.40) unstable; urgency=medium
 
   * fix(view): fix schedule label misalignment in week/day view
