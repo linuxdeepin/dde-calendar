@@ -9,6 +9,7 @@
 #include "constants.h"
 #include "cscheduleoperation.h"
 #include "lunarmanager.h"
+#include "units.h"
 
 #include <DHiDPIHelper>
 #include <DPalette>
@@ -217,7 +218,7 @@ void CMyScheduleView::updateDateTimeFormat()
 QString CMyScheduleView::getDataByFormat(const QDate &date, QString format)
 {
     QString name = date.toString(format);
-    if (m_scheduleInfo->lunnar()) {
+    if (m_scheduleInfo->lunnar() && isChineseEnv()) {
         //接入农历时间
         name += gLunarManager->getHuangLiShortName(date);
     }
