@@ -9,9 +9,21 @@
 #include "tabletconfig.h"
 #include <DTitlebar>
 
+namespace {
+QString shortTimeFormatFromValue(int value)
+{
+    return value ? "hh:mm" : "h:mm";
+}
+
+QString displayTimeFormat(const QString &shortTimeFormat)
+{
+    return (CalendarManager::getInstance()->getTimeShowType() ? "AP " : "") + shortTimeFormat;
+}
+}
+
 DCalendarDDialog::DCalendarDDialog(QWidget *parent)
     : DDialog(parent)
-    , m_timeFormat(CalendarManager::getInstance()->getTimeFormat())
+    , m_timeFormat(displayTimeFormat(CalendarManager::getInstance()->getTimeFormat()))
     , m_dateFormat(CalendarManager::getInstance()->getDateFormat())
 {
     connect(CalendarManager::getInstance(), &CalendarManager::signalTimeFormatChanged, this, &DCalendarDDialog::setTimeFormat);
@@ -59,16 +71,17 @@ void DCalendarDDialog::updateDateTimeFormat()
 
 }
 
+void DCalendarDDialog::refreshTimeFormat()
+{
+    m_timeFormat = displayTimeFormat(CalendarManager::getInstance()->getTimeFormat());
+}
+
 /**
  * @brief DCalendarDDialog::setTimeFormat 设置短时间格式,并更新显示
  */
 void DCalendarDDialog::setTimeFormat(int value)
 {
-    if (value) {
-        m_timeFormat = "hh:mm";
-    } else {
-        m_timeFormat = "h:mm";
-    }
+    m_timeFormat = displayTimeFormat(shortTimeFormatFromValue(value));
     updateDateTimeFormat();
 }
 

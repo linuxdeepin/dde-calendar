@@ -15,9 +15,21 @@
 //视图容器最大高度
 const int viewContainerMaxHeight = 305;
 
+namespace {
+QString shortTimeFormatFromValue(int value)
+{
+    return value ? "hh:mm" : "h:mm";
+}
+
+QString displayTimeFormat(const QString &shortTimeFormat)
+{
+    return (CalendarManager::getInstance()->getTimeShowType() ? "AP " : "") + shortTimeFormat;
+}
+}
+
 CTimeEdit::CTimeEdit(QWidget *parent)
     : DComboBox(parent)
-    , m_timeFormat(CalendarManager::getInstance()->getTimeFormat())
+    , m_timeFormat(displayTimeFormat(CalendarManager::getInstance()->getTimeFormat()))
     , m_timeEdit(new CCustomTimeEdit())
     , m_hasFocus(false)
     , m_miniTime(QTime(0, 0, 0))
@@ -89,11 +101,7 @@ void CTimeEdit::setTimeFormat(int value)
     //获取edit的当前时间
     QTime editCurrentTime = getTime();
     //根据value值,设置时间显示格式
-    if (value) {
-        m_timeFormat = "hh:mm";
-    } else {
-        m_timeFormat = "h:mm";
-    }
+    m_timeFormat = displayTimeFormat(shortTimeFormatFromValue(value));
     //先更新列表信息，更新列表信息后再设置编辑框显示时间
     updateListItem(m_isShowTimeInterval);
     m_timeEdit->setDisplayFormat(m_timeFormat);

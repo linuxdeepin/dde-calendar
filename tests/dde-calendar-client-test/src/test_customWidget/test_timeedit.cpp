@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "test_timeedit.h"
+#include "calendarmanage.h"
 
 #include <QPixmap>
 #include <QFocusEvent>
@@ -36,6 +37,38 @@ TEST_F(test_timeedit, setTimeFormat)
 {
     mTimeEdit->setTimeFormat(1);
     mTimeEdit->setTimeFormat(0);
+}
+
+TEST_F(test_timeedit, usesTimeShowTypeForInitialTimeFormat)
+{
+    const QString oldTimeFormat = CalendarManager::getInstance()->getTimeFormat();
+    const int oldTimeShowType = CalendarManager::getInstance()->getTimeShowType();
+    CalendarManager::getInstance()->setTimeFormatChanged(0);
+    CalendarManager::getInstance()->setTimeShowType(1, false);
+    CTimeEdit timeEdit;
+
+    timeEdit.setTime(QTime(18, 0));
+
+    EXPECT_EQ(timeEdit.lineEdit()->text(), QTime(18, 0).toString("AP h:mm"));
+
+    CalendarManager::getInstance()->setTimeFormatChanged(oldTimeFormat == "hh:mm" ? 1 : 0);
+    CalendarManager::getInstance()->setTimeShowType(oldTimeShowType, false);
+}
+
+TEST_F(test_timeedit, keepsTimeShowTypeWhenShortTimeFormatChanges)
+{
+    const QString oldTimeFormat = CalendarManager::getInstance()->getTimeFormat();
+    const int oldTimeShowType = CalendarManager::getInstance()->getTimeShowType();
+    CalendarManager::getInstance()->setTimeShowType(1, false);
+    CTimeEdit timeEdit;
+    timeEdit.setTime(QTime(18, 0));
+
+    timeEdit.setTimeFormat(0);
+
+    EXPECT_EQ(timeEdit.lineEdit()->text(), QTime(18, 0).toString("AP h:mm"));
+
+    CalendarManager::getInstance()->setTimeFormatChanged(oldTimeFormat == "hh:mm" ? 1 : 0);
+    CalendarManager::getInstance()->setTimeShowType(oldTimeShowType, false);
 }
 
 //slotFocusDraw

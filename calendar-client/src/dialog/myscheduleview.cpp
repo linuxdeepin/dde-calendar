@@ -44,6 +44,7 @@ void CMyScheduleView::setSchedules(const DSchedule::Ptr &schduleInfo)
 
 void CMyScheduleView::updateFormat()
 {
+    refreshTimeFormat();
     updateDateTimeFormat();
     slotAccountStateChange();
 }

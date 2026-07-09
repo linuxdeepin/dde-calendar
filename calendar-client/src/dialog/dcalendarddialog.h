@@ -16,6 +16,7 @@ public:
     explicit DCalendarDDialog(QWidget *parent = nullptr);
 
 protected:
+    void refreshTimeFormat();
     void mouseMoveEvent(QMouseEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
     bool eventFilter(QObject *o, QEvent *e) override;
