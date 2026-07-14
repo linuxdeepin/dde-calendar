@@ -43,6 +43,19 @@ MLogger::~MLogger() { m_config->deleteLater(); }
 void MLogger::setRules(const QString &rules) {
   auto tmpRules = rules;
   m_rules = tmpRules.replace(";", "\n");
+  const QStringList ruleList = m_rules.split('\n');
+  const bool debugEnabled = ruleList.contains("*.debug=true");
+  const bool infoEnabled = ruleList.contains("*.info=true");
+
+  // 显式覆盖：追加的 *.warning=true/*.info=true 会覆盖用户在配置中设置的 *.warning=false/*.info=false。
+  // 因为 QLoggingCategory::setFilterRules 采用后匹配优先策略（last-match-wins），
+  // 追加的规则位于末尾，会覆盖之前的所有同名 category 设置。这是预期行为。
+  // System developer rules take precedence and use cumulative log levels.
+  if (debugEnabled) {
+    m_rules += "\n*.debug=true\n*.info=true\n*.warning=true";
+  } else if (infoEnabled) {
+    m_rules += "\n*.info=true\n*.warning=true";
+  }
   QLoggingCategory::setFilterRules(m_rules);
 }
 
