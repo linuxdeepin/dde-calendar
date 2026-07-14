@@ -607,10 +607,10 @@ void Calendarmainwindow::createview()
 void Calendarmainwindow::resizeView()
 {
     if (!m_hasInit) {
-        qCWarning(calendar_client) << "Calendarmainwindow's not inited,be careful!";
+        qCDebug(calendar_client) << "Calendar main window is not initialized";
         return;
     } else {
-        qCWarning(calendar_client) << "Calendarmainwindow's inited,be happy!";
+        qCDebug(calendar_client) << "Calendar main window is initialized";
     }
 
     //帐户列表窗口（A），视图窗口(B),搜索结果窗口(C)
@@ -807,10 +807,12 @@ void Calendarmainwindow::slotSearchSelectSchedule(const DSchedule::Ptr &schedule
 void Calendarmainwindow::slotViewtransparentFrame(const bool isShow)
 {
     if (!m_transparentFrame) {
-        qCWarning(calendar_client) << "Calendarmainwindow's not inited,be careful!" << isShow;
+        qCDebug(calendar_client)
+                << "Calendar main window is not initialized, isShow:" << isShow;
         return;
     } else {
-        qCWarning(calendar_client) << "Calendarmainwindow's inited,be happy!" << isShow;
+        qCDebug(calendar_client)
+                << "Calendar main window is initialized, isShow:" << isShow;
     }
 
     if (isShow) {
