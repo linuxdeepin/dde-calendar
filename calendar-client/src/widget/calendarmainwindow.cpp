@@ -130,6 +130,10 @@ Calendarmainwindow::Calendarmainwindow(int index, QWidget *w)
         int height = CConfigSettings::getInstance()->value("base.windowHeight").toInt();
         QRect rect(0, 0, width, height);
         this->setGeometry(rect);
+        //标记需要在窗口显示后恢复最大化状态
+        if (CConfigSettings::getInstance()->value("base.windowMaximized", false).toBool()) {
+            m_needMaximize = true;
+        }
     } else {
         //如果没有相关配置则设置为默认尺寸
         QRect rect(0, 0, Calendar_Default_Width, Calendar_Default_Height);
@@ -684,9 +688,28 @@ void Calendarmainwindow::resizeEvent(QResizeEvent *event)
 
     resizeView();
 
-    //保存窗口大小
-    CConfigSettings::getInstance()->setOption("base.windowWidth", event->size().width());
-    CConfigSettings::getInstance()->setOption("base.windowHeight", event->size().height());
+    //窗口未显示时不保存配置（构造期间的 resize/setGeometry 不覆盖已保存的窗口状态）
+    if (!isVisible()) {
+        return;
+    }
+
+    //仅保存普通窗口尺寸（最大化/最小化时不覆盖，以保留用户设定的正常窗口大小）
+    if (!isMaximized() && !(windowState() & Qt::WindowMinimized)) {
+        CConfigSettings::getInstance()->setOption("base.windowWidth", event->size().width());
+        CConfigSettings::getInstance()->setOption("base.windowHeight", event->size().height());
+    }
+}
+
+void Calendarmainwindow::showEvent(QShowEvent *event)
+{
+    DMainWindow::showEvent(event);
+
+    //窗口首次显示后恢复最大化状态
+    //Wayland 上 showMaximized() 需要窗口可见后才生效，构造函数中调用无效
+    if (m_needMaximize) {
+        m_needMaximize = false;
+        showMaximized();
+    }
 }
 
 /**
@@ -949,6 +972,12 @@ void Calendarmainwindow::changeEvent(QEvent *event)
     DMainWindow::changeEvent(event);
     if (event->type() == QEvent::ActivationChange) {
         setScheduleHide();
+    }
+    //窗口状态变化时保存最大化状态（最小化时不覆盖原来的最大化状态）
+    if (event->type() == QEvent::WindowStateChange) {
+        if (!(windowState() & Qt::WindowMinimized)) {
+            CConfigSettings::getInstance()->setOption("base.windowMaximized", isMaximized());
+        }
     }
 }
 

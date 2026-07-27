@@ -70,6 +70,7 @@ private:
     void removeSyncToast();
 protected:
     void resizeEvent(QResizeEvent *event) override;
+    void showEvent(QShowEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void changeEvent(QEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
@@ -142,6 +143,7 @@ private:
     bool m_isNormalStateShow {true}; //是否为正常状态显示
     QPoint m_startPos;
     bool m_hasInit = false;
+    bool m_needMaximize = false; //首次显示时需要恢复最大化状态
     QDateTime m_currentDateTime;
 
     CMyScheduleView *m_dlg = Q_NULLPTR;
