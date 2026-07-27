@@ -34,6 +34,7 @@ void CSystemdTimerControl::buildingConfiggure(const QVector<SystemDInfo> &infoVe
         createService(fileNameList.last(), info);
         createTimer(fileNameList.last(), info.triggerTimer);
     }
+    execLinuxCommand("systemctl --user daemon-reload");
     startSystemdTimer(fileNameList);
 }
 
@@ -119,7 +120,7 @@ void CSystemdTimerControl::startDownloadTask(const QString &accountID, const int
     {
         //.service
         QString fileName;
-        QString remindCMD = QString("dbus-send --session --print-reply --dest=com.deepin.dataserver.Calendar "
+        QString remindCMD = QString("/usr/bin/dbus-send --session --print-reply --dest=com.deepin.dataserver.Calendar "
                                     "/com/deepin/dataserver/Calendar/AccountManager "
                                     "com.deepin.dataserver.Calendar.AccountManager.downloadByAccountID string:%1 ")
                             .arg(accountID);
@@ -181,7 +182,7 @@ void CSystemdTimerControl::startUploadTask(const int minute)
     {
         //.service
         QString fileName;
-        QString remindCMD = QString("dbus-send --session --print-reply --dest=com.deepin.dataserver.Calendar "
+        QString remindCMD = QString("/usr/bin/dbus-send --session --print-reply --dest=com.deepin.dataserver.Calendar "
                                     "/com/deepin/dataserver/Calendar/AccountManager "
                                     "com.deepin.dataserver.Calendar.AccountManager.uploadNetWorkAccountData ");
         fileName = m_systemdPath + UPLOADTASK_SERVICE;
@@ -246,7 +247,7 @@ QString CSystemdTimerControl::execLinuxCommand(const QString &command)
 void CSystemdTimerControl::createService(const QString &name, const SystemDInfo &info)
 {
     QString fileName;
-    QString remindCMD = QString("dbus-send --session --print-reply --dest=com.deepin.dataserver.Calendar "
+    QString remindCMD = QString("/usr/bin/dbus-send --session --print-reply --dest=com.deepin.dataserver.Calendar "
                                 "/com/deepin/dataserver/Calendar/AccountManager "
                                 "com.deepin.dataserver.Calendar.AccountManager.remindJob string:%1 string:%2")
                         .arg(info.accountID)

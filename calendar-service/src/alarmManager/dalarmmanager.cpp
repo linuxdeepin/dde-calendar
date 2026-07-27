@@ -150,14 +150,14 @@ int DAlarmManager::remindJob(const DRemindData::Ptr &remindData, const DSchedule
     bool bmax = getRemindLaterDuration(remindData->remindCount(), duration);
     QStringList actionlist;
     QVariantMap hints;
-    QString cmd = QString("dbus-send --session --print-reply --dest=com.deepin.dataserver.Calendar "
-                          "/com/deepin/dataserver/Calendar/AccountManager "
-                          "com.deepin.dataserver.Calendar.AccountManager.notifyMsgHanding string:%1 string:%2")
+    QString cmd = QString("/usr/bin/dbus-send,--session,--print-reply,--dest=com.deepin.dataserver.Calendar,"
+                          "/com/deepin/dataserver/Calendar/AccountManager,"
+                          "com.deepin.dataserver.Calendar.AccountManager.notifyMsgHanding,string:%1,string:%2")
                   .arg(remindData->accountID())
                   .arg(remindData->alarmID());
     auto argMake = [&](int operationNum, const QString & text, const QString & transText) {
         actionlist << text << transText;
-        hints.insert("x-deepin-action-" + text, QString("%1 int32:%2").arg(cmd).arg(operationNum));
+        hints.insert("x-deepin-action-" + text, QString("%1,int32:%2").arg(cmd).arg(operationNum));
     };
 
     QDateTime tm = QDateTime::currentDateTime();
