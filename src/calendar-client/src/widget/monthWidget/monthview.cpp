@@ -80,7 +80,6 @@ void CMonthView::slotScheduleRemindWidget(const bool isShow, const DSchedule::Pt
         //根据类型获取颜色
         CSchedulesColor gdColor = CScheduleDataManage::getScheduleDataManage()->getScheduleColorByType(out->scheduleTypeID());
         m_remindWidget->setData(out, gdColor);
-        // 因为将提示框从window改为widget，要转换为相对窗口的坐标
         auto rPos = this->mapFromGlobal(remindPos);
         //根据提示框在屏幕的位置设置箭头方向
         qCDebug(ClientLogger) << "Reminder widget position" 
@@ -91,12 +90,12 @@ void CMonthView::slotScheduleRemindWidget(const bool isShow, const DSchedule::Pt
             // 显示到右侧
             qCDebug(ClientLogger) << "Showing reminder to the right";
             m_remindWidget->setDirection(DArrowRectangle::ArrowLeft);
-            m_remindWidget->show(rPos.x()+10, rPos.y());
+            m_remindWidget->show(rPos.x() + 10, rPos.y());
         } else {
             // 显示到左侧
             qCDebug(ClientLogger) << "Showing reminder to the left";
             m_remindWidget->setDirection(DArrowRectangle::ArrowRight);
-            m_remindWidget->show(rPos.x()-10, rPos.y());
+            m_remindWidget->show(rPos.x() - 10, rPos.y());
         }
     } else {
         // qCDebug(ClientLogger) << "Hiding schedule reminder widget";

@@ -537,7 +537,6 @@ void CScheduleView::slotScheduleShow(const bool isShow, const DSchedule::Ptr &ou
             out->scheduleTypeID());
 
         m_ScheduleRemindWidget->setData(out, gdColor);
-        // pos22: 全局屏幕坐标; rPos: 转换后的控件逻辑坐标
         const auto rPos = this->mapFromGlobal(pos22);
         const int offsetPx = 15; // 逻辑像素偏移，与 rPos 同一坐标系
 

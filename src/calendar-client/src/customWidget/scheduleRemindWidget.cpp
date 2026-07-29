@@ -11,17 +11,26 @@
 #include <QPainter>
 #include <QtMath>
 
+namespace {
+static const int kReminderArrowWidth = 18;
+static const int kReminderArrowHeight = 10;
+static const int kReminderMargin = 12;
+static const int kReminderArrowInset = 10;
+}
+
 DGUI_USE_NAMESPACE
 ScheduleRemindWidget::ScheduleRemindWidget(QWidget *parent)
     : DArrowRectangle(DArrowRectangle::ArrowLeft, DArrowRectangle::FloatWidget, parent)
     , m_centerWidget(new CenterWidget(this))
 {
     qCDebug(ClientLogger) << "ScheduleRemindWidget constructor";
-    //如果dtk版本为5.3以上则使用新接口
+    setBackgroundColor(DBlurEffectWidget::AutoColor);
+    setLeftRightRadius(true);
+    setArrowWidth(kReminderArrowWidth);
+    setArrowHeight(kReminderArrowHeight);
+    setMargin(kReminderMargin);
 #if (DTK_VERSION > DTK_VERSION_CHECK(5, 3, 0, 0))
-    //设置显示圆角
     setRadiusArrowStyleEnable(true);
-    //设置圆角
     setRadius(DARROWRECT::DRADIUS);
 #endif
     m_centerWidget->setFixedWidth(207);
@@ -32,6 +41,7 @@ ScheduleRemindWidget::ScheduleRemindWidget(QWidget *parent)
                      m_centerWidget,
                      &CenterWidget::setTheMe);
     m_centerWidget->setTheMe(DGuiApplicationHelper::instance()->themeType());
+    updatePopupGeometry();
 }
 
 ScheduleRemindWidget::~ScheduleRemindWidget()
@@ -45,7 +55,7 @@ void ScheduleRemindWidget::setData(const DSchedule::Ptr &vScheduleInfo, const CS
     m_centerWidget->setData(vScheduleInfo, gcolor);
     m_ScheduleInfo = vScheduleInfo;
     gdcolor = gcolor;
-    this->setHeight(m_centerWidget->height() + 10);
+    updatePopupGeometry();
 }
 
 /**
@@ -55,10 +65,9 @@ void ScheduleRemindWidget::setData(const DSchedule::Ptr &vScheduleInfo, const CS
 void ScheduleRemindWidget::setDirection(DArrowRectangle::ArrowDirection value)
 {
     qCDebug(ClientLogger) << "ScheduleRemindWidget::setDirection:" << value;
-    //设置箭头方向
     this->setArrowDirection(value);
-    //设置内容窗口
     this->setContent(m_centerWidget);
+    updatePopupGeometry();
 }
 
 /**
@@ -71,12 +80,33 @@ void ScheduleRemindWidget::setTimeFormat(QString timeformat)
     m_centerWidget->setTimeFormat(timeformat);
 }
 
+void ScheduleRemindWidget::show(int x, int y)
+{
+    updateArrowPosition();
+    DArrowRectangle::show(x, y);
+    updateArrowPosition();
+}
+
+void ScheduleRemindWidget::updateArrowPosition()
+{
+    setArrowY((height() - arrowWidth()) / 2);
+}
+
+void ScheduleRemindWidget::updatePopupGeometry()
+{
+    resizeWithContent();
+    updateArrowPosition();
+}
+
 CenterWidget::CenterWidget(DWidget *parent)
     : DFrame(parent)
     , textwidth(0)
     , textheight(0)
 {
     qCDebug(ClientLogger) << "CenterWidget constructor";
+    setAutoFillBackground(false);
+    setAttribute(Qt::WA_TranslucentBackground);
+    setAttribute(Qt::WA_NoSystemBackground);
     textfont.setWeight(QFont::Medium);
 }
 

@@ -26,9 +26,14 @@ public:
     //设置箭头方向
     void setDirection(ArrowDirection value);
     void setTimeFormat(QString timeformat);
+    void show(int x, int y) override;
 signals:
 
 public slots:
+private:
+    void updateArrowPosition();
+    void updatePopupGeometry();
+
 private:
     CenterWidget *m_centerWidget = nullptr;
     DSchedule::Ptr m_ScheduleInfo;
