@@ -124,20 +124,21 @@ Calendarmainwindow::Calendarmainwindow(int index, QWidget *w)
         //移除旧的配置信息
         CConfigSettings::getInstance()->remove("base.geometry");
         CConfigSettings::getInstance()->remove("base.state");
-    } else if (CConfigSettings::getInstance()->contains("base.windowWidth")) {
-        //获取窗口的宽度和高度
-        int width = CConfigSettings::getInstance()->value("base.windowWidth").toInt();
-        int height = CConfigSettings::getInstance()->value("base.windowHeight").toInt();
-        QRect rect(0, 0, width, height);
-        this->setGeometry(rect);
-        //标记需要在窗口显示后恢复最大化状态
-        if (CConfigSettings::getInstance()->value("base.windowMaximized", false).toBool()) {
-            m_needMaximize = true;
-        }
     } else {
-        //如果没有相关配置则设置为默认尺寸
-        QRect rect(0, 0, Calendar_Default_Width, Calendar_Default_Height);
-        this->setGeometry(rect);
+        if (CConfigSettings::getInstance()->contains("base.windowWidth")) {
+            //获取窗口的宽度和高度
+            int width = CConfigSettings::getInstance()->value("base.windowWidth").toInt();
+            int height = CConfigSettings::getInstance()->value("base.windowHeight").toInt();
+            QRect rect(0, 0, width, height);
+            this->setGeometry(rect);
+        } else {
+            //如果没有相关配置则设置为默认尺寸
+            QRect rect(0, 0, Calendar_Default_Width, Calendar_Default_Height);
+            this->setGeometry(rect);
+        }
+
+        //最大化状态不能依赖普通窗口尺寸是否已保存
+        m_needMaximize = CConfigSettings::getInstance()->value("base.windowMaximized", false).toBool();
     }
 
     //在屏幕中央显示
