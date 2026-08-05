@@ -249,6 +249,8 @@ void CMonthWindow::initUI()
 {
     qCDebug(ClientLogger) << "CMonthWindow::initUI";
     m_today = new CTodayButton;
+    m_today->setObjectName("MonthTodayButton");
+    m_today->setAccessibleName("MonthTodayButton");
     m_today->setText(QCoreApplication::translate("today", "Today", "Today"));
     m_today->setFixedSize(DDEMonthCalendar::MTodayWindth, DDEMonthCalendar::MTodayHeight);
 
@@ -257,8 +259,12 @@ void CMonthWindow::initUI()
     todayfont.setPixelSize(DDECalendar::FontSizeFourteen);
     m_today->setFont(todayfont);
     m_YearLabel = new QLabel();
+    m_YearLabel->setObjectName("MonthYearLabel");
+    m_YearLabel->setAccessibleName("MonthYearLabel");
     m_YearLabel->setFixedHeight(DDEMonthCalendar::M_YLabelHeight);
     m_YearLunarLabel = new QLabel();
+    m_YearLunarLabel->setObjectName("MonthLunarLabel");
+    m_YearLunarLabel->setAccessibleName("MonthLunarLabel");
     m_YearLunarLabel->setFixedSize(DDEMonthCalendar::M_YLunaLabelWindth, DDEMonthCalendar::M_YLunaLabelHeight);
 
     QFont yLabelF;
@@ -312,6 +318,8 @@ void CMonthWindow::initUI()
 
     //头部控件统一高度为 M_YTopHeight
     QWidget *top = new QWidget(this);
+    top->setObjectName("MonthTopWidget");
+    top->setAccessibleName("MonthTopWidget");
     top->setFixedHeight(DDEMonthCalendar::M_YTopHeight);
     top->setLayout(yeartitleLayout);
     hhLayout->addWidget(top);

@@ -255,6 +255,8 @@ void CDayWindow::initUI()
     titleLayout->setContentsMargins(10, 9, 0, 3);
 
     m_YearLabel = new QLabel();
+    m_YearLabel->setObjectName("DayYearLabel");
+    m_YearLabel->setAccessibleName("DayYearLabel");
     m_YearLabel->setMinimumHeight(DDEDayCalendar::D_YLabelHeight);
     QFont labelF;
     labelF.setWeight(QFont::Medium);
@@ -267,6 +269,8 @@ void CDayWindow::initUI()
     m_dialogIconButton->setFocusPolicy(Qt::NoFocus);
     titleLayout->addWidget(m_dialogIconButton);
     m_LunarLabel = new QLabel();
+    m_LunarLabel->setObjectName("DayLunarLabel");
+    m_LunarLabel->setAccessibleName("DayLunarLabel");
     titleLayout->addSpacing(15);
     m_LunarLabel->setFixedHeight(DDEDayCalendar::D_YLabelHeight);
     labelF.setPixelSize(DDECalendar::FontSizeFourteen);
@@ -277,6 +281,8 @@ void CDayWindow::initUI()
     m_LunarLabel->setPalette(lpa);
     titleLayout->addWidget(m_LunarLabel);
     m_SolarDay = new QLabel();
+    m_SolarDay->setObjectName("DaySolarDayLabel");
+    m_SolarDay->setAccessibleName("DaySolarDayLabel");
     labelF.setPixelSize(DDECalendar::FontSizeTen);
     m_SolarDay->setFixedHeight(DDEDayCalendar::D_YLabelHeight);
     m_SolarDay->setFont(labelF);
@@ -291,6 +297,8 @@ void CDayWindow::initUI()
     leftLayout->setContentsMargins(0, 0, 0, 0);
     leftLayout->setSpacing(0);
     m_scheduleView = new CScheduleView(this, ScheduleViewPos::DayPos);
+    m_scheduleView->setObjectName("DayScheduleView");
+    m_scheduleView->setAccessibleName("DayScheduleView");
     m_scheduleView->setviewMargin(72, 109, 20, 0);
     m_scheduleView->setCurrentDate(getCurrendDateTime());
     leftLayout->addLayout(titleLayout);
@@ -300,6 +308,8 @@ void CDayWindow::initUI()
     m_verline->setFixedWidth(2);
 
     m_daymonthView = new CDayMonthView(this);
+    m_daymonthView->setObjectName("DayMonthView");
+    m_daymonthView->setAccessibleName("DayMonthView");
 
     QHBoxLayout *leftMainLayout = new QHBoxLayout;
     leftMainLayout->setContentsMargins(0, 0, 0, 0);

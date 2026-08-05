@@ -12,6 +12,8 @@ CScheduleBaseWidget::CScheduleBaseWidget(QWidget *parent)
 {
     qCDebug(ClientLogger) << "CScheduleBaseWidget::CScheduleBaseWidget";
     m_dialogIconButton = new CDialogIconButton(this);
+    m_dialogIconButton->setObjectName("DateJumpButton");
+    m_dialogIconButton->setAccessibleName("DateJumpButton");
     m_dialogIconButton->setFixedSize(QSize(16, 16));
     initConnect();
     if (m_calendarManager == nullptr) {

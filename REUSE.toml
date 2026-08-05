@@ -105,6 +105,13 @@ precedence = "aggregate"
 SPDX-FileCopyrightText = "2026 UnionTech Software Technology Co., Ltd."
 SPDX-License-Identifier = "CC0-1.0"
 
+# report files
+[[annotations]]
+path = ["SCAN_REPORT.md", "COMPLETION_REPORT.md"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 UnionTech Software Technology Co., Ltd."
+SPDX-License-Identifier = "CC-BY-4.0"
+
 # linglong
 [[annotations]]
 path = ["install_dep", "deploy_dep", "linglong.yaml", "LICENSE", ".project.json"]

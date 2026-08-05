@@ -56,6 +56,8 @@ void CWeekWindow::setLunarVisible(bool state)
 void CWeekWindow::initUI()
 {
     qCDebug(ClientLogger) << "Initializing UI for CWeekWindow";
+    m_today->setObjectName("WeekTodayButton");
+    m_today->setAccessibleName("WeekTodayButton");
     m_today->setText(QCoreApplication::translate("today", "Today", "Today"));
     m_today->setFixedSize(DDEWeekCalendar::WTodayWindth, DDEWeekCalendar::WTodayHeight);
 
@@ -65,6 +67,8 @@ void CWeekWindow::initUI()
     m_today->setFont(todayfont);
     //新建年份label
     m_YearLabel = new QLabel();
+    m_YearLabel->setObjectName("WeekYearLabel");
+    m_YearLabel->setAccessibleName("WeekYearLabel");
     m_YearLabel->setFixedHeight(DDEWeekCalendar::W_YLabelHeight);
 
     QFont t_labelF;
@@ -76,11 +80,15 @@ void CWeekWindow::initUI()
     m_YearLabel->setPalette(LunaPa);
 
     m_YearLunarLabel = new QLabel(this);
+    m_YearLunarLabel->setObjectName("WeekLunarLabel");
+    m_YearLunarLabel->setAccessibleName("WeekLunarLabel");
     m_YearLunarLabel->setFixedSize(DDEWeekCalendar::W_YLunatLabelWindth, DDEWeekCalendar::W_YLunatLabelHeight);
 
     m_weekview  = new CWeekView(&CalendarManager::getWeekNumOfYear, this);
 
     m_weekLabel = new QLabel();
+    m_weekLabel->setObjectName("WeekLabel");
+    m_weekLabel->setAccessibleName("WeekLabel");
     m_weekLabel->setFixedHeight(DDEWeekCalendar::W_YLabelHeight);
     QFont weeklabelF;
     weeklabelF.setWeight(QFont::Medium);
@@ -136,7 +144,11 @@ void CWeekWindow::initUI()
     yeartitleLayout->addWidget(m_today, 0, Qt::AlignRight);
 
     m_weekHeadView = new CWeekHeadView(this);
+    m_weekHeadView->setObjectName("WeekHeadView");
+    m_weekHeadView->setAccessibleName("WeekHeadView");
     m_scheduleView = new CScheduleView(this);
+    m_scheduleView->setObjectName("WeekScheduleView");
+    m_scheduleView->setAccessibleName("WeekScheduleView");
     m_scheduleView->setviewMargin(73, 109 + 30, 0, 0);
     m_scheduleView->setRange(763, 1032, QDate(2019, 8, 12), QDate(2019, 8, 18));
 

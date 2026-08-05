@@ -16,6 +16,7 @@
 #include <DLog>
 #include <DGuiApplicationHelper>
 
+#include <QAccessible>
 #include <QDBusConnection>
 
 DWIDGET_USE_NAMESPACE
@@ -94,6 +95,8 @@ int main(int argc, char *argv[])
         einterface.registerAction("VIEW", "check a date on calendar");
         einterface.registerAction("QUERY", "find a schedule information");
         einterface.registerAction("CANCEL", "cancel a schedule");
+        QAccessible::installFactory(accessibleFactory);
+
         qCDebug(ClientLogger) << "DBus actions registered: CREATE, VIEW, QUERY, CANCEL";
 
         QDBusConnection dbus = QDBusConnection::sessionBus();

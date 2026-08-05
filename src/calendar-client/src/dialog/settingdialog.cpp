@@ -204,6 +204,7 @@ void CSettingDialog::initView()
 
     auto settings = Dtk::Core::DSettings::fromJson(strJson.toLatin1());
     setObjectName("SettingDialog");
+    setAccessibleName("SettingDialog");
     updateSettings(settings);
     //恢复默认设置按钮不显示
     setResetVisible(false);

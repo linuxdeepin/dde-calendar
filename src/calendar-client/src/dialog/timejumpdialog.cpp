@@ -27,9 +27,17 @@ void TimeJumpDialog::initView()
     setMargin(10);      //设置边距
 
     m_yearEdit = new CTimeLineEdit(EditYear, this);
+    m_yearEdit->setObjectName("JumpYearEdit");
+    m_yearEdit->setAccessibleName("JumpYearEdit");
     m_monthEdit = new CTimeLineEdit(EditMonth, this);
+    m_monthEdit->setObjectName("JumpMonthEdit");
+    m_monthEdit->setAccessibleName("JumpMonthEdit");
     m_dayEdit = new CTimeLineEdit(EditDay, this);
+    m_dayEdit->setObjectName("JumpDayEdit");
+    m_dayEdit->setAccessibleName("JumpDayEdit");
     m_jumpButton = new DSuggestButton(tr("Go", "button"), this);
+    m_jumpButton->setObjectName("JumpGoButton");
+    m_jumpButton->setAccessibleName("JumpGoButton");
 
     m_yearEdit->setFixedSize(98, 36);
     m_monthEdit->setFixedSize(88, 36);
