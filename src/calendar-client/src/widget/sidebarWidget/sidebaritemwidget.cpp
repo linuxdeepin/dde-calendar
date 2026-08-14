@@ -126,6 +126,8 @@ void SidebarTypeItemWidget::initView()
     vLayout->setContentsMargins(5, 0, 0, 0);
     vLayout->setSpacing(0);
     m_checkBox = new QCheckBox(this);
+    m_checkBox->setObjectName("CheckBox");
+    m_checkBox->setAccessibleName("CheckBox");
     QPalette palette = m_checkBox->palette();
     palette.setBrush(QPalette::Highlight, QColor(m_scheduleType->getColorCode()));
     m_checkBox->setPalette(palette);
@@ -193,6 +195,8 @@ void SidebarAccountItemWidget::initView()
     hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(0);
     m_headIconButton = new DIconButton(this);
+    m_headIconButton->setObjectName("HeadIconButton");
+    m_headIconButton->setAccessibleName("HeadIconButton");
     m_headIconButton->setFlat(true);
     m_headIconButton->setFixedSize(16, 16);
     m_headIconButton->setIconSize(QSize(10, 10));
@@ -220,6 +224,8 @@ void SidebarAccountItemWidget::initView()
     m_titleLabel->setToolTip("<p style='white-space:pre;'>" + m_accountItem->getAccount()->accountName().toHtmlEscaped());
 
     m_syncIconButton = new DIconButton(this);
+    m_syncIconButton->setObjectName("SyncIconButton");
+    m_syncIconButton->setAccessibleName("SyncIconButton");
     m_syncIconButton->setIcon(QIcon(":/icons/deepin/builtin/icons/icon_refresh.svg"));
     m_syncIconButton->setFixedSize(QSize(20, 20));
     qreal ratio = qApp->devicePixelRatio();

@@ -26,6 +26,8 @@ CPushButton::CPushButton(QWidget *parent) : QWidget(parent)
     layoutAddType->setContentsMargins(0, 0, 0, 0);
     layoutAddType->setAlignment(Qt::AlignLeft);
     m_iconButton = new DIconButton(this);
+    m_iconButton->setObjectName("IconButton");
+    m_iconButton->setAccessibleName("IconButton");
     m_iconButton->setFocusPolicy(Qt::NoFocus);
     m_iconButton->setFixedSize(16, 16);
     m_iconButton->setFlat(true);

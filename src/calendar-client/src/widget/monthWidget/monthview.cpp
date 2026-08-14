@@ -50,6 +50,7 @@ CMonthView::CMonthView(QWidget *parent) : DWidget(parent)
 
     setLayout(m_mainLayout);
     m_createAction = new QAction(tr("New event"), this);
+    m_createAction->setObjectName("MonthViewCreateAction");
 
     m_remindWidget = new ScheduleRemindWidget(this);
     setMouseTracking(true);

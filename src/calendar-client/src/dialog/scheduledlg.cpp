@@ -923,6 +923,8 @@ void CScheduleDlg::initUI()
         aLabel->setFixedSize(label_Fixed_Width, item_Fixed_Height);
 
         m_accountComBox = new DComboBox(this);
+        m_accountComBox->setObjectName("AccountComBox");
+        m_accountComBox->setAccessibleName("AccountComBox");
         m_accountComBox->setFixedSize(350, item_Fixed_Height);
         hlayout->addWidget(aLabel);
         hlayout->addWidget(m_accountComBox);
@@ -1048,13 +1050,18 @@ void CScheduleDlg::initUI()
         tLabel->setFixedSize(DDECalendar::NewScheduleLabelWidth, 25);
 
         m_solarRadioBtn = new DRadioButton(tr("Solar"));
+        m_solarRadioBtn->setObjectName("SolarRadioBtn");
+        m_solarRadioBtn->setAccessibleName("SolarRadioBtn");
         m_lunarRadioBtn = new DRadioButton(tr("Lunar"));
+        m_lunarRadioBtn->setObjectName("LunarRadioBtn");
+        m_lunarRadioBtn->setAccessibleName("LunarRadioBtn");
         m_solarRadioBtn->setMinimumWidth(72);
         m_lunarRadioBtn->setMinimumWidth(72);
         m_solarRadioBtn->setFixedHeight(25);
         m_lunarRadioBtn->setFixedHeight(25);
 
         m_calendarCategoryRadioGroup = new QButtonGroup(this);
+        m_calendarCategoryRadioGroup->setObjectName("CalendarCategoryRadioGroup");
         m_calendarCategoryRadioGroup->setExclusive(true);
         m_calendarCategoryRadioGroup->addButton(m_solarRadioBtn, RadioSolarId);
         m_calendarCategoryRadioGroup->addButton(m_lunarRadioBtn, RadioLunarId);

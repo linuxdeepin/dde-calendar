@@ -47,8 +47,11 @@ DragInfoGraphicsView::DragInfoGraphicsView(DWidget *parent)
     setContentsMargins(0, 0, 0, 0);
 
     m_editAction = new QAction(tr("Edit"), this);
+    m_editAction->setObjectName("EditAction");
     m_deleteAction = new QAction(tr("Delete"), this);
+    m_deleteAction->setObjectName("DeleteAction");
     m_createAction = new QAction(tr("New event"), this);
+    m_createAction->setObjectName("CreateAction");
     connect(m_createAction, &QAction::triggered, this,
             static_cast<void (DragInfoGraphicsView::*)()>(&DragInfoGraphicsView::slotCreate));
     this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -368,6 +371,8 @@ void DragInfoGraphicsView::contextMenuEvent(QContextMenuEvent *event)
         if (!CScheduleOperation::isFestival(schData)) {
             m_rightMenu->clear();
             m_rightMenu->addAction(m_editAction);
+            m_rightMenu->setObjectName("RightMenu");
+            m_rightMenu->setAccessibleName("RightMenu");
             m_rightMenu->addAction(m_deleteAction);
             //如果日程是不可修改的则设置删除按钮无效
             bool canDelete = !CScheduleOperation::scheduleIsInvariant(schData);

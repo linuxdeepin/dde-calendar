@@ -31,6 +31,8 @@ void SidebarView::initView()
     vLayout->setSpacing(0);
 
     m_treeWidget = new QTreeWidget();
+    m_treeWidget->setObjectName("TreeWidget");
+    m_treeWidget->setAccessibleName("TreeWidget");
     delegate = new SideBarTreeWidgetItemDelegate;
 
     // 设置底色透明，否则展开/收起出现背景色

@@ -1,0 +1,620 @@
+version: '1.0'
+widgets:
+- variable: m_colorSlider
+  type: ColorSlider *
+  object_name: ColorSlider
+  accessible_name: ColorSlider
+  source_file: src/calendar-client/src/customWidget/colorWidget/colorpickerWidget.cpp
+  class_name: CColorPickerWidget
+  line: 52
+- variable: m_colHexLineEdit
+  type: DLineEdit *
+  object_name: ColHexLineEdit
+  accessible_name: ColHexLineEdit
+  source_file: src/calendar-client/src/customWidget/colorWidget/colorpickerWidget.cpp
+  class_name: CColorPickerWidget
+  line: 54
+- variable: m_cancelBtn
+  type: DPushButton *
+  object_name: CancelBtn
+  accessible_name: CancelBtn
+  source_file: src/calendar-client/src/customWidget/colorWidget/colorpickerWidget.cpp
+  class_name: CColorPickerWidget
+  line: 56
+- variable: m_enterBtn
+  type: DPushButton *
+  object_name: EnterBtn
+  accessible_name: EnterBtn
+  source_file: src/calendar-client/src/customWidget/colorWidget/colorpickerWidget.cpp
+  class_name: CColorPickerWidget
+  line: 57
+- variable: m_colorGroup
+  type: QButtonGroup *
+  object_name: ColorGroup
+  accessible_name: ''
+  source_file: src/calendar-client/src/customWidget/colorseletorwidget.cpp
+  class_name: ColorSeletorWidget
+  line: 88
+- variable: m_userColorBtn
+  type: CRadioButton *
+  object_name: UserColorBtn
+  accessible_name: UserColorBtn
+  source_file: src/calendar-client/src/customWidget/colorseletorwidget.cpp
+  class_name: ColorSeletorWidget
+  line: 90
+- variable: m_iconButton
+  type: DIconButton *
+  object_name: IconButton
+  accessible_name: IconButton
+  source_file: src/calendar-client/src/customWidget/cpushbutton.cpp
+  class_name: CPushButton
+  line: 37
+- variable: m_sidebarIcon
+  type: DIconButton *
+  object_name: SidebarIcon
+  accessible_name: SidebarIcon
+  source_file: src/calendar-client/src/customWidget/ctitlewidget.cpp
+  class_name: CTitleWidget
+  line: 92
+- variable: m_buttonBox
+  type: CButtonBox *
+  object_name: ButtonBox
+  accessible_name: ButtonBox
+  source_file: src/calendar-client/src/customWidget/ctitlewidget.cpp
+  class_name: CTitleWidget
+  line: 93
+- variable: m_searchEdit
+  type: DSearchEdit *
+  object_name: SearchEdit
+  accessible_name: SearchEdit
+  source_file: src/calendar-client/src/customWidget/ctitlewidget.cpp
+  class_name: CTitleWidget
+  line: 94
+- variable: m_newScheduleBtn
+  type: DIconButton *
+  object_name: NewScheduleBtn
+  accessible_name: NewScheduleBtn
+  source_file: src/calendar-client/src/customWidget/ctitlewidget.cpp
+  class_name: CTitleWidget
+  line: 95
+- variable: m_searchPush
+  type: DIconButton *
+  object_name: SearchPush
+  accessible_name: SearchPush
+  source_file: src/calendar-client/src/customWidget/ctitlewidget.cpp
+  class_name: CTitleWidget
+  line: 96
+- variable: m_lineEdit
+  type: QLineEdit *
+  object_name: ''
+  accessible_name: ''
+  source_file: src/calendar-client/src/customWidget/jobtypecombobox.cpp
+  class_name: JobTypeComboBox
+  line: 65
+- variable: m_lunarLabel
+  type: QLabel *
+  object_name: BottomSpacingLabel
+  accessible_name: ''
+  source_file: src/calendar-client/src/customWidget/lunarcalendarwidget.cpp
+  class_name: LunarCalendarWidget
+  line: 34
+- variable: m_timeEdit
+  type: CCustomTimeEdit *
+  object_name: TimeEdit
+  accessible_name: TimeEdit
+  source_file: src/calendar-client/src/customWidget/timeedit.cpp
+  class_name: CTimeEdit
+  line: 90
+- variable: m_accountComBox
+  type: DComboBox *
+  object_name: AccountComBox
+  accessible_name: AccountComBox
+  source_file: src/calendar-client/src/dialog/scheduledlg.cpp
+  class_name: CScheduleDlg
+  line: 173
+- variable: m_typeComBox
+  type: JobTypeComboBox *
+  object_name: ScheduleTypeCombobox
+  accessible_name: ScheduleTypeCombobox
+  source_file: src/calendar-client/src/dialog/scheduledlg.cpp
+  class_name: CScheduleDlg
+  line: 177
+- variable: m_textEdit
+  type: DTextEdit *
+  object_name: ScheduleTitleEdit
+  accessible_name: ScheduleTitleEdit
+  source_file: src/calendar-client/src/dialog/scheduledlg.cpp
+  class_name: CScheduleDlg
+  line: 180
+- variable: m_beginDateEdit
+  type: CDateEdit *
+  object_name: ScheduleBeginDateEdit
+  accessible_name: ScheduleBeginDateEdit
+  source_file: src/calendar-client/src/dialog/scheduledlg.cpp
+  class_name: CScheduleDlg
+  line: 182
+- variable: m_beginTimeEdit
+  type: CTimeEdit *
+  object_name: ScheduleBeginTimeEdit
+  accessible_name: ScheduleBeginTimeEdit
+  source_file: src/calendar-client/src/dialog/scheduledlg.cpp
+  class_name: CScheduleDlg
+  line: 183
+- variable: m_endDateEdit
+  type: CDateEdit *
+  object_name: ScheduleEndDateEdit
+  accessible_name: ScheduleEndDateEdit
+  source_file: src/calendar-client/src/dialog/scheduledlg.cpp
+  class_name: CScheduleDlg
+  line: 185
+- variable: m_endTimeEdit
+  type: CTimeEdit *
+  object_name: ScheduleEndTimeEdit
+  accessible_name: ScheduleEndTimeEdit
+  source_file: src/calendar-client/src/dialog/scheduledlg.cpp
+  class_name: CScheduleDlg
+  line: 186
+- variable: m_allDayCheckbox
+  type: DCheckBox *
+  object_name: AllDayCheckBox
+  accessible_name: AllDayCheckBox
+  source_file: src/calendar-client/src/dialog/scheduledlg.cpp
+  class_name: CScheduleDlg
+  line: 189
+- variable: m_rmindCombox
+  type: DComboBox *
+  object_name: RmindComboBox
+  accessible_name: RmindComboBox
+  source_file: src/calendar-client/src/dialog/scheduledlg.cpp
+  class_name: CScheduleDlg
+  line: 191
+- variable: m_beginrepeatCombox
+  type: DComboBox *
+  object_name: BeginRepeatComboBox
+  accessible_name: BeginRepeatComboBox
+  source_file: src/calendar-client/src/dialog/scheduledlg.cpp
+  class_name: CScheduleDlg
+  line: 193
+- variable: m_endrepeatCombox
+  type: DComboBox *
+  object_name: EndRepeatComboBox
+  accessible_name: EndRepeatComboBox
+  source_file: src/calendar-client/src/dialog/scheduledlg.cpp
+  class_name: CScheduleDlg
+  line: 195
+- variable: m_endrepeattimes
+  type: DLineEdit *
+  object_name: EndRepeatTimeEidt
+  accessible_name: EndRepeatTimeEidt
+  source_file: src/calendar-client/src/dialog/scheduledlg.cpp
+  class_name: CScheduleDlg
+  line: 196
+- variable: m_endrepeattimesWidget
+  type: DWidget *
+  object_name: EndRepeatTimeWidget
+  accessible_name: EndRepeatTimeWidget
+  source_file: src/calendar-client/src/dialog/scheduledlg.cpp
+  class_name: CScheduleDlg
+  line: 198
+- variable: m_endRepeatDate
+  type: CDateEdit *
+  object_name: EndRepeatDateEdit
+  accessible_name: EndRepeatDateEdit
+  source_file: src/calendar-client/src/dialog/scheduledlg.cpp
+  class_name: CScheduleDlg
+  line: 199
+- variable: m_endrepeatWidget
+  type: DWidget *
+  object_name: EndRepeatDateWidget
+  accessible_name: EndRepeatDateWidget
+  source_file: src/calendar-client/src/dialog/scheduledlg.cpp
+  class_name: CScheduleDlg
+  line: 200
+- variable: m_calendarCategoryRadioGroup
+  type: QButtonGroup *
+  object_name: CalendarCategoryRadioGroup
+  accessible_name: ''
+  source_file: src/calendar-client/src/dialog/scheduledlg.cpp
+  class_name: CScheduleDlg
+  line: 203
+- variable: m_solarRadioBtn
+  type: DRadioButton *
+  object_name: SolarRadioBtn
+  accessible_name: SolarRadioBtn
+  source_file: src/calendar-client/src/dialog/scheduledlg.cpp
+  class_name: CScheduleDlg
+  line: 204
+- variable: m_lunarRadioBtn
+  type: DRadioButton *
+  object_name: LunarRadioBtn
+  accessible_name: LunarRadioBtn
+  source_file: src/calendar-client/src/dialog/scheduledlg.cpp
+  class_name: CScheduleDlg
+  line: 205
+- variable: m_lineEdit
+  type: DLineEdit *
+  object_name: LineEdit
+  accessible_name: LineEdit
+  source_file: src/calendar-client/src/dialog/scheduletypeeditdlg.cpp
+  class_name: ScheduleTypeEditDlg
+  line: 84
+- variable: m_fileEdit
+  type: DFileChooserEdit *
+  object_name: FileEdit
+  accessible_name: FileEdit
+  source_file: src/calendar-client/src/dialog/scheduletypeeditdlg.cpp
+  class_name: ScheduleTypeEditDlg
+  line: 85
+- variable: m_firstDayofWeekCombobox
+  type: QComboBox *
+  object_name: FirstDayofWeekCombobox
+  accessible_name: FirstDayofWeekCombobox
+  source_file: src/calendar-client/src/dialog/settingdialog.cpp
+  class_name: CSettingDialog
+  line: 80
+- variable: m_timeTypeCombobox
+  type: QComboBox *
+  object_name: TimeTypeCombobox
+  accessible_name: TimeTypeCombobox
+  source_file: src/calendar-client/src/dialog/settingdialog.cpp
+  class_name: CSettingDialog
+  line: 84
+- variable: m_accountComboBox
+  type: QComboBox *
+  object_name: AccountComboBox
+  accessible_name: AccountComboBox
+  source_file: src/calendar-client/src/dialog/settingdialog.cpp
+  class_name: CSettingDialog
+  line: 87
+- variable: m_syncFreqComboBox
+  type: QComboBox *
+  object_name: SyncFreqComboBox
+  accessible_name: SyncFreqComboBox
+  source_file: src/calendar-client/src/dialog/settingdialog.cpp
+  class_name: CSettingDialog
+  line: 89
+- variable: m_typeAddBtn
+  type: DIconButton *
+  object_name: TypeAddBtn
+  accessible_name: TypeAddBtn
+  source_file: src/calendar-client/src/dialog/settingdialog.cpp
+  class_name: CSettingDialog
+  line: 91
+- variable: m_typeImportBtn
+  type: DIconButton *
+  object_name: TypeImportBtn
+  accessible_name: TypeImportBtn
+  source_file: src/calendar-client/src/dialog/settingdialog.cpp
+  class_name: CSettingDialog
+  line: 92
+- variable: m_scheduleTypeWidget
+  type: JobTypeListView *
+  object_name: JobTypeListView
+  accessible_name: ''
+  source_file: src/calendar-client/src/dialog/settingdialog.cpp
+  class_name: CSettingDialog
+  line: 94
+- variable: m_syncBtn
+  type: QPushButton *
+  object_name: SyncBtn
+  accessible_name: SyncBtn
+  source_file: src/calendar-client/src/dialog/settingdialog.cpp
+  class_name: CSettingDialog
+  line: 98
+- variable: m_manualSyncWidget
+  type: QWidget *
+  object_name: ManualSyncWidget
+  accessible_name: ''
+  source_file: src/calendar-client/src/dialog/settingdialog.cpp
+  class_name: CSettingDialog
+  line: 99
+- variable: m_yearEdit
+  type: CTimeLineEdit *
+  object_name: YearEdit
+  accessible_name: YearEdit
+  source_file: src/calendar-client/src/dialog/timejumpdialog.cpp
+  class_name: TimeJumpDialog
+  line: 56
+- variable: m_monthEdit
+  type: CTimeLineEdit *
+  object_name: MonthEdit
+  accessible_name: MonthEdit
+  source_file: src/calendar-client/src/dialog/timejumpdialog.cpp
+  class_name: TimeJumpDialog
+  line: 57
+- variable: m_dayEdit
+  type: CTimeLineEdit *
+  object_name: DayEdit
+  accessible_name: DayEdit
+  source_file: src/calendar-client/src/dialog/timejumpdialog.cpp
+  class_name: TimeJumpDialog
+  line: 58
+- variable: m_jumpButton
+  type: DSuggestButton *
+  object_name: JumpButton
+  accessible_name: JumpButton
+  source_file: src/calendar-client/src/dialog/timejumpdialog.cpp
+  class_name: TimeJumpDialog
+  line: 59
+- variable: m_createAction
+  type: QAction *
+  object_name: CreateAction
+  accessible_name: ''
+  source_file: src/calendar-client/src/view/draginfographicsview.cpp
+  class_name: DragInfoGraphicsView
+  line: 183
+- variable: m_editAction
+  type: QAction *
+  object_name: EditAction
+  accessible_name: ''
+  source_file: src/calendar-client/src/view/draginfographicsview.cpp
+  class_name: DragInfoGraphicsView
+  line: 184
+- variable: m_deleteAction
+  type: QAction *
+  object_name: DeleteAction
+  accessible_name: ''
+  source_file: src/calendar-client/src/view/draginfographicsview.cpp
+  class_name: DragInfoGraphicsView
+  line: 185
+- variable: m_rightMenu
+  type: DMenu *
+  object_name: RightMenu
+  accessible_name: RightMenu
+  source_file: src/calendar-client/src/view/draginfographicsview.cpp
+  class_name: DragInfoGraphicsView
+  line: 186
+- variable: m_stackWidget
+  type: AnimationStackedWidget *
+  object_name: StackedWidget
+  accessible_name: StackedWidget
+  source_file: src/calendar-client/src/widget/calendarmainwindow.cpp
+  class_name: Calendarmainwindow
+  line: 125
+- variable: m_buttonBox
+  type: DButtonBox *
+  object_name: ''
+  accessible_name: ''
+  source_file: src/calendar-client/src/widget/calendarmainwindow.cpp
+  class_name: Calendarmainwindow
+  line: 126
+- variable: m_searchEdit
+  type: DSearchEdit *
+  object_name: ''
+  accessible_name: ''
+  source_file: src/calendar-client/src/widget/calendarmainwindow.cpp
+  class_name: Calendarmainwindow
+  line: 127
+- variable: m_scheduleSearchView
+  type: CScheduleSearchView *
+  object_name: ScheduleSearchWidget
+  accessible_name: ScheduleSearchWidget
+  source_file: src/calendar-client/src/widget/calendarmainwindow.cpp
+  class_name: Calendarmainwindow
+  line: 135
+- variable: m_contentBackground
+  type: DFrame *
+  object_name: ScheduleSearchWidgetBackgroundFrame
+  accessible_name: ScheduleSearchWidgetBackgroundFrame
+  source_file: src/calendar-client/src/widget/calendarmainwindow.cpp
+  class_name: Calendarmainwindow
+  line: 136
+- variable: m_newScheduleBtn
+  type: DIconButton *
+  object_name: ''
+  accessible_name: ''
+  source_file: src/calendar-client/src/widget/calendarmainwindow.cpp
+  class_name: Calendarmainwindow
+  line: 143
+- variable: m_dialogIconButton
+  type: CDialogIconButton *
+  object_name: DialogIconButton
+  accessible_name: DialogIconButton
+  source_file: src/calendar-client/src/widget/cschedulebasewidget.cpp
+  class_name: CScheduleBaseWidget
+  line: 75
+- variable: m_prevButton
+  type: DIconButton *
+  object_name: DayMonthPrevButton
+  accessible_name: DayMonthPrevButton
+  source_file: src/calendar-client/src/widget/dayWidget/daymonthview.cpp
+  class_name: CDayMonthView
+  line: 66
+- variable: m_nextButton
+  type: DIconButton *
+  object_name: DayMonthNextButton
+  accessible_name: DayMonthNextButton
+  source_file: src/calendar-client/src/widget/dayWidget/daymonthview.cpp
+  class_name: CDayMonthView
+  line: 67
+- variable: m_today
+  type: CTodayButton *
+  object_name: TodayButton
+  accessible_name: TodayButton
+  source_file: src/calendar-client/src/widget/dayWidget/daymonthview.cpp
+  class_name: CDayMonthView
+  line: 68
+- variable: m_weekWidget
+  type: CWeekWidget *
+  object_name: WeekWidget
+  accessible_name: WeekWidget
+  source_file: src/calendar-client/src/widget/dayWidget/daymonthview.cpp
+  class_name: CDayMonthView
+  line: 96
+- variable: m_createAction
+  type: QAction *
+  object_name: MonthViewCreateAction
+  accessible_name: ''
+  source_file: src/calendar-client/src/widget/monthWidget/monthview.cpp
+  class_name: CMonthView
+  line: 110
+- variable: m_monthView
+  type: CMonthView *
+  object_name: monthViewWidget
+  accessible_name: monthViewWidget
+  source_file: src/calendar-client/src/widget/monthWidget/monthwindow.cpp
+  class_name: CMonthWindow
+  line: 90
+- variable: m_today
+  type: CTodayButton *
+  object_name: MonthWindowTodayButton
+  accessible_name: MonthWindowTodayButton
+  source_file: src/calendar-client/src/widget/monthWidget/monthwindow.cpp
+  class_name: CMonthWindow
+  line: 92
+- variable: m_gradientItemList
+  type: CScheduleListWidget *
+  object_name: GradientItemList
+  accessible_name: GradientItemList
+  source_file: src/calendar-client/src/widget/schedulesearchview.cpp
+  class_name: CScheduleSearchView
+  line: 63
+- variable: m_editAction
+  type: QAction *
+  object_name: ScheduleSearchEditAction
+  accessible_name: ''
+  source_file: src/calendar-client/src/widget/schedulesearchview.cpp
+  class_name: CScheduleSearchItem
+  line: 152
+- variable: m_deleteAction
+  type: QAction *
+  object_name: ScheduleSearchDeleteAction
+  accessible_name: ''
+  source_file: src/calendar-client/src/widget/schedulesearchview.cpp
+  class_name: CScheduleSearchItem
+  line: 153
+- variable: m_rightMenu
+  type: DMenu *
+  object_name: ScheduleSearchRightMenu
+  accessible_name: ScheduleSearchRightMenu
+  source_file: src/calendar-client/src/widget/schedulesearchview.cpp
+  class_name: CScheduleSearchItem
+  line: 163
+- variable: m_buttonImg
+  type: DIconButton *
+  object_name: ButtonImg
+  accessible_name: ButtonImg
+  source_file: src/calendar-client/src/widget/settingWidget/userloginwidget.cpp
+  class_name: UserloginWidget
+  line: 47
+- variable: m_buttonLogin
+  type: QPushButton *
+  object_name: ButtonLogin
+  accessible_name: ButtonLogin
+  source_file: src/calendar-client/src/widget/settingWidget/userloginwidget.cpp
+  class_name: UserloginWidget
+  line: 48
+- variable: m_buttonLoginOut
+  type: QPushButton *
+  object_name: ButtonLoginOut
+  accessible_name: ButtonLoginOut
+  source_file: src/calendar-client/src/widget/settingWidget/userloginwidget.cpp
+  class_name: UserloginWidget
+  line: 49
+- variable: m_weekWidget
+  type: CWeekWidget *
+  object_name: SidebarWeekWidget
+  accessible_name: SidebarWeekWidget
+  source_file: src/calendar-client/src/widget/sidebarWidget/sidebarcalendarwidget.cpp
+  class_name: SidebarCalendarWidget
+  line: 51
+- variable: m_nextPage
+  type: DPushButton *
+  object_name: NextPage
+  accessible_name: NextPage
+  source_file: src/calendar-client/src/widget/sidebarWidget/sidebarcalendarwidget.cpp
+  class_name: SidebarCalendarWidget
+  line: 56
+- variable: m_previousPage
+  type: DPushButton *
+  object_name: PreviousPage
+  accessible_name: PreviousPage
+  source_file: src/calendar-client/src/widget/sidebarWidget/sidebarcalendarwidget.cpp
+  class_name: SidebarCalendarWidget
+  line: 57
+- variable: m_checkBox
+  type: QCheckBox *
+  object_name: CheckBox
+  accessible_name: CheckBox
+  source_file: src/calendar-client/src/widget/sidebarWidget/sidebaritemwidget.cpp
+  class_name: SidebarTypeItemWidget
+  line: 79
+- variable: m_syncIconButton
+  type: DIconButton *
+  object_name: SyncIconButton
+  accessible_name: SyncIconButton
+  source_file: src/calendar-client/src/widget/sidebarWidget/sidebaritemwidget.cpp
+  class_name: SidebarAccountItemWidget
+  line: 113
+- variable: m_headIconButton
+  type: DIconButton *
+  object_name: HeadIconButton
+  accessible_name: HeadIconButton
+  source_file: src/calendar-client/src/widget/sidebarWidget/sidebaritemwidget.cpp
+  class_name: SidebarAccountItemWidget
+  line: 115
+- variable: m_treeWidget
+  type: QTreeWidget *
+  object_name: TreeWidget
+  accessible_name: TreeWidget
+  source_file: src/calendar-client/src/widget/sidebarWidget/sidebarview.cpp
+  class_name: SidebarView
+  line: 53
+- variable: m_prevButton
+  type: DIconButton *
+  object_name: WeekPrevButton
+  accessible_name: WeekPrevButton
+  source_file: src/calendar-client/src/widget/weekWidget/weekview.cpp
+  class_name: CWeekView
+  line: 66
+- variable: m_nextButton
+  type: DIconButton *
+  object_name: WeekNextButton
+  accessible_name: WeekNextButton
+  source_file: src/calendar-client/src/widget/weekWidget/weekview.cpp
+  class_name: CWeekView
+  line: 68
+- variable: m_today
+  type: CTodayButton *
+  object_name: WeekWindowTodayButton
+  accessible_name: WeekWindowTodayButton
+  source_file: src/calendar-client/src/widget/weekWidget/weekwindow.cpp
+  class_name: CWeekWindow
+  line: 101
+- variable: m_currentMouth
+  type: CustomFrame *
+  object_name: currentMouth
+  accessible_name: ''
+  source_file: src/calendar-client/src/widget/yearWidget/yearview.cpp
+  class_name: CYearView
+  line: 62
+- variable: m_weekWidget
+  type: CWeekWidget *
+  object_name: YearViewWeekWidget
+  accessible_name: YearViewWeekWidget
+  source_file: src/calendar-client/src/widget/yearWidget/yearview.cpp
+  class_name: CYearView
+  line: 76
+- variable: m_prevButton
+  type: DIconButton *
+  object_name: PrevButton
+  accessible_name: PrevButton
+  source_file: src/calendar-client/src/widget/yearWidget/yearwindow.cpp
+  class_name: CYearWindow
+  line: 114
+- variable: m_nextButton
+  type: DIconButton *
+  object_name: NextButton
+  accessible_name: NextButton
+  source_file: src/calendar-client/src/widget/yearWidget/yearwindow.cpp
+  class_name: CYearWindow
+  line: 115
+- variable: m_today
+  type: LabelWidget *
+  object_name: yearToDay
+  accessible_name: yearToDay
+  source_file: src/calendar-client/src/widget/yearWidget/yearwindow.cpp
+  class_name: CYearWindow
+  line: 116
+qml_elements: []
+transient_elements: []

@@ -23,6 +23,8 @@ CTimeEdit::CTimeEdit(QWidget *parent)
     , m_miniTime(QTime(0, 0, 0))
 {
     qCDebug(ClientLogger) << "Creating CTimeEdit";
+    m_timeEdit->setObjectName("TimeEdit");
+    m_timeEdit->setAccessibleName("TimeEdit");
     initUI();
     initConnection();
 }

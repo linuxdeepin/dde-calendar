@@ -20,6 +20,7 @@ void ColorSeletorWidget::init()
     qCDebug(ClientLogger) << "ColorSeletorWidget::init - Initializing widget";
     initView();
     m_colorGroup = new QButtonGroup(this);
+    m_colorGroup->setObjectName("ColorGroup");
     m_colorGroup->setExclusive(true);
 #if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
     connect(m_colorGroup, &QButtonGroup::idClicked, this, &ColorSeletorWidget::slotButtonClicked);
@@ -83,6 +84,9 @@ void ColorSeletorWidget::reset()
     if (nullptr == m_userColorBtn) {
         qCDebug(ClientLogger) << "Creating new user color button";
         m_userColorBtn = new CRadioButton(this);
+
+        m_userColorBtn->setObjectName("UserColorBtn");
+        m_userColorBtn->setAccessibleName("UserColorBtn");
         m_userColorBtn->setFixedSize(18, 18);
     }
     m_userColorBtn->hide();

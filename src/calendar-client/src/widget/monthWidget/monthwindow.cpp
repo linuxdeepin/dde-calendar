@@ -249,6 +249,8 @@ void CMonthWindow::initUI()
 {
     qCDebug(ClientLogger) << "CMonthWindow::initUI";
     m_today = new CTodayButton;
+    m_today->setObjectName("MonthWindowTodayButton");
+    m_today->setAccessibleName("MonthWindowTodayButton");
     m_today->setText(QCoreApplication::translate("today", "Today", "Today"));
     m_today->setFixedSize(DDEMonthCalendar::MTodayWindth, DDEMonthCalendar::MTodayHeight);
 

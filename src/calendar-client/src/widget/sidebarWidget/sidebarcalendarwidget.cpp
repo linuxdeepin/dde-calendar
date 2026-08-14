@@ -31,7 +31,11 @@ void SidebarCalendarWidget::initView()
     font.setPixelSize(DDECalendar::FontSizeTwelve);
     m_dateLabel->setFont(font);
     m_nextPage = new QPushButton();
+    m_nextPage->setObjectName("NextPage");
+    m_nextPage->setAccessibleName("NextPage");
     m_previousPage = new QPushButton();
+    m_previousPage->setObjectName("PreviousPage");
+    m_previousPage->setAccessibleName("PreviousPage");
     m_nextPage->setIcon(DStyle().standardIcon(QStyle::SP_ArrowRight));
     m_previousPage->setIcon(DStyle().standardIcon(QStyle::SP_ArrowLeft));
     m_nextPage->setFixedSize(20, 20);
@@ -56,6 +60,8 @@ void SidebarCalendarWidget::initView()
     m_headWidget->setMinimumHeight(30);
 
     m_weekWidget = new CWeekWidget(this);
+    m_weekWidget->setObjectName("SidebarWeekWidget");
+    m_weekWidget->setAccessibleName("SidebarWeekWidget");
     m_weekWidget->setAutoFontSizeByWindow(false);
     m_weekWidget->setFirstDay(Qt::Sunday);
 

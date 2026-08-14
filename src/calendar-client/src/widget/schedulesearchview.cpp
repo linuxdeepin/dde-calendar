@@ -42,7 +42,9 @@ CScheduleSearchItem::CScheduleSearchItem(QWidget *parent)
     this->setAccessibleName("CScheduleDataItem");
 
     m_editAction = new QAction(tr("Edit"), this);
+    m_editAction->setObjectName("ScheduleSearchEditAction");
     m_deleteAction = new QAction(tr("Delete"), this);
+    m_deleteAction->setObjectName("ScheduleSearchDeleteAction");
     connect(m_editAction, SIGNAL(triggered(bool)), this, SLOT(slotEdit()));
     connect(m_deleteAction, SIGNAL(triggered(bool)), this, SLOT(slotDelete()));
     setTheMe(DGuiApplicationHelper::instance()->themeType());
@@ -191,6 +193,8 @@ void CScheduleSearchItem::slotSchotCutClicked()
         }
         m_rightMenu->clear();
         m_rightMenu->addAction(m_editAction);
+        m_rightMenu->setObjectName("ScheduleSearchRightMenu");
+        m_rightMenu->setAccessibleName("ScheduleSearchRightMenu");
         m_rightMenu->addAction(m_deleteAction);
         //获取item坐标,并转换为全局坐标
         QPointF itemPos = QPointF(this->rect().x() + this->rect().width() / 2,
@@ -483,6 +487,8 @@ CScheduleSearchView::CScheduleSearchView(QWidget *parent)
     QVBoxLayout *layout = new QVBoxLayout;
     layout->setSpacing(0);
     m_gradientItemList = new CScheduleListWidget(parent);
+    m_gradientItemList->setObjectName("GradientItemList");
+    m_gradientItemList->setAccessibleName("GradientItemList");
     m_gradientItemList->setAlternatingRowColors(true);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(m_gradientItemList);

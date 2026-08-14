@@ -49,6 +49,8 @@ CYearView::CYearView(QWidget *parent)
     m_currentMouth->installEventFilter(this);
 
     m_weekWidget = new CWeekWidget(this);
+    m_weekWidget->setObjectName("YearViewWeekWidget");
+    m_weekWidget->setAccessibleName("YearViewWeekWidget");
 //    m_weekWidget->setMinimumHeight(20);
 
     m_monthView = new MonthBrefWidget(this);

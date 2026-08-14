@@ -35,12 +35,16 @@ CWeekView::CWeekView(const GetWeekNumOfYear &getWeekNumOfYear, QWidget *parent)
 
     //上一周按钮
     m_prevButton = new DIconButton(DStyle::SP_ArrowLeft, this);
+    m_prevButton->setObjectName("WeekPrevButton");
+    m_prevButton->setAccessibleName("WeekPrevButton");
     m_prevButton->setFixedSize(36, 36);
     connect(m_prevButton, &DIconButton::clicked, this, &CWeekView::signalBtnPrev);
 
     m_weekNumWidget = new CWeekNumWidget(getWeekNumOfYear, this);
     //下一周按钮
     m_nextButton = new DIconButton(DStyle::SP_ArrowRight, this);
+    m_nextButton->setObjectName("WeekNextButton");
+    m_nextButton->setAccessibleName("WeekNextButton");
     m_nextButton->setFixedSize(36, 36);
     connect(m_nextButton, &DIconButton::clicked, this, &CWeekView::signalBtnNext);
 
