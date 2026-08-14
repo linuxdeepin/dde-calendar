@@ -40,11 +40,15 @@ void CDayWindow::setTheMe(int type)
         m_leftground->setBColor("#FFFFFF");
 
         DPalette ypa = m_YearLabel->palette();
-        ypa.setColor(DPalette::WindowText, QColor("#3B3B3B"));
+        QColor yearTextColor = QColor("#000000");
+        yearTextColor.setAlphaF(0.8);
+        ypa.setColor(DPalette::WindowText, yearTextColor);
         m_YearLabel->setPalette(ypa);
         m_YearLabel->setForegroundRole(DPalette::WindowText);
         DPalette lpa = m_LunarLabel->palette();
-        lpa.setColor(DPalette::WindowText, QColor("#8A8A8A"));
+        QColor lunarTextColor = QColor("#000000");
+        lunarTextColor.setAlphaF(0.5);
+        lpa.setColor(DPalette::WindowText, lunarTextColor);
         m_LunarLabel->setPalette(lpa);
         m_LunarLabel->setForegroundRole(DPalette::WindowText);
         DPalette spa = m_SolarDay->palette();
@@ -56,11 +60,15 @@ void CDayWindow::setTheMe(int type)
         m_leftground->setBColor("#282828");
 
         DPalette ypa = m_YearLabel->palette();
-        ypa.setColor(DPalette::WindowText, QColor("#C0C6D4"));
+        QColor yearTextColor = QColor("#FFFFFF");
+        yearTextColor.setAlphaF(0.8);
+        ypa.setColor(DPalette::WindowText, yearTextColor);
         m_YearLabel->setPalette(ypa);
         m_YearLabel->setForegroundRole(DPalette::WindowText);
         DPalette lpa = m_LunarLabel->palette();
-        lpa.setColor(DPalette::WindowText, QColor("#798BA8"));
+        QColor lunarTextColor = QColor("#FFFFFF");
+        lunarTextColor.setAlphaF(0.5);
+        lpa.setColor(DPalette::WindowText, lunarTextColor);
         m_LunarLabel->setPalette(lpa);
         m_LunarLabel->setForegroundRole(DPalette::WindowText);
         DPalette spa = m_SolarDay->palette();
@@ -261,7 +269,9 @@ void CDayWindow::initUI()
     labelF.setPixelSize(DDECalendar::FontSizeTwentyfour);
     m_YearLabel->setFont(labelF);
     DPalette ypa = m_YearLabel->palette();
-    ypa.setColor(DPalette::WindowText, QColor("#3B3B3B"));
+    QColor yearTextColor = QColor("#000000");
+    yearTextColor.setAlphaF(0.8);
+    ypa.setColor(DPalette::WindowText, yearTextColor);
     m_YearLabel->setPalette(ypa);
     titleLayout->addWidget(m_YearLabel);
     m_dialogIconButton->setFocusPolicy(Qt::NoFocus);
@@ -273,7 +283,9 @@ void CDayWindow::initUI()
     m_LunarLabel->setFont(labelF);
     m_LunarLabel->setAlignment(Qt::AlignCenter);
     DPalette lpa = m_LunarLabel->palette();
-    lpa.setColor(DPalette::WindowText, QColor("#8A8A8A"));
+    QColor lunarTextColor = QColor("#000000");
+    lunarTextColor.setAlphaF(0.5);
+    lpa.setColor(DPalette::WindowText, lunarTextColor);
     m_LunarLabel->setPalette(lpa);
     titleLayout->addWidget(m_LunarLabel);
     m_SolarDay = new QLabel();

@@ -74,7 +74,9 @@ void CWeekWindow::initUI()
     t_labelF.setPixelSize(DDECalendar::FontSizeTwentyfour);
     m_YearLabel->setFont(t_labelF);
     DPalette LunaPa = m_YearLabel->palette();
-    LunaPa.setColor(DPalette::WindowText, QColor("#3B3B3B"));
+    QColor yearTextColor = QColor("#000000");
+    yearTextColor.setAlphaF(0.8);
+    LunaPa.setColor(DPalette::WindowText, yearTextColor);
     m_YearLabel->setPalette(LunaPa);
 
     m_YearLunarLabel = new QLabel(this);
@@ -98,7 +100,9 @@ void CWeekWindow::initUI()
     yLabelF.setPixelSize(DDECalendar::FontSizeFourteen);
     m_YearLunarLabel->setFont(yLabelF);
     DPalette YearLpa = m_YearLunarLabel->palette();
-    YearLpa.setColor(DPalette::WindowText, QColor("#8A8A8A"));
+    QColor lunarTextColor = QColor("#000000");
+    lunarTextColor.setAlphaF(0.5);
+    YearLpa.setColor(DPalette::WindowText, lunarTextColor);
 
     m_YearLunarLabel->setPalette(YearLpa);
 
@@ -206,11 +210,15 @@ void CWeekWindow::setTheMe(int type)
         //返回今天按钮的背景色
         m_todayframe->setBColor(Qt::white);
         DPalette pa = m_YearLabel->palette();
-        pa.setColor(DPalette::WindowText, QColor("#3B3B3B"));
+        QColor yearTextColor = QColor("#000000");
+        yearTextColor.setAlphaF(0.8);
+        pa.setColor(DPalette::WindowText, yearTextColor);
         m_YearLabel->setPalette(pa);
         m_YearLabel->setForegroundRole(DPalette::WindowText);
         DPalette LunaPa = m_YearLunarLabel->palette();
-        LunaPa.setColor(DPalette::WindowText, QColor("#8A8A8A"));
+        QColor lunarTextColor = QColor("#000000");
+        lunarTextColor.setAlphaF(0.5);
+        LunaPa.setColor(DPalette::WindowText, lunarTextColor);
         m_YearLunarLabel->setPalette(LunaPa);
         m_YearLunarLabel->setForegroundRole(DPalette::WindowText);
 
@@ -226,11 +234,15 @@ void CWeekWindow::setTheMe(int type)
         m_todayframe->setBColor(bColor);
 
         DPalette pa = m_YearLabel->palette();
-        pa.setColor(DPalette::WindowText, QColor("#C0C6D4"));
+        QColor yearTextColor = QColor("#FFFFFF");
+        yearTextColor.setAlphaF(0.8);
+        pa.setColor(DPalette::WindowText, yearTextColor);
         m_YearLabel->setPalette(pa);
         m_YearLabel->setForegroundRole(DPalette::WindowText);
         DPalette LunaPa = m_YearLunarLabel->palette();
-        LunaPa.setColor(DPalette::WindowText, QColor("#798BA8"));
+        QColor lunarTextColor = QColor("#FFFFFF");
+        lunarTextColor.setAlphaF(0.5);
+        LunaPa.setColor(DPalette::WindowText, lunarTextColor);
         m_YearLunarLabel->setPalette(LunaPa);
         m_YearLunarLabel->setForegroundRole(DPalette::WindowText);
         DPalette wpa = m_weekLabel->palette();
@@ -545,5 +557,3 @@ void CWeekWindow::mousePressEvent(QMouseEvent *event)
     Q_UNUSED(event);
     slotScheduleHide();
 }
-
-
