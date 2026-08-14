@@ -355,6 +355,8 @@ void CSettingDialog::initFirstDayofWeekWidget()
     m_firstDayofWeekWidget = new QWidget();
 
     m_firstDayofWeekCombobox = new QComboBox(m_firstDayofWeekWidget);
+    m_firstDayofWeekCombobox->setObjectName("FirstDayofWeekCombobox");
+    m_firstDayofWeekCombobox->setAccessibleName("FirstDayofWeekCombobox");
     m_firstDayofWeekCombobox->setFixedSize(150, 36);
     m_firstDayofWeekCombobox->addItem(tr("Sunday"));
     m_firstDayofWeekCombobox->addItem(tr("Monday"));
@@ -374,6 +376,8 @@ void CSettingDialog::initTimeTypeWidget()
     m_timeTypeWidget = new QWidget();
 
     m_timeTypeCombobox = new QComboBox(m_timeTypeWidget);
+    m_timeTypeCombobox->setObjectName("TimeTypeCombobox");
+    m_timeTypeCombobox->setAccessibleName("TimeTypeCombobox");
     m_timeTypeCombobox->setFixedSize(150, 36);
     m_timeTypeCombobox->addItem(tr("24-hour clock"));
     m_timeTypeCombobox->addItem(tr("12-hour clock"));
@@ -391,15 +395,21 @@ void CSettingDialog::initTimeTypeWidget()
 void CSettingDialog::initAccountComboBoxWidget()
 {
     m_accountComboBox = new QComboBox();
+    m_accountComboBox->setObjectName("AccountComboBox");
+    m_accountComboBox->setAccessibleName("AccountComboBox");
     m_accountComboBox->setFixedSize(150, 36);
 }
 
 void CSettingDialog::initTypeAddWidget()
 {
     m_typeAddBtn = new DIconButton(DStyle::SP_IncreaseElement, nullptr);
+    m_typeAddBtn->setObjectName("TypeAddBtn");
+    m_typeAddBtn->setAccessibleName("TypeAddBtn");
     m_typeAddBtn->setFixedSize(20, 20);
 
     m_typeImportBtn = new DIconButton(DStyle::SP_SelectElement, nullptr);
+    m_typeImportBtn->setObjectName("TypeImportBtn");
+    m_typeImportBtn->setAccessibleName("TypeImportBtn");
     m_typeImportBtn->setToolTip(tr("import ICS file"));
     m_typeImportBtn->setFixedSize(20, 20);
 }
@@ -413,6 +423,8 @@ void CSettingDialog::initScheduleTypeWidget()
 void CSettingDialog::initSyncFreqWidget()
 {
     m_syncFreqComboBox = new QComboBox;
+    m_syncFreqComboBox->setObjectName("SyncFreqComboBox");
+    m_syncFreqComboBox->setAccessibleName("SyncFreqComboBox");
     m_syncFreqComboBox->setMaximumWidth(150);
     m_syncFreqComboBox->addItem(tr("Manual"),   DAccount::SyncFreq_Maunal);
     m_syncFreqComboBox->addItem(tr("15 mins"),  DAccount::SyncFreq_15Mins);
@@ -428,6 +440,8 @@ void CSettingDialog::initManualSyncButton()
     m_ptrNetworkState = new DOANetWorkDBus(this);
     m_manualSyncWidget->setObjectName("ManualSyncWidget");
     m_syncBtn = new QPushButton(m_manualSyncWidget);
+    m_syncBtn->setObjectName("SyncBtn");
+    m_syncBtn->setAccessibleName("SyncBtn");
     m_syncBtn->setFixedSize(266, 36);
     m_syncBtn->setText(tr("Sync Now"));
 

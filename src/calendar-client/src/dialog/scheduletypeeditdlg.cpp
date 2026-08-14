@@ -146,9 +146,13 @@ void ScheduleTypeEditDlg::initView()
     m_titleLabel->setFont(titlelabelF);
 
     m_lineEdit = new DLineEdit();
+    m_lineEdit->setObjectName("LineEdit");
+    m_lineEdit->setAccessibleName("LineEdit");
     m_lineEdit->setClearButtonEnabled(false); //不显示按钮
     m_colorSeletor = new ColorSeletorWidget();
     m_fileEdit = new DFileChooserEdit;
+    m_fileEdit->setObjectName("FileEdit");
+    m_fileEdit->setAccessibleName("FileEdit");
 
     QFormLayout *formLayout = new QFormLayout(this);
     formLayout->setHorizontalSpacing(10);

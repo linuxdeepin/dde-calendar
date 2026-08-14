@@ -34,8 +34,14 @@ void UserloginWidget::initView()
     m_userNameLabel->setElideMode(Qt::ElideMiddle);
     m_userNameLabel->setTextFormat(Qt::PlainText);
     m_buttonImg = new DIconButton(this);
+    m_buttonImg->setObjectName("ButtonImg");
+    m_buttonImg->setAccessibleName("ButtonImg");
     m_buttonLogin = new QPushButton(this);
+    m_buttonLogin->setObjectName("ButtonLogin");
+    m_buttonLogin->setAccessibleName("ButtonLogin");
     m_buttonLoginOut = new QPushButton(this);
+    m_buttonLoginOut->setObjectName("ButtonLoginOut");
+    m_buttonLoginOut->setAccessibleName("ButtonLoginOut");
     m_buttonLogin->setFixedSize(98, 36);
     m_buttonLoginOut->setFixedSize(98, 36);
     QHBoxLayout *layout = new QHBoxLayout(this);

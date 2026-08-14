@@ -29,6 +29,14 @@ CColorPickerWidget::CColorPickerWidget(QWidget *parent)
     , m_enterBtn(new DSuggestButton(this))
 {
     qCDebug(ClientLogger) << "CColorPickerWidget constructor initialized";
+    m_colorSlider->setObjectName("ColorSlider");
+    m_colorSlider->setAccessibleName("ColorSlider");
+    m_colHexLineEdit->setObjectName("ColHexLineEdit");
+    m_colHexLineEdit->setAccessibleName("ColHexLineEdit");
+    m_cancelBtn->setObjectName("CancelBtn");
+    m_cancelBtn->setAccessibleName("CancelBtn");
+    m_enterBtn->setObjectName("EnterBtn");
+    m_enterBtn->setAccessibleName("EnterBtn");
     initUI();
     setColorHexLineEdit();
     moveToCenter();

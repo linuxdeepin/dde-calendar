@@ -27,6 +27,8 @@ CWeekWindow::CWeekWindow(QWidget *parent)
     , m_today(new CTodayButton)
 {
     qCDebug(ClientLogger) << "CWeekWindow constructed";
+    m_today->setObjectName("WeekWindowTodayButton");
+    m_today->setAccessibleName("WeekWindowTodayButton");
     setContentsMargins(0, 0, 0, 0);
     initUI();
     initConnection();

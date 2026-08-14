@@ -20,6 +20,8 @@ CTitleWidget::CTitleWidget(QWidget *parent)
 {
     qCDebug(ClientLogger) << "CTitleWidget constructor";
     m_sidebarIcon = new DIconButton(this);
+    m_sidebarIcon->setObjectName("SidebarIcon");
+    m_sidebarIcon->setAccessibleName("SidebarIcon");
     m_sidebarIcon->setFixedSize(QSize(36, 36));
     m_sidebarIcon->setIconSize(QSize(16, 16));
     connect(m_sidebarIcon, &DIconButton::clicked, this, &CTitleWidget::slotSidebarIconClicked);
@@ -102,12 +104,18 @@ CTitleWidget::CTitleWidget(QWidget *parent)
 
     //搜索按钮，在窗口比较小的时候，显示搜索按钮隐藏搜索框
     m_searchPush = new DIconButton(this);
+
+    m_searchPush->setObjectName("SearchPush");
+    m_searchPush->setAccessibleName("SearchPush");
     m_searchPush->setFixedSize(36, 36);
     m_searchPush->setIcon(QIcon::fromTheme("search"));
     connect(m_searchPush, &DIconButton::clicked, this, &CTitleWidget::slotShowSearchEdit);
 
     //新建日程快捷按钮
     m_newScheduleBtn = new DIconButton(this);
+
+    m_newScheduleBtn->setObjectName("NewScheduleBtn");
+    m_newScheduleBtn->setAccessibleName("NewScheduleBtn");
     DStyle style;
     m_newScheduleBtn->setFixedSize(36, 36);
     //设置+

@@ -197,15 +197,21 @@ void CDayMonthView::initUI()
 {
     qCDebug(ClientLogger) << "CDayMonthView::initUI";
     m_today = new CTodayButton;
+    m_today->setObjectName("TodayButton");
+    m_today->setAccessibleName("TodayButton");
     m_today->setText(QCoreApplication::translate("today", "Today", "Today"));
     m_today->setFixedSize(80, DDEDayCalendar::D_MLabelHeight);
     QFont todayfont;
     todayfont.setPixelSize(DDECalendar::FontSizeFourteen);
     m_today->setFont(todayfont);
     m_prevButton = new DIconButton(DStyle::SP_ArrowLeft, this);
+    m_prevButton->setObjectName("DayMonthPrevButton");
+    m_prevButton->setAccessibleName("DayMonthPrevButton");
     m_prevButton->setFixedSize(36, 36);
 
     m_nextButton = new DIconButton(DStyle::SP_ArrowRight, this);
+    m_nextButton->setObjectName("DayMonthNextButton");
+    m_nextButton->setAccessibleName("DayMonthNextButton");
     m_nextButton->setFixedSize(36, 36);
 
     QHBoxLayout *titleLayout = new QHBoxLayout;
@@ -234,6 +240,8 @@ void CDayMonthView::initUI()
     m_upLayout->addLayout(titleLayout);
 
     m_weekWidget = new CWeekWidget();
+    m_weekWidget->setObjectName("WeekWidget");
+    m_weekWidget->setAccessibleName("WeekWidget");
     m_weekWidget->setMaximumHeight(40);
     m_dayMonthWidget = new CDayMonthWidget();
     m_upLayout->addWidget(m_weekWidget, 1);
