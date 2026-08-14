@@ -90,7 +90,8 @@ void CWeekHeadView::setTheMe(int type)
         m_backgroundShowColor.setAlphaF(0.4);
         m_Background_Weekend_Color = "#DAE4ED";
 
-        m_defaultTextColor = "#6F6F6F";
+        m_defaultTextColor = "#000000";
+        m_defaultTextColor.setAlphaF(0.7);
         m_currentDayTextColor = "#FFFFFF";
         m_defaultLunarColor = "#898989";
         m_currentMonthColor = "#000000";
@@ -107,7 +108,8 @@ void CWeekHeadView::setTheMe(int type)
         m_backgroundShowColor.setAlphaF(0.4);
         m_Background_Weekend_Color = "#333D4A";
 
-        m_defaultTextColor = "#C0C6D4";
+        m_defaultTextColor = "#FFFFFF";
+        m_defaultTextColor.setAlphaF(0.7);
         m_currentDayTextColor = "#C0C6D4";
         m_defaultLunarColor = "#6886BA";
 

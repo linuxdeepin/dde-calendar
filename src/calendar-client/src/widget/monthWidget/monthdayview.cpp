@@ -499,7 +499,8 @@ void CMonthRect::setTheMe(int type)
 
     if (type == 0 || type == 1) {
         qCDebug(ClientLogger) << "Applying light theme";
-        m_defaultTextColor = Qt::black;
+        m_defaultTextColor = QColor("#000000");
+        m_defaultTextColor.setAlphaF(0.7);
         m_backgrounddefaultColor = Qt::white;
         m_currentDayTextColor = Qt::white;
         m_backgroundcurrentDayColor = CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
@@ -508,7 +509,8 @@ void CMonthRect::setTheMe(int type)
         m_fillColor.setAlphaF(0);
     } else if (type == 2) {
         qCDebug(ClientLogger) << "Applying dark theme";
-        m_defaultTextColor = "#C0C6D4";
+        m_defaultTextColor = QColor("#FFFFFF");
+        m_defaultTextColor.setAlphaF(0.7);
         QColor framecolor = Qt::black;
         framecolor.setAlphaF(0.5);
         m_backgrounddefaultColor = framecolor;

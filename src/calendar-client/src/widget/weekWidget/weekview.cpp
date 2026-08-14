@@ -199,13 +199,15 @@ void CWeekNumWidget::setTheMe(int type)
 {
     qCDebug(ClientLogger) << "Setting theme in CWeekNumWidget to:" << type;
     if (type == 0 || type == 1) {
-        m_defaultTextColor = Qt::black;
+        m_defaultTextColor = QColor("#000000");
+        m_defaultTextColor.setAlphaF(0.7);
         m_backgrounddefaultColor = Qt::white;
         m_currentDayTextColor = Qt::white;
         m_backgroundcurrentDayColor = CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
         m_fillColor = "#FFFFFF";
     } else if (type == 2) {
-        m_defaultTextColor = "#C0C6D4";
+        m_defaultTextColor = QColor("#FFFFFF");
+        m_defaultTextColor.setAlphaF(0.7);
         m_backgrounddefaultColor = "#FFFFFF";
         m_backgrounddefaultColor.setAlphaF(0.05);
         m_currentDayTextColor = "#B8D3FF";

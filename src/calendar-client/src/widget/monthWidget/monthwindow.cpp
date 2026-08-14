@@ -57,12 +57,16 @@ void CMonthWindow::setTheMe(int type)
     if (type == 0 || type == 1) {
         qCDebug(ClientLogger) << "Applying light theme";
         DPalette pa = m_YearLabel->palette();
-        pa.setColor(DPalette::WindowText, QColor("#3B3B3B"));
+        QColor yearTextColor = QColor("#000000");
+        yearTextColor.setAlphaF(0.8);
+        pa.setColor(DPalette::WindowText, yearTextColor);
         m_YearLabel->setPalette(pa);
         m_YearLabel->setForegroundRole(DPalette::WindowText);
 
         DPalette LunaPa = m_YearLunarLabel->palette();
-        LunaPa.setColor(DPalette::WindowText, QColor("#8A8A8A"));
+        QColor lunarTextColor = QColor("#000000");
+        lunarTextColor.setAlphaF(0.5);
+        LunaPa.setColor(DPalette::WindowText, lunarTextColor);
         m_YearLunarLabel->setPalette(LunaPa);
         m_YearLunarLabel->setForegroundRole(DPalette::WindowText);
 
@@ -73,11 +77,15 @@ void CMonthWindow::setTheMe(int type)
     } else if (type == 2) {
         qCDebug(ClientLogger) << "Applying dark theme";
         DPalette pa = m_YearLabel->palette();
-        pa.setColor(DPalette::WindowText, QColor("#C0C6D4"));
+        QColor yearTextColor = QColor("#FFFFFF");
+        yearTextColor.setAlphaF(0.8);
+        pa.setColor(DPalette::WindowText, yearTextColor);
         m_YearLabel->setPalette(pa);
         m_YearLabel->setForegroundRole(DPalette::WindowText);
         DPalette LunaPa = m_YearLunarLabel->palette();
-        LunaPa.setColor(DPalette::WindowText, QColor("#798BA8"));
+        QColor lunarTextColor = QColor("#FFFFFF");
+        lunarTextColor.setAlphaF(0.5);
+        LunaPa.setColor(DPalette::WindowText, lunarTextColor);
         m_YearLunarLabel->setPalette(LunaPa);
         m_YearLunarLabel->setForegroundRole(DPalette::WindowText);
 
@@ -266,13 +274,17 @@ void CMonthWindow::initUI()
     yLabelF.setPixelSize(DDECalendar::FontSizeTwentyfour);
     m_YearLabel->setFont(yLabelF);
     DPalette pa = m_YearLabel->palette();
-    pa.setColor(DPalette::WindowText, QColor("#3B3B3B"));
+    QColor yearTextColor = QColor("#000000");
+    yearTextColor.setAlphaF(0.8);
+    pa.setColor(DPalette::WindowText, yearTextColor);
     m_YearLabel->setPalette(pa);
 
     yLabelF.setPixelSize(DDECalendar::FontSizeFourteen);
     m_YearLunarLabel->setFont(yLabelF);
     DPalette Lunarpa = m_YearLunarLabel->palette();
-    Lunarpa.setColor(DPalette::WindowText, QColor("#8A8A8A"));
+    QColor lunarTextColor = QColor("#000000");
+    lunarTextColor.setAlphaF(0.5);
+    Lunarpa.setColor(DPalette::WindowText, lunarTextColor);
     m_YearLunarLabel->setPalette(Lunarpa);
 
     m_monthDayView = new CMonthDayView(this);
