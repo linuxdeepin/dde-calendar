@@ -63,11 +63,12 @@ void CMonthDayItem::setTheMe(int type)
 
     if (type == 0 || type == 1) {
         // qCDebug(ClientLogger) << "Setting light theme colors";
-        m_dayNumColor = "#000000";
+        m_dayNumColor = QColor("#000000");
+        m_dayNumColor.setAlphaF(0.8);
         m_dayNumCurrentColor = "#FFFFFF";
 
-        m_LunerColor = "#5E5E5E";
-        m_LunerColor.setAlphaF(0.5);
+        m_LunerColor = QColor("#000000");
+        m_LunerColor.setAlphaF(0.4);
 
         m_fillColor = Qt::white;
         m_banColor = "#FF7171";
@@ -79,11 +80,12 @@ void CMonthDayItem::setTheMe(int type)
         m_BorderColor.setAlphaF(0.05);
     } else if (type == 2) {
         // qCDebug(ClientLogger) << "Setting dark theme colors";
-        m_dayNumColor = "#C0C6D4";
+        m_dayNumColor = QColor("#FFFFFF");
+        m_dayNumColor.setAlphaF(0.8);
         m_dayNumCurrentColor = "#B8D3FF";
 
-        m_LunerColor = "#ABDAFF";
-        m_LunerColor.setAlphaF(0.5);
+        m_LunerColor = QColor("#FFFFFF");
+        m_LunerColor.setAlphaF(0.4);
 
         m_fillColor = "#000000";
         m_fillColor.setAlphaF(0.05);

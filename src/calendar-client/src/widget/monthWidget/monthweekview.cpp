@@ -176,9 +176,11 @@ void WeekRect::setTheMe(int type)
     m_activeColor = CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
     if (type == 0 || type == 1) {
         // qCDebug(ClientLogger) << "Applying light theme";
-        m_testColor = "#6F6F6F";
+        m_testColor = QColor("#000000");
+        m_testColor.setAlphaF(0.5);
     } else {
         // qCDebug(ClientLogger) << "Applying dark theme";
-        m_testColor = "#C0C6D4";
+        m_testColor = QColor("#FFFFFF");
+        m_testColor.setAlphaF(0.5);
     }
 }
