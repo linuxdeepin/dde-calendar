@@ -311,21 +311,22 @@ void CWeekHeadView::paintCell(QWidget *cell)
     const QString dayNum = getCellDayNum(pos);
     const QString dayLunar = getLunar(pos);
     QString dayWeek = locale.dayName(d ? d : DDEWeekCalendar::AFewDaysofWeek, QLocale::ShortFormat);
+    QColor primaryTextColor = m_themetype == 2 ? QColor(Qt::white) : QColor(Qt::black);
+    primaryTextColor.setAlphaF(0.8);
+    QColor lunarTextColor = m_themetype == 2 ? QColor(Qt::white) : QColor(Qt::black);
+    lunarTextColor.setAlphaF(0.5);
+    QFont lunarFont = m_dayNumFont;
+    lunarFont.setWeight(QFont::Normal);
 
     painter.save();
     painter.setPen(Qt::SolidLine);
-    // draw text of day
     if (isSelectedCell) {
         painter.setPen(m_currentDayTextColor);
-    } else if (isCurrentDay) {
+    } else if (d == DDEWeekCalendar::FirstDayOfWeekend || d == DDEWeekCalendar::AFewDaysofWeek) {
         painter.setPen(m_weekendsTextColor);
     } else {
-        if (d == DDEWeekCalendar::FirstDayOfWeekend || d == DDEWeekCalendar::AFewDaysofWeek)
-            painter.setPen(m_weekendsTextColor);
-        else
-            painter.setPen(m_defaultTextColor);
+        painter.setPen(primaryTextColor);
     }
-
     painter.setFont(m_dayNumFont);
 
     if (m_showState & ShowLunar) {
@@ -333,7 +334,7 @@ void CWeekHeadView::paintCell(QWidget *cell)
         if (d == DDEWeekCalendar::FirstDayOfWeekend || d == DDEWeekCalendar::AFewDaysofWeek)
             painter.setPen(m_weekendsTextColor);
         else
-            painter.setPen(m_defaultTextColor);
+            painter.setPen(primaryTextColor);
         painter.drawText(QRect(bw + 24, bh, 30, 25), Qt::AlignCenter, dayWeek);
     } else {
         QFontMetrics fm1 = painter.fontMetrics();
@@ -341,7 +342,7 @@ void CWeekHeadView::paintCell(QWidget *cell)
         if (d == DDEWeekCalendar::FirstDayOfWeekend || d == DDEWeekCalendar::AFewDaysofWeek)
             painter.setPen(m_weekendsTextColor);
         else
-            painter.setPen(m_defaultTextColor);
+            painter.setPen(primaryTextColor);
 
         QFontMetrics fm = painter.fontMetrics();
 
@@ -356,7 +357,8 @@ void CWeekHeadView::paintCell(QWidget *cell)
             if (d == DDEWeekCalendar::FirstDayOfWeekend || d == DDEWeekCalendar::AFewDaysofWeek)
                 painter.setPen(m_weekendsTextColor);
             else
-                painter.setPen(m_defaultLunarColor);
+                painter.setPen(lunarTextColor);
+            painter.setFont(lunarFont);
 
             if (cell->width() < 132) {
                 QString str_dayLunar = nullptr;
