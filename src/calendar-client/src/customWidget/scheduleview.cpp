@@ -93,12 +93,14 @@ void CScheduleView::setTheMe(int type)
         qCDebug(ClientLogger) << "Setting light theme colors";
         m_linecolor = "#000000";
         m_linecolor.setAlphaF(0.1);
+        m_dividingLineColor = QColor(0, 0, 0, 13);
         m_ALLDayColor = "#303030";
         m_timeColor = "#7D7D7D";
     } else if (type == 2) {
         qCDebug(ClientLogger) << "Setting dark theme colors";
         m_linecolor = "#000000";
         m_linecolor.setAlphaF(0.1);
+        m_dividingLineColor = QColor(255, 255, 255, 10);
         m_ALLDayColor = "#7D7D7D";
         m_timeColor = "#7D7D7D";
     }
@@ -344,16 +346,12 @@ void CScheduleView::paintEvent(QPaintEvent *event)
     painter.drawText(QRect(0, 0, m_leftMargin - 2, m_topMargin - 2), Qt::AlignCenter, tr("ALL DAY"));
     painter.restore();
 
-    //绘制全天与非全天之间的直线
     painter.save();
     painter.setPen(Qt::NoPen);
-    //分割线y坐标点
-    const int point_y = m_alldaylist->height() + m_alldaylist->y();
-    //设置间隔线颜色
-    painter.setBrush(m_linecolor);
-    //绘制间隔线矩阵
-    painter.drawRect(QRectF(0, point_y, this->width() - m_rightMargin - 2, 1));
+    painter.setBrush(m_dividingLineColor);
+    painter.drawRect(QRect(0, m_topMargin, width() - m_rightMargin, 1));
     painter.restore();
+
     if (m_viewPos == ScheduleViewPos::WeekPos) {
         // qDebug() << "WeekPos";
         //如果为周视图绘制右侧背景色（否则会有一个竖线的白色背景，不协调）
@@ -447,7 +445,6 @@ void CScheduleView::initUI()
     m_layout->setContentsMargins(0, 0, 0, 0);
     m_alldaylist = new CAllDayEventWeekView(this, m_viewPos);
     m_layout->addWidget(m_alldaylist);
-    m_layout->addSpacing(1);
     m_graphicsView = new CGraphicsView(this, m_viewPos);
     const int miniHeight = m_viewPos == ScheduleViewPos::WeekPos ? 300 : 380;
     qCDebug(ClientLogger) << "Setting minimum height:" << miniHeight;

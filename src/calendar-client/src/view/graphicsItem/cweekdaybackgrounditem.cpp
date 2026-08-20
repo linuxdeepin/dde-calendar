@@ -24,10 +24,12 @@ void CWeekDayBackgroundItem::setTheMe(int type)
         // qCDebug(ClientLogger) << "Setting light theme colors";
         m_weekColor = "#00429A";
         m_weekColor.setAlphaF(0.05);
+        m_dividingLineColor = QColor(0, 0, 0, 13);
     } else {
         // qCDebug(ClientLogger) << "Setting dark theme colors";
         m_weekColor = "#4F9BFF";
         m_weekColor.setAlphaF(0.1);
+        m_dividingLineColor = QColor(255, 255, 255, 10);
     }
 }
 
@@ -44,11 +46,8 @@ void CWeekDayBackgroundItem::paint(QPainter *painter, const QStyleOptionGraphics
         //绘制分割线
         if (this->getBackgroundNum() != 6) {
             // qCDebug(ClientLogger) << "Drawing dividing line for day column";
-            // 分割线颜色
-            QColor m_linecolor = "#000000";
-            m_linecolor.setAlphaF(0.05);
             painter->setPen(Qt::SolidLine);
-            painter->setPen(m_linecolor);
+            painter->setPen(m_dividingLineColor);
             painter->drawLine(this->rect().topRight(), this->rect().bottomRight());
         }
         //绘制周六周日背景

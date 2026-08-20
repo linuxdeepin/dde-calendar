@@ -94,6 +94,7 @@ private:
      * @brief m_Background_Weekend_Color 周六周日背景色
      */
     QColor m_Background_Weekend_Color = "#00429A";
+    QColor m_dividingLineColor = QColor(0, 0, 0, 26);
     QColor m_solofestivalLunarColor = "#4DFF7272";
     int m_themetype = 1;
     const int m_radius = 8;
