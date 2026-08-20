@@ -61,10 +61,9 @@ void CWeekDayGraphicsview::setRange(int w, int h, QDate begindate, QDate enddate
     //如果为全天区域
     if (m_viewType == ALLDayView) {
         qCDebug(ClientLogger) << "Adjusting width for ALL day view";
-        w -= 2;
     } else {
         qCDebug(ClientLogger) << "Adjusting width for part time view";
-        w = w - rightmagin - 2;
+        w = w - rightmagin;
     }
     setBackgroundDate();
     m_coorManage->setRange(w, h, begindate, enddate, rightmagin);

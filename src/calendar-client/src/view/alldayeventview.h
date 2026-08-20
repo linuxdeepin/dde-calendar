@@ -48,6 +48,7 @@ public:
     void setTheMe(int type = 0) override;
 private:
     void changeEvent(QEvent *event) override;
+    void paintEvent(QPaintEvent *event) override;
     bool MeetCreationConditions(const QDateTime &date) override;
     void slotCreate(const QDateTime &date) override;
     //判断时间是否相等
@@ -75,6 +76,7 @@ private:
     QVector<DSchedule::Ptr> m_scheduleInfo;
     QVector<CAllDayScheduleItem *> m_baseShowItem;
     bool m_updateDflag = false;
+    QColor m_dividingLineColor = QColor(0, 0, 0, 13);
 };
 
 #endif // CSCHEDULEDAYVIEW_H
