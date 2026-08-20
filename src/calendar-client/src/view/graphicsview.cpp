@@ -88,22 +88,20 @@ void CGraphicsView::setTheMe(int type)
         qCDebug(ClientLogger) << "Setting light theme colors";
         m_weekcolor = "#00429A";
         m_weekcolor.setAlphaF(0.05);
-        QColor linecolor = "#000000";
-        //ui图透明度为5%
-        linecolor.setAlphaF(0.05);
-        m_LRPen.setColor(linecolor);
-        m_TBPen.setColor(linecolor);
+        m_gridLineColor = QColor(0, 0, 0, 13);
+        m_LRPen.setColor(m_gridLineColor);
+        m_TBPen.setColor(m_gridLineColor);
         m_LRPen.setStyle(Qt::SolidLine);
         m_TBPen.setStyle(Qt::SolidLine);
     } else if (type == 2) {
         qCDebug(ClientLogger) << "Setting dark theme colors";
         m_weekcolor = "#4F9BFF";
         m_weekcolor.setAlphaF(0.1);
-        QColor linecolor = "#000000";
-        //ui图透明度为5%
-        linecolor.setAlphaF(0.05);
-        m_LRPen.setColor(linecolor);
-        m_TBPen.setColor(linecolor);
+        m_gridLineColor = QColor(255, 255, 255, 10);
+        m_LRPen.setColor(m_gridLineColor);
+        m_TBPen.setColor(m_gridLineColor);
+        m_LRPen.setStyle(Qt::SolidLine);
+        m_TBPen.setStyle(Qt::SolidLine);
     }
     CWeekDayGraphicsview::setTheMe(type);
 }

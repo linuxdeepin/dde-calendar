@@ -21,8 +21,41 @@
 #include <QShortcut>
 #include <QVBoxLayout>
 #include <QApplication>
+#include <QWidget>
 
 DGUI_USE_NAMESPACE
+
+namespace {
+class AllDayDividerWidget : public QWidget
+{
+public:
+    explicit AllDayDividerWidget(QWidget *parent = nullptr)
+        : QWidget(parent)
+    {
+        setAttribute(Qt::WA_TransparentForMouseEvents);
+        setAttribute(Qt::WA_NoSystemBackground);
+    }
+
+    void setLineColor(const QColor &color)
+    {
+        m_lineColor = color;
+        update();
+    }
+
+protected:
+    void paintEvent(QPaintEvent *event) override
+    {
+        Q_UNUSED(event);
+        QPainter painter(this);
+        painter.setPen(QPen(m_lineColor, 1));
+        const int y = height() - 1;
+        painter.drawLine(QPoint(0, y), QPoint(width(), y));
+    }
+
+private:
+    QColor m_lineColor = QColor(0, 0, 0, 13);
+};
+}
 
 static int hourTextWidth = 50;
 static int hourTextHeight = 20;
@@ -93,12 +126,14 @@ void CScheduleView::setTheMe(int type)
         qCDebug(ClientLogger) << "Setting light theme colors";
         m_linecolor = "#000000";
         m_linecolor.setAlphaF(0.1);
+        m_dividingLineColor = QColor(0, 0, 0, 13);
         m_ALLDayColor = "#303030";
         m_timeColor = "#7D7D7D";
     } else if (type == 2) {
         qCDebug(ClientLogger) << "Setting dark theme colors";
         m_linecolor = "#000000";
         m_linecolor.setAlphaF(0.1);
+        m_dividingLineColor = QColor(255, 255, 255, 10);
         m_ALLDayColor = "#7D7D7D";
         m_timeColor = "#7D7D7D";
     }
@@ -107,6 +142,7 @@ void CScheduleView::setTheMe(int type)
     m_outerBorderColor = _painte.color(QPalette::Active, QPalette::Window);
     m_graphicsView->setTheMe(type);
     m_alldaylist->setTheMe(type);
+    static_cast<AllDayDividerWidget *>(m_allDayDivider)->setLineColor(m_dividingLineColor);
     update();
 }
 
@@ -344,16 +380,6 @@ void CScheduleView::paintEvent(QPaintEvent *event)
     painter.drawText(QRect(0, 0, m_leftMargin - 2, m_topMargin - 2), Qt::AlignCenter, tr("ALL DAY"));
     painter.restore();
 
-    //绘制全天与非全天之间的直线
-    painter.save();
-    painter.setPen(Qt::NoPen);
-    //分割线y坐标点
-    const int point_y = m_alldaylist->height() + m_alldaylist->y();
-    //设置间隔线颜色
-    painter.setBrush(m_linecolor);
-    //绘制间隔线矩阵
-    painter.drawRect(QRectF(0, point_y, this->width() - m_rightMargin - 2, 1));
-    painter.restore();
     if (m_viewPos == ScheduleViewPos::WeekPos) {
         // qDebug() << "WeekPos";
         //如果为周视图绘制右侧背景色（否则会有一个竖线的白色背景，不协调）
@@ -385,6 +411,7 @@ void CScheduleView::resizeEvent(QResizeEvent *event)
     m_graphicsView->setRange(width() - m_leftMargin,
                              scheduleViewHeight(), m_beginDate, m_endDate, m_rightMargin);
     m_alldaylist->setRange(width() - m_leftMargin, 22, m_beginDate, m_endDate, m_rightMargin);
+    updateDividerGeometry();
     update();
     QFrame::resizeEvent(event);
     updateAllday();
@@ -457,6 +484,8 @@ void CScheduleView::initUI()
     m_layout->addWidget(m_graphicsView);
     setLayout(m_layout);
     m_graphicsView->scrollBarValueChangedSlot();
+    m_allDayDivider = new AllDayDividerWidget(this);
+    updateDividerGeometry();
 
     m_ScheduleRemindWidget = new ScheduleRemindWidget(this);
     // move focus to m_graphicsView
@@ -559,6 +588,7 @@ void CScheduleView::slotUpdatePaint(const int topM)
 {
     qCDebug(ClientLogger) << "Update paint slot called with topMargin:" << topM;
     m_topMargin = topM;
+    updateDividerGeometry();
     update();
 }
 
@@ -632,6 +662,16 @@ void CScheduleView::updateAllday()
     m_alldaylist->updateInfo();
     update();
     m_graphicsView->resize(m_graphicsView->width(), this->height() - m_alldaylist->height());
+    updateDividerGeometry();
+}
+
+void CScheduleView::updateDividerGeometry()
+{
+    if (!m_allDayDivider || !m_alldaylist)
+        return;
+
+    const int pointY = m_alldaylist->y() + m_alldaylist->height();
+    m_allDayDivider->setGeometry(0, pointY - 1, width() - m_rightMargin, 1);
 }
 
 int CScheduleView::scheduleViewHeight()

@@ -95,6 +95,7 @@ void CWeekHeadView::setTheMe(int type)
         m_defaultLunarColor = "#898989";
         m_currentMonthColor = "#000000";
         m_backgroundColor = "#E6EEF2";
+        m_dividingLineColor = QColor(0, 0, 0, 26);
         m_solofestivalLunarColor = "#4DFF7272";
     } else if (type == 2) {
         // qCDebug(ClientLogger) << "Setting theme to dark";
@@ -114,6 +115,7 @@ void CWeekHeadView::setTheMe(int type)
         m_currentMonthColor = "#000000";
         m_backgroundColor = "#82AEC1";
         m_backgroundColor.setAlphaF(0.1);
+        m_dividingLineColor = QColor(255, 255, 255, 20);
         m_solofestivalLunarColor = "#4DFF7272";
     }
     m_weekendsTextColor = CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
@@ -261,9 +263,7 @@ void CWeekHeadView::paintCell(QWidget *cell)
         QPoint point_begin(cell->width(), 0);
         QPoint point_end(cell->width(), cell->height());
         painter.save();
-        QColor m_linecolor = "#000000";
-        m_linecolor.setAlphaF(0.1);
-        painter.setPen(m_linecolor);
+        painter.setPen(m_dividingLineColor);
         painter.drawLine(point_begin, point_end);
         painter.restore();
     } else {
