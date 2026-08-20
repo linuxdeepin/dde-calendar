@@ -143,7 +143,8 @@ void CWeekWindow::initUI()
 
     m_weekHeadView = new CWeekHeadView(this);
     m_scheduleView = new CScheduleView(this);
-    m_scheduleView->setviewMargin(73, 109 + 30, 0, 0);
+    //左边距与周视图表头月份标签宽度一致，使日程区各天分隔线与表头纵向对齐
+    m_scheduleView->setviewMargin(DDEWeekCalendar::WMCellHeaderWidth - 5, 109 + 30, 0, 0);
     m_scheduleView->setRange(763, 1032, QDate(2019, 8, 12), QDate(2019, 8, 18));
 
     m_mainHLayout = new QVBoxLayout;

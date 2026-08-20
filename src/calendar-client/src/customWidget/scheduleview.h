@@ -17,6 +17,7 @@ DWIDGET_USE_NAMESPACE
 #define ScheduleViewPos CWeekDayGraphicsview::ViewPosition
 class CAllDayEventWeekView;
 class QVBoxLayout;
+class QWidget;
 class CScheduleView : public DFrame
 {
     Q_OBJECT
@@ -88,6 +89,7 @@ private:
     ScheduleViewPos m_viewPos;
     int m_sMaxNum = 4;
     QColor m_linecolor = Qt::lightGray;
+    QColor m_dividingLineColor = QColor(0, 0, 0, 13);
     QColor m_ALLDayColor = "#303030";
     QColor m_timeColor = "#7D7D7D";
     QColor m_currenttimecolor = "#F74444";
