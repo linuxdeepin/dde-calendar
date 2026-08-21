@@ -17,6 +17,7 @@ DWIDGET_USE_NAMESPACE
 #define ScheduleViewPos CWeekDayGraphicsview::ViewPosition
 class CAllDayEventWeekView;
 class QVBoxLayout;
+class QWidget;
 class CScheduleView : public DFrame
 {
     Q_OBJECT
@@ -68,6 +69,7 @@ private:
     void initConnection();
     void updateSchedule();
     void updateAllday();
+    void updateDividerGeometry();
     int scheduleViewHeight();
 
 private:
@@ -88,11 +90,13 @@ private:
     ScheduleViewPos m_viewPos;
     int m_sMaxNum = 4;
     QColor m_linecolor = Qt::lightGray;
+    QColor m_dividingLineColor = QColor(0, 0, 0, 13);
     QColor m_ALLDayColor = "#303030";
     QColor m_timeColor = "#7D7D7D";
     QColor m_currenttimecolor = "#F74444";
     int m_currentTimeType = 0;
     QVBoxLayout *m_layout = nullptr;
+    QWidget *m_allDayDivider = nullptr;
     ScheduleRemindWidget *m_ScheduleRemindWidget = nullptr;
     int m_minTime; //最小高度对应的最小时间
     QFont font;

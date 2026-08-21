@@ -42,6 +42,7 @@ private:
     bool m_drawDividingLine; //是否绘制分割线
     bool m_showFocus; //背景是否显示焦点效果
     QColor m_weekColor; //周六周日背景色
+    QColor m_dividingLineColor = QColor(0, 0, 0, 13);
 };
 
 #endif // CWEEKDAYBACKGROUNDITEM_H
