@@ -99,6 +99,8 @@ public:
     virtual void setSelectSearchSchedule(const DSchedule::Ptr &scheduleInfo);
     //初始化点击日程
     void pressScheduleInit();
+    //重置点击选中状态并刷新场景，用于浮窗隐藏后清除选中高亮和阴影残留
+    void resetPressState();
     QDate getCurrentDate() const;
     void setCurrentDate(const QDate &currentDate);
 
