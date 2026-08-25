@@ -100,7 +100,14 @@ void CMonthView::slotScheduleRemindWidget(const bool isShow, const DSchedule::Pt
         }
     } else {
         // qCDebug(ClientLogger) << "Hiding schedule reminder widget";
+        //记录浮窗位置用于隐藏后刷新阴影残留区域
+        const QRect popupRect = m_remindWidget->geometry();
         m_remindWidget->hide();
+        //清除日程条选中高亮状态并强制重绘，消除浮窗与日程条重合处的颜色割裂
+        if (m_monthGraphicsView)
+            m_monthGraphicsView->resetPressState();
+        //刷新浮窗周围区域以清除阴影/模糊残留
+        this->update(popupRect.adjusted(-20, -20, 20, 20));
     }
 }
 
