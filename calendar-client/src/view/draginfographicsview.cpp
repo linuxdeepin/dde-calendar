@@ -327,27 +327,29 @@ void DragInfoGraphicsView::contextMenuEvent(QContextMenuEvent *event)
         return;
     }
     if (infoitem != nullptr) {
+        //提前获取日程信息，右键菜单事件循环期间场景刷新会释放item，避免使用悬空的item指针
+        DSchedule::Ptr scheduleInfo = infoitem->getData();
         //是否为节假日日程判断
-        if (!CScheduleOperation::isFestival(infoitem->getData())) {
+        if (!CScheduleOperation::isFestival(scheduleInfo)) {
             m_rightMenu->clear();
             m_rightMenu->addAction(m_editAction);
             m_rightMenu->addAction(m_deleteAction);
             //如果日程是不可修改的则设置删除按钮无效
-            m_deleteAction->setEnabled(!CScheduleOperation::scheduleIsInvariant(infoitem->getData()));
+            m_deleteAction->setEnabled(!CScheduleOperation::scheduleIsInvariant(scheduleInfo));
 
             QAction *action_t = m_rightMenu->exec(QCursor::pos());
 
             if (action_t == m_editAction) {
                 CScheduleDlg dlg(0, this);
-                dlg.setData(infoitem->getData());
+                dlg.setData(scheduleInfo);
                 if (dlg.exec() == DDialog::Accepted) {
                     emit signalsUpdateSchedule();
                 }
             } else if (action_t == m_deleteAction) {
-                DeleteItem(infoitem->getData());
+                DeleteItem(scheduleInfo);
             }
         } else {
-            CMyScheduleView dlg(infoitem->getData(), this);
+            CMyScheduleView dlg(scheduleInfo, this);
             dlg.exec();
         }
     } else {
@@ -898,8 +900,10 @@ void DragInfoGraphicsView::slotContextMenu(CFocusItem *item)
 {
     DragInfoItem *infoitem = dynamic_cast<DragInfoItem *>(item);
     if (infoitem != nullptr) {
+        //提前获取日程信息，右键菜单事件循环期间场景刷新会释放item，避免使用悬空的item指针
+        DSchedule::Ptr scheduleInfo = infoitem->getData();
         //如果为节假日则退出不展示右击菜单
-        if (CScheduleOperation::isFestival(infoitem->getData()))
+        if (CScheduleOperation::isFestival(scheduleInfo))
             return;
         //快捷键调出右击菜单
         m_Scene->setIsContextMenu(true);
@@ -907,7 +911,7 @@ void DragInfoGraphicsView::slotContextMenu(CFocusItem *item)
         m_rightMenu->addAction(m_editAction);
         m_rightMenu->addAction(m_deleteAction);
         //如果日程不可修改则设置删除无效
-        m_deleteAction->setEnabled(!CScheduleOperation::scheduleIsInvariant(infoitem->getData()));
+        m_deleteAction->setEnabled(!CScheduleOperation::scheduleIsInvariant(scheduleInfo));
         QPointF itemPos = QPointF(infoitem->rect().x() + infoitem->rect().width() / 2, infoitem->rect().y() + infoitem->rect().height() / 2);
         QPointF scene_pos = infoitem->mapToScene(itemPos);
         QPointF view_pos = mapFromScene(scene_pos);
@@ -916,12 +920,12 @@ void DragInfoGraphicsView::slotContextMenu(CFocusItem *item)
 
         if (action_t == m_editAction) {
             CScheduleDlg dlg(0, this);
-            dlg.setData(infoitem->getData());
+            dlg.setData(scheduleInfo);
             if (dlg.exec() == DDialog::Accepted) {
                 emit signalsUpdateSchedule();
             }
         } else if (action_t == m_deleteAction) {
-            DeleteItem(infoitem->getData());
+            DeleteItem(scheduleInfo);
         }
         m_Scene->setIsContextMenu(false);
         m_Scene->currentFocusItemUpdate();
