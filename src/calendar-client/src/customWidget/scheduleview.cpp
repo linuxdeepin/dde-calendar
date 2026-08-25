@@ -539,15 +539,26 @@ void CScheduleView::slotScheduleShow(const bool isShow, const DSchedule::Ptr &ou
         m_ScheduleRemindWidget->setData(out, gdColor);
         const auto rPos = this->mapFromGlobal(pos22);
         const int offsetPx = 15; // 逻辑像素偏移，与 rPos 同一坐标系
+        //rPos 相对于 CScheduleView，边界判断也用 CScheduleView 自身宽度，
+        //避免日视图右侧有迷你日历时浮窗超出视图右边界被裁剪
+        const int popupW = m_ScheduleRemindWidget->width();
+        const int popupH = m_ScheduleRemindWidget->height();
+        //箭头垂直居中，计算浮窗上下边界以防止纵向溢出
+        const int arrowY = (popupH - m_ScheduleRemindWidget->arrowWidth()) / 2;
+        int showY = rPos.y();
+        if (showY - arrowY < 0)
+            showY = arrowY;
+        else if (showY - arrowY + popupH > this->height())
+            showY = this->height() - popupH + arrowY;
 
-        if ((rPos.x() + m_ScheduleRemindWidget->width() + offsetPx) > this->window()->width()) {
+        if ((rPos.x() + popupW + offsetPx) > this->width()) {
             qCDebug(ClientLogger) << "Positioning widget to the right";
             m_ScheduleRemindWidget->setDirection(DArrowRectangle::ArrowRight);
-            m_ScheduleRemindWidget->show(rPos.x() - offsetPx, rPos.y());
+            m_ScheduleRemindWidget->show(rPos.x() - offsetPx, showY);
         } else {
             qCDebug(ClientLogger) << "Positioning widget to the left";
             m_ScheduleRemindWidget->setDirection(DArrowRectangle::ArrowLeft);
-            m_ScheduleRemindWidget->show(rPos.x() + offsetPx, rPos.y());
+            m_ScheduleRemindWidget->show(rPos.x() + offsetPx, showY);
         }
     } else {
         // qCDebug(ClientLogger) << "Hiding schedule widget";
