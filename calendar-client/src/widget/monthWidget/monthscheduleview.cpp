@@ -120,6 +120,10 @@ QVector<QGraphicsRectItem *> CMonthScheduleView::getScheduleShowItem() const
 
 void CMonthScheduleView::updateDate(const DSchedule::Ptr &info)
 {
+    //日程数据无效时不更新
+    if (info.isNull()) {
+        return;
+    }
     for (int i = 0; i < m_weekSchedule.size(); ++i) {
         if (m_weekSchedule.at(i)->addData(info)) {
         } else {
@@ -133,6 +137,10 @@ void CMonthScheduleView::updateDate(const DSchedule::Ptr &info)
 
 void CMonthScheduleView::changeDate(const DSchedule::Ptr &info)
 {
+    //日程数据无效时不更新
+    if (info.isNull()) {
+        return;
+    }
     for (int i = 0; i < m_weekSchedule.size(); ++i) {
         m_weekSchedule.at(i)->changeDate(info);
         QVector<QVector<MScheduleDateRangeInfo>> mSchedule = m_weekSchedule[i]->getMScheduleInfo();
@@ -142,6 +150,10 @@ void CMonthScheduleView::changeDate(const DSchedule::Ptr &info)
 
 void CMonthScheduleView::updateDate(const int row, const DSchedule::Ptr &info)
 {
+    //日程数据无效时不更新
+    if (info.isNull()) {
+        return;
+    }
     for (int i = 0; i < m_weekSchedule.size(); ++i) {
         if (row == i) {
             m_weekSchedule.at(i)->addData(info);
@@ -269,6 +281,10 @@ void CWeekScheduleView::setData(QMap<QDate, DSchedule::List> &data, const QDate 
 
 bool CWeekScheduleView::addData(const DSchedule::Ptr &info)
 {
+    //日程数据无效时不添加，避免空指针解引用
+    if (info.isNull()) {
+        return false;
+    }
     if (info->dtStart().date().daysTo(endDate) >= 0 && beginDate.daysTo(info->dtEnd().date()) >= 0) {
         clearItem();
         updateSchedule(false, info);
@@ -280,6 +296,10 @@ bool CWeekScheduleView::addData(const DSchedule::Ptr &info)
 
 void CWeekScheduleView::changeDate(const DSchedule::Ptr &info)
 {
+    //日程数据无效时不更新
+    if (info.isNull()) {
+        return;
+    }
     int index = m_ScheduleInfo.indexOf(info);
 
     if (index < 0) {

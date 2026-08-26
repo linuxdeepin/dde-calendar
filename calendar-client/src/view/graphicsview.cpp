@@ -697,6 +697,10 @@ void CGraphicsView::updateInfo()
 {
     //更新选择日程状态
     DragInfoGraphicsView::updateInfo();
+    //拖拽日程数据无效时将拖拽状态恢复为默认，避免残留拖拽状态使用空日程数据
+    if (m_DragStatus == IsCreate && m_DragScheduleInfo.isNull()) {
+        m_DragStatus = NONE;
+    }
     switch (m_DragStatus) {
     case IsCreate:
         upDateInfoShow(IsCreate, m_DragScheduleInfo);

@@ -240,6 +240,10 @@ void CMonthGraphicsview::updateInfo()
                                     0, 0, 0, h);
     m_MonthScheduleView->setData(m_schedulelistdata, 1);
 
+    //拖拽日程数据无效时将拖拽状态恢复为默认，避免残留拖拽状态使用空日程数据
+    if (m_DragStatus != NONE && m_DragScheduleInfo.isNull()) {
+        m_DragStatus = NONE;
+    }
     switch (m_DragStatus) {
     case IsCreate:
         upDateInfoShow(IsCreate, m_DragScheduleInfo);
@@ -313,6 +317,10 @@ QDateTime CMonthGraphicsview::getPosDate(const QPoint &p)
 
 void CMonthGraphicsview::upDateInfoShow(const CMonthGraphicsview::DragStatus &status, const DSchedule::Ptr &info)
 {
+    //日程数据为空时不执行更新，避免空指针解引用
+    if (status != NONE && info.isNull()) {
+        return;
+    }
     switch (status) {
     case NONE:
         Q_UNUSED(info);
