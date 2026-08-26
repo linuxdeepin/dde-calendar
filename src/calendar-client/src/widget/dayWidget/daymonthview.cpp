@@ -217,7 +217,7 @@ void CDayMonthView::initUI()
     QHBoxLayout *titleLayout = new QHBoxLayout;
     titleLayout->setContentsMargins(0, 0, 0, 0);
     titleLayout->setSpacing(0);
-    titleLayout->setContentsMargins(0, 0, 0, 3);
+    titleLayout->setContentsMargins(0, 0, 10, 3);
     //add separator line
     m_currentMouth = new CustomFrame(this);
     m_currentMouth->setFixedSize(74, DDEDayCalendar::D_MLabelHeight);
