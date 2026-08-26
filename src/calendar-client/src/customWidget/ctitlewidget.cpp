@@ -9,6 +9,7 @@
 #include "commondef.h"
 
 #include <DFontSizeManager>
+#include <DGuiApplicationHelper>
 
 #include <QHBoxLayout>
 #include <QEvent>
@@ -108,8 +109,12 @@ CTitleWidget::CTitleWidget(QWidget *parent)
     m_searchPush->setObjectName("SearchPush");
     m_searchPush->setAccessibleName("SearchPush");
     m_searchPush->setFixedSize(36, 36);
-    m_searchPush->setIcon(QIcon::fromTheme("search"));
+    m_searchPush->setIconSize(QSize(16, 16));
+    updateSearchIcon();
     connect(m_searchPush, &DIconButton::clicked, this, &CTitleWidget::slotShowSearchEdit);
+    //主题切换时更新搜索图标
+    connect(DGuiApplicationHelper::instance(), &DGuiApplicationHelper::themeTypeChanged,
+            this, &CTitleWidget::updateSearchIcon);
 
     //新建日程快捷按钮
     m_newScheduleBtn = new DIconButton(this);
@@ -243,6 +248,16 @@ void CTitleWidget::normalStateUpdateSearchEditWidth()
     m_searchEdit->setMaximumWidth(searchWidth);
     m_searchEdit->setPlaceHolder(m_strPlaceHolder);
     m_searchEdit->setPlaceholderText(m_strPlaceHolder);
+}
+
+void CTitleWidget::updateSearchIcon()
+{
+    qCDebug(ClientLogger) << "CTitleWidget::updateSearchIcon";
+    if (DGuiApplicationHelper::instance()->themeType() == DGuiApplicationHelper::DarkType) {
+        m_searchPush->setIcon(QIcon(":/icons/deepin/builtin/icons/dde_calendar_search_dark_32px.svg"));
+    } else {
+        m_searchPush->setIcon(QIcon(":/icons/deepin/builtin/icons/dde_calendar_search_light_32px.svg"));
+    }
 }
 
 void CTitleWidget::updateSidebarIconStatus()

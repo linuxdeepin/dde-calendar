@@ -61,6 +61,7 @@ private:
      * 更新侧边栏控制图标按钮的状态
      */
     void updateSidebarIconStatus();
+    void updateSearchIcon();
     void updateSearchEditPlaceHolder();
 
 protected:

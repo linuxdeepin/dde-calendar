@@ -67,6 +67,8 @@
         <file>builtin/icons/dde_calendar_xiu.svg</file>
         <file>builtin/icons/dde_calendar_yi_32px.svg</file>
         <file>builtin/icons/icon_refresh.svg</file>
+        <file>builtin/icons/dde_calendar_search_light_32px.svg</file>
+        <file>builtin/icons/dde_calendar_search_dark_32px.svg</file>
         <file>builtin/dark/icons/dde_calendar_account_32px.svg</file>
         <file>builtin/dark/icons/dde_calendar_create_32px.svg</file>
         <file>builtin/dark/icons/dde_calendar_sidebar_32px.svg</file>
