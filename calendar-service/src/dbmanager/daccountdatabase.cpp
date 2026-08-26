@@ -14,6 +14,7 @@
 #include <QDebug>
 #include <QSqlError>
 #include <QFile>
+#include <QCryptographicHash>
 
 using namespace DDLOG_SERVICE;
 
@@ -753,13 +754,27 @@ DTypeColor::List DAccountDataBase::getSysColor()
 
 void DAccountDataBase::createRemindInfo(const DRemindData::Ptr &remind)
 {
-    QString strSql("INSERT INTO remindTask                              \
+    //使用OR IGNORE：alarmID已存在(如稍后提醒后更新的提醒时间/次数)时保留原记录，
+    //避免全量刷新时用"原始提醒时间"覆盖掉稍后提醒产生的新记录导致提醒丢失
+    QString strSql("INSERT OR IGNORE INTO remindTask                      \
                    (alarmID, scheduleID, recurID,remindCount,notifyID        \
                     , dtRemind, dtStart, dtEnd)                         \
                    VALUES(?,?,?,?,?,?,?,?);");
     SqliteQuery query(m_database);
     if (query.prepare(strSql)) {
-        remind->setAlarmID(createUuid());
+        //alarmID 为空时按"日程ID+重复ID+提醒时间+提醒次数"确定性生成，
+        //保证同一日程的同一提醒多次刷新时ID稳定，避免提醒任务文件被反复重建
+        if (remind->alarmID().isEmpty()) {
+            QByteArray seed = QString("%1|%2|%3|%4")
+                              .arg(remind->scheduleID())
+                              .arg(dtToString(remind->recurrenceId()))
+                              .arg(dtToString(remind->dtRemind()))
+                              .arg(remind->remindCount())
+                              .toUtf8();
+            QString hash = QString::fromLatin1(QCryptographicHash::hash(seed, QCryptographicHash::Sha256).toHex().left(32));
+            remind->setAlarmID(QString("%1-%2-%3-%4-%5")
+                               .arg(hash.mid(0, 8), hash.mid(8, 4), hash.mid(12, 4), hash.mid(16, 4), hash.mid(20, 12)));
+        }
         query.addBindValue(remind->alarmID());
         query.addBindValue(remind->scheduleID());
         query.addBindValue(dtToString(remind->recurrenceId()));

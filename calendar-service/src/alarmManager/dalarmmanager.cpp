@@ -51,11 +51,7 @@ void DAlarmManager::updateRemind(const DRemindData::List &remindList)
 {
     if (remindList.size() == 0)
         return;
-    QString &&accountID = remindList.at(0)->accountID();
     CSystemdTimerControl systemdTimerControl;
-    //清空该帐户下日程提醒
-    systemdTimerControl.stopAllRemindSystemdTimer(accountID);
-    systemdTimerControl.removeRemindFile(accountID);
 
     QVector<SystemDInfo> infoVector {};
     foreach (auto remind, remindList) {
@@ -66,7 +62,9 @@ void DAlarmManager::updateRemind(const DRemindData::List &remindList)
         info.triggerTimer = remind->dtRemind();
         infoVector.append(info);
     }
-    systemdTimerControl.buildingConfiggure(infoVector);
+    //增量更新提醒任务文件，内容未变化时不会执行daemon-reload，
+    //避免频繁reload导致下载任务定时器(OnActiveSec)被反复触发形成同步死循环
+    systemdTimerControl.buildingConfiggure(infoVector, true);
 }
 
 void DAlarmManager::notifyJobsChanged(const DRemindData::List &remindList)

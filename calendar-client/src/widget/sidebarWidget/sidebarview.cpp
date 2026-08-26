@@ -9,6 +9,8 @@
 #include <QVBoxLayout>
 #include <QPixmap>
 #include <QElapsedTimer>
+#include <QScrollBar>
+#include <QTimer>
 
 SidebarView::SidebarView(QWidget *parent) : QWidget(parent)
 {
@@ -78,6 +80,9 @@ void SidebarView::initConnection()
  */
 void SidebarView::initData()
 {
+    //保存滚动条位置，重建后恢复，避免帐户刷新时滚动位置丢失
+    int scrollPos = m_treeWidget->verticalScrollBar()->value();
+
     m_treeWidget->clear();
 
     initLocalAccountItem();
@@ -85,6 +90,11 @@ void SidebarView::initData()
     //刷新列表展开状态
     initExpandStatus();
     slotScheduleTypeUpdate();
+
+    //待布局完成后恢复滚动位置，避免同步恢复时因滚动范围尚未更新而失效
+    QTimer::singleShot(0, this, [this, scrollPos]() {
+        m_treeWidget->verticalScrollBar()->setValue(scrollPos);
+    });
 }
 
 /**
@@ -225,11 +235,17 @@ void SidebarView::slotAccountUpdate()
  */
 void SidebarView::slotScheduleTypeUpdate()
 {
+    //保存滚动条位置，重建后恢复，避免日程类型刷新时滚动位置丢失
+    int scrollPos = m_treeWidget->verticalScrollBar()->value();
     //初始化列表数据
     resetJobTypeChildItem(m_localItemWidget);
     resetJobTypeChildItem(m_unionItemWidget);
     //刷新列表展开状态
     initExpandStatus();
+    //待布局完成后恢复滚动位置，避免同步恢复时因滚动范围尚未更新而失效
+    QTimer::singleShot(0, this, [this, scrollPos]() {
+        m_treeWidget->verticalScrollBar()->setValue(scrollPos);
+    });
 }
 
 /**

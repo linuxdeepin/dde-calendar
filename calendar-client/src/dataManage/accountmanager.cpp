@@ -234,11 +234,12 @@ void AccountManager::slotGetAccountListFinish(DAccount::List accountList)
     }
 
     for (AccountItem::Ptr p : getAccountList()) {
-        connect(p.data(), &AccountItem::signalScheduleUpdate, this, &AccountManager::signalScheduleUpdate);
-        connect(p.data(), &AccountItem::signalSearchScheduleUpdate, this, &AccountManager::signalSearchScheduleUpdate);
-        connect(p.data(), &AccountItem::signalScheduleTypeUpdate, this, &AccountManager::signalScheduleTypeUpdate);
-        connect(p.data(), &AccountItem::signalLogout, this, &AccountManager::signalLogout);
-        connect(p.data(), &AccountItem::signalAccountStateChange, this, &AccountManager::signalAccountStateChange);
+        //帐户列表刷新会重复走到这里，使用UniqueConnection避免信号被重复连接导致刷新被放大
+        connect(p.data(), &AccountItem::signalScheduleUpdate, this, &AccountManager::signalScheduleUpdate, Qt::UniqueConnection);
+        connect(p.data(), &AccountItem::signalSearchScheduleUpdate, this, &AccountManager::signalSearchScheduleUpdate, Qt::UniqueConnection);
+        connect(p.data(), &AccountItem::signalScheduleTypeUpdate, this, &AccountManager::signalScheduleTypeUpdate, Qt::UniqueConnection);
+        connect(p.data(), &AccountItem::signalLogout, this, &AccountManager::signalLogout, Qt::UniqueConnection);
+        connect(p.data(), &AccountItem::signalAccountStateChange, this, &AccountManager::signalAccountStateChange, Qt::UniqueConnection);
     }
 
     emit signalAccountUpdate();

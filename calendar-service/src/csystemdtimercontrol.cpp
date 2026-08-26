@@ -5,11 +5,14 @@
 #include "csystemdtimercontrol.h"
 
 #include "units.h"
+#include "ddlogService.h"
 
 #include <QDir>
 #include <QStandardPaths>
 #include <QProcess>
 #include <QFile>
+
+using namespace DDLOG_SERVICE;
 
 const QString UPLOADTASK_SERVICE = "uploadNetWorkAccountData_calendar.service";
 const QString UPLOADTASK_TIMER = "uploadNetWorkAccountData_calendar.timer";
@@ -24,18 +27,28 @@ CSystemdTimerControl::~CSystemdTimerControl()
 {
 }
 
-void CSystemdTimerControl::buildingConfiggure(const QVector<SystemDInfo> &infoVector)
+bool CSystemdTimerControl::buildingConfiggure(const QVector<SystemDInfo> &infoVector, bool removeStale)
 {
     if (infoVector.size() == 0)
-        return;
+        return false;
     QStringList fileNameList{};
+    bool configChanged = false;
     foreach (auto info, infoVector) {
         fileNameList.append(QString("calendar-remind-%1-%2-%3").arg(info.accountID.mid(0,8)).arg(info.alarmID.mid(0, 8)).arg(info.laterCount));
-        createService(fileNameList.last(), info);
-        createTimer(fileNameList.last(), info.triggerTimer);
+        configChanged |= createService(fileNameList.last(), info);
+        configChanged |= createTimer(fileNameList.last(), info.triggerTimer);
     }
+    //全量刷新时清理帐户下已失效的提醒任务文件
+    if (removeStale) {
+        configChanged |= removeStaleRemindFiles(infoVector.first().accountID, fileNameList);
+    }
+    //配置没有变化时不执行daemon-reload和重启定时器，
+    //避免reload触发已过期的一次性定时事件(如下载任务的OnActiveSec)被立即补触发
+    if (!configChanged)
+        return false;
     execLinuxCommand("systemctl --user daemon-reload");
     startSystemdTimer(fileNameList);
+    return true;
 }
 
 void CSystemdTimerControl::stopSystemdTimerByJobInfos(const QVector<SystemDInfo> &infoVector)
@@ -244,7 +257,7 @@ QString CSystemdTimerControl::execLinuxCommand(const QString &command)
     return strResult;
 }
 
-void CSystemdTimerControl::createService(const QString &name, const SystemDInfo &info)
+bool CSystemdTimerControl::createService(const QString &name, const SystemDInfo &info)
 {
     QString fileName;
     QString remindCMD = QString("/usr/bin/dbus-send --session --print-reply --dest=com.deepin.dataserver.Calendar "
@@ -258,10 +271,10 @@ void CSystemdTimerControl::createService(const QString &name, const SystemDInfo 
     content += "Description = schedule reminder task.\n";
     content += "[Service]\n";
     content += QString("ExecStart = %1\n").arg(remindCMD);
-    createFile(fileName, content);
+    return createFile(fileName, content);
 }
 
-void CSystemdTimerControl::createTimer(const QString &name, const QDateTime &triggerTimer)
+bool CSystemdTimerControl::createTimer(const QString &name, const QDateTime &triggerTimer)
 {
     QString fileName;
     fileName = m_systemdPath + name + ".timer";
@@ -272,14 +285,62 @@ void CSystemdTimerControl::createTimer(const QString &name, const QDateTime &tri
     content += "AccuracySec = 1ms\n";
     content += "RandomizedDelaySec = 0\n";
     content += QString("OnCalendar = %1 \n").arg(triggerTimer.toString("yyyy-MM-dd hh:mm:ss"));
-    createFile(fileName, content);
+    return createFile(fileName, content);
 }
 
-void CSystemdTimerControl::createFile(const QString &fileName, const QString &content)
+bool CSystemdTimerControl::createFile(const QString &fileName, const QString &content)
 {
-    QFile file;
-    file.setFileName(fileName);
-    file.open(QIODevice::ReadWrite | QIODevice::Text);
+    //内容没有变化时跳过写入，减少文件系统变动
+    QFile file(fileName);
+    if (file.open(QIODevice::ReadOnly)) {
+        QByteArray oldContent = file.readAll();
+        file.close();
+        if (oldContent == content.toLatin1()) {
+            return false;
+        }
+    }
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)) {
+        qCWarning(calendar_service) << "open timer config file for write failed:" << fileName << file.errorString();
+        return false;
+    }
     file.write(content.toLatin1());
     file.close();
+    return true;
+}
+
+bool CSystemdTimerControl::removeStaleRemindFiles(const QString &accountID, const QStringList &keepFileNames)
+{
+    QDir dir(m_systemdPath);
+    if (!dir.exists()) {
+        return false;
+    }
+    QStringList filters;
+    filters << QString("calendar-remind-%1-*").arg(accountID.mid(0,8));
+    dir.setFilter(QDir::Files | QDir::NoSymLinks);
+    dir.setNameFilters(filters);
+
+    QStringList staleTimers;
+    bool removed = false;
+    foreach (const QString &fileName, dir.entryList()) {
+        //去掉.timer/.service后缀得到任务名，不在保留名单中的即为失效任务
+        QString taskName = fileName;
+        if (taskName.endsWith(".timer")) {
+            taskName.chop(6);
+        } else if (taskName.endsWith(".service")) {
+            taskName.chop(8);
+        } else {
+            continue;
+        }
+        if (!keepFileNames.contains(taskName)) {
+            QFile::remove(m_systemdPath + fileName);
+            removed = true;
+            if (fileName.endsWith(".timer")) {
+                staleTimers.append(taskName);
+            }
+        }
+    }
+    if (!staleTimers.isEmpty()) {
+        stopSystemdTimer(staleTimers);
+    }
+    return removed;
 }
