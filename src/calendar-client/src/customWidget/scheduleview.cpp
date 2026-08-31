@@ -551,7 +551,16 @@ void CScheduleView::slotScheduleShow(const bool isShow, const DSchedule::Ptr &ou
         }
     } else {
         // qCDebug(ClientLogger) << "Hiding schedule widget";
+        //记录浮窗位置用于隐藏后刷新阴影残留区域
+        const QRect popupRect = m_ScheduleRemindWidget->geometry();
         m_ScheduleRemindWidget->hide();
+        //清除日程条选中高亮状态并强制重绘，消除浮窗与日程条重合处的颜色割裂
+        if (m_graphicsView)
+            m_graphicsView->resetPressState();
+        if (m_alldaylist)
+            m_alldaylist->resetPressState();
+        //刷新浮窗周围区域以清除阴影/模糊残留
+        this->update(popupRect.adjusted(-20, -20, 20, 20));
     }
 }
 

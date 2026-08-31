@@ -1095,6 +1095,21 @@ void DragInfoGraphicsView::pressScheduleInit()
     m_PressScheduleInfo = DSchedule::Ptr();
 }
 
+void DragInfoGraphicsView::resetPressState()
+{
+    qCDebug(ClientLogger) << "DragInfoGraphicsView::resetPressState";
+    m_press = false;
+    setPressSelectInfo(DSchedule::Ptr());
+    pressScheduleInit();
+    DragInfoItem::setPressFlag(false);
+    if (m_Scene) {
+        m_Scene->update();
+    }
+    if (viewport()) {
+        viewport()->update();
+    }
+}
+
 QDate DragInfoGraphicsView::getCurrentDate() const
 {
     // qCDebug(ClientLogger) << "DragInfoGraphicsView::getCurrentDate";
