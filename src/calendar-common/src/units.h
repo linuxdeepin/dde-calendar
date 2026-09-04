@@ -8,6 +8,7 @@
 #include <QString>
 #include <QDateTime>
 #include <QMap>
+#include <QStringList>
 #include <QDir>
 #include <QProcess>
 #include <QSharedPointer>
@@ -26,6 +27,12 @@ static const QMap<QString, QString> GTypeColor = {
     {"6cfd1459-1085-47e9-8ca6-379d47ec319a", "#5D51FF"},
     {"70080e96-e68d-40af-9cca-2f41021f6142", "#A950FF"},
     {"8ac5c8bb-55ce-4264-8b0a-5d32116cf983", "#717171"}};
+
+// CalDAV uses a separate fixed nine-color palette from local calendars.
+static const QStringList GCalDavTypeColors = {
+    QStringLiteral("#FF282A"), QStringLiteral("#FF5F00"), QStringLiteral("#A0D900"),
+    QStringLiteral("#5EC938"), QStringLiteral("#43CED5"), QStringLiteral("#4381D5"),
+    QStringLiteral("#175BDF"), QStringLiteral("#D312EF"), QStringLiteral("#C0875F")};
 
 QString dtToString(const QDateTime &dt);
 QDateTime dtFromString(const QString &st);

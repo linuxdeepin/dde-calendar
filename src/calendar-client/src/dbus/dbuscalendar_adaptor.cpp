@@ -26,6 +26,7 @@
 #include <QtCore/QStringList>
 #include <QtCore/QUuid>
 #include <QtCore/QVariant>
+#include <QSharedPointer>
 
 /*
  * Implementation of adaptor class CalendarAdaptor
@@ -82,11 +83,13 @@ static QString pickUserScheduleType(const DScheduleType::List &types)
 // available between the caller's earlier check and now), then falls back
 // to a synchronous call to AccountManager to get account list.
 // Returns an invalid interface (isValid() == false) if unavailable.
-static QDBusInterface getLocalAccountInterface()
+using QDBusInterfacePtr = QSharedPointer<QDBusInterface>;
+
+static QDBusInterfacePtr getLocalAccountInterface()
 {
     auto item = gAccountManager->getLocalAccountItem();
     if (item) {
-        return QDBusInterface(
+        return QDBusInterfacePtr::create(
             "com.deepin.dataserver.Calendar",
             item->getAccount()->dbusPath(),
             item->getAccount()->dbusInterface(),
@@ -104,18 +107,18 @@ static QDBusInterface getLocalAccountInterface()
     QDBusReply<QString> reply = mgrIface.call("getAccountList");
     if (!reply.isValid()) {
         qCWarning(ClientLogger) << "Failed to get account list:" << reply.error().message();
-        return QDBusInterface("", "", "", QDBusConnection::sessionBus());
+        return QDBusInterfacePtr::create("", "", "", QDBusConnection::sessionBus());
     }
 
     DAccount::List accountList;
     if (!DAccount::fromJsonListString(accountList, reply.value())) {
         qCWarning(ClientLogger) << "Failed to parse account list";
-        return QDBusInterface("", "", "", QDBusConnection::sessionBus());
+        return QDBusInterfacePtr::create("", "", "", QDBusConnection::sessionBus());
     }
 
     for (const auto &acc : accountList) {
         if (acc->accountType() == DAccount::Account_Local) {
-            return QDBusInterface(
+            return QDBusInterfacePtr::create(
                 "com.deepin.dataserver.Calendar",
                 acc->dbusPath(),
                 acc->dbusInterface(),
@@ -124,7 +127,7 @@ static QDBusInterface getLocalAccountInterface()
     }
 
     qCWarning(ClientLogger) << "No local account found";
-    return QDBusInterface("", "", "", QDBusConnection::sessionBus());
+    return QDBusInterfacePtr::create("", "", "", QDBusConnection::sessionBus());
 }
 
 // Apply JSON update fields to an existing schedule.
@@ -440,13 +443,13 @@ QString CalendarAdaptor::CreateSchedule(const QString &scheduleData)
         }
 
         // Fallback: directly call backend service synchronously
-        QDBusInterface accountIface = getLocalAccountInterface();
-        if (!accountIface.isValid()) {
+        QDBusInterfacePtr accountIface = getLocalAccountInterface();
+        if (!accountIface->isValid()) {
             return QString();
         }
 
         // Get schedule type list
-        QDBusReply<QString> typeListReply = accountIface.call("getScheduleTypeList");
+        QDBusReply<QString> typeListReply = accountIface->call("getScheduleTypeList");
         if (!typeListReply.isValid()) {
             qCWarning(ClientLogger) << "Failed to get schedule type list:" << typeListReply.error().message();
             return QString();
@@ -463,7 +466,7 @@ QString CalendarAdaptor::CreateSchedule(const QString &scheduleData)
         // Create the schedule
         QString scheduleJson;
         DSchedule::toJsonString(schedule, scheduleJson);
-        QDBusReply<QString> createReply = accountIface.call("createSchedule", QVariant(scheduleJson));
+        QDBusReply<QString> createReply = accountIface->call("createSchedule", QVariant(scheduleJson));
         if (!createReply.isValid()) {
             qCWarning(ClientLogger) << "Failed to create schedule:" << createReply.error().message();
             return QString();
@@ -503,11 +506,11 @@ bool CalendarAdaptor::ModifySchedule(const QString &scheduleId,
                 }
             }
             // Fallback: directly call backend
-            QDBusInterface accountIface = getLocalAccountInterface();
-            if (!accountIface.isValid()) {
+            QDBusInterfacePtr accountIface = getLocalAccountInterface();
+            if (!accountIface->isValid()) {
                 return false;
             }
-            QDBusReply<bool> delReply = accountIface.call("deleteScheduleByScheduleID", QVariant(scheduleId));
+            QDBusReply<bool> delReply = accountIface->call("deleteScheduleByScheduleID", QVariant(scheduleId));
             return delReply.isValid() && delReply.value();
 
         } else if (operation == "update") {
@@ -530,13 +533,13 @@ bool CalendarAdaptor::ModifySchedule(const QString &scheduleId,
 
             // Fallback: directly call backend
             // (reached when account is null OR schedule not in cache)
-            QDBusInterface accountIface = getLocalAccountInterface();
-            if (!accountIface.isValid()) {
+            QDBusInterfacePtr accountIface = getLocalAccountInterface();
+            if (!accountIface->isValid()) {
                 return false;
             }
 
             // Fetch existing schedule, merge updates, then save
-            QDBusReply<QString> getReply = accountIface.call("getScheduleByScheduleID", QVariant(scheduleId));
+            QDBusReply<QString> getReply = accountIface->call("getScheduleByScheduleID", QVariant(scheduleId));
             if (!getReply.isValid()) {
                 return false;
             }
@@ -551,7 +554,7 @@ bool CalendarAdaptor::ModifySchedule(const QString &scheduleId,
 
             QString scheduleJson;
             DSchedule::toJsonString(schedule, scheduleJson);
-            QDBusReply<bool> updReply = accountIface.call("updateSchedule", QVariant(scheduleJson));
+            QDBusReply<bool> updReply = accountIface->call("updateSchedule", QVariant(scheduleJson));
             return updReply.isValid() && updReply.value();
 
         } else if (operation == "snooze") {

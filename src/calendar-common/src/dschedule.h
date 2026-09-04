@@ -57,6 +57,9 @@ public:
     QString scheduleTypeID() const;
     void setScheduleTypeID(const QString &typeID);
 
+    QString accountColor() const;
+    void setAccountColor(const QString &color);
+
     //为了与旧数据兼容处理（与联系人交互中使用的是自增ID作为日程的ID）
     int dbID() const;
     void setDbID(int id);
@@ -120,6 +123,7 @@ private:
     QString m_fileName; //日程对应文件名称
     //日程类型
     QString m_scheduleTypeID;
+    QString m_accountColor;
     bool m_moved = false;
     int m_compatibleID; //为了与旧数据兼容处理（与联系人交互中使用的是自增ID作为日程的ID）
 };
