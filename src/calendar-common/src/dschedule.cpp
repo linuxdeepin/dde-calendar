@@ -18,6 +18,31 @@
 #define Duration_Day 24 * 60 * 60
 #define Duration_Week 7 * 24 * 60 * 60
 
+namespace {
+
+QDate displayDate(const QDateTime &dateTime, bool allDay = false)
+{
+    return allDay ? dateTime.date() : dateTime.toLocalTime().date();
+}
+
+bool hasUsableRecurrence(const DSchedule::Ptr &schedule)
+{
+    if (schedule.isNull() || !schedule->recurs()) {
+        return false;
+    }
+
+    const KCalendarCore::Recurrence *recurrence = schedule->recurrence();
+    const KCalendarCore::RecurrenceRule *rule = recurrence->defaultRRuleConst();
+    if (rule != nullptr && rule->recurrenceType() != KCalendarCore::RecurrenceRule::rNone
+        && !rule->rrule().isEmpty()) {
+        return true;
+    }
+
+    return !recurrence->rDates().isEmpty() || !recurrence->rDateTimes().isEmpty();
+}
+
+} // namespace
+
 DSchedule::DSchedule()
     : KCalendarCore::Event()
     , m_fileName("")
@@ -35,6 +60,7 @@ DSchedule::DSchedule(const DSchedule &schedule)
 {
     // qCDebug(CommonLogger) << "DSchedule copy constructor called for schedule:" << schedule.summary();
     this->setScheduleTypeID(schedule.scheduleTypeID());
+    this->setAccountColor(schedule.accountColor());
 }
 
 DSchedule::DSchedule(const KCalendarCore::Event &event)
@@ -62,6 +88,16 @@ void DSchedule::setScheduleTypeID(const QString &typeID)
 {
     // qCDebug(CommonLogger) << "Setting scheduleTypeID to:" << typeID;
     m_scheduleTypeID = typeID;
+}
+
+QString DSchedule::accountColor() const
+{
+    return m_accountColor;
+}
+
+void DSchedule::setAccountColor(const QString &color)
+{
+    m_accountColor = color;
 }
 
 bool DSchedule::isMoved()
@@ -318,8 +354,19 @@ bool DSchedule::fromIcsString(Ptr &schedule, const QString &string)
     KCalendarCore::MemoryCalendar::Ptr _cal(new KCalendarCore::MemoryCalendar(timezone));
     if (icalformat.fromString(_cal, string)) {
         KCalendarCore::Event::List eventList = _cal->events();
-        if (eventList.size() > 0) {
-            schedule = DSchedule::Ptr(new DSchedule(*eventList.at(0).data())); // eventList.at(0).staticCast<DSchedule>();
+        if (!eventList.isEmpty()) {
+            // A CalDAV resource may contain the master VEVENT followed by
+            // detached exception VEVENTs. This model stores one schedule, so
+            // prefer the master instead of relying on provider-specific event
+            // ordering. EXDATE/RDATE data on the master remains intact.
+            KCalendarCore::Event::Ptr selectedEvent = eventList.first();
+            for (const KCalendarCore::Event::Ptr &event : eventList) {
+                if (!event->hasRecurrenceId()) {
+                    selectedEvent = event;
+                    break;
+                }
+            }
+            schedule = DSchedule::Ptr(new DSchedule(*selectedEvent.data()));
             // qCDebug(CommonLogger) << "Successfully parsed schedule:" << schedule->summary();
             resBool = true;
         }
@@ -451,7 +498,7 @@ void DSchedule::expendRecurrence(DSchedule::Map &scheduleMap, const DSchedule::P
         queryDtStart.setTime(QTime(0,0,0));
     }
 
-    if (schedule->recurs()) {
+    if (hasUsableRecurrence(schedule)) {
         //获取日程的开始结束时间差
         qint64 interval = schedule->dtStart().secsTo(schedule->dtEnd());
         QList<QDateTime> dtList = schedule->recurrence()->timesInInterval(queryDtStart, dtEnd);
@@ -466,12 +513,12 @@ void DSchedule::expendRecurrence(DSchedule::Map &scheduleMap, const DSchedule::P
             if (schedule->dtStart() != dt) {
                 newSchedule->setRecurrenceId(dt);
             }
-            scheduleMap[dt.date()].append(newSchedule);
+            scheduleMap[displayDate(dt, schedule->allDay())].append(newSchedule);
         }
     } else {
         // qCDebug(CommonLogger) << "Schedule does not recur, checking if it falls within the interval.";
         if (!(schedule->dtStart() > dtEnd || schedule->dtEnd() < queryDtStart)) {
-            scheduleMap[schedule->dtStart().date()].append(schedule);
+            scheduleMap[displayDate(schedule->dtStart(), schedule->allDay())].append(schedule);
         }
     }
 }
@@ -488,7 +535,7 @@ QMap<QDate, DSchedule::List> DSchedule::convertSchedules(const DScheduleQueryPar
         //获取日程的开始结束时间差
         qint64 interval = schedule->dtStart().secsTo(schedule->dtEnd());
         //如果存在重复日程
-        if (schedule->recurs()) {
+        if (hasUsableRecurrence(schedule)) {
             // qCDebug(CommonLogger) << "Processing recurring schedule:" << schedule->summary();
             //如果为农历日程
             if (schedule->lunnar()) {
@@ -515,7 +562,7 @@ QMap<QDate, DSchedule::List> DSchedule::convertSchedules(const DScheduleQueryPar
                     if (schedule->dtStart() != recurDateTime) {
                         newSchedule->setRecurrenceId(recurDateTime);
                     }
-                    scheduleMap[recurDateTime.date()].append(newSchedule);
+                    scheduleMap[displayDate(recurDateTime, schedule->allDay())].append(newSchedule);
                 }
             } else {
                 // qCDebug(CommonLogger) << "Processing Gregorian recurring schedule.";
@@ -532,16 +579,18 @@ QMap<QDate, DSchedule::List> DSchedule::convertSchedules(const DScheduleQueryPar
                 queryDtStart.setTime(QTime(0,0,0));
             }
             if (!(schedule->dtEnd() < queryDtStart || schedule->dtStart() > dtEnd)) {
-                if (extend && schedule->isMultiDay()) {
+                const QDate displayStartDate = displayDate(schedule->dtStart(), schedule->allDay());
+                const QDate displayEndDate = displayDate(schedule->dtEnd(), schedule->allDay());
+                if (extend && displayStartDate != displayEndDate) {
                     // qCDebug(CommonLogger) << "Expanding multi-day schedule.";
                     //需要扩展的天数
-                    int extenddays = static_cast<int>(schedule->dtStart().daysTo(schedule->dtEnd()));
+                    const int extenddays = displayStartDate.daysTo(displayEndDate);
                     for (int i = 0; i <= extenddays; ++i) {
                         // 开始结束日期已经在查询时间范围内
-                        scheduleMap[schedule->dtStart().date().addDays(i)].append(schedule);
+                        scheduleMap[displayStartDate.addDays(i)].append(schedule);
                     }
                 } else {
-                    scheduleMap[schedule->dtStart().date()].append(schedule);
+                    scheduleMap[displayStartDate].append(schedule);
                 }
             }
         }

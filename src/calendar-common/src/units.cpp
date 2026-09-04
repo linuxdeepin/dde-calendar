@@ -18,8 +18,16 @@
 QString dtToString(const QDateTime &dt)
 {
     // qCDebug(CommonLogger) << "Converting QDateTime to string:" << dt;
-    QTime _offsetTime = QTime(0, 0).addSecs(dt.timeZone().offsetFromUtc(dt));
-    return QString("%1+%2").arg(dt.toString("yyyy-MM-ddThh:mm:ss")).arg(_offsetTime.toString("hh:mm"));
+    const int offsetSeconds = dt.timeZone().offsetFromUtc(dt);
+    const QChar sign = offsetSeconds < 0 ? QLatin1Char('-') : QLatin1Char('+');
+    const int absoluteSeconds = qAbs(offsetSeconds);
+    const int hours = absoluteSeconds / 3600;
+    const int minutes = (absoluteSeconds % 3600) / 60;
+    return QStringLiteral("%1%2%3:%4")
+        .arg(dt.toString(QStringLiteral("yyyy-MM-ddThh:mm:ss")))
+        .arg(sign)
+        .arg(hours, 2, 10, QLatin1Char('0'))
+        .arg(minutes, 2, 10, QLatin1Char('0'));
 }
 
 QDateTime dtConvert(const QDateTime &datetime)
@@ -32,10 +40,9 @@ QDateTime dtConvert(const QDateTime &datetime)
 
 QDateTime dtFromString(const QString &st)
 {
-    // qCDebug(CommonLogger) << "Converting string to QDateTime:" << st;
-    QDateTime &&dtSt = QDateTime::fromString(st, Qt::ISODate);
-    //转换为本地时区
-    return QDateTime(dtSt.date(),dtSt.time());
+    // 保留字符串中的时区/UTC 偏移，显示层再根据当前系统时区转换。
+    // 不能在这里转成本地时间，否则用户修改系统时区后会丢失原始时刻。
+    return QDateTime::fromString(st, Qt::ISODate);
 }
 
 QString getDBPath()
