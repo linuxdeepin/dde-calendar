@@ -21,7 +21,7 @@ set(APP_QRC "${APP_RES_DIR}/resources.qrc")
 # Find the library
 find_package(PkgConfig REQUIRED)
 find_package(Dtk${DTK_VERSION_MAJOR} REQUIRED COMPONENTS Core)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core DBus Sql)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core DBus Network Sql)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
@@ -49,6 +49,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${OBJECT_BINARY_DIR} ../calend
 target_link_libraries(${PROJECT_NAME}
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::DBus
+    Qt${QT_VERSION_MAJOR}::Network
     Qt${QT_VERSION_MAJOR}::Sql
     Dtk${DTK_VERSION_MAJOR}::Core
     commondata
