@@ -17,6 +17,7 @@
 
 #include <QStandardPaths>
 #include <QDir>
+#include <QFileInfo>
 #include <QDebug>
 #include <QSqlQuery>
 #include <QSqlError>
@@ -39,9 +40,13 @@ DDataBaseManagement::DDataBaseManagement()
     setNewDatabasePath(newDbPath);
     QString newDB(newDatabasePath() + "/" + m_newDatabaseName);
     qCDebug(ServiceLogger) << "New database path:" << newDB;
-    //如果新数据库不存在
-    if (!databaseExists(newDatabasePath())) {
-        qCDebug(ServiceLogger) << "New database does not exist, creating initial setup";
+    // 确保数据库目录存在；不能仅将目录存在视为账户库已经初始化。
+    databaseExists(newDatabasePath());
+    // 账户管理数据库不存在或为空时，创建本地账户及其数据库。
+    // 不能只检查目录，因为删除数据库文件后配置目录仍然存在。
+    const QFileInfo accountManagerFile(newDB);
+    if (!accountManagerFile.isFile() || accountManagerFile.size() == 0) {
+        qCDebug(ServiceLogger) << "Account manager database is missing or empty, creating initial setup";
         QString localAccountDB(newDatabasePath() + "/" + localDBName);
         qCDebug(ServiceLogger) << "Initializing account manager database";
         DAccountManagerDataBase accountManager;

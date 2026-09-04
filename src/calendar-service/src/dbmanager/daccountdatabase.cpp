@@ -19,7 +19,7 @@ DAccountDataBase::DAccountDataBase(const DAccount::Ptr &account, QObject *parent
     : DDataBase(parent)
     , m_account(account)
 {
-    setConnectionName(m_account->accountName());
+    setConnectionName(m_account->accountID());
 }
 
 QString DAccountDataBase::createSchedule(const DSchedule::Ptr &schedule)
@@ -28,7 +28,9 @@ QString DAccountDataBase::createSchedule(const DSchedule::Ptr &schedule)
         qCDebug(ServiceLogger) << "Creating schedule:" << schedule->summary() 
                               << "Start:" << schedule->dtStart().toString();
         SqliteQuery query(m_database);
-        schedule->setUid(DDataBase::createUuid());
+        if (schedule->uid().isEmpty() || schedule->uid() == QStringLiteral("0")) {
+            schedule->setUid(DDataBase::createUuid());
+        }
 
         QString strSql("INSERT INTO schedules                                                   \
                        (scheduleID, scheduleTypeID, summary, description, allDay, dtStart   \
@@ -78,7 +80,7 @@ bool DAccountDataBase::updateSchedule(const DSchedule::Ptr &schedule)
         QString strSql("UPDATE schedules                                                  \
                        SET scheduleTypeID=?, summary=?, description=?, allDay=?           \
                 , dtStart=?, dtEnd=?, isAlarm=?,titlePinyin=?, isLunar=?, ics=?, fileName=?             \
-                , dtUpdate=? WHERE scheduleID= ?;");
+                , dtUpdate=?, dtDelete=?, isDeleted=0 WHERE scheduleID= ?;");
         if (query.prepare(strSql)) {
             query.addBindValue(schedule->scheduleTypeID());
             query.addBindValue(schedule->summary());
@@ -92,6 +94,7 @@ bool DAccountDataBase::updateSchedule(const DSchedule::Ptr &schedule)
             query.addBindValue(DSchedule::toIcsString(schedule));
             query.addBindValue(schedule->fileName());
             query.addBindValue(dtToString(schedule->lastModified()));
+            query.addBindValue(QString());
             query.addBindValue(schedule->schedulingID());
             if (query.exec()) {
                 resbool = true;
@@ -118,12 +121,16 @@ DSchedule::Ptr DAccountDataBase::getScheduleByScheduleID(const QString &schedule
     DSchedule::Ptr schedule;
     if (query.prepare(strSql)) {
         query.addBindValue(scheduleID);
-        schedule = DSchedule::Ptr(new DSchedule);
         if (query.exec()) {
             if (query.next()) {
-                QString &&icsStr = query.value("ics").toString();
-                DSchedule::fromIcsString(schedule, icsStr);
-                schedule->setScheduleTypeID(query.value("scheduleTypeID").toString());
+                const QString ics = query.value("ics").toString();
+                DSchedule::Ptr parsedSchedule;
+                if (DSchedule::fromIcsString(parsedSchedule, ics) && !parsedSchedule.isNull()) {
+                    parsedSchedule->setScheduleTypeID(query.value("scheduleTypeID").toString());
+                    schedule = parsedSchedule;
+                } else {
+                    qCWarning(ServiceLogger) << "Failed to parse schedule ICS for scheduleID:" << scheduleID;
+                }
             }
         } else {
             qCWarning(ServiceLogger) << Q_FUNC_INFO << query.lastError();
@@ -138,6 +145,109 @@ DSchedule::Ptr DAccountDataBase::getScheduleByScheduleID(const QString &schedule
     }
 
     return schedule;
+}
+
+bool DAccountDataBase::scheduleExistsByScheduleID(const QString &scheduleID) const
+{
+    if (scheduleID.isEmpty()) {
+        return false;
+    }
+
+    SqliteQuery query(m_database);
+    if (!query.prepare(QStringLiteral(
+            "SELECT 1 FROM schedules WHERE scheduleID = ? LIMIT 1"))) {
+        return false;
+    }
+    query.addBindValue(scheduleID);
+    return query.exec() && query.next();
+}
+
+bool DAccountDataBase::isScheduleDeletedByScheduleID(const QString &scheduleID) const
+{
+    if (scheduleID.isEmpty()) {
+        return false;
+    }
+    SqliteQuery query(m_database);
+    if (!query.prepare(QStringLiteral(
+            "SELECT isDeleted FROM schedules WHERE scheduleID = ? LIMIT 1"))) {
+        return false;
+    }
+    query.addBindValue(scheduleID);
+    return query.exec() && query.next() && query.value(0).toInt() != 0;
+}
+
+bool DAccountDataBase::upsertCalDavRecoveryItem(const DCalDavRecoveryItem &item)
+{
+    if (item.accountID.isEmpty() || item.localScheduleID.isEmpty() || item.scheduleIcs.isEmpty()) {
+        return false;
+    }
+    SqliteQuery query(m_database);
+    if (!query.prepare(QStringLiteral(
+            "INSERT OR REPLACE INTO caldavRecovery "
+            "(accountID, localScheduleID, operationType, scheduleIcs, calendarID, href, etag, "
+            "originalIcs, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"))) {
+        return false;
+    }
+    query.addBindValue(item.accountID);
+    query.addBindValue(item.localScheduleID);
+    query.addBindValue(static_cast<int>(item.operationType));
+    query.addBindValue(item.scheduleIcs);
+    query.addBindValue(item.calendarID);
+    query.addBindValue(item.href);
+    query.addBindValue(item.etag);
+    query.addBindValue(item.originalIcs);
+    query.addBindValue((item.createdAt.isValid() ? item.createdAt : QDateTime::currentDateTimeUtc())
+                           .toUTC().toString(Qt::ISODate));
+    return query.exec();
+}
+
+DCalDavRecoveryItem::List DAccountDataBase::getCalDavRecoveryItems(const QString &accountID) const
+{
+    DCalDavRecoveryItem::List items;
+    if (accountID.isEmpty()) {
+        return items;
+    }
+    SqliteQuery query(m_database);
+    if (!query.prepare(QStringLiteral(
+            "SELECT accountID, localScheduleID, operationType, scheduleIcs, calendarID, href, etag, "
+            "originalIcs, createdAt FROM caldavRecovery WHERE accountID = ? ORDER BY createdAt"))) {
+        return items;
+    }
+    query.addBindValue(accountID);
+    if (!query.exec()) {
+        return items;
+    }
+    while (query.next()) {
+        DCalDavRecoveryItem item;
+        item.accountID = query.value("accountID").toString();
+        item.localScheduleID = query.value("localScheduleID").toString();
+        item.operationType = static_cast<DCalDavRecoveryItem::OperationType>(
+            query.value("operationType").toInt());
+        item.scheduleIcs = query.value("scheduleIcs").toString();
+        item.calendarID = query.value("calendarID").toString();
+        item.href = query.value("href").toString();
+        item.etag = query.value("etag").toString();
+        item.originalIcs = query.value("originalIcs").toString();
+        item.createdAt = QDateTime::fromString(query.value("createdAt").toString(), Qt::ISODate);
+        items.append(item);
+    }
+    return items;
+}
+
+bool DAccountDataBase::deleteCalDavRecoveryItem(const QString &accountID,
+                                                 const QString &localScheduleID)
+{
+    if (accountID.isEmpty() || localScheduleID.isEmpty()) {
+        return false;
+    }
+    SqliteQuery query(m_database);
+    if (!query.prepare(QStringLiteral(
+            "DELETE FROM caldavRecovery WHERE accountID = ? AND localScheduleID = ?"))) {
+        return false;
+    }
+    query.addBindValue(accountID);
+    query.addBindValue(localScheduleID);
+    return query.exec();
 }
 
 QStringList DAccountDataBase::getScheduleIDListByTypeID(const QString &typeID)
@@ -212,6 +322,35 @@ bool DAccountDataBase::deleteSchedulesByScheduleTypeID(const QString &typeID, co
         query.finish();
     }
     return resBool;
+}
+
+DSchedule::List DAccountDataBase::getScheduleListByTypeID(const QString &typeID)
+{
+    DSchedule::List scheduleList;
+    const QString sql = QStringLiteral(
+        "SELECT ics, scheduleTypeID FROM schedules WHERE scheduleTypeID = ? AND isDeleted = 0");
+    SqliteQuery query(m_database);
+    if (query.prepare(sql)) {
+        query.addBindValue(typeID);
+        if (query.exec()) {
+            while (query.next()) {
+                DSchedule::Ptr schedule;
+                if (DSchedule::fromIcsString(schedule, query.value("ics").toString())
+                    && !schedule.isNull()) {
+                    schedule->setScheduleTypeID(query.value("scheduleTypeID").toString());
+                    scheduleList.append(schedule);
+                }
+            }
+        } else {
+            qCWarning(ServiceLogger) << Q_FUNC_INFO << query.lastError();
+        }
+    } else {
+        qCWarning(ServiceLogger) << Q_FUNC_INFO << query.lastError();
+    }
+    if (query.isActive()) {
+        query.finish();
+    }
+    return scheduleList;
 }
 
 DSchedule::List DAccountDataBase::querySchedulesByKey(const QString &key)
@@ -351,6 +490,11 @@ void DAccountDataBase::initDBData()
         //如果存在则连接数据库
         qCDebug(ServiceLogger) << "Database file exists, opening connection";
         dbOpen();
+    }
+    SqliteQuery recoverySchemaQuery(m_database);
+    if (!recoverySchemaQuery.exec(sql_create_caldavRecovery)) {
+        qCWarning(ServiceLogger) << "Failed to create CalDAV recovery table:"
+                                 << recoverySchemaQuery.lastError().text();
     }
 }
 
@@ -1064,6 +1208,11 @@ void DAccountDataBase::createDB()
         res = query.exec(sql_create_remindTask);
         if (!res) {
             qCWarning(ServiceLogger) << "Failed to create remindTask table:" << query.lastError().text();
+        }
+
+        res = query.exec(sql_create_caldavRecovery);
+        if (!res) {
+            qCWarning(ServiceLogger) << "Failed to create CalDAV recovery table:" << query.lastError().text();
         }
 
         if (query.isActive()) {

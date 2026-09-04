@@ -234,7 +234,16 @@ void DUIDSynDataWorker::startUpdate()
 
     if (errCode == 0) {
         qCInfo(ServiceLogger) << "Committing transaction for sync.";
-        transactionLocker.commit();
+        if (!transactionLocker.commit()) {
+            errCode = -1;
+            if (transactionLocker.hasPartialCommit()) {
+                qCWarning(ServiceLogger)
+                    << "Sync transaction partially committed; forcing reconciliation on retry."
+                    << "Committed connections:" << transactionLocker.committedConnectionNames();
+            } else {
+                qCWarning(ServiceLogger) << "Sync transaction commit failed and was rolled back.";
+            }
+        }
     } else {
         qCWarning(ServiceLogger) << "Rolling back transaction for sync. Error code:" << errCode;
         transactionLocker.rollback();
