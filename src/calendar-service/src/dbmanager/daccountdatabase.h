@@ -12,6 +12,7 @@
 #include "dreminddata.h"
 #include "duploadtaskdata.h"
 #include "dtypecolor.h"
+#include "dcaldavrecoveryitem.h"
 
 #include <QSharedPointer>
 
@@ -30,9 +31,16 @@ public:
     bool updateSchedule(const DSchedule::Ptr &schedule);
     //根据日程id获取日程信息
     DSchedule::Ptr getScheduleByScheduleID(const QString &scheduleID);
+    bool scheduleExistsByScheduleID(const QString &scheduleID) const;
+    bool isScheduleDeletedByScheduleID(const QString &scheduleID) const;
+
+    bool upsertCalDavRecoveryItem(const DCalDavRecoveryItem &item);
+    DCalDavRecoveryItem::List getCalDavRecoveryItems(const QString &accountID) const;
+    bool deleteCalDavRecoveryItem(const QString &accountID, const QString &localScheduleID);
 
     //根据日程类型ID获取日程id列表
     QStringList getScheduleIDListByTypeID(const QString &typeID);
+    DSchedule::List getScheduleListByTypeID(const QString &typeID);
     bool deleteScheduleByScheduleID(const QString &scheduleID, const int isDeleted = 0);
     bool deleteSchedulesByScheduleTypeID(const QString &typeID, const int isDeleted = 0);
     //根据关键字查询一定范围内的日程

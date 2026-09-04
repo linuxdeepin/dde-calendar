@@ -132,6 +132,89 @@ const QString DDataBase::sql_create_accountManager =
     " expandStatus  integer,               "
     " isDeleted INTEGER not null)";
 
+//CalDAV 账户配置
+const QString DDataBase::sql_create_caldavAccount =
+    " CREATE TABLE if not exists caldavAccount ("
+    " accountID TEXT NOT NULL PRIMARY KEY,"
+    " providerType INTEGER NOT NULL,"
+    " serverUrl TEXT NOT NULL,"
+    " username TEXT NOT NULL,"
+    " credentialRef TEXT,"
+    " accountColor TEXT,"
+    " lastSuccessfulSync DATETIME,"
+    " syncStatus INTEGER NOT NULL DEFAULT 0,"
+    " failureReason TEXT,"
+    " failureCode INTEGER NOT NULL DEFAULT 0,"
+    " retryCount INTEGER NOT NULL DEFAULT 0,"
+    " nextRetryAt DATETIME)";
+
+//CalDAV 日历集合
+const QString DDataBase::sql_create_caldavCalendar =
+    " CREATE TABLE if not exists caldavCalendar ("
+    " calendarID TEXT NOT NULL PRIMARY KEY,"
+    " accountID TEXT NOT NULL,"
+    " href TEXT NOT NULL,"
+    " displayName TEXT,"
+    " color TEXT,"
+    " scheduleTypeID TEXT,"
+    " privileges INTEGER NOT NULL DEFAULT 0,"
+    " syncToken TEXT,"
+    " initialSyncCompleted INTEGER NOT NULL DEFAULT 0,"
+    " enabled INTEGER NOT NULL DEFAULT 1,"
+    " UNIQUE(accountID, href))";
+
+//CalDAV 远端日程映射
+const QString DDataBase::sql_create_caldavEventMapping =
+    " CREATE TABLE if not exists caldavEventMapping ("
+    " localScheduleID TEXT NOT NULL,"
+    " accountID TEXT NOT NULL,"
+    " calendarID TEXT NOT NULL,"
+    " uid TEXT NOT NULL,"
+    " href TEXT NOT NULL,"
+    " etag TEXT,"
+    " originalIcs TEXT,"
+    " PRIMARY KEY(accountID, href))";
+
+//CalDAV 待处理写回操作
+const QString DDataBase::sql_create_caldavCategoryMapping =
+    " CREATE TABLE if not exists caldavCategoryMapping ("
+    " accountID TEXT NOT NULL,"
+    " calendarID TEXT NOT NULL,"
+    " categoryKey TEXT NOT NULL,"
+    " scheduleTypeID TEXT NOT NULL,"
+    " PRIMARY KEY(accountID, calendarID, categoryKey))";
+
+const QString DDataBase::sql_create_caldavOutbox =
+    " CREATE TABLE if not exists caldavOutbox ("
+    " operationID TEXT NOT NULL PRIMARY KEY,"
+    " accountID TEXT NOT NULL,"
+    " localScheduleID TEXT NOT NULL,"
+    " operationType INTEGER NOT NULL,"
+    " baseEtag TEXT,"
+    " conflictIcs TEXT,"
+    " serverIcs TEXT,"
+    " retryCount INTEGER NOT NULL DEFAULT 0,"
+    " nextRetryAt DATETIME,"
+    " failureType INTEGER NOT NULL DEFAULT 0)";
+
+const QString DDataBase::sql_create_caldavRecovery =
+    " CREATE TABLE if not exists caldavRecovery ("
+    " accountID TEXT NOT NULL,"
+    " localScheduleID TEXT NOT NULL,"
+    " operationType INTEGER NOT NULL,"
+    " scheduleIcs TEXT NOT NULL,"
+    " calendarID TEXT,"
+    " href TEXT,"
+    " etag TEXT,"
+    " originalIcs TEXT,"
+    " createdAt TEXT NOT NULL,"
+    " PRIMARY KEY(accountID, localScheduleID))";
+
+const QString DDataBase::sql_create_caldavAccountDeletionCleanup =
+    " CREATE TABLE if not exists caldavAccountDeletionCleanup ("
+    " accountID TEXT NOT NULL PRIMARY KEY,"
+    " sourceDbName TEXT NOT NULL)";
+
 //日历通用设置
 const QString DDataBase::sql_create_calendargeneralsettings =
     " CREATE TABLE  if not exists calendargeneralsettings(     "
@@ -223,10 +306,18 @@ bool DDataBase::dbFileExists()
     return exists;
 }
 
-void DDataBase::removeDB()
+bool DDataBase::removeDB()
 {
-    qCDebug(ServiceLogger) << "Removing database file:" << getDBPath();
-    QFile::remove(getDBPath());
+    const QString databasePath = getDBPath();
+    qCDebug(ServiceLogger) << "Removing database file:" << databasePath;
+    if (databasePath.isEmpty() || !QFile::exists(databasePath)) {
+        return true;
+    }
+    if (QFile::remove(databasePath)) {
+        return true;
+    }
+    qCWarning(ServiceLogger) << "Failed to remove database file:" << databasePath;
+    return false;
 }
 
 void SqliteMutex::lock()
@@ -309,18 +400,26 @@ bool SqliteQuery::exec()
     return f;
 }
 
-void SqliteQuery::transaction()
+bool SqliteQuery::transaction()
 {
     qCDebug(ServiceLogger) << "Starting database transaction";
     getDbMutexRef(_db.databaseName()).transactionLock();
-    _db.transaction();
+    if (!_db.transaction()) {
+        getDbMutexRef(_db.databaseName()).transactionUnlock();
+        return false;
+    }
+    return true;
 }
 
-void SqliteQuery::commit()
+bool SqliteQuery::commit()
 {
     qCDebug(ServiceLogger) << "Committing database transaction";
-    _db.commit();
+    const bool success = _db.commit();
+    if (!success) {
+        _db.rollback();
+    }
     getDbMutexRef(_db.databaseName()).transactionUnlock();
+    return success;
 }
 
 void SqliteQuery::rollback()

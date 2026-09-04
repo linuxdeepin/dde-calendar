@@ -103,45 +103,6 @@ struct SyncAccount {
 };
 
 /**
- * @brief The SqlTransactionLocker class 用于数据库事务
- */
-class SqlTransactionLocker
-{
-public:
-    explicit SqlTransactionLocker(const QStringList &connectionNames)
-        : _connectionNames(connectionNames)
-    {
-        for (auto name : _connectionNames) {
-            SqliteQuery(name).transaction();
-        }
-    }
-    ~SqlTransactionLocker()
-    {
-        if (hasCommited)
-            return;
-
-        for (auto name : _connectionNames)
-            SqliteQuery(name).rollback();
-    }
-    void commit()
-    {
-        hasCommited = true;
-        for (auto name : _connectionNames)
-            SqliteQuery(name).commit();
-    }
-    void rollback()
-    {
-        hasCommited = true;
-        for (auto name : _connectionNames)
-            SqliteQuery(name).rollback();
-    }
-
-private:
-    QStringList _connectionNames;
-    bool hasCommited = false;
-};
-
-/**
  * @brief The DUIDSynDataWorker class 用于多线程上传下载
  */
 class DUIDSynDataWorker : public QObject

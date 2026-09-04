@@ -12,6 +12,7 @@
 #include <QVector>
 #include <QMutex>
 #include <QMap>
+#include <QStringList>
 
 //账户数据库的实例
 #define DBAccountManager QSqlDatabase::database(DDataBase::NameAccountManager)
@@ -40,6 +41,19 @@ public:
     static const QString sql_create_remindTask;
     //创建帐户管理表
     static const QString sql_create_accountManager;
+    //CalDAV 账户配置
+    static const QString sql_create_caldavAccount;
+    //CalDAV 日历集合
+    static const QString sql_create_caldavCalendar;
+    //CalDAV 远端日程映射
+    static const QString sql_create_caldavEventMapping;
+    //CalDAV 日程分类与本地类型映射
+    static const QString sql_create_caldavCategoryMapping;
+    //CalDAV 待处理写回操作
+    static const QString sql_create_caldavOutbox;
+    //CalDAV 跨数据库操作恢复记录（保存在账户本地数据库）
+    static const QString sql_create_caldavRecovery;
+    static const QString sql_create_caldavAccountDeletionCleanup;
     //日历通用设置
     static const QString sql_create_calendargeneralsettings;
 
@@ -71,7 +85,7 @@ public:
     bool dbFileExists();
 
     //删除db数据库文件
-    void removeDB();
+    bool removeDB();
 
 protected:
     //创建数据库
@@ -138,12 +152,99 @@ public:
     bool exec(QString sql);
     bool exec();
 
-    void transaction();
-    void commit();
+    bool transaction();
+    bool commit();
     void rollback();
 
 private:
     QSqlDatabase _db;
+};
+
+/**
+ * @brief SqlTransactionLocker coordinates transactions across SQLite connections.
+ *
+ * SQLite commits each connection independently, so this class cannot provide
+ * atomicity across multiple database files. Callers must handle partial commits
+ * when hasPartialCommit() returns true.
+ */
+class SqlTransactionLocker
+{
+public:
+    explicit SqlTransactionLocker(const QStringList &connectionNames)
+    {
+        for (const QString &name : connectionNames) {
+            if (SqliteQuery(name).transaction()) {
+                m_activeConnectionNames.append(name);
+            } else {
+                rollbackActiveTransactions();
+                m_valid = false;
+                return;
+            }
+        }
+    }
+
+    ~SqlTransactionLocker()
+    {
+        if (!m_committed) {
+            rollback();
+        }
+    }
+
+    bool commit()
+    {
+        if (m_committed) {
+            return m_valid;
+        }
+        if (!m_valid) {
+            m_committed = true;
+            return false;
+        }
+
+        while (!m_activeConnectionNames.isEmpty()) {
+            const QString name = m_activeConnectionNames.first();
+            if (!SqliteQuery(name).commit()) {
+                m_activeConnectionNames.removeFirst();
+                m_partialCommit = !m_committedConnectionNames.isEmpty();
+                rollbackActiveTransactions();
+                m_committed = true;
+                return false;
+            }
+            m_activeConnectionNames.removeFirst();
+            m_committedConnectionNames.append(name);
+        }
+        m_committed = true;
+        return true;
+    }
+
+    bool isValid() const { return m_valid; }
+    bool hasPartialCommit() const { return m_partialCommit; }
+    const QStringList &committedConnectionNames() const
+    {
+        return m_committedConnectionNames;
+    }
+
+    void rollback()
+    {
+        if (m_committed) {
+            return;
+        }
+        rollbackActiveTransactions();
+        m_committed = true;
+    }
+
+private:
+    void rollbackActiveTransactions()
+    {
+        while (!m_activeConnectionNames.isEmpty()) {
+            SqliteQuery(m_activeConnectionNames.takeLast()).rollback();
+        }
+    }
+
+    QStringList m_activeConnectionNames;
+    QStringList m_committedConnectionNames;
+    bool m_valid = true;
+    bool m_committed = false;
+    bool m_partialCommit = false;
 };
 
 #endif // DDATABASE_H
