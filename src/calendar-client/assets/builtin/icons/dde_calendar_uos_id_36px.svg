@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="36px" height="36px" viewBox="0 0 36 36" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>第三方账户/uos id</title>
+    <defs>
+        <filter x="-10.9%" y="-10.9%" width="121.9%" height="130.4%" filterUnits="objectBoundingBox" id="filter-1">
+            <feOffset dx="0" dy="1" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="1" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.20036604 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="96.1840679%" id="linearGradient-2">
+            <stop stop-color="#FFFFFF" offset="0%"></stop>
+            <stop stop-color="#C0D4FF" offset="100%"></stop>
+        </linearGradient>
+        <path d="M18.0363636,0 C22.6312704,0 26.4486331,3.50938654 27.2080829,8.12427108 C30.0032038,9.19339376 32,12.0175441 32,15.3333333 C32,19.5675164 28.7438891,23 24.7272727,23 L7.27272727,23 C3.25611091,23 0,19.5675164 0,15.3333333 C0,11.0991503 3.25611091,7.66666667 7.27272727,7.66666667 C7.83618169,7.66666667 8.38467034,7.73421355 8.91130397,7.86204492 C9.76965344,3.37710022 13.5288912,0 18.0363636,0 Z" id="path-3"></path>
+        <filter x="-9.4%" y="-13.0%" width="118.8%" height="126.1%" filterUnits="objectBoundingBox" id="filter-4">
+            <feGaussianBlur stdDeviation="2" in="SourceAlpha" result="shadowBlurInner1"></feGaussianBlur>
+            <feOffset dx="0" dy="-2" in="shadowBlurInner1" result="shadowOffsetInner1"></feOffset>
+            <feComposite in="shadowOffsetInner1" in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1" result="shadowInnerInner1"></feComposite>
+            <feColorMatrix values="0 0 0 0 0.0641111344   0 0 0 0 0.254066875   0 0 0 0 0.844068878  0 0 0 0.35 0" type="matrix" in="shadowInnerInner1"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="第三方账户/uos-id" stroke="none" fill="none" fill-rule="evenodd" stroke-width="1">
+        <g id="编组" filter="url(#filter-1)" transform="translate(2, 6)">
+            <g id="Path">
+                <use fill="url(#linearGradient-2)" fill-rule="evenodd" xlink:href="#path-3"></use>
+                <use fill="black" fill-opacity="1" filter="url(#filter-4)" xlink:href="#path-3"></use>
+            </g>
+        </g>
+    </g>
+</svg>

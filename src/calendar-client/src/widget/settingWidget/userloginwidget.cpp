@@ -9,8 +9,57 @@
 #include <DSettingsOption>
 #include <DSettingsWidgetFactory>
 #include <QHBoxLayout>
+#include <QPainter>
+#include <QStyleOptionToolButton>
+#include <QStylePainter>
 #include <QPainterPath>
 #include <QNetworkReply>
+
+namespace {
+class SignOutButton final : public DToolButton
+{
+public:
+    explicit SignOutButton(QWidget *parent = nullptr)
+        : DToolButton(parent)
+    {
+    }
+
+protected:
+    void paintEvent(QPaintEvent *event) override
+    {
+        Q_UNUSED(event)
+
+        QStyleOptionToolButton option;
+        DToolButton::initStyleOption(&option);
+        option.text.clear();
+        option.icon = QIcon();
+        QStylePainter stylePainter(this);
+        stylePainter.drawComplexControl(QStyle::CC_ToolButton, option);
+
+        const QRect contentRect = contentsRect();
+        const int iconLength = iconSize().width();
+        const int iconSpacing = 6;
+        const int textLength = fontMetrics().horizontalAdvance(text());
+        const int contentLength = textLength + iconSpacing + iconLength;
+        const int contentLeft = contentRect.x() + (contentRect.width() - contentLength) / 2;
+        const QRect textRect(contentLeft, contentRect.y(), textLength, contentRect.height());
+        const QRect iconRect(contentLeft + textLength + iconSpacing,
+                             contentRect.y() + (contentRect.height() - iconLength) / 2,
+                             iconLength,
+                             iconLength);
+
+        QPainter painter(this);
+        const QPalette::ColorGroup colorGroup = isEnabled() ? QPalette::Active : QPalette::Disabled;
+        painter.setPen(palette().color(colorGroup, QPalette::ButtonText));
+        painter.drawText(textRect, Qt::AlignVCenter | Qt::AlignLeft, text());
+
+        const QIcon::Mode iconMode = !isEnabled() ? QIcon::Disabled
+                                  : isDown() ? QIcon::Selected
+                                             : underMouse() ? QIcon::Active : QIcon::Normal;
+        icon().paint(&painter, iconRect, Qt::AlignCenter, iconMode);
+    }
+};
+}
 
 UserloginWidget::UserloginWidget(QWidget *parent)
     : QWidget(parent)
@@ -39,23 +88,31 @@ void UserloginWidget::initView()
     m_buttonLogin = new QPushButton(this);
     m_buttonLogin->setObjectName("ButtonLogin");
     m_buttonLogin->setAccessibleName("ButtonLogin");
-    m_buttonLoginOut = new QPushButton(this);
-    m_buttonLoginOut->setObjectName("ButtonLoginOut");
+    auto *signOutButton = new SignOutButton(this);
+    m_buttonLoginOut = signOutButton;
+    m_buttonLoginOut->setObjectName(QStringLiteral("UosSignOutButton"));
     m_buttonLoginOut->setAccessibleName("ButtonLoginOut");
-    m_buttonLogin->setFixedSize(98, 36);
-    m_buttonLoginOut->setFixedSize(98, 36);
+    m_buttonLogin->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+    m_buttonLoginOut->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+    m_buttonLoginOut->setFocusPolicy(Qt::NoFocus);
+    m_buttonLogin->setFixedHeight(36);
+    m_buttonLoginOut->setMinimumWidth(65);
+    m_buttonLoginOut->setFixedHeight(36);
     QHBoxLayout *layout = new QHBoxLayout(this);
-    const QIcon &icon = QIcon::fromTheme("dde_calendar_account");
-    m_buttonImg->setIcon(icon);
+    m_buttonImg->setIcon(QIcon::fromTheme("dde_calendar_account"));
     m_buttonImg->setIconSize(QSize(36, 36));
-    m_buttonImg->setStyleSheet("border:0px solid;");
+    m_buttonImg->setFlat(true);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(m_buttonImg);
     layout->addSpacing(5);
     layout->addWidget(m_userNameLabel);
     layout->addStretch();
     m_buttonLogin->setText(tr("Sign In", "button"));
-    m_buttonLoginOut->setText(tr("Sign Out", "button"));
+    signOutButton->setText(tr("Sign Out", "button"));
+    signOutButton->setIcon(QIcon(QStringLiteral(
+        ":/icons/deepin/builtin/icons/dde_calendar_logout_16px.svg")));
+    signOutButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    m_buttonLoginOut->setIconSize(QSize(16, 16));
     m_buttonLoginOut->hide();
     layout->addWidget(m_buttonLogin);
     layout->addWidget(m_buttonLoginOut);
@@ -126,7 +183,7 @@ void UserloginWidget::slotLoginBtnClicked()
 
 void UserloginWidget::slotLogoutBtnClicked()
 {
-    qCDebug(ClientLogger) << "Logout button clicked, initiating logout";
+    qCDebug(ClientLogger) << "UOS ID sign out requested";
     gAccountManager->loginout();
 }
 
@@ -140,7 +197,7 @@ void UserloginWidget::slotAccountUpdate()
         m_buttonLoginOut->show();
         DAccount::Ptr account = gUosAccountItem->getAccount();
         m_userNameLabel->setText(account->accountName());
-        m_userNameLabel->setToolTip("<p style='white-space:pre;'>" + account->accountName().toHtmlEscaped());
+        m_userNameLabel->setToolTip(account->accountName());
         // 这里的url一定要带上http://头的， 跟在浏览器里输入其它链接不太一样，浏览器里面会自动转的，这里需要手动加上。
         m_networkManager->get(QNetworkRequest(account->avatar()));
     } else {
@@ -148,7 +205,7 @@ void UserloginWidget::slotAccountUpdate()
         qCDebug(ClientLogger) << "Account is logged out";
         m_buttonLoginOut->hide();
         m_buttonLogin->show();
-        m_userNameLabel->setText("");
+        m_userNameLabel->setText(tr("Not signed in"));
         m_userNameLabel->setToolTip("");
         m_buttonImg->setIcon(QIcon::fromTheme("dde_calendar_account"));
     }

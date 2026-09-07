@@ -55,6 +55,8 @@
     <qresource prefix="/icons/deepin">
         <file>builtin/icons/dde_calendar_ban_32px.svg</file>
         <file>builtin/icons/dde_calendar_delete_32px.svg</file>
+        <file>builtin/icons/dde_calendar_add_16px.svg</file>
+        <file>builtin/icons/dde_calendar_delete_16px.svg</file>
         <file>builtin/icons/dde_calendar_edit_32px.svg</file>
         <file>builtin/icons/dde_calendar_fail_200px.png</file>
         <file>builtin/icons/dde_calendar_ji_32px.svg</file>
@@ -63,6 +65,16 @@
         <file>builtin/icons/dde_calendar_sync_schedule_32px.svg</file>
         <file>builtin/icons/dde_calendar_sync_setting_32px.svg</file>
         <file>builtin/icons/dde_calendar_warning_light_32px.svg</file>
+        <file>builtin/icons/dde_calendar_caldav_dingtalk_24px.svg</file>
+        <file>builtin/icons/dde_calendar_caldav_wecom_24px.svg</file>
+        <file>builtin/icons/dde_calendar_caldav_tencent_meeting_24px.svg</file>
+        <file>builtin/icons/dde_calendar_caldav_qq_mail_24px.svg</file>
+        <file>builtin/icons/dde_calendar_caldav_feishu_24px.svg</file>
+        <file>builtin/icons/dde_calendar_caldav_other_24px.svg</file>
+        <file>builtin/icons/dde_calendar_uos_id_36px.svg</file>
+        <file>builtin/icons/dde_calendar_schedule_more_16px.svg</file>
+        <file>builtin/icons/dde_calendar_third_party_36px.svg</file>
+        <file>builtin/icons/dde_calendar_logout_16px.svg</file>
         <file>builtin/icons/dde_calendar_warning.svg</file>
         <file>builtin/icons/dde_calendar_xiu.svg</file>
         <file>builtin/icons/dde_calendar_yi_32px.svg</file>

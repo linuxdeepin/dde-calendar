@@ -9,6 +9,7 @@
 #include "doanetworkdbus.h"
 #include <DLabel>
 #include <DIconButton>
+#include <DToolButton>
 #include <DPushButton>
 #include <QNetworkAccessManager>
 DWIDGET_USE_NAMESPACE
@@ -46,7 +47,7 @@ private:
     DLabel *m_userNameLabel = nullptr;
     DIconButton *m_buttonImg = nullptr;
     QPushButton *m_buttonLogin = nullptr;
-    QPushButton *m_buttonLoginOut = nullptr;
+    DToolButton *m_buttonLoginOut = nullptr;
     QNetworkAccessManager *m_networkManager;
     DOANetWorkDBus   * m_ptrDoaNetwork;
 };
