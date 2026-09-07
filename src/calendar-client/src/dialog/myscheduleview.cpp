@@ -10,17 +10,37 @@
 #include "cscheduleoperation.h"
 #include "lunarmanager.h"
 #include "commondef.h"
+#include "dcaldavaccountstatus.h"
+#include "dcaldavprofile.h"
 
 #include <DPalette>
 #include <DFontSizeManager>
 #include <DLabel>
 
 #include <QShortcut>
+#include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QPainter>
 #include <QtMath>
 
 DGUI_USE_NAMESPACE
+namespace {
+QHBoxLayout *findDialogButtonLayout(QObject *object, QAbstractButton *button)
+{
+    if (QHBoxLayout *layout = qobject_cast<QHBoxLayout *>(object)) {
+        if (layout->indexOf(button) >= 0)
+            return layout;
+    }
+
+    for (QObject *child : object->children()) {
+        if (QHBoxLayout *layout = findDialogButtonLayout(child, button))
+            return layout;
+    }
+
+    return nullptr;
+}
+}
+
 CMyScheduleView::CMyScheduleView(const DSchedule::Ptr &schduleInfo, QWidget *parent)
     : DCalendarDDialog(parent)
 {
@@ -31,7 +51,8 @@ CMyScheduleView::CMyScheduleView(const DSchedule::Ptr &schduleInfo, QWidget *par
     initConnection();
     //根据主题type设置颜色
     setLabelTextColor(DGuiApplicationHelper::instance()->themeType());
-    setFixedSize(400, 160);
+    setFixedWidth(400);
+    setMinimumHeight(160);
     //设置初始化弹窗内容
     updateDateTimeFormat();
     focusNextPrevChild(false);
@@ -64,82 +85,83 @@ void CMyScheduleView::slotAutoFeed(const QFont &font)
         return;
     }
 
-    QString strText = m_scheduleInfo->summary();
-    QString resultStr = nullptr;
+    const QString strText = m_scheduleInfo->summary();
+    QString resultStr;
     QFont labelF;
     labelF.setWeight(QFont::Medium);
     labelF = DFontSizeManager::instance()->get(DFontSizeManager::T6, labelF);
-    QFontMetrics fm(labelF);
-    int titlewidth = fm.horizontalAdvance(strText);
+    const QFontMetrics fm(labelF);
+    const int titleWidth = 330;
+    const int lineHeight = fm.height();
     QStringList strList;
-    QString str;
-    int h = fm.height();
-    strList.clear();
+    QString line;
 
-    if (titlewidth < 330) {
-        strList.append(strText);
-        resultStr += strText;
-    } else {
-        for (int i = 0; i < strText.count(); i++) {
-            str += strText.at(i);
-
-            if (fm.horizontalAdvance(str) > 330) {
-                str.remove(str.count() - 1, 1);
-                strList.append(str);
-                resultStr += str + "\n";
-                str.clear();
-                --i;
-            }
+    // Keep the existing character-based wrapping, but always consume a
+    // character even when a single glyph is wider than the content area.
+    // Otherwise the old remove-and-retry loop could never advance.
+    for (int i = 0; i < strText.size();) {
+        const QString next = line + strText.at(i);
+        if (!line.isEmpty() && fm.horizontalAdvance(next) > titleWidth) {
+            strList.append(line);
+            resultStr += line + QLatin1Char('\n');
+            line.clear();
+            continue;
         }
-        strList.append(str);
-        resultStr += str;
+        line = next;
+        ++i;
+    }
+    if (!line.isEmpty() || strText.isEmpty()) {
+        strList.append(line);
+        resultStr += line;
     }
 
-    const int scheduleContentH = strList.count() * h;
-    const bool needScroll = scheduleContentH > 100;
-    if (needScroll) {
-        m_scheduleLabelH = 100;
-    } else {
-        int minH = 17;
-        m_scheduleLabelH = scheduleContentH;
-        m_scheduleLabelH = m_scheduleLabelH >= minH ? m_scheduleLabelH : minH;
-    }
-    //更新控件高度
+    const int contentHeight = qMax(17, strList.count() * lineHeight);
+    const bool needScroll = contentHeight > 100;
+    // Keep the designed popup height for normal titles. Long titles remain
+    // fully available through the existing scroll area instead of being
+    // clipped at the bottom.
+    m_scheduleLabelH = qMin(contentHeight, 100);
     area->setFixedHeight(m_scheduleLabelH);
     area->setVerticalScrollBarPolicy(needScroll ? Qt::ScrollBarAsNeeded : Qt::ScrollBarAlwaysOff);
     area->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_scheduleLabel->setText(resultStr);
-    m_scheduleLabel->setFixedHeight(needScroll ? scheduleContentH : m_scheduleLabelH);
+    m_scheduleLabel->setFixedHeight(contentHeight);
 
-    m_timeLabelH = 26;
+    QString timeName = m_timeLabel->text();
     if (m_scheduleInfo->lunnar()) {
-        QString timeName = m_timeLabel->text();
-        int index = timeName.indexOf("~");
-        //重新计算法字符串像素长度
-        if (index != -1) {
-            timeName[index - 1] = ' ';
-            QFontMetrics fm(m_timeLabel->font());
-            int textWidth = fm.horizontalAdvance(m_timeLabel->text());
-            if (textWidth > m_timeLabel->width()) {
-                timeName[index - 1] = '\n';
-                m_timeLabelH = 58;
-                qCDebug(ClientLogger) << "Adjusting time label height to 58 for lunar calendar";
-            } else {
-                m_timeLabelH = 26;
-                qCDebug(ClientLogger) << "Setting time label height to 26 for lunar calendar";
+        const int separatorIndex = timeName.indexOf(QLatin1String("~"));
+        if (separatorIndex > 0) {
+            QString singleLineTime = timeName;
+            singleLineTime[separatorIndex - 1] = QLatin1Char(' ');
+            const QFontMetrics timeMetrics(m_timeLabel->font());
+            if (timeMetrics.horizontalAdvance(singleLineTime) > m_timeLabel->width()) {
+                timeName[separatorIndex - 1] = QLatin1Char('\n');
             }
         }
-        m_timeLabel->setText(timeName);
-    } else {
-        m_timeLabelH = 26;
-        qCDebug(ClientLogger) << "Setting time label height to 26 for standard calendar";
     }
+    m_timeLabel->setText(timeName);
+    m_timeLabel->setWordWrap(true);
+    const QFontMetrics timeMetrics(m_timeLabel->font());
+    const int timeWidth = qMax(1, m_timeLabel->width());
+    const QRect timeRect = timeMetrics.boundingRect(
+        QRect(0, 0, timeWidth, 0), Qt::AlignCenter | Qt::TextWordWrap, timeName);
+    m_timeLabelH = qMax(26, timeRect.height());
     //更新控件高度
     m_timeLabel->setFixedHeight(m_timeLabelH);
 
+    const int timeSpacing = m_timeSpacing != nullptr ? m_timeSpacing->height() : 0;
+    const int sourceHeight = m_sourceLabel != nullptr && m_sourceLabel->isVisible()
+        ? m_sourceLabel->height() : 0;
+    const int sourceSpacing = m_sourceSpacing != nullptr && m_sourceSpacing->isVisible()
+        ? m_sourceSpacing->height() : 0;
+    const int sourceBottomSpacing = m_sourceBottomSpacing != nullptr && m_sourceBottomSpacing->isVisible()
+        ? m_sourceBottomSpacing->height() : 0;
     //更新界面高度
-    setFixedHeight(m_defaultH + m_timeLabelH + m_scheduleLabelH);
-    qCDebug(ClientLogger) << "Updated view height to:" << (m_defaultH + m_timeLabelH + m_scheduleLabelH);
+    setFixedHeight(m_defaultH + m_scheduleLabelH + timeSpacing + m_timeLabelH
+                   + sourceSpacing + sourceHeight + sourceBottomSpacing);
+    qCDebug(ClientLogger) << "Updated view height to:"
+                          << (m_defaultH + m_scheduleLabelH + timeSpacing + m_timeLabelH
+                              + sourceSpacing + sourceHeight + sourceBottomSpacing);
 }
 
 void CMyScheduleView::slotAccountStateChange()
@@ -150,11 +172,39 @@ void CMyScheduleView::slotAccountStateChange()
         qCWarning(ClientLogger) << "No account found for schedule type ID:" << m_scheduleInfo->scheduleTypeID();
         return;
     }
+    if (m_sourceLabel != nullptr) {
+        const DAccount::Ptr account = item->getAccount();
+        QString source;
+        if (account->accountType() == DAccount::Account_Local) {
+            source = tr("Local calendar");
+        } else if (account->accountType() == DAccount::Account_UnionID) {
+            source = tr("UOS ID") + QStringLiteral("-") + account->accountName();
+        } else if (account->accountType() == DAccount::Account_CalDav) {
+            const DCalDavAccountStatus status =
+                gAccountManager->getCalDavAccountStatus(account->accountID());
+            source = DCalDavProviderProfile::accountDisplayName(
+                static_cast<DCalDavProviderProfile::ProviderType>(status.providerType),
+                account->displayName());
+        }
+        if (source.isEmpty()) {
+            m_sourceLabel->clear();
+            m_sourceLabel->hide();
+            m_sourceSpacing->hide();
+            m_sourceBottomSpacing->hide();
+        } else {
+            m_sourceLabel->setText(tr("Calendar Source") + QStringLiteral(": ") + source);
+            m_sourceLabel->setToolTip(QString());
+            m_sourceSpacing->show();
+            m_sourceLabel->show();
+            m_sourceBottomSpacing->show();
+        }
+    }
     bool canSync = item->isCanSyncShedule();
     qCDebug(ClientLogger) << "Account sync state changed for schedule:" << m_scheduleInfo->summary()
                           << "can sync:" << canSync;
     //根据可同步状态设置删除按钮是否可用
     getButtons()[0]->setEnabled(canSync);
+    slotAutoFeed();
 }
 
 /**
@@ -241,8 +291,10 @@ void CMyScheduleView::updateDateTimeFormat()
             }
 
         } else {
-            beginName = getDataByFormat(m_scheduleInfo->dtStart().date(), m_dateFormat) + " " + m_scheduleInfo->dtStart().time().toString(m_timeFormat);
-            endName = getDataByFormat(m_scheduleInfo->dtEnd().date(), m_dateFormat) + " " + m_scheduleInfo->dtEnd().time().toString(m_timeFormat);
+            const QDateTime localStart = m_scheduleInfo->dtStart().toLocalTime();
+            const QDateTime localEnd = m_scheduleInfo->dtEnd().toLocalTime();
+            beginName = getDataByFormat(localStart.date(), m_dateFormat) + " " + localStart.time().toString(m_timeFormat);
+            endName = getDataByFormat(localEnd.date(), m_dateFormat) + " " + localEnd.time().toString(m_timeFormat);
             showTime = beginName + " ~ " + endName;
             qCDebug(ClientLogger) << "Time-specific schedule:" << showTime;
         }
@@ -352,8 +404,27 @@ void CMyScheduleView::initUI()
     timeFont.setWeight(QFont::Normal);
     m_timeLabel->setFont(timeFont);
     m_timeLabel->setFixedWidth(363);
-    mainLayout->addSpacing(5);
+
+    m_timeSpacing = new QWidget(this);
+    m_timeSpacing->setFixedHeight(5);
+    mainLayout->addWidget(m_timeSpacing);
     mainLayout->addWidget(m_timeLabel);
+
+    m_sourceSpacing = new QWidget(this);
+    m_sourceSpacing->setFixedHeight(15);
+    m_sourceSpacing->hide();
+    mainLayout->addWidget(m_sourceSpacing);
+
+    m_sourceLabel = new DLabel(this);
+    m_sourceLabel->setAlignment(Qt::AlignCenter);
+    m_sourceLabel->setFixedHeight(22);
+    m_sourceLabel->hide();
+    mainLayout->addWidget(m_sourceLabel);
+
+    m_sourceBottomSpacing = new QWidget(this);
+    m_sourceBottomSpacing->setFixedHeight(15);
+    m_sourceBottomSpacing->hide();
+    mainLayout->addWidget(m_sourceBottomSpacing);
 
     //如果为节假日日程
     if (CScheduleOperation::isFestival(m_scheduleInfo)) {
@@ -367,7 +438,18 @@ void CMyScheduleView::initUI()
         addButton(tr("Edit", "button"), false, DDialog::ButtonRecommend);
         for (int i = 0; i < buttonCount(); i++) {
             QAbstractButton *button = getButton(i);
-            button->setFixedSize(165, 36);
+            button->setFixedSize(180, 36);
+        }
+
+        if (QHBoxLayout *buttonLayout = findDialogButtonLayout(this, getButton(0))) {
+            const QMargins margins = buttonLayout->contentsMargins();
+            buttonLayout->setContentsMargins(10, margins.top(), 10, margins.bottom());
+            buttonLayout->setSpacing(9);
+            for (int i = 0; i < buttonLayout->count(); ++i) {
+                QWidget *widget = buttonLayout->itemAt(i)->widget();
+                if (widget != nullptr && widget->objectName() == QLatin1String("VLine"))
+                    widget->setFixedWidth(2);
+            }
         }
         //TODO:如果为不可修改日程则设置删除按钮无效
     }

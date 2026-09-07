@@ -13,6 +13,8 @@
 #include "accountmanager.h"
 #include "units.h"
 #include "commondef.h"
+#include "dcaldavaccountstatus.h"
+#include "dcaldavprofile.h"
 
 
 #include <DFontSizeManager>
@@ -24,11 +26,10 @@
 #include <QShortcut>
 #include <QVBoxLayout>
 #include <QKeyEvent>
-#include <QPainter>
-#include <QBitmap>
 #include <QTimer>
 
 const int  dialog_width = 468;      //对话框宽度
+
 DGUI_USE_NAMESPACE
 CScheduleDlg::CScheduleDlg(int type, QWidget *parent, const bool isAllDay)
     : DCalendarDDialog(parent)
@@ -99,8 +100,10 @@ void CScheduleDlg::setData(const DSchedule::Ptr &info)
     if (nullptr != m_accountItem) {
         qCDebug(ClientLogger) << "Updating account and type selection for account:" << m_accountItem->getAccount()->accountName();
         //更新帐户下拉框和类型选择框
-        m_accountComBox->setCurrentText(m_accountItem->getAccount()->accountName());
+        const int accountIndex = m_accountComBox->findData(m_accountItem->getAccount()->accountID());
+        m_accountComBox->setCurrentIndex(accountIndex);
         m_typeComBox->updateJobType(m_accountItem);
+        getButtons()[1]->setEnabled(canWriteCurrentCalDavCollection());
     } else {
         qCWarning(ClientLogger) << "No account found, falling back to local account";
         m_accountItem = gAccountManager->getLocalAccountItem();
@@ -111,12 +114,14 @@ void CScheduleDlg::setData(const DSchedule::Ptr &info)
         m_typeComBox->setCurrentJobTypeNo(m_scheduleDataInfo->scheduleTypeID());
     }
 
-    m_beginDateEdit->setDate(info->dtStart().date());
-    m_beginTimeEdit->setTime(info->dtStart().time());
-    m_endDateEdit->setDate(info->dtEnd().date());
-    m_endTimeEdit->setTime(info->dtEnd().time());
+    const QDateTime displayStart = info->allDay() ? info->dtStart() : info->dtStart().toLocalTime();
+    const QDateTime displayEnd = info->allDay() ? info->dtEnd() : info->dtEnd().toLocalTime();
+    m_beginDateEdit->setDate(displayStart.date());
+    m_beginTimeEdit->setTime(displayStart.time());
+    m_endDateEdit->setDate(displayEnd.date());
+    m_endTimeEdit->setTime(displayEnd.time());
     m_allDayCheckbox->setChecked(info->allDay());
-    m_endRepeatDate->setMinimumDate(info->dtStart().date());
+    m_endRepeatDate->setMinimumDate(displayStart.date());
 
     m_currentDate = info->dtStart();
     m_EndDate = info->dtEnd();
@@ -184,6 +189,12 @@ void CScheduleDlg::setAllDay(bool flag)
 bool CScheduleDlg::clickOkBtn()
 {
     qCDebug(ClientLogger) << "CScheduleDlg::clickOkBtn";
+    const bool editingExistingSchedule = m_type == 0;
+    if (m_accountItem.isNull() || !m_accountItem->isCanSyncShedule()
+        || (editingExistingSchedule && !canWriteCurrentCalDavCollection())) {
+        qCWarning(ClientLogger) << "Cannot save an existing schedule for the current read-only account or collection.";
+        return false;
+    }
     return selectScheduleType();
 }
 
@@ -559,12 +570,16 @@ void CScheduleDlg::slotallDayStateChanged(int state)
 
         if (m_type == 0) {
             qCDebug(ClientLogger) << "Restoring edit mode time values";
-            m_beginDateEdit->setDate(m_scheduleDataInfo->dtStart().date());
-            m_beginTimeEdit->setTime(m_scheduleDataInfo->dtStart().time());
-            m_endDateEdit->setDate(m_scheduleDataInfo->dtEnd().date());
-            m_endTimeEdit->setTime(m_scheduleDataInfo->dtEnd().time());
-            if (m_scheduleDataInfo->dtStart().time() == m_scheduleDataInfo->dtEnd().time()
-                    && m_scheduleDataInfo->dtEnd().time().toString() == "00:00:00") {
+            const QDateTime displayStart = m_scheduleDataInfo->allDay()
+                ? m_scheduleDataInfo->dtStart() : m_scheduleDataInfo->dtStart().toLocalTime();
+            const QDateTime displayEnd = m_scheduleDataInfo->allDay()
+                ? m_scheduleDataInfo->dtEnd() : m_scheduleDataInfo->dtEnd().toLocalTime();
+            m_beginDateEdit->setDate(displayStart.date());
+            m_beginTimeEdit->setTime(displayStart.time());
+            m_endDateEdit->setDate(displayEnd.date());
+            m_endTimeEdit->setTime(displayEnd.time());
+            if (displayStart.time() == displayEnd.time()
+                    && displayEnd.time().toString() == "00:00:00") {
                 qCDebug(ClientLogger) << "Adjusting end time to end of day for zero time";
                 m_endTimeEdit->setTime(QTime(23, 59, 59));
             }
@@ -660,10 +675,12 @@ void CScheduleDlg::slotJobComboBoxEditingFinished()
 void CScheduleDlg::slotAccoutBoxActivated(const QString &text)
 {
     qCDebug(ClientLogger) << "Account selected:" << text;
-    m_accountItem = gAccountManager->getAccountItemByAccountName(text);
+    Q_UNUSED(text)
+    m_accountItem = gAccountManager->getAccountItemByAccountId(
+        m_accountComBox->currentData().toString());
     m_typeComBox->updateJobType(m_accountItem);
     resetColor(m_accountItem);
-    getButtons()[1]->setEnabled(true);
+    getButtons()[1]->setEnabled(canWriteCurrentCalDavCollection());
     //将焦点转移到类型选择框上
     m_typeComBox->setFocus();
     setShowState(m_lunarRadioBtn->isChecked());
@@ -932,10 +949,8 @@ void CScheduleDlg::initUI()
         widget->setLayout(hlayout);
         widget->setFixedHeight(item_Fixed_Height);
         maintlayout->addWidget(widget);
-        if (!gAccountManager->getIsSupportUid()) {
-            qCDebug(ClientLogger) << "UID not supported, hiding account widget";
-            widget->hide();
-        }
+        // Third-party CalDAV accounts are independent of UOS ID support.
+        // Keep this selector visible even on systems without UOS ID.
     }
 
     //类型
@@ -1387,11 +1402,59 @@ void CScheduleDlg::initConnection()
 void CScheduleDlg::slotAccountUpdate()
 {
     qCDebug(ClientLogger) << "CScheduleDlg::slotAccountUpdate";
+    const QString previousAccountID = m_accountComBox->currentData().toString();
     m_accountComBox->clear();
-    QList<AccountItem::Ptr> accountList = gAccountManager->getAccountList();
-    for (AccountItem::Ptr p : accountList) {
-        m_accountComBox->addItem(p->getAccount()->accountName());
+    const QList<AccountItem::Ptr> accountList = gAccountManager->getAccountList();
+    QList<AccountItem::Ptr> localAccounts;
+    QList<AccountItem::Ptr> unionAccounts;
+    QList<AccountItem::Ptr> calDavAccounts;
+    for (const AccountItem::Ptr &item : accountList) {
+        if (item.isNull()) {
+            continue;
+        }
+        const DAccount::Ptr account = item->getAccount();
+        if (account.isNull()) {
+            qCWarning(ClientLogger) << "Skipping account without account data";
+            continue;
+        }
+        switch (account->accountType()) {
+        case DAccount::Account_Local:
+            localAccounts.append(item);
+            break;
+        case DAccount::Account_UnionID:
+            unionAccounts.append(item);
+            break;
+        case DAccount::Account_CalDav:
+            calDavAccounts.append(item);
+            break;
+        }
     }
+
+    auto addAccount = [this](const AccountItem::Ptr &item) {
+        const DAccount::Ptr account = item->getAccount();
+        QString label = account->accountType() == DAccount::Account_Local
+            ? tr("Local calendar")
+            : (account->accountType() == DAccount::Account_UnionID
+                ? tr("UOS ID")
+                : account->displayName());
+        if (account->accountType() == DAccount::Account_CalDav) {
+            const DCalDavAccountStatus status = gAccountManager->getCalDavAccountStatus(account->accountID());
+            label = DCalDavProviderProfile::accountDisplayName(
+                static_cast<DCalDavProviderProfile::ProviderType>(status.providerType), label);
+        }
+        m_accountComBox->addItem(label, account->accountID());
+    };
+    for (const AccountItem::Ptr &item : localAccounts) {
+        addAccount(item);
+    }
+    for (const AccountItem::Ptr &item : unionAccounts) {
+        addAccount(item);
+    }
+    for (const AccountItem::Ptr &item : calDavAccounts) {
+        addAccount(item);
+    }
+    int index = m_accountComBox->findData(previousAccountID);
+    m_accountComBox->setCurrentIndex(index >= 0 ? index : 0);
     initJobTypeComboBox();
 }
 
@@ -1418,9 +1481,12 @@ void CScheduleDlg::initDateEdit()
 void CScheduleDlg::initJobTypeComboBox()
 {
     qCDebug(ClientLogger) << "CScheduleDlg::initJobTypeComboBox";
-    m_accountItem = gAccountManager->getAccountItemByAccountName(m_accountComBox->currentText());
+    m_accountItem = gAccountManager->getAccountItemByAccountId(
+        m_accountComBox->currentData().toString());
     m_typeComBox->updateJobType(m_accountItem);
     resetColor(m_accountItem);
+    setShowState(m_lunarRadioBtn->isChecked());
+    setOkBtnEnabled();
 }
 
 void CScheduleDlg::initRmindRpeatUI()
@@ -1583,19 +1649,21 @@ bool CScheduleDlg::isShowLunar()
 void CScheduleDlg::setShowState(bool jobIsLunar)
 {
     qCDebug(ClientLogger) << "Setting show state for lunar mode:" << jobIsLunar;
-    m_solarRadioBtn->setEnabled(true);
-    m_lunarRadioBtn->setEnabled(true);
-    setWidgetEnabled(true);
-    getButton(1)->setEnabled(true);
-    if (!m_accountItem || !m_accountItem->isCanSyncShedule()) {
-        //不可同步日程，除帐户选择外其他的控件都置灰
-        qCDebug(ClientLogger) << "Account cannot sync schedule, disabling controls";
+    const bool editingExistingSchedule = m_type == 0;
+    const bool canEdit = !m_accountItem.isNull()
+        && m_accountItem->isCanSyncShedule()
+        && (!editingExistingSchedule || canWriteCurrentCalDavCollection());
+
+    m_solarRadioBtn->setEnabled(canEdit);
+    m_lunarRadioBtn->setEnabled(canEdit);
+    setWidgetEnabled(canEdit);
+    getButton(1)->setEnabled(canEdit);
+
+    if (!canEdit) {
+        qCDebug(ClientLogger) << "Current account or CalDAV collection is read-only, disabling controls";
         m_solarRadioBtn->setEnabled(false);
         m_lunarRadioBtn->setEnabled(false);
-        setWidgetEnabled(false);
-        getButton(1)->setEnabled(false);
     } else if (isShowLunar()) {
-        //如果不显示农历
         qCDebug(ClientLogger) << "Locale supports lunar calendar, enabling lunar radio button";
         m_lunarRadioBtn->setEnabled(true);
         m_beginDateEdit->setLunarCalendarStatus(jobIsLunar);
@@ -1707,10 +1775,41 @@ void CScheduleDlg::resize()
     setFixedSize(dialog_width, 573 + h);
 }
 
+bool CScheduleDlg::canWriteCurrentCalDavCollection() const
+{
+    if (m_accountItem.isNull()) {
+        return true;
+    }
+    const DAccount::Ptr account = m_accountItem->getAccount();
+    if (account.isNull() || account->accountType() != DAccount::Account_CalDav) {
+        return true;
+    }
+
+    const QString accountID = account->accountID();
+    const bool accountWritable = gAccountManager->canWriteCalDavAccount(accountID);
+    qCDebug(ClientLogger) << "CalDAV account write capability:" << accountWritable
+                          << "accountID:" << accountID;
+    if (!accountWritable) {
+        return false;
+    }
+
+    // The account status is the authoritative editor capability. Per-calendar
+    // privileges are validated by the service before it sends the remote PUT.
+    return true;
+}
+
 void CScheduleDlg::setOkBtnEnabled()
 {
     qCDebug(ClientLogger) << "Checking if OK button should be enabled";
     QAbstractButton *m_OkBt = getButton(1);
+    if (m_OkBt == nullptr) {
+        return;
+    }
+    const bool editingExistingSchedule = m_type == 0;
+    if (editingExistingSchedule && !canWriteCurrentCalDavCollection()) {
+        m_OkBt->setEnabled(false);
+        return;
+    }
 
     //根据类型输入框的内容判断保存按钮是否有效
     if (m_OkBt != nullptr && m_typeComBox->lineEdit() != nullptr) {

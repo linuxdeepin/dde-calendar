@@ -5,11 +5,32 @@
 #include "sidebaritemwidget.h"
 #include "accountmanager.h"
 #include "commondef.h"
+#include "dcaldavaccountstatus.h"
+#include "dcaldavprofile.h"
 #include <DFontSizeManager>
 #include <QVBoxLayout>
 #include <QTimer>
 #include <QApplication>
 #include <QSizePolicy>
+
+namespace {
+
+QString sidebarAccountTitle(const AccountItem::Ptr &item)
+{
+    const DAccount::Ptr account = item->getAccount();
+    QString title = (account->accountType() == DAccount::Account_Local
+                     || account->accountType() == DAccount::Account_UnionID)
+        ? account->accountName()
+        : account->displayName();
+    if (account->accountType() == DAccount::Account_CalDav) {
+        const DCalDavAccountStatus status = gAccountManager->getCalDavAccountStatus(account->accountID());
+        title = DCalDavProviderProfile::accountDisplayName(
+            static_cast<DCalDavProviderProfile::ProviderType>(status.providerType), title);
+    }
+    return title;
+}
+
+} // namespace
 
 SidebarItemWidget::SidebarItemWidget(QWidget *parent)
     : QWidget(parent)
@@ -151,7 +172,7 @@ void SidebarTypeItemWidget::initView()
     m_titleLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     m_titleLabel->setTextFormat(Qt::PlainText);
     m_titleLabel->setText(m_scheduleType->displayName());
-    m_titleLabel->setToolTip("<p style='white-space:pre;'>" + m_scheduleType->displayName().toHtmlEscaped());
+    m_titleLabel->setToolTip(m_scheduleType->displayName());
 
     vLayout->addSpacing(2);
     vLayout->addWidget(m_checkBox);
@@ -212,7 +233,7 @@ void SidebarAccountItemWidget::initView()
     m_titleLabel = new DLabel(this);
     m_titleLabel->setFixedHeight(30);
     DFontSizeManager::instance()->bind(m_titleLabel, DFontSizeManager::T6);
-    m_titleLabel->setElideMode(Qt::ElideMiddle);
+    m_titleLabel->setElideMode(Qt::ElideRight);
     //设置初始字体大小
     DFontSizeManager::instance()->setFontGenericPixelSize(static_cast<quint16>(DFontSizeManager::fontPixelSize(QFont())));
     QFont labelF = DFontSizeManager::instance()->t6();
@@ -220,8 +241,9 @@ void SidebarAccountItemWidget::initView()
     m_titleLabel->setFont(labelF);
     m_titleLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     m_titleLabel->setTextFormat(Qt::PlainText);
-    m_titleLabel->setText(m_accountItem->getAccount()->accountName());
-    m_titleLabel->setToolTip("<p style='white-space:pre;'>" + m_accountItem->getAccount()->accountName().toHtmlEscaped());
+    const QString title = sidebarAccountTitle(m_accountItem);
+    m_titleLabel->setText(title);
+    m_titleLabel->setToolTip(title);
 
     m_syncIconButton = new DIconButton(this);
     m_syncIconButton->setObjectName("SyncIconButton");
@@ -246,12 +268,10 @@ void SidebarAccountItemWidget::initView()
     hLayout->addSpacing(15);
 
     this->setLayout(hLayout);
-    if (m_accountItem->getAccount()->accountType() == DAccount::Account_UnionID) {
-        qCDebug(ClientLogger) << "Account is UnionID type, initializing sync button";
+    if (m_accountItem->getAccount()->accountType() == DAccount::Account_UnionID
+        || m_accountItem->getAccount()->accountType() == DAccount::Account_CalDav) {
         resetRearIconButton();
     } else {
-        //尾部控件隐藏
-        qCDebug(ClientLogger) << "Account is not UnionID type, hiding sync buttons";
         m_syncIconButton->hide();
         m_warningLabel->hide();
     }
@@ -264,6 +284,13 @@ void SidebarAccountItemWidget::initConnect()
     connect(m_syncIconButton, &DIconButton::clicked, this, &SidebarAccountItemWidget::slotRearIconClicked);
     connect(m_accountItem.data(), &AccountItem::signalSyncStateChange, this, &SidebarAccountItemWidget::slotSyncStatusChange);
     connect(gAccountManager, &AccountManager::signalAccountStateChange, this, &SidebarAccountItemWidget::slotAccountStateChange);
+    connect(gAccountManager, &AccountManager::signalCalDavAccountStatusChanged,
+            this, &SidebarAccountItemWidget::slotCalDavStatusChange);
+    connect(gAccountManager, &AccountManager::signalCalDavAccountStatusReady, this, [this]() {
+        if (m_accountItem && m_accountItem->getAccount()->accountType() == DAccount::Account_CalDav) {
+            resetRearIconButton();
+        }
+    });
     connect(m_ptrDoaNetwork, &DOANetWorkDBus::sign_NetWorkChange, this, &SidebarAccountItemWidget::slotNetworkStateChange);
 }
 
@@ -299,9 +326,32 @@ void SidebarAccountItemWidget::resetRearIconButton()
 {
     qCDebug(ClientLogger) << "Resetting rear icon button for account:" 
                           << m_accountItem->getAccount()->accountName();
-    //控件不显示则不处理
+    if (m_accountItem->getAccount()->accountType() == DAccount::Account_CalDav) {
+        const DCalDavAccountStatus status = gAccountManager->getCalDavAccountStatus(
+            m_accountItem->getAccount()->accountID());
+        const bool running = status.syncStatus == DCalDavSyncStatus::Running;
+        const bool pendingDelete = status.pendingDeleteCount > 0;
+        const bool failed = status.syncStatus == DCalDavSyncStatus::Failed
+            || status.syncStatus == DCalDavSyncStatus::AuthenticationRequired
+            || status.syncStatus == DCalDavSyncStatus::PermissionDenied
+            || status.syncStatus == DCalDavSyncStatus::RetryScheduled;
+        if (failed) {
+            m_syncIconButton->hide();
+            m_warningLabel->setToolTip(
+                DCalDavSyncStatus::localizedFailureReason(
+                    static_cast<DCalDavErrorCode>(status.failureCode)));
+            m_warningLabel->show();
+        } else {
+            m_syncIconButton->show();
+            m_syncIconButton->setEnabled(!running && !pendingDelete);
+            m_warningLabel->hide();
+            m_syncIconButton->setToolTip(pendingDelete ? tr("Deleting...")
+                                                         : (running ? tr("Syncing...") : tr("Sync")));
+        }
+        return;
+    }
+
     if (m_accountItem->getAccount()->accountType() != DAccount::Account_UnionID) {
-        qCDebug(ClientLogger) << "Account is not UnionID type, skipping reset";
         return;
     }
 
@@ -331,6 +381,14 @@ void SidebarAccountItemWidget::resetRearIconButton()
 AccountItem::Ptr SidebarAccountItemWidget::getAccountItem()
 {
     return m_accountItem;
+}
+
+void SidebarAccountItemWidget::slotCalDavStatusChange(const QString &accountID)
+{
+    if (m_accountItem && m_accountItem->getAccount()->accountType() == DAccount::Account_CalDav
+        && m_accountItem->getAccount()->accountID() == accountID) {
+        resetRearIconButton();
+    }
 }
 
 void SidebarAccountItemWidget::updateStatus()
@@ -367,4 +425,3 @@ void SidebarAccountItemWidget::slotAccountStateChange()
     qCDebug(ClientLogger) << "Account state changed for:" << m_accountItem->getAccount()->accountName();
     resetRearIconButton();
 }
-

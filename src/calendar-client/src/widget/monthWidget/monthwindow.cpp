@@ -161,6 +161,15 @@ void CMonthWindow::updateShowSchedule()
 {
     qCDebug(ClientLogger) << "CMonthWindow::updateShowSchedule";
     QMap<QDate, DSchedule::List> map = gScheduleManager->getScheduleMap(m_startDate, m_stopDate);
+    int scheduleCount = 0;
+    for (const DSchedule::List &schedules : map) {
+        scheduleCount += schedules.size();
+    }
+    qCDebug(ClientLogger) << "Month schedule data fetched"
+                            << "start:" << m_startDate
+                            << "end:" << m_stopDate
+                            << "dateCount:" << map.size()
+                            << "scheduleCount:" << scheduleCount;
     //因获取的日程中只有有日程的项，数量不等于开始时间到结束时间的天数，
     //但是视图显示要求数量为开始时间到结束时间的天数，所以在没有日程的时间中添加空日期列表
     QDate date = m_startDate;

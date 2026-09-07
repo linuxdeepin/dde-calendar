@@ -119,6 +119,7 @@ private slots:
     void slotShowSyncToast(int syncNum);
 
     void slotAccountUpdate();
+    void slotCalDavScheduleCreateFailed(const QString &accountID, int createFailure);
 
 private:
     DLabel *m_icon = nullptr;

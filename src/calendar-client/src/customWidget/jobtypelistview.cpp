@@ -13,11 +13,13 @@
 
 
 #include <DStyle>
-#include <DIcon>
-#include <DIconButton>
+#include <DToolButton>
+#include <QFileDialog>
+#include <QFileInfo>
 #include <QToolTip>
 #include <QPainter>
 #include <QHeaderView>
+#include <QHBoxLayout>
 #include <QTimer>
 #include <DSpinner>
 #include <DDesktopServices>
@@ -28,6 +30,30 @@
 static const int RoleJobTypeInfo = Qt::UserRole + 2;
 static const int RoleJobTypeEditable = Qt::UserRole + 3;
 static const int RoleJobTypeLine = Qt::UserRole + 4;
+static const int OperationButtonsWidth = 90;
+
+namespace {
+QString lastIcsDirectory;
+
+QString icsDialogDirectory()
+{
+    if (!lastIcsDirectory.isEmpty()) {
+        return lastIcsDirectory;
+    }
+    return QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+}
+
+void updateLastIcsDirectory(const QString &filePath)
+{
+    lastIcsDirectory = QFileInfo(filePath).absolutePath();
+}
+
+bool isCalDavRemoteScheduleType(const DScheduleType &info)
+{
+    return info.description() == QStringLiteral("CalDAV calendar")
+        || info.description() == QStringLiteral("CalDAV category");
+}
+}
 
 JobTypeListView::JobTypeListView(QWidget *parent) : QTableView(parent)
 {
@@ -72,13 +98,21 @@ void JobTypeListView::initUI()
 
     connect(gAccountManager, &AccountManager::signalScheduleTypeUpdate, this, &JobTypeListView::updateJobType);
     connect(this, &QTableView::entered, this, [&](const QModelIndex & index) {
-        if (!index.isValid()) return;
-        DScheduleType info = index.data(RoleJobTypeInfo).value<DScheduleType>();
-        QString displayName = info.displayName();
-        if (!displayName.isEmpty()) {
-            qCDebug(ClientLogger) << "Showing tooltip for schedule type:" << displayName;
-            QToolTip::showText(QCursor::pos(), info.displayName());
+        if (!index.isValid()) {
+            QToolTip::hideText();
+            return;
         }
+        DScheduleType info = index.data(RoleJobTypeInfo).value<DScheduleType>();
+        const QString displayName = info.displayName();
+        const int textWidth = visualRect(index).width() - OperationButtonsWidth;
+        const QFontMetrics fontMetrics(font());
+        if (displayName.isEmpty() || textWidth <= 0
+            || fontMetrics.horizontalAdvance(displayName) <= textWidth) {
+            QToolTip::hideText();
+            return;
+        }
+        qCDebug(ClientLogger) << "Showing tooltip for schedule type:" << displayName;
+        QToolTip::showText(QCursor::pos(), displayName, viewport(), visualRect(index));
     });
 }
 
@@ -144,40 +178,72 @@ bool JobTypeListView::viewportEvent(QEvent *event)
                 // 设置其他style时，转换指针为空
                 if (DStyle *ds = qobject_cast<DStyle *>(style())) {
                     Q_UNUSED(ds)
-                    auto actionExport = new DViewItemAction(Qt::AlignRight, QSize(30, 0), QSize(30, 0), true);
-                    actionExport->setIconVisibleInMenu(false);
-                    actionExport->setText(tr("export"));
-                    actionExport->setParent(this);
-                    connect(actionExport, &QAction::triggered, this, &JobTypeListView::slotExportScheduleType);
-                    if (!itemJobType->data(RoleJobTypeEditable).toBool()) {
-                        if (!itemJobType->data(RoleJobTypeLine).toBool()) {
-                            qCDebug(ClientLogger) << "JobTypeListView: Adding export action to non-editable item";
-                            itemJobType->setActionList(Qt::Edge::RightEdge, { actionExport });
-                        }
+                    const bool editable = itemJobType->data(RoleJobTypeEditable).toBool();
+                    if (!editable && itemJobType->data(RoleJobTypeLine).toBool()) {
                         return true;
                     }
-                    auto actionEdit = new DViewItemAction(Qt::AlignVCenter, QSize(20, 20), QSize(20, 20), true);
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-                    actionEdit->setIcon(DIcon::loadNxPixmap(":/icons/deepin/builtin/icons/dde_calendar_edit_32px.svg"));
-#else
-                    // Qt5.11.3 兼容：旧版 DTK 不支持 loadNxPixmap，使用 QIcon 直接加载
-                    actionEdit->setIcon(QIcon(":/icons/deepin/builtin/icons/dde_calendar_edit_32px.svg"));
-#endif
-                    actionEdit->setParent(this);
-                    connect(actionEdit, &QAction::triggered, this, &JobTypeListView::slotUpdateJobType);
 
-                    auto actionDelete = new DViewItemAction(Qt::AlignVCenter, QSize(20, 20), QSize(20, 20), true);
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-                    actionDelete->setIcon(DIcon::loadNxPixmap(":/icons/deepin/builtin/icons/dde_calendar_delete_32px.svg"));
-#else
-                    // Qt5.11.3 兼容：旧版 DTK 不支持 loadNxPixmap，使用 QIcon 直接加载
-                    actionDelete->setIcon(QIcon(":/icons/deepin/builtin/icons/dde_calendar_delete_32px.svg"));
-#endif
-                    actionDelete->setParent(this);
-                    connect(actionDelete, &QAction::triggered, this, &JobTypeListView::slotDeleteJobType);
+                    const int actionCount = editable ? 3 : 1;
+                    auto actionGroup = new DViewItemAction(
+                        Qt::AlignVCenter, QSize(actionCount * 30, 30), QSize(actionCount * 30, 30));
+                    actionGroup->setParent(this);
 
-                    qCDebug(ClientLogger) << "JobTypeListView: Adding edit, delete, and export actions to editable item";
-                    itemJobType->setActionList(Qt::Edge::RightEdge, {actionEdit, actionDelete, actionExport});
+                    QWidget *actionWidget = new QWidget(viewport());
+                    actionWidget->setFixedSize(actionCount * 30, 30);
+                    auto *actionLayout = new QHBoxLayout(actionWidget);
+                    actionLayout->setContentsMargins(0, 0, 0, 0);
+                    actionLayout->setSpacing(0);
+
+                    auto createActionButton = [actionWidget](const QString &iconPath,
+                                                              const QString &toolTip) {
+                        auto *button = new DToolButton(actionWidget);
+                        button->setAutoRaise(true);
+                        button->setAttribute(Qt::WA_Hover, true);
+                        button->setToolButtonStyle(Qt::ToolButtonIconOnly);
+                        button->setFocusPolicy(Qt::NoFocus);
+                        button->setFixedSize(30, 30);
+                        button->setIconSize(QSize(16, 16));
+                        button->setIcon(QIcon(iconPath));
+                        button->setToolTip(toolTip);
+                        return button;
+                    };
+
+                    if (editable) {
+                        auto *editButton = createActionButton(
+                            QStringLiteral(":/icons/deepin/builtin/icons/dde_calendar_schedule_edit_16px.svg"),
+                            tr("Edit"));
+                        auto *deleteButton = createActionButton(
+                            QStringLiteral(":/icons/deepin/builtin/icons/dde_calendar_delete_16px.svg"),
+                            tr("Delete"));
+                        auto *exportButton = createActionButton(
+                            QStringLiteral(":/icons/deepin/builtin/icons/dde_calendar_schedule_export_16px.svg"),
+                            tr("Export"));
+                        actionLayout->addWidget(editButton);
+                        actionLayout->addWidget(deleteButton);
+                        actionLayout->addWidget(exportButton);
+                        connect(editButton, &DToolButton::clicked,
+                                this, &JobTypeListView::slotUpdateJobType);
+                        connect(deleteButton, &DToolButton::clicked,
+                                this, &JobTypeListView::slotDeleteJobType);
+                        connect(exportButton, &DToolButton::clicked,
+                                this, &JobTypeListView::slotExportScheduleType);
+                        qCDebug(ClientLogger) << "JobTypeListView: Adding edit, delete, and export actions to editable item";
+                    } else {
+                        auto *exportButton = createActionButton(
+                            QStringLiteral(":/icons/deepin/builtin/icons/dde_calendar_schedule_export_16px.svg"),
+                            tr("Export"));
+                        actionLayout->addWidget(exportButton);
+                        connect(exportButton, &DToolButton::clicked,
+                                this, &JobTypeListView::slotExportScheduleType);
+                        qCDebug(ClientLogger) << "JobTypeListView: Adding export action to non-editable item";
+                    }
+
+                    actionGroup->setWidget(actionWidget);
+                    // DStandardItem destroys its actions when the model is rebuilt,
+                    // but DViewItemAction does not own widgets parented to viewport().
+                    // Tie the widget lifetime to the action to release it on rebuild.
+                    connect(actionGroup, &QObject::destroyed, actionWidget, &QObject::deleteLater);
+                    itemJobType->setActionList(Qt::Edge::RightEdge, {actionGroup});
                 }
             }
         }
@@ -223,6 +289,11 @@ void JobTypeListView::slotAddScheduleType()
         qCWarning(ClientLogger) << "Failed to add schedule type: Account not found for id" << m_account_id;
         return;
     }
+    if (account->getAccount() && account->getAccount()->accountType() == DAccount::Account_CalDav
+        && !gAccountManager->canWriteCalDavAccount(m_account_id)) {
+        qCWarning(ClientLogger) << "Cannot add schedule type to a read-only CalDAV account.";
+        return;
+    }
 
     ScheduleTypeEditDlg dialog(this);
     dialog.setAccount(account);
@@ -237,23 +308,29 @@ void JobTypeListView::slotAddScheduleType()
 void JobTypeListView::slotImportScheduleType()
 {
     qCDebug(ClientLogger) << "JobTypeListView::slotImportScheduleType";
-    // 选择ICS文件
-    auto docDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
-    auto filename = QFileDialog::getOpenFileName(nullptr, tr("import ICS file"), docDir, "ICS (*.ics)");
+    AccountItem::Ptr account = gAccountManager->getAccountItemByAccountId(m_account_id);
+    if (!account) {
+        qCWarning(ClientLogger) << "Import failed: Account not found for id" << m_account_id;
+        return;
+    }
+    if (account->getAccount() && account->getAccount()->accountType() == DAccount::Account_CalDav
+        && !gAccountManager->canWriteCalDavAccount(m_account_id)) {
+        qCWarning(ClientLogger) << "Cannot import schedule type to a read-only CalDAV account.";
+        return;
+    }
+
+    // 选择 ICS 文件。首次定位“文档”；本次应用中随后导入/导出共用最近目录。
+    const QString filename = QFileDialog::getOpenFileName(
+        nullptr, tr("import ICS file"), icsDialogDirectory(), tr("ICS files (*.ics)"));
     if (filename.isEmpty()) {
         qCDebug(ClientLogger) << "Import cancelled: No file selected";
         return;
     }
+    updateLastIcsDirectory(filename);
 
     auto fileinfo = QFileInfo(filename);
     if (!fileinfo.exists()) {
         qCWarning(ClientLogger) << "Import failed: ICS file does not exist:" << filename;
-        return;
-    }
-
-    AccountItem::Ptr account = gAccountManager->getAccountItemByAccountId(m_account_id);
-    if (!account) {
-        qCWarning(ClientLogger) << "Import failed: Account not found for id" << m_account_id;
         return;
     }
 
@@ -344,13 +421,15 @@ void JobTypeListView::slotExportScheduleType()
         return;
     }
 
-    auto docDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
     DScheduleType info = item->data(RoleJobTypeInfo).value<DScheduleType>();
-    auto filename = QFileDialog::getSaveFileName(nullptr, "", docDir + "/" + info.displayName() + ".ics", "");
+    const QString filename = QFileDialog::getSaveFileName(
+        nullptr, tr("Export ICS file"), icsDialogDirectory() + "/" + info.displayName() + ".ics",
+        tr("ICS files (*.ics)"));
     if (filename.isEmpty()) {
         qCDebug(ClientLogger) << "Export cancelled: No file selected";
         return;
     }
+    updateLastIcsDirectory(filename);
 
     QEventLoop event;
     m_waitDialog->show();
@@ -376,6 +455,10 @@ bool JobTypeListView::canAdd()
     if (!account)
         return false;
 
+    if (account->getAccount() && account->getAccount()->accountType() == DAccount::Account_CalDav
+        && !gAccountManager->canWriteCalDavAccount(m_account_id)) {
+        return false;
+    }
     //最多20个类型
     int count = account->getScheduleTypeList().count();
     qCDebug(ClientLogger) << "JobTypeListView::canAdd checking if can add more types, current count:" << count;
@@ -399,8 +482,13 @@ int JobTypeListView::addJobTypeItem(const DScheduleType &info)
     int itemHeight = 0;
     DStandardItem *item = new DStandardItem;
     item->setData(QVariant::fromValue(info), RoleJobTypeInfo);
-    //根据日程类型权限设置显示数据
-    item->setData(info.privilege() > 1, RoleJobTypeEditable);
+    // CalDAV collection types expose event write permission, but the collection
+    // itself is not editable through the generic schedule-type APIs.
+    const AccountItem::Ptr account = gAccountManager->getAccountItemByAccountId(m_account_id);
+    const bool isCalDav = account && account->getAccount()
+        && account->getAccount()->accountType() == DAccount::Account_CalDav;
+    const bool isCalDavRemoteType = isCalDav && isCalDavRemoteScheduleType(info);
+    item->setData(info.privilege() > 1 && !isCalDavRemoteType, RoleJobTypeEditable);
     item->setData(false, RoleJobTypeLine);
 
     //首个 非默认日程类型，前面 添加分割线
@@ -544,8 +632,8 @@ void JobTypeListViewStyle::paint(QPainter *painter, const QStyleOptionViewItem &
     // 获取当前字体的信息
     QFontMetrics fontMetrics(opt.font);
     // 当前文字长度是否大于显示框长度
-    if (fontMetrics.horizontalAdvance(displayName) > (opt.rect.width() - 90)) {
-        displayName = fontMetrics.elidedText(displayName, Qt::ElideRight, opt.rect.width() - 90); // 截取字符串长度用...代替
+    if (fontMetrics.horizontalAdvance(displayName) > (opt.rect.width() - OperationButtonsWidth)) {
+        displayName = fontMetrics.elidedText(displayName, Qt::ElideRight, opt.rect.width() - OperationButtonsWidth); // 截取字符串长度用...代替
     }
     if (view && view->m_iIndexCurrentHover == index.row()) {
         painter->drawText(opt.rect.adjusted(38, 0, -10, 0), Qt::AlignVCenter | Qt::AlignLeft, displayName);

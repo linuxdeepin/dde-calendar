@@ -55,7 +55,9 @@ protected:
     void paintEvent(QPaintEvent *e) override;
 private:
     QStringList testList;
+    QString m_sourceText;
     QFont textfont;
+    QFont sourceFont;
     int textwidth;
     int textheight;
     const int textRectWidth = 165;

@@ -49,6 +49,11 @@ void CMonthScheduleView::setallsize(int w, int h, int left, int top, int buttom,
     m_leftMargin = left;
     m_topMargin = top;
     m_cNum = static_cast<int>(((m_height - m_topMargin - m_bottomMargin) / 6.0 + 0.5 - schedule_Item_Y) / (itemHeight + 1));
+    qCDebug(ClientLogger) << "Month schedule view size configured"
+                            << "width:" << m_width
+                            << "height:" << m_height
+                            << "itemHeight:" << itemHeight
+                            << "maxScheduleRows:" << m_cNum;
 }
 
 void CMonthScheduleView::setData(QMap<QDate, DSchedule::List> &data, int currentMonth)
@@ -101,7 +106,10 @@ void CMonthScheduleView::updateData()
     }
     // Protect against invalid data during initialization
     if (m_data.count() != DDEMonthCalendar::ItemSizeOfMonthDay || m_cNum < 1) {
-        qCDebug(ClientLogger) << "Data count or cNum is invalid, returning";
+        qCWarning(ClientLogger) << "Month schedule view data is invalid"
+                                << "dateCount:" << m_data.count()
+                                << "expectedDateCount:" << DDEMonthCalendar::ItemSizeOfMonthDay
+                                << "maxScheduleRows:" << m_cNum;
         return;
     }
     //开始结束时间
@@ -111,12 +119,16 @@ void CMonthScheduleView::updateData()
     QDate enddate = _iter.key();
     m_beginDate = begindate;
     m_endDate = enddate;
+    int itemCount = 0;
     for (int i = 0; i < m_weekSchedule.size(); ++i) {
         m_weekSchedule[i]->setHeight(m_ItemHeight, qRound((m_height - m_topMargin - m_bottomMargin) / 6.0 - schedule_Item_Y));
         m_weekSchedule[i]->setData(m_data, begindate.addDays(i * 7), begindate.addDays(i * 7 + 6));
         QVector<QVector<MScheduleDateRangeInfo>> mSchedule = m_weekSchedule[i]->getMScheduleInfo();
         updateDateShow(mSchedule, m_weekSchedule[i]->getScheduleShowItem());
+        itemCount += m_weekSchedule[i]->getScheduleShowItem().size();
     }
+    qCDebug(ClientLogger) << "Month schedule graphics items created"
+                            << "itemCount:" << itemCount;
 }
 
 void CMonthScheduleView::updateHeight()

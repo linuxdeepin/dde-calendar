@@ -223,7 +223,7 @@ void CDayWindow::setSelectSearchScheduleInfo(const DSchedule::Ptr &info)
         setTime();
     } else {
         qCDebug(ClientLogger) << "Timed event, setting specific time";
-        m_scheduleView->setTime(info->dtStart().time());
+        m_scheduleView->setTime(info->dtStart().toLocalTime().time());
     }
 
     m_scheduleView->setSelectSchedule(info);

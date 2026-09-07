@@ -106,6 +106,17 @@ void CMonthScheduleItem::paintBackground(QPainter *painter, const QRectF &rect, 
                              rect.height() / 3,
                              rect.height() / 3);
     painter->restore();
+    QColor sourceColor = QColor(m_vScheduleInfo->accountColor());
+    if (!sourceColor.isValid()) {
+        sourceColor = gdColor.orginalColor;
+    }
+    painter->save();
+    QPen sourcePen(sourceColor);
+    sourcePen.setWidth(2);
+    painter->setPen(sourcePen);
+    painter->drawLine(QPointF(fillRect.left(), fillRect.top() + 1),
+                      QPointF(fillRect.left(), fillRect.bottom() - 1));
+    painter->restore();
     painter->setFont(m_font);
     painter->setPen(textcolor);
 

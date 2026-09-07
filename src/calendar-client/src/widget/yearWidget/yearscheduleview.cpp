@@ -267,7 +267,8 @@ void CYearScheduleView::paintItem(QPainter &painter, DSchedule::Ptr info, int in
             //圆点m_solocolor
             QColor gdColor;
             DScheduleType::Ptr type = gScheduleManager->getScheduleTypeByScheduleId(info->scheduleTypeID());
-            if (nullptr != type) {
+            gdColor = QColor(info->accountColor());
+            if (!gdColor.isValid() && nullptr != type) {
                 gdColor = type->getColorCode();
             }
             painter.save();
@@ -315,7 +316,7 @@ void CYearScheduleView::paintItem(QPainter &painter, DSchedule::Ptr info, int in
                 if (m_currentDate > info->dtStart().date()) {
                     str = tr("All Day");
                 } else {
-                    str = info->dtStart().time().toString(m_timeFormat);
+                    str = info->dtStart().toLocalTime().time().toString(m_timeFormat);
                 }
             }
             painter.drawText(QRect(width() - 70, bHeight, 57, labelheight - 2), Qt::AlignRight | Qt::AlignVCenter, str);

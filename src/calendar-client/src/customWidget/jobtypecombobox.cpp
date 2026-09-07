@@ -161,6 +161,20 @@ void JobTypeComboBox::updateJobType(const AccountItem::Ptr& account)
     setEditable(isEnit);
     setCurrentText(text);
 
+    // CalDAV accounts can expose both read-only and writable calendars. If
+    // there is no matching previous selection, choose a writable type by
+    // default so a new event is not sent to a read-only calendar accidentally.
+    if (account->getAccount()
+        && account->getAccount()->accountType() == DAccount::Account_CalDav
+        && currentIndex() < 0) {
+        for (int index = 0; index < m_lstJobType.size(); ++index) {
+            if (m_lstJobType.at(index)->privilege() & DScheduleType::Write) {
+                setCurrentIndex(index);
+                break;
+            }
+        }
+    }
+
 }
 
 void JobTypeComboBox::addJobTypeItem(int idx, QString strColorHex, QString strJobType)

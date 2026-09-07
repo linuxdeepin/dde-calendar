@@ -76,7 +76,10 @@ class JobTypeListViewStyle : public DStyledItemDelegate
     Q_OBJECT
 public:
     explicit JobTypeListViewStyle(QAbstractItemView *parent = nullptr)
-        : DStyledItemDelegate(parent) {}
+        : DStyledItemDelegate(parent)
+    {
+        setItemSpacing(0);
+    }
 
 protected:
     // painting
