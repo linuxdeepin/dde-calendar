@@ -1,3 +1,29 @@
+dde-calendar (6.5.43) unstable; urgency=medium
+
+  * i18n: Translate dde-calendar-service_en_US.ts in pt_BR
+  * i18n: Translate dde-calendar_en_US.ts in pt_BR
+  * i18n: Translate desktop.ts in pt
+  * i18n: Translate dde-calendar-service_en_US.ts in pt
+  * i18n: Translate dde-calendar_en_US.ts in pt
+  * i18n: Translate dde-calendar-service_en_US.ts in ar
+  * i18n: Translate dde-calendar_en_US.ts in ar
+  * fix(widget): fix reminder popup split
+  * fix(dialog): update my schedule icon theme sync and scroll behavior
+  * fix(calendar-ui): align title text colors
+  * fix(month-view): adjust text colors in month view
+  * fix(week-head-view): adapt header text colors
+  * fix: Update cppcheck workflow to use checkout@v7
+  * chore(at-spi): add AT-SPI naming for interactive widgets
+  * fix: adjust month view date table text colors to match design spec
+  * chore: Sync by https://github.com/linuxdeepin/.github/commit/a300f8523d4876677112edab6a0772f7ad112976
+  * fix: update Arabic (ar) translations
+  * feat(common): add CalDAV common foundation
+  * feat(caldav): add protocol transport and calendar discovery
+  * feat(database): add CalDAV persistence and migration support
+  * feat(sync): add CalDAV synchronization core
+
+ -- Liu Zhangjian <liuzhangjian@uniontech.com>  Mon, 07 Sep 2026 13:11:02 +0800
+
 dde-calendar (6.5.42) unstable; urgency=medium
 
   * chore: Update version to 6.5.42
