@@ -17,24 +17,130 @@
 #include "unionIDDav/dunioniddav.h"
 #include "ddatasyncbase.h"
 #include "dbusnotify.h"
+#include "daccountmanagerdatabase.h"
+#include "dcaldavoutboxenqueuer.h"
+#include "dcaldavrecoveryhandler.h"
+#include "dcaldavaccountinfo.h"
+#include "dcaldavcredentialstore.h"
+#include "dcaldavcalendarinfo.h"
+#include "dcaldavcategoryinfo.h"
+#include "dcaldavprofile.h"
+#include "dcaldavxmlreader.h"
 
 #include <QDir>
 #include <QFile>
+#include <QJsonArray>
+#include <QJsonDocument>
+
+#include <memory>
 
 #define UPDATEREMINDJOBTIMEINTERVAL 1000 * 60 * 10 //提醒任务更新时间间隔毫秒数（10分钟）
 
-DAccountModule::DAccountModule(const DAccount::Ptr &account, QObject *parent)
+namespace {
+
+bool usesLegacyNetworkSync(const DAccount::Ptr &account)
+{
+    return account->isNetWorkAccount() && account->accountType() != DAccount::Account_CalDav;
+}
+
+bool isCalDavRemoteScheduleType(const DScheduleType &scheduleType)
+{
+    return scheduleType.description() == QStringLiteral("CalDAV calendar")
+        || scheduleType.description() == QStringLiteral("CalDAV category");
+}
+
+DCalDavCalendarInfo writableCalDavCalendar(DAccountManagerDataBase *database,
+                                           const QString &accountID,
+                                           const QString &scheduleTypeID)
+{
+    DCalDavCalendarInfo calendar = database->getCalDavCalendarByScheduleTypeID(accountID, scheduleTypeID);
+    if (calendar.calendarId.isEmpty()) {
+        const DCalDavCategoryInfo category =
+            database->getCalDavCategoryMappingByScheduleTypeID(accountID, scheduleTypeID);
+        if (!category.calendarId.isEmpty()) {
+            const DCalDavCalendarInfo::List calendars = database->getCalDavCalendarList(accountID);
+            for (const DCalDavCalendarInfo &candidate : calendars) {
+                if (candidate.enabled && candidate.calendarId == category.calendarId) {
+                    calendar = candidate;
+                    break;
+                }
+            }
+        }
+    }
+    if (calendar.calendarId.isEmpty()
+        || !(calendar.privileges & DCalDavXmlReader::WritePrivilege)) {
+        return DCalDavCalendarInfo();
+    }
+    return calendar;
+}
+
+QUrl calDavEventUrl(const DCalDavCalendarInfo &calendar, const QString &uid)
+{
+    QUrl url(calendar.href);
+    QString path = url.path();
+    if (!path.endsWith(QLatin1Char('/'))) {
+        path.append(QLatin1Char('/'));
+    }
+    path.append(QString::fromLatin1(QUrl::toPercentEncoding(uid)));
+    path.append(QStringLiteral(".ics"));
+    url.setPath(path);
+    return url;
+}
+
+/**
+ * @brief Builds the durable record used to recover a partially applied CalDAV change.
+ * @param account Owning CalDAV account of the local schedule.
+ * @param schedule Current local schedule serialized for recovery.
+ * @param operation Intended local Create, Modify, or Delete operation.
+ * @param mapping Persisted remote mapping, when an event already exists remotely.
+ * @param calendar Writable calendar used to derive a new event URL when needed.
+ * @return A recovery item sufficient to recreate the Outbox operation after restart.
+ */
+DCalDavRecoveryItem makeCalDavRecoveryItem(const DAccount::Ptr &account,
+                                           const DSchedule::Ptr &schedule,
+                                           DCalDavRecoveryItem::OperationType operation,
+                                           const DCalDavEventMappingInfo &mapping,
+                                           const DCalDavCalendarInfo &calendar)
+{
+    DCalDavRecoveryItem item;
+    item.accountID = account->accountID();
+    item.localScheduleID = schedule->uid();
+    item.operationType = operation;
+    item.scheduleIcs = DSchedule::toIcsString(schedule);
+    item.calendarID = !mapping.calendarID.isEmpty() ? mapping.calendarID : calendar.calendarId;
+    item.href = mapping.href;
+    // A remote-first creation has a deterministic resource URL before the
+    // local schedule is committed. Existing events without a mapping must not
+    // invent one during recovery: the outbox can still reconcile a pending
+    // Create/Modify operation using its normal mapping lookup.
+    if (operation == DCalDavRecoveryItem::CreateOperation && item.href.isEmpty()
+        && !calendar.calendarId.isEmpty()) {
+        item.href = calDavEventUrl(calendar, schedule->uid()).toString();
+    }
+    item.etag = mapping.etag;
+    item.originalIcs = mapping.originalIcs;
+    item.createdAt = QDateTime::currentDateTimeUtc();
+    return item;
+}
+
+} // namespace
+
+DAccountModule::DAccountModule(const DAccount::Ptr &account,
+                               DAccountManagerDataBase *calDavAccountManagerDatabase,
+                               QObject *parent)
     : QObject(parent)
     , m_account(account)
     , m_accountDB(new DAccountDataBase(account))
     , m_alarm(new DAlarmManager)
     , m_dataSync(DSyncDataFactory::createDataSync(m_account))
+    , m_calDavAccountManagerDatabase(calDavAccountManagerDatabase)
 {
     qCDebug(ServiceLogger) << "DAccountModule constructor called for account:" << account->accountID();
     QString newDbPath = getDBPath();
     m_accountDB->setDBPath(newDbPath + "/" + account->dbName());
     m_accountDB->initDBData();
     m_accountDB->getAccountInfo(m_account);
+    recoverPendingCalDavOperations();
 
     //关联打开日历界面
     connect(m_alarm.data(), &DAlarmManager::signalCallOpenCalendarUI, this, &DAccountModule::slotOpenCalendar);
@@ -143,17 +249,54 @@ QString DAccountModule::createScheduleType(const QString &typeInfo)
 {
     qCDebug(ServiceLogger) << "Creating schedule type for account:" << m_account->accountID() << "with info:" << typeInfo;
     DScheduleType::Ptr scheduleType;
-    DScheduleType::fromJsonString(scheduleType, typeInfo);
+    if (!DScheduleType::fromJsonString(scheduleType, typeInfo) || scheduleType.isNull()) {
+        qCWarning(ServiceLogger) << "Failed to parse schedule type creation payload.";
+        return QString();
+    }
+
+    DCalDavCalendarInfo selectedCalendar;
+    const bool isCalDav = m_account->accountType() == DAccount::Account_CalDav;
+    std::unique_ptr<SqlTransactionLocker> calDavTransaction;
+    if (isCalDav) {
+        if (m_calDavAccountManagerDatabase == nullptr) {
+            return QString();
+        }
+        const DCalDavCalendarInfo::List calendars =
+            m_calDavAccountManagerDatabase->getCalDavCalendarList(m_account->accountID());
+        for (const DCalDavCalendarInfo &calendar : calendars) {
+            if (!calendar.enabled || !(calendar.privileges & DCalDavXmlReader::WritePrivilege)) {
+                continue;
+            }
+            if (!scheduleType->typePath().isEmpty() && scheduleType->typePath() != calendar.calendarId) {
+                continue;
+            }
+            selectedCalendar = calendar;
+            break;
+        }
+        if (selectedCalendar.calendarId.isEmpty()) {
+            qCWarning(ServiceLogger) << "No writable CalDAV calendar is available for a new schedule type.";
+            return QString();
+        }
+        calDavTransaction.reset(new SqlTransactionLocker(
+            {m_accountDB->getConnectionName(), DDataBase::NameAccountManager}));
+        if (!calDavTransaction->isValid()) {
+            return QString();
+        }
+        scheduleType->setTypePath(selectedCalendar.calendarId);
+        scheduleType->setPrivilege(DScheduleType::User);
+    }
+    QString createdColorID;
     //如果颜色为用户自定义则需要在数据库中记录
     if (scheduleType->typeColor().colorID() == "") {
         scheduleType->setColorID(DDataBase::createUuid());
+        createdColorID = scheduleType->typeColor().colorID();
         DTypeColor::Ptr typeColor(new DTypeColor(scheduleType->typeColor()));
         typeColor->setPrivilege(DTypeColor::PriUser);
         m_accountDB->addTypeColor(typeColor);
         qCDebug(ServiceLogger) << "Added custom color for schedule type:" << typeColor->colorID();
         
         //添加创建颜色任务
-        if (m_account->isNetWorkAccount()) {
+        if (usesLegacyNetworkSync(m_account)) {
             DUploadTaskData::Ptr uploadTask(new DUploadTaskData);
             uploadTask->setTaskType(DUploadTaskData::TaskType::Create);
             uploadTask->setTaskObject(DUploadTaskData::Task_Color);
@@ -165,8 +308,37 @@ QString DAccountModule::createScheduleType(const QString &typeInfo)
     //设置创建时间
     scheduleType->setDtCreate(QDateTime::currentDateTime());
     QString scheduleTypeID = m_accountDB->createScheduleType(scheduleType);
+    if (scheduleTypeID.isEmpty()) {
+        if (calDavTransaction) {
+            calDavTransaction->rollback();
+        }
+        return QString();
+    }
+    if (isCalDav) {
+        QJsonArray categories;
+        categories.append(scheduleType->typeName().trimmed());
+        DCalDavCategoryInfo categoryMapping;
+        categoryMapping.accountId = m_account->accountID();
+        categoryMapping.calendarId = selectedCalendar.calendarId;
+        categoryMapping.categoryKey = QString::fromUtf8(
+            QJsonDocument(categories).toJson(QJsonDocument::Compact));
+        categoryMapping.scheduleTypeId = scheduleTypeID;
+        if (!m_calDavAccountManagerDatabase->upsertCalDavCategoryMapping(categoryMapping)
+            || !calDavTransaction->commit()) {
+            if (calDavTransaction) {
+                calDavTransaction->rollback();
+            }
+            m_accountDB->deleteScheduleTypeByID(scheduleTypeID, 1);
+            if (!createdColorID.isEmpty()) {
+                m_accountDB->deleteTypeColor(createdColorID);
+            }
+            return QString();
+        }
+        emit signalScheduleTypeUpdate();
+        return scheduleTypeID;
+    }
     //如果为网络日程则需要上传任务
-    if (m_account->isNetWorkAccount()) {
+    if (usesLegacyNetworkSync(m_account)) {
         DUploadTaskData::Ptr uploadTask(new DUploadTaskData);
         uploadTask->setTaskType(DUploadTaskData::TaskType::Create);
         uploadTask->setTaskObject(DUploadTaskData::Task_ScheduleType);
@@ -182,6 +354,16 @@ QString DAccountModule::createScheduleType(const QString &typeInfo)
 
 bool DAccountModule::deleteScheduleTypeByID(const QString &typeID)
 {
+    DScheduleType::Ptr scheduleType = m_accountDB->getScheduleTypeByID(typeID);
+    if (scheduleType.isNull()) {
+        qCWarning(ServiceLogger) << "scheduleType isNull, typeID:" << typeID;
+        return false;
+    }
+    if (m_account->accountType() == DAccount::Account_CalDav
+        && isCalDavRemoteScheduleType(*scheduleType)) {
+        qCWarning(ServiceLogger) << "CalDAV remote calendar/category types cannot be changed through schedule type APIs.";
+        return false;
+    }
     qCDebug(ServiceLogger) << "Deleting schedule type by ID:" << typeID << "for account:" << m_account->accountID();
     //如果日程类型被使用需要删除对应到日程信息
     if (m_accountDB->scheduleTypeByUsed(typeID)) {
@@ -190,7 +372,7 @@ bool DAccountModule::deleteScheduleTypeByID(const QString &typeID)
         foreach (auto scheduleID, scheduleIDList) {
             closeNotification(scheduleID);
             //添加删除日程任务
-            if (m_account->isNetWorkAccount()) {
+            if (usesLegacyNetworkSync(m_account)) {
                 DUploadTaskData::Ptr uploadTask(new DUploadTaskData);
                 uploadTask->setTaskType(DUploadTaskData::TaskType::Delete);
                 uploadTask->setTaskObject(DUploadTaskData::Task_Schedule);
@@ -200,12 +382,11 @@ bool DAccountModule::deleteScheduleTypeByID(const QString &typeID)
         }
         //更新提醒任务
         updateRemindSchedules(false);
-        m_accountDB->deleteSchedulesByScheduleTypeID(typeID, !m_account->isNetWorkAccount());
+        m_accountDB->deleteSchedulesByScheduleTypeID(typeID, m_account->accountType() == DAccount::Account_Local);
         emit signalScheduleUpdate();
     }
-    DScheduleType::Ptr scheduleType = m_accountDB->getScheduleTypeByID(typeID);
     //根据帐户是否为网络帐户需要添加任务列表中,并设置弱删除
-    if (m_account->isNetWorkAccount()) {
+    if (usesLegacyNetworkSync(m_account)) {
         QStringList scheduleIDList = m_accountDB->getScheduleIDListByTypeID(typeID);
         //弱删除
         m_accountDB->deleteScheduleTypeByID(typeID);
@@ -234,6 +415,12 @@ bool DAccountModule::deleteScheduleTypeByID(const QString &typeID)
         if(scheduleType->typeColor().privilege() != DTypeColor::PriSystem){
             m_accountDB->deleteTypeColor(scheduleType->typeColor().colorID());
         }
+        if (m_account->accountType() == DAccount::Account_CalDav
+            && m_calDavAccountManagerDatabase != nullptr
+            && !m_calDavAccountManagerDatabase->deleteCalDavCategoryMappingByScheduleTypeID(
+                   m_account->accountID(), typeID)) {
+            qCWarning(ServiceLogger) << "Failed to remove CalDAV category mapping for schedule type:" << typeID;
+        }
     }
     if (scheduleType.isNull()) {
         qCWarning(ServiceLogger) << "scheduleType isNull, typeID:" << typeID;
@@ -258,39 +445,61 @@ bool DAccountModule::updateScheduleType(const QString &typeInfo)
 {
     qCDebug(ServiceLogger) << "Updating schedule type for account:" << m_account->accountID() << "with info:" << typeInfo;
     DScheduleType::Ptr scheduleType;
-    DScheduleType::fromJsonString(scheduleType, typeInfo);
+    if (!DScheduleType::fromJsonString(scheduleType, typeInfo) || scheduleType.isNull()) {
+        qCWarning(ServiceLogger) << "Failed to parse schedule type update payload.";
+        return false;
+    }
+
     DScheduleType::Ptr oldScheduleType = m_accountDB->getScheduleTypeByID(scheduleType->typeID());
-    //如果颜色有改动
     if (oldScheduleType.isNull()) {
-        qCWarning(ServiceLogger) << "get oldScheduleType error,typeID:" << scheduleType->typeID();
-    } else {
-        qCDebug(ServiceLogger) << "oldScheduleType:" << oldScheduleType->typeID();
-        if (oldScheduleType->typeColor() != scheduleType->typeColor()) {
-            if (!oldScheduleType->typeColor().isSysColorInfo()) {
-                m_accountDB->deleteTypeColor(oldScheduleType->typeColor().colorID());
-                //添加删除颜色任务
-                if (m_account->isNetWorkAccount()) {
-                    DUploadTaskData::Ptr uploadTask(new DUploadTaskData);
-                    uploadTask->setTaskType(DUploadTaskData::TaskType::Delete);
-                    uploadTask->setTaskObject(DUploadTaskData::Task_Color);
-                    uploadTask->setObjectId(oldScheduleType->typeColor().colorID());
-                    m_accountDB->addUploadTask(uploadTask);
-                }
+        qCWarning(ServiceLogger) << "Schedule type not found, typeID:" << scheduleType->typeID();
+        return false;
+    }
+
+    // Remote CalDAV collection/category metadata is read-only, but the local
+    // display state must remain user-configurable and persistent across restarts.
+    if (m_account->accountType() == DAccount::Account_CalDav
+        && isCalDavRemoteScheduleType(*oldScheduleType)) {
+        const DScheduleType::ShowState oldShowState = oldScheduleType->showState();
+        oldScheduleType->setShowState(scheduleType->showState());
+        oldScheduleType->setDtUpdate(QDateTime::currentDateTime());
+        const bool isSucc = m_accountDB->updateScheduleType(oldScheduleType);
+        if (isSucc) {
+            if (oldShowState == oldScheduleType->showState()) {
+                emit signalScheduleTypeUpdate();
+            } else {
+                emit signalScheduleUpdate();
             }
-            if (!scheduleType->typeColor().isSysColorInfo()) {
-                DTypeColor::Ptr typeColor(new DTypeColor(scheduleType->typeColor()));
-                typeColor->setPrivilege(DTypeColor::PriUser);
-                m_accountDB->addTypeColor(typeColor);
-                scheduleType->setColorID(typeColor->colorID());
-                //添加创建颜色任务
-                if (m_account->isNetWorkAccount()) {
-                    DUploadTaskData::Ptr uploadTask(new DUploadTaskData);
-//                    uploadTask->setTaskType(DUploadTaskData::TaskType::Delete);
-                    uploadTask->setTaskType(DUploadTaskData::TaskType::Create);
-                    uploadTask->setTaskObject(DUploadTaskData::Task_Color);
-                    uploadTask->setObjectId(typeColor->colorID());
-                    m_accountDB->addUploadTask(uploadTask);
-                }
+        }
+        qCDebug(ServiceLogger) << "CalDAV schedule type display state update result:" << isSucc;
+        return isSucc;
+    }
+    qCDebug(ServiceLogger) << "oldScheduleType:" << oldScheduleType->typeID();
+    //如果颜色有改动
+    if (oldScheduleType->typeColor() != scheduleType->typeColor()) {
+        if (!oldScheduleType->typeColor().isSysColorInfo()) {
+            m_accountDB->deleteTypeColor(oldScheduleType->typeColor().colorID());
+            //添加删除颜色任务
+            if (usesLegacyNetworkSync(m_account)) {
+                DUploadTaskData::Ptr uploadTask(new DUploadTaskData);
+                uploadTask->setTaskType(DUploadTaskData::TaskType::Delete);
+                uploadTask->setTaskObject(DUploadTaskData::Task_Color);
+                uploadTask->setObjectId(oldScheduleType->typeColor().colorID());
+                m_accountDB->addUploadTask(uploadTask);
+            }
+        }
+        if (!scheduleType->typeColor().isSysColorInfo()) {
+            DTypeColor::Ptr typeColor(new DTypeColor(scheduleType->typeColor()));
+            typeColor->setPrivilege(DTypeColor::PriUser);
+            m_accountDB->addTypeColor(typeColor);
+            scheduleType->setColorID(typeColor->colorID());
+            //添加创建颜色任务
+            if (usesLegacyNetworkSync(m_account)) {
+                DUploadTaskData::Ptr uploadTask(new DUploadTaskData);
+                uploadTask->setTaskType(DUploadTaskData::TaskType::Create);
+                uploadTask->setTaskObject(DUploadTaskData::Task_Color);
+                uploadTask->setObjectId(typeColor->colorID());
+                m_accountDB->addUploadTask(uploadTask);
             }
         }
     }
@@ -299,7 +508,7 @@ bool DAccountModule::updateScheduleType(const QString &typeInfo)
 
     if (isSucc) {
         qCDebug(ServiceLogger) << "Schedule type updated successfully";
-        if (m_account->isNetWorkAccount()) {
+        if (usesLegacyNetworkSync(m_account)) {
             DUploadTaskData::Ptr uploadTask(new DUploadTaskData);
             uploadTask->setTaskType(DUploadTaskData::TaskType::Modify);
             uploadTask->setTaskObject(DUploadTaskData::Task_ScheduleType);
@@ -322,45 +531,162 @@ bool DAccountModule::updateScheduleType(const QString &typeInfo)
     return isSucc;
 }
 
+void DAccountModule::notifyCalDavScheduleCreateFailed(int createFailure)
+{
+    emit signalCalDavScheduleCreateFailed(createFailure);
+}
+
+void DAccountModule::recoverPendingCalDavOperations()
+{
+    if (m_account.isNull() || m_account->accountType() != DAccount::Account_CalDav) {
+        return;
+    }
+    DCalDavRecoveryHandler::recover(m_accountDB.data(), m_calDavAccountManagerDatabase,
+                                    m_account->accountID());
+}
+
 QString DAccountModule::createSchedule(const QString &scheduleInfo)
 {
-    qCDebug(ServiceLogger) << "Creating schedule for account:" << m_account->accountID() << "with info:" << scheduleInfo;
+    qCDebug(ServiceLogger) << "Creating schedule for account:" << m_account->accountID()
+                             << "payloadLength:" << scheduleInfo.size();
     DSchedule::Ptr schedule;
-    DSchedule::fromJsonString(schedule, scheduleInfo);
+    if (!DSchedule::fromJsonString(schedule, scheduleInfo) || schedule.isNull()) {
+        qCWarning(ServiceLogger) << "Failed to parse schedule creation payload.";
+        return QString();
+    }
     schedule->setCreated(QDateTime::currentDateTime());
 
-    QString scheduleID = m_accountDB->createSchedule(schedule);
-    //根据是否为网络帐户判断是否需要更新任务列表
-    if (m_account->isNetWorkAccount()) {
-        qCDebug(ServiceLogger) << "Schedule type is network account";
+    DCalDavRecoveryItem recoveryItem;
+    bool hasRecoveryItem = false;
+    if (m_account->accountType() == DAccount::Account_CalDav) {
+        if (m_calDavAccountManagerDatabase == nullptr) {
+            return QString();
+        }
+        schedule->setUid(DDataBase::createUuid());
+        recoveryItem.accountID = m_account->accountID();
+        recoveryItem.localScheduleID = schedule->uid();
+        recoveryItem.operationType = DCalDavRecoveryItem::LocalCreateOperation;
+        recoveryItem.scheduleIcs = DSchedule::toIcsString(schedule);
+        recoveryItem.createdAt = QDateTime::currentDateTimeUtc();
+        if (!m_accountDB->upsertCalDavRecoveryItem(recoveryItem)) {
+            qCWarning(ServiceLogger) << "Failed to persist CalDAV local creation recovery record.";
+            return QString();
+        }
+        hasRecoveryItem = true;
+    }
+
+    std::unique_ptr<SqlTransactionLocker> calDavTransaction;
+    if (m_account->accountType() == DAccount::Account_CalDav) {
+        calDavTransaction.reset(new SqlTransactionLocker(
+            {m_accountDB->getConnectionName(), DDataBase::NameAccountManager}));
+        if (!calDavTransaction->isValid()) {
+            m_accountDB->deleteCalDavRecoveryItem(m_account->accountID(), schedule->uid());
+            return QString();
+        }
+    }
+
+    const QString scheduleID = m_accountDB->createSchedule(schedule);
+    if (scheduleID.isEmpty()) {
+        if (calDavTransaction) {
+            calDavTransaction->rollback();
+        }
+        if (hasRecoveryItem) {
+            m_accountDB->deleteCalDavRecoveryItem(m_account->accountID(), schedule->uid());
+        }
+        return QString();
+    }
+
+    bool calDavOutboxQueued = false;
+    if (usesLegacyNetworkSync(m_account)) {
         DUploadTaskData::Ptr uploadTask(new DUploadTaskData);
         uploadTask->setTaskType(DUploadTaskData::TaskType::Create);
         uploadTask->setTaskObject(DUploadTaskData::Task_Schedule);
         uploadTask->setObjectId(scheduleID);
         m_accountDB->addUploadTask(uploadTask);
-        qCDebug(ServiceLogger) << "Added schedule upload task for network account";
-        //开启上传任务
         uploadNetWorkAccountData();
+    } else if (m_account->accountType() == DAccount::Account_CalDav) {
+        calDavOutboxQueued = DCalDavOutboxEnqueuer::enqueue(
+            m_calDavAccountManagerDatabase, m_account->accountID(), schedule,
+            DCalDavOutboxEnqueuer::CreateChange);
+        if (!calDavOutboxQueued) {
+            // The requirement is local-first: a permission/configuration
+            // failure must not discard the event the user just saved.
+            qCWarning(ServiceLogger) << "CalDAV creation was saved locally but could not be queued.";
+        }
     }
-    //根据是否为提醒日程更新提醒任务
+
+    if (calDavTransaction && !calDavTransaction->commit()) {
+        qCWarning(ServiceLogger) << "Failed to commit CalDAV local creation transaction.";
+        // Keep the recovery record. If the local database committed before the
+        // account-manager database, startup will recreate the Create Outbox.
+        return QString();
+    }
+    if (hasRecoveryItem
+        && !m_accountDB->deleteCalDavRecoveryItem(m_account->accountID(), schedule->uid())) {
+        qCWarning(ServiceLogger) << "Failed to clear completed CalDAV local creation recovery record.";
+    }
+
     if (schedule->alarms().size() > 0) {
-        qCDebug(ServiceLogger) << "Updating reminders for new schedule:" << scheduleID;
         updateRemindSchedules(false);
     }
-    //发送日程更新信号
+    if (m_account->accountType() == DAccount::Account_CalDav) {
+        if (calDavOutboxQueued) {
+            emit signalCalDavLocalChange();
+        } else {
+            qCWarning(ServiceLogger) << "CalDAV creation was saved locally but could not be queued.";
+        }
+    }
     emit signalScheduleUpdate();
     return scheduleID;
 }
 
 bool DAccountModule::updateSchedule(const QString &scheduleInfo)
 {
-    qCDebug(ServiceLogger) << "Updating schedule for account:" << m_account->accountID() << "with info:" << scheduleInfo;
+    qCDebug(ServiceLogger) << "Updating schedule for account:" << m_account->accountID()
+                             << "payloadLength:" << scheduleInfo.size();
     //根据是否为提醒日程更新提醒任务
     DSchedule::Ptr schedule;
-    DSchedule::fromJsonString(schedule, scheduleInfo);
+    if (!DSchedule::fromJsonString(schedule, scheduleInfo) || schedule.isNull()) {
+        qCWarning(ServiceLogger) << "Failed to parse schedule update payload.";
+        return false;
+    }
     DSchedule::Ptr oldSchedule = m_accountDB->getScheduleByScheduleID(schedule->uid());
+    if (oldSchedule.isNull() || oldSchedule->uid().isEmpty()) {
+        qCWarning(ServiceLogger) << "Schedule to update was not found.";
+        return false;
+    }
     schedule->setLastModified(QDateTime::currentDateTime());
     schedule->setRevision(schedule->revision() + 1);
+
+    DCalDavRecoveryItem recoveryItem;
+    bool hasRecoveryItem = false;
+    if (m_account->accountType() == DAccount::Account_CalDav) {
+        if (m_calDavAccountManagerDatabase == nullptr) {
+            return false;
+        }
+        const DCalDavEventMappingInfo mapping =
+            m_calDavAccountManagerDatabase->getCalDavEventMappingByLocalScheduleID(
+                m_account->accountID(), schedule->uid());
+        const DCalDavCalendarInfo calendar = writableCalDavCalendar(
+            m_calDavAccountManagerDatabase, m_account->accountID(), schedule->scheduleTypeID());
+        recoveryItem = makeCalDavRecoveryItem(
+            m_account, schedule, DCalDavRecoveryItem::ModifyOperation, mapping, calendar);
+        if (!m_accountDB->upsertCalDavRecoveryItem(recoveryItem)) {
+            qCWarning(ServiceLogger) << "Failed to persist CalDAV update recovery record.";
+            return false;
+        }
+        hasRecoveryItem = true;
+    }
+
+    std::unique_ptr<SqlTransactionLocker> calDavTransaction;
+    if (m_account->accountType() == DAccount::Account_CalDav) {
+        calDavTransaction.reset(new SqlTransactionLocker(
+            {m_accountDB->getConnectionName(), DDataBase::NameAccountManager}));
+        if (!calDavTransaction->isValid()) {
+            m_accountDB->deleteCalDavRecoveryItem(m_account->accountID(), schedule->uid());
+            return false;
+        }
+    }
 
     //如果旧日程为提醒日程
     if (oldSchedule->alarms().size() > 0) {
@@ -407,24 +733,66 @@ bool DAccountModule::updateSchedule(const QString &scheduleInfo)
     }
 
     bool ok = m_accountDB->updateSchedule(schedule);
+    if (!ok) {
+        if (calDavTransaction) {
+            calDavTransaction->rollback();
+        }
+        if (hasRecoveryItem) {
+            m_accountDB->deleteCalDavRecoveryItem(m_account->accountID(), schedule->uid());
+        }
+        return false;
+    }
 
     //如果存在提醒
     if (oldSchedule->alarms().size() > 0 || schedule->alarms().size() > 0) {
         updateRemindSchedules(false);
     }
 
-    emit signalScheduleUpdate();
-    //根据是否为网络帐户判断是否需要更新任务列表
-    if (m_account->isNetWorkAccount()) {
+    //根据账户类型分别记录旧网络同步任务或 CalDAV Outbox。
+    if (usesLegacyNetworkSync(m_account)) {
         qCDebug(ServiceLogger) << "Schedule is network account";
         DUploadTaskData::Ptr uploadTask(new DUploadTaskData);
         uploadTask->setTaskType(DUploadTaskData::TaskType::Modify);
         uploadTask->setTaskObject(DUploadTaskData::Task_Schedule);
         uploadTask->setObjectId(schedule->uid());
         m_accountDB->addUploadTask(uploadTask);
-        //开启上传任务
         uploadNetWorkAccountData();
+    } else if (ok && m_account->accountType() == DAccount::Account_CalDav
+               && !DCalDavOutboxEnqueuer::enqueue(m_calDavAccountManagerDatabase,
+                                                   m_account->accountID(), schedule,
+                                                   DCalDavOutboxEnqueuer::ModifyChange)) {
+        qCWarning(ServiceLogger) << "Failed to enqueue CalDAV schedule update.";
+        if (calDavTransaction) {
+            calDavTransaction->rollback();
+        }
+        if (hasRecoveryItem) {
+            m_accountDB->deleteCalDavRecoveryItem(m_account->accountID(), schedule->uid());
+        }
+        return false;
     }
+    if (calDavTransaction && !calDavTransaction->commit()) {
+        qCWarning(ServiceLogger) << "Failed to commit CalDAV schedule update transaction.";
+        // SqlTransactionLocker coordinates two independent SQLite
+        // connections and cannot provide a true cross-database atomic commit.
+        // If the local connection committed before the account-manager
+        // connection failed, restore the pre-update row so the next retry does
+        // not lose the user's pending change without an outbox item.
+        const bool restored = m_accountDB->updateSchedule(oldSchedule);
+        if (!restored) {
+            qCWarning(ServiceLogger) << "Failed to restore schedule after CalDAV transaction failure.";
+        } else if (hasRecoveryItem) {
+            m_accountDB->deleteCalDavRecoveryItem(m_account->accountID(), schedule->uid());
+        }
+        if (oldSchedule->alarms().size() > 0 || schedule->alarms().size() > 0) {
+            updateRemindSchedules(false);
+        }
+        return false;
+    }
+    if (hasRecoveryItem
+        && !m_accountDB->deleteCalDavRecoveryItem(m_account->accountID(), schedule->uid())) {
+        qCWarning(ServiceLogger) << "Failed to clear completed CalDAV update recovery record.";
+    }
+    emit signalScheduleUpdate();
     return ok;
 }
 
@@ -443,17 +811,72 @@ bool DAccountModule::deleteScheduleByScheduleID(const QString &scheduleID)
     //根据是否为网络判断是否需要弱删除
     bool isOK;
     DSchedule::Ptr schedule = m_accountDB->getScheduleByScheduleID(scheduleID);
-    if (m_account->isNetWorkAccount()) {
+    if (schedule.isNull() || schedule->uid().isEmpty()) {
+        qCWarning(ServiceLogger) << "Schedule to delete was not found.";
+        return false;
+    }
+
+    DCalDavRecoveryItem recoveryItem;
+    bool hasRecoveryItem = false;
+    if (m_account->accountType() == DAccount::Account_CalDav) {
+        if (m_calDavAccountManagerDatabase == nullptr) {
+            return false;
+        }
+        const DCalDavEventMappingInfo mapping =
+            m_calDavAccountManagerDatabase->getCalDavEventMappingByLocalScheduleID(
+                m_account->accountID(), scheduleID);
+        const DCalDavCalendarInfo calendar = writableCalDavCalendar(
+            m_calDavAccountManagerDatabase, m_account->accountID(), schedule->scheduleTypeID());
+        recoveryItem = makeCalDavRecoveryItem(
+            m_account, schedule, DCalDavRecoveryItem::DeleteOperation, mapping, calendar);
+        if (!m_accountDB->upsertCalDavRecoveryItem(recoveryItem)) {
+            qCWarning(ServiceLogger) << "Failed to persist CalDAV deletion recovery record.";
+            return false;
+        }
+        hasRecoveryItem = true;
+    }
+
+    std::unique_ptr<SqlTransactionLocker> calDavTransaction;
+    if (m_account->accountType() == DAccount::Account_CalDav) {
+        calDavTransaction.reset(new SqlTransactionLocker(
+            {m_accountDB->getConnectionName(), DDataBase::NameAccountManager}));
+        if (!calDavTransaction->isValid()) {
+            m_accountDB->deleteCalDavRecoveryItem(m_account->accountID(), scheduleID);
+            return false;
+        }
+    }
+    if (usesLegacyNetworkSync(m_account)) {
         qCDebug(ServiceLogger) << "Schedule is network account";
         isOK = m_accountDB->deleteScheduleByScheduleID(scheduleID);
-        //更新上传任务表
         DUploadTaskData::Ptr uploadTask(new DUploadTaskData);
         uploadTask->setTaskType(DUploadTaskData::TaskType::Delete);
         uploadTask->setTaskObject(DUploadTaskData::Task_Schedule);
         uploadTask->setObjectId(scheduleID);
         m_accountDB->addUploadTask(uploadTask);
-        //开启任务
         uploadNetWorkAccountData();
+    } else if (m_account->accountType() == DAccount::Account_CalDav) {
+        isOK = m_accountDB->deleteScheduleByScheduleID(scheduleID);
+        if (!isOK) {
+            if (calDavTransaction) {
+                calDavTransaction->rollback();
+            }
+            if (hasRecoveryItem) {
+                m_accountDB->deleteCalDavRecoveryItem(m_account->accountID(), scheduleID);
+            }
+            return false;
+        }
+        if (!DCalDavOutboxEnqueuer::enqueue(m_calDavAccountManagerDatabase,
+                                            m_account->accountID(), schedule,
+                                            DCalDavOutboxEnqueuer::DeleteChange)) {
+            qCWarning(ServiceLogger) << "Failed to enqueue CalDAV schedule deletion.";
+            if (calDavTransaction) {
+                calDavTransaction->rollback();
+            }
+            if (hasRecoveryItem) {
+                m_accountDB->deleteCalDavRecoveryItem(m_account->accountID(), scheduleID);
+            }
+            return false;
+        }
     } else {
         qCDebug(ServiceLogger) << "Schedule is not network account";
         isOK = m_accountDB->deleteScheduleByScheduleID(scheduleID, 1);
@@ -464,6 +887,35 @@ bool DAccountModule::deleteScheduleByScheduleID(const QString &scheduleID)
         //关闭提醒消息和对应的通知弹框
         closeNotification(scheduleID);
         updateRemindSchedules(false);
+    }
+    if (calDavTransaction && !calDavTransaction->commit()) {
+        qCWarning(ServiceLogger) << "Failed to commit CalDAV schedule deletion transaction.";
+        // The two database files are committed independently.  If the local
+        // deletion was committed but the outbox transaction was not, restore
+        // the original schedule; otherwise the remote DELETE could never be
+        // retried after restart.
+        const bool restored = m_accountDB->scheduleExistsByScheduleID(scheduleID)
+            ? m_accountDB->updateSchedule(schedule)
+            : !m_accountDB->createSchedule(schedule).isEmpty();
+        if (!restored) {
+            qCWarning(ServiceLogger) << "Failed to restore schedule after CalDAV deletion transaction failure.";
+        } else if (hasRecoveryItem) {
+            m_accountDB->deleteCalDavRecoveryItem(m_account->accountID(), scheduleID);
+        }
+        if (schedule->alarms().size() > 0) {
+            updateRemindSchedules(false);
+        }
+        return false;
+    }
+    if (hasRecoveryItem
+        && !m_accountDB->deleteCalDavRecoveryItem(m_account->accountID(), scheduleID)) {
+        qCWarning(ServiceLogger) << "Failed to clear completed CalDAV deletion recovery record.";
+    }
+    if (m_account->accountType() == DAccount::Account_CalDav) {
+        // The local delete is committed. Let the account manager start the
+        // asynchronous remote DELETE immediately; the UI remains responsive
+        // while the server response is handled by the CalDAV outbox.
+        emit signalCalDavLocalChange();
     }
     emit signalScheduleUpdate();
     return isOK;
@@ -538,6 +990,18 @@ DAccount::Ptr DAccountModule::account() const
     return m_account;
 }
 
+
+DAccountDataBase *DAccountModule::accountDatabase() const
+{
+    return m_accountDB.data();
+}
+
+void DAccountModule::notifyScheduleDataChanged()
+{
+    updateRemindSchedules(false);
+    emit signalScheduleTypeUpdate();
+    emit signalScheduleUpdate();
+}
 void DAccountModule::updateRemindSchedules(bool isClear)
 {
     qCDebug(ServiceLogger) << "Updating remind schedules for account:" << m_account->accountID() << "isClear:" << isClear;
@@ -703,10 +1167,10 @@ QString DAccountModule::getDtLastUpdate()
     return dtToString(m_account->dtLastSync());
 }
 
-void DAccountModule::removeDB()
+bool DAccountModule::removeDB()
 {
     qCDebug(ServiceLogger) << "Removing database for account:" << m_account->accountID();
-    m_accountDB->removeDB();
+    bool removed = m_accountDB->removeDB();
     //如果为uid帐户退出则清空目录下所有关于uid的数据库文件
     //解决在某些条件下数据库没有被移除的问题（自测未发现）
     if(account()->accountType() == DAccount::Type::Account_UnionID){
@@ -719,10 +1183,15 @@ void DAccountModule::removeDB()
             dir.setFilter(QDir::Files | QDir::NoSymLinks);
             dir.setNameFilters(filters);
             for (uint i = 0; i < dir.count(); ++i) {
-                QFile::remove(dbPatch + dir[i]);
+                if (!QFile::remove(dbPatch + dir[i])) {
+                    removed = false;
+                    qCWarning(ServiceLogger) << "Failed to remove UID account database file:"
+                                             << dbPatch + dir[i];
+                }
             }
         }
     }
+    return removed;
 }
 
 QMap<QDate, DSchedule::List> DAccountModule::getScheduleTimesOn(const QDateTime &dtStart, const QDateTime &dtEnd, const DSchedule::List &scheduleList, bool extend)
@@ -917,7 +1386,7 @@ void DAccountModule::downloadTaskhanding(int index)
         qCDebug(ServiceLogger) << "Starting download task for account:" << m_account->accountID();
         //如果帐户刚刚登录开启定时任务
         //设置同步频率
-        if (m_account->isNetWorkAccount()) {
+        if (usesLegacyNetworkSync(m_account)) {
             int sync = -1;
             switch (m_account->syncFreq()) {
             case DAccount::SyncFreq_15Mins:

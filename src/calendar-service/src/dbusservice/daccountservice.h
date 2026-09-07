@@ -131,6 +131,7 @@ signals:
     //日程更新信号，日程颜色更新信号
     void scheduleUpdate();
     void scheduleTypeUpdate();
+    Q_SCRIPTABLE void calDavScheduleCreateFailed(int createFailure);
 
 private:
     //帐户列表是否展开
