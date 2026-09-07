@@ -12,10 +12,20 @@
 #include "daccountmanagerdatabase.h"
 #include "daccountservice.h"
 #include "dbustimedate.h"
+#include "dcaldavsyncjobmanager.h"
+
+class DCalDavAccountRegistrar;
+class DCalDavReadOnlySync;
 
 #include <QObject>
 #include <QSharedPointer>
+#include <QHash>
 #include <QTimer>
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#include <QNetworkInformation>
+#else
+#include <QNetworkConfigurationManager>
+#endif
 #include <DConfig>
 
 //帐户类型总数，若支持的类型增加则需要修改
@@ -67,6 +77,25 @@ public:
     void downloadByAccountID(const QString &accountID);
     void uploadNetWorkAccountData();
 
+    QString getCalDavAccountStatusList();
+    QString getCalDavAccountConfig(const QString &accountID);
+    QString validateCalDavAccountForUpdate(const QString &accountID, int providerType,
+                                           const QString &serverUrl, const QString &username,
+                                           const QString &credentialRef);
+    QString validateCalDavAccount(int providerType, const QString &serverUrl,
+                                  const QString &username, const QString &credentialRef);
+    bool updateCalDavCredentialReference(const QString &accountID, const QString &credentialRef);
+    QString createCalDavAccount(int providerType, const QString &serverUrl, const QString &username,
+                                const QString &credentialRef, const QString &displayName);
+    bool updateCalDavAccount(const QString &accountID, int providerType, const QString &serverUrl,
+                             const QString &username, const QString &credentialRef,
+                             const QString &displayName);
+    bool deleteCalDavAccount(const QString &accountID);
+    bool deleteCalDavAccountWithLocalDataOption(const QString &accountID, bool deleteLocalData);
+    bool resolveCalDavConflict(const QString &accountID, const QString &localScheduleID,
+                               bool keepLocal);
+    bool resolveAllCalDavConflicts(const QString &accountID, bool keepLocal);
+
     //账户登录
     void login();
     //账户登出
@@ -91,11 +120,31 @@ private:
     DCalendarGeneralSettings::Ptr getGeneralSettings();
     // 保存通用配置
     void setGeneralSettings(const DCalendarGeneralSettings::Ptr &cgSet);
+    void registerCalDavAccounts();
+    void registerCalDavAccount(const DAccount::Ptr &account);
+    void scheduleNextCalDavDailySync();
+    void scheduleNextCalDavRetry();
+    bool migrateCalDavSchedulesToLocal(const DAccountModule::Ptr &calDavModule,
+                                       const DAccountModule::Ptr &localModule,
+                                       QStringList *createdScheduleIDs,
+                                       QStringList *createdScheduleTypeIDs);
+    /**
+     * @brief Removes a CalDAV account and optionally migrates its events locally.
+     *
+     * Stops sync first, rolls back an incomplete local migration on failure, and
+     * persists deletion cleanup metadata until the account database is removed.
+     */
+    bool deleteCalDavAccountInternal(const QString &accountID, bool deleteLocalData);
+    void resumeCalDavAccountDeletionCleanups();
 
 signals:
     void firstDayOfWeekChange();
     void timeFormatTypeChange();
     void signalLoginStatusChange();
+    void calDavAccountStatusChanged(const QString &accountID);
+    void calDavAccountValidationFinished(const QString &requestID, bool success, int validationError,
+                                         const QString &errorMessage,
+                                         const QString &principalDisplayName);
 
 public slots:
     void slotFirstDayOfWeek(const int firstDay);
@@ -109,6 +158,9 @@ public slots:
 
     //定时判断日历界面是否打开
     void slotClientIsOpen();
+    void slotCalDavDailySync();
+    void slotCalDavRetry();
+    void slotCalDavOnlineStateChanged(bool isOnline);
 
 private:
     SyncFileManage *m_syncFileManage = nullptr;
@@ -122,6 +174,14 @@ private:
     bool m_isSupportUid = false;
     QSettings m_settings;
     DBusTimedate m_timeDateDbus;
+    DCalDavSyncJobManager m_calDavSyncJobManager;
+    QMap<QString, DCalDavAccountRegistrar *> m_calDavRegistrars;
+    QHash<QString, DCalDavReadOnlySync *> m_calDavValidationJobs;
+    QTimer m_calDavDailyTimer;
+    QTimer m_calDavRetryTimer;
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    QNetworkConfigurationManager m_networkConfigurationManager;
+#endif
 };
 
 #endif // DACCOUNTMANAGEMODULE_H

@@ -18,6 +18,8 @@
 
 //帐户模块
 //处理后端数据获取，提醒，上传下载等
+class DAccountManagerDataBase;
+
 class DAccountModule : public QObject
 {
     Q_OBJECT
@@ -25,7 +27,9 @@ public:
     typedef QSharedPointer<DAccountModule> Ptr;
     typedef QList<Ptr> List;
 
-    explicit DAccountModule(const DAccount::Ptr &account, QObject *parent = nullptr);
+    explicit DAccountModule(const DAccount::Ptr &account,
+                            DAccountManagerDataBase *calDavAccountManagerDatabase = nullptr,
+                            QObject *parent = nullptr);
     ~DAccountModule();
     //获取帐户信息
     QString getAccountInfo();
@@ -65,6 +69,8 @@ public:
     QString getSysColors();
 
     DAccount::Ptr account() const;
+    DAccountDataBase *accountDatabase() const;
+    void notifyScheduleDataChanged();
 
     /**
      * @brief updateRemindSchedules     更新未来10分钟的提醒任务
@@ -86,9 +92,10 @@ public:
 
     void accountDownload();
     void uploadNetWorkAccountData();
+    void notifyCalDavScheduleCreateFailed(int createFailure);
 
     //删除数据库
-    void removeDB();
+    bool removeDB();
     //index: 0:帐户登录 1：修改同步频率 2：帐户登出
     void downloadTaskhanding(int index);
 
@@ -113,9 +120,12 @@ private:
 
     //根据提醒任务获取对应的日程信息
     DSchedule::Ptr getScheduleByRemind(const DRemindData::Ptr &remindData);
+    void recoverPendingCalDavOperations();
 
 signals:
     void signalScheduleUpdate();
+    void signalCalDavScheduleCreateFailed(int createFailure);
+    void signalCalDavLocalChange();
     void signalScheduleTypeUpdate();
     //关闭通知弹框
     void signalCloseNotification(quint64 notifyID);
@@ -141,6 +151,7 @@ private:
     DAccountDataBase::Ptr m_accountDB;
     DAlarmManager::Ptr m_alarm;
     DDataSyncBase *m_dataSync;
+    DAccountManagerDataBase *m_calDavAccountManagerDatabase = nullptr;
 };
 
 #endif // DACCOUNTMODULE_H

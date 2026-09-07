@@ -48,6 +48,27 @@ public slots:
 
     Q_SCRIPTABLE void downloadByAccountID(const QString &accountID);
     Q_SCRIPTABLE void uploadNetWorkAccountData();
+    Q_SCRIPTABLE QString getCalDavAccountStatusList();
+    Q_SCRIPTABLE QString getCalDavAccountConfig(const QString &accountID);
+    Q_SCRIPTABLE QString validateCalDavAccountForUpdate(const QString &accountID, int providerType,
+                                                        const QString &serverUrl,
+                                                        const QString &username,
+                                                        const QString &credentialRef);
+    Q_SCRIPTABLE QString validateCalDavAccount(int providerType, const QString &serverUrl,
+                                               const QString &username, const QString &credentialRef);
+    Q_SCRIPTABLE bool updateCalDavCredentialReference(const QString &accountID, const QString &credentialRef);
+    Q_SCRIPTABLE QString createCalDavAccount(int providerType, const QString &serverUrl,
+                                             const QString &username, const QString &credentialRef,
+                                             const QString &displayName);
+    Q_SCRIPTABLE bool updateCalDavAccount(const QString &accountID, int providerType,
+                                          const QString &serverUrl, const QString &username,
+                                          const QString &credentialRef, const QString &displayName);
+    Q_SCRIPTABLE bool deleteCalDavAccount(const QString &accountID);
+    Q_SCRIPTABLE bool deleteCalDavAccountWithLocalDataOption(const QString &accountID,
+                                                              bool deleteLocalData);
+    Q_SCRIPTABLE bool resolveCalDavConflict(const QString &accountID,
+                                             const QString &localScheduleID, bool keepLocal);
+    Q_SCRIPTABLE bool resolveAllCalDavConflicts(const QString &accountID, bool keepLocal);
     //获取通用设置
     Q_SCRIPTABLE QString getCalendarGeneralSettings();
     //设置通用设置
@@ -63,6 +84,10 @@ public slots:
 
 signals:
     Q_SCRIPTABLE void accountUpdate();
+    Q_SCRIPTABLE void calDavAccountValidationFinished(const QString &requestID, bool success,
+                                                      int validationError, const QString &errorMessage,
+                                                      const QString &principalDisplayName);
+    Q_SCRIPTABLE void calDavAccountStatusChanged(const QString &accountID);
 private:
     int getfirstDayOfWeek() const;
     void setFirstDayOfWeek(const int firstday);

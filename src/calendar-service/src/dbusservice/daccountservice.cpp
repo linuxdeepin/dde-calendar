@@ -12,6 +12,8 @@ DAccountService::DAccountService(const QString &path, const QString &interface, 
 {
     connect(m_accountModel.data(), &DAccountModule::signalScheduleUpdate, this, &DAccountService::scheduleUpdate);
     connect(m_accountModel.data(), &DAccountModule::signalScheduleTypeUpdate, this, &DAccountService::scheduleTypeUpdate);
+    connect(m_accountModel.data(), &DAccountModule::signalCalDavScheduleCreateFailed,
+            this, &DAccountService::calDavScheduleCreateFailed);
 
     connect(m_accountModel.data(), &DAccountModule::signalAccountState, this, [&]() {
         qCDebug(ServiceLogger) << "Account state changed, notifying property change";

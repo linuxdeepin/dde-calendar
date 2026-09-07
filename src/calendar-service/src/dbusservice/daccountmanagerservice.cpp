@@ -19,6 +19,10 @@ DAccountManagerService::DAccountManagerService(QObject *parent)
     //自动退出
     DServiceExitControl exitControl;
     connect(m_accountManager.data(), &DAccountManageModule::signalLoginStatusChange, this, &DAccountManagerService::accountUpdate);
+    connect(m_accountManager.data(), &DAccountManageModule::calDavAccountStatusChanged,
+            this, &DAccountManagerService::calDavAccountStatusChanged);
+    connect(m_accountManager.data(), &DAccountManageModule::calDavAccountValidationFinished,
+            this, &DAccountManagerService::calDavAccountValidationFinished);
     qCDebug(ServiceLogger) << "Connected login status change signal";
 
     connect(m_accountManager.data(), &DAccountManageModule::firstDayOfWeekChange, this, [&]() {
@@ -76,6 +80,118 @@ void DAccountManagerService::downloadByAccountID(const QString &accountID)
     DServiceExitControl exitControl;
     m_accountManager->downloadByAccountID(accountID);
     qCDebug(ServiceLogger) << "Completed download for accountID:" << accountID;
+}
+
+QString DAccountManagerService::validateCalDavAccount(int providerType, const QString &serverUrl,
+                                                       const QString &username, const QString &credentialRef)
+{
+    DServiceExitControl exitControl;
+    if (!clientWhite(0)) {
+        return QString();
+    }
+    return m_accountManager->validateCalDavAccount(providerType, serverUrl, username, credentialRef);
+}
+
+QString DAccountManagerService::getCalDavAccountConfig(const QString &accountID)
+{
+    DServiceExitControl exitControl;
+    if (!clientWhite(0)) {
+        return QString();
+    }
+    return m_accountManager->getCalDavAccountConfig(accountID);
+}
+
+QString DAccountManagerService::validateCalDavAccountForUpdate(
+    const QString &accountID, int providerType, const QString &serverUrl,
+    const QString &username, const QString &credentialRef)
+{
+    DServiceExitControl exitControl;
+    if (!clientWhite(0)) {
+        return QString();
+    }
+    return m_accountManager->validateCalDavAccountForUpdate(
+        accountID, providerType, serverUrl, username, credentialRef);
+}
+
+QString DAccountManagerService::getCalDavAccountStatusList()
+{
+    DServiceExitControl exitControl;
+    if (!clientWhite(0)) {
+        return QStringLiteral("[]");
+    }
+    return m_accountManager->getCalDavAccountStatusList();
+}
+
+bool DAccountManagerService::updateCalDavCredentialReference(const QString &accountID, const QString &credentialRef)
+{
+    DServiceExitControl exitControl;
+    if (!clientWhite(0)) {
+        return false;
+    }
+    return m_accountManager->updateCalDavCredentialReference(accountID, credentialRef);
+}
+
+QString DAccountManagerService::createCalDavAccount(int providerType, const QString &serverUrl,
+                                                       const QString &username, const QString &credentialRef,
+                                                       const QString &displayName)
+{
+    DServiceExitControl exitControl;
+    if (!clientWhite(0)) {
+        return QString();
+    }
+    return m_accountManager->createCalDavAccount(
+        providerType, serverUrl, username, credentialRef, displayName);
+}
+
+bool DAccountManagerService::updateCalDavAccount(const QString &accountID, int providerType,
+                                                   const QString &serverUrl, const QString &username,
+                                                   const QString &credentialRef, const QString &displayName)
+{
+    DServiceExitControl exitControl;
+    if (!clientWhite(0)) {
+        return false;
+    }
+    return m_accountManager->updateCalDavAccount(
+        accountID, providerType, serverUrl, username, credentialRef, displayName);
+}
+
+bool DAccountManagerService::deleteCalDavAccount(const QString &accountID)
+{
+    DServiceExitControl exitControl;
+    if (!clientWhite(0)) {
+        return false;
+    }
+    return m_accountManager->deleteCalDavAccount(accountID);
+}
+
+bool DAccountManagerService::deleteCalDavAccountWithLocalDataOption(const QString &accountID,
+                                                                     bool deleteLocalData)
+{
+    DServiceExitControl exitControl;
+    if (!clientWhite(0)) {
+        return false;
+    }
+    return m_accountManager->deleteCalDavAccountWithLocalDataOption(accountID, deleteLocalData);
+}
+
+bool DAccountManagerService::resolveCalDavConflict(const QString &accountID,
+                                                        const QString &localScheduleID,
+                                                        bool keepLocal)
+{
+    DServiceExitControl exitControl;
+    if (!clientWhite(0)) {
+        return false;
+    }
+    return m_accountManager->resolveCalDavConflict(accountID, localScheduleID, keepLocal);
+}
+
+bool DAccountManagerService::resolveAllCalDavConflicts(const QString &accountID, bool keepLocal)
+{
+    DServiceExitControl exitControl;
+    if (!clientWhite(0)) {
+        return false;
+    }
+    return m_accountManager->resolveAllCalDavConflicts(accountID, keepLocal);
 }
 
 void DAccountManagerService::uploadNetWorkAccountData()
