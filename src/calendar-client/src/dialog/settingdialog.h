@@ -8,11 +8,17 @@
 #include "settingWidget/settingwidgets.h"
 #include "doanetworkdbus.h"
 #include "controlCenterProxy.h"
+#include "caldavaccountlistwidget.h"
 #include <DSettingsDialog>
 #include <DIconButton>
 #include <DCommandLinkButton>
 
 DWIDGET_USE_NAMESPACE
+
+class QAction;
+class QCheckBox;
+class QPushButton;
+class UserloginWidget;
 
 class CSettingDialog : public DSettingsDialog
 {
@@ -24,11 +30,11 @@ private:
     QPair<QWidget*, QWidget*> createFirstDayofWeekWidget(QObject *obj);
     QPair<QWidget*, QWidget*> createTimeTypeWidget(QObject *obj);
     QPair<QWidget*, QWidget*> createAccountCombobox(QObject *obj);
+    QPair<QWidget*, QWidget*> createSyncItemsWidget(QObject *obj);
     QPair<QWidget*, QWidget*> createSyncFreqCombobox(QObject *obj);
-    QPair<QWidget*, QWidget*> createSyncTagRadioButton(QObject *obj);
-    QWidget *createManualSyncButton(QObject *obj);
+    QPair<QWidget*, QWidget*> createManualSyncButton(QObject *obj);
+    QWidget *createCalDavAccountListWidget(QObject *obj);
     QWidget *createJobTypeListView(QObject *obj);
-    DIconButton *createTypeAddButton();
     QWidget *createControlCenterLink(QObject *obj);
 
 public slots:
@@ -42,6 +48,9 @@ public slots:
     void slotFirstDayofWeekCurrentChanged(int index);
     void slotTimeTypeCurrentChanged(int index);
     void slotAccountCurrentChanged(int index);
+    void slotAddCalDavAccount();
+    void slotDeleteCalDavAccount();
+    void slotDeleteCalDavAccountFinished(bool success);
     void slotTypeAddBtnClickded();
     void slotTypeImportBtnClickded();
     void slotSetUosSyncFreq(int freq);
@@ -60,10 +69,13 @@ private:
     void initScheduleTypeWidget();
     void initSyncFreqWidget();
     void initManualSyncButton();
+    void initUosAccountSettingsWidget();
+    void updateUosAccountSettingsVisibility();
 
     void setFirstDayofWeek(int value);
     void setTimeType(int value);
     void accountUpdate();
+    void updateCalDavAddButtonVisibility();
 
     void setTypeEnable(int index);
 private:
@@ -85,11 +97,20 @@ private:
 
     //帐户选择
     QComboBox *m_accountComboBox = nullptr;
+    CalDavAccountListWidget *m_calDavAccountListWidget = nullptr;
+    DIconButton *m_calDavAccountAddButton = nullptr;
+    QWidget *m_uosAccountSettingsWidget = nullptr;
+    UserloginWidget *m_uosLoginWidget = nullptr;
+    QWidget *m_uosLoginRow = nullptr;
+    QWidget *m_uosSyncItemsRow = nullptr;
+    QWidget *m_uosSyncFreqRow = nullptr;
+    QWidget *m_uosManualSyncRow = nullptr;
     //同步频率
     QComboBox *m_syncFreqComboBox = nullptr;
+    QWidget *m_syncFreqWidget = nullptr;
 
-    DIconButton *m_typeAddBtn = nullptr;
-    DIconButton *m_typeImportBtn = nullptr;
+    QAction *m_typeAddAction = nullptr;
+    QAction *m_typeImportAction = nullptr;
 
     JobTypeListView *m_scheduleTypeWidget = nullptr;
 
@@ -97,9 +118,10 @@ private:
     QLabel *m_syncTimeLabel = nullptr;
     QPushButton *m_syncBtn = nullptr;
     QWidget *m_manualSyncWidget = nullptr;
+    QWidget *m_uosSyncItemsWidget = nullptr;
     DOANetWorkDBus *m_ptrNetworkState;
-    SettingWidget::SyncTagRadioButton *m_radiobuttonAccountCalendar = nullptr;
-    SettingWidget::SyncTagRadioButton *m_radiobuttonAccountSetting = nullptr;
+    QCheckBox *m_radiobuttonAccountCalendar = nullptr;
+    QCheckBox *m_radiobuttonAccountSetting = nullptr;
     ControlCenterProxy *m_controlCenterProxy;
 };
 
