@@ -9,6 +9,9 @@
 #include "accountitem.h"
 #include "dcalendargeneralsettings.h"
 
+#include <QHash>
+#include <QString>
+
 //所有帐户管理类
 class AccountManager : public QObject
 {
@@ -33,6 +36,19 @@ public:
     void downloadByAccountID(const QString &accountID, CallbackFunc callback = nullptr);
     //更新网络帐户数据
     void uploadNetWorkAccountData(CallbackFunc callback = nullptr);
+    void validateCalDavAccount(int providerType, const QString &serverUrl, const QString &username,
+                                const QString &credentialRef);
+    void getCalDavAccountConfig(const QString &accountID);
+    void validateCalDavAccountForUpdate(const QString &accountID, int providerType,
+                                        const QString &serverUrl, const QString &username,
+                                        const QString &credentialRef);
+    void deleteCalDavAccountWithLocalDataOption(const QString &accountID, bool deleteLocalData);
+    void resolveAllCalDavConflicts(const QString &accountID, bool keepLocal);
+    void createCalDavAccount(int providerType, const QString &serverUrl, const QString &username,
+                             const QString &credentialRef, const QString &displayName);
+    void updateCalDavAccount(const QString &accountID, int providerType,
+                             const QString &serverUrl, const QString &username,
+                             const QString &credentialRef, const QString &displayName);
 
     //设置一周首日
     void setFirstDayofWeek(int);
@@ -52,6 +68,8 @@ public:
     void loginout();
 
     bool getIsSupportUid() const;
+    DCalDavAccountStatus getCalDavAccountStatus(const QString &accountID) const;
+    bool canWriteCalDavAccount(const QString &accountID) const;
 
 signals:
     void signalDataInitFinished();
@@ -63,6 +81,19 @@ signals:
     void signalScheduleTypeUpdate();
     void signalSearchScheduleUpdate();
     void signalAccountStateChange();
+    void signalCalDavAccountStatusChanged(const QString &accountID);
+    void signalCalDavAccountStatusReady();
+    void signalCalDavScheduleCreateFailed(const QString &accountID, int createFailure);
+    void signalCalDavAccountValidationStarted(const QString &requestID);
+    void signalCalDavAccountValidationForUpdateStarted(const QString &requestID);
+    void signalGetCalDavAccountConfigFinish(const QString &config);
+    void signalCalDavAccountValidationFinished(const QString &requestID, bool success,
+                                               int validationError, const QString &errorMessage,
+                                               const QString &principalDisplayName);
+    void signalCreateCalDavAccountFinish(const QString &accountID);
+    void signalDeleteCalDavAccountFinish(bool success);
+    void signalUpdateCalDavAccountFinish(bool success);
+    void signalCalDavAccountRequestFailed(const QString &method, const QString &errorMessage);
 
     //正在同步
     void signalSyncNum(const int num = -1);
@@ -77,6 +108,7 @@ public slots:
     void slotGetGeneralSettingsFinish(DCalendarGeneralSettings::Ptr ptr);
     //获取是否支持UID完成事件
     void slotGetIsSupportUidFinish(bool supported);
+    void slotGetCalDavAccountStatusListFinish(DCalDavAccountStatus::List statusList);
 
 protected:
     explicit AccountManager(QObject *parent = nullptr);
@@ -88,6 +120,12 @@ private:
     static AccountManager *m_accountManager;
     AccountItem::Ptr  m_localAccountItem;
     AccountItem::Ptr  m_unionAccountItem;
+    QList<AccountItem::Ptr> m_calDavAccountItems;
+    QHash<QString, DCalDavAccountStatus> m_calDavAccountStatuses;
+    bool m_calDavStatusesInitialized = false;
+    QHash<QString, int> m_calDavProviderTypeOverrides;
+    int m_pendingCalDavProviderType = -1;
+    QString m_pendingCalDavDeleteAccountID;
     DCalendarGeneralSettings::Ptr m_settings;
 
     DbusAccountManagerRequest *m_dbusRequest;

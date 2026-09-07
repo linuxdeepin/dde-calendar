@@ -14,6 +14,7 @@ AccountManager::AccountManager(QObject *parent)
     qCDebug(ClientLogger) << "Creating AccountManager";
     initConnect();
     m_dbusRequest->clientIsShow(true);
+    m_dbusRequest->getCalDavAccountStatusList();
 
     if (isCommunityEdition()) {
         m_isSupportUid = false;
@@ -31,12 +32,141 @@ void AccountManager::initConnect()
     connect(m_dbusRequest, &DbusAccountManagerRequest::signalGetAccountListFinish, this, &AccountManager::slotGetAccountListFinish);
     connect(m_dbusRequest, &DbusAccountManagerRequest::signalGetGeneralSettingsFinish, this, &AccountManager::slotGetGeneralSettingsFinish);
     connect(m_dbusRequest, &DbusAccountManagerRequest::signalGetIsSupportUidFinish, this, &AccountManager::slotGetIsSupportUidFinish);
+    connect(m_dbusRequest, &DbusAccountManagerRequest::signalGetCalDavAccountStatusListFinish,
+            this, &AccountManager::slotGetCalDavAccountStatusListFinish);
+    connect(m_dbusRequest, &DbusAccountManagerRequest::signalValidateCalDavAccountStart,
+            this, [this](const QString &requestID) {
+        qCDebug(ClientLogger) << "Forwarding CalDAV validation start"
+                                << "accountManager:" << this
+                                << "requestIdPresent:" << !requestID.isEmpty()
+                                << "receiverCount:"
+                                << receivers(SIGNAL(signalCalDavAccountValidationStarted(QString)));
+        emit signalCalDavAccountValidationStarted(requestID);
+    });
+    connect(m_dbusRequest, &DbusAccountManagerRequest::signalValidateCalDavAccountForUpdateStart,
+            this, [this](const QString &requestID) {
+        qCDebug(ClientLogger) << "Forwarding CalDAV update validation start"
+                                << "accountManager:" << this
+                                << "requestIdPresent:" << !requestID.isEmpty()
+                                << "receiverCount:"
+                                << receivers(SIGNAL(signalCalDavAccountValidationForUpdateStarted(QString)));
+        emit signalCalDavAccountValidationForUpdateStarted(requestID);
+    });
+    connect(m_dbusRequest, &DbusAccountManagerRequest::signalGetCalDavAccountConfigFinish,
+            this, &AccountManager::signalGetCalDavAccountConfigFinish);
+    connect(m_dbusRequest, &DbusAccountManagerRequest::signalUpdateCalDavAccountFinish,
+            this, &AccountManager::signalUpdateCalDavAccountFinish);
+    connect(m_dbusRequest, &DbusAccountManagerRequest::signalCalDavAccountValidationFinished,
+            this, [this](const QString &requestID, bool success, int validationError,
+                         const QString &errorMessage, const QString &principalDisplayName) {
+        qCDebug(ClientLogger) << "Forwarding CalDAV validation result"
+                                << "accountManager:" << this
+                                << "requestIdPresent:" << !requestID.isEmpty()
+                                << "success:" << success
+                                << "validationError:" << validationError
+                                << "errorPresent:" << !errorMessage.isEmpty()
+                                << "principalDisplayNamePresent:" << !principalDisplayName.isEmpty()
+                                << "receiverCount:"
+                                << receivers(SIGNAL(signalCalDavAccountValidationFinished(QString,bool,int,QString,QString)));
+        emit signalCalDavAccountValidationFinished(requestID, success, validationError, errorMessage,
+                                                    principalDisplayName);
+    });
+    connect(m_dbusRequest, &DbusAccountManagerRequest::signalCreateCalDavAccountFinish,
+            this, [this](const QString &accountID) {
+        if (!accountID.isEmpty()) {
+            if (m_pendingCalDavProviderType >= 0) {
+                m_calDavProviderTypeOverrides.insert(accountID, m_pendingCalDavProviderType);
+                DCalDavAccountStatus &status = m_calDavAccountStatuses[accountID];
+                status.accountId = accountID;
+                status.providerType = m_pendingCalDavProviderType;
+            }
+            m_pendingCalDavProviderType = -1;
+            // Refresh immediately so the new account starts loading its schedule data
+            // without waiting for a later settings refresh or application restart.
+            m_dbusRequest->getAccountList();
+        }
+        emit signalCreateCalDavAccountFinish(accountID);
+    });
+    connect(m_dbusRequest, &DbusAccountManagerRequest::signalDeleteCalDavAccountFinish,
+            this, [this](bool success) {
+        if (success && !m_pendingCalDavDeleteAccountID.isEmpty()) {
+            m_calDavProviderTypeOverrides.remove(m_pendingCalDavDeleteAccountID);
+            m_calDavAccountStatuses.remove(m_pendingCalDavDeleteAccountID);
+        }
+        m_pendingCalDavDeleteAccountID.clear();
+        emit signalDeleteCalDavAccountFinish(success);
+    });
+    connect(m_dbusRequest, &DbusAccountManagerRequest::signalCalDavAccountRequestFailed,
+            this, &AccountManager::signalCalDavAccountRequestFailed);
+}
+
+DCalDavAccountStatus AccountManager::getCalDavAccountStatus(const QString &accountID) const
+{
+    return m_calDavAccountStatuses.value(accountID);
+}
+
+bool AccountManager::canWriteCalDavAccount(const QString &accountID) const
+{
+    const DCalDavAccountStatus status = m_calDavAccountStatuses.value(accountID);
+    return !status.accountId.isEmpty() && status.supportsWrite;
 }
 
 bool AccountManager::getIsSupportUid() const
 {
     qCDebug(ClientLogger) << "Getting isSupportUid:" << m_isSupportUid;
     return m_isSupportUid;
+}
+
+void AccountManager::slotGetCalDavAccountStatusListFinish(DCalDavAccountStatus::List statusList)
+{
+    QHash<QString, DCalDavAccountStatus> updatedStatuses;
+    for (const DCalDavAccountStatus &status : statusList) {
+        updatedStatuses.insert(status.accountId, status);
+    }
+    for (auto it = m_calDavProviderTypeOverrides.cbegin();
+         it != m_calDavProviderTypeOverrides.cend(); ++it) {
+        auto status = updatedStatuses.find(it.key());
+        if (status != updatedStatuses.end()) {
+            status->providerType = it.value();
+        }
+    }
+
+    // The first status query is an initial snapshot, not a new failure event.
+    // Do not notify consumers here, otherwise a previously persisted failure
+    // would show a stale toast when the calendar starts.
+    const bool shouldNotifyChanges = m_calDavStatusesInitialized;
+    const QHash<QString, DCalDavAccountStatus> previousStatuses = m_calDavAccountStatuses;
+    m_calDavAccountStatuses = updatedStatuses;
+    m_calDavStatusesInitialized = true;
+    if (!shouldNotifyChanges) {
+        // The initial snapshot is intentionally not exposed as a status-change
+        // event, otherwise persisted failures could trigger stale toasts. The
+        // settings page still needs a separate notification to refresh actions
+        // that depend on supportsWrite.
+        emit signalCalDavAccountStatusReady();
+        return;
+    }
+
+    for (auto it = updatedStatuses.cbegin(); it != updatedStatuses.cend(); ++it) {
+        const DCalDavAccountStatus previous = previousStatuses.value(it.key());
+        const DCalDavAccountStatus &current = it.value();
+        if (previous.accountId != current.accountId
+            || previous.displayName != current.displayName
+            || previous.providerType != current.providerType
+            || previous.syncStatus != current.syncStatus
+            || previous.lastSuccessfulSync != current.lastSuccessfulSync
+            || previous.failureReason != current.failureReason
+            || previous.failureCode != current.failureCode
+            || previous.accountColor != current.accountColor
+            || previous.supportsWrite != current.supportsWrite
+            || previous.pendingOperationCount != current.pendingOperationCount
+            || previous.pendingDeleteCount != current.pendingDeleteCount
+            || previous.conflictCount != current.conflictCount
+            || previous.nextRetryAt != current.nextRetryAt) {
+            emit signalCalDavAccountStatusChanged(current.accountId);
+        }
+    }
+    emit signalCalDavAccountStatusReady();
 }
 
 void AccountManager::slotGetIsSupportUidFinish(bool supported)
@@ -86,6 +216,9 @@ QList<AccountItem::Ptr> AccountManager::getAccountList()
     if (nullptr != m_unionAccountItem.data()) {
         qCDebug(ClientLogger) << "Adding union account to list";
         accountList.append(m_unionAccountItem);
+    }
+    for (const AccountItem::Ptr &account : m_calDavAccountItems) {
+        accountList.append(account);
     }
     qCDebug(ClientLogger) << "Returning" << accountList.size() << "accounts";
     return accountList;
@@ -214,6 +347,58 @@ void AccountManager::downloadByAccountID(const QString &accountID, CallbackFunc 
  * 更新网络帐户数据
  * @param callback 回调函数
  */
+void AccountManager::validateCalDavAccount(int providerType, const QString &serverUrl,
+                                             const QString &username, const QString &credentialRef)
+{
+    m_dbusRequest->validateCalDavAccount(providerType, serverUrl, username, credentialRef);
+}
+
+void AccountManager::deleteCalDavAccountWithLocalDataOption(const QString &accountID,
+                                                             bool deleteLocalData)
+{
+    m_pendingCalDavDeleteAccountID = accountID;
+    m_dbusRequest->deleteCalDavAccountWithLocalDataOption(accountID, deleteLocalData);
+}
+
+void AccountManager::getCalDavAccountConfig(const QString &accountID)
+{
+    m_dbusRequest->getCalDavAccountConfig(accountID);
+}
+
+void AccountManager::validateCalDavAccountForUpdate(
+    const QString &accountID, int providerType, const QString &serverUrl,
+    const QString &username, const QString &credentialRef)
+{
+    m_dbusRequest->validateCalDavAccountForUpdate(
+        accountID, providerType, serverUrl, username, credentialRef);
+}
+
+void AccountManager::createCalDavAccount(int providerType, const QString &serverUrl,
+                                           const QString &username, const QString &credentialRef,
+                                           const QString &displayName)
+{
+    m_pendingCalDavProviderType = providerType;
+    m_dbusRequest->createCalDavAccount(providerType, serverUrl, username, credentialRef, displayName);
+}
+
+void AccountManager::updateCalDavAccount(const QString &accountID, int providerType,
+                                          const QString &serverUrl, const QString &username,
+                                          const QString &credentialRef, const QString &displayName)
+{
+    m_calDavProviderTypeOverrides.insert(accountID, providerType);
+    if (m_calDavAccountStatuses.contains(accountID)) {
+        m_calDavAccountStatuses[accountID].providerType = providerType;
+        emit signalCalDavAccountStatusChanged(accountID);
+    }
+    m_dbusRequest->updateCalDavAccount(accountID, providerType, serverUrl, username, credentialRef,
+                                       displayName);
+}
+
+void AccountManager::resolveAllCalDavConflicts(const QString &accountID, bool keepLocal)
+{
+    m_dbusRequest->resolveAllCalDavConflicts(accountID, keepLocal);
+}
+
 void AccountManager::uploadNetWorkAccountData(CallbackFunc callback)
 {
     qCDebug(ClientLogger) << "Uploading network account data";
@@ -294,6 +479,12 @@ void AccountManager::slotGetAccountListFinish(DAccount::List accountList)
 {
     qCDebug(ClientLogger) << "Received account list with" << accountList.size() << "accounts";
     bool hasUnionAccount = false;
+    QHash<QString, AccountItem::Ptr> existingCalDavAccounts;
+    for (const AccountItem::Ptr &item : m_calDavAccountItems) {
+        existingCalDavAccounts.insert(item->getAccount()->accountID(), item);
+    }
+    QList<AccountItem::Ptr> updatedCalDavAccounts;
+    QStringList currentCalDavAccountIDs;
     for (DAccount::Ptr account : accountList) {
         if (account->accountType() == DAccount::Account_Local) {
             qCDebug(ClientLogger) << "Processing local account";
@@ -307,7 +498,7 @@ void AccountManager::slotGetAccountListFinish(DAccount::List accountList)
                 qCDebug(ClientLogger) << "Creating new local account item";
                 m_localAccountItem.reset(new AccountItem(account, this));
             }
-            m_localAccountItem->resetAccount();
+
 
         } else if (account->accountType() == DAccount::Account_UnionID && !isCommunityEdition()) {
             qCDebug(ClientLogger) << "Processing UnionID account:" << account->accountName();
@@ -315,28 +506,64 @@ void AccountManager::slotGetAccountListFinish(DAccount::List accountList)
             if (!m_unionAccountItem) {
                 qCDebug(ClientLogger) << "Creating new union account item";
                 m_unionAccountItem.reset(new AccountItem(account, this));
-                m_unionAccountItem->resetAccount();
             } else if (m_unionAccountItem && m_unionAccountItem->getAccount()->accountID() != account->accountID()) {
                 qCDebug(ClientLogger) << "Union account ID changed, creating new union account item";
                 emit m_unionAccountItem->signalLogout(m_unionAccountItem->getAccount()->accountType());
                 m_unionAccountItem.reset(new AccountItem(account, this));
-                m_unionAccountItem->resetAccount();
             }
+        } else if (account->accountType() == DAccount::Account_CalDav) {
+            currentCalDavAccountIDs.append(account->accountID());
+            AccountItem::Ptr item = existingCalDavAccounts.value(account->accountID());
+            if (!item) {
+                item.reset(new AccountItem(account, this));
+            } else {
+                item->updateAccount(account);
+            }
+            updatedCalDavAccounts.append(item);
         }
     }
+    m_calDavAccountItems = updatedCalDavAccounts;
+    for (auto it = m_calDavProviderTypeOverrides.begin();
+         it != m_calDavProviderTypeOverrides.end();) {
+        if (!currentCalDavAccountIDs.contains(it.key())) {
+            it = m_calDavProviderTypeOverrides.erase(it);
+        } else {
+            ++it;
+        }
+    }
+
     if (!hasUnionAccount && m_unionAccountItem) {
         qCDebug(ClientLogger) << "No union account in list but union account item exists, clearing it";
         emit m_unionAccountItem->signalLogout(m_unionAccountItem->getAccount()->accountType());
         m_unionAccountItem.reset(nullptr);
     }
 
+    // Install all account signal connections before starting asynchronous
+    // data queries. A local CalDAV database can answer quickly, so starting a
+    // query before these connections are in place may lose the result and
+    // leave the calendar view without the remote schedules.
     for (AccountItem::Ptr p : getAccountList()) {
-        qCDebug(ClientLogger) << "Setting up connections for account:" << p->getAccount()->accountName();
-        connect(p.data(), &AccountItem::signalScheduleUpdate, this, &AccountManager::signalScheduleUpdate);
-        connect(p.data(), &AccountItem::signalSearchScheduleUpdate, this, &AccountManager::signalSearchScheduleUpdate);
-        connect(p.data(), &AccountItem::signalScheduleTypeUpdate, this, &AccountManager::signalScheduleTypeUpdate);
-        connect(p.data(), &AccountItem::signalLogout, this, &AccountManager::signalLogout);
-        connect(p.data(), &AccountItem::signalAccountStateChange, this, &AccountManager::signalAccountStateChange);
+        qCDebug(ClientLogger) << "Setting up account data connections"
+                                << "accountId:" << p->getAccount()->accountID()
+                                << "accountType:" << p->getAccount()->accountType();
+        connect(p.data(), &AccountItem::signalScheduleUpdate, this, &AccountManager::signalScheduleUpdate,
+                Qt::UniqueConnection);
+        connect(p.data(), &AccountItem::signalSearchScheduleUpdate, this, &AccountManager::signalSearchScheduleUpdate,
+                Qt::UniqueConnection);
+        connect(p.data(), &AccountItem::signalScheduleTypeUpdate, this, &AccountManager::signalScheduleTypeUpdate,
+                Qt::UniqueConnection);
+        connect(p.data(), &AccountItem::signalLogout, this, &AccountManager::signalLogout,
+                Qt::UniqueConnection);
+        connect(p.data(), &AccountItem::signalAccountStateChange, this, &AccountManager::signalAccountStateChange,
+                Qt::UniqueConnection);
+        connect(p.data(), &AccountItem::signalCalDavScheduleCreateFailed, this,
+                &AccountManager::signalCalDavScheduleCreateFailed, Qt::UniqueConnection);
+    }
+
+    // Start loading only after the account list and all forwarding connections
+    // are ready.
+    for (AccountItem::Ptr p : getAccountList()) {
+        p->resetAccount();
     }
 
     emit signalAccountUpdate();

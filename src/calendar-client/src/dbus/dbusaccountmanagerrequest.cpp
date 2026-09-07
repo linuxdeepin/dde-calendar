@@ -12,7 +12,17 @@
 DbusAccountManagerRequest::DbusAccountManagerRequest(QObject *parent)
     : DbusRequestBase("/com/deepin/dataserver/Calendar/AccountManager", "com.deepin.dataserver.Calendar.AccountManager", QDBusConnection::sessionBus(), parent)
 {
-
+    const auto connectSignal = [this](const char *signal, const char *signature) {
+        if (!QDBusConnection::sessionBus().connect(this->service(), this->path(),
+                                                   this->interface(), signal, signature, this,
+                                                   SLOT(slotDbusCall(QDBusMessage)))) {
+            qCWarning(ClientLogger) << "Failed to connect account manager DBus signal:"
+                                    << signal << "path:" << this->path();
+        }
+    };
+    connectSignal("accountUpdate", "");
+    connectSignal("calDavAccountStatusChanged", "s");
+    connectSignal("calDavAccountValidationFinished", "sbiss");
 }
 
 /**
@@ -122,6 +132,66 @@ void DbusAccountManagerRequest::downloadByAccountID(const QString &accountID)
  * @brief DbusAccountManagerRequest::uploadNetWorkAccountData
  * 更新网络帐户数据
  */
+void DbusAccountManagerRequest::getCalDavAccountStatusList()
+{
+    asyncCall("getCalDavAccountStatusList");
+}
+
+void DbusAccountManagerRequest::validateCalDavAccount(int providerType, const QString &serverUrl,
+                                                        const QString &username, const QString &credentialRef)
+{
+    asyncCall("validateCalDavAccount", {providerType, serverUrl, username, credentialRef});
+}
+
+void DbusAccountManagerRequest::getCalDavAccountConfig(const QString &accountID)
+{
+    asyncCall("getCalDavAccountConfig", {accountID});
+}
+
+void DbusAccountManagerRequest::validateCalDavAccountForUpdate(
+    const QString &accountID, int providerType, const QString &serverUrl,
+    const QString &username, const QString &credentialRef)
+{
+    asyncCall("validateCalDavAccountForUpdate",
+              {accountID, providerType, serverUrl, username, credentialRef});
+}
+
+void DbusAccountManagerRequest::updateCalDavCredentialReference(const QString &accountID, const QString &credentialRef)
+{
+    asyncCall("updateCalDavCredentialReference", {accountID, credentialRef});
+}
+
+void DbusAccountManagerRequest::createCalDavAccount(int providerType, const QString &serverUrl,
+                                                     const QString &username, const QString &credentialRef,
+                                                     const QString &displayName)
+{
+    asyncCall("createCalDavAccount", {providerType, serverUrl, username, credentialRef, displayName});
+}
+
+void DbusAccountManagerRequest::updateCalDavAccount(const QString &accountID, int providerType,
+                                                     const QString &serverUrl, const QString &username,
+                                                     const QString &credentialRef, const QString &displayName)
+{
+    asyncCall("updateCalDavAccount", {accountID, providerType, serverUrl, username, credentialRef,
+                                        displayName});
+}
+
+void DbusAccountManagerRequest::deleteCalDavAccount(const QString &accountID)
+{
+    asyncCall("deleteCalDavAccount", {accountID});
+}
+
+void DbusAccountManagerRequest::deleteCalDavAccountWithLocalDataOption(const QString &accountID,
+                                                                    bool deleteLocalData)
+{
+    asyncCall("deleteCalDavAccountWithLocalDataOption", {accountID, deleteLocalData});
+}
+
+void DbusAccountManagerRequest::resolveAllCalDavConflicts(const QString &accountID, bool keepLocal)
+{
+    asyncCall("resolveAllCalDavConflicts", {accountID, keepLocal});
+}
+
 void DbusAccountManagerRequest::uploadNetWorkAccountData()
 {
     asyncCall("uploadNetWorkAccountData");
@@ -193,8 +263,14 @@ void DbusAccountManagerRequest::slotCallFinished(CDBusPendingCallWatcher *call)
     
     //错误处理
     if (call->isError()) {
-        qCWarning(ClientLogger) << "DBus call error - Method:" << call->reply().member()
-                               << "Error:" << call->error().message();
+        qCWarning(ClientLogger) << "DBus call error - Method:" << call->getmember()
+                                << "Error:" << call->error().message();
+        if (call->getmember() == QStringLiteral("validateCalDavAccount")
+            || call->getmember() == QStringLiteral("validateCalDavAccountForUpdate")
+            || call->getmember() == QStringLiteral("createCalDavAccount")
+            || call->getmember() == QStringLiteral("updateCalDavAccount")) {
+            emit signalCalDavAccountRequestFailed(call->getmember(), call->error().message());
+        }
         // Retry critical calls synchronously on failure
         if (call->getmember() == "getAccountList") {
             qCInfo(ClientLogger) << "Retrying getAccountList synchronously";
@@ -261,6 +337,61 @@ void DbusAccountManagerRequest::slotCallFinished(CDBusPendingCallWatcher *call)
         QDBusPendingReply<bool> reply = *call;
         const bool supported = reply.argumentAt<0>();
         emit signalGetIsSupportUidFinish(supported);
+    } else if (call->getmember() == "validateCalDavAccount") {
+        QDBusPendingReply<QString> reply = *call;
+        const QString requestID = reply.argumentAt<0>();
+        qCDebug(ClientLogger) << "CalDAV validation DBus method returned"
+                                << "requestIdPresent:" << !requestID.isEmpty();
+        emit signalValidateCalDavAccountStart(requestID);
+        ret = requestID.isEmpty() ? 1 : 0;
+    } else if (call->getmember() == "getCalDavAccountConfig") {
+        QDBusPendingReply<QString> reply = *call;
+        emit signalGetCalDavAccountConfigFinish(reply.argumentAt<0>());
+        ret = reply.argumentAt<0>().isEmpty() ? 1 : 0;
+    } else if (call->getmember() == "validateCalDavAccountForUpdate") {
+        QDBusPendingReply<QString> reply = *call;
+        const QString requestID = reply.argumentAt<0>();
+        qCDebug(ClientLogger) << "CalDAV update validation DBus method returned"
+                                << "requestIdPresent:" << !requestID.isEmpty();
+        emit signalValidateCalDavAccountForUpdateStart(requestID);
+        ret = requestID.isEmpty() ? 1 : 0;
+    } else if (call->getmember() == "getCalDavAccountStatusList") {
+        QDBusPendingReply<QString> reply = *call;
+        DCalDavAccountStatus::List statusList;
+        if (DCalDavAccountStatus::fromJsonListString(statusList, reply.argumentAt<0>())) {
+            emit signalGetCalDavAccountStatusListFinish(statusList);
+        } else {
+            qCWarning(ClientLogger) << "Failed to parse CalDAV account status list";
+            ret = 2;
+        }
+    } else if (call->getmember() == "updateCalDavCredentialReference") {
+        QDBusPendingReply<bool> reply = *call;
+        ret = reply.argumentAt<0>() ? 0 : 1;
+    } else if (call->getmember() == "createCalDavAccount") {
+        QDBusPendingReply<QString> reply = *call;
+        const QString accountID = reply.argumentAt<0>();
+        qCDebug(ClientLogger) << "CalDAV account creation DBus method returned"
+                                << "accountIdPresent:" << !accountID.isEmpty();
+        emit signalCreateCalDavAccountFinish(accountID);
+        ret = accountID.isEmpty() ? 1 : 0;
+    } else if (call->getmember() == "updateCalDavAccount") {
+        QDBusPendingReply<bool> reply = *call;
+        const bool success = reply.argumentAt<0>();
+        emit signalUpdateCalDavAccountFinish(success);
+        ret = success ? 0 : 1;
+    } else if (call->getmember() == "deleteCalDavAccount") {
+        QDBusPendingReply<bool> reply = *call;
+        const bool success = reply.argumentAt<0>();
+        emit signalDeleteCalDavAccountFinish(success);
+        ret = success ? 0 : 1;
+    } else if (call->getmember() == "deleteCalDavAccountWithLocalDataOption") {
+        QDBusPendingReply<bool> reply = *call;
+        const bool success = reply.argumentAt<0>();
+        emit signalDeleteCalDavAccountFinish(success);
+        ret = success ? 0 : 1;
+    } else if (call->getmember() == "resolveAllCalDavConflicts") {
+        QDBusPendingReply<bool> reply = *call;
+        ret = reply.argumentAt<0>() ? 0 : 1;
     } else if (call->getmember() == "setCalendarGeneralSettings") {
         qCDebug(ClientLogger) << "Processing setCalendarGeneralSettings response";
         canCall = false;
@@ -283,6 +414,22 @@ void DbusAccountManagerRequest::slotDbusCall(const QDBusMessage &msg)
     if (msg.member() == "accountUpdate") {
         qCDebug(ClientLogger) << "Account update signal received, refreshing account list";
         getAccountList();
+    } else if (msg.member() == "calDavAccountStatusChanged") {
+        getCalDavAccountStatusList();
+    } else if (msg.member() == "calDavAccountValidationFinished") {
+        const QString requestID = msg.arguments().value(0).toString();
+        const bool success = msg.arguments().value(1).toBool();
+        const int validationError = msg.arguments().value(2).toInt();
+        const QString errorMessage = msg.arguments().value(3).toString();
+        const QString principalDisplayName = msg.arguments().value(4).toString();
+        qCDebug(ClientLogger) << "Received CalDAV validation result signal"
+                                << "requestIdPresent:" << !requestID.isEmpty()
+                                << "success:" << success
+                                << "validationError:" << validationError
+                                << "errorPresent:" << !errorMessage.isEmpty()
+                                << "principalDisplayNamePresent:" << !principalDisplayName.isEmpty();
+        emit signalCalDavAccountValidationFinished(requestID, success, validationError, errorMessage,
+                                                    principalDisplayName);
     } else if (msg.member() == "PropertiesChanged") {
         qCDebug(ClientLogger) << "Properties changed signal received";
         QDBusPendingReply<QString, QVariantMap, QStringList> reply = msg;

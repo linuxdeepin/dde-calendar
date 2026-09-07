@@ -8,6 +8,7 @@
 #include "dbusrequestbase.h"
 #include "daccount.h"
 #include "dcalendargeneralsettings.h"
+#include "dcaldavaccountstatus.h"
 
 //所有帐户信息管理类
 class DbusAccountManagerRequest : public DbusRequestBase
@@ -35,6 +36,22 @@ public:
     void downloadByAccountID(const QString &accountID);
     //更新网络帐户数据
     void uploadNetWorkAccountData();
+    void getCalDavAccountStatusList();
+    void getCalDavAccountConfig(const QString &accountID);
+    void validateCalDavAccountForUpdate(const QString &accountID, int providerType,
+                                        const QString &serverUrl, const QString &username,
+                                        const QString &credentialRef);
+    void validateCalDavAccount(int providerType, const QString &serverUrl,
+                               const QString &username, const QString &credentialRef);
+    void updateCalDavCredentialReference(const QString &accountID, const QString &credentialRef);
+    void createCalDavAccount(int providerType, const QString &serverUrl, const QString &username,
+                             const QString &credentialRef, const QString &displayName);
+    void updateCalDavAccount(const QString &accountID, int providerType, const QString &serverUrl,
+                             const QString &username, const QString &credentialRef,
+                             const QString &displayName);
+    void deleteCalDavAccount(const QString &accountID);
+    void deleteCalDavAccountWithLocalDataOption(const QString &accountID, bool deleteLocalData);
+    void resolveAllCalDavConflicts(const QString &accountID, bool keepLocal);
     //获取通用设置
     void getCalendarGeneralSettings();
     //
@@ -56,6 +73,17 @@ signals:
     void signalGetGeneralSettingsFinish(DCalendarGeneralSettings::Ptr ptr);
     //获取是否支持UID完成信号
     void signalGetIsSupportUidFinish(bool supported);
+    void signalGetCalDavAccountStatusListFinish(DCalDavAccountStatus::List statusList);
+    void signalGetCalDavAccountConfigFinish(const QString &config);
+    void signalValidateCalDavAccountForUpdateStart(const QString &requestID);
+    void signalValidateCalDavAccountStart(const QString &requestID);
+    void signalCalDavAccountValidationFinished(const QString &requestID, bool success,
+                                               int validationError, const QString &errorMessage,
+                                               const QString &principalDisplayName);
+    void signalCreateCalDavAccountFinish(const QString &accountID);
+    void signalUpdateCalDavAccountFinish(bool success);
+    void signalDeleteCalDavAccountFinish(bool success);
+    void signalCalDavAccountRequestFailed(const QString &method, const QString &errorMessage);
 
 public slots:
     //dbus调用完成事件
