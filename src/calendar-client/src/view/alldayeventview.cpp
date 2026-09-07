@@ -34,7 +34,22 @@ DWIDGET_USE_NAMESPACE
 void CAllDayEventWeekView::setTheMe(int type)
 {
     qCDebug(ClientLogger) << "CAllDayEventWeekView::setTheMe called with type:" << type;
+    if (type == 0 || type == 1) {
+        m_dividingLineColor = QColor(0, 0, 0, 13);
+    } else {
+        m_dividingLineColor = QColor(255, 255, 255, 10);
+    }
     CWeekDayGraphicsview::setTheMe(type);
+}
+
+void CAllDayEventWeekView::paintEvent(QPaintEvent *event)
+{
+    CWeekDayGraphicsview::paintEvent(event);
+
+    QPainter painter(viewport());
+    painter.setPen(Qt::NoPen);
+    painter.setBrush(m_dividingLineColor);
+    painter.drawRect(QRect(0, viewport()->height() - 1, viewport()->width() - m_rightmagin, 1));
 }
 
 void CAllDayEventWeekView::changeEvent(QEvent *event)
@@ -309,7 +324,7 @@ void CAllDayEventWeekView::upDateInfoShow(const DragStatus &status, const DSched
     setFixedHeight(m_topMagin - 3);
     setDayData(vResultData);
     update();
-    emit signalUpdatePaint(m_topMagin);
+    emit signalUpdatePaint(m_topMagin - 3);
 }
 
 CAllDayEventWeekView::CAllDayEventWeekView(QWidget *parent, ViewPosition type)

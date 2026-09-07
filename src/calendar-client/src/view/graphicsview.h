@@ -109,6 +109,7 @@ private:
     QPen m_LRPen; //水平线画笔
     bool m_TBFlag; //垂直线
     QPen m_TBPen; //垂直线画笔
+    QColor m_gridLineColor = QColor(0, 0, 0, 13);
     QVector<int> m_vLRLarge; //大刻度像素位置
     qreal m_timeInterval;
     qreal m_sceneHeightScale = 0;
