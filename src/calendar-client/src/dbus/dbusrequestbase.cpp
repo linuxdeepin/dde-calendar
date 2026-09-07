@@ -9,19 +9,20 @@
 DbusRequestBase::DbusRequestBase(const QString &path, const QString &interface, const QDBusConnection &connection, QObject *parent)
     : QDBusAbstractInterface(DBUS_SERVER_NAME, path, interface.toStdString().c_str(), connection, parent)
 {
-    //关联后端dbus触发信号
-    if (!QDBusConnection::sessionBus().connect(this->service(), this->path(), this->interface(), "", this, SLOT(slotDbusCall(QDBusMessage)))) {
-        qCWarning(ClientLogger) << "Failed to connect DBus signal:" 
-                                << "service:" << this->service()
-                                << "path:" << this->path()
-                                << "interface:" << this->interface();
-    };
-    //关联后端dbus触发信号
-    if (!QDBusConnection::sessionBus().connect(this->service(), this->path(), "org.freedesktop.DBus.Properties", "", this, SLOT(slotDbusCall(QDBusMessage)))) {
+    // Do not subscribe to every signal on the interface. QtDBus tries to
+    // resolve every signal argument type for a wildcard subscription, while
+    // this client deliberately handles service signals as QDBusMessage.
+    // Custom signal argument types are not registered in the client and make
+    // the wildcard subscription fail, which also prevents scheduleUpdate from
+    // reaching the account request.
+    if (!QDBusConnection::sessionBus().connect(this->service(), this->path(),
+                                               "org.freedesktop.DBus.Properties",
+                                               "PropertiesChanged", "sa{sv}as", this,
+                                               SLOT(slotDbusCall(QDBusMessage)))) {
         qCWarning(ClientLogger) << "Failed to connect DBus Properties signal:"
                                 << "service:" << this->service()
                                 << "path:" << this->path();
-    };
+    }
 }
 
 void DbusRequestBase::setCallbackFunc(CallbackFunc func)
@@ -64,4 +65,5 @@ void DbusRequestBase::asyncCall(const QString &method, const QString &callName, 
  */
 void DbusRequestBase::slotDbusCall(const QDBusMessage &msg)
 {
+    Q_UNUSED(msg);
 }

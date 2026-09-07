@@ -24,6 +24,7 @@ public:
 
     //获取帐户数据
     DAccount::Ptr getAccount();
+    void updateAccount(const DAccount::Ptr &account);
 
     //获取日程
     QMap<QDate, DSchedule::List> getScheduleMap();
@@ -114,6 +115,7 @@ signals:
     void signalDtLastUpdate(QString);
     void signalAccountStateChange();
     void signalSyncStateChange(DAccount::AccountSyncState);
+    void signalCalDavScheduleCreateFailed(const QString &accountID, int createFailure);
 
 public slots:
     //获取帐户信息完成事件

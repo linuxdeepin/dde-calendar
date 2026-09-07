@@ -28,6 +28,10 @@ void AccountItem::initConnect()
     connect(m_dbusRequest, &DbusAccountRequest::signalSyncStateChange, this, &AccountItem::slotSyncStateChange);
     connect(m_dbusRequest, &DbusAccountRequest::signalAccountStateChange, this, &AccountItem::slotAccountStateChange);
     connect(m_dbusRequest, &DbusAccountRequest::signalSearchUpdate, this, &AccountItem::slotSearchUpdata);
+    connect(m_dbusRequest, &DbusAccountRequest::signalCalDavScheduleCreateFailed, this,
+            [this](int createFailure) {
+        emit signalCalDavScheduleCreateFailed(m_account->accountID(), createFailure);
+    });
 }
 
 /**
@@ -67,7 +71,9 @@ QString AccountItem::getSyncMsg(DAccount::AccountSyncState code)
  */
 void AccountItem::resetAccount()
 {
-    qCDebug(ClientLogger) << "Resetting account data for:" << m_account->accountName();
+    qCDebug(ClientLogger) << "Resetting account data"
+                            << "accountId:" << m_account->accountID()
+                            << "accountName:" << m_account->accountName();
 
     // Optimization: Load only 3 months before and after the current month instead of the entire year
     // Use symmetric range: first day of month -3 to last day of month +3
@@ -85,7 +91,10 @@ void AccountItem::resetAccount()
     QDateTime start(startDate, QTime(0, 0, 0));
     QDateTime end(endDate, QTime(23, 59, 59));
 
-    qCDebug(ClientLogger) << "Loading schedules from" << start.toString() << "to" << end.toString();
+    qCDebug(ClientLogger) << "Loading schedules"
+                            << "accountId:" << m_account->accountID()
+                            << "start:" << start
+                            << "end:" << end;
     querySchedulesWithParameter(start, end);
 
     m_dbusRequest->getScheduleTypeList();
@@ -100,6 +109,14 @@ void AccountItem::resetAccount()
 DAccount::Ptr AccountItem::getAccount()
 {
     return m_account;
+}
+
+void AccountItem::updateAccount(const DAccount::Ptr &account)
+{
+    if (!account.isNull() && account->accountID() == m_account->accountID()) {
+        m_account = account;
+        emit signalAccountDataUpdate();
+    }
 }
 
 //获取日程
@@ -409,7 +426,11 @@ void AccountItem::querySchedulesWithParameter(const QDateTime &start, const QDat
 
 void AccountItem::querySchedulesWithParameter(const QString &key, const QDateTime &start, const QDateTime &end, CallbackFunc callback)
 {
-    qCDebug(ClientLogger) << "Querying schedules with key:" << key << "from" << start.toString() << "to" << end.toString() << "for account:" << m_account->accountName();
+    qCDebug(ClientLogger) << "Querying schedules"
+                            << "accountId:" << m_account->accountID()
+                            << "keyPresent:" << !key.isEmpty()
+                            << "start:" << start
+                            << "end:" << end;
     DScheduleQueryPar::Ptr ptr;
     ptr.reset(new DScheduleQueryPar);
     ptr->setKey(key);
@@ -426,10 +447,11 @@ void AccountItem::querySchedulesWithParameter(const QString &key, const QDateTim
  */
 void AccountItem::querySchedulesWithParameter(const DScheduleQueryPar::Ptr &params, CallbackFunc callback)
 {
-    qCDebug(ClientLogger) << "Querying schedules with parameters for account:" << m_account->accountName()
-                          << "key:" << params->key()
-                          << "start:" << params->dtStart().toString()
-                          << "end:" << params->dtEnd().toString();
+    qCDebug(ClientLogger) << "Querying schedules with parameters"
+                            << "accountId:" << m_account->accountID()
+                            << "keyPresent:" << !params->key().isEmpty()
+                            << "start:" << params->dtStart()
+                            << "end:" << params->dtEnd();
     m_preQuery = params;
     m_dbusRequest->setCallbackFunc(callback);
     m_dbusRequest->querySchedulesWithParameter(params);
@@ -497,7 +519,14 @@ void AccountItem::slotGetScheduleTypeListFinish(DScheduleType::List scheduleType
  */
 void AccountItem::slotGetScheduleListFinish(QMap<QDate, DSchedule::List> map)
 {
-    qCDebug(ClientLogger) << "Received schedule list with" << map.size() << "dates for account:" << m_account->accountName();
+    int scheduleCount = 0;
+    for (const DSchedule::List &schedules : map) {
+        scheduleCount += schedules.size();
+    }
+    qCDebug(ClientLogger) << "Received schedule list"
+                            << "accountId:" << m_account->accountID()
+                            << "dateCount:" << map.size()
+                            << "scheduleCount:" << scheduleCount;
     m_scheduleMap = map;
     emit signalScheduleUpdate();
 }

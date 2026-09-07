@@ -141,6 +141,7 @@ signals:
     void signalSyncStateChange(DAccount::AccountSyncState);
     void signalAccountStateChange(DAccount::AccountStates);
     void signalSearchUpdate();
+    void signalCalDavScheduleCreateFailed(int createFailure);
 
 public slots:
     //dbus服务端调用

@@ -12,6 +12,17 @@
 DbusAccountRequest::DbusAccountRequest(const QString &path, const QString &interface, QObject *parent)
     : DbusRequestBase(path, interface, QDBusConnection::sessionBus(), parent)
 {
+    const auto connectSignal = [this](const char *signal, const char *signature) {
+        if (!QDBusConnection::sessionBus().connect(this->service(), this->path(),
+                                                   this->interface(), signal, signature, this,
+                                                   SLOT(slotDbusCall(QDBusMessage)))) {
+            qCWarning(ClientLogger) << "Failed to connect account DBus signal:"
+                                    << signal << "path:" << this->path();
+        }
+    };
+    connectSignal("scheduleUpdate", "");
+    connectSignal("scheduleTypeUpdate", "");
+    connectSignal("calDavScheduleCreateFailed", "i");
 }
 
 /**
@@ -271,7 +282,10 @@ QString DbusAccountRequest::getDtLastUpdate()
 
 void DbusAccountRequest::slotCallFinished(CDBusPendingCallWatcher *call)
 {
-    qCDebug(ClientLogger) << "DBus call finished for method:" << call->getmember() << "path:" << this->path();
+    qCDebug(ClientLogger) << "DBus account call finished"
+                            << "method:" << call->getmember()
+                            << "path:" << this->path()
+                            << "error:" << call->isError();
     int ret = 0;
     bool canCall = true;
     QVariant msg;
@@ -312,7 +326,14 @@ void DbusAccountRequest::slotCallFinished(CDBusPendingCallWatcher *call)
             QDBusPendingReply<QString> reply = *call;
             QString str = reply.argumentAt<0>();
             QMap<QDate, DSchedule::List> map = DSchedule::fromQueryResult(str);
-            qCDebug(ClientLogger) << "Query returned schedules for" << map.size() << "dates";
+            int scheduleCount = 0;
+            for (const DSchedule::List &schedules : map) {
+                scheduleCount += schedules.size();
+            }
+            qCDebug(ClientLogger) << "Query returned schedules"
+                                    << "path:" << this->path()
+                                    << "dateCount:" << map.size()
+                                    << "scheduleCount:" << scheduleCount;
             emit signalGetScheduleListFinish(map);
         } else if (call->getmember() == "searchSchedulesWithParameter") {
             qCDebug(ClientLogger) << "Processing schedule search response for path:" << this->path();
@@ -361,9 +382,25 @@ void DbusAccountRequest::slotDbusCall(const QDBusMessage &msg)
     } else if (msg.member() == "scheduleTypeUpdate") {
         qCDebug(ClientLogger) << "Schedule type update signal received, refreshing type list";
         getScheduleTypeList();
+    } else if (msg.member() == "calDavScheduleCreateFailed") {
+        const int createFailure = msg.arguments().value(0).toInt();
+        qCWarning(ClientLogger) << "CalDAV schedule creation failed"
+                                << "path:" << this->path()
+                                << "createFailure:" << createFailure;
+        emit signalCalDavScheduleCreateFailed(createFailure);
     } else if (msg.member() == "scheduleUpdate") {
         //更新全局数据
         qCDebug(ClientLogger) << "Schedule update signal received, refreshing data";
+        if (m_priParams.isNull()) {
+            const QDate currentDate = QDate::currentDate();
+            const QDate startDate = currentDate.addMonths(-3);
+            const QDate endDate = currentDate.addMonths(3);
+            m_priParams.reset(new DScheduleQueryPar);
+            m_priParams->setDtStart(QDateTime(startDate, QTime(0, 0, 0)));
+            m_priParams->setDtEnd(QDateTime(endDate, QTime(23, 59, 59)));
+            qCWarning(ClientLogger) << "Schedule update arrived before initial query; using default refresh range"
+                                    << m_priParams->dtStart() << m_priParams->dtEnd();
+        }
         querySchedulesWithParameter(m_priParams);
         //更新搜索数据
         emit signalSearchUpdate();
