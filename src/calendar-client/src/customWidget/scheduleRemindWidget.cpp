@@ -5,9 +5,15 @@
 #include "scheduleRemindWidget.h"
 #include "constants.h"
 #include "commondef.h"
+#include "dataManage/accountmanager.h"
+#include "dataManage/accountitem.h"
+#include "daccount.h"
+#include "dcaldavaccountstatus.h"
+#include "dcaldavprofile.h"
 
 #include <DGuiApplicationHelper>
 
+#include <QCoreApplication>
 #include <QPainter>
 #include <QtMath>
 
@@ -19,6 +25,16 @@ static const int kReminderArrowInset = 10;
 }
 
 DGUI_USE_NAMESPACE
+
+namespace {
+constexpr int kContentTop = 12;
+constexpr int kTimeFrameHeight = 17;
+constexpr int kTimeTitleSpacing = 6;
+constexpr int kTitleFrameHeight = 17;
+constexpr int kTitleSourceSpacing = 7;
+constexpr int kSourceFrameHeight = 15;
+constexpr int kContentBottom = 13;
+}
 ScheduleRemindWidget::ScheduleRemindWidget(QWidget *parent)
     : DArrowRectangle(DArrowRectangle::ArrowLeft, DArrowRectangle::FloatWidget, parent)
     , m_centerWidget(new CenterWidget(this))
@@ -121,6 +137,31 @@ void CenterWidget::setData(const DSchedule::Ptr &vScheduleInfo, const CSchedules
     m_ScheduleInfo = vScheduleInfo;
     gdcolor = gcolor;
     textfont.setPixelSize(DDECalendar::FontSizeTwelve);
+    m_sourceText.clear();
+
+    const AccountItem::Ptr accountItem =
+        gAccountManager->getAccountItemByScheduleTypeId(m_ScheduleInfo->scheduleTypeID());
+    if (accountItem) {
+        const DAccount::Ptr account = accountItem->getAccount();
+        QString source;
+        if (account->accountType() == DAccount::Account_Local) {
+            source = QCoreApplication::translate("CMyScheduleView", "Local calendar");
+        } else if (account->accountType() == DAccount::Account_UnionID) {
+            source = QCoreApplication::translate("CMyScheduleView", "UOS ID")
+                + QStringLiteral("-") + account->accountName();
+        } else if (account->accountType() == DAccount::Account_CalDav) {
+            const DCalDavAccountStatus status =
+                gAccountManager->getCalDavAccountStatus(account->accountID());
+            const QString accountName = account->displayName().isEmpty()
+                ? account->accountName() : account->displayName();
+            source = DCalDavProviderProfile::accountDisplayName(
+                static_cast<DCalDavProviderProfile::ProviderType>(status.providerType), accountName);
+        }
+        if (!source.isEmpty()) {
+            m_sourceText = QCoreApplication::translate("CMyScheduleView", "Source: %1").arg(source);
+        }
+    }
+
     UpdateTextList();
     update();
 }
@@ -195,7 +236,13 @@ void CenterWidget::UpdateTextList()
     }
 
     qCDebug(ClientLogger) << "Final text list has" << testList.count() << "lines";
-    this->setFixedHeight(testList.count() * textheight + 30 + 8);
+    sourceFont.setPixelSize(DDECalendar::FontSizeTwelve);
+    const int sourceHeight = m_sourceText.isEmpty() ? 0 : kSourceFrameHeight;
+    const int titleHeight = testList.count() * kTitleFrameHeight;
+    const int sourceSpacing = m_sourceText.isEmpty() ? 0 : kTitleSourceSpacing;
+    const int contentHeight = kContentTop + kTimeFrameHeight + kTimeTitleSpacing + titleHeight
+        + sourceSpacing + sourceHeight + kContentBottom;
+    this->setFixedHeight(contentHeight);
 }
 
 void CenterWidget::paintEvent(QPaintEvent *e)
@@ -214,7 +261,7 @@ void CenterWidget::paintEvent(QPaintEvent *e)
     painter.setPen(pen);
     painter.setFont(timeFont);
     QString timestr;
-    timestr = m_ScheduleInfo->dtStart().time().toString(m_timeFormat);
+    timestr = m_ScheduleInfo->dtStart().toLocalTime().time().toString(m_timeFormat);
 
     QFontMetrics metrics(timeFont);
     if (m_ScheduleInfo->allDay()) {
@@ -224,13 +271,15 @@ void CenterWidget::paintEvent(QPaintEvent *e)
         // qCDebug(ClientLogger) << "Time-specific event:" << timestr;
     }
     int timewidth = metrics.horizontalAdvance(timestr);
-    int timeheight = metrics.height();
+    const int timeheight = kTimeFrameHeight;
 
-    painter.drawText(QRect(x + 13, 7, timewidth, timeheight), Qt::AlignLeft | Qt::AlignTop, timestr);
+    const int titleY = kContentTop + timeheight + kTimeTitleSpacing;
+    painter.drawText(QRect(x + 13, kContentTop, timewidth, kTimeFrameHeight),
+                     Qt::AlignLeft | Qt::AlignTop, timestr);
     painter.setRenderHints(QPainter::Antialiasing);
     painter.setPen(Qt::NoPen);
     painter.setBrush(QBrush(gdcolor.orginalColor));
-    painter.drawEllipse(x, 7 + (timeheight - diam) / 2, diam, diam);
+    painter.drawEllipse(x, kContentTop + (timeheight - diam) / 2, diam, diam);
     pen.setColor(textColor);
     painter.setPen(pen);
     painter.setFont(textfont);
@@ -238,7 +287,16 @@ void CenterWidget::paintEvent(QPaintEvent *e)
     // qCDebug(ClientLogger) << "Drawing" << testList.count() << "lines of text";
     for (int i = 0; i < testList.count(); i++) {
         painter.drawText(
-            QRect(x, 30 + i * textheight, textRectWidth, textheight),
+            QRect(x, titleY + i * kTitleFrameHeight, textRectWidth, kTitleFrameHeight),
             Qt::AlignLeft, testList.at(i));
+    }
+
+    if (!m_sourceText.isEmpty()) {
+        painter.setFont(sourceFont);
+        painter.setPen(timeColor);
+        const int sourceY = titleY + testList.count() * kTitleFrameHeight + kTitleSourceSpacing;
+        const QFontMetrics sourceMetrics(sourceFont);
+        painter.drawText(QRect(x, sourceY, textRectWidth, kSourceFrameHeight),
+                         Qt::AlignLeft, sourceMetrics.elidedText(m_sourceText, Qt::ElideRight, textRectWidth));
     }
 }

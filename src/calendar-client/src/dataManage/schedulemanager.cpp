@@ -4,6 +4,70 @@
 
 #include "schedulemanager.h"
 #include "commondef.h"
+#include "dcaldavaccountstatus.h"
+
+namespace {
+
+bool isScheduleVisible(const DSchedule::Ptr &schedule)
+{
+    if (schedule.isNull()) {
+        return false;
+    }
+
+    const DScheduleType::Ptr type = gAccountManager->getScheduleTypeByScheduleTypeId(
+        schedule->scheduleTypeID());
+    return type.isNull() || type->showState() == DScheduleType::Show;
+}
+
+DSchedule::List visibleSchedules(const DSchedule::List &schedules)
+{
+    DSchedule::List visible;
+    for (const DSchedule::Ptr &schedule : schedules) {
+        if (isScheduleVisible(schedule)) {
+            visible.append(schedule);
+        }
+    }
+    return visible;
+}
+
+/**
+ * Merge visible schedules from every valid account into a target map.
+ * CalDAV schedules receive their account color before being exposed to views.
+ */
+template<typename ScheduleMapGetter>
+void mergeAccountSchedules(QMap<QDate, DSchedule::List> &target,
+                           ScheduleMapGetter scheduleMapGetter)
+{
+    for (const AccountItem::Ptr &account : gAccountManager->getAccountList()) {
+        if (account.isNull()) {
+            continue;
+        }
+        const DAccount::Ptr accountData = account->getAccount();
+        if (accountData.isNull()) {
+            qCWarning(ClientLogger) << "Skipping schedule merge for an account item without account data";
+            continue;
+        }
+
+        const QMap<QDate, DSchedule::List> scheduleMap = scheduleMapGetter(account);
+        const bool isCalDavAccount = accountData->accountType() == DAccount::Account_CalDav;
+        const QString accountColor = isCalDavAccount
+            ? gAccountManager->getCalDavAccountStatus(accountData->accountID()).accountColor
+            : QString();
+        for (auto iterator = scheduleMap.cbegin(); iterator != scheduleMap.cend(); ++iterator) {
+            DSchedule::List visible = visibleSchedules(iterator.value());
+            if (isCalDavAccount) {
+                for (const DSchedule::Ptr &schedule : visible) {
+                    schedule->setAccountColor(accountColor);
+                }
+            }
+            if (!visible.isEmpty()) {
+                target[iterator.key()].append(visible);
+            }
+        }
+    }
+}
+
+} // namespace
 
 ScheduleManager::ScheduleManager(QObject *parent) : QObject(parent)
 {
@@ -22,7 +86,11 @@ void ScheduleManager::initconnect()
 {
     qCDebug(ClientLogger) << "Initializing ScheduleManager connections";
     connect(gAccountManager, &AccountManager::signalScheduleUpdate, this, &ScheduleManager::slotScheduleUpdate);
+    connect(gAccountManager, &AccountManager::signalScheduleTypeUpdate, this, &ScheduleManager::slotScheduleUpdate);
     connect(gAccountManager, &AccountManager::signalSearchScheduleUpdate, this, &ScheduleManager::slotSearchUpdate);
+    connect(gAccountManager, &AccountManager::signalScheduleTypeUpdate, this, &ScheduleManager::slotSearchUpdate);
+    connect(gAccountManager, &AccountManager::signalCalDavAccountStatusChanged, this,
+            [this](const QString &) { updateSchedule(); updateSearchSchedule(); });
 }
 
 /**
@@ -54,27 +122,11 @@ void ScheduleManager::updateSchedule()
 {
     qCDebug(ClientLogger) << "Updating schedule data";
     m_scheduleMap.clear();
-    if (nullptr != gAccountManager->getLocalAccountItem()) {
-        qCDebug(ClientLogger) << "Getting schedule map from local account";
-        m_scheduleMap = gAccountManager->getLocalAccountItem()->getScheduleMap();
-    }
-
-    if (nullptr != gAccountManager->getUnionAccountItem()) {
-        qCDebug(ClientLogger) << "Getting schedule map from union account";
-        QMap<QDate, DSchedule::List> scheduleMap = gAccountManager->getUnionAccountItem()->getScheduleMap();
-        if (m_scheduleMap.size() == 0) {
-            m_scheduleMap = scheduleMap;
-        } else {
-            auto iterator = scheduleMap.begin();
-            while (iterator != scheduleMap.end()) {
-                DSchedule::List list = m_scheduleMap[iterator.key()];
-                list.append(iterator.value());
-                m_scheduleMap[iterator.key()] = list;
-                iterator++;
-            }
-        }
-    }
-    qCDebug(ClientLogger) << "Schedule update complete with" << m_scheduleMap.size() << "dates";
+    mergeAccountSchedules(m_scheduleMap, [](const AccountItem::Ptr &account) {
+        return account->getScheduleMap();
+    });
+    qCDebug(ClientLogger) << "Schedule update complete"
+                            << "dateCount:" << m_scheduleMap.size();
     emit signalScheduleUpdate();
 }
 
@@ -86,26 +138,11 @@ void ScheduleManager::updateSearchSchedule()
 {
     qCDebug(ClientLogger) << "Updating search schedule data";
     m_searchScheduleMap.clear();
-    if (nullptr != gLocalAccountItem) {
-        qCDebug(ClientLogger) << "Getting search schedule map from local account";
-        m_searchScheduleMap = gLocalAccountItem->getSearchScheduleMap();
-    }
-    if (nullptr != gUosAccountItem) {
-        qCDebug(ClientLogger) << "Getting search schedule map from UOS account";
-        QMap<QDate, DSchedule::List> scheduleMap = gUosAccountItem->getSearchScheduleMap();
-        if (m_searchScheduleMap.size() == 0) {
-            m_searchScheduleMap = scheduleMap;
-        } else {
-            auto iterator = scheduleMap.begin();
-            while (iterator != scheduleMap.end()) {
-                DSchedule::List list = m_searchScheduleMap[iterator.key()];
-                list.append(iterator.value());
-                m_searchScheduleMap[iterator.key()] = list;
-                iterator++;
-            }
-        }
-    }
-    qCDebug(ClientLogger) << "Search schedule update complete with" << m_searchScheduleMap.size() << "dates";
+    mergeAccountSchedules(m_searchScheduleMap, [](const AccountItem::Ptr &account) {
+        return account->getSearchScheduleMap();
+    });
+    qCDebug(ClientLogger) << "Search schedule update complete with"
+                            << m_searchScheduleMap.size() << "dates";
     emit signalSearchScheduleUpdate();
 }
 

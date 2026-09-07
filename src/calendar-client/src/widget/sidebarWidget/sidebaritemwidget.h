@@ -100,6 +100,7 @@ public slots:
     void slotAccountStateChange();
     // 网络状态发生改变
     void slotNetworkStateChange(DOANetWorkDBus::NetWorkState state);
+    void slotCalDavStatusChange(const QString &accountID);
 
 protected:
     void initView();

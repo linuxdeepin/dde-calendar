@@ -43,20 +43,36 @@ void ColorSeletorWidget::resetColorButton(const AccountItem::Ptr &account)
         return;
     }
 
-    DTypeColor::List colorList = account->getColorTypeList();
-    qCDebug(ClientLogger) << "Got color list with" << colorList.size() << "colors";
-    //添加默认颜色控件
-    for (DTypeColor::Ptr &var : colorList) {
-        if (DTypeColor::PriSystem == var->privilege()) {
-            // qCDebug(ClientLogger) << "Adding system color:" << var->colorCode();
-            addColor(var);
-        }
+    const bool isCalDav = account->getAccount()
+        && account->getAccount()->accountType() == DAccount::Account_CalDav;
+    m_allowCustomColor = !isCalDav;
+    if (m_addColorButton) {
+        m_addColorButton->setVisible(m_allowCustomColor);
     }
 
-    //自定义控件单独添加
-    qCDebug(ClientLogger) << "Adding user color button with ID:" << m_userColorBtnId;
-    m_colorGroup->addButton(m_userColorBtn, m_userColorBtnId);
-    m_colorLayout->addWidget(m_userColorBtn);
+    if (isCalDav) {
+        qCDebug(ClientLogger) << "Using the fixed CalDAV palette with" << GCalDavTypeColors.size() << "colors";
+        for (const QString &colorCode : GCalDavTypeColors) {
+            DTypeColor::Ptr color = DTypeColor::Ptr::create();
+            color->setColorCode(colorCode);
+            color->setPrivilege(DTypeColor::PriSystem);
+            addColor(color);
+        }
+    } else {
+        DTypeColor::List colorList = account->getColorTypeList();
+        qCDebug(ClientLogger) << "Got local color list with" << colorList.size() << "colors";
+        //添加默认颜色控件
+        for (DTypeColor::Ptr &var : colorList) {
+            if (DTypeColor::PriSystem == var->privilege()) {
+                addColor(var);
+            }
+        }
+
+        //自定义控件单独添加
+        qCDebug(ClientLogger) << "Adding user color button with ID:" << m_userColorBtnId;
+        m_colorGroup->addButton(m_userColorBtn, m_userColorBtnId);
+        m_colorLayout->addWidget(m_userColorBtn);
+    }
 
     if (m_colorGroup->buttons().size() > 0) {
         qCDebug(ClientLogger) << "Clicking first button";
@@ -137,6 +153,17 @@ void ColorSeletorWidget::setSelectedColorByIndex(int index)
 void ColorSeletorWidget::setSelectedColorById(int colorId)
 {
     qCDebug(ClientLogger) << "ColorSeletorWidget::setSelectedColorById - Setting color by ID:" << colorId;
+    // CalDAV uses a fixed palette whose order is independent of local color IDs.
+    if (!m_allowCustomColor) {
+        if (colorId >= 0 && colorId < GCalDavTypeColors.size()) {
+            setSelectedColorByIndex(colorId);
+        } else if (m_colorGroup->buttons().size() > 0) {
+            qCDebug(ClientLogger) << "Invalid CalDAV color ID, selecting first button";
+            m_colorGroup->buttons().at(0)->click();
+        }
+        return;
+    }
+
     //默认选择第一个
     if (colorId < 0) {
         qCDebug(ClientLogger) << "Invalid color ID, selecting first button";
@@ -171,7 +198,11 @@ void ColorSeletorWidget::setSelectedColor(const DTypeColor &colorInfo)
     bool finding = false;
     auto iterator = m_colorEntityMap.begin();
     while (iterator != m_colorEntityMap.end()) {
-        if (iterator.value()->colorID() == colorInfo.colorID()) {
+        const bool sameColorID = !colorInfo.colorID().isEmpty()
+            && iterator.value()->colorID() == colorInfo.colorID();
+        const bool sameColorCode = !colorInfo.colorCode().isEmpty()
+            && iterator.value()->colorCode().compare(colorInfo.colorCode(), Qt::CaseInsensitive) == 0;
+        if (sameColorID || sameColorCode) {
             QAbstractButton *btn = m_colorGroup->button(iterator.key());
             if (btn) {
                 qCDebug(ClientLogger) << "Found matching color, clicking button with key:" << iterator.key();
@@ -197,11 +228,11 @@ void ColorSeletorWidget::initView()
 
     QHBoxLayout *hLayout = new QHBoxLayout();
     hLayout->addLayout(m_colorLayout);
-    QPushButton *addColorBut = new QPushButton();
-    addColorBut->setIcon(DStyle().standardIcon(DStyle::SP_IncreaseElement));
-    addColorBut->setFixedSize(18, 18);
-    addColorBut->setIconSize(QSize(10, 10));
-    hLayout->addWidget(addColorBut);
+    m_addColorButton = new QPushButton();
+    m_addColorButton->setIcon(DStyle().standardIcon(DStyle::SP_IncreaseElement));
+    m_addColorButton->setFixedSize(18, 18);
+    m_addColorButton->setIconSize(QSize(10, 10));
+    hLayout->addWidget(m_addColorButton);
     hLayout->addStretch(1);
 
     m_colorLayout->setContentsMargins(0, 0, 0, 0);
@@ -211,7 +242,7 @@ void ColorSeletorWidget::initView()
 
     this->setLayout(hLayout);
 
-    connect(addColorBut, &QPushButton::clicked, this, &ColorSeletorWidget::slotAddColorButClicked);
+    connect(m_addColorButton, &QPushButton::clicked, this, &ColorSeletorWidget::slotAddColorButClicked);
     qCDebug(ClientLogger) << "View initialization completed";
 }
 
@@ -224,7 +255,8 @@ void ColorSeletorWidget::slotButtonClicked(int butId)
         return;
     }
     DTypeColor::Ptr info = it.value();
-    if (info->colorCode() != m_colorInfo->colorCode()) {
+    if (info->colorCode() != m_colorInfo->colorCode()
+        || info->colorID() != m_colorInfo->colorID()) {
         qCDebug(ClientLogger) << "Color changed from" << m_colorInfo->colorCode() << "to" << info->colorCode();
         m_colorInfo = info;
         emit signalColorChange(info);
@@ -244,6 +276,10 @@ void ColorSeletorWidget::slotButtonClickedCompat(QAbstractButton *button)
 
 void ColorSeletorWidget::slotAddColorButClicked()
 {
+    if (!m_allowCustomColor) {
+        qCDebug(ClientLogger) << "Custom colors are disabled for CalDAV accounts";
+        return;
+    }
     qCDebug(ClientLogger) << "ColorSeletorWidget::slotAddColorButClicked - Add color button clicked";
     CColorPickerWidget colorPicker;
 
@@ -263,7 +299,7 @@ void ColorSeletorWidget::slotAddColorButClicked()
 void ColorSeletorWidget::setUserColor(const DTypeColor::Ptr &colorInfo)
 {
     // qCDebug(ClientLogger) << "ColorSeletorWidget::setUserColor - Setting user color:" << colorInfo->colorCode();
-    if (nullptr == m_userColorBtn || DTypeColor::PriUser != colorInfo->privilege()) {
+    if (!m_allowCustomColor || nullptr == m_userColorBtn || DTypeColor::PriUser != colorInfo->privilege()) {
         qCDebug(ClientLogger) << "Invalid user color button or privilege";
         return;
     }

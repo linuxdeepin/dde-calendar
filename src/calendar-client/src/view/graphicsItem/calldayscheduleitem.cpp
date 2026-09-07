@@ -76,6 +76,15 @@ void CAllDayScheduleItem::paintBackground(QPainter *painter, const QRectF &rect,
         painter->setPen(Qt::NoPen);
     }
     painter->drawRoundedRect(fillRect, rect.height() / 3, rect.height() / 3);
+    QColor sourceColor = QColor(m_vScheduleInfo->accountColor());
+    if (!sourceColor.isValid()) {
+        sourceColor = gdColor.orginalColor;
+    }
+    QPen sourcePen(sourceColor);
+    sourcePen.setWidth(2);
+    painter->setPen(sourcePen);
+    painter->drawLine(QPointF(fillRect.left(), fillRect.top() + 1),
+                      QPointF(fillRect.left(), fillRect.bottom() - 1));
     painter->setFont(m_font);
     painter->setPen(textcolor);
     QFontMetrics fm = painter->fontMetrics();

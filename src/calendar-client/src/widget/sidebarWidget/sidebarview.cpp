@@ -83,6 +83,7 @@ void SidebarView::initData()
 
     initLocalAccountItem();
     initUnionAccountItem();
+    initCalDavAccountItems();
     //刷新列表展开状态
     initExpandStatus();
 }
@@ -97,6 +98,7 @@ void SidebarView::initExpandStatus()
     //初始化列表展开状态
     QList<SidebarAccountItemWidget*> itemWidget;
     itemWidget << m_localItemWidget << m_unionItemWidget;
+    itemWidget.append(m_calDavItemWidgets);
     for (SidebarAccountItemWidget *widget : itemWidget) {
         if (widget != nullptr) {
             //先进行一次反的展开状态目的是解决使用widget填充item时添加列表项后最后一项的widget没有隐藏问题
@@ -165,6 +167,27 @@ void SidebarView::initUnionAccountItem()
  * 重置日程类型选项
  * @param parentItemWidget 父列表控件
  */
+void SidebarView::initCalDavAccountItems()
+{
+    qCDebug(ClientLogger) << "Initializing CalDAV account items";
+    qDeleteAll(m_calDavItemWidgets);
+    m_calDavItemWidgets.clear();
+    for (const AccountItem::Ptr &accountItem : gAccountManager->getAccountList()) {
+        if (accountItem.isNull()
+            || accountItem->getAccount()->accountType() != DAccount::Account_CalDav) {
+            continue;
+        }
+
+        QTreeWidgetItem *calendarItem = new QTreeWidgetItem();
+        m_treeWidget->addTopLevelItem(calendarItem);
+        SidebarAccountItemWidget *widget = new SidebarAccountItemWidget(accountItem);
+        m_treeWidget->setItemWidget(calendarItem, 0, widget);
+        widget->setItem(calendarItem);
+        m_calDavItemWidgets.append(widget);
+        resetJobTypeChildItem(widget);
+    }
+}
+
 void SidebarView::resetJobTypeChildItem(SidebarAccountItemWidget *parentItemWidget)
 {
     if (nullptr == parentItemWidget) {
@@ -250,6 +273,9 @@ void SidebarView::slotScheduleTypeUpdate()
     //初始化列表数据
     resetJobTypeChildItem(m_localItemWidget);
     resetJobTypeChildItem(m_unionItemWidget);
+    for (SidebarAccountItemWidget *widget : m_calDavItemWidgets) {
+        resetJobTypeChildItem(widget);
+    }
     //刷新列表展开状态
     initExpandStatus();
 }

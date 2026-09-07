@@ -68,8 +68,10 @@ void ScheduleTypeEditDlg::setAccount(AccountItem::Ptr account)
     m_colorSeletor->resetColorButton(account);
 
     //将用户上一次选择的自定义颜色添加进去
+    const DAccount::Ptr accountData = account->getAccount();
+    const bool isCalDav = accountData && accountData->accountType() == DAccount::Account_CalDav;
     QString colorName = CConfigSettings::getInstance()->value("LastUserColor", "").toString();
-    if (!colorName.isEmpty()) {
+    if (!isCalDav && !colorName.isEmpty()) {
         qCDebug(ClientLogger) << "Restoring last user color:" << colorName;
         //设置颜色
         DTypeColor::Ptr typeColor;

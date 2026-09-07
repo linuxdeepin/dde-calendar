@@ -139,6 +139,13 @@ void CMonthGraphicsview::setScheduleInfo(const QMap<QDate, DSchedule::List> &inf
 {
     qCDebug(ClientLogger) << "Setting schedule info" << "date count:" << info.size();
     m_schedulelistdata = info;
+    int scheduleCount = 0;
+    for (const DSchedule::List &schedules : m_schedulelistdata) {
+        scheduleCount += schedules.size();
+    }
+    qCDebug(ClientLogger) << "Month graphics schedule data received"
+                            << "dateCount:" << m_schedulelistdata.size()
+                            << "scheduleCount:" << scheduleCount;
     updateInfo();
 }
 
@@ -252,6 +259,9 @@ void CMonthGraphicsview::updateInfo()
     m_MonthScheduleView->setallsize(this->viewport()->width(),
                                     this->viewport()->height(),
                                     0, 0, 0, h);
+    qCDebug(ClientLogger) << "Month graphics updating schedule data"
+                            << "dateCount:" << m_schedulelistdata.count()
+                            << "expectedDateCount:" << DDEMonthCalendar::ItemSizeOfMonthDay;
     // Only update schedule data when it's valid (42 days for month view)
     if (m_schedulelistdata.count() == DDEMonthCalendar::ItemSizeOfMonthDay) {
         m_MonthScheduleView->setData(m_schedulelistdata, 1);

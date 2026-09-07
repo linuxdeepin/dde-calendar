@@ -43,6 +43,8 @@ private:
     void initLocalAccountItem();
     //初始化union账户列表
     void initUnionAccountItem();
+    //初始化第三方CalDAV账户列表
+    void initCalDavAccountItems();
 
     //重置日程类型item
     void resetJobTypeChildItem(SidebarAccountItemWidget *parentItemWidget);
@@ -53,6 +55,7 @@ private:
     QTreeWidget *m_treeWidget = nullptr;        //树结构
     SidebarAccountItemWidget* m_localItemWidget = nullptr;
     SidebarAccountItemWidget* m_unionItemWidget = nullptr;
+    QList<SidebarAccountItemWidget *> m_calDavItemWidgets;
 
     SidebarCalendarWidget *m_calendarWidget = nullptr;  //小日历
 

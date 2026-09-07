@@ -251,7 +251,11 @@ void CScheduleItem::paintBackground(QPainter *painter, const QRectF &rect, const
     }
 
     painter->save();
-    QPen pen(gdColor.orginalColor);
+    QColor sourceColor = QColor(m_vScheduleInfo->accountColor());
+    if (!sourceColor.isValid()) {
+        sourceColor = gdColor.orginalColor;
+    }
+    QPen pen(sourceColor);
     pen.setWidth(2);
     painter->setPen(pen);
     //左侧绘制竖线
@@ -279,7 +283,7 @@ void CScheduleItem::paintBackground(QPainter *painter, const QRectF &rect, const
             painter->setFont(font);
             painter->setPen(gdColor.orginalColor);
 
-            QTime stime = m_vScheduleInfo->dtStart().time();
+            QTime stime = m_vScheduleInfo->dtStart().toLocalTime().time();
             QString str = stime.toString((CalendarManager::getInstance()->getTimeShowType() ? "AP " : "") + m_timeFormat);
             // qCDebug(ClientLogger) << "Start time text:" << str;
             QFontMetrics fontMetrics(font);

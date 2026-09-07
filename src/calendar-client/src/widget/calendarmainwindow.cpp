@@ -26,6 +26,8 @@
 
 #include "scheduletypeeditdlg.h"
 #include "accountmanager.h"
+#include "dcaldavprofile.h"
+#include "dcaldavvalidationerror.h"
 #include "units.h"
 #include "commondef.h"
 
@@ -383,7 +385,7 @@ void Calendarmainwindow::slotOpenSchedule(QString job)
     //更新界面显示
     m_DayWindow->updateData();
     //设置非全天时间定位位置
-    m_DayWindow->setTime(out->dtStart().time());
+    m_DayWindow->setTime(out->dtStart().toLocalTime().time());
     //弹出编辑对话框
     if (m_dlg == Q_NULLPTR) {
         qCDebug(ClientLogger) << "Creating new CMyScheduleView dialog";
@@ -544,6 +546,8 @@ void Calendarmainwindow::initConnection()
     //signalAccountUpdate
     connect(gAccountManager, &AccountManager::signalSyncNum, this, &Calendarmainwindow::slotShowSyncToast);
     connect(gAccountManager, &AccountManager::signalAccountUpdate, this, &Calendarmainwindow::slotAccountUpdate);
+    connect(gAccountManager, &AccountManager::signalCalDavScheduleCreateFailed, this,
+            &Calendarmainwindow::slotCalDavScheduleCreateFailed);
 }
 
 void Calendarmainwindow::initData()
@@ -1229,6 +1233,48 @@ void Calendarmainwindow::slotShowSyncToast(int syncNum)
             break;
         }
     }
+}
+
+void Calendarmainwindow::slotCalDavScheduleCreateFailed(const QString &accountID,
+                                                            int createFailure)
+{
+    const DCalDavScheduleCreateError::Type errorType =
+        static_cast<DCalDavScheduleCreateError::Type>(createFailure);
+    if (errorType == DCalDavScheduleCreateError::NoError) {
+        return;
+    }
+
+    QString toastText;
+    if (errorType == DCalDavScheduleCreateError::PermissionDenied) {
+        QString accountName;
+        const AccountItem::Ptr account = gAccountManager->getAccountItemByAccountId(accountID);
+        if (account && account->getAccount()) {
+            const DAccount::Ptr accountInfo = account->getAccount();
+            const QString username = accountInfo->accountName();
+            if (!username.isEmpty()) {
+                const DCalDavAccountStatus status = gAccountManager->getCalDavAccountStatus(accountID);
+                accountName = status.accountId.isEmpty()
+                    ? QStringLiteral("CalDAV-") + username
+                    : DCalDavProviderProfile::accountDisplayName(
+                          static_cast<DCalDavProviderProfile::ProviderType>(status.providerType),
+                          username);
+            }
+        }
+        if (accountName.isEmpty()) {
+            accountName = QStringLiteral("CalDAV-") + accountID;
+        }
+        toastText = tr("%1 does not allow creating events. Please check account permissions.")
+            .arg(accountName);
+    } else {
+        toastText = tr("Unable to connect to the server. Please check your network connection "
+                       "and server address.");
+    }
+
+    DFloatingMessage *message = new DFloatingMessage(DFloatingMessage::TransientType);
+    message->setIcon(QIcon::fromTheme(QStringLiteral("dialog-error")));
+    message->setMessage(toastText);
+    message->setDuration(2000);
+    DMessageManager::instance()->sendMessage(window(), message);
 }
 
 void Calendarmainwindow::slotAccountUpdate()

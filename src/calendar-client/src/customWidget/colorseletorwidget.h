@@ -18,6 +18,8 @@
 #include <QHBoxLayout>
 #include <QMap>
 
+class QPushButton;
+
 //色彩控件选择类
 class ColorSeletorWidget : public QWidget
 {
@@ -85,10 +87,12 @@ private:
 private:
     QMap<int, DTypeColor::Ptr> m_colorEntityMap; //所有色彩实体
     QHBoxLayout *m_colorLayout = nullptr;     //色彩控件布局类
+    QPushButton *m_addColorButton = nullptr;  //自定义色彩按钮
     QButtonGroup *m_colorGroup = nullptr;     //所有色彩控件
     DTypeColor::Ptr m_colorInfo; //当前已选择的色彩
     CRadioButton *m_userColorBtn = nullptr; //用户自定义的色彩控件
     const int m_userColorBtnId = 999; //用户自定义的色彩控件id
+    bool m_allowCustomColor = true;
 };
 
 #endif // COLORSELETOR_H

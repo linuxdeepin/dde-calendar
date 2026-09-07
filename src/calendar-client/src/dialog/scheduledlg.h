@@ -167,6 +167,7 @@ private:
      * @brief setOkBtnEnabled   根据选项设置保存按钮是否有效
      */
     void setOkBtnEnabled();
+    bool canWriteCurrentCalDavCollection() const;
 
 private:
 

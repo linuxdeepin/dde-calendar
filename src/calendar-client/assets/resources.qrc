@@ -73,6 +73,8 @@
         <file>builtin/icons/dde_calendar_caldav_other_24px.svg</file>
         <file>builtin/icons/dde_calendar_uos_id_36px.svg</file>
         <file>builtin/icons/dde_calendar_schedule_more_16px.svg</file>
+        <file>builtin/icons/dde_calendar_schedule_export_16px.svg</file>
+        <file>builtin/icons/dde_calendar_schedule_edit_16px.svg</file>
         <file>builtin/icons/dde_calendar_third_party_36px.svg</file>
         <file>builtin/icons/dde_calendar_logout_16px.svg</file>
         <file>builtin/icons/dde_calendar_warning.svg</file>

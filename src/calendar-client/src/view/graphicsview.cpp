@@ -327,7 +327,7 @@ void CGraphicsView::setSelectSearchSchedule(const DSchedule::Ptr &info)
 {
     qCDebug(ClientLogger) << "Setting selected search schedule";
     DragInfoGraphicsView::setSelectSearchSchedule(info);
-    setTime(info->dtStart().time());
+    setTime(info->dtStart().toLocalTime().time());
 
     int animatedCount = 0;
     for (int i = 0; i < m_vScheduleItem.size(); ++i) {
