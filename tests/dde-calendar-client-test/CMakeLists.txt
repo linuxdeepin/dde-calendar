@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.7)
-include(../qt-version-macros)
+include(${CMAKE_SOURCE_DIR}/cmake/qt-version-macros.cmake)
 
-# common resource names
 project(dde-calendar-client-test)
 
 ADD_COMPILE_OPTIONS(-fno-access-control)
@@ -9,9 +8,6 @@ ADD_COMPILE_OPTIONS(-fno-access-control)
 set(APP_CLIENT_DIR "${CMAKE_SOURCE_DIR}/src/calendar-client")
 set(APP_COMMON_DIR "${CMAKE_SOURCE_DIR}/src/calendar-common")
 set(APP_3PARTY_DIR "${CMAKE_SOURCE_DIR}/3rdparty/kcalendarcore")
-
-# set(APP_RES_DIR "${APP_CLIENT_DIR}/assets")
-# set(APP_QRC "${APP_RES_DIR}/resources.qrc")
 set(APP_BIN_NAME "dde-calendar-test")
 set(PROJECT_NAME_TEST ${APP_BIN_NAME})
 
@@ -28,45 +24,48 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,--as-needed -fPIE")
 set(CMAKE_EXE_LINKER_FLAGS "-pie")
 
 include_directories(${APP_CLIENT_DIR}/src)
-SUBDIRLIST(all_src ${APP_CLIENT_DIR}/src)
-
+include_directories(${APP_CLIENT_DIR}/src/dbus)
 include_directories(${APP_COMMON_DIR}/src)
-SUBDIRLIST(all_src ${APP_COMMON_DIR}/src)
-
 include_directories(${APP_3PARTY_DIR}/src)
-SUBDIRLIST(all_src ${APP_3PARTY_DIR}/src)
-
-# Include all app own subdirectories
-foreach(subdir ${all_src})
-    include_directories(${APP_CLIENT_DIR}/src/${subdir})
-    include_directories(${APP_COMMON_DIR}/src/${subdir})
-    include_directories(${APP_COMMON_DIR}/src/${subdir})
-endforeach()
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 QT_INCLUDE_GUI_PRIVATE_DIRS()
 
-file(GLOB_RECURSE Calendar_CLIENTSRC ${APP_CLIENT_DIR}/src/*.cpp)
-file(GLOB_RECURSE Calendar_COMMONSRC ${APP_COMMON_DIR}/src/*.cpp)
-file(GLOB_RECURSE Calendar_3PARTYSRC ${APP_3PARTY_DIR}/src/*.cpp)
-list(REMOVE_ITEM Calendar_CLIENTSRC ${APP_CLIENT_DIR}/src/main.cpp)
-list(REMOVE_ITEM Calendar_COMMONSRC ${APP_COMMON_DIR}/src/main.cpp)
-list(REMOVE_ITEM Calendar_3PARTYSRC ${APP_3PARTY_DIR}/src/main.cpp)
+set(CALENDAR_CLIENT_TEST_SRC
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/client_main.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_dbus/test_caldavdbussignals.cpp
+    ${APP_CLIENT_DIR}/src/dbus/cdbuspendingcallwatcher.cpp
+    ${APP_CLIENT_DIR}/src/dbus/dbusrequestbase.cpp
+    ${APP_CLIENT_DIR}/src/dbus/dbusaccountmanagerrequest.cpp
+    ${APP_CLIENT_DIR}/src/dbus/dbusaccountrequest.cpp
+)
 
-# test SRC
-SUBDIRLIST(TEST_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+if(BUILD_LEGACY_CALENDAR_TESTS)
+    SUBDIRLIST(CLIENT_TEST_SRC_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    foreach(subdir ${CLIENT_TEST_SRC_DIRS})
+        include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/${subdir})
+    endforeach()
 
-foreach(subdir ${TEST_SRC})
-    include_directories(${subdir})
-endforeach()
+    file(GLOB_RECURSE LEGACY_CALENDAR_CLIENT_TEST_SRC
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
+    list(REMOVE_ITEM LEGACY_CALENDAR_CLIENT_TEST_SRC
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/client_main.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/test_dbus/test_caldavdbussignals.cpp)
+    list(APPEND CALENDAR_CLIENT_TEST_SRC ${LEGACY_CALENDAR_CLIENT_TEST_SRC})
 
-file(GLOB_RECURSE Calendar_TEST_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
-include_directories(../../calendar-basicstruct/)
+    file(GLOB_RECURSE CALENDAR_CLIENT_SRC ${APP_CLIENT_DIR}/src/*.cpp)
+    file(GLOB_RECURSE CALENDAR_COMMON_SRC ${APP_COMMON_DIR}/src/*.cpp)
+    file(GLOB_RECURSE CALENDAR_3PARTY_SRC ${APP_3PARTY_DIR}/src/*.cpp)
+    list(REMOVE_ITEM CALENDAR_CLIENT_SRC ${APP_CLIENT_DIR}/src/main.cpp)
+    list(REMOVE_ITEM CALENDAR_COMMON_SRC ${APP_COMMON_DIR}/src/main.cpp)
+    list(REMOVE_ITEM CALENDAR_3PARTY_SRC ${APP_3PARTY_DIR}/src/main.cpp)
+    list(APPEND CALENDAR_CLIENT_TEST_SRC
+        ${CALENDAR_CLIENT_SRC}
+        ${CALENDAR_COMMON_SRC}
+        ${CALENDAR_3PARTY_SRC})
+endif()
 
-list(APPEND CMAKE_MODULE_PATH "${ASAN_CMAKE_DIR}")
-include(asan)
-
-# Tell CMake to create the executable
-add_executable(${APP_BIN_NAME} ${Calendar_TEST_SRC} ${Calendar_CLIENTSRC} ${Calendar_COMMONSRC} ${Calendar_3PARTYSRC} ${APP_QRC})
+add_executable(${APP_BIN_NAME} ${CALENDAR_CLIENT_TEST_SRC})
 
 target_include_directories(${APP_BIN_NAME} PUBLIC ${OBJECT_BINARY_DIR})
 
@@ -81,5 +80,5 @@ target_link_libraries(${APP_BIN_NAME}
     ${GTEST_LIBRARIES}
     ${GTEST_MAIN_LIBRARIES}
     pthread
-    basestruct
+    commondata
 )
