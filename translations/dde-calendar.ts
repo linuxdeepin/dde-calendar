@@ -204,6 +204,16 @@
             <source>Source: %1</source>
             <translation>Source: %1</translation>
         </message>
+        <message>
+            <location filename="../src/calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="152" />
+            <source>Organizer</source>
+            <translation>Organizer</translation>
+        </message>
+        <message>
+            <location filename="../src/calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="153" />
+            <source>Attendees</source>
+            <translation>Attendees</translation>
+        </message>
     </context>
     <context>
         <name>CPushButton</name>

@@ -55,12 +55,17 @@ protected:
     void paintEvent(QPaintEvent *e) override;
 private:
     QStringList testList;
+    QStringList m_organizerLines;
+    QStringList m_attendeeLines;
+    QString m_organizerLabel;
+    QString m_attendeeLabel;
     QString m_sourceText;
     QFont textfont;
     QFont sourceFont;
     int textwidth;
     int textheight;
-    const int textRectWidth = 165;
+    int m_detailLabelWidth = 0;
+    int textRectWidth = 165;
     DSchedule::Ptr m_ScheduleInfo;
     CSchedulesColor gdcolor;
     QColor textColor;
