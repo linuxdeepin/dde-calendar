@@ -3,8 +3,10 @@ project(dde-calendar-test)
 
 set(ASAN_CMAKE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
-ADD_SUBDIRECTORY(dde-calendar-client-test)
+option(BUILD_LEGACY_CALENDAR_TESTS
+    "Build legacy calendar test suites that target removed scheduling APIs" OFF)
 
+ADD_SUBDIRECTORY(dde-calendar-client-test)
 ADD_SUBDIRECTORY(dde-calendar-service-test)
 
 include_directories(third-party_stub)

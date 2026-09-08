@@ -73,6 +73,7 @@ macro(SUBDIRLIST result curdir)
 endmacro()
 
 option(WITH_AIASSISTANT_PLUGIN "Build with AI assistant (schedule-plugin) support" ON)
+option(BUILD_TESTING "Build dde-calendar tests" OFF)
 
 ADD_SUBDIRECTORY(3rdparty/kcalendarcore)
 ADD_SUBDIRECTORY(src/calendar-common)
@@ -83,7 +84,9 @@ if(WITH_AIASSISTANT_PLUGIN)
 endif()
 
 # FIXME: Unit tests have not been maintained for a long time
-# ADD_SUBDIRECTORY(tests)
+if(BUILD_TESTING)
+    ADD_SUBDIRECTORY(tests)
+endif()
 
 # ##### Translation #####
 include(translation-generate)
