@@ -26,6 +26,7 @@
 #include <QObject>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QPointer>
 
 DWIDGET_USE_NAMESPACE
 class CYearWindow;
@@ -73,7 +74,9 @@ private:
     CDayWindow* ensureDayWindow();
     //重置界面大小
     void resizeView();
-    void removeSyncToast();
+    void removeSyncToast(QWidget *parent = nullptr);
+    void removeAllSyncToasts();
+    QWidget *syncToastParent() const;
 protected:
     void resizeEvent(QResizeEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
@@ -117,8 +120,8 @@ private slots:
 
     //显示同步提示
     void slotShowSyncToast(int syncNum);
+    void slotCalDavAccountStatusChanged(const QString &accountID);
 
-    void slotAccountUpdate();
     void slotCalDavScheduleCreateFailed(const QString &accountID, int createFailure);
 
 private:
@@ -142,7 +145,7 @@ private:
     QPropertyAnimation *m_animation = nullptr;
     QTimer *m_currentDateUpdateTimer = nullptr;
     DIconButton *m_newScheduleBtn {nullptr}; //全局的新建日程按钮
-    CSettingDialog *m_dsdSetting {nullptr};
+    QPointer<CSettingDialog> m_dsdSetting;
     JobTypeListView *m_jobTypeListView {nullptr};
     //日历打开默认显示视图
     int m_defaultIndex;

@@ -23,6 +23,7 @@
 #include <QMenu>
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <QTimer>
 
 #include <DBackgroundGroup>
 #include <DComboBox>
@@ -31,6 +32,8 @@
 #include <DSettingsOption>
 #include <DSettingsWidgetFactory>
 #include <DIcon>
+#include <DPalette>
+#include <DFontSizeManager>
 #include <DToolButton>
 
 #include <qglobal.h>
@@ -406,6 +409,9 @@ void CSettingDialog::initConnect()
     //TODO:更新union帐户的的同步频率
     connect(m_syncFreqComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &CSettingDialog::slotSetUosSyncFreq);
     connect(m_syncBtn, &QPushButton::clicked, this, &CSettingDialog::slotUosManualSync);
+    m_syncTimeoutTimer = new QTimer(this);
+    m_syncTimeoutTimer->setSingleShot(true);
+    connect(m_syncTimeoutTimer, &QTimer::timeout, this, &CSettingDialog::slotSyncTimeout);
     connect(m_ptrNetworkState, &DOANetWorkDBus::sign_NetWorkChange, this, &CSettingDialog::slotNetworkStateChange);
     qCDebug(ClientLogger) << "Settings dialog connections initialized";
 }
@@ -554,10 +560,19 @@ void CSettingDialog::initManualSyncButton()
     m_syncBtn->setText(tr("Sync Now"));
 
     m_syncTimeLabel = new QLabel;
+    m_syncTimeValueLabel = new DLabel;
+    m_syncTimeValueLabel->setForegroundRole(Dtk::Gui::DPalette::TextTips);
+    DFontSizeManager::instance()->bind(m_syncTimeValueLabel, DFontSizeManager::T8);
+    m_syncStatusIconLabel = new QLabel;
+    m_syncStatusIconLabel->setFixedSize(16, 16);
+    m_syncStatusIconLabel->hide();
 
     QHBoxLayout *layout = new QHBoxLayout(m_manualSyncWidget);
     layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(6);
     layout->addWidget(m_syncTimeLabel);
+    layout->addWidget(m_syncStatusIconLabel);
+    layout->addWidget(m_syncTimeValueLabel);
     layout->addStretch();
     layout->addWidget(m_syncBtn);
 
@@ -612,7 +627,10 @@ void CSettingDialog::slotAccountUpdate()
     //判断账户是否为登录状态，并建立连接
     if (gUosAccountItem) {
         slotLastSyncTimeUpdate(gUosAccountItem->getDtLastUpdate());
-        connect(gUosAccountItem.get(), &AccountItem::signalDtLastUpdate, this, &CSettingDialog::slotLastSyncTimeUpdate);
+        connect(gUosAccountItem.get(), &AccountItem::signalDtLastUpdate,
+                this, &CSettingDialog::slotLastSyncTimeUpdate, Qt::UniqueConnection);
+        connect(gUosAccountItem.get(), &AccountItem::signalSyncStateChange,
+                this, &CSettingDialog::slotSyncStateChange, Qt::UniqueConnection);
     }
 }
 
@@ -770,6 +788,16 @@ void CSettingDialog::slotUosManualSync()
         return;
     }
     qCDebug(ClientLogger) << "Manual sync requested for account:" << gUosAccountItem->getAccount()->accountID();
+    if (m_syncTimeValueLabel && m_syncStatusIconLabel) {
+        m_syncTimeValueLabel->setText(tr("Syncing..."));
+        m_syncStatusIconLabel->setPixmap(QIcon(QStringLiteral(
+            ":/icons/deepin/builtin/icons/dde_calendar_spinner_32px.svg"))
+            .pixmap(16, 16));
+        m_syncStatusIconLabel->show();
+    }
+    if (m_syncTimeoutTimer) {
+        m_syncTimeoutTimer->start(10000);
+    }
     gAccountManager->downloadByAccountID(gUosAccountItem->getAccount()->accountID());
 }
 
@@ -823,9 +851,13 @@ void CSettingDialog::slotSyncAccountStateUpdate(bool status)
     }
 }
 
-void CSettingDialog::slotLastSyncTimeUpdate(const QString &datetime)
+void CSettingDialog::updateSyncStatusDisplay(const QString &datetime,
+                                              DAccount::AccountSyncState state)
 {
-    qCDebug(ClientLogger) << "Last sync time updated:" << datetime;
+    if (!m_syncTimeLabel || !m_syncTimeValueLabel || !m_syncStatusIconLabel || !gUosAccountItem) {
+        return;
+    }
+
     QString dtstr;
     if (gCalendarManager->getTimeShowType()) {
         dtstr = dtFromString(datetime).toString("yyyy/MM/dd ap hh:mm");
@@ -833,11 +865,56 @@ void CSettingDialog::slotLastSyncTimeUpdate(const QString &datetime)
         dtstr = dtFromString(datetime).toString("yyyy/MM/dd hh:mm");
     }
 
-    if (m_syncTimeLabel && gUosAccountItem) {
-        m_syncTimeLabel->setText(dtstr.isEmpty()
-            ? tr("Last sync time")
-            : tr("Last sync time (%1)").arg(dtstr));
+    m_syncTimeLabel->setText(tr("Last sync time"));
+    const bool failed = state != DAccount::Sync_Normal;
+    if (!failed && dtstr.isEmpty()) {
+        m_syncTimeValueLabel->clear();
+        m_syncStatusIconLabel->hide();
+        return;
     }
+
+    if (failed) {
+        m_syncTimeValueLabel->setText(
+            QCoreApplication::translate("DCalDavSyncStatus", "Sync Failed"));
+    } else {
+        m_syncTimeValueLabel->setText(QStringLiteral("(%1)").arg(dtstr));
+    }
+    m_syncStatusIconLabel->setPixmap(QIcon(failed
+        ? QStringLiteral(":/icons/deepin/builtin/icons/dde_calendar_sync_failed_32px.svg")
+        : QStringLiteral(":/icons/deepin/builtin/icons/dde_calendar_sync_success_32px.svg"))
+        .pixmap(16, 16));
+    m_syncStatusIconLabel->show();
+}
+
+void CSettingDialog::slotLastSyncTimeUpdate(const QString &datetime)
+{
+    qCDebug(ClientLogger) << "Last sync time updated:" << datetime;
+    const DAccount::AccountSyncState state = gUosAccountItem
+        ? gUosAccountItem->getAccount()->syncState()
+        : DAccount::Sync_ServerException;
+    updateSyncStatusDisplay(datetime, state);
+}
+
+void CSettingDialog::slotSyncStateChange(DAccount::AccountSyncState state)
+{
+    if (m_syncTimeoutTimer) {
+        m_syncTimeoutTimer->stop();
+    }
+    if (!m_syncStatusIconLabel || !m_syncTimeValueLabel || !gUosAccountItem) {
+        return;
+    }
+
+    updateSyncStatusDisplay(gUosAccountItem->getDtLastUpdate(), state);
+}
+
+void CSettingDialog::slotSyncTimeout()
+{
+    qCWarning(ClientLogger) << "UOS account sync timed out";
+    if (!gUosAccountItem) {
+        return;
+    }
+
+    updateSyncStatusDisplay(gUosAccountItem->getDtLastUpdate(), DAccount::Sync_NetworkAnomaly);
 }
 
 void CSettingDialog::slotAccountStateChange()

@@ -13,6 +13,8 @@
 #include <QCoreApplication>
 #include <QIcon>
 #include <DLabel>
+#include <DPalette>
+#include <DFontSizeManager>
 #include <QHBoxLayout>
 #include <QPalette>
 #include <QTimer>
@@ -38,22 +40,32 @@ QString accountTitle(const DAccount::Ptr &account, const DCalDavAccountStatus &s
     return title;
 }
 
-QString syncTimeText(const DCalDavAccountStatus &status)
+QString syncTimeLabel()
+{
+    return QCoreApplication::translate("CalDavAccountListWidget", "Last sync time");
+}
+
+QString syncTimeValue(const DCalDavAccountStatus &status)
 {
     if (!status.lastSuccessfulSync.isValid()) {
-        return QCoreApplication::translate("CalDavAccountListWidget", "Last sync time");
+        return {};
     }
 
     const QString time = status.lastSuccessfulSync.toLocalTime().toString(
         QStringLiteral("yyyy/MM/dd HH:mm"));
-    return QCoreApplication::translate("CalDavAccountListWidget", "Last sync time (%1)").arg(time);
+    return QStringLiteral("(%1)").arg(time);
 }
 
-QIcon syncStatusIcon(bool failed)
+QIcon syncResultIcon(bool failed)
 {
     return QIcon(failed
-        ? QStringLiteral(":/icons/deepin/builtin/icons/dde_calendar_warning_light_32px.svg")
-        : QStringLiteral(":/icons/deepin/builtin/icons/dde_calendar_spinner_32px.svg"));
+        ? QStringLiteral(":/icons/deepin/builtin/icons/dde_calendar_sync_failed_32px.svg")
+        : QStringLiteral(":/icons/deepin/builtin/icons/dde_calendar_sync_success_32px.svg"));
+}
+
+QIcon syncRunningIcon()
+{
+    return QIcon(QStringLiteral(":/icons/deepin/builtin/icons/dde_calendar_spinner_32px.svg"));
 }
 
 
@@ -205,36 +217,59 @@ void CalDavAccountListWidget::rebuildCards()
 
         // The last successful sync time remains visible while a sync operation
         // is running or has failed. The current state is shown alongside it.
-        Dtk::Widget::DLabel *timeLabel = new Dtk::Widget::DLabel(syncTimeText(status), statusRow);
+        const bool showResultIcon = status.syncStatus == DCalDavSyncStatus::Succeeded
+            || status.conflictCount > 0 || failed;
+        QWidget *timeWidget = new QWidget(statusRow);
+        QHBoxLayout *timeLayout = new QHBoxLayout(timeWidget);
+        timeLayout->setContentsMargins(0, 0, 0, 0);
+        timeLayout->setSpacing(6);
+
+        Dtk::Widget::DLabel *timeLabel = new Dtk::Widget::DLabel(syncTimeLabel(), timeWidget);
         timeLabel->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-        statusLayout->addWidget(timeLabel);
+        timeLayout->addWidget(timeLabel);
+
+        if (showResultIcon) {
+            Dtk::Widget::DLabel *resultIconLabel = new Dtk::Widget::DLabel(timeWidget);
+            resultIconLabel->setFixedSize(16, 16);
+            resultIconLabel->setPixmap(syncResultIcon(status.conflictCount > 0 || failed).pixmap(16, 16));
+            timeLayout->addWidget(resultIconLabel);
+        } else if (running || pendingDelete) {
+            Dtk::Widget::DLabel *stateIconLabel = new Dtk::Widget::DLabel(timeWidget);
+            stateIconLabel->setFixedSize(16, 16);
+            stateIconLabel->setPixmap(syncRunningIcon().pixmap(16, 16));
+            timeLayout->addWidget(stateIconLabel);
+        }
+
+        const QString timeValue = syncTimeValue(status);
+        if (!timeValue.isEmpty()) {
+            Dtk::Widget::DLabel *timeValueLabel = new Dtk::Widget::DLabel(timeValue, timeWidget);
+            Dtk::Widget::DFontSizeManager::instance()->bind(timeValueLabel,
+                                                             Dtk::Widget::DFontSizeManager::T8);
+            timeValueLabel->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+            timeLayout->addWidget(timeValueLabel);
+        }
+        statusLayout->addWidget(timeWidget);
 
         if (status.conflictCount > 0) {
-            Dtk::Widget::DLabel *stateIconLabel = new Dtk::Widget::DLabel(statusRow);
-            stateIconLabel->setFixedSize(16, 16);
-            stateIconLabel->setPixmap(syncStatusIcon(true).pixmap(16, 16));
-            statusLayout->addWidget(stateIconLabel);
             Dtk::Widget::DLabel *stateLabel = new Dtk::Widget::DLabel(tr("Sync conflict"), statusRow);
             stateLabel->setToolTip(tr("A synchronization conflict was detected. The server version will replace the local changes."));
             statusLayout->addWidget(stateLabel);
         } else if (running || pendingDelete || failed) {
-            Dtk::Widget::DLabel *stateIconLabel = new Dtk::Widget::DLabel(statusRow);
-            stateIconLabel->setFixedSize(16, 16);
-            stateIconLabel->setPixmap(syncStatusIcon(failed).pixmap(16, 16));
-            statusLayout->addWidget(stateIconLabel);
-
             const QString stateText = failed
                 ? tr("Sync Failed: %1").arg(
                       DCalDavSyncStatus::localizedFailureReason(
                     static_cast<DCalDavErrorCode>(status.failureCode)))
                 : (pendingDelete ? tr("Deleting...") : tr("Syncing..."));
             Dtk::Widget::DLabel *stateLabel = new Dtk::Widget::DLabel(stateText, statusRow);
+            stateLabel->setForegroundRole(Dtk::Gui::DPalette::TextTips);
+            Dtk::Widget::DFontSizeManager::instance()->bind(stateLabel,
+                                                             Dtk::Widget::DFontSizeManager::T8);
             stateLabel->setToolTip(failed
                 ? DCalDavSyncStatus::localizedFailureReason(
                     static_cast<DCalDavErrorCode>(status.failureCode))
                 : QString());
-            stateLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
             stateLabel->setElideMode(Qt::ElideRight);
+            stateLabel->setMinimumWidth(0);
             stateLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
             statusLayout->addWidget(stateLabel);
         }

@@ -757,9 +757,9 @@
             <translation>最近同步时间</translation>
         </message>
         <message>
-            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="819" />
-            <source>Last sync time (%1)</source>
-            <translation>最近同步时间（%1）</translation>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="794" />
+            <source>Syncing...</source>
+            <translation>同步中...</translation>
         </message>
         <message>
             <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="1049" />
@@ -1064,11 +1064,6 @@
             <translation>最近同步时间</translation>
         </message>
         <message>
-            <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="74" />
-            <source>Last sync time (%1)</source>
-            <translation>最近同步时间（%1）</translation>
-        </message>
-        <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="242" />
             <source>Sync conflict</source>
             <translation>同步冲突</translation>
@@ -1256,6 +1251,11 @@
         <message>
             <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="76" />
             <source>Synchronization failed.</source>
+            <translation>同步失败</translation>
+        </message>
+        <message>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="855" />
+            <source>Sync Failed</source>
             <translation>同步失败</translation>
         </message>
     </context>

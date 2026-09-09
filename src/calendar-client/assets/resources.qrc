@@ -61,6 +61,8 @@
         <file>builtin/icons/dde_calendar_fail_200px.png</file>
         <file>builtin/icons/dde_calendar_ji_32px.svg</file>
         <file>builtin/icons/dde_calendar_spinner_32px.svg</file>
+        <file>builtin/icons/dde_calendar_sync_success_32px.svg</file>
+        <file>builtin/icons/dde_calendar_sync_failed_32px.svg</file>
         <file>builtin/icons/dde_calendar_success_200px.png</file>
         <file>builtin/icons/dde_calendar_sync_schedule_32px.svg</file>
         <file>builtin/icons/dde_calendar_sync_setting_32px.svg</file>

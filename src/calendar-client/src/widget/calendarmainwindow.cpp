@@ -545,9 +545,10 @@ void Calendarmainwindow::initConnection()
     connect(m_titleWidget, &CTitleWidget::signalSidebarStatusChange, this, &Calendarmainwindow::slotSidebarStatusChange);
     //signalAccountUpdate
     connect(gAccountManager, &AccountManager::signalSyncNum, this, &Calendarmainwindow::slotShowSyncToast);
-    connect(gAccountManager, &AccountManager::signalAccountUpdate, this, &Calendarmainwindow::slotAccountUpdate);
     connect(gAccountManager, &AccountManager::signalCalDavScheduleCreateFailed, this,
             &Calendarmainwindow::slotCalDavScheduleCreateFailed);
+    connect(gAccountManager, &AccountManager::signalCalDavAccountStatusChanged, this,
+            &Calendarmainwindow::slotCalDavAccountStatusChanged);
 }
 
 void Calendarmainwindow::initData()
@@ -1151,11 +1152,10 @@ void Calendarmainwindow::slotapplicationStateChanged(Qt::ApplicationState state)
 void Calendarmainwindow::slotOpenSettingDialog()
 {
     qCDebug(ClientLogger) << "Calendarmainwindow::slotOpenSettingDialog";
-    m_dsdSetting = new CSettingDialog(this);
+    CSettingDialog settingDialog(this);
+    m_dsdSetting = &settingDialog;
     //内容定位到顶端
-    m_dsdSetting->exec();
-    //使用完后释放
-    delete m_dsdSetting;
+    settingDialog.exec();
     m_dsdSetting = nullptr;
     gCalendarManager->updateData();
 }
@@ -1184,10 +1184,11 @@ void Calendarmainwindow::slotShowPrivacy()
     QDesktopServices::openUrl(url);
 }
 
-void Calendarmainwindow::removeSyncToast()
+void Calendarmainwindow::removeSyncToast(QWidget *parent)
 {
     qCDebug(ClientLogger) << "Calendarmainwindow::removeSyncToast";
-    QWidget *content = this->window()->findChild<QWidget *>("_d_message_manager_content", Qt::FindDirectChildrenOnly);
+    QWidget *messageParent = parent ? parent : this->window();
+    QWidget *content = messageParent->findChild<QWidget *>("_d_message_manager_content", Qt::FindDirectChildrenOnly);
     if (nullptr == content) return;
     for (DFloatingMessage *message : content->findChildren<DFloatingMessage *>(QString(), Qt::FindDirectChildrenOnly)) {
         content->layout()->removeWidget(message);
@@ -1196,43 +1197,91 @@ void Calendarmainwindow::removeSyncToast()
     }
 }
 
+void Calendarmainwindow::removeAllSyncToasts()
+{
+    removeSyncToast();
+    if (m_dsdSetting) {
+        removeSyncToast(m_dsdSetting);
+    }
+}
+
+QWidget *Calendarmainwindow::syncToastParent() const
+{
+    return m_dsdSetting ? m_dsdSetting.data() : this->window();
+}
+
 void Calendarmainwindow::slotShowSyncToast(int syncNum)
 {
     qCDebug(ClientLogger) << "Showing sync toast" << "sync number:" << syncNum;
     //-1:正在刷新 0:正常 1:网络异常 2:服务器异常 3：存储已经满
-    static int preSyncNum = -2;
-    if (preSyncNum != syncNum && syncNum == -1) {
-        preSyncNum = -1;
-        //同步中
-        qCDebug(ClientLogger) << "Showing 'Syncing...' toast";
+    if (syncNum == -1) {
+        // The settings dialog shows the running state in the account row.
+        // Only show the running toast in the main window when the dialog is closed.
+        if (m_dsdSetting) {
+            removeAllSyncToasts();
+            return;
+        }
+        qCDebug(ClientLogger) << "Showing 'Syncing...' toast in the main window";
         removeSyncToast();
-        DMessageManager::instance()->sendMessage(this->window(), QIcon::fromTheme(":/icons/deepin/builtin/icons/dde_calendar_spinner_32px.svg"), tr("Syncing..."));
+        DMessageManager::instance()->sendMessage(
+            this->window(),
+            QIcon(QStringLiteral(":/icons/deepin/builtin/icons/dde_calendar_spinner_32px.svg")),
+            tr("Syncing..."));
         return;
     }
-    //
-    if (preSyncNum == -1 && syncNum != -1) {
-        preSyncNum = -2;
-        switch (syncNum) {
-        case 0: {
-            qCDebug(ClientLogger) << "Sync completed successfully";
-            //同步成功
-            removeSyncToast();
-            DMessageManager::instance()->sendMessage(this->window(), QIcon::fromTheme(":/icons/deepin/builtin/icons/dde_calendar_success_200px.png"), tr("Sync successful"));
-            break;
-        }
-        case 1:
-        case 2:
-        case 3: {
-            qCWarning(ClientLogger) << "Sync failed with error code:" << syncNum;
-            //同步失败
-            removeSyncToast();
-            DMessageManager::instance()->sendMessage(this->window(), QIcon::fromTheme(":/icons/deepin/builtin/icons/dde_calendar_fail_200px.png"), tr("Sync failed, please try later"));
-            break;
-        }
-        default:
-            break;
-        }
+
+    QWidget *messageParent = syncToastParent();
+
+    switch (syncNum) {
+    case 0:
+        qCDebug(ClientLogger) << "Sync completed successfully";
+        removeAllSyncToasts();
+        DMessageManager::instance()->sendMessage(
+            messageParent,
+            QIcon(QStringLiteral(":/icons/deepin/builtin/icons/dde_calendar_success_200px.png")),
+            tr("Sync successful"));
+        break;
+    case 1:
+    case 2:
+    case 3:
+        qCWarning(ClientLogger) << "Sync failed with error code:" << syncNum;
+        removeAllSyncToasts();
+        DMessageManager::instance()->sendMessage(
+            messageParent,
+            QIcon(QStringLiteral(":/icons/deepin/builtin/icons/dde_calendar_sync_failed_32px.svg")),
+            tr("Sync failed, please try later"));
+        break;
+    default:
+        break;
     }
+}
+
+void Calendarmainwindow::slotCalDavAccountStatusChanged(const QString &accountID)
+{
+    const DCalDavAccountStatus status = gAccountManager->getCalDavAccountStatus(accountID);
+    if (status.syncStatus == DCalDavSyncStatus::Succeeded) {
+        slotShowSyncToast(0);
+        return;
+    }
+
+    const bool failed = status.syncStatus == DCalDavSyncStatus::Failed
+        || status.syncStatus == DCalDavSyncStatus::AuthenticationRequired
+        || status.syncStatus == DCalDavSyncStatus::PermissionDenied
+        || status.syncStatus == DCalDavSyncStatus::RetryScheduled;
+    if (!failed) {
+        return;
+    }
+
+    const QString failureReason = !status.failureReason.isEmpty()
+        ? status.failureReason
+        : DCalDavSyncStatus::localizedFailureReason(
+              static_cast<DCalDavErrorCode>(status.failureCode));
+    QWidget *messageParent = syncToastParent();
+    removeAllSyncToasts();
+    DMessageManager::instance()->sendMessage(
+        messageParent,
+        QIcon(QStringLiteral(":/icons/deepin/builtin/icons/dde_calendar_sync_failed_32px.svg")),
+        failureReason);
 }
 
 void Calendarmainwindow::slotCalDavScheduleCreateFailed(const QString &accountID,
@@ -1274,16 +1323,7 @@ void Calendarmainwindow::slotCalDavScheduleCreateFailed(const QString &accountID
     message->setIcon(QIcon::fromTheme(QStringLiteral("dialog-error")));
     message->setMessage(toastText);
     message->setDuration(2000);
-    DMessageManager::instance()->sendMessage(window(), message);
-}
-
-void Calendarmainwindow::slotAccountUpdate()
-{
-    qCDebug(ClientLogger) << "Updating account information";
-    AccountItem::Ptr uidAccount = gUosAccountItem;
-    if (!uidAccount.isNull()) {
-        connect(uidAccount.get(), &AccountItem::signalSyncStateChange, this, &Calendarmainwindow::slotShowSyncToast);
-    }
+    DMessageManager::instance()->sendMessage(syncToastParent(), message);
 }
 
 void Calendarmainwindow::paintEvent(QPaintEvent *event)
