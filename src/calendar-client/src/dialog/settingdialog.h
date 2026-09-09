@@ -12,6 +12,7 @@
 #include <DSettingsDialog>
 #include <DIconButton>
 #include <DCommandLinkButton>
+#include <DLabel>
 
 DWIDGET_USE_NAMESPACE
 
@@ -19,6 +20,7 @@ class QAction;
 class QCheckBox;
 class QPushButton;
 class UserloginWidget;
+class QTimer;
 
 class CSettingDialog : public DSettingsDialog
 {
@@ -60,6 +62,8 @@ public slots:
     void slotSyncTagButtonUpdate();
     //点击同步项时，更新uos账户状态
     void slotSyncAccountStateUpdate(bool);
+    void slotSyncStateChange(DAccount::AccountSyncState state);
+    void slotSyncTimeout();
 
 private:
     void initFirstDayofWeekWidget();
@@ -78,6 +82,7 @@ private:
     void updateCalDavAddButtonVisibility();
 
     void setTypeEnable(int index);
+    void updateSyncStatusDisplay(const QString &datetime, DAccount::AccountSyncState state);
 private:
     void initWidget();
     void initConnect();
@@ -116,10 +121,13 @@ private:
 
     //手动同步按钮和同步时间显示
     QLabel *m_syncTimeLabel = nullptr;
+    DLabel *m_syncTimeValueLabel = nullptr;
+    QLabel *m_syncStatusIconLabel = nullptr;
     QPushButton *m_syncBtn = nullptr;
     QWidget *m_manualSyncWidget = nullptr;
     QWidget *m_uosSyncItemsWidget = nullptr;
     DOANetWorkDBus *m_ptrNetworkState;
+    QTimer *m_syncTimeoutTimer = nullptr;
     QCheckBox *m_radiobuttonAccountCalendar = nullptr;
     QCheckBox *m_radiobuttonAccountSetting = nullptr;
     ControlCenterProxy *m_controlCenterProxy;

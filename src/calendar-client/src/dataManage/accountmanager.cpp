@@ -503,13 +503,22 @@ void AccountManager::slotGetAccountListFinish(DAccount::List accountList)
         } else if (account->accountType() == DAccount::Account_UnionID && !isCommunityEdition()) {
             qCDebug(ClientLogger) << "Processing UnionID account:" << account->accountName();
             hasUnionAccount = true;
+            bool unionAccountChanged = false;
             if (!m_unionAccountItem) {
                 qCDebug(ClientLogger) << "Creating new union account item";
                 m_unionAccountItem.reset(new AccountItem(account, this));
-            } else if (m_unionAccountItem && m_unionAccountItem->getAccount()->accountID() != account->accountID()) {
+                unionAccountChanged = true;
+            } else if (m_unionAccountItem->getAccount()->accountID() != account->accountID()) {
                 qCDebug(ClientLogger) << "Union account ID changed, creating new union account item";
                 emit m_unionAccountItem->signalLogout(m_unionAccountItem->getAccount()->accountType());
                 m_unionAccountItem.reset(new AccountItem(account, this));
+                unionAccountChanged = true;
+            }
+            if (unionAccountChanged) {
+                connect(m_unionAccountItem.data(), &AccountItem::signalSyncStateChange,
+                        this, [this](DAccount::AccountSyncState state) {
+                    emit signalSyncNum(static_cast<int>(state));
+                });
             }
         } else if (account->accountType() == DAccount::Account_CalDav) {
             currentCalDavAccountIDs.append(account->accountID());

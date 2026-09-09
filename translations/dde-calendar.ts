@@ -809,9 +809,9 @@
             <translation>Last sync time</translation>
         </message>
         <message>
-            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="819" />
-            <source>Last sync time (%1)</source>
-            <translation>Last sync time (%1)</translation>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="794" />
+            <source>Syncing...</source>
+            <translation>Syncing...</translation>
         </message>
         <message>
             <source>Last sync: %1</source>
@@ -1051,11 +1051,6 @@
             <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="69" />
             <source>Last sync time</source>
             <translation>Last sync time</translation>
-        </message>
-        <message>
-            <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="74" />
-            <source>Last sync time (%1)</source>
-            <translation>Last sync time (%1)</translation>
         </message>
         <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="151" />
@@ -1324,6 +1319,11 @@
             <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="76" />
             <source>Synchronization failed.</source>
             <translation>Synchronization failed.</translation>
+        </message>
+        <message>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="855" />
+            <source>Sync Failed</source>
+            <translation>Sync Failed</translation>
         </message>
     </context>
     <context>
