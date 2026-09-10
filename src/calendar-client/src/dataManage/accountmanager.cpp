@@ -13,7 +13,6 @@ AccountManager::AccountManager(QObject *parent)
 {
     qCDebug(ClientLogger) << "Creating AccountManager";
     initConnect();
-    m_dbusRequest->clientIsShow(true);
     m_dbusRequest->getCalDavAccountStatusList();
 
     if (isCommunityEdition()) {
@@ -34,6 +33,12 @@ void AccountManager::initConnect()
     connect(m_dbusRequest, &DbusAccountManagerRequest::signalGetIsSupportUidFinish, this, &AccountManager::slotGetIsSupportUidFinish);
     connect(m_dbusRequest, &DbusAccountManagerRequest::signalGetCalDavAccountStatusListFinish,
             this, &AccountManager::slotGetCalDavAccountStatusListFinish);
+    connect(m_dbusRequest, &DbusAccountManagerRequest::signalCalDavAccountStatusRefreshRequested,
+            this, [this](const QString &accountID) {
+        if (!m_calDavStatusesInitialized && !accountID.isEmpty()) {
+            m_pendingCalDavStatusChanges.insert(accountID);
+        }
+    });
     connect(m_dbusRequest, &DbusAccountManagerRequest::signalValidateCalDavAccountStart,
             this, [this](const QString &requestID) {
         qCDebug(ClientLogger) << "Forwarding CalDAV validation start"
@@ -156,10 +161,18 @@ void AccountManager::slotGetCalDavAccountStatusListFinish(DCalDavAccountStatus::
     m_calDavStatusesInitialized = true;
     if (!shouldNotifyChanges) {
         // The initial snapshot is intentionally not exposed as a status-change
-        // event, otherwise persisted failures could trigger stale toasts. The
-        // settings page still needs a separate notification to refresh actions
-        // that depend on supportsWrite.
+        // event, otherwise persisted failures could trigger stale toasts. A
+        // status-change signal received before this snapshot, however, belongs
+        // to a live service event and must not be swallowed by initialization.
+        const QSet<QString> pendingStatusChanges = m_pendingCalDavStatusChanges;
+        m_pendingCalDavStatusChanges.clear();
         emit signalCalDavAccountStatusReady();
+        for (const QString &accountID : pendingStatusChanges) {
+            if (updatedStatuses.contains(accountID)) {
+                emit signalCalDavAccountStatusChanged(accountID);
+            }
+        }
+        maybeNotifyClientIsShow();
         return;
     }
 
@@ -183,6 +196,18 @@ void AccountManager::slotGetCalDavAccountStatusListFinish(DCalDavAccountStatus::
         }
     }
     emit signalCalDavAccountStatusReady();
+    maybeNotifyClientIsShow();
+}
+
+void AccountManager::maybeNotifyClientIsShow()
+{
+    if (!m_clientShowRequested || m_clientShowNotified || !m_calDavStatusesInitialized) {
+        return;
+    }
+
+    qCDebug(ClientLogger) << "Notifying account service that calendar is shown";
+    m_clientShowNotified = true;
+    m_dbusRequest->clientIsShow(true);
 }
 
 void AccountManager::slotGetIsSupportUidFinish(bool supported)
@@ -344,6 +369,12 @@ void AccountManager::resetAccount()
     m_dbusRequest->getCalendarGeneralSettings();
 }
 
+void AccountManager::notifyClientIsShow()
+{
+    m_clientShowRequested = true;
+    maybeNotifyClientIsShow();
+}
+
 /**
  * @brief AccountManager::downloadByAccountID
  * 根据帐户ID下拉数据
@@ -358,6 +389,10 @@ void AccountManager::downloadByAccountID(const QString &accountID, CallbackFunc 
         && account->getAccount()->accountType() == DAccount::Account_CalDav) {
         m_manualCalDavSyncAccounts.insert(accountID);
     } else {
+        if (account && account->getAccount()
+            && account->getAccount()->accountType() == DAccount::Account_UnionID) {
+            m_manualUnionSyncAccounts.insert(accountID);
+        }
         emit signalSyncNum();
     }
     m_dbusRequest->setCallbackFunc(callback);
@@ -533,12 +568,21 @@ void AccountManager::slotGetAccountListFinish(DAccount::List accountList)
             } else if (m_unionAccountItem->getAccount()->accountID() != account->accountID()) {
                 qCDebug(ClientLogger) << "Union account ID changed, creating new union account item";
                 emit m_unionAccountItem->signalLogout(m_unionAccountItem->getAccount()->accountType());
+                m_manualUnionSyncAccounts.remove(m_unionAccountItem->getAccount()->accountID());
                 m_unionAccountItem.reset(new AccountItem(account, this));
                 unionAccountChanged = true;
             }
             if (unionAccountChanged) {
+                const QString unionAccountID = m_unionAccountItem->getAccount()->accountID();
                 connect(m_unionAccountItem.data(), &AccountItem::signalSyncStateChange,
-                        this, [this](DAccount::AccountSyncState state) {
+                        this, [this, unionAccountID](DAccount::AccountSyncState state) {
+                    // Automatic syncs stay silent on success, while failures
+                    // always notify. Manual sync results also notify.
+                    const bool manuallyRequested =
+                        m_manualUnionSyncAccounts.remove(unionAccountID) > 0;
+                    if (state == DAccount::Sync_Normal && !manuallyRequested) {
+                        return;
+                    }
                     emit signalSyncNum(static_cast<int>(state));
                 });
             }
@@ -566,6 +610,7 @@ void AccountManager::slotGetAccountListFinish(DAccount::List accountList)
     if (!hasUnionAccount && m_unionAccountItem) {
         qCDebug(ClientLogger) << "No union account in list but union account item exists, clearing it";
         emit m_unionAccountItem->signalLogout(m_unionAccountItem->getAccount()->accountType());
+        m_manualUnionSyncAccounts.clear();
         m_unionAccountItem.reset(nullptr);
     }
 

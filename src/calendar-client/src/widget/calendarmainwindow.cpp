@@ -1335,3 +1335,17 @@ void Calendarmainwindow::paintEvent(QPaintEvent *event)
         QTimer::singleShot(0, this, &Calendarmainwindow::startDeferredViewDataInit);
     }
 }
+
+void Calendarmainwindow::showEvent(QShowEvent *event)
+{
+    DMainWindow::showEvent(event);
+    if (m_clientShowSyncScheduled) {
+        return;
+    }
+
+    m_clientShowSyncScheduled = true;
+    // Let the first UI/data work settle before starting network synchronization.
+    constexpr int kStartupSyncDelayMs = 500;
+    QTimer::singleShot(kStartupSyncDelayMs, gAccountManager,
+                       &AccountManager::notifyClientIsShow);
+}

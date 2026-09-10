@@ -285,8 +285,6 @@ DAccountManageModule::DAccountManageModule(QObject *parent)
 
     connect(&m_timer, &QTimer::timeout, this, &DAccountManageModule::slotClientIsOpen);
     m_timer.start(2000);
-    QTimer::singleShot(0, this, &DAccountManageModule::registerCalDavAccounts);
-
     connect(&m_calDavDailyTimer, &QTimer::timeout,
             this, &DAccountManageModule::slotCalDavDailySync);
     scheduleNextCalDavDailySync();
@@ -1081,14 +1079,21 @@ void DAccountManageModule::slotCalDavOnlineStateChanged(bool isOnline)
 
 void DAccountManageModule::registerCalDavAccounts()
 {
+    if (m_calDavAccountsRegistrationStarted) {
+        return;
+    }
+    m_calDavAccountsRegistrationStarted = true;
+
+    qCDebug(ServiceLogger) << "Registering existing CalDAV accounts after client open.";
     for (const DAccount::Ptr &account : m_accountList) {
         if (account->accountType() == DAccount::Account_CalDav) {
-            registerCalDavAccount(account);
+            registerCalDavAccount(account, false);
         }
     }
 }
 
-void DAccountManageModule::registerCalDavAccount(const DAccount::Ptr &account)
+void DAccountManageModule::registerCalDavAccount(const DAccount::Ptr &account,
+                                                 bool triggerInitialSync)
 {
     if (account.isNull() || account->accountID().isEmpty()
         || !m_accountModuleMap.contains(account->accountID())
@@ -1117,17 +1122,22 @@ void DAccountManageModule::registerCalDavAccount(const DAccount::Ptr &account)
     request.localDatabase = accountModule->accountDatabase();
     request.accountManagerDatabase = m_accountManagerDB.data();
     request.jobManager = &m_calDavSyncJobManager;
+    request.triggerInitialSync = triggerInitialSync;
 
     const QString accountID = account->accountID();
     DCalDavAccountRegistrar *registrar = new DCalDavAccountRegistrar(this);
     m_calDavRegistrars.insert(accountID, registrar);
-    registrar->start(request, [this, accountID, registrar](
+    registrar->start(request, [this, accountID, registrar, triggerInitialSync](
                          const DCalDavAccountRegistrar::Result &result) {
         m_calDavRegistrars.remove(accountID);
         if (result.success) {
             const DAccountModule::Ptr accountModule = m_accountModuleMap.value(accountID);
             if (!accountModule.isNull()) {
                 accountModule->notifyScheduleDataChanged();
+            }
+            if (!triggerInitialSync && m_clientIsOpen) {
+                m_calDavSyncJobManager.requestSync(
+                    accountID, DCalDavSyncStateMachine::ForegroundTrigger);
             }
         } else {
             DCalDavAccountInfo accountInfo;
@@ -1191,8 +1201,14 @@ bool DAccountManageModule::isSupportUid()
 void DAccountManageModule::calendarOpen(bool isOpen)
 {
     qCDebug(ServiceLogger) << "Calendar open status changed:" << isOpen;
+    m_clientIsOpen = isOpen;
     //每次开启日历时需要同步数据
     if (isOpen) {
+        // Defer CalDAV discovery until the client window is visible. Service
+        // startup should only initialize local account data and not access the
+        // credential store or remote CalDAV servers.
+        registerCalDavAccounts();
+
         QMap<QString, DAccountModule::Ptr>::iterator iter = m_accountModuleMap.begin();
         for (; iter != m_accountModuleMap.end(); ++iter) {
             if (iter.value()->account()->accountType() == DAccount::Account_CalDav) {

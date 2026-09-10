@@ -74,6 +74,7 @@ signals:
     //获取是否支持UID完成信号
     void signalGetIsSupportUidFinish(bool supported);
     void signalGetCalDavAccountStatusListFinish(DCalDavAccountStatus::List statusList);
+    void signalCalDavAccountStatusRefreshRequested(const QString &accountID);
     void signalGetCalDavAccountConfigFinish(const QString &config);
     void signalValidateCalDavAccountForUpdateStart(const QString &requestID);
     void signalValidateCalDavAccountStart(const QString &requestID);

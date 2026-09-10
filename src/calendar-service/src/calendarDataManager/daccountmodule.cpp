@@ -1138,8 +1138,8 @@ void DAccountModule::accountDownload()
     qCDebug(ServiceLogger) << "Account download triggered for account:" << m_account->accountID();
     if (m_dataSync != nullptr) {
         qCInfo(ServiceLogger) << "Starting data download for account:" << m_account->accountID();
-        m_dataSync->syncData(this->account()->accountID(), this->account()->accountName(), 
-                            (int)this->account()->accountState(), 
+        m_dataSync->syncData(this->account()->accountID(), m_accountDB->getConnectionName(),
+                            (int)this->account()->accountState(),
                             DDataSyncBase::Sync_Upload | DDataSyncBase::Sync_Download);
     } else {
         qCWarning(ServiceLogger) << "Cannot download data - sync not available for account:" 
@@ -1152,8 +1152,8 @@ void DAccountModule::uploadNetWorkAccountData()
     qCDebug(ServiceLogger) << "Upload network account data triggered for account:" << m_account->accountID();
     if (m_dataSync != nullptr) {
         qCInfo(ServiceLogger) << "Starting data upload for account:" << m_account->accountID();
-        m_dataSync->syncData(this->account()->accountID(), this->account()->accountName(), 
-                            (int)this->account()->accountState(), 
+        m_dataSync->syncData(this->account()->accountID(), m_accountDB->getConnectionName(),
+                            (int)this->account()->accountState(),
                             DDataSyncBase::Sync_Upload);
     } else {
         qCWarning(ServiceLogger) << "Cannot upload data - sync not available for account:" 

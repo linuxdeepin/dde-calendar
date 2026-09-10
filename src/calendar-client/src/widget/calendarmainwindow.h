@@ -84,6 +84,7 @@ protected:
     void mousePressEvent(QMouseEvent *event) override;
     bool event(QEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
+    void showEvent(QShowEvent *event) override;
 private slots:
     //获取程序状态
     void slotapplicationStateChanged(Qt::ApplicationState state);
@@ -156,6 +157,7 @@ private:
     CMyScheduleView *m_dlg = Q_NULLPTR;
 
     bool m_firstPaintDone = false;
+    bool m_clientShowSyncScheduled = false;
     bool m_deferredViewDataInitDone = false;
     bool m_hasInit = false;
 };
