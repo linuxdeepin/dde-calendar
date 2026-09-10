@@ -92,6 +92,7 @@ void AccountManager::initConnect()
         if (success && !m_pendingCalDavDeleteAccountID.isEmpty()) {
             m_calDavProviderTypeOverrides.remove(m_pendingCalDavDeleteAccountID);
             m_calDavAccountStatuses.remove(m_pendingCalDavDeleteAccountID);
+            m_manualCalDavSyncAccounts.remove(m_pendingCalDavDeleteAccountID);
         }
         m_pendingCalDavDeleteAccountID.clear();
         emit signalDeleteCalDavAccountFinish(success);
@@ -109,6 +110,21 @@ bool AccountManager::canWriteCalDavAccount(const QString &accountID) const
 {
     const DCalDavAccountStatus status = m_calDavAccountStatuses.value(accountID);
     return !status.accountId.isEmpty() && status.supportsWrite;
+}
+
+bool AccountManager::takeManualCalDavSyncRequest(const QString &accountID, int syncStatus)
+{
+    const bool completed = syncStatus == DCalDavSyncStatus::Succeeded
+        || syncStatus == DCalDavSyncStatus::Failed
+        || syncStatus == DCalDavSyncStatus::AuthenticationRequired
+        || syncStatus == DCalDavSyncStatus::PermissionDenied
+        || syncStatus == DCalDavSyncStatus::RetryScheduled;
+    if (!completed || !m_manualCalDavSyncAccounts.contains(accountID)) {
+        return false;
+    }
+
+    m_manualCalDavSyncAccounts.remove(accountID);
+    return true;
 }
 
 bool AccountManager::getIsSupportUid() const
@@ -337,7 +353,13 @@ void AccountManager::resetAccount()
 void AccountManager::downloadByAccountID(const QString &accountID, CallbackFunc callback)
 {
     qCDebug(ClientLogger) << "Downloading data for account ID:" << accountID;
-    emit signalSyncNum();
+    const AccountItem::Ptr account = getAccountItemByAccountId(accountID);
+    if (account && account->getAccount()
+        && account->getAccount()->accountType() == DAccount::Account_CalDav) {
+        m_manualCalDavSyncAccounts.insert(accountID);
+    } else {
+        emit signalSyncNum();
+    }
     m_dbusRequest->setCallbackFunc(callback);
     m_dbusRequest->downloadByAccountID(accountID);
 }

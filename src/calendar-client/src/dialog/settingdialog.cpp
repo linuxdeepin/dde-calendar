@@ -909,12 +909,12 @@ void CSettingDialog::slotSyncStateChange(DAccount::AccountSyncState state)
 
 void CSettingDialog::slotSyncTimeout()
 {
-    qCWarning(ClientLogger) << "UOS account sync timed out";
+    qCWarning(ClientLogger) << "UOS account sync timed out, restoring the last known sync status";
     if (!gUosAccountItem) {
         return;
     }
 
-    updateSyncStatusDisplay(gUosAccountItem->getDtLastUpdate(), DAccount::Sync_NetworkAnomaly);
+    slotLastSyncTimeUpdate(gUosAccountItem->getDtLastUpdate());
 }
 
 void CSettingDialog::slotAccountStateChange()

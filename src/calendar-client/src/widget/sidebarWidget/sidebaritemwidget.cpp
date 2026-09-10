@@ -337,9 +337,7 @@ void SidebarAccountItemWidget::resetRearIconButton()
             || status.syncStatus == DCalDavSyncStatus::RetryScheduled;
         if (failed) {
             m_syncIconButton->hide();
-            m_warningLabel->setToolTip(
-                DCalDavSyncStatus::localizedFailureReason(
-                    static_cast<DCalDavErrorCode>(status.failureCode)));
+            m_warningLabel->setToolTip(DCalDavAccountStatus::resolveFailureReason(status));
             m_warningLabel->show();
         } else {
             m_syncIconButton->show();

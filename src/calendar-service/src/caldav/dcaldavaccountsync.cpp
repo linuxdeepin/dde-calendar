@@ -91,6 +91,9 @@ void DCalDavAccountSync::flushOutbox()
     m_outboxProcessor.start(outboxRequest, [this](const DCalDavOutboxProcessor::Result &result) {
         m_result.failureResponse = result.failureResponse;
         m_result.failureCode = DCalDavSyncStatusMapper::errorCodeForFailure(m_result.failureResponse);
+        if (!result.success && m_result.failureCode == DCalDavErrorCode::NoError) {
+            m_result.failureCode = DCalDavErrorCode::Unknown;
+        }
         m_result.createFailure = result.createFailure;
         if (!result.success) {
             if (result.retryScheduledCount > 0 && result.permanentFailureCount == 0) {
@@ -152,6 +155,9 @@ void DCalDavAccountSync::syncNextCalendar()
                                      << "errorPresent:" << !syncResult.errorMessage.isEmpty();
             m_result.failureResponse = syncResult.failureResponse;
             m_result.failureCode = DCalDavSyncStatusMapper::errorCodeForFailure(m_result.failureResponse);
+            if (!syncResult.success && m_result.failureCode == DCalDavErrorCode::NoError) {
+                m_result.failureCode = DCalDavErrorCode::Unknown;
+            }
             const bool permissionDenied = syncResult.failureResponse.httpStatus == 403
                 || syncResult.failureResponse.error == DCalDavTransport::PermissionDenied;
             if (permissionDenied) {

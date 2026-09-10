@@ -1259,8 +1259,12 @@ void Calendarmainwindow::slotShowSyncToast(int syncNum)
 void Calendarmainwindow::slotCalDavAccountStatusChanged(const QString &accountID)
 {
     const DCalDavAccountStatus status = gAccountManager->getCalDavAccountStatus(accountID);
+    const bool manuallyRequested = gAccountManager->takeManualCalDavSyncRequest(accountID,
+                                                                                  status.syncStatus);
     if (status.syncStatus == DCalDavSyncStatus::Succeeded) {
-        slotShowSyncToast(0);
+        if (manuallyRequested) {
+            slotShowSyncToast(0);
+        }
         return;
     }
 
@@ -1272,10 +1276,7 @@ void Calendarmainwindow::slotCalDavAccountStatusChanged(const QString &accountID
         return;
     }
 
-    const QString failureReason = !status.failureReason.isEmpty()
-        ? status.failureReason
-        : DCalDavSyncStatus::localizedFailureReason(
-              static_cast<DCalDavErrorCode>(status.failureCode));
+    const QString failureReason = DCalDavAccountStatus::resolveFailureReason(status);
     QWidget *messageParent = syncToastParent();
     removeAllSyncToasts();
     DMessageManager::instance()->sendMessage(

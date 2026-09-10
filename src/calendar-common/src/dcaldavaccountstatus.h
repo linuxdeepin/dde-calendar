@@ -47,6 +47,9 @@ public:
     static QString localizedFailureReason(DCalDavErrorCode errorCode)
     {
         switch (errorCode) {
+        case DCalDavErrorCode::InvalidRequest:
+            return QCoreApplication::translate(
+                "DCalDavSyncStatus", "The server request is invalid.");
         case DCalDavErrorCode::CertificateInvalid:
             return QCoreApplication::translate(
                 "DCalDavSyncStatus", "The server certificate is invalid.");
@@ -64,6 +67,18 @@ public:
         case DCalDavErrorCode::PermissionDenied:
             return QCoreApplication::translate(
                 "DCalDavSyncStatus", "The server denied access.");
+        case DCalDavErrorCode::RateLimited:
+            return QCoreApplication::translate(
+                "DCalDavSyncStatus", "The server is busy. Please try again later.");
+        case DCalDavErrorCode::ServerUnavailable:
+            return QCoreApplication::translate(
+                "DCalDavSyncStatus", "The server is unavailable. Please try again later.");
+        case DCalDavErrorCode::Conflict:
+            return QCoreApplication::translate(
+                "DCalDavSyncStatus", "The calendar data conflicts with the server.");
+        case DCalDavErrorCode::ResponseTooLarge:
+            return QCoreApplication::translate(
+                "DCalDavSyncStatus", "The server returned too much data. Please try again later.");
         case DCalDavErrorCode::RequestTimedOut:
             return QCoreApplication::translate(
                 "DCalDavSyncStatus", "The server request timed out.");
@@ -72,6 +87,9 @@ public:
             return QCoreApplication::translate(
                 "DCalDavSyncStatus",
                 "Unable to connect to the server. Please check your network connection and server address.");
+        case DCalDavErrorCode::StorageError:
+            return QCoreApplication::translate(
+                "DCalDavSyncStatus", "Unable to save calendar data. Please try again later.");
         default:
             return QCoreApplication::translate("DCalDavSyncStatus", "Synchronization failed.");
         }
@@ -111,6 +129,24 @@ public:
     int pendingDeleteCount = 0;
     int conflictCount = 0;
     QDateTime nextRetryAt;
+
+    /**
+     * @brief Returns the user-facing reason for a failed synchronization.
+     * @param status Synchronization status containing the error code and raw reason.
+     * @return The raw reason for unknown errors when available, otherwise a
+     * localized message for the error code.
+     */
+    static QString resolveFailureReason(const DCalDavAccountStatus &status)
+    {
+        const DCalDavErrorCode errorCode =
+            static_cast<DCalDavErrorCode>(status.failureCode);
+        if ((errorCode == DCalDavErrorCode::Unknown
+             || errorCode == DCalDavErrorCode::NoError)
+            && !status.failureReason.isEmpty()) {
+            return status.failureReason;
+        }
+        return DCalDavSyncStatus::localizedFailureReason(errorCode);
+    }
 
     static QString toJsonListString(const List &statusList)
     {

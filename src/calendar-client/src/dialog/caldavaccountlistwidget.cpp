@@ -47,7 +47,8 @@ QString syncTimeLabel()
 
 QString syncTimeValue(const DCalDavAccountStatus &status)
 {
-    if (!status.lastSuccessfulSync.isValid()) {
+    if (status.syncStatus != DCalDavSyncStatus::Succeeded
+        || !status.lastSuccessfulSync.isValid()) {
         return {};
     }
 
@@ -255,19 +256,15 @@ void CalDavAccountListWidget::rebuildCards()
             stateLabel->setToolTip(tr("A synchronization conflict was detected. The server version will replace the local changes."));
             statusLayout->addWidget(stateLabel);
         } else if (running || pendingDelete || failed) {
+            const QString failureReason = DCalDavAccountStatus::resolveFailureReason(status);
             const QString stateText = failed
-                ? tr("Sync Failed: %1").arg(
-                      DCalDavSyncStatus::localizedFailureReason(
-                    static_cast<DCalDavErrorCode>(status.failureCode)))
+                ? tr("Sync Failed: %1").arg(failureReason)
                 : (pendingDelete ? tr("Deleting...") : tr("Syncing..."));
             Dtk::Widget::DLabel *stateLabel = new Dtk::Widget::DLabel(stateText, statusRow);
             stateLabel->setForegroundRole(Dtk::Gui::DPalette::TextTips);
             Dtk::Widget::DFontSizeManager::instance()->bind(stateLabel,
                                                              Dtk::Widget::DFontSizeManager::T8);
-            stateLabel->setToolTip(failed
-                ? DCalDavSyncStatus::localizedFailureReason(
-                    static_cast<DCalDavErrorCode>(status.failureCode))
-                : QString());
+            stateLabel->setToolTip(failed ? failureReason : QString());
             stateLabel->setElideMode(Qt::ElideRight);
             stateLabel->setMinimumWidth(0);
             stateLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);

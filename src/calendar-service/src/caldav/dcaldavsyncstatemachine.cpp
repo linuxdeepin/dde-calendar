@@ -38,7 +38,8 @@ bool DCalDavSyncStateMachine::requestSync(const QString &accountId, Trigger trig
     }
 
     if (account->state == Running) {
-        return false;
+        account->pendingTriggers |= trigger;
+        return true;
     }
 
     account->pendingTriggers |= trigger;
