@@ -27,6 +27,9 @@ public:
         DAccountDataBase *localDatabase = nullptr;
         DAccountManagerDataBase *accountManagerDatabase = nullptr;
         DCalDavSyncJobManager *jobManager = nullptr;
+        // Existing accounts are registered at service startup and synced after
+        // the client reports that its window is shown.
+        bool triggerInitialSync = true;
     };
 
     struct Result {

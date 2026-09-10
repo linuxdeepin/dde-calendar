@@ -33,6 +33,9 @@ public:
     //重新获取帐户信息
     void resetAccount();
 
+    //通知服务端客户端已显示，触发启动后的同步
+    void notifyClientIsShow();
+
     //根据帐户ID下拉数据
     void downloadByAccountID(const QString &accountID, CallbackFunc callback = nullptr);
     //更新网络帐户数据
@@ -125,6 +128,7 @@ protected:
 
 private:
     void initConnect();
+    void maybeNotifyClientIsShow();
 
 private:
     static AccountManager *m_accountManager;
@@ -133,7 +137,11 @@ private:
     QList<AccountItem::Ptr> m_calDavAccountItems;
     QHash<QString, DCalDavAccountStatus> m_calDavAccountStatuses;
     QSet<QString> m_manualCalDavSyncAccounts;
+    QSet<QString> m_manualUnionSyncAccounts;
+    QSet<QString> m_pendingCalDavStatusChanges;
     bool m_calDavStatusesInitialized = false;
+    bool m_clientShowRequested = false;
+    bool m_clientShowNotified = false;
     QHash<QString, int> m_calDavProviderTypeOverrides;
     int m_pendingCalDavProviderType = -1;
     QString m_pendingCalDavDeleteAccountID;

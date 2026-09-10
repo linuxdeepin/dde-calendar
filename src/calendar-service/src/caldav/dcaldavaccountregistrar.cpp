@@ -142,8 +142,10 @@ void DCalDavAccountRegistrar::start(const Request &request, const Callback &call
                    DCalDavTransport::Response(), DCalDavErrorCode::Unknown);
             return;
         }
-        m_request.jobManager->requestSync(
-            m_request.account.accountId, DCalDavSyncStateMachine::StartupTrigger);
+        if (m_request.triggerInitialSync) {
+            m_request.jobManager->requestSync(
+                m_request.account.accountId, DCalDavSyncStateMachine::StartupTrigger);
+        }
         finish(true);
     });
 }

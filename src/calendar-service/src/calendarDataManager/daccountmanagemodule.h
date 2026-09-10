@@ -121,7 +121,7 @@ private:
     // 保存通用配置
     void setGeneralSettings(const DCalendarGeneralSettings::Ptr &cgSet);
     void registerCalDavAccounts();
-    void registerCalDavAccount(const DAccount::Ptr &account);
+    void registerCalDavAccount(const DAccount::Ptr &account, bool triggerInitialSync = true);
     void scheduleNextCalDavDailySync();
     void scheduleNextCalDavRetry();
     bool migrateCalDavSchedulesToLocal(const DAccountModule::Ptr &calDavModule,
@@ -172,6 +172,8 @@ private:
     DTK_CORE_NAMESPACE::DConfig *m_reginFormatConfig;
     QTimer m_timer;
     bool m_isSupportUid = false;
+    bool m_clientIsOpen = false;
+    bool m_calDavAccountsRegistrationStarted = false;
     QSettings m_settings;
     DBusTimedate m_timeDateDbus;
     DCalDavSyncJobManager m_calDavSyncJobManager;

@@ -415,6 +415,8 @@ void DbusAccountManagerRequest::slotDbusCall(const QDBusMessage &msg)
         qCDebug(ClientLogger) << "Account update signal received, refreshing account list";
         getAccountList();
     } else if (msg.member() == "calDavAccountStatusChanged") {
+        emit signalCalDavAccountStatusRefreshRequested(
+            msg.arguments().value(0).toString());
         getCalDavAccountStatusList();
     } else if (msg.member() == "calDavAccountValidationFinished") {
         const QString requestID = msg.arguments().value(0).toString();
