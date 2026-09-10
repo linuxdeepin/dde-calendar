@@ -54,6 +54,7 @@ private:
     void addJobTypeItem(int idx, QString strColorHex, QString strJobType);
     void addCustomWidget(QFrame *);
     void setItemSelectable(bool status);
+    void setAddTypeEnabled(bool enabled);
 
 private:
     QWidget *m_customWidget {nullptr};
@@ -62,6 +63,7 @@ private:
     int m_hoverSelectedIndex = -1; //鼠标悬停的选项下标
     int m_itemNumIndex = 0; //item数量
     DAlertControl *m_control {nullptr};
+    bool m_addTypeEnabled = true;
     QLineEdit *m_lineEdit {nullptr};
     int m_oldPos = 0;
     int m_newPos = 0;

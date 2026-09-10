@@ -328,6 +328,7 @@ void CSettingDialog::initView()
     //首次显示JobTypeListView时，更新日程类型
     if (m_scheduleTypeWidget && m_accountComboBox) {
         m_scheduleTypeWidget->updateCalendarAccount(m_accountComboBox->currentData().toString());
+        setTypeEnable(m_accountComboBox->currentIndex());
     }
 
 
@@ -1060,23 +1061,27 @@ void CSettingDialog::setTypeEnable(int index)
     bool canExport = false;
     bool canImport = false;
     bool canManageTypes = false;
+    bool isCalDavAccount = false;
     if (account) {
         const DAccount::Type accountType = account->getAccount()->accountType();
+        isCalDavAccount = accountType == DAccount::Account_CalDav;
         canExport = accountType == DAccount::Account_Local
             || accountType == DAccount::Account_CalDav
             || (accountType == DAccount::Account_UnionID
                 && gUosAccountItem && gUosAccountItem->isCanSyncShedule());
         canManageTypes = accountType == DAccount::Account_Local
-            || (accountType == DAccount::Account_CalDav
-                && gAccountManager->canWriteCalDavAccount(accountId))
             || (accountType == DAccount::Account_UnionID
                 && gUosAccountItem && gUosAccountItem->isCanSyncShedule());
         canEdit = canManageTypes && account->getScheduleTypeList().count() < 20;
         canImport = canEdit;
     }
 
-    // CalDAV schedule types can be added when the account has a writable
-    // collection; read-only accounts keep the action visible but disabled.
+    if (DToolButton *moreButton = findChild<DToolButton *>(
+            QStringLiteral("ScheduleTypeMoreButton"))) {
+        moreButton->setEnabled(!isCalDavAccount);
+    }
+
+    // Schedule types cannot be added or imported for CalDAV accounts.
     // Existing collection/category types are not editable through the generic APIs.
     m_typeAddAction->setVisible(true);
     m_typeAddAction->setEnabled(canEdit);

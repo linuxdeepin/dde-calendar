@@ -149,6 +149,9 @@ void JobTypeComboBox::updateJobType(const AccountItem::Ptr& account)
     //保存现场
     bool isEnit = isEditable();
     QString text = currentText();
+    const bool isCalDavAccount = account->getAccount()
+        && account->getAccount()->accountType() == DAccount::Account_CalDav;
+    setAddTypeEnabled(!isCalDavAccount);
     m_lstJobType = account->getScheduleTypeList();
     clear(); //更新前先清空原有列表
     qCDebug(ClientLogger) << "Updating job types, count:" << m_lstJobType.size();
@@ -158,7 +161,7 @@ void JobTypeComboBox::updateJobType(const AccountItem::Ptr& account)
     //数据重置后hover标识重置为-1
     m_hoverSelectedIndex = -1;
     //恢复原状
-    setEditable(isEnit);
+    setEditable(isEnit && !isCalDavAccount);
     setCurrentText(text);
 
     // CalDAV accounts can expose both read-only and writable calendars. If
@@ -258,6 +261,22 @@ void JobTypeComboBox::addCustomWidget(QFrame *viewContainer)
             view()->installEventFilter(this);
             connect(m_addBtn, &CPushButton::clicked, this, &JobTypeComboBox::slotBtnAddItemClicked);
         }
+        setAddTypeEnabled(m_addTypeEnabled);
+    }
+}
+
+void JobTypeComboBox::setAddTypeEnabled(bool enabled)
+{
+    m_addTypeEnabled = enabled;
+    if (!enabled && isEditable()) {
+        setEditable(false);
+        setIconSize(QSize(16, 16));
+    }
+    if (m_addBtn) {
+        m_addBtn->setEnabled(enabled);
+        if (!enabled) {
+            m_addBtn->setHighlight(false);
+        }
     }
 }
 
@@ -293,9 +312,9 @@ void JobTypeComboBox::showPopup()
         addCustomWidget(viewContainer);
     }
 
-    if (m_customWidget && m_lstJobType.size() >= 20) {
-        qCDebug(ClientLogger) << "Hiding custom widget, too many items";
-        m_customWidget->hide();
+    if (m_customWidget) {
+        m_customWidget->setVisible(m_lstJobType.size() < 20);
+        setAddTypeEnabled(m_addTypeEnabled);
     }
 
     //设置最大高度为400
@@ -369,6 +388,10 @@ bool JobTypeComboBox::eventFilter(QObject *obj, QEvent *event)
 void JobTypeComboBox::slotBtnAddItemClicked()
 {
     qCDebug(ClientLogger) << "JobTypeComboBox::slotBtnAddItemClicked";
+    if (!m_addTypeEnabled) {
+        qCDebug(ClientLogger) << "Adding schedule type is disabled for current account";
+        return;
+    }
     JobTypeComboBox::hidePopup();
     setIconSize(QSize(0, 0));
     //设置没有选中，
