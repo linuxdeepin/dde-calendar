@@ -10,6 +10,7 @@
 #include "dcalendargeneralsettings.h"
 
 #include <QHash>
+#include <QSet>
 #include <QString>
 
 //所有帐户管理类
@@ -71,6 +72,15 @@ public:
     DCalDavAccountStatus getCalDavAccountStatus(const QString &accountID) const;
     bool canWriteCalDavAccount(const QString &accountID) const;
 
+    /**
+     * @brief Determines whether a completed CalDAV sync was manually requested.
+     * @param accountID Identifier of the account that completed synchronization.
+     * @param syncStatus Current CalDAV synchronization status.
+     * @return True when the completed sync was manually requested. The request
+     * marker is consumed before returning true.
+     */
+    bool takeManualCalDavSyncRequest(const QString &accountID, int syncStatus);
+
 signals:
     void signalDataInitFinished();
     void signalAccountUpdate();
@@ -122,6 +132,7 @@ private:
     AccountItem::Ptr  m_unionAccountItem;
     QList<AccountItem::Ptr> m_calDavAccountItems;
     QHash<QString, DCalDavAccountStatus> m_calDavAccountStatuses;
+    QSet<QString> m_manualCalDavSyncAccounts;
     bool m_calDavStatusesInitialized = false;
     QHash<QString, int> m_calDavProviderTypeOverrides;
     int m_pendingCalDavProviderType = -1;

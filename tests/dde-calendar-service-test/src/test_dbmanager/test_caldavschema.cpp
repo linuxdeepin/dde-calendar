@@ -864,7 +864,7 @@ TEST(CalDavReadOnlySync, RejectsInvalidRequestWithoutNetworkAccess)
 }
 
 
-TEST(CalDavSyncStateMachine, IgnoresTriggersWhileAccountIsRunning)
+TEST(CalDavSyncStateMachine, QueuesTriggersReceivedWhileAccountIsRunning)
 {
     DCalDavSyncStateMachine stateMachine;
     ASSERT_TRUE(stateMachine.registerAccount(QStringLiteral("account-1")));
@@ -878,11 +878,14 @@ TEST(CalDavSyncStateMachine, IgnoresTriggersWhileAccountIsRunning)
 
     EXPECT_EQ(QStringLiteral("account-1"), stateMachine.takeNextRunnableAccount());
     EXPECT_EQ(DCalDavSyncStateMachine::Running, stateMachine.stateFor(QStringLiteral("account-1")));
-    EXPECT_FALSE(stateMachine.requestSync(QStringLiteral("account-1"),
-                                          DCalDavSyncStateMachine::ForegroundTrigger));
-    EXPECT_EQ(DCalDavSyncStateMachine::NoTrigger,
+    EXPECT_TRUE(stateMachine.requestSync(QStringLiteral("account-1"),
+                                         DCalDavSyncStateMachine::ForegroundTrigger));
+    EXPECT_EQ(DCalDavSyncStateMachine::ForegroundTrigger,
               stateMachine.pendingTriggersFor(QStringLiteral("account-1")));
 
+    ASSERT_TRUE(stateMachine.complete(QStringLiteral("account-1"), true));
+    EXPECT_EQ(DCalDavSyncStateMachine::Queued, stateMachine.stateFor(QStringLiteral("account-1")));
+    EXPECT_EQ(QStringLiteral("account-1"), stateMachine.takeNextRunnableAccount());
     ASSERT_TRUE(stateMachine.complete(QStringLiteral("account-1"), true));
     EXPECT_EQ(DCalDavSyncStateMachine::Succeeded, stateMachine.stateFor(QStringLiteral("account-1")));
     EXPECT_TRUE(stateMachine.takeNextRunnableAccount().isEmpty());
@@ -1139,6 +1142,11 @@ TEST(CalDavRepository, PersistsCalendarTokenAndAccountStatus)
 
     const QDateTime syncTime = QDateTime::fromString(QStringLiteral("2026-08-10T12:00:00Z"), Qt::ISODate);
     ASSERT_TRUE(database.updateCalDavSyncStatus(QStringLiteral("account-1"), 2, syncTime, QString()));
+    EXPECT_TRUE(database.getCalDavAccountStatusList().contains(QStringLiteral("2026-08-10T12:00:00Z")));
+    ASSERT_TRUE(database.updateCalDavSyncStatus(QStringLiteral("account-1"), 1, QDateTime(), QString()));
+    EXPECT_TRUE(database.getCalDavAccountStatusList().contains(QStringLiteral("2026-08-10T12:00:00Z")));
+    ASSERT_TRUE(database.updateCalDavSyncStatus(QStringLiteral("account-1"), 3, QDateTime(),
+                                                QStringLiteral("sync failed")));
     EXPECT_TRUE(database.getCalDavAccountStatusList().contains(QStringLiteral("2026-08-10T12:00:00Z")));
 
     DCalDavEventMappingInfo mapping;

@@ -795,6 +795,36 @@
         <name>DCalDavSyncStatus</name>
         <message>
             <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="51" />
+            <source>The server request is invalid.</source>
+            <translation>服务器请求无效</translation>
+        </message>
+        <message>
+            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="71" />
+            <source>The server is busy. Please try again later.</source>
+            <translation>服务器繁忙，请稍后重试</translation>
+        </message>
+        <message>
+            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="74" />
+            <source>The server is unavailable. Please try again later.</source>
+            <translation>服务器不可用，请稍后重试</translation>
+        </message>
+        <message>
+            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="77" />
+            <source>The calendar data conflicts with the server.</source>
+            <translation>日历数据与服务器存在冲突</translation>
+        </message>
+        <message>
+            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="80" />
+            <source>The server returned too much data. Please try again later.</source>
+            <translation>服务器返回的数据过大，请稍后重试</translation>
+        </message>
+        <message>
+            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="91" />
+            <source>Unable to save calendar data. Please try again later.</source>
+            <translation>无法保存日历数据，请稍后重试</translation>
+        </message>
+        <message>
+            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="51" />
             <source>The server certificate is invalid.</source>
             <translation>服务器证书无效</translation>
         </message>

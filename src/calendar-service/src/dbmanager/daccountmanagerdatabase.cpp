@@ -1207,13 +1207,18 @@ bool DAccountManagerDataBase::updateCalDavSyncStatus(const QString &accountID, i
     }
 
     SqliteQuery query(m_database);
-    if (!query.prepare("UPDATE caldavAccount SET syncStatus = ?, lastSuccessfulSync = ?, failureReason = ?, failureCode = ? "
+    if (!query.prepare("UPDATE caldavAccount SET syncStatus = ?, "
+                       "lastSuccessfulSync = CASE WHEN ? != '' THEN ? ELSE lastSuccessfulSync END, "
+                       "failureReason = ?, failureCode = ? "
                        "WHERE accountID = ?")) {
         qCWarning(ServiceLogger) << "Failed to prepare CalDAV status update:" << query.lastError().text();
         return false;
     }
     query.addBindValue(syncStatus);
-    query.addBindValue(lastSuccessfulSync.isValid() ? lastSuccessfulSync.toString(Qt::ISODate) : QString());
+    const QString lastSuccessfulSyncValue = lastSuccessfulSync.isValid()
+        ? lastSuccessfulSync.toString(Qt::ISODate) : QString();
+    query.addBindValue(lastSuccessfulSyncValue);
+    query.addBindValue(lastSuccessfulSyncValue);
     query.addBindValue(failureReason);
     query.addBindValue(static_cast<int>(failureCode));
     query.addBindValue(accountID);

@@ -317,7 +317,11 @@ DAccountManageModule::DAccountManageModule(QObject *parent)
     //第一次启动加载完成后发送帐户改变信号
     // emit signalLoginStatusChange();
     connect(&m_calDavSyncJobManager, &DCalDavSyncJobManager::accountSyncStateChanged,
-            this, [this](const QString &accountID, DCalDavSyncStateMachine::State) {
+            this, [this](const QString &accountID, DCalDavSyncStateMachine::State state) {
+        if (state == DCalDavSyncStateMachine::Queued) {
+            m_accountManagerDB->updateCalDavSyncStatus(
+                accountID, DCalDavSyncStatus::Running, QDateTime(), QString());
+        }
         emit calDavAccountStatusChanged(accountID);
     });
     connect(&m_calDavSyncJobManager, &DCalDavSyncJobManager::accountSyncDataChanged,
@@ -452,7 +456,16 @@ void DAccountManageModule::downloadByAccountID(const QString &accountID)
     qCDebug(ServiceLogger) << "Triggering download for account:" << accountID;
     const DAccount::Ptr account = m_accountManagerDB->getAccountByID(accountID);
     if (account && account->accountType() == DAccount::Account_CalDav) {
-        m_calDavSyncJobManager.requestSync(accountID, DCalDavSyncStateMachine::ManualTrigger);
+        if (!m_calDavSyncJobManager.requestSync(accountID,
+                                                DCalDavSyncStateMachine::ManualTrigger)) {
+            qCWarning(ServiceLogger) << "Unable to request CalDAV manual sync"
+                                     << "accountID:" << accountID;
+            m_accountManagerDB->updateCalDavSyncStatus(
+                accountID, DCalDavSyncStatus::Failed, QDateTime(),
+                QStringLiteral("CalDAV account is not ready for synchronization."),
+                DCalDavErrorCode::InvalidRequest);
+            emit calDavAccountStatusChanged(accountID);
+        }
         return;
     }
     if (m_accountModuleMap.contains(accountID)) {
