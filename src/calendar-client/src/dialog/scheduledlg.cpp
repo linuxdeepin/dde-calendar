@@ -97,7 +97,7 @@ void CScheduleDlg::setData(const DSchedule::Ptr &info)
         m_accountComBox->setEnabled(false);
     }
 
-    if (nullptr != m_accountItem) {
+    if (m_accountItem && m_accountItem->getAccount()) {
         qCDebug(ClientLogger) << "Updating account and type selection for account:" << m_accountItem->getAccount()->accountName();
         //更新帐户下拉框和类型选择框
         const int accountIndex = m_accountComBox->findData(m_accountItem->getAccount()->accountID());
@@ -206,6 +206,11 @@ bool CScheduleDlg::clickOkBtn()
 bool CScheduleDlg::selectScheduleType()
 {
     qCDebug(ClientLogger) << "CScheduleDlg::selectScheduleType";
+    if (m_typeComBox->isEditable() && m_accountItem && m_accountItem->getAccount()
+        && m_accountItem->getAccount()->accountType() == DAccount::Account_CalDav) {
+        qCWarning(ClientLogger) << "Cannot create a schedule type for a CalDAV account.";
+        return false;
+    }
     //编辑状态，需要创建日程
     if (m_typeComBox->isEditable()) {
         qCDebug(ClientLogger) << "Type combobox is editable, creating new schedule type";

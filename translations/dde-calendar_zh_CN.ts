@@ -1007,7 +1007,7 @@
         <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="575" />
             <source>The server rejected your login request. Please check your account permissions.</source>
-            <translation>服务器拒绝了登录请求，请检查账号是否有访问权限</translation>
+            <translation>服务器拒绝了登录请求，请检查账户是否有访问权限</translation>
         </message>
         <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="577" />
