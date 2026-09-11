@@ -1523,32 +1523,32 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="252"/>
         <source>Sync Failed: %1</source>
-        <translation type="unfinished"/>
+        <translation>Falha na sincronização: %1</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="255"/>
         <source>Deleting...</source>
-        <translation type="unfinished"/>
+        <translation>Excluindo...</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="255"/>
         <source>Syncing...</source>
-        <translation type="unfinished"/>
+        <translation>Sincronizando...</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="267"/>
         <source>Sync Now</source>
-        <translation type="unfinished"/>
+        <translation>Sincronizar</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="302"/>
         <source>Calendar synchronization conflict</source>
-        <translation type="unfinished"/>
+        <translation>Conflito de sincronização do calendário</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="308"/>
         <source>Use server version</source>
-        <translation type="unfinished"/>
+        <translation>Usar a versão do servidor</translation>
     </message>
     </context>
     <context>
@@ -1608,7 +1608,7 @@
     </message>
     <message>
         <source>The server rejected your login request. Please check your account permissions.</source>
-        <translation type="unfinished"/>
+        <translation>O servidor recusou a tentativa de login. Verifique as permissões da sua conta.</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="65"/>
