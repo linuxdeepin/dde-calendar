@@ -467,7 +467,7 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1409"/>
         <source>UOS ID</source>
-        <translation type="unfinished"/>
+        <translation>UOS ID</translation>
     </message>
 </context>
 <context>
@@ -708,32 +708,32 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="214"/>
         <source>More</source>
-        <translation type="unfinished"/>
+        <translation>Mais</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="246"/>
         <source>Third-party accounts</source>
-        <translation type="unfinished"/>
+        <translation>Contas de terceiros</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="255"/>
         <source>Add</source>
-        <translation type="unfinished"/>
+        <translation>Adicionar</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="304"/>
         <source>Sync items</source>
-        <translation type="unfinished"/>
+        <translation>Itens para sincronizar</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="305"/>
         <source>Sync interval</source>
-        <translation type="unfinished"/>
+        <translation>Intervalo de sincronização</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="497"/>
         <source>Add schedule</source>
-        <translation type="unfinished"/>
+        <translation>Adicionar programação</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="498"/>
@@ -743,12 +743,12 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="499"/>
         <source>Import events from an ICS file</source>
-        <translation type="unfinished"/>
+        <translation>Importar eventos de um arquivo ICS</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="681"/>
         <source>Remove Calendar Account</source>
-        <translation type="unfinished"/>
+        <translation>Remover conta do calendário</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="689"/>
