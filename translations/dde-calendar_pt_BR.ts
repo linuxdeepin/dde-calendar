@@ -1429,48 +1429,48 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="232"/>
         <source>Leave empty to keep the current password</source>
-        <translation type="unfinished"/>
+        <translation>Deixe em branco para manter a senha atual</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="510"/>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="558"/>
         <source>Please enter a valid server address.</source>
-        <translation type="unfinished"/>
+        <translation>Insira um endereço de servidor válido.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="561"/>
         <source>Please enter the correct username.</source>
-        <translation type="unfinished"/>
+        <translation>Digite o nome de usuário correto.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="562"/>
         <source>Please enter the correct password.</source>
-        <translation type="unfinished"/>
+        <translation>Digite a senha correta.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="571"/>
         <source>Incorrect username or password. Please try again.</source>
-        <translation type="unfinished"/>
+        <translation>O nome de usuário ou a senha estão incorretos. Tente novamente.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="573"/>
         <source>This server does not support CalDAV.</source>
-        <translation type="unfinished"/>
+        <translation>Este servidor não oferece suporte ao CalDAV.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="575"/>
         <source>The server rejected your login request. Please check your account permissions.</source>
-        <translation type="unfinished"/>
+        <translation>O servidor recusou a tentativa de login. Verifique as permissões da sua conta.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="577"/>
         <source>Unable to parse the data returned by the server. Please verify the server address or try again later.</source>
-        <translation type="unfinished"/>
+        <translation>Não foi possível interpretar os dados retornados pelo servidor. Verifique o endereço do servidor ou tente novamente mais tarde.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="579"/>
         <source>The server certificate is invalid.</source>
-        <translation type="unfinished"/>
+        <translation>O certificado do servidor é inválido.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="583"/>
