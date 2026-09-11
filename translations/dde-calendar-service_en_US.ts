@@ -1163,4 +1163,96 @@
         <translation>Today</translation>
     </message>
 </context>
+    <context>
+        <name>DAccountManageModule</name>
+    <message>
+        <location filename="../src/calendar-service/src/calendarDataManager/daccountmanagemodule.cpp" line="125"/>
+        <source>[Original Type: %1]</source>
+        <translation>[Original Type: %1]</translation>
+    </message>
+    </context>
+    <context>
+        <name>DCalDavAccountRegistrar</name>
+    <message>
+        <location filename="../src/calendar-service/src/caldav/dcaldavaccountregistrar.cpp" line="60"/>
+        <source>Calendar</source>
+        <translation>Calendar</translation>
+    </message>
+    </context>
+    <context>
+        <name>DCalDavProviderProfile</name>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavprofile.h" line="37"/>
+        <source>DingTalk</source>
+        <translation>DingTalk</translation>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavprofile.h" line="39"/>
+        <source>WeCom</source>
+        <translation>WeCom</translation>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavprofile.h" line="41"/>
+        <source>Tencent Meeting</source>
+        <translation>Tencent Meeting</translation>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavprofile.h" line="43"/>
+        <source>QQ Mail</source>
+        <translation>QQ Mail</translation>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavprofile.h" line="45"/>
+        <source>Feishu</source>
+        <translation>Feishu</translation>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavprofile.h" line="48"/>
+        <source>Other CalDAV</source>
+        <translation>Other CalDAV</translation>
+    </message>
+    </context>
+    <context>
+        <name>DCalDavSyncStatus</name>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="51"/>
+        <source>The server certificate is invalid.</source>
+        <translation>The server certificate is invalid.</translation>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="54"/>
+        <source>Incorrect username or password. Please try again.</source>
+        <translation>Incorrect username or password. Please try again.</translation>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="57"/>
+        <source>This server does not support CalDAV.</source>
+        <translation>This server does not support CalDAV.</translation>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="61"/>
+        <source>Unable to parse the data returned by the server. Please verify the server address or try again later.</source>
+        <translation>Unable to parse the data returned by the server. Please verify the server address or try again later.</translation>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="65"/>
+        <source>The server denied access.</source>
+        <translation>The server denied access.</translation>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="68"/>
+        <source>The server request timed out.</source>
+        <translation>The server request timed out.</translation>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="72"/>
+        <source>Unable to connect to the server. Please check your network connection and server address.</source>
+        <translation>Unable to connect to the server. Please check your network connection and server address.</translation>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="76"/>
+        <source>Synchronization failed.</source>
+        <translation>Synchronization failed.</translation>
+    </message>
+    </context>
 </TS>
