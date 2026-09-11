@@ -1556,12 +1556,12 @@
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="37"/>
         <source>DingTalk</source>
-        <translation type="unfinished"/>
+        <translation>DingTalk</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="39"/>
         <source>WeCom</source>
-        <translation type="unfinished"/>
+        <translation>WeCom</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="41"/>
