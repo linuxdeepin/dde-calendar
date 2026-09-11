@@ -1192,17 +1192,17 @@
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="41"/>
         <source>Tencent Meeting</source>
-        <translation type="unfinished"/>
+        <translation>Tencent Meeting</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="43"/>
         <source>QQ Mail</source>
-        <translation type="unfinished"/>
+        <translation>QQ Mail</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="45"/>
         <source>Feishu</source>
-        <translation type="unfinished"/>
+        <translation>Feishu</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="48"/>
