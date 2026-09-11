@@ -1207,7 +1207,7 @@
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="48"/>
         <source>Other CalDAV</source>
-        <translation type="unfinished"/>
+        <translation>Outro CalDAV</translation>
     </message>
     </context>
     <context>
@@ -1215,7 +1215,7 @@
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="51"/>
         <source>The server certificate is invalid.</source>
-        <translation type="unfinished"/>
+        <translation>O certificado do servidor é inválido.</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="54"/>
