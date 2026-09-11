@@ -1084,18 +1084,18 @@
         <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="219"/>
         <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="233"/>
         <source>Export</source>
-        <translation type="unfinished"/>
+        <translation>Exportar</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="308"/>
         <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="417"/>
         <source>ICS files (*.ics)</source>
-        <translation type="unfinished"/>
+        <translation>Arquivos ICS (*.ics)</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="416"/>
         <source>Export ICS file</source>
-        <translation type="unfinished"/>
+        <translation>Exportar arquivo ICS</translation>
     </message>
 </context>
 <context>
@@ -1163,17 +1163,17 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="54"/>
         <source>UOS ID</source>
-        <translation type="unfinished"/>
+        <translation>UOS ID</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="59"/>
         <source>Third-party accounts</source>
-        <translation type="unfinished"/>
+        <translation>Contas de terceiros</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="75"/>
         <source>Associated account</source>
-        <translation type="unfinished"/>
+        <translation>Conta associada</translation>
     </message>
 </context>
 <context>
@@ -1251,7 +1251,7 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="164"/>
         <source><a href="https://wikipedia.org/wiki/ICalendar">ICS</a> File:</source>
-        <translation type="unfinished"/>
+        <translation>Arquivo &lt;a href=&quot;https://wikipedia.org/wiki/ICalendar&quot;&gt;ICS&lt;/a&gt;:</translation>
     </message>
 </context>
 <context>
@@ -1331,7 +1331,7 @@
     <message>
         <location filename="../src/calendar-client/src/widget/settingWidget/userloginwidget.cpp" line="203"/>
         <source>Not signed in</source>
-        <translation type="unfinished"/>
+        <translation>Não conectado</translation>
     </message>
 </context>
 <context>
@@ -1356,22 +1356,22 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="65"/>
         <source>:</source>
-        <translation type="unfinished"/>
+        <translation>:</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="75"/>
         <source>Add Calendar Account</source>
-        <translation type="unfinished"/>
+        <translation>Adicionar conta do calendário</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="98"/>
         <source>Select account type</source>
-        <translation type="unfinished"/>
+        <translation>Selecionar tipo de conta</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="109"/>
         <source>Automatically filled after selecting account type</source>
-        <translation type="unfinished"/>
+        <translation>Preenchido automaticamente após selecionar o tipo de conta</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="110"/>
