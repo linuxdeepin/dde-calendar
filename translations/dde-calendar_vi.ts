@@ -1,12 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="vi">
+<?xml version="1.0" ?><!DOCTYPE TS><TS version="2.1" language="vi">
 <context>
     <name>AccountItem</name>
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="41"/>
         <source>Sync successful</source>
-        <translation>Đồng bộ thành công</translation>
+        <translation>Đồng bộ hóa thành công</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="42"/>
@@ -16,12 +14,12 @@
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="43"/>
         <source>Server exception</source>
-        <translation>Lỗi ngoại lệ máy chủ</translation>
+        <translation>Lỗi từ máy chủ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="44"/>
         <source>Storage full</source>
-        <translation>Ổ chứa đầy</translation>
+        <translation>Khoảng trống đầy</translation>
     </message>
 </context>
 <context>
@@ -42,7 +40,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/colorWidget/colorpickerWidget.cpp" line="77"/>
         <source>Color</source>
-        <translation>Màu</translation>
+        <translation>Màu sắc</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/colorWidget/colorpickerWidget.cpp" line="90"/>
@@ -115,7 +113,7 @@
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daywindow.cpp" line="170"/>
         <source>Lunar</source>
-        <translation>Âm lịch</translation>
+        <translation>Lịch âm</translation>
     </message>
 </context>
 <context>
@@ -179,6 +177,38 @@
         <source>Edit</source>
         <comment>button</comment>
         <translation>Chỉnh sửa</translation>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/myscheduleview.cpp" line="193"/>
+        <source>Calendar Source</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="118"/>
+        <location filename="../src/calendar-client/src/dialog/myscheduleview.cpp" line="177"/>
+        <source>Local calendar</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="120"/>
+        <location filename="../src/calendar-client/src/dialog/myscheduleview.cpp" line="179"/>
+        <source>UOS ID</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="131"/>
+        <source>Source: %1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="152"/>
+        <source>Organizer</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="153"/>
+        <source>Attendees</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -350,12 +380,12 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="972"/>
         <source>Solar</source>
-        <translation>Nhiệt đới</translation>
+        <translation>Lịch dương</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="973"/>
         <source>Lunar</source>
-        <translation>Âm lịch</translation>
+        <translation>Lịch âm</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1006"/>
@@ -428,6 +458,16 @@
         <source>Save</source>
         <comment>button</comment>
         <translation>Lưu</translation>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1407"/>
+        <source>Local calendar</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1409"/>
+        <source>UOS ID</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -532,7 +572,7 @@
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="416"/>
         <source>You have selected a leap month, and will be reminded according to the rules of the lunar calendar.</source>
-        <translation>Bạn đã chọn một tháng nhuận, và sẽ được nhắc nhở theo các quy tắc của lịch âm.</translation>
+        <translation>Bạn đã chọn tháng nhuận, và sẽ được nhắc nhở theo quy tắc của lịch âm.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="417"/>
@@ -618,7 +658,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="365"/>
         <source>12-hour clock</source>
-        <translation>Đồng hồ 12 giờ</translation>
+        <translation>Ghế 12 giờ</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="389"/>
@@ -653,17 +693,108 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="418"/>
         <source>Sync Now</source>
-        <translation>Đồng bộ ngay</translation>
+        <translation>Sincronize ngay</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="585"/>
         <source>Last sync</source>
-        <translation>Đồng bộ lần cuối</translation>
+        <translation>Lần sincronize cuối</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="779"/>
         <source>Please go to the Control Center to change system settings</source>
-        <translation>Vui lòng truy cập Trung tâm Điều khiển để thay đổi cài đặt hệ thống</translation>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="214"/>
+        <source>More</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="246"/>
+        <source>Third-party accounts</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="255"/>
+        <source>Add</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="304"/>
+        <source>Sync items</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="305"/>
+        <source>Sync interval</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="497"/>
+        <source>Add schedule</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="498"/>
+        <source>Import ICS file</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="499"/>
+        <source>Import events from an ICS file</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="681"/>
+        <source>Remove Calendar Account</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="689"/>
+        <source>Are you sure you want to remove the account &quot;%1&quot;?</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="693"/>
+        <source>Also remove synced events from this calendar</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="698"/>
+        <source>Cancel</source>
+        <comment>button</comment>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="699"/>
+        <source>Delete</source>
+        <comment>button</comment>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="818"/>
+        <source>Last sync time</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="794"/>
+        <source>Syncing...</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Last sync: %1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="908"/>
+        <source>Local account</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="1049"/>
+        <source>Please go to the <a href="/">Control Center</a> to change system settings</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -671,17 +802,17 @@
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="71"/>
         <source>(%1 mins)</source>
-        <translation>(%1 phút)</translation>
+        <translation>(%1 phút]</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="73"/>
         <source>(%1 hour)</source>
-        <translation>(%1 giờ)</translation>
+        <translation>(%1 giờ]</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="75"/>
         <source>(%1 hours)</source>
-        <translation>(%1 giờ)</translation>
+        <translation>(%1 giờ]</translation>
     </message>
 </context>
 <context>
@@ -709,7 +840,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="92"/>
         <source>Search events and festivals</source>
-        <translation>Tìm sự kiện và lễ hội</translation>
+        <translation>Tìm kiếm sự kiện và lễ hội</translation>
     </message>
 </context>
 <context>
@@ -784,12 +915,22 @@
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="973"/>
         <source>Sync successful</source>
-        <translation>Đồng bộ thành công</translation>
+        <translation>Sincronize thành công</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="982"/>
         <source>Sync failed, please try later</source>
-        <translation>Đồng bộ thất bại, vui lòng thử lại sau</translation>
+        <translation>Sincronize thất bại, vui lòng thử lại sau</translation>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/widget/calendarmainwindow.cpp" line="1266"/>
+        <source>%1 does not allow creating events. Please check account permissions.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/widget/calendarmainwindow.cpp" line="1269"/>
+        <source>Unable to connect to the server. Please check your network connection and server address.</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -869,7 +1010,7 @@
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="258"/>
         <source>%1 to %2</source>
-        <translation>'%1 đến %2'</translation>
+        <translation>%1 đến %2</translation>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="296"/>
@@ -905,12 +1046,12 @@
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="144"/>
         <source>export</source>
-        <translation>xuất</translation>
+        <translation>导出</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="219"/>
         <source>import ICS file</source>
-        <translation>nhập tệp ICS</translation>
+        <translation>import tệp ICS</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="450"/>
@@ -920,7 +1061,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="451"/>
         <source>All events under this type will be deleted and cannot be recovered.</source>
-        <translation>Tất cả sự kiện trong loại này sẽ bị xóa và không thể khôi phục.</translation>
+        <translation>Tất cả các sự kiện thuộc loại này sẽ bị xóa và không thể khôi phục.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="452"/>
@@ -933,6 +1074,28 @@
         <source>Delete</source>
         <comment>button</comment>
         <translation>Xóa</translation>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="213"/>
+        <source>Edit</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="219"/>
+        <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="233"/>
+        <source>Export</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="308"/>
+        <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="417"/>
+        <source>ICS files (*.ics)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="416"/>
+        <source>Export ICS file</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -960,7 +1123,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="53"/>
         <source>Select items to be synced</source>
-        <translation>Chọn các mục để đồng bộ</translation>
+        <translation>Chọn các mục cần đồng bộ hóa</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="56"/>
@@ -975,7 +1138,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="74"/>
         <source>Sync interval</source>
-        <translation>Khoảng thời gian đồng bộ</translation>
+        <translation>Khoảng thời gian đồng bộ hóa</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="104"/>
@@ -996,6 +1159,21 @@
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="153"/>
         <source>Time</source>
         <translation>Thời gian</translation>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="54"/>
+        <source>UOS ID</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="59"/>
+        <source>Third-party accounts</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="75"/>
+        <source>Associated account</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -1026,12 +1204,12 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="32"/>
         <source>Edit event type</source>
-        <translation>Chỉnh sửa loại sự kiện</translation>
+        <translation>Sửa loại sự kiện</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="43"/>
         <source>Import ICS file</source>
-        <translation>Nhập tệp ICS</translation>
+        <translation>Import tệp ICS</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="151"/>
@@ -1041,12 +1219,12 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="152"/>
         <source>Color:</source>
-        <translation>'Màu:'</translation>
+        <translation>Màu:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="156"/>
         <source>ICS File:</source>
-        <translation>'Tệp ICS:'</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="167"/>
@@ -1063,12 +1241,17 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="219"/>
         <source>The name can not only contain whitespaces</source>
-        <translation>Tên không chỉ chứa khoảng trống</translation>
+        <translation>Tên không chỉ được chứa các khoảng trắng</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="256"/>
         <source>Enter a name please</source>
         <translation>Vui lòng nhập tên</translation>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="164"/>
+        <source><a href="https://wikipedia.org/wiki/ICalendar">ICS</a> File:</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -1145,6 +1328,11 @@
         <comment>button</comment>
         <translation>Đăng xuất</translation>
     </message>
+    <message>
+        <location filename="../src/calendar-client/src/widget/settingWidget/userloginwidget.cpp" line="203"/>
+        <source>Not signed in</source>
+        <translation type="unfinished"/>
+    </message>
 </context>
 <context>
     <name>YearFrame</name>
@@ -1163,4 +1351,308 @@
         <translation>Hôm nay</translation>
     </message>
 </context>
+    <context>
+        <name>CalDavAccountDialog</name>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="65"/>
+        <source>:</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="75"/>
+        <source>Add Calendar Account</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="98"/>
+        <source>Select account type</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="109"/>
+        <source>Automatically filled after selecting account type</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="110"/>
+        <source>Enter username or email</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="111"/>
+        <source>Enter password</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="118"/>
+        <source>Account Type</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="119"/>
+        <source>Server Address</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="120"/>
+        <source>Username</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="121"/>
+        <source>Password</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="132"/>
+        <source>Cancel</source>
+        <comment>button</comment>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="133"/>
+        <source>Sign In</source>
+        <comment>button</comment>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="224"/>
+        <source>Edit Account</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="225"/>
+        <source>Save</source>
+        <comment>button</comment>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="232"/>
+        <source>Leave empty to keep the current password</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="510"/>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="558"/>
+        <source>Please enter a valid server address.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="561"/>
+        <source>Please enter the correct username.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="562"/>
+        <source>Please enter the correct password.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="571"/>
+        <source>Incorrect username or password. Please try again.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="573"/>
+        <source>This server does not support CalDAV.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="575"/>
+        <source>The server rejected your login request. Please check your account permissions.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="577"/>
+        <source>Unable to parse the data returned by the server. Please verify the server address or try again later.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="579"/>
+        <source>The server certificate is invalid.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="583"/>
+        <source>Unable to connect to the server. Please check your network connection and server address.</source>
+        <translation type="unfinished"/>
+    </message>
+    </context>
+    <context>
+        <name>CalDavAccountListWidget</name>
+    <message>
+        <source>Last sync: %1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="69"/>
+        <source>Last sync time</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="151"/>
+        <source>No third-party accounts added</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="157"/>
+        <source>Add</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="210"/>
+        <source>Pending synchronization</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="210"/>
+        <source>Delete</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="242"/>
+        <source>Sync conflict</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="243"/>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="304"/>
+        <source>A synchronization conflict was detected. The server version will replace the local changes.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="252"/>
+        <source>Sync Failed: %1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="255"/>
+        <source>Deleting...</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="255"/>
+        <source>Syncing...</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="267"/>
+        <source>Sync Now</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="302"/>
+        <source>Calendar synchronization conflict</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="308"/>
+        <source>Use server version</source>
+        <translation type="unfinished"/>
+    </message>
+    </context>
+    <context>
+        <name>DCalDavProviderProfile</name>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavprofile.h" line="37"/>
+        <source>DingTalk</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavprofile.h" line="39"/>
+        <source>WeCom</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavprofile.h" line="41"/>
+        <source>Tencent Meeting</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavprofile.h" line="43"/>
+        <source>QQ Mail</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavprofile.h" line="45"/>
+        <source>Feishu</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavprofile.h" line="48"/>
+        <source>Other CalDAV</source>
+        <translation type="unfinished"/>
+    </message>
+    </context>
+    <context>
+        <name>DCalDavSyncStatus</name>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="61"/>
+        <source>Unable to parse the data returned by the server. Please verify the server address or try again later.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="51"/>
+        <source>The server certificate is invalid.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="54"/>
+        <source>Incorrect username or password. Please try again.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="57"/>
+        <source>This server does not support CalDAV.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>The server rejected your login request. Please check your account permissions.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="65"/>
+        <source>The server denied access.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="68"/>
+        <source>The server request timed out.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="72"/>
+        <source>Unable to connect to the server. Please check your network connection and server address.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="76"/>
+        <source>Synchronization failed.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="855"/>
+        <source>Sync Failed</source>
+        <translation type="unfinished"/>
+    </message>
+    </context>
+    <context>
+        <name>SidebarAccountItemWidget</name>
+    <message>
+        <location filename="../src/calendar-client/src/widget/sidebarWidget/sidebaritemwidget.cpp" line="335"/>
+        <location filename="../src/calendar-client/src/widget/sidebarWidget/sidebaritemwidget.cpp" line="345"/>
+        <source>Sync</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/widget/sidebarWidget/sidebaritemwidget.cpp" line="344"/>
+        <source>Deleting...</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/widget/sidebarWidget/sidebaritemwidget.cpp" line="345"/>
+        <source>Syncing...</source>
+        <translation type="unfinished"/>
+    </message>
+    </context>
 </TS>
