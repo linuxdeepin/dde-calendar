@@ -181,34 +181,34 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/myscheduleview.cpp" line="193"/>
         <source>Calendar Source</source>
-        <translation type="unfinished"/>
+        <translation>Fonte do calendário</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="118"/>
         <location filename="../src/calendar-client/src/dialog/myscheduleview.cpp" line="177"/>
         <source>Local calendar</source>
-        <translation type="unfinished"/>
+        <translation>Calendário local</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="120"/>
         <location filename="../src/calendar-client/src/dialog/myscheduleview.cpp" line="179"/>
         <source>UOS ID</source>
-        <translation type="unfinished"/>
+        <translation>UOS ID</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="131"/>
         <source>Source: %1</source>
-        <translation type="unfinished"/>
+        <translation>Fonte: %1</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="152"/>
         <source>Organizer</source>
-        <translation type="unfinished"/>
+        <translation>Organizador</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="153"/>
         <source>Attendees</source>
-        <translation type="unfinished"/>
+        <translation>Participantes</translation>
     </message>
 </context>
 <context>
@@ -462,7 +462,7 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1407"/>
         <source>Local calendar</source>
-        <translation type="unfinished"/>
+        <translation>Calendário local</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1409"/>
