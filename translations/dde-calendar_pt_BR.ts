@@ -753,24 +753,24 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="689"/>
         <source>Are you sure you want to remove the account &quot;%1&quot;?</source>
-        <translation type="unfinished"/>
+        <translation>Remover a conta &quot;%1&quot;?</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="693"/>
         <source>Also remove synced events from this calendar</source>
-        <translation type="unfinished"/>
+        <translation>Remover também os eventos sincronizados deste calendário</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="698"/>
         <source>Cancel</source>
         <comment>button</comment>
-        <translation type="unfinished"/>
+        <translation>Cancelar</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="699"/>
         <source>Delete</source>
         <comment>button</comment>
-        <translation type="unfinished"/>
+        <translation>Excluir</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="818"/>
