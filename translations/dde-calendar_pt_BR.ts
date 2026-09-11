@@ -775,26 +775,26 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="818"/>
         <source>Last sync time</source>
-        <translation type="unfinished"/>
+        <translation>Última sincronização</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="794"/>
         <source>Syncing...</source>
-        <translation type="unfinished"/>
+        <translation>Sincronizando...</translation>
     </message>
     <message>
         <source>Last sync: %1</source>
-        <translation type="unfinished"/>
+        <translation>Última sincronização: %1</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="908"/>
         <source>Local account</source>
-        <translation type="unfinished"/>
+        <translation>Conta local</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="1049"/>
         <source>Please go to the <a href="/">Control Center</a> to change system settings</source>
-        <translation type="unfinished"/>
+        <translation>Acesse as &lt;a href=&quot;/&quot;&gt;Configurações&lt;/a&gt; para alterar as opções do sistema</translation>
     </message>
 </context>
 <context>
@@ -925,12 +925,12 @@
     <message>
         <location filename="../src/calendar-client/src/widget/calendarmainwindow.cpp" line="1266"/>
         <source>%1 does not allow creating events. Please check account permissions.</source>
-        <translation type="unfinished"/>
+        <translation>%1 não permite criar eventos. Verifique as permissões da conta.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/widget/calendarmainwindow.cpp" line="1269"/>
         <source>Unable to connect to the server. Please check your network connection and server address.</source>
-        <translation type="unfinished"/>
+        <translation>Não foi possível conectar ao servidor. Verifique sua conexão de rede e o endereço do servidor.</translation>
     </message>
 </context>
 <context>
@@ -1078,7 +1078,7 @@
     <message>
         <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="213"/>
         <source>Edit</source>
-        <translation type="unfinished"/>
+        <translation>Editar</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="219"/>
