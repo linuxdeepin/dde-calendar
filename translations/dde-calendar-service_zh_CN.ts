@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="zh_CN">
+<?xml version="1.0" ?><!DOCTYPE TS><TS version="2.1" language="zh_CN">
 <context>
     <name>AccountItem</name>
     <message>
@@ -598,7 +596,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="389"/>
         <source>import ICS file</source>
-        <translation>导入ICS文件</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="403"/>
@@ -638,7 +636,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="779"/>
         <source>Please go to the Control Center to change system settings</source>
-        <translation>请前往控制中心更改系统设置</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="346"/>
@@ -653,7 +651,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="347"/>
         <source>Use System Setting</source>
-        <translation>使用系统设置</translation>
+        <translation>跟随系统</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="365"/>
@@ -1046,7 +1044,7 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="156"/>
         <source>ICS File:</source>
-        <translation>ICS文件：</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="167"/>
@@ -1163,4 +1161,96 @@
         <translation>今天</translation>
     </message>
 </context>
+    <context>
+        <name>DAccountManageModule</name>
+    <message>
+        <location filename="../src/calendar-service/src/calendarDataManager/daccountmanagemodule.cpp" line="125"/>
+        <source>[Original Type: %1]</source>
+        <translation type="unfinished"/>
+    </message>
+    </context>
+    <context>
+        <name>DCalDavAccountRegistrar</name>
+    <message>
+        <location filename="../src/calendar-service/src/caldav/dcaldavaccountregistrar.cpp" line="60"/>
+        <source>Calendar</source>
+        <translation type="unfinished"/>
+    </message>
+    </context>
+    <context>
+        <name>DCalDavProviderProfile</name>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavprofile.h" line="37"/>
+        <source>DingTalk</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavprofile.h" line="39"/>
+        <source>WeCom</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavprofile.h" line="41"/>
+        <source>Tencent Meeting</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavprofile.h" line="43"/>
+        <source>QQ Mail</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavprofile.h" line="45"/>
+        <source>Feishu</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavprofile.h" line="48"/>
+        <source>Other CalDAV</source>
+        <translation type="unfinished"/>
+    </message>
+    </context>
+    <context>
+        <name>DCalDavSyncStatus</name>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="51"/>
+        <source>The server certificate is invalid.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="54"/>
+        <source>Incorrect username or password. Please try again.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="57"/>
+        <source>This server does not support CalDAV.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="61"/>
+        <source>Unable to parse the data returned by the server. Please verify the server address or try again later.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="65"/>
+        <source>The server denied access.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="68"/>
+        <source>The server request timed out.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="72"/>
+        <source>Unable to connect to the server. Please check your network connection and server address.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="76"/>
+        <source>Synchronization failed.</source>
+        <translation type="unfinished"/>
+    </message>
+    </context>
 </TS>
