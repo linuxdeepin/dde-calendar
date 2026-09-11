@@ -1475,50 +1475,50 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="583"/>
         <source>Unable to connect to the server. Please check your network connection and server address.</source>
-        <translation type="unfinished"/>
+        <translation>Não foi possível conectar ao servidor. Verifique sua conexão de rede e o endereço do servidor.</translation>
     </message>
     </context>
     <context>
         <name>CalDavAccountListWidget</name>
     <message>
         <source>Last sync: %1</source>
-        <translation type="unfinished"/>
+        <translation>Última sincronização: %1</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="69"/>
         <source>Last sync time</source>
-        <translation type="unfinished"/>
+        <translation>Última sincronização</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="151"/>
         <source>No third-party accounts added</source>
-        <translation type="unfinished"/>
+        <translation>Nenhuma conta de terceiros adicionada</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="157"/>
         <source>Add</source>
-        <translation type="unfinished"/>
+        <translation>Adicionar</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="210"/>
         <source>Pending synchronization</source>
-        <translation type="unfinished"/>
+        <translation>Sincronização pendente</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="210"/>
         <source>Delete</source>
-        <translation type="unfinished"/>
+        <translation>Excluir</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="242"/>
         <source>Sync conflict</source>
-        <translation type="unfinished"/>
+        <translation>Conflito de sincronização</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="243"/>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="304"/>
         <source>A synchronization conflict was detected. The server version will replace the local changes.</source>
-        <translation type="unfinished"/>
+        <translation>Um conflito de sincronização foi detectado. A versão do servidor substituirá as alterações locais.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="252"/>
