@@ -1220,12 +1220,12 @@
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="54"/>
         <source>Incorrect username or password. Please try again.</source>
-        <translation type="unfinished"/>
+        <translation>O nome de usuário ou a senha estão incorretos. Tente novamente.</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="57"/>
         <source>This server does not support CalDAV.</source>
-        <translation type="unfinished"/>
+        <translation>Este servidor não oferece suporte ao CalDAV.</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="61"/>
