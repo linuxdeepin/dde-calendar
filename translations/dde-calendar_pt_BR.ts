@@ -1633,7 +1633,7 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="855"/>
         <source>Sync Failed</source>
-        <translation type="unfinished"/>
+        <translation>Falha na sincronização</translation>
     </message>
     </context>
     <context>
@@ -1642,17 +1642,17 @@
         <location filename="../src/calendar-client/src/widget/sidebarWidget/sidebaritemwidget.cpp" line="335"/>
         <location filename="../src/calendar-client/src/widget/sidebarWidget/sidebaritemwidget.cpp" line="345"/>
         <source>Sync</source>
-        <translation type="unfinished"/>
+        <translation>Sincronizar</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/widget/sidebarWidget/sidebaritemwidget.cpp" line="344"/>
         <source>Deleting...</source>
-        <translation type="unfinished"/>
+        <translation>Excluindo...</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/widget/sidebarWidget/sidebaritemwidget.cpp" line="345"/>
         <source>Syncing...</source>
-        <translation type="unfinished"/>
+        <translation>Sincronizando...</translation>
     </message>
     </context>
 </TS>
