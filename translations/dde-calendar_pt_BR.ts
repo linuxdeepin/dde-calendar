@@ -1589,7 +1589,7 @@
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="61"/>
         <source>Unable to parse the data returned by the server. Please verify the server address or try again later.</source>
-        <translation type="unfinished"/>
+        <translation>Não foi possível interpretar os dados retornados pelo servidor. Verifique o endereço do servidor e tente novamente mais tarde.</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="51"/>
@@ -1599,12 +1599,12 @@
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="54"/>
         <source>Incorrect username or password. Please try again.</source>
-        <translation type="unfinished"/>
+        <translation>O nome de usuário ou a senha estão incorretos. Tente novamente.</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="57"/>
         <source>This server does not support CalDAV.</source>
-        <translation type="unfinished"/>
+        <translation>Este servidor não oferece suporte ao CalDAV.</translation>
     </message>
     <message>
         <source>The server rejected your login request. Please check your account permissions.</source>
