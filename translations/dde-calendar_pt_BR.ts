@@ -1613,22 +1613,22 @@
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="65"/>
         <source>The server denied access.</source>
-        <translation type="unfinished"/>
+        <translation>O servidor recusou o acesso.</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="68"/>
         <source>The server request timed out.</source>
-        <translation type="unfinished"/>
+        <translation>A solicitação ao servidor expirou.</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="72"/>
         <source>Unable to connect to the server. Please check your network connection and server address.</source>
-        <translation type="unfinished"/>
+        <translation>Não foi possível conectar ao servidor. Verifique sua conexão de rede e o endereço do servidor.</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="76"/>
         <source>Synchronization failed.</source>
-        <translation type="unfinished"/>
+        <translation>A sincronização falhou.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="855"/>
