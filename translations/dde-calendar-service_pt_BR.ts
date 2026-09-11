@@ -1166,7 +1166,7 @@
     <message>
         <location filename="../src/calendar-service/src/calendarDataManager/daccountmanagemodule.cpp" line="125"/>
         <source>[Original Type: %1]</source>
-        <translation type="unfinished"/>
+        <translation>[Tipo original: %1]</translation>
     </message>
     </context>
     <context>
@@ -1174,7 +1174,7 @@
     <message>
         <location filename="../src/calendar-service/src/caldav/dcaldavaccountregistrar.cpp" line="60"/>
         <source>Calendar</source>
-        <translation type="unfinished"/>
+        <translation>Calendário</translation>
     </message>
     </context>
     <context>
@@ -1182,12 +1182,12 @@
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="37"/>
         <source>DingTalk</source>
-        <translation type="unfinished"/>
+        <translation>DingTalk</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="39"/>
         <source>WeCom</source>
-        <translation type="unfinished"/>
+        <translation>WeCom</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="41"/>
