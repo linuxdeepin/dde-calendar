@@ -1376,55 +1376,55 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="110"/>
         <source>Enter username or email</source>
-        <translation type="unfinished"/>
+        <translation>Digite o nome de usuário ou e-mail</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="111"/>
         <source>Enter password</source>
-        <translation type="unfinished"/>
+        <translation>Digite a senha</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="118"/>
         <source>Account Type</source>
-        <translation type="unfinished"/>
+        <translation>Tipo de conta</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="119"/>
         <source>Server Address</source>
-        <translation type="unfinished"/>
+        <translation>Endereço do servidor</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="120"/>
         <source>Username</source>
-        <translation type="unfinished"/>
+        <translation>Nome de usuário</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="121"/>
         <source>Password</source>
-        <translation type="unfinished"/>
+        <translation>Senha</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="132"/>
         <source>Cancel</source>
         <comment>button</comment>
-        <translation type="unfinished"/>
+        <translation>Cancelar</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="133"/>
         <source>Sign In</source>
         <comment>button</comment>
-        <translation type="unfinished"/>
+        <translation>Entrar</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="224"/>
         <source>Edit Account</source>
-        <translation type="unfinished"/>
+        <translation>Editar conta</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="225"/>
         <source>Save</source>
         <comment>button</comment>
-        <translation type="unfinished"/>
+        <translation>Salvar</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="232"/>
