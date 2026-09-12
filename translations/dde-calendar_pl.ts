@@ -930,7 +930,7 @@
     <message>
         <location filename="../src/calendar-client/src/widget/calendarmainwindow.cpp" line="1269"/>
         <source>Unable to connect to the server. Please check your network connection and server address.</source>
-        <translation>Nie można połączyć się z serwerem. Sprawdź stan połączenia i adres serwera.</translation>
+        <translation>Nie można połączyć się z serwerem. Sprawdź połączenie internetowe i adres serwera.</translation>
     </message>
 </context>
 <context>
@@ -1475,7 +1475,7 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="583"/>
         <source>Unable to connect to the server. Please check your network connection and server address.</source>
-        <translation>Nie można połączyć się z serwerem. Sprawdź stan połączenia i adres serwera.</translation>
+        <translation>Nie można połączyć się z serwerem. Sprawdź połączenie internetowe i adres serwera.</translation>
     </message>
     </context>
     <context>
@@ -1548,7 +1548,7 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="308"/>
         <source>Use server version</source>
-        <translation type="unfinished"/>
+        <translation>Użyj wersji serwerowej</translation>
     </message>
     </context>
     <context>
@@ -1556,32 +1556,32 @@
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="37"/>
         <source>DingTalk</source>
-        <translation type="unfinished"/>
+        <translation>DingTalk</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="39"/>
         <source>WeCom</source>
-        <translation type="unfinished"/>
+        <translation>WeCom</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="41"/>
         <source>Tencent Meeting</source>
-        <translation type="unfinished"/>
+        <translation>Tencent Meeting</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="43"/>
         <source>QQ Mail</source>
-        <translation type="unfinished"/>
+        <translation>QQ Mail</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="45"/>
         <source>Feishu</source>
-        <translation type="unfinished"/>
+        <translation>Feishu</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="48"/>
         <source>Other CalDAV</source>
-        <translation type="unfinished"/>
+        <translation>Inny CalDAV</translation>
     </message>
     </context>
     <context>
@@ -1589,51 +1589,51 @@
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="61"/>
         <source>Unable to parse the data returned by the server. Please verify the server address or try again later.</source>
-        <translation type="unfinished"/>
+        <translation>Nie można przetworzyć danych zwróconych przez serwer. Sprawdź adres serwera lub spróbuj ponownie później.</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="51"/>
         <source>The server certificate is invalid.</source>
-        <translation type="unfinished"/>
+        <translation>Certyfikat serwera jest nieprawidłowy.</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="54"/>
         <source>Incorrect username or password. Please try again.</source>
-        <translation type="unfinished"/>
+        <translation>Nieprawidłowa nazwa użytkownika lub hasło. Spróbuj ponownie.</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="57"/>
         <source>This server does not support CalDAV.</source>
-        <translation type="unfinished"/>
+        <translation>Serwer nie wspiera protokołu CalDAV.</translation>
     </message>
     <message>
         <source>The server rejected your login request. Please check your account permissions.</source>
-        <translation type="unfinished"/>
+        <translation>Serwer odrzucił prośbę logowania. Sprawdź uprawnienia swojego konta.</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="65"/>
         <source>The server denied access.</source>
-        <translation type="unfinished"/>
+        <translation>Serwer odmówił dostępu.</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="68"/>
         <source>The server request timed out.</source>
-        <translation type="unfinished"/>
+        <translation>Upłynął limit czasu oczekiwania żądania serwera.</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="72"/>
         <source>Unable to connect to the server. Please check your network connection and server address.</source>
-        <translation type="unfinished"/>
+        <translation>Nie można połączyć się z serwerem. Sprawdź połączenie internetowe i adres serwera.</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="76"/>
         <source>Synchronization failed.</source>
-        <translation type="unfinished"/>
+        <translation>Błąd synchronizacji.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="855"/>
         <source>Sync Failed</source>
-        <translation type="unfinished"/>
+        <translation>Błąd synchronizacji</translation>
     </message>
     </context>
     <context>
@@ -1642,17 +1642,17 @@
         <location filename="../src/calendar-client/src/widget/sidebarWidget/sidebaritemwidget.cpp" line="335"/>
         <location filename="../src/calendar-client/src/widget/sidebarWidget/sidebaritemwidget.cpp" line="345"/>
         <source>Sync</source>
-        <translation type="unfinished"/>
+        <translation>Synchronizacja</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/widget/sidebarWidget/sidebaritemwidget.cpp" line="344"/>
         <source>Deleting...</source>
-        <translation type="unfinished"/>
+        <translation>Usuwam...</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/widget/sidebarWidget/sidebaritemwidget.cpp" line="345"/>
         <source>Syncing...</source>
-        <translation type="unfinished"/>
+        <translation>Synchronizuję...</translation>
     </message>
     </context>
 </TS>
