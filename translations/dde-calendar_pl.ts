@@ -1366,184 +1366,184 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="98"/>
         <source>Select account type</source>
-        <translation type="unfinished"/>
+        <translation>Wybierz typ konta</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="109"/>
         <source>Automatically filled after selecting account type</source>
-        <translation type="unfinished"/>
+        <translation>Wypełniane automatycznie po wybraniu typu konta</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="110"/>
         <source>Enter username or email</source>
-        <translation type="unfinished"/>
+        <translation>Wprowadź nazwę użytkownika lub adres e-mail</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="111"/>
         <source>Enter password</source>
-        <translation type="unfinished"/>
+        <translation>Wprowadź hasło</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="118"/>
         <source>Account Type</source>
-        <translation type="unfinished"/>
+        <translation>Typ konta</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="119"/>
         <source>Server Address</source>
-        <translation type="unfinished"/>
+        <translation>Adres serwera</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="120"/>
         <source>Username</source>
-        <translation type="unfinished"/>
+        <translation>Nazwa użytkownika</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="121"/>
         <source>Password</source>
-        <translation type="unfinished"/>
+        <translation>Hasło</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="132"/>
         <source>Cancel</source>
         <comment>button</comment>
-        <translation type="unfinished"/>
+        <translation>Anuluj</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="133"/>
         <source>Sign In</source>
         <comment>button</comment>
-        <translation type="unfinished"/>
+        <translation>Zaloguj</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="224"/>
         <source>Edit Account</source>
-        <translation type="unfinished"/>
+        <translation>Edytuj konto</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="225"/>
         <source>Save</source>
         <comment>button</comment>
-        <translation type="unfinished"/>
+        <translation>Zapisz</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="232"/>
         <source>Leave empty to keep the current password</source>
-        <translation type="unfinished"/>
+        <translation>Pozostaw puste, aby zachować obecne hasło</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="510"/>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="558"/>
         <source>Please enter a valid server address.</source>
-        <translation type="unfinished"/>
+        <translation>Wprowadź prawidłowy adres serwera.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="561"/>
         <source>Please enter the correct username.</source>
-        <translation type="unfinished"/>
+        <translation>Wprowadź poprawną nazwę użytkownika.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="562"/>
         <source>Please enter the correct password.</source>
-        <translation type="unfinished"/>
+        <translation>Wprowadź prawidłowe hasło.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="571"/>
         <source>Incorrect username or password. Please try again.</source>
-        <translation type="unfinished"/>
+        <translation>Nieprawidłowa nazwa użytkownika lub hasło. Spróbuj ponownie.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="573"/>
         <source>This server does not support CalDAV.</source>
-        <translation type="unfinished"/>
+        <translation>Serwer nie wspiera protokołu CalDAV.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="575"/>
         <source>The server rejected your login request. Please check your account permissions.</source>
-        <translation type="unfinished"/>
+        <translation>Serwer odrzucił prośbę logowania. Sprawdź uprawnienia swojego konta.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="577"/>
         <source>Unable to parse the data returned by the server. Please verify the server address or try again later.</source>
-        <translation type="unfinished"/>
+        <translation>Nie można przetworzyć danych zwróconych przez serwer. Sprawdź adres serwera lub spróbuj ponownie później.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="579"/>
         <source>The server certificate is invalid.</source>
-        <translation type="unfinished"/>
+        <translation>Certyfikat serwera jest nieprawidłowy.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="583"/>
         <source>Unable to connect to the server. Please check your network connection and server address.</source>
-        <translation type="unfinished"/>
+        <translation>Nie można połączyć się z serwerem. Sprawdź stan połączenia i adres serwera.</translation>
     </message>
     </context>
     <context>
         <name>CalDavAccountListWidget</name>
     <message>
         <source>Last sync: %1</source>
-        <translation type="unfinished"/>
+        <translation>Ostatnia synchronizacja: %1</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="69"/>
         <source>Last sync time</source>
-        <translation type="unfinished"/>
+        <translation>Ostatnia synchronizacja</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="151"/>
         <source>No third-party accounts added</source>
-        <translation type="unfinished"/>
+        <translation>Nie dodano kont zewnętrznych</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="157"/>
         <source>Add</source>
-        <translation type="unfinished"/>
+        <translation>Dodaj</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="210"/>
         <source>Pending synchronization</source>
-        <translation type="unfinished"/>
+        <translation>Oczekiwanie na synchronizację</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="210"/>
         <source>Delete</source>
-        <translation type="unfinished"/>
+        <translation>Usuń</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="242"/>
         <source>Sync conflict</source>
-        <translation type="unfinished"/>
+        <translation>Konflikt synchronizacji</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="243"/>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="304"/>
         <source>A synchronization conflict was detected. The server version will replace the local changes.</source>
-        <translation type="unfinished"/>
+        <translation>Wykryto konflikt synchronizacji. Zmiany lokalne zostaną zastąpione wersją serwerową.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="252"/>
         <source>Sync Failed: %1</source>
-        <translation type="unfinished"/>
+        <translation>Błąd synchronizacji: %1</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="255"/>
         <source>Deleting...</source>
-        <translation type="unfinished"/>
+        <translation>Usuwam...</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="255"/>
         <source>Syncing...</source>
-        <translation type="unfinished"/>
+        <translation>Synchronizuję...</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="267"/>
         <source>Sync Now</source>
-        <translation type="unfinished"/>
+        <translation>Synchronizuj teraz</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="302"/>
         <source>Calendar synchronization conflict</source>
-        <translation type="unfinished"/>
+        <translation>Konflikt synchronizacji kalendarza</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="308"/>
