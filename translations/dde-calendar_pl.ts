@@ -181,34 +181,34 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/myscheduleview.cpp" line="193"/>
         <source>Calendar Source</source>
-        <translation type="unfinished"/>
+        <translation>Źródło kalendarza</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="118"/>
         <location filename="../src/calendar-client/src/dialog/myscheduleview.cpp" line="177"/>
         <source>Local calendar</source>
-        <translation type="unfinished"/>
+        <translation>Kalendarz lokalny</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="120"/>
         <location filename="../src/calendar-client/src/dialog/myscheduleview.cpp" line="179"/>
         <source>UOS ID</source>
-        <translation type="unfinished"/>
+        <translation>UOS ID</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="131"/>
         <source>Source: %1</source>
-        <translation type="unfinished"/>
+        <translation>Źródło: %1</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="152"/>
         <source>Organizer</source>
-        <translation type="unfinished"/>
+        <translation>Organizator</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="153"/>
         <source>Attendees</source>
-        <translation type="unfinished"/>
+        <translation>Uczestnicy</translation>
     </message>
 </context>
 <context>
@@ -462,12 +462,12 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1407"/>
         <source>Local calendar</source>
-        <translation type="unfinished"/>
+        <translation>Kalendarz lokalny</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1409"/>
         <source>UOS ID</source>
-        <translation type="unfinished"/>
+        <translation>UOS ID</translation>
     </message>
 </context>
 <context>
@@ -708,32 +708,32 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="214"/>
         <source>More</source>
-        <translation type="unfinished"/>
+        <translation>Więcej</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="246"/>
         <source>Third-party accounts</source>
-        <translation type="unfinished"/>
+        <translation>Konta zewnętrzne</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="255"/>
         <source>Add</source>
-        <translation type="unfinished"/>
+        <translation>Dodaj</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="304"/>
         <source>Sync items</source>
-        <translation type="unfinished"/>
+        <translation>Synchronizuj przedmioty</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="305"/>
         <source>Sync interval</source>
-        <translation type="unfinished"/>
+        <translation>Interwał synchronizacji</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="497"/>
         <source>Add schedule</source>
-        <translation type="unfinished"/>
+        <translation>Dodaj harmonogram</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="498"/>
@@ -743,58 +743,58 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="499"/>
         <source>Import events from an ICS file</source>
-        <translation type="unfinished"/>
+        <translation>Importuj wydarzenia z pliku ICS</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="681"/>
         <source>Remove Calendar Account</source>
-        <translation type="unfinished"/>
+        <translation>Usuń konto kalendarza</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="689"/>
         <source>Are you sure you want to remove the account &quot;%1&quot;?</source>
-        <translation type="unfinished"/>
+        <translation>Czy na pewno chcesz usunąć konto &quot;%1&quot;?</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="693"/>
         <source>Also remove synced events from this calendar</source>
-        <translation type="unfinished"/>
+        <translation>Usuń również zsynchronizowane wydarzenia z kalendarza</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="698"/>
         <source>Cancel</source>
         <comment>button</comment>
-        <translation type="unfinished"/>
+        <translation>Anuluj</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="699"/>
         <source>Delete</source>
         <comment>button</comment>
-        <translation type="unfinished"/>
+        <translation>Usuń</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="818"/>
         <source>Last sync time</source>
-        <translation type="unfinished"/>
+        <translation>Ostatnia synchronizacja</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="794"/>
         <source>Syncing...</source>
-        <translation type="unfinished"/>
+        <translation>Synchronizuję...</translation>
     </message>
     <message>
         <source>Last sync: %1</source>
-        <translation type="unfinished"/>
+        <translation>Ostatnia synchronizacja: %1</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="908"/>
         <source>Local account</source>
-        <translation type="unfinished"/>
+        <translation>Konto lokalne</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="1049"/>
         <source>Please go to the <a href="/">Control Center</a> to change system settings</source>
-        <translation type="unfinished"/>
+        <translation>Przejdź do &lt;a href=&quot;/&quot;&gt;Centrum kontroli&lt;/a&gt;, aby zmienić ustawienia systemu</translation>
     </message>
 </context>
 <context>
@@ -925,12 +925,12 @@
     <message>
         <location filename="../src/calendar-client/src/widget/calendarmainwindow.cpp" line="1266"/>
         <source>%1 does not allow creating events. Please check account permissions.</source>
-        <translation type="unfinished"/>
+        <translation>%1 nie zezwala na tworzenie wydarzeń. Sprawdź uprawnienia konta.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/widget/calendarmainwindow.cpp" line="1269"/>
         <source>Unable to connect to the server. Please check your network connection and server address.</source>
-        <translation type="unfinished"/>
+        <translation>Nie można połączyć się z serwerem. Sprawdź stan połączenia i adres serwera.</translation>
     </message>
 </context>
 <context>
@@ -1078,24 +1078,24 @@
     <message>
         <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="213"/>
         <source>Edit</source>
-        <translation type="unfinished"/>
+        <translation>Edytuj</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="219"/>
         <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="233"/>
         <source>Export</source>
-        <translation type="unfinished"/>
+        <translation>Eksportuj</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="308"/>
         <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="417"/>
         <source>ICS files (*.ics)</source>
-        <translation type="unfinished"/>
+        <translation>Pliki ICS (*.ics)</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="416"/>
         <source>Export ICS file</source>
-        <translation type="unfinished"/>
+        <translation>Eksportuj plik ICS</translation>
     </message>
 </context>
 <context>
@@ -1163,17 +1163,17 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="54"/>
         <source>UOS ID</source>
-        <translation type="unfinished"/>
+        <translation>UOS ID</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="59"/>
         <source>Third-party accounts</source>
-        <translation type="unfinished"/>
+        <translation>Konta zewnętrzne</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="75"/>
         <source>Associated account</source>
-        <translation type="unfinished"/>
+        <translation>Konto powiązane</translation>
     </message>
 </context>
 <context>
@@ -1251,7 +1251,7 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="164"/>
         <source><a href="https://wikipedia.org/wiki/ICalendar">ICS</a> File:</source>
-        <translation type="unfinished"/>
+        <translation>Plik &lt;a href=&quot;https://wikipedia.org/wiki/ICalendar&quot;&gt;ICS&lt;/a&gt;:</translation>
     </message>
 </context>
 <context>
@@ -1331,7 +1331,7 @@
     <message>
         <location filename="../src/calendar-client/src/widget/settingWidget/userloginwidget.cpp" line="203"/>
         <source>Not signed in</source>
-        <translation type="unfinished"/>
+        <translation>Nie zalogowano</translation>
     </message>
 </context>
 <context>
@@ -1356,12 +1356,12 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="65"/>
         <source>:</source>
-        <translation type="unfinished"/>
+        <translation>:</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="75"/>
         <source>Add Calendar Account</source>
-        <translation type="unfinished"/>
+        <translation>Dodaj konto kalendarza</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="98"/>
