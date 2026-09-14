@@ -1497,58 +1497,58 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="157"/>
         <source>Add</source>
-        <translation type="unfinished"/>
+        <translation>Afegeix</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="210"/>
         <source>Pending synchronization</source>
-        <translation type="unfinished"/>
+        <translation>Sincronització pendent</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="210"/>
         <source>Delete</source>
-        <translation type="unfinished"/>
+        <translation>Elimina</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="242"/>
         <source>Sync conflict</source>
-        <translation type="unfinished"/>
+        <translation>Conflicte de sincronització</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="243"/>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="304"/>
         <source>A synchronization conflict was detected. The server version will replace the local changes.</source>
-        <translation type="unfinished"/>
+        <translation>S&apos;ha detectat un conflicte de sincronització. La versió del servidor substituirà els canvis locals.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="252"/>
         <source>Sync Failed: %1</source>
-        <translation type="unfinished"/>
+        <translation>Ha fallat la sincronització: %1</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="255"/>
         <source>Deleting...</source>
-        <translation type="unfinished"/>
+        <translation>S&apos;elimina...</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="255"/>
         <source>Syncing...</source>
-        <translation type="unfinished"/>
+        <translation>Se sincronitza...</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="267"/>
         <source>Sync Now</source>
-        <translation type="unfinished"/>
+        <translation>Sincronitza ara</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="302"/>
         <source>Calendar synchronization conflict</source>
-        <translation type="unfinished"/>
+        <translation>Conflicte de sincronització del calendari</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="308"/>
         <source>Use server version</source>
-        <translation type="unfinished"/>
+        <translation>Usa la versió del servidor</translation>
     </message>
     </context>
     <context>
@@ -1608,7 +1608,7 @@
     </message>
     <message>
         <source>The server rejected your login request. Please check your account permissions.</source>
-        <translation type="unfinished"/>
+        <translation>El servidor ha rebutjat la sol·licitud d&apos;inici de sessió. Si us plau, comproveu els permisos del compte.</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="65"/>
@@ -1633,7 +1633,7 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="855"/>
         <source>Sync Failed</source>
-        <translation type="unfinished"/>
+        <translation>Ha fallat la sincronització.</translation>
     </message>
     </context>
     <context>
