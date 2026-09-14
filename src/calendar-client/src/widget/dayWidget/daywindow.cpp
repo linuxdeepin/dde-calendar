@@ -200,9 +200,14 @@ void CDayWindow::updateShowLunar()
     // Ensure lunar data is loaded for the current date
     ensureLunarDataLoaded(currentDate, currentDate);
 
-    CaHuangLiDayInfo _huangLiInfo = getLunarInfo();
-    m_LunarLabel->setText(tr("Lunar") + _huangLiInfo.mLunarMonthName + _huangLiInfo.mLunarDayName);
-    m_daymonthView->setHuangLiInfo(_huangLiInfo);
+    if (gLunarManager->hasHuangLiDay(currentDate)) {
+        CaHuangLiDayInfo _huangLiInfo = getLunarInfo();
+        m_LunarLabel->setText(tr("Lunar") + _huangLiInfo.mLunarMonthName + _huangLiInfo.mLunarDayName);
+        m_daymonthView->setHuangLiInfo(_huangLiInfo);
+    } else {
+        m_LunarLabel->clear();
+        m_daymonthView->setHuangLiInfo(CaHuangLiDayInfo());
+    }
 }
 
 void CDayWindow::updateSearchScheduleInfo()

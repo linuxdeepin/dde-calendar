@@ -6,9 +6,69 @@
 #include "commondef.h"
 #include <QFutureWatcher>
 #include <QtConcurrent>
-#include <iterator>
 
 static constexpr int MAX_CACHED_RANGES = 10;
+
+namespace {
+
+using DateRange = QPair<QDate, QDate>;
+using LunarQueryResult = QPair<bool, QMap<QDate, CaHuangLiDayInfo>>;
+using FestivalQueryResult = QPair<bool, QVector<FestivalInfo>>;
+using DayQueryResult = QPair<bool, CaHuangLiDayInfo>;
+
+bool isRangeCovered(const QList<DateRange> &ranges, const DateRange &target)
+{
+    for (const DateRange &range : ranges) {
+        if (target.first >= range.first && target.second <= range.second) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool isRangeCovered(const QSet<DateRange> &ranges, const DateRange &target)
+{
+    for (const DateRange &range : ranges) {
+        if (target.first >= range.first && target.second <= range.second) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void rememberRange(QList<DateRange> &ranges, const DateRange &range)
+{
+    if (ranges.contains(range)) {
+        return;
+    }
+    if (ranges.size() >= MAX_CACHED_RANGES) {
+        ranges.removeFirst();
+    }
+    ranges.append(range);
+}
+
+template<typename Value>
+void pruneCache(QMap<QDate, Value> &cache, const QList<DateRange> &ranges)
+{
+    auto it = cache.begin();
+    while (it != cache.end()) {
+        const DateRange dateRange = qMakePair(it.key(), it.key());
+        if (!isRangeCovered(ranges, dateRange)) {
+            it = cache.erase(it);
+        } else {
+            ++it;
+        }
+    }
+}
+
+bool isValidHuangLiDayInfo(const CaHuangLiDayInfo &info)
+{
+    return !info.mGanZhiYear.isEmpty()
+        && !info.mLunarMonthName.isEmpty()
+        && !info.mLunarDayName.isEmpty();
+}
+
+} // namespace
 
 LunarManager::LunarManager(QObject *parent) : QObject(parent)
   , m_dbusRequest(new DbusHuangLiRequest)
@@ -137,35 +197,68 @@ void LunarManager::queryLunarInfo(const QDate &startDate, const QDate &stopDate)
 {
     qCDebug(ClientLogger) << "Querying lunar info from" << startDate.toString() << "to" << stopDate.toString();
     const int offsetMonth = (stopDate.year() - startDate.year()) * 12 + stopDate.month() - startDate.month();
-    
-    QFutureWatcher<QMap<QDate, CaHuangLiDayInfo>> *w = new QFutureWatcher<QMap<QDate, CaHuangLiDayInfo>>(this);
-    QFuture<QMap<QDate, CaHuangLiDayInfo>> future = QtConcurrent::run([offsetMonth, startDate]() -> QMap<QDate, CaHuangLiDayInfo> {
+
+    QFutureWatcher<LunarQueryResult> *w = new QFutureWatcher<LunarQueryResult>(this);
+    QFuture<LunarQueryResult> future = QtConcurrent::run([offsetMonth, startDate]() -> LunarQueryResult {
         auto dbus = new DbusHuangLiRequest();
         QMap<QDate, CaHuangLiDayInfo> lunarInfoMap;
         CaHuangLiMonthInfo monthInfo;
+        bool success = true;
         //获取开始时间至结束时间所在月的农历和节假日信息
         for (int i = 0; i <= offsetMonth; ++i) {
             monthInfo.clear();
             QDate beginDate = startDate.addMonths(i);
-            dbus->getHuangLiMonth(beginDate.year(), beginDate.month(), false, monthInfo);
+            if (!dbus->getHuangLiMonth(beginDate.year(), beginDate.month(), false, monthInfo)
+                || monthInfo.mDays <= 0
+                || monthInfo.mDays > monthInfo.mCaLunarDayInfo.size()) {
+                success = false;
+                continue;
+            }
 
             QDate getDate(beginDate.year(), beginDate.month(), 1);
             for (int j = 0; j < monthInfo.mDays; ++j) {
-                lunarInfoMap[getDate.addDays(j)] = monthInfo.mCaLunarDayInfo.at(j);
+                const CaHuangLiDayInfo &dayInfo = monthInfo.mCaLunarDayInfo.at(j);
+                if (!isValidHuangLiDayInfo(dayInfo)) {
+                    success = false;
+                    continue;
+                }
+                lunarInfoMap[getDate.addDays(j)] = dayInfo;
             }
         }
         delete dbus;
-        return lunarInfoMap;
+        return qMakePair(success, lunarInfoMap);
     });
-    connect(w, &QFutureWatcher<QMap<QDate, CaHuangLiDayInfo>>::finished, this, [this, w, startDate, stopDate]() {
-        auto result = w->result();
+    connect(w, &QFutureWatcher<LunarQueryResult>::finished, this, [this, w, startDate, stopDate]() {
+        const LunarQueryResult queryResult = w->result();
+        const QMap<QDate, CaHuangLiDayInfo> &result = queryResult.second;
+        bool success = queryResult.first;
+        if (success) {
+            const int expectedDays = startDate.daysTo(stopDate) + 1;
+            for (int i = 0; i < expectedDays; ++i) {
+                if (!result.contains(startDate.addDays(i))) {
+                    success = false;
+                    break;
+                }
+            }
+        }
+
+        m_pendingLunarQueries.remove(qMakePair(startDate, stopDate));
+        // Keep every valid day even when the requested range is incomplete.
+        // Do not remember an incomplete range, so the missing days can retry.
         for (auto it = result.constBegin(); it != result.constEnd(); ++it) {
             m_lunarInfoMap[it.key()] = it.value();
         }
-        m_pendingQueries.remove(qMakePair(startDate, stopDate));
-        qCDebug(ClientLogger) << "Lunar info query completed, total cached:" << m_lunarInfoMap.size() << "days";
+        if (success) {
+            rememberRange(m_queriedRanges, qMakePair(startDate, stopDate));
+            pruneCache(m_lunarInfoMap, m_queriedRanges);
+            qCDebug(ClientLogger) << "Lunar info query completed, total cached:" << m_lunarInfoMap.size() << "days";
+            emit lunarInfoReady(startDate, stopDate);
+        } else {
+            qCWarning(ClientLogger) << "Lunar info query returned incomplete data for"
+                                    << startDate.toString() << "to" << stopDate.toString()
+                                    << ", kept" << result.size() << "valid days for the cache";
+        }
         w->deleteLater();
-        emit lunarInfoReady();
     });
     w->setFuture(future);
 }
@@ -180,32 +273,48 @@ void LunarManager::queryFestivalInfo(const QDate &startDate, const QDate &stopDa
 {
     qCDebug(ClientLogger) << "Querying festival info from" << startDate.toString() << "to" << stopDate.toString();
     const int offsetMonth = (stopDate.year() - startDate.year()) * 12 + stopDate.month() - startDate.month();
-    
-    QFutureWatcher<QVector<FestivalInfo>> *w = new QFutureWatcher<QVector<FestivalInfo>>(this);
-    QFuture<QVector<FestivalInfo>> future = QtConcurrent::run([offsetMonth, startDate]() -> QVector<FestivalInfo> {
+
+    QFutureWatcher<FestivalQueryResult> *w = new QFutureWatcher<FestivalQueryResult>(this);
+    QFuture<FestivalQueryResult> future = QtConcurrent::run([offsetMonth, startDate]() -> FestivalQueryResult {
         auto dbus = new DbusHuangLiRequest();
         QVector<FestivalInfo> festivallist{};
+        bool success = true;
         for (int i = 0; i <= offsetMonth; ++i) {
             FestivalInfo info;
             QDate beginDate = startDate.addMonths(i);
-            if (dbus->getFestivalMonth(quint32(beginDate.year()), quint32(beginDate.month()), info)) {
-                festivallist.push_back(info);
+            if (!dbus->getFestivalMonth(quint32(beginDate.year()), quint32(beginDate.month()), info)) {
+                success = false;
+                break;
             }
+            festivallist.push_back(info);
         }
         delete dbus;
-        return festivallist;
+        return qMakePair(success, festivallist);
     });
-    connect(w, &QFutureWatcher<QVector<FestivalInfo>>::finished, this, [this, w, startDate, stopDate]() {
-        auto festivallist = w->result();
-        for (const FestivalInfo &info : festivallist) {
-            for (const HolidayInfo &h : info.listHoliday) {
-                m_festivalDateMap[h.date] = h.status;
+    connect(w, &QFutureWatcher<FestivalQueryResult>::finished, this, [this, w, startDate, stopDate]() {
+        const FestivalQueryResult queryResult = w->result();
+        m_pendingFestivalQueries.remove(qMakePair(startDate, stopDate));
+        if (queryResult.first) {
+            auto oldIt = m_festivalDateMap.lowerBound(startDate);
+            while (oldIt != m_festivalDateMap.end() && oldIt.key() <= stopDate) {
+                oldIt = m_festivalDateMap.erase(oldIt);
             }
+            for (const FestivalInfo &info : queryResult.second) {
+                for (const HolidayInfo &h : info.listHoliday) {
+                    if (h.date.isValid()) {
+                        m_festivalDateMap[h.date] = h.status;
+                    }
+                }
+            }
+            rememberRange(m_queriedFestivalRanges, qMakePair(startDate, stopDate));
+            pruneCache(m_festivalDateMap, m_queriedFestivalRanges);
+            qCDebug(ClientLogger) << "Festival date map updated with" << m_festivalDateMap.size() << "days";
+            emit festivalInfoReady();
+        } else {
+            qCWarning(ClientLogger) << "Festival info query failed for"
+                                    << startDate.toString() << "to" << stopDate.toString();
         }
-        m_pendingQueries.remove(qMakePair(startDate, stopDate));
-        qCDebug(ClientLogger) << "Festival date map updated with" << m_festivalDateMap.size() << "days";
         w->deleteLater();
-        emit festivalInfoReady();
     });
     w->setFuture(future);
 }
@@ -221,14 +330,39 @@ CaHuangLiDayInfo LunarManager::getHuangLiDay(const QDate &date)
     qCDebug(ClientLogger) << "Getting HuangLi day info for date:" << date.toString();
     //首先在缓存中查找是否存在该日期的农历信息，没有则通过dbus获取
     CaHuangLiDayInfo info;
-    if (m_lunarInfoMap.contains(date)) {
+    if (hasHuangLiDay(date)) {
         qCDebug(ClientLogger) << "Found HuangLi day info in cache";
-        info = m_lunarInfoMap[date];
+        info = m_lunarInfoMap.value(date);
     } else {
         qCDebug(ClientLogger) << "HuangLi day info not in cache, fetching via dbus";
         getHuangLiDay(date, info);
     }
     return info;
+}
+
+bool LunarManager::hasHuangLiDay(const QDate &date) const
+{
+    const auto it = m_lunarInfoMap.constFind(date);
+    return it != m_lunarInfoMap.constEnd() && isValidHuangLiDayInfo(it.value());
+}
+
+bool LunarManager::hasHuangLiRange(const QDate &startDate, const QDate &endDate) const
+{
+    if (!startDate.isValid() || !endDate.isValid() || startDate > endDate) {
+        return false;
+    }
+
+    if (isRangeCovered(m_queriedRanges, qMakePair(startDate, endDate))) {
+        return true;
+    }
+
+    const int expectedDays = startDate.daysTo(endDate) + 1;
+    for (int i = 0; i < expectedDays; ++i) {
+        if (!hasHuangLiDay(startDate.addDays(i))) {
+            return false;
+        }
+    }
+    return true;
 }
 
 /**
@@ -239,27 +373,45 @@ CaHuangLiDayInfo LunarManager::getHuangLiDay(const QDate &date)
 void LunarManager::getHuangLiDayAsync(const QDate &date)
 {
     qCDebug(ClientLogger) << "Getting HuangLi day info async for date:" << date.toString();
-    if (m_lunarInfoMap.contains(date)) {
+    if (hasHuangLiDay(date)) {
         qCDebug(ClientLogger) << "Found HuangLi day info in cache, emitting directly";
-        emit huangLiDayReady(date, m_lunarInfoMap[date]);
+        emit huangLiDayReady(date, m_lunarInfoMap.value(date));
         return;
     }
-    
+
+    const DateRange target = qMakePair(date, date);
+    if (isRangeCovered(m_pendingLunarQueries, target)) {
+        // A range request will publish the same date through lunarInfoReady.
+        return;
+    }
+    if (m_pendingDayQueries.contains(date)) {
+        return;
+    }
+    m_pendingDayQueries.insert(date);
+
     //异步获取农历数据
-    QFutureWatcher<CaHuangLiDayInfo> *w = new QFutureWatcher<CaHuangLiDayInfo>(this);
-    QFuture<CaHuangLiDayInfo> future = QtConcurrent::run([date]() -> CaHuangLiDayInfo {
+    QFutureWatcher<DayQueryResult> *w = new QFutureWatcher<DayQueryResult>(this);
+    QFuture<DayQueryResult> future = QtConcurrent::run([date]() -> DayQueryResult {
         auto dbus = new DbusHuangLiRequest();
         CaHuangLiDayInfo info;
-        dbus->getHuangLiDay(date.year(), date.month(), date.day(), info);
+        const bool success = dbus->getHuangLiDay(date.year(), date.month(), date.day(), info)
+            && isValidHuangLiDayInfo(info);
         delete dbus;
-        return info;
+        return qMakePair(success, info);
     });
-    connect(w, &QFutureWatcher<CaHuangLiDayInfo>::finished, this, [this, w, date]() {
-        CaHuangLiDayInfo info = w->result();
-        //缓存结果
-        m_lunarInfoMap[date] = info;
-        qCDebug(ClientLogger) << "Async HuangLi day info ready for date:" << date.toString();
-        emit huangLiDayReady(date, info);
+    connect(w, &QFutureWatcher<DayQueryResult>::finished, this, [this, w, date]() {
+        const DayQueryResult queryResult = w->result();
+        m_pendingDayQueries.remove(date);
+        if (queryResult.first) {
+            // Do not let a slower single-day request overwrite a valid range result.
+            if (!hasHuangLiDay(date)) {
+                m_lunarInfoMap[date] = queryResult.second;
+            }
+            qCDebug(ClientLogger) << "Async HuangLi day info ready for date:" << date.toString();
+            emit huangLiDayReady(date, m_lunarInfoMap.value(date));
+        } else {
+            qCWarning(ClientLogger) << "Async HuangLi day query failed for date:" << date.toString();
+        }
         w->deleteLater();
     });
     w->setFuture(future);
@@ -327,35 +479,25 @@ void LunarManager::ensureLunarDataLoaded(const QDate &startDate, const QDate &en
 
     // Prevent re-entrant queries for the same range while DBus call is in flight
     auto key = qMakePair(startDate, endDate);
-    if (m_pendingQueries.contains(key)) {
-        return;
-    }
+    // Check the lunar range and the festival range independently. They are
+    // two asynchronous requests and must not clear one shared pending flag.
+    const bool lunarCached = isRangeCovered(m_queriedRanges, key);
+    const bool festivalCached = isRangeCovered(m_queriedFestivalRanges, key);
 
-    // Check if this range (or a superset) has already been queried
-    for (const auto &range : m_queriedRanges) {
-        if (startDate >= range.first && endDate <= range.second) {
-            // Range is already covered by a previous query
-            return;
+    if (!lunarCached) {
+        if (hasHuangLiRange(startDate, endDate)) {
+            rememberRange(m_queriedRanges, key);
+            pruneCache(m_lunarInfoMap, m_queriedRanges);
+        } else if (!isRangeCovered(m_pendingLunarQueries, key)) {
+            qCDebug(ClientLogger) << "Querying incomplete lunar cache for range"
+                                   << startDate.toString() << "to" << endDate.toString();
+            m_pendingLunarQueries.insert(key);
+            queryLunarInfo(startDate, endDate);
         }
     }
 
-    // Verify data completeness from the cache using QMap's ordered iteration
-    int expectedDays = startDate.daysTo(endDate) + 1;
-    auto startIt = m_lunarInfoMap.lowerBound(startDate);
-    auto endIt = m_lunarInfoMap.upperBound(endDate);
-    int cachedDays = std::distance(startIt, endIt);
-
-    if (cachedDays < expectedDays) {
-        qCDebug(ClientLogger) << "Querying lunar data for range" << startDate.toString() << "to" << endDate.toString()
-                               << "expected:" << expectedDays << "cached:" << cachedDays;
-        m_pendingQueries.insert(key);
-        queryLunarInfo(startDate, endDate);
+    if (!festivalCached && !isRangeCovered(m_pendingFestivalQueries, key)) {
+        m_pendingFestivalQueries.insert(key);
         queryFestivalInfo(startDate, endDate);
     }
-
-    // Cache this range (limit cache size to prevent memory growth)
-    if (m_queriedRanges.size() >= MAX_CACHED_RANGES) {
-        m_queriedRanges.removeFirst();
-    }
-    m_queriedRanges.append({startDate, endDate});
 }

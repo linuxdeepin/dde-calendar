@@ -193,8 +193,13 @@ void CMonthWindow::updateShowLunar()
     // Ensure lunar data is loaded for the current view range
     ensureLunarDataLoaded(m_startDate, m_stopDate);
 
-    getLunarInfo();
-    m_YearLunarLabel->setText(m_lunarYear);
+    if (gLunarManager->hasHuangLiDay(getSelectDate())) {
+        getLunarInfo();
+        m_YearLunarLabel->setText(m_lunarYear);
+    } else {
+        // The data is being loaded asynchronously; do not fetch it synchronously here.
+        m_YearLunarLabel->clear();
+    }
     QMap<QDate, int> _monthFestivalInfo = gLunarManager->getFestivalInfoDateMap(m_startDate, m_stopDate);
     m_monthView->setFestival(_monthFestivalInfo);
     QMap<QDate, CaHuangLiDayInfo> _monthHuangLiInfo = gLunarManager->getHuangLiDayMap(m_startDate, m_stopDate);

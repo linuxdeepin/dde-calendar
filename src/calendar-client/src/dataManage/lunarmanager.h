@@ -41,6 +41,10 @@ public:
     QMap<QDate, int> getFestivalInfoDateMap(const QDate &startDate, const QDate &stopDate);
     //获取当天农历数据
     CaHuangLiDayInfo getHuangLiDay(const QDate &date);
+    //判断当天农历数据是否已缓存
+    bool hasHuangLiDay(const QDate &date) const;
+    //判断指定日期范围的农历数据是否已完整缓存
+    bool hasHuangLiRange(const QDate &startDate, const QDate &endDate) const;
     //获取一定时间范围内的农历数据
     QMap<QDate, CaHuangLiDayInfo> getHuangLiDayMap(const QDate &startDate, const QDate &stopDate);
     //异步获取当天农历数据
@@ -51,8 +55,8 @@ public:
 signals:
     //异步获取农历数据完成信号
     void huangLiDayReady(const QDate &date, const CaHuangLiDayInfo &info);
-    //农历信息查询完成信号
-    void lunarInfoReady();
+    //农历信息查询完成信号，携带本次成功查询覆盖的日期范围
+    void lunarInfoReady(const QDate &startDate, const QDate &endDate);
     //节假日信息查询完成信号
     void festivalInfoReady();
 
@@ -62,8 +66,11 @@ private:
     DbusHuangLiRequest* m_dbusRequest = nullptr;    //dbus请求实例
     QMap<QDate, CaHuangLiDayInfo> m_lunarInfoMap;   //缓存的农历数据
     QMap<QDate, int> m_festivalDateMap;     //缓存的节假日数据
-    QList<QPair<QDate, QDate>> m_queriedRanges;  //已查询的日期范围缓存
-    QSet<QPair<QDate, QDate>> m_pendingQueries;   //正在查询中的范围，防止重入
+    QList<QPair<QDate, QDate>> m_queriedRanges;  //已成功查询的农历日期范围
+    QList<QPair<QDate, QDate>> m_queriedFestivalRanges; //已成功查询的节假日范围
+    QSet<QPair<QDate, QDate>> m_pendingLunarQueries; //正在查询中的农历范围
+    QSet<QPair<QDate, QDate>> m_pendingFestivalQueries; //正在查询中的节假日范围
+    QSet<QDate> m_pendingDayQueries; //正在查询中的单日农历请求
 
 };
 #define gLunarManager LunarManager::getInstace()

@@ -480,7 +480,7 @@ bool AccountItem::querySchedulesByExternal(const QString &key, const QDateTime &
     ptr->setDtEnd(end);
     QString json;
     if (m_dbusRequest->querySchedulesByExternal(ptr, json)) {
-        out = DSchedule::fromMapString(json);
+        out = DSchedule::fromQueryResult(json);
         qCDebug(ClientLogger) << "Successfully queried external schedules, got" << out.size() << "dates";
         return true;
     }

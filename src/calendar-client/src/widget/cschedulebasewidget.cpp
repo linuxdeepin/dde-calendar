@@ -213,9 +213,10 @@ void CScheduleBaseWidget::slotSearchedScheduleUpdate()
     updateSearchScheduleInfo();
 }
 
-void CScheduleBaseWidget::slotLunarInfoReady()
+void CScheduleBaseWidget::slotLunarInfoReady(const QDate &startDate, const QDate &endDate)
 {
-    qCDebug(ClientLogger) << "CScheduleBaseWidget::slotLunarInfoReady";
+    qCDebug(ClientLogger) << "CScheduleBaseWidget::slotLunarInfoReady"
+                          << "range:" << startDate << "to" << endDate;
     if (getShowLunar()) {
         updateShowLunar();
         update();
