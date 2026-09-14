@@ -794,7 +794,7 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="1049"/>
         <source>Please go to the <a href="/">Control Center</a> to change system settings</source>
-        <translation type="unfinished"/>
+        <translation>Siirry &lt;a href=&quot;/&quot;&gt;Ohjauspaneeliin&lt;/a&gt; ja muuta asetuksia</translation>
     </message>
 </context>
 <context>
@@ -925,12 +925,12 @@
     <message>
         <location filename="../src/calendar-client/src/widget/calendarmainwindow.cpp" line="1266"/>
         <source>%1 does not allow creating events. Please check account permissions.</source>
-        <translation type="unfinished"/>
+        <translation>%1 ei salli tapahtumien luomista. Tarkista tilin käyttöoikeudet.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/widget/calendarmainwindow.cpp" line="1269"/>
         <source>Unable to connect to the server. Please check your network connection and server address.</source>
-        <translation type="unfinished"/>
+        <translation>Palvelimeen ei saatu yhteyttä. Tarkista verkko ja palvelimen osoite.</translation>
     </message>
 </context>
 <context>
@@ -1078,24 +1078,24 @@
     <message>
         <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="213"/>
         <source>Edit</source>
-        <translation type="unfinished"/>
+        <translation>Muokkaa</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="219"/>
         <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="233"/>
         <source>Export</source>
-        <translation type="unfinished"/>
+        <translation>Vie</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="308"/>
         <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="417"/>
         <source>ICS files (*.ics)</source>
-        <translation type="unfinished"/>
+        <translation>ICS-tiedosto (*.ics)</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="416"/>
         <source>Export ICS file</source>
-        <translation type="unfinished"/>
+        <translation>Vie ICS-tiedosto</translation>
     </message>
 </context>
 <context>
@@ -1163,17 +1163,17 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="54"/>
         <source>UOS ID</source>
-        <translation type="unfinished"/>
+        <translation>UOS ID</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="59"/>
         <source>Third-party accounts</source>
-        <translation type="unfinished"/>
+        <translation>Kolmannen osapuolen tilit</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="75"/>
         <source>Associated account</source>
-        <translation type="unfinished"/>
+        <translation>Liitetty tili</translation>
     </message>
 </context>
 <context>
@@ -1251,7 +1251,7 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="164"/>
         <source><a href="https://wikipedia.org/wiki/ICalendar">ICS</a> File:</source>
-        <translation type="unfinished"/>
+        <translation>&lt;a href=&quot;https://wikipedia.org/wiki/ICalendar&quot;&gt;ICS&lt;/a&gt;-tiedosto:</translation>
     </message>
 </context>
 <context>
@@ -1331,7 +1331,7 @@
     <message>
         <location filename="../src/calendar-client/src/widget/settingWidget/userloginwidget.cpp" line="203"/>
         <source>Not signed in</source>
-        <translation type="unfinished"/>
+        <translation>Ei kirjautuneena</translation>
     </message>
 </context>
 <context>
@@ -1356,12 +1356,12 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="65"/>
         <source>:</source>
-        <translation type="unfinished"/>
+        <translation>:</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="75"/>
         <source>Add Calendar Account</source>
-        <translation type="unfinished"/>
+        <translation>Lisää kalenteritili</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="98"/>
