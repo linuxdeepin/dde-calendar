@@ -1166,7 +1166,7 @@
     <message>
         <location filename="../src/calendar-service/src/calendarDataManager/daccountmanagemodule.cpp" line="125"/>
         <source>[Original Type: %1]</source>
-        <translation type="unfinished"/>
+        <translation>[Tipus original: %1]</translation>
     </message>
     </context>
     <context>
@@ -1174,7 +1174,7 @@
     <message>
         <location filename="../src/calendar-service/src/caldav/dcaldavaccountregistrar.cpp" line="60"/>
         <source>Calendar</source>
-        <translation type="unfinished"/>
+        <translation>Calendari</translation>
     </message>
     </context>
     <context>
@@ -1182,32 +1182,32 @@
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="37"/>
         <source>DingTalk</source>
-        <translation type="unfinished"/>
+        <translation>DingTalk</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="39"/>
         <source>WeCom</source>
-        <translation type="unfinished"/>
+        <translation>WeCom</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="41"/>
         <source>Tencent Meeting</source>
-        <translation type="unfinished"/>
+        <translation>Trobada de Tencent</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="43"/>
         <source>QQ Mail</source>
-        <translation type="unfinished"/>
+        <translation>Correu QQ</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="45"/>
         <source>Feishu</source>
-        <translation type="unfinished"/>
+        <translation>Feishu</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="48"/>
         <source>Other CalDAV</source>
-        <translation type="unfinished"/>
+        <translation>Altre CalDAV</translation>
     </message>
     </context>
     <context>
@@ -1215,42 +1215,42 @@
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="51"/>
         <source>The server certificate is invalid.</source>
-        <translation type="unfinished"/>
+        <translation>El certificat del servidor no és vàlid.</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="54"/>
         <source>Incorrect username or password. Please try again.</source>
-        <translation type="unfinished"/>
+        <translation>Nom d&apos;usuari o contrasenya incorrectes. Si us plau, torneu-ho a provar.</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="57"/>
         <source>This server does not support CalDAV.</source>
-        <translation type="unfinished"/>
+        <translation>Aquest servidor no és compatible amb CalDAV.</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="61"/>
         <source>Unable to parse the data returned by the server. Please verify the server address or try again later.</source>
-        <translation type="unfinished"/>
+        <translation>No s&apos;han pogut analitzar les dades tornades pel servidor. Si us plau, verifiqueu l&apos;adreça del servidor o torneu-ho a intentar més tard.</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="65"/>
         <source>The server denied access.</source>
-        <translation type="unfinished"/>
+        <translation>El servidor n&apos;ha denegat l&apos;accés.</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="68"/>
         <source>The server request timed out.</source>
-        <translation type="unfinished"/>
+        <translation>La sol·licitud al servidor ha superat el temps límit.</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="72"/>
         <source>Unable to connect to the server. Please check your network connection and server address.</source>
-        <translation type="unfinished"/>
+        <translation>No s&apos;ha pogut connectar al servidor. Comproveu la connexió de xarxa i l&apos;adreça del servidor.</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="76"/>
         <source>Synchronization failed.</source>
-        <translation type="unfinished"/>
+        <translation>La sincronització ha fallat.</translation>
     </message>
     </context>
 </TS>
