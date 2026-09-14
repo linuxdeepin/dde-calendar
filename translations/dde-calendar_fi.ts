@@ -1512,43 +1512,43 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="242"/>
         <source>Sync conflict</source>
-        <translation type="unfinished"/>
+        <translation>Synkronointiristiriita</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="243"/>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="304"/>
         <source>A synchronization conflict was detected. The server version will replace the local changes.</source>
-        <translation type="unfinished"/>
+        <translation>Havaittiin synkronointiristiriita. Palvelinversio korvaa paikalliset muutokset.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="252"/>
         <source>Sync Failed: %1</source>
-        <translation type="unfinished"/>
+        <translation>Synkronointi epäonnistui: %1</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="255"/>
         <source>Deleting...</source>
-        <translation type="unfinished"/>
+        <translation>Poistetaan...</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="255"/>
         <source>Syncing...</source>
-        <translation type="unfinished"/>
+        <translation>Synkronoidaan...</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="267"/>
         <source>Sync Now</source>
-        <translation type="unfinished"/>
+        <translation>Synkronoi nyt</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="302"/>
         <source>Calendar synchronization conflict</source>
-        <translation type="unfinished"/>
+        <translation>Kalenterin synkronointiristiriita</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="308"/>
         <source>Use server version</source>
-        <translation type="unfinished"/>
+        <translation>Käytä palvelimen versiota</translation>
     </message>
     </context>
     <context>
@@ -1608,7 +1608,7 @@
     </message>
     <message>
         <source>The server rejected your login request. Please check your account permissions.</source>
-        <translation type="unfinished"/>
+        <translation>Palvelin hylkäsi kirjautumisen. Tarkista tilisi käyttöoikeudet.</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="65"/>
@@ -1633,7 +1633,7 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="855"/>
         <source>Sync Failed</source>
-        <translation type="unfinished"/>
+        <translation>Synkronointi epäonnistui</translation>
     </message>
     </context>
     <context>
@@ -1642,12 +1642,12 @@
         <location filename="../src/calendar-client/src/widget/sidebarWidget/sidebaritemwidget.cpp" line="335"/>
         <location filename="../src/calendar-client/src/widget/sidebarWidget/sidebaritemwidget.cpp" line="345"/>
         <source>Sync</source>
-        <translation type="unfinished"/>
+        <translation>Synkronoi</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/widget/sidebarWidget/sidebaritemwidget.cpp" line="344"/>
         <source>Deleting...</source>
-        <translation type="unfinished"/>
+        <translation>Poistetaan...</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/widget/sidebarWidget/sidebaritemwidget.cpp" line="345"/>
