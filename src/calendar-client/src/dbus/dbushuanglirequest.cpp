@@ -36,8 +36,11 @@ bool DbusHuangLiRequest::getFestivalMonth(quint32 year, quint32 month, FestivalI
     QJsonParseError json_error;
     QJsonDocument jsonDoc(QJsonDocument::fromJson(json.toLocal8Bit(), &json_error));
 
-    if (json_error.error != QJsonParseError::NoError) {
-        qCWarning(ClientLogger) << "Failed to parse festival month JSON:" << json_error.errorString();
+    if (json_error.error != QJsonParseError::NoError || !jsonDoc.isArray()) {
+        qCWarning(ClientLogger) << "Failed to parse festival month JSON:"
+                                << (json_error.error == QJsonParseError::NoError
+                                        ? QStringLiteral("root is not an array")
+                                        : json_error.errorString());
         return false;
     }
     // 解析数据

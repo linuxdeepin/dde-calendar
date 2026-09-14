@@ -60,7 +60,7 @@ public slots:
     void slotScheduleUpdate();
     void slotSearchedScheduleUpdate();
     //农历信息加载完成
-    void slotLunarInfoReady();
+    void slotLunarInfoReady(const QDate &startDate, const QDate &endDate);
     //节假日信息加载完成
     void slotFestivalInfoReady();
 

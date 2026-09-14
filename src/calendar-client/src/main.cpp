@@ -11,15 +11,21 @@
 #include "schedulemanager.h"
 #include "commondef.h"
 #include "logger.h"
+#include "calendarmanage.h"
+#include "lunarmanager.h"
+#include "constants.h"
 
 #include <DApplication>
 #include <DLog>
 #include <DGuiApplicationHelper>
 
 #include <QDBusConnection>
+#include <QTimer>
 
 DWIDGET_USE_NAMESPACE
 DCORE_USE_NAMESPACE
+
+static constexpr int LUNAR_INFO_READY_TIMEOUT_MS = 800;
 
 int main(int argc, char *argv[])
 {
@@ -87,6 +93,14 @@ int main(int argc, char *argv[])
         int viewtype = CConfigSettings::getInstance()->value("base.view").toInt(&isOk);
         if (!isOk)
             viewtype = 2;
+
+        // Register the caller identity before constructing the main window.
+        // The constructor may issue D-Bus requests before the window is ready.
+        QDBusConnection dbus = QDBusConnection::sessionBus();
+        if (!dbus.registerService("com.deepin.Calendar")) {
+            qCWarning(ClientLogger) << "Failed to register DBus service:" << dbus.lastError().message();
+        }
+
         //为了与老版本配置兼容
         Calendarmainwindow ww(viewtype - 1);
         ExportedInterface einterface(&ww);
@@ -96,16 +110,68 @@ int main(int argc, char *argv[])
         einterface.registerAction("CANCEL", "cancel a schedule");
         qCDebug(ClientLogger) << "DBus actions registered: CREATE, VIEW, QUERY, CANCEL";
 
-        QDBusConnection dbus = QDBusConnection::sessionBus();
-        //如果注册失败打印出失败信息
-        if (!dbus.registerService("com.deepin.Calendar")) {
-            qCWarning(ClientLogger) << "Failed to register DBus service:" << dbus.lastError().message();
-        }
         if (!dbus.registerObject("/com/deepin/Calendar", &ww)) {
             qCWarning(ClientLogger) << "Failed to register DBus object:" << dbus.lastError().message();
         }
         ww.slotTheme(DGuiApplicationHelper::instance()->themeType());
-        ww.show();
+        //中文环境下等待预取的农历数据就绪后再显示窗口，避免首帧无农历、
+        //数据返回后再补画；超时兜底保证服务异常时窗口仍能及时显示。
+        if (CalendarManager::getInstance()->getShowLunar()) {
+            // The callback is intentionally idempotent. The window context
+            // removes the connection when it is destroyed, so no local
+            // connection handle needs to be captured by reference.
+            auto showOnce = [&ww]() {
+                if (!ww.isVisible())
+                    ww.show();
+            };
+            QTimer::singleShot(LUNAR_INFO_READY_TIMEOUT_MS, &ww, showOnce);
+
+            int defaultViewIndex = viewtype - 1;
+            if (defaultViewIndex < DDECalendar::CalendarYearWindow
+                || defaultViewIndex > DDECalendar::CalendarDayWindow) {
+                defaultViewIndex = DDECalendar::CalendarMonthWindow;
+            }
+            const QDate selectedDate = CalendarManager::getInstance()->getSelectDate();
+            QDate requiredStart = selectedDate;
+            QDate requiredEnd = selectedDate;
+            switch (defaultViewIndex) {
+            case DDECalendar::CalendarYearWindow:
+                requiredStart = QDate(selectedDate.year(), 1, 1);
+                requiredEnd = QDate(selectedDate.year(), 12, 31);
+                break;
+            case DDECalendar::CalendarMonthWindow: {
+                const QVector<QDate> monthDates =
+                    CalendarManager::getInstance()->getMonthDate(selectedDate.year(), selectedDate.month());
+                requiredStart = monthDates.first();
+                requiredEnd = monthDates.last();
+                break;
+            }
+            case DDECalendar::CalendarWeekWindow: {
+                const QVector<QDate> weekDates = CalendarManager::getInstance()->getWeekDate(selectedDate);
+                requiredStart = weekDates.first();
+                requiredEnd = weekDates.last();
+                break;
+            }
+            case DDECalendar::CalendarDayWindow:
+                break;
+            default:
+                break;
+            }
+
+            if (gLunarManager->hasHuangLiRange(requiredStart, requiredEnd)) {
+                showOnce();
+            } else {
+                QObject::connect(gLunarManager, &LunarManager::lunarInfoReady,
+                                 &ww, [showOnce, requiredStart, requiredEnd](const QDate &startDate,
+                                                                              const QDate &endDate) {
+                    if (startDate <= requiredStart && endDate >= requiredEnd) {
+                        showOnce();
+                    }
+                }, Qt::QueuedConnection);
+            }
+        } else {
+            ww.show();
+        }
 
         // Defer account data loading to event loop for faster startup
         QMetaObject::invokeMethod(gAccountManager, &AccountManager::resetAccount,

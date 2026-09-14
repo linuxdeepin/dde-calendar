@@ -56,7 +56,7 @@ QVariant ExportedInterface::invoke(const QString &action, const QString &paramet
             qCDebug(ClientLogger) << "Querying schedules with title:" << para.ADTitleName 
                                   << "from" << para.ADStartTime.toString() 
                                   << "to" << para.ADEndTime.toString();
-            DSchedule::Map scheduleMap = DSchedule::fromMapString(gLocalAccountItem->querySchedulesByExternal(para.ADTitleName, para.ADStartTime, para.ADEndTime));
+            DSchedule::Map scheduleMap = DSchedule::fromQueryResult(gLocalAccountItem->querySchedulesByExternal(para.ADTitleName, para.ADStartTime, para.ADEndTime));
             QString qstr = DDE_Calendar::getExternalSchedule(scheduleMap);
             qCDebug(ClientLogger) << "Found" << scheduleMap.size() << "schedules";
             return QVariant(qstr);

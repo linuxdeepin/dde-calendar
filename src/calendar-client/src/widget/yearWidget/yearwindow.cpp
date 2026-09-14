@@ -538,8 +538,14 @@ void CYearWindow::updateShowLunar()
     }
 
     //获取农历信息
-    getLunarInfo();
-    m_yearWidget->setLunarYearDate(m_lunarYear);
+    if (gLunarManager->hasHuangLiDay(getSelectDate())) {
+        getLunarInfo();
+        m_yearWidget->setLunarYearDate(m_lunarYear);
+    } else {
+        m_lunarYear.clear();
+        m_lunarDay.clear();
+        m_yearWidget->setLunarYearDate();
+    }
     //如果正在切换则退出
     if (m_StackedWidget->IsRunning())
         return;

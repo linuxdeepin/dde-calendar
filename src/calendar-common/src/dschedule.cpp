@@ -307,16 +307,30 @@ bool DSchedule::fromJsonString(DSchedule::Ptr &schedule, const QString &json)
         return false;
     }
 
+    if (!jsonDoc.isObject()) {
+        qCWarning(CommonLogger) << "Schedule JSON root is not an object";
+        return false;
+    }
+
     bool resBool = false;
     QJsonObject rootObj = jsonDoc.object();
-    if (rootObj.contains("schedule")) {
-        QString str = rootObj.value("schedule").toString();
+    if (rootObj.contains("schedule") && rootObj.value("schedule").isString()) {
+        const QString str = rootObj.value("schedule").toString();
         if (fromIcsString(schedule, str)) {
             if (rootObj.contains("type")) {
+                if (!rootObj.value("type").isString()) {
+                    qCWarning(CommonLogger) << "Schedule type is not a string";
+                    return false;
+                }
                 schedule->setScheduleTypeID(rootObj.value("type").toString());
             }
             if (rootObj.contains("compatibleID")) {
-                schedule->setcompatibleID(rootObj.value("compatibleID").toInt());
+                const QJsonValue compatibleID = rootObj.value("compatibleID");
+                if (!compatibleID.isDouble() || compatibleID.toDouble() != compatibleID.toInt()) {
+                    qCWarning(CommonLogger) << "Schedule compatibleID is not an integer";
+                    return false;
+                }
+                schedule->setcompatibleID(compatibleID.toInt());
             }
             resBool = true;
         }
@@ -396,20 +410,40 @@ QMap<QDate, DSchedule::List> DSchedule::fromMapString(const QString &json)
         return scheduleMap;
     }
 
-    QJsonArray rootArray = jsonDoc.array();
-    QDate date;
-    foreach (auto jsonValue, rootArray) {
-        QJsonObject jsonObj = jsonValue.toObject();
-        if (jsonObj.contains("Date")) {
-            date = dateFromString(jsonObj.value("Date").toString());
+    if (!jsonDoc.isArray()) {
+        qCWarning(CommonLogger) << "Schedule map JSON root is not an array";
+        return scheduleMap;
+    }
+
+    const QJsonArray rootArray = jsonDoc.array();
+    for (const QJsonValue &jsonValue : rootArray) {
+        if (!jsonValue.isObject()) {
+            qCWarning(CommonLogger) << "Skipping non-object schedule map entry";
+            continue;
         }
-        if (jsonObj.contains("schedule")) {
-            QJsonArray jsonArray = jsonObj.value("schedule").toArray();
-            foreach (auto scheduleValue, jsonArray) {
-                QString scheduleStr = scheduleValue.toString();
-                DSchedule::Ptr schedule = DSchedule::Ptr(new DSchedule);
-                DSchedule::fromJsonString(schedule, scheduleStr);
-                scheduleMap[date].append(schedule);
+
+        const QJsonObject jsonObj = jsonValue.toObject();
+        if (!jsonObj.value(QStringLiteral("Date")).isString()) {
+            qCWarning(CommonLogger) << "Skipping schedule map entry without a valid Date string";
+            continue;
+        }
+        const QDate date = dateFromString(jsonObj.value(QStringLiteral("Date")).toString());
+        if (!date.isValid() || !jsonObj.value(QStringLiteral("schedule")).isArray()) {
+            qCWarning(CommonLogger) << "Skipping schedule map entry with invalid date or schedule list";
+            continue;
+        }
+
+        DSchedule::List &scheduleList = scheduleMap[date];
+        for (const QJsonValue &scheduleValue : jsonObj.value(QStringLiteral("schedule")).toArray()) {
+            if (!scheduleValue.isString()) {
+                qCWarning(CommonLogger) << "Skipping non-string schedule entry";
+                continue;
+            }
+            DSchedule::Ptr schedule;
+            if (DSchedule::fromJsonString(schedule, scheduleValue.toString())) {
+                scheduleList.append(schedule);
+            } else {
+                qCWarning(CommonLogger) << "Skipping invalid schedule entry";
             }
         }
     }
@@ -450,19 +484,31 @@ QPair<QString, DSchedule::List> DSchedule::fromListString(const QString &json)
         return schedulePair;
     }
 
-    QJsonObject jsonObj = jsonDoc.object();
-    DSchedule::List scheduleList;
-    if (jsonObj.contains("query")) {
-        schedulePair.first = jsonObj.value("query").toString();
+    if (!jsonDoc.isObject()) {
+        qCWarning(CommonLogger) << "Schedule list JSON root is not an object";
+        return schedulePair;
     }
-    if (jsonObj.contains("schedules")) {
-        QJsonArray jsonArray = jsonObj.value("schedules").toArray();
-        foreach (auto scheduleValue, jsonArray) {
-            QString scheduleStr = scheduleValue.toString();
-            DSchedule::Ptr schedule = DSchedule::Ptr(new DSchedule);
-            DSchedule::fromJsonString(schedule, scheduleStr);
-            scheduleList.append(schedule);
+
+    const QJsonObject jsonObj = jsonDoc.object();
+    DSchedule::List scheduleList;
+    if (!jsonObj.value(QStringLiteral("query")).isString()
+        || !jsonObj.value(QStringLiteral("schedules")).isArray()) {
+        qCWarning(CommonLogger) << "Schedule list JSON is missing query or schedules";
+        return schedulePair;
+    }
+
+    schedulePair.first = jsonObj.value(QStringLiteral("query")).toString();
+    for (const QJsonValue &scheduleValue : jsonObj.value(QStringLiteral("schedules")).toArray()) {
+        if (!scheduleValue.isString()) {
+            qCWarning(CommonLogger) << "Skipping non-string schedule entry";
+            continue;
         }
+        DSchedule::Ptr schedule;
+        if (!DSchedule::fromJsonString(schedule, scheduleValue.toString())) {
+            qCWarning(CommonLogger) << "Skipping invalid schedule entry";
+            continue;
+        }
+        scheduleList.append(schedule);
     }
     schedulePair.second = scheduleList;
 

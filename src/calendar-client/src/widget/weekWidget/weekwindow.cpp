@@ -355,8 +355,12 @@ void CWeekWindow::updateShowLunar()
     // Ensure lunar data is loaded for the current view range
     ensureLunarDataLoaded(m_startDate, m_stopDate);
 
-    getLunarInfo();
-    m_YearLunarLabel->setText(m_lunarYear);
+    if (gLunarManager->hasHuangLiDay(getSelectDate())) {
+        getLunarInfo();
+        m_YearLunarLabel->setText(m_lunarYear);
+    } else {
+        m_YearLunarLabel->clear();
+    }
     QMap<QDate, CaHuangLiDayInfo> weekHuangLiInfo = gLunarManager->getHuangLiDayMap(m_startDate, m_stopDate);
     m_weekHeadView->setHunagLiInfo(weekHuangLiInfo);
 }

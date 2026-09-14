@@ -7,6 +7,17 @@
 
 #include <QDBusReply>
 
+namespace {
+
+bool isValidScheduleQueryResult(const QString &payload)
+{
+    const QPair<QString, DSchedule::List> result = DSchedule::fromListString(payload);
+    return !result.first.isEmpty()
+        && !DScheduleQueryPar::fromJsonString(result.first).isNull();
+}
+
+} // namespace
+
 DbusAccountRequest::DbusAccountRequest(const QString &path, const QString &interface, QObject *parent)
     : DbusRequestBase(path, interface, QDBusConnection::sessionBus(), parent)
 {
@@ -209,7 +220,12 @@ DSchedule::Map DbusAccountRequest::querySchedulesWithParameter(const DScheduleQu
         return scheduleMap;
     }
     QDBusReply<QString> scheduleReply = reply;
-    scheduleMap = DSchedule::fromMapString(scheduleReply.value());
+    const QString payload = scheduleReply.value();
+    if (!isValidScheduleQueryResult(payload)) {
+        qCWarning(PluginLogger) << "Invalid schedule query result";
+        return scheduleMap;
+    }
+    scheduleMap = DSchedule::fromQueryResult(payload);
     qCDebug(PluginLogger) << "Successfully queried" << scheduleMap.size() << "schedule dates";
     return scheduleMap;
 }
@@ -265,13 +281,25 @@ void DbusAccountRequest::slotCallFinished(CDBusPendingCallWatcher *call)
                 ret = 2;
             }
         } else if (call->getmember() == "querySchedulesWithParameter") {
-            QMap<QDate, DSchedule::List> map = DSchedule::fromMapString(str.toString());
-            qCDebug(PluginLogger) << "Successfully processed schedule query with" << map.size() << "dates";
-            emit signalGetScheduleListFinish(map);
+            const QString payload = str.toString();
+            if (!isValidScheduleQueryResult(payload)) {
+                qCWarning(PluginLogger) << "Invalid schedule query result";
+                ret = 2;
+            } else {
+                QMap<QDate, DSchedule::List> map = DSchedule::fromQueryResult(payload);
+                qCDebug(PluginLogger) << "Successfully processed schedule query with" << map.size() << "dates";
+                emit signalGetScheduleListFinish(map);
+            }
         } else if (call->getmember() == "searchSchedulesWithParameter") {
-            QMap<QDate, DSchedule::List> map = DSchedule::fromMapString(str.toString());
-            qCDebug(PluginLogger) << "Successfully processed schedule search with" << map.size() << "dates";
-            emit signalSearchScheduleListFinish(map);
+            const QString payload = str.toString();
+            if (!isValidScheduleQueryResult(payload)) {
+                qCWarning(PluginLogger) << "Invalid schedule search result";
+                ret = 2;
+            } else {
+                QMap<QDate, DSchedule::List> map = DSchedule::fromQueryResult(payload);
+                qCDebug(PluginLogger) << "Successfully processed schedule search with" << map.size() << "dates";
+                emit signalSearchScheduleListFinish(map);
+            }
         } else if (call->getmember() == "getSysColors") {
             DTypeColor::List list = DTypeColor::fromJsonString(str.toString());
             qCDebug(PluginLogger) << "Successfully processed" << list.size() << "system colors";

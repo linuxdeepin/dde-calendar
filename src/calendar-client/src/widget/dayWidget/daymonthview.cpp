@@ -372,6 +372,14 @@ void CDayMonthView::updateDateLunarDay()
         qCDebug(ClientLogger) << "Huangli state is false, returning";
         return;
     }
+    if (m_huangLiInfo.mGanZhiYear.isEmpty()
+        && m_huangLiInfo.mLunarMonthName.isEmpty()
+        && m_huangLiInfo.mLunarDayName.isEmpty()) {
+        m_currentLuna->setTextStr(QString());
+        m_yiLabel->setHuangLiText(QStringList());
+        m_jiLabel->setHuangLiText(QStringList(), 1);
+        return;
+    }
     m_currentLuna->setTextStr(m_huangLiInfo.mGanZhiYear + "年 " + "【" + m_huangLiInfo.mZodiac + "年】" + m_huangLiInfo.mGanZhiMonth + "月 " + m_huangLiInfo.mGanZhiDay + "日 ");
     QStringList yiList = m_huangLiInfo.mSuit.split(".", QT_SKIP_EMPTY_PARTS);
     QStringList jiList = m_huangLiInfo.mAvoid.split(".", QT_SKIP_EMPTY_PARTS);

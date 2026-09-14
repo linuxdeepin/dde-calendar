@@ -13,6 +13,9 @@ AccountManager::AccountManager(QObject *parent)
 {
     qCDebug(ClientLogger) << "Creating AccountManager";
     initConnect();
+    // Pure local DB read issued in parallel with getAccountList(); the UI
+    // (sidebar account titles) consumes these statuses while building, so the
+    // query must not wait for clientIsShow. Network sync stays deferred there.
     m_dbusRequest->getCalDavAccountStatusList();
 
     if (isCommunityEdition()) {
@@ -201,7 +204,7 @@ void AccountManager::slotGetCalDavAccountStatusListFinish(DCalDavAccountStatus::
 
 void AccountManager::maybeNotifyClientIsShow()
 {
-    if (!m_clientShowRequested || m_clientShowNotified || !m_calDavStatusesInitialized) {
+    if (!m_clientShowRequested || m_clientShowNotified) {
         return;
     }
 

@@ -370,6 +370,15 @@ void CalendarManager::initData()
     setTimeFormatChanged(_timeFormat);
     setDateFormatChanged(_dateFormat);
     slotGeneralSettingsUpdate();
+
+    //提前预取当前月视图42天网格的农历数据：DBus服务激活与查询在后台线程执行，
+    //与主窗口构建并行，首帧updateShowLunar()通常直接命中缓存，
+    //避免界面先显示再补画农历。
+    if (m_showLunar) {
+        const QDate _today = m_currentDateTime.date();
+        const QVector<QDate> _monthShowData = getMonthDate(_today.year(), _today.month());
+        gLunarManager->ensureLunarDataLoaded(_monthShowData.first(), _monthShowData.last());
+    }
 }
 
 /**

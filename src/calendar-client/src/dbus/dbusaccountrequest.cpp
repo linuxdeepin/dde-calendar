@@ -7,7 +7,42 @@
 #include <QDBusInterface>
 #include <QDBusMessage>
 #include <QDBusReply>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QtDebug>
+
+namespace {
+
+bool isValidScheduleQueryResult(const QString &payload)
+{
+    if (payload.isEmpty()) {
+        return false;
+    }
+
+    QJsonParseError error;
+    const QJsonDocument document = QJsonDocument::fromJson(payload.toUtf8(), &error);
+    if (error.error != QJsonParseError::NoError || !document.isObject()) {
+        return false;
+    }
+
+    const QJsonObject result = document.object();
+    if (!result.value(QStringLiteral("query")).isString()
+        || !result.value(QStringLiteral("schedules")).isArray()) {
+        return false;
+    }
+
+    const QString query = result.value(QStringLiteral("query")).toString();
+    QJsonParseError queryError;
+    const QJsonDocument queryDocument = QJsonDocument::fromJson(query.toUtf8(), &queryError);
+    if (queryError.error != QJsonParseError::NoError || !queryDocument.isObject()) {
+        return false;
+    }
+
+    return !DScheduleQueryPar::fromJsonString(query).isNull();
+}
+
+} // namespace
 
 DbusAccountRequest::DbusAccountRequest(const QString &path, const QString &interface, QObject *parent)
     : DbusRequestBase(path, interface, QDBusConnection::sessionBus(), parent)
@@ -258,12 +293,23 @@ void DbusAccountRequest::querySchedulesWithParameter(const DScheduleQueryPar::Pt
 
 bool DbusAccountRequest::querySchedulesByExternal(const DScheduleQueryPar::Ptr &params, QString &json)
 {
-    QDBusPendingReply<QString> reply = call("querySchedulesWithParameter", QVariant::fromValue(params));
+    const QString query = DScheduleQueryPar::toJsonString(params);
+    if (query.isEmpty()) {
+        qCWarning(ClientLogger) << "Cannot query schedules externally with empty parameters";
+        return false;
+    }
+
+    QDBusPendingReply<QString> reply = call("querySchedulesWithParameter", QVariant(query));
     if (reply.isError()) {
         qCWarning(ClientLogger) << "External schedule query failed:" << reply.error().message();
         return false;
     }
     json = reply.argumentAt<0>();
+    if (!isValidScheduleQueryResult(json)) {
+        qCWarning(ClientLogger) << "Invalid external schedule query result for path:" << this->path();
+        json.clear();
+        return false;
+    }
     return true;
 }
 
@@ -325,23 +371,37 @@ void DbusAccountRequest::slotCallFinished(CDBusPendingCallWatcher *call)
             qCDebug(ClientLogger) << "Processing schedule query response for path:" << this->path();
             QDBusPendingReply<QString> reply = *call;
             QString str = reply.argumentAt<0>();
-            QMap<QDate, DSchedule::List> map = DSchedule::fromQueryResult(str);
-            int scheduleCount = 0;
-            for (const DSchedule::List &schedules : map) {
-                scheduleCount += schedules.size();
+            // An invalid payload is not a valid query result: the service
+            // returns an empty string when the call is rejected or parameters
+            // are invalid, while a legitimate empty result is still valid JSON.
+            // Emitting an empty map here would wipe the loaded schedules.
+            if (!isValidScheduleQueryResult(str)) {
+                qCWarning(ClientLogger) << "Invalid schedule query result for path:" << this->path();
+                ret = 2;
+            } else {
+                QMap<QDate, DSchedule::List> map = DSchedule::fromQueryResult(str);
+                int scheduleCount = 0;
+                for (const DSchedule::List &schedules : map) {
+                    scheduleCount += schedules.size();
+                }
+                qCDebug(ClientLogger) << "Query returned schedules"
+                                        << "path:" << this->path()
+                                        << "dateCount:" << map.size()
+                                        << "scheduleCount:" << scheduleCount;
+                emit signalGetScheduleListFinish(map);
             }
-            qCDebug(ClientLogger) << "Query returned schedules"
-                                    << "path:" << this->path()
-                                    << "dateCount:" << map.size()
-                                    << "scheduleCount:" << scheduleCount;
-            emit signalGetScheduleListFinish(map);
         } else if (call->getmember() == "searchSchedulesWithParameter") {
             qCDebug(ClientLogger) << "Processing schedule search response for path:" << this->path();
             QDBusPendingReply<QString> reply = *call;
             QString str = reply.argumentAt<0>();
-            QMap<QDate, DSchedule::List> map = DSchedule::fromQueryResult(str);
-            qCDebug(ClientLogger) << "Search returned schedules for" << map.size() << "dates";
-            emit signalSearchScheduleListFinish(map);
+            if (!isValidScheduleQueryResult(str)) {
+                qCWarning(ClientLogger) << "Invalid schedule search result for path:" << this->path();
+                ret = 2;
+            } else {
+                QMap<QDate, DSchedule::List> map = DSchedule::fromQueryResult(str);
+                qCDebug(ClientLogger) << "Search returned schedules for" << map.size() << "dates";
+                emit signalSearchScheduleListFinish(map);
+            }
         } else if (call->getmember() == "getSysColors") {
             qCDebug(ClientLogger) << "Processing system colors response for path:" << this->path();
             QDBusPendingReply<QString> reply = *call;

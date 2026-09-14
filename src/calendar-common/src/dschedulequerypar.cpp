@@ -11,6 +11,38 @@
 #include <QJsonObject>
 #include <QDebug>
 
+namespace {
+
+bool readJsonInt(const QJsonObject &object, const QString &name, int &value)
+{
+    const QJsonValue jsonValue = object.value(name);
+    if (!jsonValue.isDouble()) {
+        return false;
+    }
+
+    const double number = jsonValue.toDouble();
+    const int integer = jsonValue.toInt(0);
+    if (number != integer) {
+        return false;
+    }
+
+    value = integer;
+    return true;
+}
+
+bool readJsonDateTime(const QJsonObject &object, const QString &name, QDateTime &value)
+{
+    const QJsonValue jsonValue = object.value(name);
+    if (!jsonValue.isString()) {
+        return false;
+    }
+
+    value = dtFromString(jsonValue.toString());
+    return value.isValid();
+}
+
+} // namespace
+
 DScheduleQueryPar::DScheduleQueryPar()
     : m_key("")
     , m_queryTop(1)
@@ -67,35 +99,70 @@ DScheduleQueryPar::Ptr DScheduleQueryPar::fromJsonString(const QString &queryStr
         return nullptr;
     }
 
+    if (!jsonDoc.isObject()) {
+        qCWarning(CommonLogger) << "Query parameters JSON root is not an object";
+        return nullptr;
+    }
+
     DScheduleQueryPar::Ptr queryPar = DScheduleQueryPar::Ptr(new DScheduleQueryPar);
     QJsonObject rootObj = jsonDoc.object();
-    if (rootObj.contains("key")) {
-        queryPar->setKey(rootObj.value("key").toString());
+    if (!rootObj.contains("key") || !rootObj.value("key").isString()) {
+        qCWarning(CommonLogger) << "Query parameters are missing a string key";
+        return nullptr;
     }
-    if (rootObj.contains("dtStart")) {
-        queryPar->setDtStart(dtFromString(rootObj.value("dtStart").toString()));
+    queryPar->setKey(rootObj.value("key").toString());
+
+    QDateTime dtStart;
+    QDateTime dtEnd;
+    if (!readJsonDateTime(rootObj, QStringLiteral("dtStart"), dtStart)
+        || !readJsonDateTime(rootObj, QStringLiteral("dtEnd"), dtEnd)
+        || dtStart > dtEnd) {
+        qCWarning(CommonLogger) << "Query parameters contain an invalid date range";
+        return nullptr;
     }
-    if (rootObj.contains("dtEnd")) {
-        queryPar->setDtEnd(dtFromString(rootObj.value("dtEnd").toString()));
+
+    queryPar->setDtStart(dtStart);
+    queryPar->setDtEnd(dtEnd);
+
+    int queryTypeValue = 0;
+    if (!readJsonInt(rootObj, QStringLiteral("queryType"), queryTypeValue)
+        || queryTypeValue < Query_None
+        || queryTypeValue > Query_ScheduleID) {
+        qCWarning(CommonLogger) << "Query parameters contain an invalid query type";
+        return nullptr;
     }
-    QueryType qType = Query_None;
-    if (rootObj.contains("queryType")) {
-        qType = static_cast<QueryType>(rootObj.value("queryType").toInt());
-        queryPar->setQueryType(qType);
-    }
+    const QueryType qType = static_cast<QueryType>(queryTypeValue);
+    queryPar->setQueryType(qType);
+
     switch (qType) {
     case Query_Top: {
-        if (rootObj.contains("queryTop")) {
-            queryPar->setQueryTop(rootObj.value("queryTop").toInt());
+        int queryTop = 0;
+        if (!readJsonInt(rootObj, QStringLiteral("queryTop"), queryTop) || queryTop <= 0) {
+            qCWarning(CommonLogger) << "Top query requires a positive queryTop";
+            return nullptr;
         }
+        queryPar->setQueryTop(queryTop);
     } break;
     case Query_RRule: {
-        if (rootObj.contains("queryRRule")) {
-            queryPar->setRruleType(static_cast<RRuleType>(rootObj.value("queryRRule").toInt()));
+        int rruleValue = 0;
+        if (!readJsonInt(rootObj, QStringLiteral("queryRRule"), rruleValue)
+            || rruleValue < RRule_Day
+            || rruleValue > RRule_Year) {
+            qCWarning(CommonLogger) << "RRule query contains an invalid queryRRule";
+            return nullptr;
         }
-    }
-    default:
+        queryPar->setRruleType(static_cast<RRuleType>(rruleValue));
+    } break;
+    case Query_ScheduleID:
+        if (queryPar->key().isEmpty()) {
+            qCWarning(CommonLogger) << "Schedule ID query requires a non-empty key";
+            return nullptr;
+        }
         break;
+    case Query_None:
+        break;
+    default:
+        return nullptr;
     }
     // qCDebug(CommonLogger) << "Successfully parsed DScheduleQueryPar from JSON.";
     return queryPar;
