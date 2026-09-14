@@ -1366,76 +1366,76 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="98"/>
         <source>Select account type</source>
-        <translation type="unfinished"/>
+        <translation>Valitse tilin tyyppi</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="109"/>
         <source>Automatically filled after selecting account type</source>
-        <translation type="unfinished"/>
+        <translation>Täytetään automaattisesti tilityypin valinnan jälkeen</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="110"/>
         <source>Enter username or email</source>
-        <translation type="unfinished"/>
+        <translation>Anna käyttäjänimi tai sähköpostiosoite</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="111"/>
         <source>Enter password</source>
-        <translation type="unfinished"/>
+        <translation>Anna salasana</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="118"/>
         <source>Account Type</source>
-        <translation type="unfinished"/>
+        <translation>Tilin tyyppi</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="119"/>
         <source>Server Address</source>
-        <translation type="unfinished"/>
+        <translation>Palvelimen osoite</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="120"/>
         <source>Username</source>
-        <translation type="unfinished"/>
+        <translation>Käyttäjänimi</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="121"/>
         <source>Password</source>
-        <translation type="unfinished"/>
+        <translation>Salasana</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="132"/>
         <source>Cancel</source>
         <comment>button</comment>
-        <translation type="unfinished"/>
+        <translation>Peruuta</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="133"/>
         <source>Sign In</source>
         <comment>button</comment>
-        <translation type="unfinished"/>
+        <translation>Kirjaudu sisään</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="224"/>
         <source>Edit Account</source>
-        <translation type="unfinished"/>
+        <translation>Muokkaa tiliä</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="225"/>
         <source>Save</source>
         <comment>button</comment>
-        <translation type="unfinished"/>
+        <translation>Tallenna</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="232"/>
         <source>Leave empty to keep the current password</source>
-        <translation type="unfinished"/>
+        <translation>Jätä tyhjäksi, jos haluat säilyttää nykyisen salasanan</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="510"/>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="558"/>
         <source>Please enter a valid server address.</source>
-        <translation type="unfinished"/>
+        <translation>Anna kelvollinen palvelimen osoite.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="561"/>
