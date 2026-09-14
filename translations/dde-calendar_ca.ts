@@ -1642,17 +1642,17 @@
         <location filename="../src/calendar-client/src/widget/sidebarWidget/sidebaritemwidget.cpp" line="335"/>
         <location filename="../src/calendar-client/src/widget/sidebarWidget/sidebaritemwidget.cpp" line="345"/>
         <source>Sync</source>
-        <translation type="unfinished"/>
+        <translation>Sincronització</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/widget/sidebarWidget/sidebaritemwidget.cpp" line="344"/>
         <source>Deleting...</source>
-        <translation type="unfinished"/>
+        <translation>S&apos;elimina...</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/widget/sidebarWidget/sidebaritemwidget.cpp" line="345"/>
         <source>Syncing...</source>
-        <translation type="unfinished"/>
+        <translation>Se sincronitza...</translation>
     </message>
     </context>
 </TS>
