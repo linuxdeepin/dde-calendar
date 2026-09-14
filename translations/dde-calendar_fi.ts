@@ -1440,74 +1440,74 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="561"/>
         <source>Please enter the correct username.</source>
-        <translation type="unfinished"/>
+        <translation>Anna kelvollinen käyttäjänimi.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="562"/>
         <source>Please enter the correct password.</source>
-        <translation type="unfinished"/>
+        <translation>Anna kelvollinen salasana.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="571"/>
         <source>Incorrect username or password. Please try again.</source>
-        <translation type="unfinished"/>
+        <translation>Virheellinen käyttäjänimi tai salasana. Yritä uudelleen.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="573"/>
         <source>This server does not support CalDAV.</source>
-        <translation type="unfinished"/>
+        <translation>Palvelin ei tue CalDAV-protokollaa.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="575"/>
         <source>The server rejected your login request. Please check your account permissions.</source>
-        <translation type="unfinished"/>
+        <translation>Palvelin hylkäsi kirjautumisen. Tarkista tilisi käyttöoikeudet.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="577"/>
         <source>Unable to parse the data returned by the server. Please verify the server address or try again later.</source>
-        <translation type="unfinished"/>
+        <translation>Palvelimen jäsentäminen epäonnistui. Tarkista osoite tai yritä uudelleen.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="579"/>
         <source>The server certificate is invalid.</source>
-        <translation type="unfinished"/>
+        <translation>Palvelimen sertifikaatti on virheellinen.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="583"/>
         <source>Unable to connect to the server. Please check your network connection and server address.</source>
-        <translation type="unfinished"/>
+        <translation>Palvelimeen ei saatu yhteyttä. Tarkista verkko ja palvelimen osoite.</translation>
     </message>
     </context>
     <context>
         <name>CalDavAccountListWidget</name>
     <message>
         <source>Last sync: %1</source>
-        <translation type="unfinished"/>
+        <translation>Viimeisin synkronointi: %1</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="69"/>
         <source>Last sync time</source>
-        <translation type="unfinished"/>
+        <translation>Synkronointiaika</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="151"/>
         <source>No third-party accounts added</source>
-        <translation type="unfinished"/>
+        <translation>Ei kolmannen osapuolen tilejä</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="157"/>
         <source>Add</source>
-        <translation type="unfinished"/>
+        <translation>Lisää</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="210"/>
         <source>Pending synchronization</source>
-        <translation type="unfinished"/>
+        <translation>Synkronointia odotetaan</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="210"/>
         <source>Delete</source>
-        <translation type="unfinished"/>
+        <translation>Poista</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="242"/>
