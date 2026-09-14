@@ -1652,7 +1652,7 @@
     <message>
         <location filename="../src/calendar-client/src/widget/sidebarWidget/sidebaritemwidget.cpp" line="345"/>
         <source>Syncing...</source>
-        <translation type="unfinished"/>
+        <translation>Synkronoidaan...</translation>
     </message>
     </context>
 </TS>
