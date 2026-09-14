@@ -27,12 +27,12 @@
 <context>
     <name>AccountManager</name>
     <message>
-        <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="209"/>
+        <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="233"/>
         <source>Local account</source>
         <translation>本地帳戶</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="211"/>
+        <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="235"/>
         <source>Event types</source>
         <translation>日程類型</translation>
     </message>
@@ -121,7 +121,7 @@
 <context>
     <name>CGraphicsView</name>
     <message>
-        <location filename="../calendar-client/src/view/graphicsview.cpp" line="594"/>
+        <location filename="../calendar-client/src/view/graphicsview.cpp" line="612"/>
         <source>New Event</source>
         <translation>新建日程</translation>
     </message>
@@ -158,24 +158,24 @@
 <context>
     <name>CMyScheduleView</name>
     <message>
-        <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="267"/>
+        <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="269"/>
         <source>My Event</source>
         <translation>我的日程</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="308"/>
+        <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="310"/>
         <source>OK</source>
         <comment>button</comment>
         <translation>確 定</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="312"/>
+        <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="314"/>
         <source>Delete</source>
         <comment>button</comment>
         <translation>刪 除</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="313"/>
+        <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="315"/>
         <source>Edit</source>
         <comment>button</comment>
         <translation>更 改</translation>
@@ -461,122 +461,122 @@
 <context>
     <name>CScheduleOperation</name>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="80"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="78"/>
         <source>All occurrences of a repeating event must have the same all-day status.</source>
         <translation>重複日程的所有重複必須具有相同的全天狀態。</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="81"/>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="98"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="79"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="96"/>
         <source>Do you want to change all occurrences?</source>
         <translation>您要更改所有重複嗎？</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="82"/>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="99"/>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="129"/>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="148"/>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="168"/>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="240"/>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="270"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="80"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="97"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="127"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="146"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="166"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="238"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="268"/>
         <source>Cancel</source>
         <comment>button</comment>
         <translation>取 消</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="83"/>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="100"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="81"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="98"/>
         <source>Change All</source>
         <translation>全部更改</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="97"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="95"/>
         <source>You are changing the repeating rule of this event.</source>
         <translation>您正在更改日程的重複規則。</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="127"/>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="146"/>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="166"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="125"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="144"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="164"/>
         <source>You are deleting an event.</source>
         <translation>您正在刪除日程。</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="128"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="126"/>
         <source>Are you sure you want to delete this event?</source>
         <translation>您確定要刪除此日程嗎？</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="130"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="128"/>
         <source>Delete</source>
         <comment>button</comment>
         <translation>刪 除</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="147"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="145"/>
         <source>Do you want to delete all occurrences of this event, or only the selected occurrence?</source>
         <translation>您要刪除此日程的所有重複，還是只刪除所選重複？</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="149"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="147"/>
         <source>Delete All</source>
         <translation>全部刪除</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="150"/>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="170"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="148"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="168"/>
         <source>Delete Only This Event</source>
         <translation>僅刪除此日程</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="167"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="165"/>
         <source>Do you want to delete this and all future occurrences of this event, or only the selected occurrence?</source>
         <translation>您要刪除此日程的這個重複和所有將來重複，還是只刪除所選重複？</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="169"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="167"/>
         <source>Delete All Future Events</source>
         <translation>刪除所有將來日程</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="236"/>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="266"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="234"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="264"/>
         <source>You are changing a repeating event.</source>
         <translation>您正在更改重複日程。</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="238"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="236"/>
         <source>Do you want to change only this occurrence of the event, or all occurrences?</source>
         <translation>您要更改此日程的僅這一個重複，還是更改它的所有重複？</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="241"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="239"/>
         <source>All</source>
         <translation>全部日程</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="242"/>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="272"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="240"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="270"/>
         <source>Only This Event</source>
         <translation>僅此日程</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="268"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="266"/>
         <source>Do you want to change only this occurrence of the event, or this and all future occurrences?</source>
         <translation>您要更改此日程的這個重複和所有將來重複，還是只更改所選重複？</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="271"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="269"/>
         <source>All Future Events</source>
         <translation>所有將來日程</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="383"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="381"/>
         <source>You have selected a leap month, and will be reminded according to the rules of the lunar calendar.</source>
         <translation>您選擇的是閏月，將按照農曆規則提醒</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="384"/>
+        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="382"/>
         <source>OK</source>
         <comment>button</comment>
         <translation>確 定</translation>
@@ -629,7 +629,7 @@
 <context>
     <name>CScheduleView</name>
     <message>
-        <location filename="../calendar-client/src/customWidget/scheduleview.cpp" line="314"/>
+        <location filename="../calendar-client/src/customWidget/scheduleview.cpp" line="336"/>
         <source>ALL DAY</source>
         <translation>全天</translation>
     </message>
@@ -637,75 +637,86 @@
 <context>
     <name>CSettingDialog</name>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="340"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="350"/>
         <source>Sunday</source>
         <translation>週日</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="341"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="351"/>
         <source>Monday</source>
         <translation>週一</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="358"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="352"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="371"/>
+        <source>Use System Setting</source>
+        <translation>跟隨系統</translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="369"/>
         <source>24-hour clock</source>
         <translation>24小時制</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="359"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="370"/>
         <source>12-hour clock</source>
         <translation>12小時制</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="392"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="404"/>
         <source>Manual</source>
         <translation>手動</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="393"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="405"/>
         <source>15 mins</source>
         <translation>每15分鐘</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="394"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="406"/>
         <source>30 mins</source>
         <translation>每30分鐘</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="395"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="407"/>
         <source>1 hour</source>
         <translation>每1小時</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="396"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="408"/>
         <source>24 hours</source>
         <translation>每24小時</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="407"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="419"/>
         <source>Sync Now</source>
         <translation>立即同步</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="553"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="586"/>
         <source>Last sync</source>
         <translation>最近同步時間</translation>
+    </message>
+    <message>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="778"/>
+        <source>Please go to the &lt;a href=&apos;/&apos;&gt;Control Center&lt;/a&gt; to change system settings</source>
+        <translation>請到&lt;a href=&apos;/&apos;&gt;控制中心&lt;/a&gt;更改系統設置</translation>
     </message>
 </context>
 <context>
     <name>CTimeEdit</name>
     <message>
-        <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="72"/>
+        <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="84"/>
         <source>(%1 mins)</source>
         <translation>(%1分鐘)</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="74"/>
+        <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="86"/>
         <source>(%1 hour)</source>
         <translation>(%1小時)</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="76"/>
+        <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="88"/>
         <source>(%1 hours)</source>
         <translation>(%1小時)</translation>
     </message>
@@ -828,32 +839,32 @@
 <context>
     <name>Calendarmainwindow</name>
     <message>
-        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="90"/>
+        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="92"/>
         <source>Calendar</source>
         <translation>日曆</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="395"/>
+        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="415"/>
         <source>Manage</source>
         <translation>管理</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="402"/>
+        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="422"/>
         <source>Privacy Policy</source>
         <translation>私隱政策</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="1030"/>
+        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="1079"/>
         <source>Syncing...</source>
         <translation>正在同步...</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="1040"/>
+        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="1089"/>
         <source>Sync successful</source>
         <translation>同步成功</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="1048"/>
+        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="1097"/>
         <source>Sync failed, please try later</source>
         <translation>同步失敗，請稍後再試</translation>
     </message>
@@ -869,17 +880,17 @@
 <context>
     <name>DAccountDataBase</name>
     <message>
-        <location filename="../calendar-service/src/dbmanager/daccountdatabase.cpp" line="1146"/>
+        <location filename="../calendar-service/src/dbmanager/daccountdatabase.cpp" line="1161"/>
         <source>Work</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/dbmanager/daccountdatabase.cpp" line="1148"/>
+        <location filename="../calendar-service/src/dbmanager/daccountdatabase.cpp" line="1163"/>
         <source>Life</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/dbmanager/daccountdatabase.cpp" line="1150"/>
+        <location filename="../calendar-service/src/dbmanager/daccountdatabase.cpp" line="1165"/>
         <source>Other</source>
         <translation type="unfinished"></translation>
     </message>
@@ -887,65 +898,65 @@
 <context>
     <name>DAlarmManager</name>
     <message>
-        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="169"/>
-        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="176"/>
-        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="181"/>
-        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="191"/>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="167"/>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="174"/>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="179"/>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="189"/>
         <source>Close</source>
         <comment>button</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="172"/>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="170"/>
         <source>One day before start</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="177"/>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="175"/>
         <source>Remind me tomorrow</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="182"/>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="180"/>
         <source>Remind me later</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="184"/>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="182"/>
         <source>15 mins later</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="185"/>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="183"/>
         <source>1 hour later</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="186"/>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="184"/>
         <source>4 hours later</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="187"/>
-        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="265"/>
-        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="276"/>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="185"/>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="263"/>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="274"/>
         <source>Tomorrow</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="194"/>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="192"/>
         <source>Schedule Reminder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="233"/>
-        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="242"/>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="231"/>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="240"/>
         <source>%1 to %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="262"/>
-        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="273"/>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="260"/>
+        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="271"/>
         <source>Today</source>
         <translation type="unfinished">今天</translation>
     </message>
@@ -968,7 +979,7 @@
         <translation>新建日程</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/view/draginfographicsview.cpp" line="737"/>
+        <location filename="../calendar-client/src/view/draginfographicsview.cpp" line="739"/>
         <source>New Event</source>
         <translation>新建日程</translation>
     </message>
@@ -1001,65 +1012,65 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="89"/>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="120"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="91"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="122"/>
         <source>Manage calendar</source>
         <translation>日曆管理</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="105"/>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="124"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="107"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="126"/>
         <source>Event types</source>
         <translation>日程類型</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="31"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="33"/>
         <source>Account settings</source>
         <translation>帳戶設置</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="35"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="37"/>
         <source>Account</source>
         <translation>帳戶</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="46"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="48"/>
         <source>Select items to be synced</source>
         <translation>設置您的同步項</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="49"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="51"/>
         <source>Events</source>
         <translation>日程</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="56"/>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="139"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="58"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="141"/>
         <source>General settings</source>
         <translation>通用設置</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="67"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="69"/>
         <source>Sync interval</source>
         <translation>同步頻率</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="97"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="99"/>
         <source>Calendar account</source>
         <translation>日曆帳戶</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="143"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="145"/>
         <source>General</source>
         <translation>通用</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="147"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="149"/>
         <source>First day of week</source>
         <translation>每星期開始於</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="155"/>
+        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="157"/>
         <source>Time</source>
         <translation>時間</translation>
     </message>

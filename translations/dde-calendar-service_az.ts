@@ -533,6 +533,14 @@
         <source>Last sync</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Use System Setting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Please go to the &lt;a href=&apos;/&apos;&gt;Control Center&lt;/a&gt; to change system settings</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>CTimeEdit</name>
