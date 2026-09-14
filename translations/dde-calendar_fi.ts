@@ -181,34 +181,34 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/myscheduleview.cpp" line="193"/>
         <source>Calendar Source</source>
-        <translation type="unfinished"/>
+        <translation>Kalenterin lähde</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="118"/>
         <location filename="../src/calendar-client/src/dialog/myscheduleview.cpp" line="177"/>
         <source>Local calendar</source>
-        <translation type="unfinished"/>
+        <translation>Paikallinen kalenteri</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="120"/>
         <location filename="../src/calendar-client/src/dialog/myscheduleview.cpp" line="179"/>
         <source>UOS ID</source>
-        <translation type="unfinished"/>
+        <translation>UOS ID</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="131"/>
         <source>Source: %1</source>
-        <translation type="unfinished"/>
+        <translation>Lähde: %1</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="152"/>
         <source>Organizer</source>
-        <translation type="unfinished"/>
+        <translation>Järjestäjä</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="153"/>
         <source>Attendees</source>
-        <translation type="unfinished"/>
+        <translation>Osallistujat</translation>
     </message>
 </context>
 <context>
@@ -462,12 +462,12 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1407"/>
         <source>Local calendar</source>
-        <translation type="unfinished"/>
+        <translation>Paikallinen kalenteri</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1409"/>
         <source>UOS ID</source>
-        <translation type="unfinished"/>
+        <translation>UOS ID</translation>
     </message>
 </context>
 <context>
@@ -708,32 +708,32 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="214"/>
         <source>More</source>
-        <translation type="unfinished"/>
+        <translation>Lisää</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="246"/>
         <source>Third-party accounts</source>
-        <translation type="unfinished"/>
+        <translation>Kolmannen osapuolen tilit</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="255"/>
         <source>Add</source>
-        <translation type="unfinished"/>
+        <translation>Lisää</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="304"/>
         <source>Sync items</source>
-        <translation type="unfinished"/>
+        <translation>Synkronoi kohteet</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="305"/>
         <source>Sync interval</source>
-        <translation type="unfinished"/>
+        <translation>Synkronointiväli</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="497"/>
         <source>Add schedule</source>
-        <translation type="unfinished"/>
+        <translation>Lisää tapahtuma</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="498"/>
