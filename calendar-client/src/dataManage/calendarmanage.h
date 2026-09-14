@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -81,8 +81,6 @@ signals:
     void sigNotifySidebarFirstDayChanged(int value);
 
 public slots:
-    //关联dbus信号，每周首日改变事触发
-    void weekBeginsChanged(int value);
     //农历更新成功刷新界面
     void slotGetLunarSuccess();
 

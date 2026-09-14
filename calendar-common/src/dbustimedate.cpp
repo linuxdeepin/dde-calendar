@@ -1,9 +1,9 @@
-// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "dbustimedate.h"
-#include "ddlogClient.h"
+#include "ddlogCommon.h"
 
 #include <QDBusPendingReply>
 #include <QDBusReply>
@@ -11,7 +11,7 @@
 #include <QDBusInterface>
 #include <QElapsedTimer>
 
-using namespace DDLOG_CLIENT;
+using namespace DDLOG_COMMON;
 
 #define NETWORK_DBUS_INTEERFACENAME "com.deepin.daemon.Timedate"
 #define NETWORK_DBUS_NAME "com.deepin.daemon.Timedate"
@@ -26,11 +26,11 @@ DBusTimedate::DBusTimedate(QObject *parent)
                                                "org.freedesktop.DBus.Properties",
                                                QLatin1String("PropertiesChanged"), this,
                                                SLOT(propertiesChanged(QDBusMessage)))) {
-        qCWarning(calendar_client) << "the PropertiesChanged was fail!";
-        qCWarning(calendar_client) << this->lastError();
+        qCWarning(calendar_common) << "the PropertiesChanged was fail!";
+        qCWarning(calendar_common) << this->lastError();
     }
 
-    m_hasDateTimeFormat = getHasDateTimeFormat();
+    initPropertyFlags();
 }
 
 int DBusTimedate::shortTimeFormat()
@@ -43,6 +43,31 @@ int DBusTimedate::shortDateFormat()
 {
     //如果存在对应的时间设置则获取，否则默认为1
     return m_hasDateTimeFormat ? getPropertyByName("ShortDateFormat").toInt() : 1;
+}
+
+Qt::DayOfWeek DBusTimedate::weekBegins()
+{
+    // dcc 一周首日支持周一至周日七选一，写入值为 0 基（0=周一 … 6=周日，dcc 5.10 实测），
+    // 加一转为 Qt::DayOfWeek（1=周一 … 7=周日）；视图层支持任意一周首日，跟随系统时原样透传
+    if (m_hasDateTimeFormat) {
+        const int day = getPropertyByName("WeekBegins").toInt();
+        if (day >= 0 && day <= 6) {
+            return static_cast<Qt::DayOfWeek>(day + 1);
+        }
+        return Qt::Monday;
+    }
+    return Qt::Monday;
+}
+
+bool DBusTimedate::hasUse24HourFormat()
+{
+    return m_hasUse24HourFormat;
+}
+
+bool DBusTimedate::use24HourFormat()
+{
+    // dcc 的 12/24 小时制开关实际写入 Use24HourFormat；ShortTimeFormat 在切换时保持不变
+    return m_hasUse24HourFormat ? getPropertyByName("Use24HourFormat").toBool() : true;
 }
 
 void DBusTimedate::propertiesChanged(const QDBusMessage &msg)
@@ -61,6 +86,10 @@ void DBusTimedate::propertiesChanged(const QDBusMessage &msg)
             emit ShortTimeFormatChanged(changedProps[prop].toInt());
         } else if (prop == "ShortDateFormat") {
             emit ShortDateFormatChanged(changedProps[prop].toInt());
+        } else if (prop == "WeekBegins") {
+            emit WeekBeginsChanged(changedProps[prop].toInt());
+        } else if (prop == "Use24HourFormat") {
+            emit use24HourFormatChanged(changedProps[prop].toBool());
         }
     }
 }
@@ -71,7 +100,7 @@ QVariant DBusTimedate::getPropertyByName(const char *porpertyName)
     return dbusinterface.property(porpertyName);
 }
 
-bool DBusTimedate::getHasDateTimeFormat()
+void DBusTimedate::initPropertyFlags()
 {
     QDBusMessage msg = QDBusMessage::createMethodCall(NETWORK_DBUS_NAME,
                                                       NETWORK_DBUS_PATH,
@@ -81,12 +110,8 @@ bool DBusTimedate::getHasDateTimeFormat()
     QDBusMessage reply =  QDBusConnection::sessionBus().call(msg);
 
     if (reply.type() == QDBusMessage::ReplyMessage) {
-        QVariant variant = reply.arguments().first();
-
-        return variant.toString().contains("\"ShortDateFormat\"");
-    } else {
-        return false;
+        QString xml = reply.arguments().first().toString();
+        m_hasDateTimeFormat = xml.contains("\"ShortDateFormat\"");
+        m_hasUse24HourFormat = xml.contains("\"Use24HourFormat\"");
     }
-
-
 }

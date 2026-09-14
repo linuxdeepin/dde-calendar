@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -8,11 +8,43 @@
 #include "calendarprogramexitcontrol.h"
 #include "ddlogService.h"
 
+#include <QStandardPaths>
+
 using namespace DDLOG_SERVICE;
 
+const QString firstDayOfWeek_key = "firstDayOfWeek";
+const QString shortTimeFormat_key = "shortTimeFormat";
+const QString firstDayOfWeekSource_key = "firstDayOfWeekSource";
+const QString shortTimeFormatSource_key = "shortTimeFormatSource";
+
 DAccountManageModule::DAccountManageModule(QObject *parent)
-    : QObject(parent), m_syncFileManage(new SyncFileManage()), m_accountManagerDB(new DAccountManagerDataBase)
+    : QObject(parent)
+    , m_syncFileManage(new SyncFileManage())
+    , m_accountManagerDB(new DAccountManagerDataBase)
+    , m_reginFormatConfig(DTK_CORE_NAMESPACE::DConfig::createGeneric("org.deepin.region-format", QString(), this))
+    , m_timeDateDbus(this)
+    , m_settings(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation) + "/config.ini", QSettings::IniFormat)
 {
+    //监听控制中心格式设置变化：deepin V23 环境走 dconfig，旧环境（UOS 专业版）走 com.deepin.daemon.Timedate
+    if (m_reginFormatConfig->isValid()) {
+        connect(m_reginFormatConfig,
+                &DTK_CORE_NAMESPACE::DConfig::valueChanged,
+                this,
+                &DAccountManageModule::slotSettingChange);
+    } else {
+        connect(&m_timeDateDbus,
+                &DBusTimedate::ShortTimeFormatChanged,
+                this,
+                &DAccountManageModule::slotSettingChange);
+        connect(&m_timeDateDbus,
+                &DBusTimedate::WeekBeginsChanged,
+                this,
+                &DAccountManageModule::slotSettingChange);
+        connect(&m_timeDateDbus,
+                &DBusTimedate::use24HourFormatChanged,
+                this,
+                &DAccountManageModule::slotSettingChange);
+    }
     m_isSupportUid = m_syncFileManage->getSyncoperation()->hasAvailable();
     //新文件路径
     QString newDbPath = getDBPath();
@@ -46,7 +78,7 @@ DAccountManageModule::DAccountManageModule(QObject *parent)
             }
         }
     }
-    m_generalSetting = m_accountManagerDB->getCalendarGeneralSettings();
+    m_generalSetting = getGeneralSettings();
 
     connect(&m_timer, &QTimer::timeout, this, &DAccountManageModule::slotClientIsOpen);
     m_timer.start(2000);
@@ -70,7 +102,7 @@ QString DAccountManageModule::getAccountList()
 QString DAccountManageModule::getCalendarGeneralSettings()
 {
     QString cgSetStr;
-    m_generalSetting = m_accountManagerDB->getCalendarGeneralSettings();
+    m_generalSetting = getGeneralSettings();
     DCalendarGeneralSettings::toJsonString(m_generalSetting, cgSetStr);
     return cgSetStr;
 }
@@ -80,7 +112,7 @@ void DAccountManageModule::setCalendarGeneralSettings(const QString &cgSet)
     DCalendarGeneralSettings::Ptr cgSetPtr = DCalendarGeneralSettings::Ptr(new DCalendarGeneralSettings);
     DCalendarGeneralSettings::fromJsonString(cgSetPtr, cgSet);
     if (m_generalSetting != cgSetPtr) {
-        m_accountManagerDB->setCalendarGeneralSettings(cgSetPtr);
+        setGeneralSettings(cgSetPtr);
         DCalendarGeneralSettings::Ptr tmpSetting = DCalendarGeneralSettings::Ptr(m_generalSetting->clone());
         m_generalSetting = cgSetPtr;
         if (tmpSetting->firstDayOfWeek() != m_generalSetting->firstDayOfWeek()) {
@@ -101,7 +133,7 @@ void DAccountManageModule::setFirstDayOfWeek(const int firstday)
 {
     if (m_generalSetting->firstDayOfWeek() != firstday) {
         m_generalSetting->setFirstDayOfWeek(static_cast<Qt::DayOfWeek>(firstday));
-        m_accountManagerDB->setCalendarGeneralSettings(m_generalSetting);
+        setGeneralSettings(m_generalSetting);
         foreach (auto account, m_accountList) {
             if (account->accountType() == DAccount::Account_UnionID) {
                 m_accountModuleMap[account->accountID()]->accountDownload();
@@ -119,7 +151,7 @@ void DAccountManageModule::setTimeFormatType(const int timeType)
 {
     if (m_generalSetting->timeShowType() != timeType) {
         m_generalSetting->setTimeShowType(static_cast<DCalendarGeneralSettings::TimeShowType>(timeType));
-        m_accountManagerDB->setCalendarGeneralSettings(m_generalSetting);
+        setGeneralSettings(m_generalSetting);
         foreach (auto account, m_accountList) {
             if (account->accountType() == DAccount::Account_UnionID) {
                 m_accountModuleMap[account->accountID()]->accountDownload();
@@ -329,6 +361,96 @@ void DAccountManageModule::slotTimeFormatType(const int timeType)
     }
 }
 
+DCalendarGeneralSettings::GeneralSettingSource DAccountManageModule::getFirstDayOfWeekSource()
+{
+    //默认跟随系统
+    auto val = m_settings.value(firstDayOfWeekSource_key, DCalendarGeneralSettings::Source_System);
+    return static_cast<DCalendarGeneralSettings::GeneralSettingSource>(val.toInt());
+}
+
+void DAccountManageModule::setFirstDayOfWeekSource(const DCalendarGeneralSettings::GeneralSettingSource source)
+{
+    m_settings.setValue(firstDayOfWeekSource_key, source);
+    //切回跟随系统时立即合并控制中心取值再广播，避免客户端仍收到切换前的旧值
+    if (source == DCalendarGeneralSettings::Source_System) {
+        auto cg = getGeneralSettings();
+        if (cg->firstDayOfWeek() != m_generalSetting->firstDayOfWeek()) {
+            m_generalSetting->setFirstDayOfWeek(cg->firstDayOfWeek());
+        }
+    }
+    emit firstDayOfWeekChange();
+}
+
+DCalendarGeneralSettings::GeneralSettingSource DAccountManageModule::getTimeFormatTypeSource()
+{
+    //默认跟随系统
+    auto val = m_settings.value(shortTimeFormatSource_key, DCalendarGeneralSettings::Source_System);
+    return static_cast<DCalendarGeneralSettings::GeneralSettingSource>(val.toInt());
+}
+
+void DAccountManageModule::setTimeFormatTypeSource(const DCalendarGeneralSettings::GeneralSettingSource source)
+{
+    m_settings.setValue(shortTimeFormatSource_key, source);
+    //切回跟随系统时立即合并控制中心取值再广播，避免客户端仍收到切换前的旧值
+    if (source == DCalendarGeneralSettings::Source_System) {
+        auto cg = getGeneralSettings();
+        if (cg->timeShowType() != m_generalSetting->timeShowType()) {
+            m_generalSetting->setTimeShowType(cg->timeShowType());
+        }
+    }
+    emit timeFormatTypeChange();
+}
+
+//获取通用设置
+DCalendarGeneralSettings::Ptr DAccountManageModule::getGeneralSettings()
+{
+    auto cg = m_accountManagerDB->getCalendarGeneralSettings();
+    //一周首日来源为跟随系统时，使用控制中心的设置
+    if (getFirstDayOfWeekSource() == DCalendarGeneralSettings::Source_System) {
+        // deepin V23 使用 dconfig 存储系统配置
+        if (m_reginFormatConfig->isValid()) {
+            bool ok;
+            auto dayofWeek = Qt::DayOfWeek(m_reginFormatConfig->value(firstDayOfWeek_key).toInt(&ok));
+            if (ok) {
+                cg->setFirstDayOfWeek(dayofWeek);
+            } else {
+                qCWarning(calendar_service) << "Unable to get first day of week from control center config file";
+            }
+        } else {
+            // UOS 专业版使用 dbus 获取系统配置
+            cg->setFirstDayOfWeek(m_timeDateDbus.weekBegins());
+        }
+    }
+    //时间显示格式来源为跟随系统时，使用控制中心的设置
+    if (getTimeFormatTypeSource() == DCalendarGeneralSettings::Source_System) {
+        if (m_reginFormatConfig->isValid()) {
+            auto shortTimeFormat = m_reginFormatConfig->value(shortTimeFormat_key).toString();
+            if (shortTimeFormat.isEmpty()) {
+                qCWarning(calendar_service) << "Unable to get short time format from control center config file";
+            } else if (shortTimeFormat.contains("ap")) {
+                cg->setTimeShowType(DCalendarGeneralSettings::Twelve);
+            } else {
+                cg->setTimeShowType(DCalendarGeneralSettings::TwentyFour);
+            }
+        } else {
+            // UOS 专业版：12/24 小时制的真实载体是 Use24HourFormat（dcc 开关切换时 ShortTimeFormat 不变），
+            // 老守护进程无该属性时回退上游的 ShortTimeFormat 语义（0为12小时制，其余为24小时制）
+            bool twentyFour = m_timeDateDbus.hasUse24HourFormat()
+                    ? m_timeDateDbus.use24HourFormat()
+                    : (m_timeDateDbus.shortTimeFormat() != 0);
+            cg->setTimeShowType(twentyFour ? DCalendarGeneralSettings::TwentyFour
+                                           : DCalendarGeneralSettings::Twelve);
+        }
+    }
+    return cg;
+}
+
+//保存通用设置
+void DAccountManageModule::setGeneralSettings(const DCalendarGeneralSettings::Ptr &cgSet)
+{
+    m_accountManagerDB->setCalendarGeneralSettings(cgSet);
+}
+
 void DAccountManageModule::slotUidLoginStatueChange(const int status)
 {
     //因为有时登录成功会触发2次
@@ -424,14 +546,14 @@ void DAccountManageModule::slotSwitcherChange(const bool state)
 
 void DAccountManageModule::slotSettingChange()
 {
-    DCalendarGeneralSettings::Ptr newSetting = m_accountManagerDB->getCalendarGeneralSettings();
+    DCalendarGeneralSettings::Ptr newSetting = getGeneralSettings();
     if (newSetting->firstDayOfWeek() != m_generalSetting->firstDayOfWeek()) {
         m_generalSetting->setFirstDayOfWeek(newSetting->firstDayOfWeek());
         emit firstDayOfWeekChange();
     }
 
     if (newSetting->timeShowType() != m_generalSetting->timeShowType()) {
-        m_generalSetting->setTimeShowType(m_generalSetting->timeShowType());
+        m_generalSetting->setTimeShowType(newSetting->timeShowType());
         emit timeFormatTypeChange();
     }
 }

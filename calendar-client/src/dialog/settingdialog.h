@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -27,6 +27,7 @@ private:
     QWidget *createManualSyncButton(QObject *obj);
     QWidget *createJobTypeListView(QObject *obj);
     DIconButton *createTypeAddButton();
+    QWidget *createControlCenterLink(QObject *obj);
 
 public slots:
     void slotGeneralSettingsUpdate();

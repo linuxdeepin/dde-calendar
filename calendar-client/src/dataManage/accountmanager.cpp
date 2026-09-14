@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -176,6 +176,30 @@ void AccountManager::setTimeFormatType(int value)
 {
     m_settings->setTimeShowType(static_cast<DCalendarGeneralSettings::TimeShowType>(value));
     m_dbusRequest->setTimeFormatType(value);
+}
+
+//设置一周首日来源
+void AccountManager::setFirstDayofWeekSource(DCalendarGeneralSettings::GeneralSettingSource value)
+{
+    m_dbusRequest->setFirstDayofWeekSource(value);
+}
+
+//设置时间显示格式来源
+void AccountManager::setTimeFormatTypeSource(DCalendarGeneralSettings::GeneralSettingSource value)
+{
+    m_dbusRequest->setTimeFormatTypeSource(value);
+}
+
+//获取一周首日来源
+DCalendarGeneralSettings::GeneralSettingSource AccountManager::getFirstDayofWeekSource()
+{
+    return m_dbusRequest->getFirstDayofWeekSource();
+}
+
+//获取时间显示格式来源
+DCalendarGeneralSettings::GeneralSettingSource AccountManager::getTimeFormatTypeSource()
+{
+    return m_dbusRequest->getTimeFormatTypeSource();
 }
 
 /**

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -33,6 +33,56 @@ void DbusAccountManagerRequest::setTimeFormatType(int value)
 {
     QDBusInterface interface(this->service(), this->path(), this->interface(), QDBusConnection::sessionBus(), this);
     interface.setProperty("timeFormatType", QVariant(value));
+}
+
+/**
+ * @brief DbusAccountManagerRequest::setFirstDayofWeekSource
+ * 设置一周首日来源
+ */
+void DbusAccountManagerRequest::setFirstDayofWeekSource(DCalendarGeneralSettings::GeneralSettingSource value)
+{
+    QDBusInterface interface(this->service(), this->path(), this->interface(), QDBusConnection::sessionBus(), this);
+    interface.setProperty("firstDayOfWeekSource", QVariant(value));
+}
+
+/**
+ * @brief DbusAccountManagerRequest::setTimeFormatTypeSource
+ * 设置时间显示格式来源
+ */
+void DbusAccountManagerRequest::setTimeFormatTypeSource(DCalendarGeneralSettings::GeneralSettingSource value)
+{
+    QDBusInterface interface(this->service(), this->path(), this->interface(), QDBusConnection::sessionBus(), this);
+    interface.setProperty("timeFormatTypeSource", QVariant(value));
+}
+
+/**
+ * @brief DbusAccountManagerRequest::getFirstDayofWeekSource
+ * 获取一周首日来源
+ */
+DCalendarGeneralSettings::GeneralSettingSource DbusAccountManagerRequest::getFirstDayofWeekSource()
+{
+    QDBusInterface interface(this->service(), this->path(), this->interface(), QDBusConnection::sessionBus(), this);
+    bool ok;
+    auto val = interface.property("firstDayOfWeekSource").toInt(&ok);
+    if (ok) {
+        return static_cast<DCalendarGeneralSettings::GeneralSettingSource>(val);
+    }
+    return DCalendarGeneralSettings::Source_System;
+}
+
+/**
+ * @brief DbusAccountManagerRequest::getTimeFormatTypeSource
+ * 获取时间显示格式来源
+ */
+DCalendarGeneralSettings::GeneralSettingSource DbusAccountManagerRequest::getTimeFormatTypeSource()
+{
+    QDBusInterface interface(this->service(), this->path(), this->interface(), QDBusConnection::sessionBus(), this);
+    bool ok;
+    auto val = interface.property("timeFormatTypeSource").toInt(&ok);
+    if (ok) {
+        return static_cast<DCalendarGeneralSettings::GeneralSettingSource>(val);
+    }
+    return DCalendarGeneralSettings::Source_System;
 }
 
 /**

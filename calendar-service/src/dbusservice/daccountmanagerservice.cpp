@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -73,6 +73,9 @@ QString DAccountManagerService::getCalendarGeneralSettings()
 void DAccountManagerService::setCalendarGeneralSettings(const QString &cgSet)
 {
     DServiceExitControl exitControl;
+    //通用设置被显式写入（如云同步下发），来源切回日历自身
+    m_accountManager->setFirstDayOfWeekSource(DCalendarGeneralSettings::Source_Database);
+    m_accountManager->setTimeFormatTypeSource(DCalendarGeneralSettings::Source_Database);
     m_accountManager->setCalendarGeneralSettings(cgSet);
 }
 
@@ -110,6 +113,8 @@ int DAccountManagerService::getfirstDayOfWeek() const
 void DAccountManagerService::setFirstDayOfWeek(const int firstday)
 {
     DServiceExitControl exitControl;
+    //用户在日历中手动设置，来源切回日历自身
+    m_accountManager->setFirstDayOfWeekSource(DCalendarGeneralSettings::Source_Database);
     m_accountManager->setFirstDayOfWeek(firstday);
 }
 
@@ -122,5 +127,33 @@ int DAccountManagerService::getTimeFormatType() const
 void DAccountManagerService::setTimeFormatType(const int timeType)
 {
     DServiceExitControl exitControl;
+    //用户在日历中手动设置，来源切回日历自身
+    m_accountManager->setTimeFormatTypeSource(DCalendarGeneralSettings::Source_Database);
     m_accountManager->setTimeFormatType(timeType);
+}
+
+int DAccountManagerService::getFirstDayOfWeekSource()
+{
+    return static_cast<int>(m_accountManager->getFirstDayOfWeekSource());
+}
+
+void DAccountManagerService::setFirstDayOfWeekSource(const int source)
+{
+    if (source >= DCalendarGeneralSettings::Source_Database
+            && source < DCalendarGeneralSettings::Source_Unknown) {
+        m_accountManager->setFirstDayOfWeekSource(static_cast<DCalendarGeneralSettings::GeneralSettingSource>(source));
+    }
+}
+
+int DAccountManagerService::getTimeFormatTypeSource()
+{
+    return static_cast<int>(m_accountManager->getTimeFormatTypeSource());
+}
+
+void DAccountManagerService::setTimeFormatTypeSource(const int source)
+{
+    if (source >= DCalendarGeneralSettings::Source_Database
+            && source < DCalendarGeneralSettings::Source_Unknown) {
+        m_accountManager->setTimeFormatTypeSource(static_cast<DCalendarGeneralSettings::GeneralSettingSource>(source));
+    }
 }

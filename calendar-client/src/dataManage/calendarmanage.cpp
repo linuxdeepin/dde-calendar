@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -339,15 +339,6 @@ void CalendarManager::initConnection()
     connect(m_timeDateDbus, &DaemonTimeDate::ShortTimeFormatChanged, this, &CalendarManager::slotTimeFormatChanged);  // add time format slot.
     connect(m_timeDateDbus, &DaemonTimeDate::ShortDateFormatChanged, this, &CalendarManager::slotDateFormatChanged);
     connect(m_timeDateDbus, &DaemonTimeDate::ShortDateFormatChanged, this, &CalendarManager::signalDateFormatChanged);
-}
-
-/**
- * @brief CalendarManager::WeekBeginsChanged    关联dbus信号，每周首日改变事触发
- * @param value
- */
-void CalendarManager::weekBeginsChanged(int value)
-{
-    setFirstDayOfWeek(value);
 }
 
 /**

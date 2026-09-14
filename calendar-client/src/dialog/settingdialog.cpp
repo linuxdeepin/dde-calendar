@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -11,8 +11,10 @@
 #include "units.h"
 
 #include <QSpacerItem>
+#include <QDBusInterface>
 
 #include <DComboBox>
+#include <DLabel>
 #include <DSysInfo>
 #include <DSettingsGroup>
 #include <DSettingsOption>
@@ -155,6 +157,13 @@ static CalendarSettingSetting setting_general = {
                     QObject::tr("Time"),  //name
                     "Time",               //type
                     ""                    //default
+                },
+
+                {
+                    "control-center-button", //key
+                    "",                      //name
+                    "ControlCenterLink",     //type
+                    ""                       //default
                 }
             }
         }
@@ -176,6 +185,7 @@ void CSettingDialog::initView()
     widgetFactory()->registerWidget("login",              UserloginWidget::createloginButton);
     widgetFactory()->registerWidget("FirstDayofWeek",     std::bind(&CSettingDialog::createFirstDayofWeekWidget,  this, std::placeholders::_1));
     widgetFactory()->registerWidget("Time",               std::bind(&CSettingDialog::createTimeTypeWidget,        this, std::placeholders::_1));
+    widgetFactory()->registerWidget("ControlCenterLink",  std::bind(&CSettingDialog::createControlCenterLink,     this, std::placeholders::_1));
     widgetFactory()->registerWidget("AccountCombobox",    std::bind(&CSettingDialog::createAccountCombobox,       this, std::placeholders::_1));
     widgetFactory()->registerWidget("JobTypeListView",    std::bind(&CSettingDialog::createJobTypeListView,       this, std::placeholders::_1));
     widgetFactory()->registerWidget("SyncTagRadioButton", std::bind(&CSettingDialog::createSyncTagRadioButton,    this, std::placeholders::_1));
@@ -284,8 +294,10 @@ void CSettingDialog::initConnect()
     connect(gAccountManager, &AccountManager::signalAccountUpdate, this, &CSettingDialog::slotAccountUpdate);
     connect(gAccountManager, &AccountManager::signalLogout, this, &CSettingDialog::slotLogout);
     connect(gAccountManager, &AccountManager::signalAccountStateChange, this, &CSettingDialog::slotAccountStateChange);
-    connect(m_firstDayofWeekCombobox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &CSettingDialog::slotFirstDayofWeekCurrentChanged);
-    connect(m_timeTypeCombobox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &CSettingDialog::slotTimeTypeCurrentChanged);
+    //一周首日/时制下拉框用 activated 而非 currentIndexChanged：程序性 setCurrentIndex（初始化、
+    //跟随系统广播刷新）会触发 currentIndexChanged，把"跟随系统"来源悄悄写回"日历自身"
+    connect(m_firstDayofWeekCombobox, QOverload<int>::of(&QComboBox::activated), this, &CSettingDialog::slotFirstDayofWeekCurrentChanged);
+    connect(m_timeTypeCombobox, QOverload<int>::of(&QComboBox::activated), this, &CSettingDialog::slotTimeTypeCurrentChanged);
     connect(m_accountComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &CSettingDialog::slotAccountCurrentChanged);
     connect(m_typeAddBtn, &DIconButton::clicked, this, &CSettingDialog::slotTypeAddBtnClickded);
     //当日常类型超过上限时，更新button的状态
@@ -339,6 +351,7 @@ void CSettingDialog::initFirstDayofWeekWidget()
     m_firstDayofWeekCombobox->setFixedSize(150, 36);
     m_firstDayofWeekCombobox->addItem(tr("Sunday"));
     m_firstDayofWeekCombobox->addItem(tr("Monday"));
+    m_firstDayofWeekCombobox->addItem(tr("Use System Setting"));
 
     QHBoxLayout *layout = new QHBoxLayout(m_firstDayofWeekWidget);
     layout->setContentsMargins(0, 0, 0, 0);
@@ -357,6 +370,7 @@ void CSettingDialog::initTimeTypeWidget()
     m_timeTypeCombobox->setFixedSize(150, 36);
     m_timeTypeCombobox->addItem(tr("24-hour clock"));
     m_timeTypeCombobox->addItem(tr("12-hour clock"));
+    m_timeTypeCombobox->addItem(tr("Use System Setting"));
 
     QHBoxLayout *layout = new QHBoxLayout(m_timeTypeWidget);
     layout->setContentsMargins(0, 0, 0, 0);
@@ -448,28 +462,49 @@ void CSettingDialog::slotLogout(DAccount::Type type)
 void CSettingDialog::slotFirstDayofWeekCurrentChanged(int index)
 {
     DCalendarGeneralSettings::Ptr setting = gAccountManager->getGeneralSettings();
-    if (index == setting->firstDayOfWeek() % 7) {
-        return;
-    }
-    //此次只设置一周首日，不刷新界面
     if (index == 0) {
+        //来源为跟随系统时即使取值相同也须切回日历自身，否则选择会在下次刷新时弹回"跟随系统"
+        if (gAccountManager->getFirstDayofWeekSource() != DCalendarGeneralSettings::Source_System
+                && setting && setting->firstDayOfWeek() == 7) {
+            return;
+        }
+        //此次只设置一周首日，不刷新界面
         gAccountManager->setFirstDayofWeek(7);
         gCalendarManager->setFirstDayOfWeek(7, false);
     } else if (index == 1) {
+        if (gAccountManager->getFirstDayofWeekSource() != DCalendarGeneralSettings::Source_System
+                && setting && setting->firstDayOfWeek() == 1) {
+            return;
+        }
+        //此次只设置一周首日，不刷新界面
         gAccountManager->setFirstDayofWeek(1);
         gCalendarManager->setFirstDayOfWeek(1, false);
+    } else {
+        //跟随系统，由服务端读取控制中心配置后广播刷新
+        if (gAccountManager->getFirstDayofWeekSource() != DCalendarGeneralSettings::Source_System) {
+            gAccountManager->setFirstDayofWeekSource(DCalendarGeneralSettings::Source_System);
+        }
     }
 }
 
 void CSettingDialog::slotTimeTypeCurrentChanged(int index)
 {
     DCalendarGeneralSettings::Ptr setting = gAccountManager->getGeneralSettings();
-    if (index == setting->timeShowType()) {
-        return;
+    if (index == 0 || index == 1) {
+        //来源为跟随系统时即使取值相同也须切回日历自身，否则选择会在下次刷新时弹回"跟随系统"
+        if (gAccountManager->getTimeFormatTypeSource() != DCalendarGeneralSettings::Source_System
+                && setting && setting->timeShowType() == index) {
+            return;
+        }
+        gAccountManager->setTimeFormatType(index);
+        //设置时间显示格式不刷新界面
+        gCalendarManager->setTimeShowType(index, false);
+    } else {
+        //跟随系统，由服务端读取控制中心配置后广播刷新
+        if (gAccountManager->getTimeFormatTypeSource() != DCalendarGeneralSettings::Source_System) {
+            gAccountManager->setTimeFormatTypeSource(DCalendarGeneralSettings::Source_System);
+        }
     }
-    gAccountManager->setTimeFormatType(index);
-    //设置时间显示格式不刷新界面
-    gCalendarManager->setTimeShowType(index, false);
 }
 
 void CSettingDialog::slotAccountCurrentChanged(int index)
@@ -584,14 +619,16 @@ void CSettingDialog::setFirstDayofWeek(int value)
     if (!m_firstDayofWeekCombobox) {
         return;
     }
-    //设置一周首日并刷新界面
-    if (value == 1) {
+    //来源为跟随系统时选中最后一项
+    if (gAccountManager->getFirstDayofWeekSource() == DCalendarGeneralSettings::Source_System) {
+        m_firstDayofWeekCombobox->setCurrentIndex(m_firstDayofWeekCombobox->count() - 1);
+    } else if (value == 1) {
         m_firstDayofWeekCombobox->setCurrentIndex(1);
-        gCalendarManager->setFirstDayOfWeek(1, true);
     } else {
         m_firstDayofWeekCombobox->setCurrentIndex(0);
-        gCalendarManager->setFirstDayOfWeek(7, true);
     }
+    //设置一周首日并刷新界面（跟随系统时 value 可为周一至周日任意一天，视图层支持任意首日）
+    gCalendarManager->setFirstDayOfWeek(value, true);
 }
 
 
@@ -603,8 +640,13 @@ void CSettingDialog::setTimeType(int value)
     if (value > 1 || value < 0) {
         value = 0;
     }
-    //设置时间显示格式并刷新界面
-    m_timeTypeCombobox->setCurrentIndex(value);
+    //来源为跟随系统时选中最后一项
+    if (gAccountManager->getTimeFormatTypeSource() == DCalendarGeneralSettings::Source_System) {
+        m_timeTypeCombobox->setCurrentIndex(m_timeTypeCombobox->count() - 1);
+    } else {
+        //设置时间显示格式并刷新界面
+        m_timeTypeCombobox->setCurrentIndex(value);
+    }
     gCalendarManager->setTimeShowType(value, true);
 }
 
@@ -727,4 +769,30 @@ QWidget *CSettingDialog::createJobTypeListView(QObject *)
 DIconButton *CSettingDialog::createTypeAddButton()
 {
     return m_typeAddBtn;
+}
+
+QWidget *CSettingDialog::createControlCenterLink(QObject *obj)
+{
+    DLabel *myLabel = new DLabel(tr("Please go to the <a href='/'>Control Center</a> to change system settings"), this);
+    myLabel->setTextFormat(Qt::RichText);
+    myLabel->setFixedHeight(36);
+    connect(myLabel, &DLabel::linkActivated, this, [this] {
+        //跳转控制中心时间日期页；UOS 专业版为 com.deepin.dde.ControlCenter（无新版 ControlCenter1 服务），
+        //其 ShowPage 需 module/page 双参数，单参数调用会因参数不匹配被静默丢弃，故用 ShowModule
+        QDBusInterface controlCenter("com.deepin.dde.ControlCenter",
+                                     "/com/deepin/dde/ControlCenter",
+                                     "com.deepin.dde.ControlCenter",
+                                     QDBusConnection::sessionBus(),
+                                     this);
+        controlCenter.asyncCall("ShowModule", "datetime");
+    });
+    QWidget *w = new QWidget(this);
+    QHBoxLayout *layout = new QHBoxLayout(w);
+    layout->setContentsMargins(0, 0, 10, 0);
+    layout->setSpacing(0);
+    layout->addStretch(10);
+    layout->addWidget(myLabel, 1);
+
+    w->setLayout(layout);
+    return w;
 }

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -20,6 +20,14 @@ public:
     void setFirstDayofWeek(int);
     //设置时间显示格式
     void setTimeFormatType(int);
+    //设置一周首日来源
+    void setFirstDayofWeekSource(DCalendarGeneralSettings::GeneralSettingSource value);
+    //设置时间显示格式来源
+    void setTimeFormatTypeSource(DCalendarGeneralSettings::GeneralSettingSource value);
+    //获取一周首日来源
+    DCalendarGeneralSettings::GeneralSettingSource getFirstDayofWeekSource();
+    //获取时间显示格式来源
+    DCalendarGeneralSettings::GeneralSettingSource getTimeFormatTypeSource();
 
     //获取帐户列表
     void getAccountList();

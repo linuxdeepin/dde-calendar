@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -20,6 +20,8 @@ class DAccountManagerService : public DServiceBase
     Q_CLASSINFO("D-Bus Interface", "com.deepin.dataserver.Calendar.AccountManager")
     Q_PROPERTY(int firstDayOfWeek READ getfirstDayOfWeek WRITE setFirstDayOfWeek)
     Q_PROPERTY(int timeFormatType READ getTimeFormatType WRITE setTimeFormatType)
+    Q_PROPERTY(int firstDayOfWeekSource READ getFirstDayOfWeekSource WRITE setFirstDayOfWeekSource)
+    Q_PROPERTY(int timeFormatTypeSource READ getTimeFormatTypeSource WRITE setTimeFormatTypeSource)
 public:
     explicit DAccountManagerService(QObject *parent = nullptr);
 public slots:
@@ -66,6 +68,11 @@ private:
     void setFirstDayOfWeek(const int firstday);
     int getTimeFormatType() const;
     void setTimeFormatType(const int timeType);
+
+    int getFirstDayOfWeekSource();
+    void setFirstDayOfWeekSource(const int source);
+    int getTimeFormatTypeSource();
+    void setTimeFormatTypeSource(const int source);
 
 private:
     DAccountManageModule::Ptr m_accountManager;

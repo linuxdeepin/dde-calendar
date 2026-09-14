@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -10,7 +10,10 @@
 #include "daccountmodule.h"
 #include "daccountmanagerdatabase.h"
 #include "daccountservice.h"
+#include "dbustimedate.h"
 
+#include <DConfig>
+#include <QSettings>
 #include <QObject>
 #include <QSharedPointer>
 #include <QTimer>
@@ -39,6 +42,13 @@ public:
     void setFirstDayOfWeek(const int firstday);
     int getTimeFormatType();
     void setTimeFormatType(const int timeType);
+
+    //一周首日取值来源
+    DCalendarGeneralSettings::GeneralSettingSource getFirstDayOfWeekSource();
+    void setFirstDayOfWeekSource(const DCalendarGeneralSettings::GeneralSettingSource source);
+    //时间显示格式取值来源
+    DCalendarGeneralSettings::GeneralSettingSource getTimeFormatTypeSource();
+    void setTimeFormatTypeSource(const DCalendarGeneralSettings::GeneralSettingSource source);
 
     void remindJob(const QString &accountID, const QString &alarmID);
 
@@ -79,6 +89,10 @@ private:
     void updateUIdAccount(const DAccount::Ptr &oldAccount, const DAccount::Ptr &uidAccount);
     //获取设置开关状态
     void setUidSwitchStatus(const DAccount::Ptr &account);
+    //获取通用设置（数据库配置按来源合并控制中心系统配置）
+    DCalendarGeneralSettings::Ptr getGeneralSettings();
+    //保存通用设置到数据库
+    void setGeneralSettings(const DCalendarGeneralSettings::Ptr &cgSet);
 
 signals:
     void firstDayOfWeekChange();
@@ -107,6 +121,12 @@ private:
     DCalendarGeneralSettings::Ptr m_generalSetting;
     QTimer m_timer;
     bool m_isSupportUid = false;
+    //控制中心区域格式配置（deepin V23 环境），UOS 专业版无此配置时走 DBusTimedate
+    DTK_CORE_NAMESPACE::DConfig *m_reginFormatConfig = nullptr;
+    //系统时间设置（com.deepin.daemon.Timedate）
+    DBusTimedate m_timeDateDbus;
+    //通用设置来源本地存储
+    QSettings m_settings;
 };
 
 #endif // DACCOUNTMANAGEMODULE_H
