@@ -1589,7 +1589,7 @@
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="61"/>
         <source>Unable to parse the data returned by the server. Please verify the server address or try again later.</source>
-        <translation type="unfinished"/>
+        <translation>Palvelimen jäsentäminen epäonnistui. Tarkista osoite tai yritä uudelleen.</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="51"/>
@@ -1613,22 +1613,22 @@
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="65"/>
         <source>The server denied access.</source>
-        <translation type="unfinished"/>
+        <translation>Palvelin eväsi pääsyn.</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="68"/>
         <source>The server request timed out.</source>
-        <translation type="unfinished"/>
+        <translation>Palvelimen aikakatkaisu.</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="72"/>
         <source>Unable to connect to the server. Please check your network connection and server address.</source>
-        <translation type="unfinished"/>
+        <translation>Palvelimeen ei saatu yhteyttä. Tarkista verkko ja palvelimen osoite.</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="76"/>
         <source>Synchronization failed.</source>
-        <translation type="unfinished"/>
+        <translation>Synkronointivirhe.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="855"/>
