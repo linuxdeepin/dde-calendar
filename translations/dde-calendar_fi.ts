@@ -1556,32 +1556,32 @@
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="37"/>
         <source>DingTalk</source>
-        <translation type="unfinished"/>
+        <translation>DingTalk</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="39"/>
         <source>WeCom</source>
-        <translation type="unfinished"/>
+        <translation>WeCom</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="41"/>
         <source>Tencent Meeting</source>
-        <translation type="unfinished"/>
+        <translation>Tencent Meeting</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="43"/>
         <source>QQ Mail</source>
-        <translation type="unfinished"/>
+        <translation>QQ Mail</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="45"/>
         <source>Feishu</source>
-        <translation type="unfinished"/>
+        <translation>Feishu</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="48"/>
         <source>Other CalDAV</source>
-        <translation type="unfinished"/>
+        <translation>Muu CalDAV</translation>
     </message>
     </context>
     <context>
@@ -1594,17 +1594,17 @@
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="51"/>
         <source>The server certificate is invalid.</source>
-        <translation type="unfinished"/>
+        <translation>Palvelimen sertifikaatti on virheellinen.</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="54"/>
         <source>Incorrect username or password. Please try again.</source>
-        <translation type="unfinished"/>
+        <translation>Virheellinen käyttäjänimi tai salasana. Yritä uudelleen.</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="57"/>
         <source>This server does not support CalDAV.</source>
-        <translation type="unfinished"/>
+        <translation>Palvelin ei tue CalDAV-protokollaa.</translation>
     </message>
     <message>
         <source>The server rejected your login request. Please check your account permissions.</source>
