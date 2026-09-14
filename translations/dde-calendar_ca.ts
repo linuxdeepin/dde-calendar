@@ -181,34 +181,34 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/myscheduleview.cpp" line="193"/>
         <source>Calendar Source</source>
-        <translation type="unfinished"/>
+        <translation>Font del calendari</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="118"/>
         <location filename="../src/calendar-client/src/dialog/myscheduleview.cpp" line="177"/>
         <source>Local calendar</source>
-        <translation type="unfinished"/>
+        <translation>Calendari local</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="120"/>
         <location filename="../src/calendar-client/src/dialog/myscheduleview.cpp" line="179"/>
         <source>UOS ID</source>
-        <translation type="unfinished"/>
+        <translation>ID d&apos;UOS</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="131"/>
         <source>Source: %1</source>
-        <translation type="unfinished"/>
+        <translation>Font: %1</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="152"/>
         <source>Organizer</source>
-        <translation type="unfinished"/>
+        <translation>Organitzador</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="153"/>
         <source>Attendees</source>
-        <translation type="unfinished"/>
+        <translation>Assistents</translation>
     </message>
 </context>
 <context>
@@ -462,12 +462,12 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1407"/>
         <source>Local calendar</source>
-        <translation type="unfinished"/>
+        <translation>Calendari local</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1409"/>
         <source>UOS ID</source>
-        <translation type="unfinished"/>
+        <translation>ID d&apos;UOS</translation>
     </message>
 </context>
 <context>
@@ -708,32 +708,32 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="214"/>
         <source>More</source>
-        <translation type="unfinished"/>
+        <translation>Més</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="246"/>
         <source>Third-party accounts</source>
-        <translation type="unfinished"/>
+        <translation>Comptes de tercers</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="255"/>
         <source>Add</source>
-        <translation type="unfinished"/>
+        <translation>Afegeix</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="304"/>
         <source>Sync items</source>
-        <translation type="unfinished"/>
+        <translation>Sincronitza els elements</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="305"/>
         <source>Sync interval</source>
-        <translation type="unfinished"/>
+        <translation>Interval de sincronització</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="497"/>
         <source>Add schedule</source>
-        <translation type="unfinished"/>
+        <translation>Afegiu-hi una programació</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="498"/>
@@ -743,58 +743,58 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="499"/>
         <source>Import events from an ICS file</source>
-        <translation type="unfinished"/>
+        <translation>Importa esdeveniments d&apos;un fitxer ICS</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="681"/>
         <source>Remove Calendar Account</source>
-        <translation type="unfinished"/>
+        <translation>Elimina el compte de calendari</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="689"/>
         <source>Are you sure you want to remove the account &quot;%1&quot;?</source>
-        <translation type="unfinished"/>
+        <translation>Segur que voleu eliminar el compte %1?</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="693"/>
         <source>Also remove synced events from this calendar</source>
-        <translation type="unfinished"/>
+        <translation>Elimina també els esdeveniments sincronitzats d&apos;aquest calendari.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="698"/>
         <source>Cancel</source>
         <comment>button</comment>
-        <translation type="unfinished"/>
+        <translation>Cancel·la</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="699"/>
         <source>Delete</source>
         <comment>button</comment>
-        <translation type="unfinished"/>
+        <translation>Elimina</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="818"/>
         <source>Last sync time</source>
-        <translation type="unfinished"/>
+        <translation>Hora de la darrera sincronització</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="794"/>
         <source>Syncing...</source>
-        <translation type="unfinished"/>
+        <translation>Se sincronitza...</translation>
     </message>
     <message>
         <source>Last sync: %1</source>
-        <translation type="unfinished"/>
+        <translation>Darrera sincronització: %1</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="908"/>
         <source>Local account</source>
-        <translation type="unfinished"/>
+        <translation>Compte local</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="1049"/>
         <source>Please go to the <a href="/">Control Center</a> to change system settings</source>
-        <translation type="unfinished"/>
+        <translation>Si us plau, aneu al &lt;a href=&apos;/&apos;&gt;Centre de control&lt;/a&gt; per canviar la configuració del sistema.</translation>
     </message>
 </context>
 <context>
@@ -925,12 +925,12 @@
     <message>
         <location filename="../src/calendar-client/src/widget/calendarmainwindow.cpp" line="1266"/>
         <source>%1 does not allow creating events. Please check account permissions.</source>
-        <translation type="unfinished"/>
+        <translation>%1 no permet crear esdeveniments. Si us plau, comproveu els permisos del compte.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/widget/calendarmainwindow.cpp" line="1269"/>
         <source>Unable to connect to the server. Please check your network connection and server address.</source>
-        <translation type="unfinished"/>
+        <translation>No s&apos;ha pogut connectar amb el servidor. Comproveu la connexió de xarxa i l&apos;adreça del servidor.</translation>
     </message>
 </context>
 <context>
@@ -1078,24 +1078,24 @@
     <message>
         <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="213"/>
         <source>Edit</source>
-        <translation type="unfinished"/>
+        <translation>Edita</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="219"/>
         <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="233"/>
         <source>Export</source>
-        <translation type="unfinished"/>
+        <translation>Exporta</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="308"/>
         <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="417"/>
         <source>ICS files (*.ics)</source>
-        <translation type="unfinished"/>
+        <translation>Fitxers ICS (*.ics)</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="416"/>
         <source>Export ICS file</source>
-        <translation type="unfinished"/>
+        <translation>Exporta el fitxer ICS</translation>
     </message>
 </context>
 <context>
@@ -1163,17 +1163,17 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="54"/>
         <source>UOS ID</source>
-        <translation type="unfinished"/>
+        <translation>ID d&apos;UOS</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="59"/>
         <source>Third-party accounts</source>
-        <translation type="unfinished"/>
+        <translation>Comptes de tercers</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="75"/>
         <source>Associated account</source>
-        <translation type="unfinished"/>
+        <translation>Compte associat</translation>
     </message>
 </context>
 <context>
@@ -1251,7 +1251,7 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="164"/>
         <source><a href="https://wikipedia.org/wiki/ICalendar">ICS</a> File:</source>
-        <translation type="unfinished"/>
+        <translation>Fitxer &lt;a href=&quot;https://wikipedia.org/wiki/ICalendar&quot;&gt;ICS&lt;/a&gt;:</translation>
     </message>
 </context>
 <context>
@@ -1331,7 +1331,7 @@
     <message>
         <location filename="../src/calendar-client/src/widget/settingWidget/userloginwidget.cpp" line="203"/>
         <source>Not signed in</source>
-        <translation type="unfinished"/>
+        <translation>No ha iniciat la sessió</translation>
     </message>
 </context>
 <context>
@@ -1356,143 +1356,143 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="65"/>
         <source>:</source>
-        <translation type="unfinished"/>
+        <translation>:</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="75"/>
         <source>Add Calendar Account</source>
-        <translation type="unfinished"/>
+        <translation>Afegeix un compte de calendari</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="98"/>
         <source>Select account type</source>
-        <translation type="unfinished"/>
+        <translation>Trieu un tipus de compte.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="109"/>
         <source>Automatically filled after selecting account type</source>
-        <translation type="unfinished"/>
+        <translation>S&apos;emplena automàticament després de seleccionar el tipus de compte.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="110"/>
         <source>Enter username or email</source>
-        <translation type="unfinished"/>
+        <translation>Introduïu el nom d&apos;usuari o el correu electrònic.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="111"/>
         <source>Enter password</source>
-        <translation type="unfinished"/>
+        <translation>Introduïu la contrasenya.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="118"/>
         <source>Account Type</source>
-        <translation type="unfinished"/>
+        <translation>Tipus de compte</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="119"/>
         <source>Server Address</source>
-        <translation type="unfinished"/>
+        <translation>Adreça del servidor</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="120"/>
         <source>Username</source>
-        <translation type="unfinished"/>
+        <translation>Nom d&apos;usuari</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="121"/>
         <source>Password</source>
-        <translation type="unfinished"/>
+        <translation>Contrasenya</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="132"/>
         <source>Cancel</source>
         <comment>button</comment>
-        <translation type="unfinished"/>
+        <translation>Cancel·la</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="133"/>
         <source>Sign In</source>
         <comment>button</comment>
-        <translation type="unfinished"/>
+        <translation>Inicia la sessió</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="224"/>
         <source>Edit Account</source>
-        <translation type="unfinished"/>
+        <translation>Edita el compte</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="225"/>
         <source>Save</source>
         <comment>button</comment>
-        <translation type="unfinished"/>
+        <translation>Desa</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="232"/>
         <source>Leave empty to keep the current password</source>
-        <translation type="unfinished"/>
+        <translation>Deixeu-ho en blanc per mantenir la contrasenya actual.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="510"/>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="558"/>
         <source>Please enter a valid server address.</source>
-        <translation type="unfinished"/>
+        <translation>Si us plau, introduïu una adreça de servidor vàlida.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="561"/>
         <source>Please enter the correct username.</source>
-        <translation type="unfinished"/>
+        <translation>Si us plau, introduïu el nom d&apos;usuari correcte.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="562"/>
         <source>Please enter the correct password.</source>
-        <translation type="unfinished"/>
+        <translation>Si us plau, introduïu la contrasenya correcta.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="571"/>
         <source>Incorrect username or password. Please try again.</source>
-        <translation type="unfinished"/>
+        <translation>Nom d&apos;usuari o contrasenya incorrectes. Si us plau, torneu-ho a provar.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="573"/>
         <source>This server does not support CalDAV.</source>
-        <translation type="unfinished"/>
+        <translation>Aquest servidor no és compatible amb CalDAV.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="575"/>
         <source>The server rejected your login request. Please check your account permissions.</source>
-        <translation type="unfinished"/>
+        <translation>El servidor ha rebutjat la sol·licitud d&apos;inici de sessió. Si us plau, comproveu els permisos del compte.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="577"/>
         <source>Unable to parse the data returned by the server. Please verify the server address or try again later.</source>
-        <translation type="unfinished"/>
+        <translation>No s&apos;han pogut analitzar les dades tornades pel servidor. Si us plau, verifiqueu l&apos;adreça del servidor o torneu-ho a intentar més tard.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="579"/>
         <source>The server certificate is invalid.</source>
-        <translation type="unfinished"/>
+        <translation>El certificat del servidor no és vàlid.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="583"/>
         <source>Unable to connect to the server. Please check your network connection and server address.</source>
-        <translation type="unfinished"/>
+        <translation>No s&apos;ha pogut connectar amb el servidor. Comproveu la connexió de xarxa i l&apos;adreça del servidor.</translation>
     </message>
     </context>
     <context>
         <name>CalDavAccountListWidget</name>
     <message>
         <source>Last sync: %1</source>
-        <translation type="unfinished"/>
+        <translation>Darrera sincronització: %1</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="69"/>
         <source>Last sync time</source>
-        <translation type="unfinished"/>
+        <translation>Hora de la darrera sincronització</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="151"/>
         <source>No third-party accounts added</source>
-        <translation type="unfinished"/>
+        <translation>No s&apos;han afegit comptes de tercers.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="157"/>
@@ -1556,32 +1556,32 @@
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="37"/>
         <source>DingTalk</source>
-        <translation type="unfinished"/>
+        <translation>DingTalk</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="39"/>
         <source>WeCom</source>
-        <translation type="unfinished"/>
+        <translation>WeCom</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="41"/>
         <source>Tencent Meeting</source>
-        <translation type="unfinished"/>
+        <translation>Trobada de Tencent</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="43"/>
         <source>QQ Mail</source>
-        <translation type="unfinished"/>
+        <translation>Correu QQ</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="45"/>
         <source>Feishu</source>
-        <translation type="unfinished"/>
+        <translation>Feishu</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="48"/>
         <source>Other CalDAV</source>
-        <translation type="unfinished"/>
+        <translation>Altre CalDAV</translation>
     </message>
     </context>
     <context>
@@ -1589,22 +1589,22 @@
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="61"/>
         <source>Unable to parse the data returned by the server. Please verify the server address or try again later.</source>
-        <translation type="unfinished"/>
+        <translation>No s&apos;han pogut analitzar les dades tornades pel servidor. Si us plau, verifiqueu l&apos;adreça del servidor o torneu-ho a intentar més tard.</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="51"/>
         <source>The server certificate is invalid.</source>
-        <translation type="unfinished"/>
+        <translation>El certificat del servidor no és vàlid.</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="54"/>
         <source>Incorrect username or password. Please try again.</source>
-        <translation type="unfinished"/>
+        <translation>Nom d&apos;usuari o contrasenya incorrectes. Si us plau, torneu-ho a provar.</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="57"/>
         <source>This server does not support CalDAV.</source>
-        <translation type="unfinished"/>
+        <translation>Aquest servidor no és compatible amb CalDAV.</translation>
     </message>
     <message>
         <source>The server rejected your login request. Please check your account permissions.</source>
@@ -1613,22 +1613,22 @@
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="65"/>
         <source>The server denied access.</source>
-        <translation type="unfinished"/>
+        <translation>El servidor n&apos;ha denegat l&apos;accés.</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="68"/>
         <source>The server request timed out.</source>
-        <translation type="unfinished"/>
+        <translation>La sol·licitud al servidor ha superat el temps límit.</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="72"/>
         <source>Unable to connect to the server. Please check your network connection and server address.</source>
-        <translation type="unfinished"/>
+        <translation>No s&apos;ha pogut connectar al servidor. Comproveu la connexió de xarxa i l&apos;adreça del servidor.</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="76"/>
         <source>Synchronization failed.</source>
-        <translation type="unfinished"/>
+        <translation>La sincronització ha fallat.</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="855"/>
