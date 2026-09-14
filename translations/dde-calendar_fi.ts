@@ -743,53 +743,53 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="499"/>
         <source>Import events from an ICS file</source>
-        <translation type="unfinished"/>
+        <translation>Tuo tapahtumat ics-tiedostoista</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="681"/>
         <source>Remove Calendar Account</source>
-        <translation type="unfinished"/>
+        <translation>Poista kalenteritili</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="689"/>
         <source>Are you sure you want to remove the account &quot;%1&quot;?</source>
-        <translation type="unfinished"/>
+        <translation>Haluatko varmasti poistaa &quot;%1&quot; tilin?</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="693"/>
         <source>Also remove synced events from this calendar</source>
-        <translation type="unfinished"/>
+        <translation>Poista myös kalenterista synkronoidut tapahtumat</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="698"/>
         <source>Cancel</source>
         <comment>button</comment>
-        <translation type="unfinished"/>
+        <translation>Peruuta</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="699"/>
         <source>Delete</source>
         <comment>button</comment>
-        <translation type="unfinished"/>
+        <translation>Poista</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="818"/>
         <source>Last sync time</source>
-        <translation type="unfinished"/>
+        <translation>Synkronointiaika</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="794"/>
         <source>Syncing...</source>
-        <translation type="unfinished"/>
+        <translation>Synkronoidaan...</translation>
     </message>
     <message>
         <source>Last sync: %1</source>
-        <translation type="unfinished"/>
+        <translation>Viimeisin synkronointi: %1</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="908"/>
         <source>Local account</source>
-        <translation type="unfinished"/>
+        <translation>Paikallinen tili</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="1049"/>
