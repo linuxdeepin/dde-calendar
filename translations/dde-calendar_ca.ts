@@ -793,7 +793,7 @@
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="1049"/>
-        <source>Please go to the <a href="/">Control Center</a> to change system settings</source>
+        <source>Please go to the &lt;a href=&apos;/&apos;&gt;Control Center&lt;/a&gt; to change system settings</source>
         <translation>Si us plau, aneu al &lt;a href=&apos;/&apos;&gt;Centre de control&lt;/a&gt; per canviar la configuració del sistema.</translation>
     </message>
 </context>
@@ -1250,8 +1250,8 @@
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="164"/>
-        <source><a href="https://wikipedia.org/wiki/ICalendar">ICS</a> File:</source>
-        <translation>Fitxer &lt;a href=&quot;https://wikipedia.org/wiki/ICalendar&quot;&gt;ICS&lt;/a&gt;:</translation>
+        <source>&lt;a href=&apos;https://wikipedia.org/wiki/ICalendar&apos;&gt;ICS&lt;/a&gt; File:</source>
+        <translation>Fitxer &lt;a href=&apos;https://wikipedia.org/wiki/ICalendar&apos;&gt;ICS&lt;/a&gt;:</translation>
     </message>
 </context>
 <context>
