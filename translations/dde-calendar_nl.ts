@@ -793,8 +793,8 @@
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="1049"/>
-        <source>Please go to the <a href="/">Control Center</a> to change system settings</source>
-        <translation type="unfinished"/>
+        <source>Please go to the &lt;a href=&apos;/&apos;&gt;Control Center&lt;/a&gt; to change system settings</source>
+        <translation>De instellingen kunnen worden aangepast in het &lt;a href=&apos;/&apos;&gt;instellingencentrum&lt;/a&gt; </translation>
     </message>
 </context>
 <context>
@@ -1250,8 +1250,8 @@
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="164"/>
-        <source><a href="https://wikipedia.org/wiki/ICalendar">ICS</a> File:</source>
-        <translation type="unfinished"/>
+        <source>&lt;a href=&apos;https://wikipedia.org/wiki/ICalendar&apos;&gt;ICS&lt;/a&gt; File:</source>
+        <translation>&lt;a href=&apos;https://wikipedia.org/wiki/ICalendar&apos;&gt;Ics&lt;/a&gt;-bestand:</translation>
     </message>
 </context>
 <context>
