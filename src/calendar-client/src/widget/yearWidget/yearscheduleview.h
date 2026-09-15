@@ -73,6 +73,7 @@ private:
      */
     void updateDateShow();
 protected:
+    bool event(QEvent *event) override;
     /**
      * @brief paintEvent 绘制日程
      * @param event 绘图事件

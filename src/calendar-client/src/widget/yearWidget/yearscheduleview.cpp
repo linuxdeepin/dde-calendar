@@ -12,8 +12,11 @@
 #include "cscheduleoperation.h"
 
 #include <QPainter>
+#include <QFontMetrics>
 #include <QRect>
 #include <QMouseEvent>
+#include <QHelpEvent>
+#include <QToolTip>
 
 DGUI_USE_NAMESPACE
 
@@ -226,6 +229,37 @@ void CYearScheduleView::updateDateShow()
         m_drawRect.append(QRect(30, 10 + i * 29, width() - 50, 26));
     }
     return;
+}
+
+bool CYearScheduleView::event(QEvent *event)
+{
+    if (event->type() == QEvent::ToolTip) {
+        auto *helpEvent = static_cast<QHelpEvent *>(event);
+        for (int i = 0; i < m_drawRect.size() && i < m_vlistData.size(); ++i) {
+            if (!m_drawRect.at(i).contains(helpEvent->pos())) {
+                continue;
+            }
+
+            const DSchedule::Ptr &schedule = m_vlistData.at(i);
+            if (!schedule.isNull() && schedule->uid() != QStringLiteral("-1")) {
+                const QString summary = schedule->summary();
+                QString displaySummary = summary;
+                displaySummary.replace("\n", "");
+                const int titleWidth = width() - 110;
+                if (QFontMetrics(m_textfont).horizontalAdvance(displaySummary) + 5 >= titleWidth) {
+                    QToolTip::showText(helpEvent->globalPos(), displaySummary, this, m_drawRect.at(i));
+                } else {
+                    QToolTip::hideText();
+                }
+            } else {
+                QToolTip::hideText();
+            }
+            return true;
+        }
+        QToolTip::hideText();
+        return true;
+    }
+    return DWidget::event(event);
 }
 
 void CYearScheduleView::paintEvent(QPaintEvent *event)
