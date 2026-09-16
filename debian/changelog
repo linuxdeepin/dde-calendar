@@ -1,3 +1,43 @@
+dde-calendar (6.6.0) unstable; urgency=medium
+
+  * feat(year): show tooltip for truncated schedule titles in year view
+  * fix(calendar): harden data loading and restore namespace compatibility
+  * chore: update zh_HK, zh_TW and en_US translations for dde-calendar
+  * fix(caldav): disable schedule type creation for third-party accounts
+  * fix(caldav): defer account discovery until client opens
+  * feat(sync): improve calendar account sync status feedback
+  * feat(caldav): improve sync status and toast feedback
+  * feat(caldav): show organizer and attendees in event preview
+  * i18n(caldav): update calendar account translations
+  * test(caldav): add account and synchronization coverage
+  * feat(schedule-ui): add CalDAV schedule and sidebar interface
+  * feat(account-ui): add CalDAV account management interface
+  * feat(client): add CalDAV account data and DBus support
+  * feat(service): add CalDAV account management and DBus support
+  * feat(sync): add CalDAV synchronization core
+  * feat(database): add CalDAV persistence and migration support
+  * feat(caldav): add protocol transport and calendar discovery
+  * feat(common): add CalDAV common foundation
+  * i18n: Translate dde-calendar_en_US.ts in ar
+  * i18n: Translate dde-calendar-service_en_US.ts in ar
+  * fix: update Arabic (ar) translations
+  * fix(week-head-view): adapt header text colors
+  * fix(month-view): adjust text colors in month view
+  * fix(calendar-ui): align title text colors
+  * fix(dialog): update my schedule icon theme sync and scroll behavior
+  * chore: Sync by https://github.com/linuxdeepin/.github/commit/a300f8523d4876677112edab6a0772f7ad112976
+  * fix: adjust month view date table text colors to match design spec
+  * chore(at-spi): add AT-SPI naming for interactive widgets
+  * fix: Update cppcheck workflow to use checkout@v7
+  * i18n: Translate dde-calendar_en_US.ts in pt
+  * i18n: Translate dde-calendar-service_en_US.ts in pt
+  * i18n: Translate desktop.ts in pt
+  * fix(widget): fix reminder popup split
+  * i18n: Translate dde-calendar_en_US.ts in pt_BR
+  * i18n: Translate dde-calendar-service_en_US.ts in pt_BR
+
+ -- Wang Yu <wangyu@uniontech.com>  Wed, 16 Sep 2026 10:06:00 +0800
+
 dde-calendar (6.5.42) unstable; urgency=medium
 
   * chore: Update version to 6.5.42
