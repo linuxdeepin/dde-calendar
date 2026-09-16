@@ -8,6 +8,7 @@
 #include "calendarmanage.h"
 #include "tabletconfig.h"
 #include <DTitlebar>
+#include <QLocale>
 
 namespace {
 QString shortTimeFormatFromValue(int value)
@@ -109,17 +110,25 @@ void DCalendarDDialog::setDateFormat(int value)
     case 5: {
         m_dateFormat = "yyyy.MM.dd";
     } break;
+    // dcc 5.10 短日期共 11 种格式，索引与 ShortDateFormat 一一对应（6/7 为日月年两种字段序）
     case 6: {
-        m_dateFormat = "yy/M/d";
+        m_dateFormat = "MM.dd.yyyy";
     } break;
     case 7: {
-        m_dateFormat = "yy-M-d";
+        m_dateFormat = "dd.MM.yyyy";
     } break;
     case 8: {
+        m_dateFormat = "yy/M/d";
+    } break;
+    case 9: {
+        m_dateFormat = "yy-M-d";
+    } break;
+    case 10: {
         m_dateFormat = "yy.M.d";
     } break;
     default: {
-        m_dateFormat = "yyyy-MM-dd";
+        //未知索引（dcc 后续新增/调整枚举时）回退系统区域格式，避免渲染成无关样式
+        m_dateFormat = QLocale::system().dateFormat(QLocale::ShortFormat);
     } break;
     }
     updateDateTimeFormat();
