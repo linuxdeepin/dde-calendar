@@ -11,6 +11,8 @@
 #include <QDBusReply>
 #include <QtDebug>
 #include <QDBusInterface>
+#include <QDBusPendingCallWatcher>
+#include <QTimer>
 
 DCORE_USE_NAMESPACE
 
@@ -58,31 +60,27 @@ DBusTimedate::DBusTimedate(QObject *parent)
         qCWarning(CommonLogger) << "Failed to connect to PropertiesChanged signal:" << this->lastError().message();
     }
 
-    m_hasDateTimeFormat = getHasDateTimeFormat();
+    // Async initialization: defer format detection and property reads
+    // to the event loop to avoid blocking startup with synchronous DBus calls.
+    QTimer::singleShot(0, this, &DBusTimedate::asyncInitProperties);
 }
 
 int DBusTimedate::shortTimeFormat()
 {
     qCDebug(CommonLogger) << "DBusTimedate::shortTimeFormat";
-    //如果存在对应的时间设置则获取，否则默认为4
-    return m_hasDateTimeFormat ? getPropertyByName("ShortTimeFormat").toInt() : 4;
+    return m_shortTimeFormat;
 }
 
 int DBusTimedate::shortDateFormat()
 {
     qCDebug(CommonLogger) << "DBusTimedate::shortDateFormat";
-    //如果存在对应的时间设置则获取，否则默认为1
-    return m_hasDateTimeFormat ? getPropertyByName("ShortDateFormat").toInt() : 1;
+    return m_shortDateFormat;
 }
 
 Qt::DayOfWeek DBusTimedate::weekBegins()
 {
     qCDebug(CommonLogger) << "DBusTimedate::weekBegins";
-    if (m_hasDateTimeFormat) {
-        // WeekBegins是从0开始的，加1才能对应DayOfWeek
-        return Qt::DayOfWeek(getPropertyByName("WeekBegins").toInt() + 1);
-    }
-    return Qt::Monday;
+    return Qt::DayOfWeek(m_weekBegins);
 }
 
 void DBusTimedate::propertiesChanged(const QDBusMessage &msg)
@@ -106,36 +104,59 @@ void DBusTimedate::propertiesChanged(const QDBusMessage &msg)
     foreach (const QString &prop, keys) {
         if (prop == "ShortTimeFormat") {
             qCDebug(CommonLogger) << "ShortTimeFormat changed";
-            emit ShortTimeFormatChanged(changedProps[prop].toInt());
+            m_shortTimeFormat = changedProps[prop].toInt();
+            emit ShortTimeFormatChanged(m_shortTimeFormat);
         } else if (prop == "ShortDateFormat") {
             qCDebug(CommonLogger) << "ShortDateFormat changed";
-            emit ShortDateFormatChanged(changedProps[prop].toInt());
+            m_shortDateFormat = changedProps[prop].toInt();
+            emit ShortDateFormatChanged(m_shortDateFormat);
+        } else if (prop == "WeekBegins") {
+            qCDebug(CommonLogger) << "WeekBegins changed";
+            m_weekBegins = changedProps[prop].toInt() + 1;
+            emit WeekBeginsChanged(m_weekBegins);
         }
     }
 }
 
-QVariant DBusTimedate::getPropertyByName(const char *porpertyName)
+void DBusTimedate::asyncInitProperties()
 {
-    qCDebug(CommonLogger) << "DBusTimedate::getPropertyByName, propertyName:" << porpertyName;
-    QDBusInterface dbusinterface(this->service(), this->path(), this->interface(), QDBusConnection::sessionBus(), this);
-    return dbusinterface.property(porpertyName);
-}
+    qCDebug(CommonLogger) << "DBusTimedate::asyncInitProperties";
 
-bool DBusTimedate::getHasDateTimeFormat()
-{
-    qCDebug(CommonLogger) << "DBusTimedate::getHasDateTimeFormat";
+    // Check format support asynchronously
     QDBusMessage msg = QDBusMessage::createMethodCall(TIMEDATE_DBUS_SERVICE,
                                                       TIMEDATE_DBUS_PATH,
                                                       "org.freedesktop.DBus.Introspectable",
                                                       QStringLiteral("Introspect"));
+    QDBusPendingCall introspectCall = QDBusConnection::sessionBus().asyncCall(msg);
+    QDBusPendingCallWatcher *introspectWatcher = new QDBusPendingCallWatcher(introspectCall, this);
+    connect(introspectWatcher, &QDBusPendingCallWatcher::finished, this, [this](QDBusPendingCallWatcher *watcher) {
+        QDBusPendingReply<QString> reply(*watcher);
+        if (reply.isError()) {
+            qCWarning(CommonLogger) << "Failed to check DateTime format support:" << reply.error().message();
+        } else {
+            m_hasDateTimeFormat = reply.value().contains("ShortDateFormat");
+        }
+        watcher->deleteLater();
 
-    QDBusMessage reply =  QDBusConnection::sessionBus().call(msg);
+        if (m_hasDateTimeFormat) {
+            // Read properties asynchronously and emit signals on update
+            QDBusInterface dbusinterface(service(), path(), interface(), QDBusConnection::sessionBus(), this);
+            int newTimeFormat = dbusinterface.property("ShortTimeFormat").toInt();
+            int newDateFormat = dbusinterface.property("ShortDateFormat").toInt();
+            int newWeekBegins = dbusinterface.property("WeekBegins").toInt() + 1;
 
-    if (reply.type() == QDBusMessage::ReplyMessage) {
-        QVariant variant = reply.arguments().first();
-        return variant.toString().contains("\"ShortDateFormat\"");
-    } else {
-        qCWarning(CommonLogger) << "Failed to check DateTime format support:" << reply.errorMessage();
-        return false;
-    }
+            if (newTimeFormat != m_shortTimeFormat) {
+                m_shortTimeFormat = newTimeFormat;
+                emit ShortTimeFormatChanged(m_shortTimeFormat);
+            }
+            if (newDateFormat != m_shortDateFormat) {
+                m_shortDateFormat = newDateFormat;
+                emit ShortDateFormatChanged(m_shortDateFormat);
+            }
+            if (newWeekBegins != m_weekBegins) {
+                m_weekBegins = newWeekBegins;
+                emit WeekBeginsChanged(m_weekBegins);
+            }
+        }
+    });
 }

@@ -27,10 +27,12 @@ signals:
 public slots:
     void propertiesChanged(const QDBusMessage &msg);
 private:
-    QVariant getPropertyByName(const char *porpertyName);
-    bool getHasDateTimeFormat();
+    void asyncInitProperties();
 private:
     bool m_hasDateTimeFormat = false;       //是否含有
+    int m_shortTimeFormat = 4;              //默认短时间格式
+    int m_shortDateFormat = 1;              //默认短日期格式
+    int m_weekBegins = 1;                   //默认周一为一周开始（Qt::Monday = 1）
 };
 
 #endif // DBUSTIMEDATE_H
