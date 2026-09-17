@@ -51,8 +51,8 @@ int main(int argc, char *argv[])
     app->setAutoActivateWindows(true);
     //如果dtk版本为5.2.0.1以上则使用新的dtk接口
 #if (DTK_VERSION > DTK_VERSION_CHECK(5, 2, 0, 1))
-    //设置为-1将永久等待
-    DGuiApplicationHelper::setSingleInstanceInterval(-1);
+    //设置合理的超时时间，防止热启动卡死
+    DGuiApplicationHelper::setSingleInstanceInterval(2000);
 #endif
 
     if (DGuiApplicationHelper::setSingleInstance(app->applicationName(), DGuiApplicationHelper::UserScope)) {

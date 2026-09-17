@@ -457,8 +457,10 @@ void Calendarmainwindow::initUI()
     tMainLayout->setContentsMargins(10, 10, 10, 10);
     tMainLayout->setSpacing(10);
 
-    m_sidebarView = new SidebarView(this);
-    tMainLayout->addWidget(m_sidebarView, 1);
+    //Placeholder for sidebar; real SidebarView created deferred to avoid blocking startup
+    QWidget *sidebarPlaceholder = new QWidget(this);
+    sidebarPlaceholder->setFixedWidth(0);
+    tMainLayout->addWidget(sidebarPlaceholder, 1);
 
     m_stackWidget = new AnimationStackedWidget();
     m_stackWidget->setObjectName("StackedWidget");
@@ -479,15 +481,9 @@ void Calendarmainwindow::initUI()
     m_contentBackground->setAutoFillBackground(true);
     m_contentBackground->setPalette(anipa);
 
-    m_scheduleSearchView = new CScheduleSearchView(this);
-    m_scheduleSearchView->setObjectName("ScheduleSearchWidget");
-    m_scheduleSearchView->setAccessibleName("ScheduleSearchWidget");
-    m_scheduleSearchView->setAccessibleDescription("Window showing search results");
-
     QVBoxLayout *ssLayout = new QVBoxLayout;
     ssLayout->setContentsMargins(0, 0, 0, 0);
     ssLayout->setSpacing(0);
-    ssLayout->addWidget(m_scheduleSearchView, 1);
     m_contentBackground->setLayout(ssLayout);
     m_contentBackground->setVisible(false);
 
@@ -509,6 +505,43 @@ void Calendarmainwindow::initUI()
     QShortcut *dShortcut = new QShortcut(this);
     dShortcut->setKey(QKeySequence(QLatin1String("Delete")));
     connect(dShortcut, &QShortcut::activated, this, &Calendarmainwindow::slotDeleteitem);
+
+    // Defer non-critical UI components (SidebarView, CScheduleSearchView) to event
+    // loop idle so the window can appear sooner with the essential calendar view.
+    QHBoxLayout *deferredLayout = tMainLayout;
+    QTimer::singleShot(0, this, [this, deferredLayout, sidebarPlaceholder]() {
+        // Create SidebarView and replace the placeholder
+        m_sidebarView = new SidebarView(this);
+        int idx = deferredLayout->indexOf(sidebarPlaceholder);
+        deferredLayout->removeWidget(sidebarPlaceholder);
+        delete sidebarPlaceholder;
+        deferredLayout->insertWidget(idx, m_sidebarView, 1);
+
+        // Create CScheduleSearchView inside the content background
+        m_scheduleSearchView = new CScheduleSearchView(this);
+        m_scheduleSearchView->setObjectName("ScheduleSearchWidget");
+        m_scheduleSearchView->setAccessibleName("ScheduleSearchWidget");
+        m_scheduleSearchView->setAccessibleDescription("Window showing search results");
+        QVBoxLayout *ssLayout = qobject_cast<QVBoxLayout *>(m_contentBackground->layout());
+        if (ssLayout) {
+            ssLayout->addWidget(m_scheduleSearchView, 1);
+        }
+
+        // Set up connections for deferred widgets
+        connect(m_scheduleSearchView, &CScheduleSearchView::signalSelectSchedule, this,
+                &Calendarmainwindow::slotSearchSelectSchedule);
+        connect(m_scheduleSearchView, &CScheduleSearchView::signalScheduleHide, this,
+                &Calendarmainwindow::setScheduleHide);
+        connect(m_sidebarView, &SidebarView::signalScheduleHide, this, &Calendarmainwindow::setScheduleHide);
+        connect(m_scheduleSearchView, &CScheduleSearchView::signalSelectCurrentItem, this,
+                &Calendarmainwindow::slotSetSearchFocus);
+
+        // Apply current theme to newly created widgets
+        slotTheme(DGuiApplicationHelper::instance()->themeType());
+
+        // Re-adjust layout for the newly added sidebar
+        resizeView();
+    });
 }
 
 void Calendarmainwindow::initConnection()
@@ -523,14 +556,7 @@ void Calendarmainwindow::initConnection()
     //监听当前应用主题切换事件
     connect(DGuiApplicationHelper::instance(), &DGuiApplicationHelper::themeTypeChanged, this,
             &Calendarmainwindow::slotTheme);
-    //编辑搜索日程刷新界面
-    connect(m_scheduleSearchView, &CScheduleSearchView::signalSelectSchedule, this,
-            &Calendarmainwindow::slotSearchSelectSchedule);
-    connect(m_scheduleSearchView, &CScheduleSearchView::signalScheduleHide, this,
-            &Calendarmainwindow::setScheduleHide);
-    connect(m_sidebarView, &SidebarView::signalScheduleHide, this, &Calendarmainwindow::setScheduleHide);
-    connect(m_scheduleSearchView, &CScheduleSearchView::signalSelectCurrentItem, this,
-            &Calendarmainwindow::slotSetSearchFocus);
+    //SidebarView和CScheduleSearchView的连接在deferred回调中建立
     //更新当前时间
     connect(m_currentDateUpdateTimer, &QTimer::timeout, this,
             &Calendarmainwindow::slotCurrentDateUpdate);
@@ -738,11 +764,13 @@ void Calendarmainwindow::resizeView()
         if (width() < minWidth) {
             // qCDebug(ClientLogger) << "Window too narrow, hiding sidebar";
             m_titleWidget->setSidebarCanDisplay(false);
-            m_sidebarView->setVisible(false);
+            if (m_sidebarView)
+                m_sidebarView->setVisible(false);
         } else if (width() > minWidth) {
             // qCDebug(ClientLogger) << "Window wide enough, showing sidebar";
             m_titleWidget->setSidebarCanDisplay(true);
-            m_sidebarView->setVisible(true);
+            if (m_sidebarView)
+                m_sidebarView->setVisible(true);
         }
     }
 
@@ -757,7 +785,7 @@ void Calendarmainwindow::resizeView()
     }
 
     int sidWidth = 0;
-    if (!m_sidebarView->isHidden()) {
+    if (m_sidebarView && !m_sidebarView->isHidden()) {
         sidWidth = m_sidebarView->width();
     }
     if (width() < CalendarViewSwitchWidth + sidWidth) {
@@ -1062,7 +1090,7 @@ void Calendarmainwindow::slotSearchFocusSwitch()
 {
     qCDebug(ClientLogger) << "Calendarmainwindow::slotSearchFocusSwitch";
     //设置搜索日程展示列表焦点
-    if (m_contentBackground->isVisible() && m_scheduleSearchView->getHasScheduleShow()) {
+    if (m_contentBackground->isVisible() && m_scheduleSearchView && m_scheduleSearchView->getHasScheduleShow()) {
         qCDebug(ClientLogger) << "Setting focus on search view";
         m_scheduleSearchView->setFocus(Qt::TabFocusReason);
     }
@@ -1072,6 +1100,8 @@ void Calendarmainwindow::slotSidebarStatusChange(bool status)
 {
     qCDebug(ClientLogger) << "Calendarmainwindow::slotSidebarStatusChange, status:" << status;
     //先显示再调整窗口大小
+    if (!m_sidebarView)
+        return;
     m_sidebarView->setVisible(status);
     if (status) {
         qCDebug(ClientLogger) << "Sidebar is visible, resizing window if necessary";

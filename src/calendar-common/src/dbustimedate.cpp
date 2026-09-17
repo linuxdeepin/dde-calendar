@@ -11,6 +11,7 @@
 #include <QDBusReply>
 #include <QtDebug>
 #include <QDBusInterface>
+#include <QDBusPendingCallWatcher>
 
 DCORE_USE_NAMESPACE
 
@@ -58,21 +59,23 @@ DBusTimedate::DBusTimedate(QObject *parent)
         qCWarning(CommonLogger) << "Failed to connect to PropertiesChanged signal:" << this->lastError().message();
     }
 
-    m_hasDateTimeFormat = getHasDateTimeFormat();
+    //异步检查是否支持DateTimeFormat，不阻塞启动关键路径
+    //初始使用默认值，待结果返回后通过信号更新
+    asyncCheckFormatSupport();
 }
 
 int DBusTimedate::shortTimeFormat()
 {
     qCDebug(CommonLogger) << "DBusTimedate::shortTimeFormat";
-    //如果存在对应的时间设置则获取，否则默认为4
-    return m_hasDateTimeFormat ? getPropertyByName("ShortTimeFormat").toInt() : 4;
+    //返回缓存值或默认值，不阻塞
+    return m_shortTimeFormat;
 }
 
 int DBusTimedate::shortDateFormat()
 {
     qCDebug(CommonLogger) << "DBusTimedate::shortDateFormat";
-    //如果存在对应的时间设置则获取，否则默认为1
-    return m_hasDateTimeFormat ? getPropertyByName("ShortDateFormat").toInt() : 1;
+    //返回缓存值或默认值，不阻塞
+    return m_shortDateFormat;
 }
 
 Qt::DayOfWeek DBusTimedate::weekBegins()
@@ -106,10 +109,12 @@ void DBusTimedate::propertiesChanged(const QDBusMessage &msg)
     foreach (const QString &prop, keys) {
         if (prop == "ShortTimeFormat") {
             qCDebug(CommonLogger) << "ShortTimeFormat changed";
-            emit ShortTimeFormatChanged(changedProps[prop].toInt());
+            m_shortTimeFormat = changedProps[prop].toInt();
+            emit ShortTimeFormatChanged(m_shortTimeFormat);
         } else if (prop == "ShortDateFormat") {
             qCDebug(CommonLogger) << "ShortDateFormat changed";
-            emit ShortDateFormatChanged(changedProps[prop].toInt());
+            m_shortDateFormat = changedProps[prop].toInt();
+            emit ShortDateFormatChanged(m_shortDateFormat);
         }
     }
 }
@@ -138,4 +143,76 @@ bool DBusTimedate::getHasDateTimeFormat()
         qCWarning(CommonLogger) << "Failed to check DateTime format support:" << reply.errorMessage();
         return false;
     }
+}
+
+void DBusTimedate::asyncCheckFormatSupport()
+{
+    qCDebug(CommonLogger) << "DBusTimedate::asyncCheckFormatSupport";
+    QDBusMessage msg = QDBusMessage::createMethodCall(TIMEDATE_DBUS_SERVICE,
+                                                      TIMEDATE_DBUS_PATH,
+                                                      "org.freedesktop.DBus.Introspectable",
+                                                      QStringLiteral("Introspect"));
+
+    QDBusPendingCall call = QDBusConnection::sessionBus().asyncCall(msg);
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(call, this);
+    connect(watcher, &QDBusPendingCallWatcher::finished, this, &DBusTimedate::onIntrospectFinished);
+}
+
+void DBusTimedate::onIntrospectFinished(QDBusPendingCallWatcher *watcher)
+{
+    QDBusPendingReply<QString> reply(*watcher);
+    if (reply.isError()) {
+        qCWarning(CommonLogger) << "Failed to check DateTime format support:" << reply.error().message();
+        m_hasDateTimeFormat = false;
+    } else {
+        m_hasDateTimeFormat = reply.value().contains("\"ShortDateFormat\"");
+        if (m_hasDateTimeFormat) {
+            asyncFetchFormatValues();
+        }
+    }
+    watcher->deleteLater();
+}
+
+void DBusTimedate::asyncFetchFormatValues()
+{
+    qCDebug(CommonLogger) << "DBusTimedate::asyncFetchFormatValues";
+
+    //异步获取ShortTimeFormat
+    QDBusMessage timeMsg = QDBusMessage::createMethodCall(
+        TIMEDATE_DBUS_SERVICE, TIMEDATE_DBUS_PATH,
+        "org.freedesktop.DBus.Properties", QStringLiteral("Get"));
+    timeMsg << this->interface() << QStringLiteral("ShortTimeFormat");
+    QDBusPendingCall timeCall = QDBusConnection::sessionBus().asyncCall(timeMsg);
+    QDBusPendingCallWatcher *timeWatcher = new QDBusPendingCallWatcher(timeCall, this);
+    timeWatcher->setProperty("propertyName", QStringLiteral("ShortTimeFormat"));
+    connect(timeWatcher, &QDBusPendingCallWatcher::finished, this, &DBusTimedate::onPropertyFetched);
+
+    //异步获取ShortDateFormat
+    QDBusMessage dateMsg = QDBusMessage::createMethodCall(
+        TIMEDATE_DBUS_SERVICE, TIMEDATE_DBUS_PATH,
+        "org.freedesktop.DBus.Properties", QStringLiteral("Get"));
+    dateMsg << this->interface() << QStringLiteral("ShortDateFormat");
+    QDBusPendingCall dateCall = QDBusConnection::sessionBus().asyncCall(dateMsg);
+    QDBusPendingCallWatcher *dateWatcher = new QDBusPendingCallWatcher(dateCall, this);
+    dateWatcher->setProperty("propertyName", QStringLiteral("ShortDateFormat"));
+    connect(dateWatcher, &QDBusPendingCallWatcher::finished, this, &DBusTimedate::onPropertyFetched);
+}
+
+void DBusTimedate::onPropertyFetched(QDBusPendingCallWatcher *watcher)
+{
+    QDBusPendingReply<QDBusVariant> reply(*watcher);
+    if (reply.isError()) {
+        qCWarning(CommonLogger) << "Failed to fetch property:" << reply.error().message();
+    } else {
+        QString propName = watcher->property("propertyName").toString();
+        int value = reply.value().variant().toInt();
+        if (propName == "ShortTimeFormat") {
+            m_shortTimeFormat = value;
+            emit ShortTimeFormatChanged(value);
+        } else if (propName == "ShortDateFormat") {
+            m_shortDateFormat = value;
+            emit ShortDateFormatChanged(value);
+        }
+    }
+    watcher->deleteLater();
 }
