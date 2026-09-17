@@ -13,6 +13,11 @@ namespace {
 
 const QString kNoSyncTokenMarker = QStringLiteral("dde-calendar:no-sync-token");
 
+QString parseFailureMessage()
+{
+    return QStringLiteral(
+        "Unable to parse the data returned by the server. Please verify the server address or try again later.");
+}
 
 QString uidFromCalendarData(const QString &calendarData)
 {
@@ -145,6 +150,8 @@ void DCalDavIncrementalSync::start(const Request &request, const Callback &callb
     m_fallbackAttempted = false;
     m_resourceListHasEventFilter = false;
     m_syncCollectionMode = false;
+    m_resourceInventoryOnly = false;
+    m_hasCompleteRemoteResourceList = false;
     m_running = true;
 
     if (!DCalDavTransport::isSecureUrl(request.calendarUrl) || request.username.isEmpty()) {
@@ -165,18 +172,19 @@ void DCalDavIncrementalSync::start(const Request &request, const Callback &callb
     if (firstSync) {
         sendResourceListRequest(true);
     } else if (request.syncToken.isEmpty() || providerHasNoSyncToken) {
-        // Some providers, including WeCom, return only resource metadata for an
-        // unbounded REPORT and reject the subsequent event GET. Reuse the
-        // product-defined range query so calendar-data is returned inline.
-        sendResourceListRequest(true);
+        // Providers without sync tokens need a complete resource inventory to
+        // detect remote deletions. Fetch that inventory separately because the
+        // product-defined range query intentionally omits older events.
+        sendResourceListRequest(false, true);
     } else {
         sendRequest(false);
     }
 }
 
-void DCalDavIncrementalSync::sendResourceListRequest(bool firstSync)
+void DCalDavIncrementalSync::sendResourceListRequest(bool firstSync, bool inventoryOnly)
 {
     m_resourceListHasEventFilter = firstSync;
+    m_resourceInventoryOnly = inventoryOnly;
     const QDateTime referenceTime = m_request.referenceTime.isValid()
         ? m_request.referenceTime
         : QDateTime::currentDateTimeUtc();
@@ -186,6 +194,13 @@ void DCalDavIncrementalSync::sendResourceListRequest(bool firstSync)
         : DCalDavCalendarQuery::resourceListRequest(
               m_request.calendarUrl, m_request.username, m_request.password);
     m_transport.send(request, [this](const DCalDavTransport::Response &response) {
+        if (response.httpStatus == 404) {
+            m_hasCompleteRemoteResourceList = true;
+            m_remoteHrefs.clear();
+            appendDeletedResources();
+            finish(true);
+            return;
+        }
         if (response.error != DCalDavTransport::NoError) {
             qCWarning(ServiceLogger) << "CalDAV resource list request failed"
                                      << "endpoint:" << DCalDavTransport::urlForLog(m_request.calendarUrl)
@@ -199,7 +214,9 @@ void DCalDavIncrementalSync::sendResourceListRequest(bool firstSync)
         DCalDavCalendarQuery::ResourceList resources;
         QString errorMessage;
         if (!DCalDavCalendarQuery::parseResourceList(response.body, resources, &errorMessage)) {
-            finish(false, errorMessage);
+            qCWarning(ServiceLogger) << "Unable to parse CalDAV resource list"
+                                     << "details:" << errorMessage;
+            finish(false, parseFailureMessage(), DCalDavErrorCode::ParseError);
             return;
         }
 
@@ -221,6 +238,9 @@ void DCalDavIncrementalSync::sendResourceListRequest(bool firstSync)
                 ++metadataOnlyResourceCount;
             }
             m_remoteHrefs.insert(resource.href);
+            if (m_resourceInventoryOnly) {
+                continue;
+            }
             if (!m_resourceListHasEventFilter && !isEventResource(resource)) {
                 continue;
             }
@@ -236,7 +256,19 @@ void DCalDavIncrementalSync::sendResourceListRequest(bool firstSync)
                                << "responseResourceCount:" << resources.size()
                                << "collectionResourceCount:" << collectionResourceCount
                                << "metadataOnlyResourceCount:" << metadataOnlyResourceCount
-                               << "pendingResourceCount:" << pendingResourceCount;
+                               << "pendingResourceCount:" << pendingResourceCount
+                               << "inventoryOnly:" << m_resourceInventoryOnly;
+        if (m_resourceInventoryOnly) {
+            // The inventory is complete, but its metadata may not contain
+            // usable calendar data. The next range query will fetch only the
+            // events needed for the current UI window.
+            m_hasCompleteRemoteResourceList = true;
+            m_resourceInventoryOnly = false;
+            m_pendingResources.clear();
+            m_resourceIndex = 0;
+            sendResourceListRequest(true);
+            return;
+        }
         fetchNextResource();
     });
 }
@@ -253,14 +285,24 @@ bool DCalDavIncrementalSync::appendResourceCalendarData(
     event.uid = uidFromCalendarData(event.calendarData);
     if (event.calendarData.isEmpty() || !hasEventComponent(event.calendarData)
         || event.uid.isEmpty()) {
+        qCWarning(ServiceLogger) << "Remote CalDAV resource is missing a valid VEVENT UID"
+                                 << "calendarDataEmpty:" << event.calendarData.isEmpty()
+                                 << "hasEventComponent:" << hasEventComponent(event.calendarData)
+                                 << "uidPresent:" << !event.uid.isEmpty();
         if (errorMessage != nullptr) {
-            *errorMessage = QStringLiteral("Remote CalDAV resource is missing a valid VEVENT UID.");
+            *errorMessage = parseFailureMessage();
         }
         return false;
     }
 
     DSchedule::Ptr schedule;
-    if (!DCalDavEventMapper::toSchedule(event, schedule, errorMessage)) {
+    QString mappingError;
+    if (!DCalDavEventMapper::toSchedule(event, schedule, &mappingError)) {
+        qCWarning(ServiceLogger) << "Unable to map remote CalDAV event"
+                                 << "details:" << mappingError;
+        if (errorMessage != nullptr) {
+            *errorMessage = parseFailureMessage();
+        }
         return false;
     }
     if (m_resourceListHasEventFilter) {
@@ -279,7 +321,7 @@ bool DCalDavIncrementalSync::appendResourceCalendarData(
 void DCalDavIncrementalSync::fetchNextResource()
 {
     if (m_resourceIndex >= m_pendingResources.size()) {
-        if (!m_resourceListHasEventFilter && !m_syncCollectionMode) {
+        if (m_hasCompleteRemoteResourceList && !m_syncCollectionMode) {
             appendDeletedResources();
         }
         if (m_result.syncToken.isEmpty()) {
@@ -301,7 +343,7 @@ void DCalDavIncrementalSync::fetchNextResource()
 
         QString errorMessage;
         if (!appendResourceCalendarData(resource, resource.calendarData, &errorMessage)) {
-            finish(false, errorMessage);
+            finish(false, errorMessage, DCalDavErrorCode::ParseError);
             return;
         }
     }
@@ -328,21 +370,22 @@ void DCalDavIncrementalSync::requestCalendarDataBatch(
     const DCalDavTransport::Request request = DCalDavCalendarQuery::resourceMultiGetRequest(
         m_request.calendarUrl, m_request.username, m_request.password, resourceHrefs);
     m_transport.send(request, [this, resources](const DCalDavTransport::Response &response) {
+        if (response.httpStatus == 403 || response.httpStatus == 404
+            || response.httpStatus == 405 || response.httpStatus == 501) {
+            qCWarning(ServiceLogger) << "CalDAV calendar-multiget is unavailable; using GET fallback"
+                                     << "calendarEndpoint:" << DCalDavTransport::urlForLog(m_request.calendarUrl)
+                                     << "resourceCount:" << resources.size()
+                                     << "httpStatus:" << response.httpStatus;
+            m_result.failureResponse = DCalDavTransport::Response();
+            fetchResourceByGet(resources, 0);
+            return;
+        }
         if (response.error != DCalDavTransport::NoError) {
             qCWarning(ServiceLogger) << "CalDAV calendar-multiget request failed"
                                      << "calendarEndpoint:" << DCalDavTransport::urlForLog(m_request.calendarUrl)
                                      << "resourceCount:" << resources.size()
                                      << "httpStatus:" << response.httpStatus
                                      << "transportError:" << static_cast<int>(response.error);
-            if (response.httpStatus == 403 || response.httpStatus == 405 || response.httpStatus == 501) {
-                qCWarning(ServiceLogger) << "CalDAV calendar-multiget is unavailable; using GET fallback"
-                                         << "calendarEndpoint:" << DCalDavTransport::urlForLog(m_request.calendarUrl)
-                                         << "resourceCount:" << resources.size()
-                                         << "httpStatus:" << response.httpStatus;
-                m_result.failureResponse = DCalDavTransport::Response();
-                fetchResourceByGet(resources, 0);
-                return;
-            }
             m_result.failureResponse = response;
             finish(false, DCalDavUtils::transportErrorText(response));
             return;
@@ -351,7 +394,9 @@ void DCalDavIncrementalSync::requestCalendarDataBatch(
         DCalDavCalendarQuery::RemoteEventList events;
         QString errorMessage;
         if (!DCalDavCalendarQuery::parseResponse(response.body, events, &errorMessage)) {
-            finish(false, errorMessage);
+            qCWarning(ServiceLogger) << "Unable to parse CalDAV calendar-multiget response"
+                                     << "details:" << errorMessage;
+            finish(false, parseFailureMessage(), DCalDavErrorCode::ParseError);
             return;
         }
 
@@ -368,8 +413,15 @@ void DCalDavIncrementalSync::requestCalendarDataBatch(
         int fetchedCount = 0;
         for (DCalDavCalendarQuery::Resource resource : resources) {
             const auto eventIt = eventByHref.constFind(resource.href);
-            if (eventIt == eventByHref.constEnd() || eventIt->deleted
-                || eventIt->calendarData.isEmpty()) {
+            if (eventIt == eventByHref.constEnd()) {
+                fallbackResources.append(resource);
+                continue;
+            }
+            if (eventIt->deleted) {
+                appendDeletedResource(resource);
+                continue;
+            }
+            if (eventIt->calendarData.isEmpty()) {
                 fallbackResources.append(resource);
                 continue;
             }
@@ -382,7 +434,7 @@ void DCalDavIncrementalSync::requestCalendarDataBatch(
                 resource.contentType = event.contentType;
             }
             if (!appendResourceCalendarData(resource, event.calendarData, &errorMessage)) {
-                finish(false, errorMessage);
+                finish(false, errorMessage, DCalDavErrorCode::ParseError);
                 return;
             }
             ++fetchedCount;
@@ -418,6 +470,11 @@ void DCalDavIncrementalSync::fetchResourceByGet(
     const DCalDavTransport::Request request = DCalDavCalendarQuery::resourceGetRequest(
         QUrl(resource.href), m_request.username, m_request.password);
     m_transport.send(request, [this, resources, index, resource](const DCalDavTransport::Response &response) {
+        if (response.httpStatus == 404) {
+            appendDeletedResource(resource);
+            fetchResourceByGet(resources, index + 1);
+            return;
+        }
         if (response.error != DCalDavTransport::NoError) {
             qCWarning(ServiceLogger) << "CalDAV event GET fallback failed"
                                      << "calendarEndpoint:" << DCalDavTransport::urlForLog(m_request.calendarUrl)
@@ -431,11 +488,26 @@ void DCalDavIncrementalSync::fetchResourceByGet(
 
         QString errorMessage;
         if (!appendResourceCalendarData(resource, QString::fromUtf8(response.body), &errorMessage)) {
-            finish(false, errorMessage);
+            finish(false, errorMessage, DCalDavErrorCode::ParseError);
             return;
         }
         fetchResourceByGet(resources, index + 1);
     });
+}
+
+void DCalDavIncrementalSync::appendDeletedResource(
+    const DCalDavCalendarQuery::Resource &resource)
+{
+    const auto mapping = m_mappingByHref.constFind(resource.href);
+    if (mapping == m_mappingByHref.constEnd()) {
+        return;
+    }
+
+    DCalDavCalendarQuery::RemoteEvent event;
+    event.href = resource.href;
+    event.uid = mapping->uid;
+    event.deleted = true;
+    m_result.remoteEvents.append(event);
 }
 
 void DCalDavIncrementalSync::appendDeletedResources()
@@ -467,11 +539,17 @@ void DCalDavIncrementalSync::sendRequest(bool fullRange)
     }
 
     m_transport.send(request, [this, fullRange](const DCalDavTransport::Response &response) {
+        if (response.httpStatus == 404) {
+            m_remoteHrefs.clear();
+            appendDeletedResources();
+            finish(true);
+            return;
+        }
         if (response.error != DCalDavTransport::NoError) {
             if (!fullRange && shouldFallbackToFullRange(response)) {
                 m_fallbackAttempted = true;
                 m_result.usedFullRangeFallback = true;
-                sendResourceListRequest(false);
+                sendResourceListRequest(false, true);
             } else {
                 m_result.failureResponse = response;
                 finish(false, DCalDavUtils::transportErrorText(response));
@@ -482,7 +560,7 @@ void DCalDavIncrementalSync::sendRequest(bool fullRange)
         if (!fullRange && response.body.contains("valid-sync-token")) {
             m_fallbackAttempted = true;
             m_result.usedFullRangeFallback = true;
-            sendResourceListRequest(false);
+            sendResourceListRequest(false, true);
             return;
         }
 
@@ -491,7 +569,9 @@ void DCalDavIncrementalSync::sendRequest(bool fullRange)
         QString errorMessage;
         if (!DCalDavCalendarQuery::parseResponseWithSyncToken(
                 response.body, events, &syncToken, &errorMessage)) {
-            finish(false, errorMessage);
+            qCWarning(ServiceLogger) << "Unable to parse CalDAV sync response"
+                                     << "details:" << errorMessage;
+            finish(false, parseFailureMessage(), DCalDavErrorCode::ParseError);
             return;
         }
 
@@ -521,7 +601,9 @@ void DCalDavIncrementalSync::sendRequest(bool fullRange)
             event.uid = uidFromCalendarData(event.calendarData);
             DSchedule::Ptr schedule;
             if (!DCalDavEventMapper::toSchedule(event, schedule, &errorMessage)) {
-                finish(false, errorMessage);
+                qCWarning(ServiceLogger) << "Unable to map remote CalDAV sync event"
+                                         << "details:" << errorMessage;
+                finish(false, parseFailureMessage(), DCalDavErrorCode::ParseError);
                 return;
             }
             m_result.remoteEvents.append(event);
@@ -531,7 +613,8 @@ void DCalDavIncrementalSync::sendRequest(bool fullRange)
     });
 }
 
-void DCalDavIncrementalSync::finish(bool success, const QString &errorMessage)
+void DCalDavIncrementalSync::finish(bool success, const QString &errorMessage,
+                                    DCalDavErrorCode failureCode)
 {
     if (!m_running) {
         return;
@@ -539,6 +622,7 @@ void DCalDavIncrementalSync::finish(bool success, const QString &errorMessage)
 
     m_result.success = success;
     m_result.errorMessage = errorMessage;
+    m_result.failureCode = success ? DCalDavErrorCode::NoError : failureCode;
     m_request.password.clear();
     m_running = false;
     if (m_callback) {

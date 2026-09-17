@@ -136,6 +136,11 @@ void MockCalDavServer::setCalendarMultiGetResponseStatus(int status)
     m_calendarMultiGetResponseStatus = status;
 }
 
+void MockCalDavServer::setCalendarMultiGetResponseBody(const QByteArray &body)
+{
+    m_calendarMultiGetResponseBody = body;
+}
+
 void MockCalDavServer::setResponseEtag(const QByteArray &etag)
 {
     m_responseEtag = etag;
@@ -144,6 +149,11 @@ void MockCalDavServer::setResponseEtag(const QByteArray &etag)
 void MockCalDavServer::setCalendarQueryReturnsCalendarData(bool enabled)
 {
     m_calendarQueryReturnsCalendarData = enabled;
+}
+
+void MockCalDavServer::setInvalidSyncTokenOnce(bool enabled)
+{
+    m_invalidSyncTokenOnce = enabled;
 }
 
 void MockCalDavServer::incomingConnection(qintptr socketDescriptor)
@@ -220,6 +230,20 @@ void MockCalDavServer::processSocket(QSslSocket *socket)
 void MockCalDavServer::sendResponse(QSslSocket *socket, const QByteArray &method,
                                     const QByteArray &target, const QByteArray &requestBody)
 {
+    const bool invalidSyncToken = m_invalidSyncTokenOnce && method == "REPORT"
+        && requestBody.contains("sync-collection");
+    if (invalidSyncToken) {
+        m_invalidSyncTokenOnce = false;
+        const QByteArray body =
+            "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+            "<d:error xmlns:d=\"DAV:\"><d:valid-sync-token/></d:error>";
+        const QByteArray response = "HTTP/1.1 409 Conflict\r\n"
+            "Content-Type: application/xml\r\nContent-Length: "
+            + QByteArray::number(body.size()) + "\r\nConnection: close\r\n\r\n" + body;
+        socket->write(response);
+        socket->disconnectFromHost();
+        return;
+    }
     const bool isCalendarMultiGet = method == "REPORT"
         && requestBody.contains("calendar-multiget");
     const int status = isCalendarMultiGet && m_calendarMultiGetResponseStatus != 0
@@ -235,7 +259,9 @@ void MockCalDavServer::sendResponse(QSslSocket *socket, const QByteArray &method
         : status == 429 ? "Too Many Requests"
         : status == 503 ? "Service Unavailable"
         : "Multi-Status";
-    const QByteArray body = m_targetResponseBodies.contains(target)
+    const QByteArray body = isCalendarMultiGet && !m_calendarMultiGetResponseBody.isEmpty()
+        ? m_calendarMultiGetResponseBody
+        : m_targetResponseBodies.contains(target)
         ? m_targetResponseBodies.value(target)
         : status == 207 && (method == "PROPFIND" || method == "REPORT")
         ? multistatusFor(target, requestBody, m_calendarQueryReturnsCalendarData)

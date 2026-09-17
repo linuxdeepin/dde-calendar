@@ -8,10 +8,162 @@
 #include "daccountmanagerdatabase.h"
 #include "dcaldavoutboxenqueuer.h"
 #include "dcaldavrecoveryitem.h"
+#include "ddatabase.h"
 #include "dschedule.h"
 #include "commondef.h"
 
+#include <QJsonArray>
+#include <QJsonDocument>
+
 namespace {
+
+QStringList calendarRecoveryTypeIDs(const DCalDavRecoveryItem &item)
+{
+    QStringList typeIDs;
+    const QJsonDocument document = QJsonDocument::fromJson(item.originalIcs.toUtf8());
+    if (document.isArray()) {
+        for (const QJsonValue &value : document.array()) {
+            const QString typeID = value.toString();
+            if (!typeID.isEmpty() && !typeIDs.contains(typeID)) {
+                typeIDs.append(typeID);
+            }
+        }
+    }
+    if (!item.localScheduleID.isEmpty() && !typeIDs.contains(item.localScheduleID)) {
+        typeIDs.prepend(item.localScheduleID);
+    }
+    return typeIDs;
+}
+
+bool recoverCalendarDelete(DAccountDataBase *localDatabase,
+                           DAccountManagerDataBase *accountManagerDatabase,
+                           const DCalDavRecoveryItem &item)
+{
+    QStringList typeIDs = calendarRecoveryTypeIDs(item);
+    DCalDavCalendarInfo calendar = accountManagerDatabase
+        ->getCalDavCalendarByScheduleTypeIDIncludingDisabled(
+            item.accountID, item.localScheduleID);
+    if (!calendar.calendarId.isEmpty()) {
+        const DCalDavCategoryInfo::List categories =
+            accountManagerDatabase->getCalDavCategoryMappings(
+                item.accountID, calendar.calendarId);
+        for (const DCalDavCategoryInfo &category : categories) {
+            if (!typeIDs.contains(category.scheduleTypeId)) {
+                typeIDs.append(category.scheduleTypeId);
+            }
+        }
+    }
+
+    const bool pendingDelete = accountManagerDatabase->hasPendingCalDavCalendarDelete(
+        item.accountID, item.localScheduleID);
+    const bool activePrimaryType =
+        !localDatabase->getScheduleTypeByID(item.localScheduleID).isNull();
+    const bool deletedPrimaryType =
+        !localDatabase->getScheduleTypeByID(item.localScheduleID, 1).isNull();
+    if (!calendar.calendarId.isEmpty() && calendar.enabled && !pendingDelete
+        && activePrimaryType && !deletedPrimaryType) {
+        // The coordinated transaction rolled back before deleting local data.
+        return true;
+    }
+
+    if (calendar.calendarId.isEmpty()) {
+        SqlTransactionLocker transaction({localDatabase->getConnectionName()});
+        if (!transaction.isValid()) {
+            return false;
+        }
+        for (const QString &typeID : typeIDs) {
+            if (!localDatabase->deleteSchedulesByScheduleTypeID(typeID, 1)) {
+                transaction.rollback();
+                return false;
+            }
+            if ((!localDatabase->getScheduleTypeByID(typeID).isNull()
+                 || !localDatabase->getScheduleTypeByID(typeID, 1).isNull())
+                && !localDatabase->deleteScheduleTypeByID(typeID, 1)) {
+                transaction.rollback();
+                return false;
+            }
+        }
+        return transaction.commit();
+    }
+
+    SqlTransactionLocker transaction(
+        {localDatabase->getConnectionName(), DDataBase::NameAccountManager});
+    if (!transaction.isValid()) {
+        return false;
+    }
+    for (const QString &typeID : typeIDs) {
+        if (!localDatabase->deleteSchedulesByScheduleTypeID(typeID, 0)) {
+            transaction.rollback();
+            return false;
+        }
+        if (!localDatabase->getScheduleTypeByID(typeID).isNull()
+            && !localDatabase->deleteScheduleTypeByID(typeID, 0)) {
+            transaction.rollback();
+            return false;
+        }
+    }
+    calendar.enabled = false;
+    if (!accountManagerDatabase->deleteCalDavCalendarEventOutboxItems(
+            item.accountID, calendar.calendarId)
+        || !accountManagerDatabase->upsertCalDavCalendar(calendar)
+        || !DCalDavOutboxEnqueuer::enqueueCalendarDelete(
+            accountManagerDatabase, item.accountID, calendar)) {
+        transaction.rollback();
+        return false;
+    }
+    return transaction.commit();
+}
+
+bool recoverRemoteCalendarDelete(DAccountDataBase *localDatabase,
+                                 DAccountManagerDataBase *accountManagerDatabase,
+                                 const DCalDavRecoveryItem &item)
+{
+    QStringList typeIDs = calendarRecoveryTypeIDs(item);
+    const DCalDavCalendarInfo calendar = accountManagerDatabase
+        ->getCalDavCalendarByScheduleTypeIDIncludingDisabled(
+            item.accountID, item.localScheduleID);
+    if (!calendar.calendarId.isEmpty()) {
+        const DCalDavCategoryInfo::List categories =
+            accountManagerDatabase->getCalDavCategoryMappings(
+                item.accountID, calendar.calendarId);
+        for (const DCalDavCategoryInfo &category : categories) {
+            if (!typeIDs.contains(category.scheduleTypeId)) {
+                typeIDs.append(category.scheduleTypeId);
+            }
+        }
+    }
+
+    const QStringList connectionNames = calendar.calendarId.isEmpty()
+        ? QStringList {localDatabase->getConnectionName()}
+        : QStringList {localDatabase->getConnectionName(), DDataBase::NameAccountManager};
+    SqlTransactionLocker transaction(connectionNames);
+    if (!transaction.isValid()) {
+        return false;
+    }
+    for (const QString &typeID : typeIDs) {
+        DScheduleType::Ptr type = localDatabase->getScheduleTypeByID(typeID);
+        if (type.isNull()) {
+            type = localDatabase->getScheduleTypeByID(typeID, 1);
+        }
+        if (!localDatabase->deleteSchedulesByScheduleTypeID(typeID, 1)
+            || !localDatabase->deleteScheduleTypeByID(typeID, 1)) {
+            transaction.rollback();
+            return false;
+        }
+        if (!type.isNull() && type->typeColor().privilege() != DTypeColor::PriSystem) {
+            localDatabase->deleteTypeColor(type->typeColor().colorID());
+        }
+    }
+    if (!calendar.calendarId.isEmpty()
+        && (!accountManagerDatabase->deleteCalDavOutboxItem(
+                item.accountID, item.localScheduleID)
+            || !accountManagerDatabase->deleteCalDavCalendarData(
+                item.accountID, calendar.calendarId, false))) {
+        transaction.rollback();
+        return false;
+    }
+    return transaction.commit();
+}
 
 bool restoreMapping(DAccountManagerDataBase *database,
                     const DCalDavRecoveryItem &item,
@@ -48,6 +200,16 @@ void DCalDavRecoveryHandler::recover(DAccountDataBase *localDatabase,
 
     const DCalDavRecoveryItem::List items = localDatabase->getCalDavRecoveryItems(accountID);
     for (const DCalDavRecoveryItem &item : items) {
+        if (item.operationType == DCalDavRecoveryItem::DeleteCalendarOperation
+            || item.operationType == DCalDavRecoveryItem::RemoteDeleteCalendarOperation) {
+            const bool recovered = item.operationType == DCalDavRecoveryItem::DeleteCalendarOperation
+                ? recoverCalendarDelete(localDatabase, accountManagerDatabase, item)
+                : recoverRemoteCalendarDelete(localDatabase, accountManagerDatabase, item);
+            if (recovered) {
+                localDatabase->deleteCalDavRecoveryItem(item.accountID, item.localScheduleID);
+            }
+            continue;
+        }
         DSchedule::Ptr recoveredSchedule;
         if (!DSchedule::fromIcsString(recoveredSchedule, item.scheduleIcs)
             || recoveredSchedule.isNull()) {
@@ -108,7 +270,23 @@ void DCalDavRecoveryHandler::recover(DAccountDataBase *localDatabase,
             }
             break;
         case DCalDavRecoveryItem::DeleteOperation:
-            if (deleted && mappingRestored) {
+            if (item.href.isEmpty()) {
+                // A missing href identifies a local-only/orphaned schedule. If
+                // its hard delete committed, finish by cancelling any stale
+                // local Outbox item. If the local transaction rolled back,
+                // keep the restored schedule and discard the recovery marker.
+                if (!exists) {
+                    recovered = accountManagerDatabase->deleteCalDavOutboxItem(
+                        item.accountID, item.localScheduleID);
+                } else if (deleted) {
+                    recovered = localDatabase->deleteScheduleByScheduleID(
+                                    item.localScheduleID, 1)
+                        && accountManagerDatabase->deleteCalDavOutboxItem(
+                            item.accountID, item.localScheduleID);
+                } else {
+                    recovered = true;
+                }
+            } else if (deleted && mappingRestored) {
                 recovered = DCalDavOutboxEnqueuer::enqueue(
                     accountManagerDatabase, item.accountID, recoveredSchedule,
                     DCalDavOutboxEnqueuer::DeleteChange);
@@ -120,6 +298,9 @@ void DCalDavRecoveryHandler::recover(DAccountDataBase *localDatabase,
                         accountManagerDatabase, item.accountID, current,
                         DCalDavOutboxEnqueuer::ModifyChange);
             }
+            break;
+        case DCalDavRecoveryItem::DeleteCalendarOperation:
+        case DCalDavRecoveryItem::RemoteDeleteCalendarOperation:
             break;
         }
         if (recovered) {

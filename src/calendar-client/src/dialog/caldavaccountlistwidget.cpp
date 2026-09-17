@@ -12,7 +12,9 @@
 
 #include <QCoreApplication>
 #include <QIcon>
+#include <DFloatingMessage>
 #include <DLabel>
+#include <DMessageManager>
 #include <DPalette>
 #include <DFontSizeManager>
 #include <QHBoxLayout>
@@ -20,7 +22,6 @@
 #include <QTimer>
 #include <QVBoxLayout>
 
-#include <DDialog>
 #include <DToolButton>
 
 #include <DBackgroundGroup>
@@ -310,20 +311,16 @@ void CalDavAccountListWidget::showConflictNotice(const QString &accountID)
     if (status.conflictCount <= 0) {
         return;
     }
+    m_conflictNotices.insert(accountID);
     QTimer::singleShot(0, this, [this, accountID]() {
-        Dtk::Widget::DDialog dialog(this);
-        dialog.setWindowTitle(tr("Calendar synchronization conflict"));
-        Dtk::Widget::DLabel *message = new Dtk::Widget::DLabel(
-            tr("A synchronization conflict was detected. The server version will replace the local changes."),
-            &dialog);
-        message->setWordWrap(true);
-        dialog.addContent(message, Qt::AlignCenter);
-        dialog.addButton(tr("Use server version"), false, Dtk::Widget::DDialog::ButtonWarning);
-        QObject::connect(dialog.getButton(0), &QAbstractButton::clicked,
-                         &dialog, [&dialog]() { dialog.done(1); });
-        if (dialog.exec() == 1) {
-            m_conflictNotices.insert(accountID);
-            gAccountManager->resolveAllCalDavConflicts(accountID, false);
-        }
+        Dtk::Widget::DFloatingMessage *message = new Dtk::Widget::DFloatingMessage(
+            Dtk::Widget::DFloatingMessage::TransientType);
+        message->setIcon(QIcon::fromTheme(QStringLiteral("dialog-error")));
+        message->setMessage(
+            tr("A synchronization conflict was detected. The server version will replace the local changes."));
+        message->setDuration(2000);
+        Dtk::Widget::DMessageManager::instance()->sendMessage(window(), message);
+
+        gAccountManager->resolveAllCalDavConflicts(accountID, false);
     });
 }

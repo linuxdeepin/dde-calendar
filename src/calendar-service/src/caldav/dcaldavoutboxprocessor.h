@@ -39,6 +39,7 @@ public:
         int conflictDiscardedCount = 0;
         DCalDavScheduleCreateError::Type createFailure = DCalDavScheduleCreateError::NoError;
         int permanentFailureCount = 0;
+        int restoredCalendarCount = 0;
     };
 
     typedef std::function<void(const Result &)> Callback;
@@ -61,6 +62,8 @@ private:
                                const DCalDavEventMappingInfo &mapping);
     void sendDeleteRequest(const DCalDavOutboxItem &item,
                            const DCalDavEventMappingInfo &mapping);
+    void sendDeleteCalendarRequest(const DCalDavOutboxItem &item);
+    void restoreCalendarDelete(const DCalDavOutboxItem &item);
     void fetchWriteEtag(const DCalDavOutboxItem &item, const QUrl &resourceUrl);
     /**
      * @brief Processes one pending local-to-remote operation.

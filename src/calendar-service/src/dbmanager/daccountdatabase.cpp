@@ -324,6 +324,20 @@ bool DAccountDataBase::deleteSchedulesByScheduleTypeID(const QString &typeID, co
     return resBool;
 }
 
+bool DAccountDataBase::restoreSchedulesByScheduleTypeID(const QString &typeID)
+{
+    if (typeID.isEmpty()) {
+        return false;
+    }
+    SqliteQuery query(m_database);
+    if (!query.prepare(QStringLiteral(
+            "UPDATE schedules SET dtDelete = NULL, isDeleted = 0 WHERE scheduleTypeID = ?"))) {
+        return false;
+    }
+    query.addBindValue(typeID);
+    return query.exec();
+}
+
 DSchedule::List DAccountDataBase::getScheduleListByTypeID(const QString &typeID)
 {
     DSchedule::List scheduleList;
@@ -696,6 +710,20 @@ bool DAccountDataBase::deleteScheduleTypeByID(const QString &typeID, const int i
     }
 
     return res;
+}
+
+bool DAccountDataBase::restoreScheduleTypeByID(const QString &typeID)
+{
+    if (typeID.isEmpty()) {
+        return false;
+    }
+    SqliteQuery query(m_database);
+    if (!query.prepare(QStringLiteral(
+            "UPDATE scheduleType SET dtDelete = NULL, isDeleted = 0 WHERE typeID = ?"))) {
+        return false;
+    }
+    query.addBindValue(typeID);
+    return query.exec() && query.numRowsAffected() == 1;
 }
 
 bool DAccountDataBase::updateScheduleType(const DScheduleType::Ptr &scheduleType)

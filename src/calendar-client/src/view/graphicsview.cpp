@@ -506,12 +506,8 @@ void CGraphicsView::slotUpdateScene()
 void CGraphicsView::slotStateChange(bool bState)
 {
     qCDebug(ClientLogger) << "State change" << "state:" << bState;
-    if(bState) {
-        // qCDebug(ClientLogger) << "State change to true, hiding all schedule items";
-        for (int i = 0; i < m_vScheduleItem.size(); i++) {
-            m_vScheduleItem[i]->setVisible(false);
-        }
-    }
+    // Keep the current items visible until the asynchronous query returns.
+    // The refreshed data will replace them without exposing an empty scene.
 }
 
 #ifndef QT_NO_WHEELEVENT

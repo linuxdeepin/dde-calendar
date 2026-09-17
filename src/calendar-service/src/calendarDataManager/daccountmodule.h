@@ -15,10 +15,12 @@
 
 #include <QObject>
 #include <QSharedPointer>
+#include <QStringList>
 
 //帐户模块
 //处理后端数据获取，提醒，上传下载等
 class DAccountManagerDataBase;
+class DCalDavCalendarInfo;
 
 class DAccountModule : public QObject
 {
@@ -120,6 +122,12 @@ private:
 
     //根据提醒任务获取对应的日程信息
     DSchedule::Ptr getScheduleByRemind(const DRemindData::Ptr &remindData);
+    bool deleteCalDavCalendarByScheduleTypeID(const QString &typeID);
+    bool persistCalDavCalendarDeleteRecovery(const DCalDavCalendarInfo &calendar,
+                                             const QStringList &typeIDs);
+    bool commitCalDavCalendarDelete(const DCalDavCalendarInfo &calendar,
+                                    const QStringList &typeIDs,
+                                    const QStringList &scheduleIDs);
     void recoverPendingCalDavOperations();
 
 signals:

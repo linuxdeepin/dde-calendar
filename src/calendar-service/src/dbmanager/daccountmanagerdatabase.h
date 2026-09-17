@@ -69,6 +69,12 @@ public:
     DCalDavCalendarInfo::List getCalDavCalendarList(const QString &accountID);
     DCalDavCalendarInfo getCalDavCalendarByScheduleTypeID(const QString &accountID,
                                                            const QString &scheduleTypeID);
+    DCalDavCalendarInfo getCalDavCalendarByScheduleTypeIDIncludingDisabled(
+        const QString &accountID, const QString &scheduleTypeID);
+    DCalDavCalendarInfo getCalDavCalendarByIDIncludingDisabled(
+        const QString &accountID, const QString &calendarID);
+    bool deleteCalDavCalendarData(const QString &accountID, const QString &calendarID,
+                                  bool startTransaction = true);
     bool upsertCalDavCalendar(const DCalDavCalendarInfo &calendar);
     bool updateCalDavCalendarSyncToken(const QString &calendarID, const QString &syncToken);
     bool updateCalDavCalendarInitialSyncCompleted(const QString &calendarID, bool completed);
@@ -91,6 +97,8 @@ public:
     bool deleteCalDavEventMapping(const QString &accountID, const QString &href);
     DCalDavOutboxItem getCalDavOutboxItem(const QString &accountID,
                                            const QString &localScheduleID);
+    bool hasPendingCalDavCalendarDelete(const QString &accountID,
+                                        const QString &scheduleTypeID) const;
     bool hasCalDavOutboxItems(const QString &accountID) const;
     DCalDavOutboxItem::List getCalDavConflictItems(const QString &accountID);
     DCalDavOutboxItem::List getCalDavBlockedOutboxItems(const QString &accountID);
@@ -102,6 +110,8 @@ public:
     QDateTime earliestCalDavOutboxRetryAt() const;
     bool upsertCalDavOutboxItem(const DCalDavOutboxItem &item);
     bool deleteCalDavOutboxItem(const QString &accountID, const QString &localScheduleID);
+    bool deleteCalDavCalendarEventOutboxItems(const QString &accountID,
+                                              const QString &calendarID);
     bool deleteCalDavOutboxItemIfCurrent(const DCalDavOutboxItem &item);
 
     ///////////////通用设置

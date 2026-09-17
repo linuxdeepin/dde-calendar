@@ -23,6 +23,7 @@ public:
         QUrl serverUrl;
         QString username;
         QString password;
+        bool requireReadableCalendar = true;
     };
 
     struct Result {
