@@ -29,6 +29,7 @@
 #include <QtMath>
 #include <QPainter>
 #include <QPainterPath>
+#include <QPointer>
 
 //定义拖拽日程
 DSchedule::Ptr DragInfoGraphicsView::m_DragScheduleInfo;
@@ -320,7 +321,7 @@ void DragInfoGraphicsView::contextMenuEvent(QContextMenuEvent *event)
     //触摸状态恢复为默认状态
     m_touchState = TS_NONE;
     QGraphicsItem *listItem = itemAt(event->pos());
-    DragInfoItem *infoitem = dynamic_cast<DragInfoItem *>(listItem);
+    QPointer<DragInfoItem> infoitem = dynamic_cast<DragInfoItem *>(listItem);
 
     CScheduleItem *tt = dynamic_cast<CScheduleItem *>(listItem);
     if (tt != nullptr && tt->getType() != 0) {
@@ -329,22 +330,29 @@ void DragInfoGraphicsView::contextMenuEvent(QContextMenuEvent *event)
     if (infoitem != nullptr) {
         //是否为节假日日程判断
         if (!CScheduleOperation::isFestival(infoitem->getData())) {
+            //exec() 前拷贝日程数据，防止 exec() 嵌套事件循环期间对象被销毁后访问悬垂指针
+            DSchedule::Ptr scheduleData = infoitem->getData();
             m_rightMenu->clear();
             m_rightMenu->addAction(m_editAction);
             m_rightMenu->addAction(m_deleteAction);
             //如果日程是不可修改的则设置删除按钮无效
-            m_deleteAction->setEnabled(!CScheduleOperation::scheduleIsInvariant(infoitem->getData()));
+            m_deleteAction->setEnabled(!CScheduleOperation::scheduleIsInvariant(scheduleData));
 
             QAction *action_t = m_rightMenu->exec(QCursor::pos());
 
+            //exec() 返回后校验 infoitem 是否仍然有效，避免 Use-After-Free
+            if (infoitem.isNull()) {
+                return;
+            }
+
             if (action_t == m_editAction) {
                 CScheduleDlg dlg(0, this);
-                dlg.setData(infoitem->getData());
+                dlg.setData(scheduleData);
                 if (dlg.exec() == DDialog::Accepted) {
                     emit signalsUpdateSchedule();
                 }
             } else if (action_t == m_deleteAction) {
-                DeleteItem(infoitem->getData());
+                DeleteItem(scheduleData);
             }
         } else {
             CMyScheduleView dlg(infoitem->getData(), this);
