@@ -6,6 +6,7 @@
 #define DCALDAVINCREMENTALSYNC_H
 
 #include "dcaldavcalendarquery.h"
+#include "dcaldaverrorcode.h"
 #include "dcaldaveventmappinginfo.h"
 #include "dcaldaveventmapper.h"
 
@@ -37,6 +38,7 @@ public:
         QString errorMessage;
         QString syncToken;
         DCalDavTransport::Response failureResponse;
+        DCalDavErrorCode failureCode = DCalDavErrorCode::NoError;
         DCalDavCalendarQuery::RemoteEventList remoteEvents;
         DSchedule::List schedules;
     };
@@ -55,14 +57,16 @@ public:
 
 private:
     void sendRequest(bool fullRange);
-    void sendResourceListRequest(bool firstSync);
+    void sendResourceListRequest(bool firstSync, bool inventoryOnly = false);
     void fetchNextResource();
     void requestCalendarDataBatch(const DCalDavCalendarQuery::ResourceList &resources);
     void fetchResourceByGet(const DCalDavCalendarQuery::ResourceList &resources, int index);
     bool appendResourceCalendarData(const DCalDavCalendarQuery::Resource &resource,
                                     const QString &calendarData, QString *errorMessage);
+    void appendDeletedResource(const DCalDavCalendarQuery::Resource &resource);
     void appendDeletedResources();
-    void finish(bool success, const QString &errorMessage = QString());
+    void finish(bool success, const QString &errorMessage = QString(),
+                DCalDavErrorCode failureCode = DCalDavErrorCode::NoError);
     bool shouldFallbackToFullRange(const DCalDavTransport::Response &response) const;
 
     DCalDavTransport m_transport;
@@ -77,6 +81,8 @@ private:
     bool m_fallbackAttempted = false;
     bool m_resourceListHasEventFilter = false;
     bool m_syncCollectionMode = false;
+    bool m_resourceInventoryOnly = false;
+    bool m_hasCompleteRemoteResourceList = false;
 };
 
 #endif // DCALDAVINCREMENTALSYNC_H

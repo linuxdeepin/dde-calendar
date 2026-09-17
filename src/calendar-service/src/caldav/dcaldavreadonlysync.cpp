@@ -7,6 +7,8 @@
 #include "dcaldavdiscovery.h"
 #include "commondef.h"
 
+#include <algorithm>
+
 namespace {
 
 DCalDavValidationError::Type validationErrorForResponse(
@@ -280,6 +282,7 @@ void DCalDavReadOnlySync::sendCollectionsRequest(const QUrl &homeUrl)
                                  << "count:" << discovery.calendarCollections.size();
         m_result.discovery.calendarHomeSetHref = homeUrl.toString();
         const QUrl baseUrl = response.finalUrl.isValid() ? response.finalUrl : homeUrl;
+        int readableCalendarCount = 0;
         for (DCalDavXmlReader::CalendarCollection &collection : discovery.calendarCollections) {
             collection.href = DCalDavDiscovery::resolveHref(baseUrl, collection.href).toString();
             if (collection.href.isEmpty()) {
@@ -287,13 +290,17 @@ void DCalDavReadOnlySync::sendCollectionsRequest(const QUrl &homeUrl)
                        DCalDavValidationError::ParseError);
                 return;
             }
-            if (collection.privilegesKnown
-                && !(collection.privileges & DCalDavXmlReader::ReadPrivilege)) {
-                continue;
+            // Keep inaccessible collections in the discovery result. The
+            // registrar must distinguish a remote permission loss from a
+            // collection that was actually deleted; dropping it here would
+            // make the caller incorrectly delete local data.
+            if (!collection.privilegesKnown
+                || (collection.privileges & DCalDavXmlReader::ReadPrivilege)) {
+                ++readableCalendarCount;
             }
             m_result.discovery.calendarCollections.append(collection);
         }
-        if (m_result.discovery.calendarCollections.isEmpty()) {
+        if (readableCalendarCount == 0 && m_request.requireReadableCalendar) {
             finish(false, QStringLiteral("No readable CalDAV calendar was found."),
                    DCalDavValidationError::UnsupportedCalDav);
             return;
@@ -305,7 +312,30 @@ void DCalDavReadOnlySync::sendCollectionsRequest(const QUrl &homeUrl)
 
 void DCalDavReadOnlySync::sendCalendarQuery()
 {
+    while (m_collectionIndex < m_result.discovery.calendarCollections.size()) {
+        const DCalDavXmlReader::CalendarCollection &candidate =
+            m_result.discovery.calendarCollections.at(m_collectionIndex);
+        if (!candidate.privilegesKnown
+            || (candidate.privileges & DCalDavXmlReader::ReadPrivilege)) {
+            break;
+        }
+        ++m_collectionIndex;
+    }
     if (m_collectionIndex >= m_result.discovery.calendarCollections.size()) {
+        if (m_request.requireReadableCalendar) {
+            const bool hasReadableCalendar = std::any_of(
+                m_result.discovery.calendarCollections.cbegin(),
+                m_result.discovery.calendarCollections.cend(),
+                [](const DCalDavXmlReader::CalendarCollection &collection) {
+                    return !collection.privilegesKnown
+                        || (collection.privileges & DCalDavXmlReader::ReadPrivilege);
+                });
+            if (!hasReadableCalendar) {
+                finish(false, QStringLiteral("No readable CalDAV calendar was found."),
+                       DCalDavValidationError::UnsupportedCalDav);
+                return;
+            }
+        }
         finish(true);
         return;
     }
@@ -316,6 +346,13 @@ void DCalDavReadOnlySync::sendCalendarQuery()
     const DCalDavTransport::Request request = DCalDavCalendarQuery::firstSyncRequest(
         collectionUrl, m_request.username, m_request.password, QDateTime::currentDateTimeUtc());
     m_transport.send(request, [this, collectionUrl](const DCalDavTransport::Response &response) {
+        if (response.httpStatus == 404) {
+            qCInfo(ServiceLogger) << "CalDAV calendar disappeared during discovery"
+                                  << "endpoint:" << DCalDavTransport::urlForLog(collectionUrl);
+            m_result.discovery.calendarCollections.removeAt(m_collectionIndex);
+            sendCalendarQuery();
+            return;
+        }
         if (response.error != DCalDavTransport::NoError) {
             qCWarning(ServiceLogger) << "CalDAV calendar query request failed"
                                      << "endpoint:" << DCalDavTransport::urlForLog(collectionUrl)

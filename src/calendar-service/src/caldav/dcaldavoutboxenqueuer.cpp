@@ -134,3 +134,37 @@ bool DCalDavOutboxEnqueuer::enqueue(DAccountManagerDataBase *database, const QSt
     }
     return database->upsertCalDavOutboxItem(item);
 }
+
+
+bool DCalDavOutboxEnqueuer::enqueueCalendarDelete(
+    DAccountManagerDataBase *database, const QString &accountID,
+    const DCalDavCalendarInfo &calendar)
+{
+    if (database == nullptr || accountID.isEmpty() || calendar.calendarId.isEmpty()
+        || calendar.scheduleTypeID.isEmpty() || calendar.href.isEmpty()) {
+        return false;
+    }
+
+    DCalDavAccountInfo accountInfo;
+    if (!database->getCalDavAccountInfo(accountID, accountInfo)
+        || !DCalDavProviderProfile::forProvider(
+               static_cast<DCalDavProviderProfile::ProviderType>(accountInfo.providerType)).supportsWrite) {
+        return false;
+    }
+
+    DCalDavOutboxItem item = database->getCalDavOutboxItem(accountID, calendar.scheduleTypeID);
+    if (!item.operationID.isEmpty()
+        && item.operationType != DCalDavOutboxItem::DeleteCalendarOperation) {
+        return false;
+    }
+    if (item.operationID.isEmpty()) {
+        item.operationID = DDataBase::createUuid();
+        item.accountID = accountID;
+        item.localScheduleID = calendar.scheduleTypeID;
+        item.operationType = DCalDavOutboxItem::DeleteCalendarOperation;
+    }
+    item.retryCount = 0;
+    item.nextRetryAt = QDateTime();
+    item.failureType = DCalDavOutboxItem::NoFailure;
+    return database->upsertCalDavOutboxItem(item);
+}

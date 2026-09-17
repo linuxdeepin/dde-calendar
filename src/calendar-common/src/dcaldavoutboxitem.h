@@ -16,6 +16,7 @@ public:
         CreateOperation = 0,
         ModifyOperation = 1,
         DeleteOperation = 2,
+        DeleteCalendarOperation = 3,
     };
 
     enum FailureType {

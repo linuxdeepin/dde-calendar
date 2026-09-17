@@ -92,6 +92,7 @@ signals:
     void signalAccountDataUpdate();
     void signalScheduleUpdate();
     void signalScheduleTypeUpdate();
+    void signalAccountScheduleTypeUpdate(const QString &accountID);
     void signalSearchScheduleUpdate();
     void signalAccountStateChange();
     void signalCalDavAccountStatusChanged(const QString &accountID);

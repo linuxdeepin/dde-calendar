@@ -17,6 +17,8 @@ public:
         ModifyOperation = 1,
         DeleteOperation = 2,
         LocalCreateOperation = 3,
+        DeleteCalendarOperation = 4,
+        RemoteDeleteCalendarOperation = 5,
     };
 
     typedef QVector<DCalDavRecoveryItem> List;

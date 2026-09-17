@@ -11,6 +11,7 @@
 #include "dcaldavreadonlysync.h"
 
 #include <QObject>
+#include <QStringList>
 
 #include <functional>
 
@@ -27,9 +28,6 @@ public:
         DAccountDataBase *localDatabase = nullptr;
         DAccountManagerDataBase *accountManagerDatabase = nullptr;
         DCalDavSyncJobManager *jobManager = nullptr;
-        // Existing accounts are registered at service startup and synced after
-        // the client reports that its window is shown.
-        bool triggerInitialSync = true;
     };
 
     struct Result {
@@ -55,12 +53,21 @@ private:
      * @brief Persists discovered collections and prepares their initial sync requests.
      *
      * Reuses existing calendar identities and sync tokens, creates or updates
-     * local schedule types and permissions, disables missing collections, then
+     * local schedule types and permissions, removes missing collections, then
      * appends every readable collection to the account synchronization request.
      */
     bool persistCalendars(const DCalDavXmlReader::DiscoveryResult &discovery,
                           DCalDavAccountSync::Request &syncRequest,
                           QString *errorMessage);
+    bool handleRemoteCalendarDeletion(const DCalDavCalendarInfo &calendar,
+                                      QString *errorMessage);
+    bool persistRemoteCalendarDeletionRecovery(const DCalDavCalendarInfo &calendar,
+                                               const QStringList &typeIDs,
+                                               QString *errorMessage);
+    bool commitRemoteCalendarDeletion(const DCalDavCalendarInfo &calendar,
+                                      const QStringList &typeIDs,
+                                      const QStringList &scheduleIDs,
+                                      QString *errorMessage);
     void finish(bool success, const QString &errorMessage = QString(),
                 const DCalDavTransport::Response &failureResponse = DCalDavTransport::Response(),
                 DCalDavErrorCode failureCode = DCalDavErrorCode::Unknown);

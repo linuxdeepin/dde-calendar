@@ -6,6 +6,8 @@
 #include "doanetworkdbus.h"
 #include "commondef.h"
 
+#include <QSet>
+
 AccountItem::AccountItem(const DAccount::Ptr &account, QObject *parent)
     : QObject(parent)
     , m_account(account)
@@ -509,7 +511,39 @@ void AccountItem::slotGetScheduleTypeListFinish(DScheduleType::List scheduleType
 {
     qCDebug(ClientLogger) << "Received" << scheduleTypeList.size() << "schedule types for account:" << m_account->accountName();
     m_scheduleTypeList = scheduleTypeList;
+
+    // Keep already loaded schedules for other types while the asynchronous
+    // type query completes, but remove schedules belonging to a deleted type
+    // immediately. This prevents a local deletion from blanking or restoring
+    // unrelated calendars during a refresh.
+    QSet<QString> activeTypeIDs;
+    for (const DScheduleType::Ptr &type : m_scheduleTypeList) {
+        if (!type.isNull()) {
+            activeTypeIDs.insert(type->typeID());
+        }
+    }
+    const auto removeDeletedSchedules = [&activeTypeIDs](QMap<QDate, DSchedule::List> &scheduleMap) {
+        for (auto iterator = scheduleMap.begin(); iterator != scheduleMap.end();) {
+            DSchedule::List &schedules = iterator.value();
+            for (auto schedule = schedules.begin(); schedule != schedules.end();) {
+                if ((*schedule).isNull() || !activeTypeIDs.contains((*schedule)->scheduleTypeID())) {
+                    schedule = schedules.erase(schedule);
+                } else {
+                    ++schedule;
+                }
+            }
+            if (schedules.isEmpty()) {
+                iterator = scheduleMap.erase(iterator);
+            } else {
+                ++iterator;
+            }
+        }
+    };
+    removeDeletedSchedules(m_scheduleMap);
+    removeDeletedSchedules(m_searchedScheduleMap);
+
     emit signalScheduleTypeUpdate();
+    emit signalAccountScheduleTypeUpdate(m_account->accountID());
 }
 
 /**

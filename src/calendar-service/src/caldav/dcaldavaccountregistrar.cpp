@@ -4,19 +4,27 @@
 
 #include "dcaldavaccountregistrar.h"
 
+#include "dcaldavcalendardeletehelper.h"
+
 #include "daccountdatabase.h"
 #include "daccountmanagerdatabase.h"
 #include "dcaldavcredentialstore.h"
 #include "dcaldavcolorallocator.h"
 #include "dcaldavsyncjobmanager.h"
+#include "dcaldavrecoveryitem.h"
 #include "dcaldavxmlreader.h"
 #include "ddatabase.h"
 #include "dscheduletype.h"
+#include "commondef.h"
 
 #include <QCoreApplication>
+#include <QJsonArray>
+#include <QJsonDocument>
 #include <QSet>
 
 #include <QUrl>
+
+#include <memory>
 
 namespace {
 
@@ -118,6 +126,7 @@ void DCalDavAccountRegistrar::start(const Request &request, const Callback &call
     discoveryRequest.serverUrl = QUrl(request.account.serverUrl);
     discoveryRequest.username = request.account.username;
     discoveryRequest.password = m_password;
+    discoveryRequest.requireReadableCalendar = false;
     m_discovery.start(discoveryRequest, [this](const DCalDavReadOnlySync::Result &result) {
         if (!result.success) {
             finish(false, result.errorMessage, result.failureResponse, result.failureCode);
@@ -142,10 +151,6 @@ void DCalDavAccountRegistrar::start(const Request &request, const Callback &call
                    DCalDavTransport::Response(), DCalDavErrorCode::Unknown);
             return;
         }
-        if (m_request.triggerInitialSync) {
-            m_request.jobManager->requestSync(
-                m_request.account.accountId, DCalDavSyncStateMachine::StartupTrigger);
-        }
         finish(true);
     });
 }
@@ -161,6 +166,120 @@ QString DCalDavAccountRegistrar::findScheduleTypeID(
     }
     // CalDAV event types are created from CATEGORIES after ICS parsing.
     return QString();
+}
+
+bool DCalDavAccountRegistrar::handleRemoteCalendarDeletion(
+    const DCalDavCalendarInfo &calendar, QString *errorMessage)
+{
+    const DCalDavCategoryInfo::List categories =
+        m_request.accountManagerDatabase->getCalDavCategoryMappings(
+            m_request.account.accountId, calendar.calendarId);
+    const QStringList typeIDs = DCalDavCalendarDeleteHelper::collectTypeIDs(
+        calendar.scheduleTypeID, categories);
+    const QStringList scheduleIDs = DCalDavCalendarDeleteHelper::collectScheduleIDs(
+        m_request.localDatabase, typeIDs);
+
+    return persistRemoteCalendarDeletionRecovery(calendar, typeIDs, errorMessage)
+        && commitRemoteCalendarDeletion(calendar, typeIDs, scheduleIDs, errorMessage);
+}
+
+bool DCalDavAccountRegistrar::persistRemoteCalendarDeletionRecovery(
+    const DCalDavCalendarInfo &calendar, const QStringList &typeIDs, QString *errorMessage)
+{
+    QJsonArray recoveryTypeIDs;
+    for (const QString &typeID : typeIDs) {
+        recoveryTypeIDs.append(typeID);
+    }
+
+    DCalDavRecoveryItem recoveryItem;
+    recoveryItem.accountID = m_request.account.accountId;
+    recoveryItem.localScheduleID = calendar.scheduleTypeID;
+    recoveryItem.operationType = DCalDavRecoveryItem::RemoteDeleteCalendarOperation;
+    recoveryItem.scheduleIcs = QStringLiteral("CALDAV-REMOTE-CALENDAR-DELETE");
+    recoveryItem.calendarID = calendar.calendarId;
+    recoveryItem.href = calendar.href;
+    recoveryItem.originalIcs = QString::fromUtf8(
+        QJsonDocument(recoveryTypeIDs).toJson(QJsonDocument::Compact));
+    recoveryItem.createdAt = QDateTime::currentDateTimeUtc();
+    if (m_request.localDatabase->upsertCalDavRecoveryItem(recoveryItem)) {
+        return true;
+    }
+
+    if (errorMessage != nullptr) {
+        *errorMessage = QStringLiteral(
+            "Failed to persist removed CalDAV calendar recovery state.");
+    }
+    return false;
+}
+
+bool DCalDavAccountRegistrar::commitRemoteCalendarDeletion(
+    const DCalDavCalendarInfo &calendar, const QStringList &typeIDs,
+    const QStringList &scheduleIDs, QString *errorMessage)
+{
+    const auto clearRecovery = [this, &calendar]() {
+        return m_request.localDatabase->deleteCalDavRecoveryItem(
+            m_request.account.accountId, calendar.scheduleTypeID);
+    };
+    std::unique_ptr<SqlTransactionLocker> transaction(new SqlTransactionLocker(
+        {m_request.localDatabase->getConnectionName(), DDataBase::NameAccountManager}));
+    if (!transaction->isValid()) {
+        clearRecovery();
+        if (errorMessage != nullptr) {
+            *errorMessage = QStringLiteral("Failed to start removed CalDAV calendar cleanup.");
+        }
+        return false;
+    }
+
+    if (!DCalDavCalendarDeleteHelper::deleteScheduleTypes(
+            m_request.localDatabase, typeIDs, true, true)) {
+        transaction->rollback();
+        clearRecovery();
+        if (errorMessage != nullptr) {
+            *errorMessage = QStringLiteral("Failed to remove remotely deleted CalDAV calendar.");
+        }
+        return false;
+    }
+
+    const auto deleteManagerData = [this, &calendar, &scheduleIDs]() {
+        return DCalDavCalendarDeleteHelper::deleteRemoteManagerData(
+            m_request.accountManagerDatabase, m_request.account.accountId,
+            calendar.calendarId, scheduleIDs);
+    };
+    if (!deleteManagerData()) {
+        transaction->rollback();
+        clearRecovery();
+        if (errorMessage != nullptr) {
+            *errorMessage = QStringLiteral("Failed to remove deleted CalDAV calendar metadata.");
+        }
+        return false;
+    }
+
+    if (!transaction->commit()) {
+        bool repaired = false;
+        if (transaction->hasPartialCommit()
+            && transaction->committedConnectionNames().contains(
+                m_request.localDatabase->getConnectionName())) {
+            SqlTransactionLocker repairTransaction({DDataBase::NameAccountManager});
+            repaired = repairTransaction.isValid()
+                && deleteManagerData()
+                && repairTransaction.commit();
+        }
+        if (!repaired) {
+            if (!transaction->hasPartialCommit()) {
+                clearRecovery();
+            }
+            if (errorMessage != nullptr) {
+                *errorMessage = QStringLiteral(
+                    "Failed to commit removed CalDAV calendar cleanup.");
+            }
+            return false;
+        }
+    }
+
+    if (!clearRecovery()) {
+        qCWarning(ServiceLogger) << "Failed to clear removed CalDAV calendar recovery state.";
+    }
+    return true;
 }
 
 bool DCalDavAccountRegistrar::persistCalendars(const DCalDavXmlReader::DiscoveryResult &discovery,
@@ -181,6 +300,10 @@ bool DCalDavAccountRegistrar::persistCalendars(const DCalDavXmlReader::Discovery
         }
         if (collection.privilegesKnown
             && !(collection.privileges & DCalDavXmlReader::ReadPrivilege)) {
+            // This href was discovered but is currently inaccessible. It is
+            // not a remote deletion, so preserve its local metadata and only
+            // disable it.
+            discoveredHrefs.insert(collection.href);
             for (DCalDavCalendarInfo &calendar : existing) {
                 if (calendar.href == collection.href) {
                     calendar.enabled = false;
@@ -205,6 +328,13 @@ bool DCalDavAccountRegistrar::persistCalendars(const DCalDavXmlReader::Discovery
         }
 
         QString scheduleTypeID = findScheduleTypeID(calendarID, collection, existing, errorMessage);
+        if (!scheduleTypeID.isEmpty()
+            && m_request.accountManagerDatabase->hasPendingCalDavCalendarDelete(
+                   m_request.account.accountId, scheduleTypeID)) {
+            // Local deletion wins until the remote DELETE is acknowledged. Do
+            // not re-enable or sync a collection that discovery still returns.
+            continue;
+        }
         const bool writable = (collection.privileges & DCalDavXmlReader::WritePrivilege) != 0;
         if (scheduleTypeID.isEmpty()) {
             scheduleTypeID = createCalendarScheduleType(
@@ -257,15 +387,17 @@ bool DCalDavAccountRegistrar::persistCalendars(const DCalDavXmlReader::Discovery
         discoveredHrefs.insert(collection.href);
     }
 
-    for (DCalDavCalendarInfo &calendar : existing) {
-        if (calendar.enabled && !discoveredHrefs.contains(calendar.href)) {
-            calendar.enabled = false;
-            if (!m_request.accountManagerDatabase->upsertCalDavCalendar(calendar)) {
-                if (errorMessage != nullptr) {
-                    *errorMessage = QStringLiteral("Failed to disable removed CalDAV calendar.");
-                }
-                return false;
-            }
+    for (const DCalDavCalendarInfo &calendar : existing) {
+        if (discoveredHrefs.contains(calendar.href)) {
+            continue;
+        }
+        if (m_request.accountManagerDatabase->hasPendingCalDavCalendarDelete(
+                m_request.account.accountId, calendar.scheduleTypeID)) {
+            continue;
+        }
+
+        if (!handleRemoteCalendarDeletion(calendar, errorMessage)) {
+            return false;
         }
     }
     return true;

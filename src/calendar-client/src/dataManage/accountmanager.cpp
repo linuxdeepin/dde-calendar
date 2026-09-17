@@ -631,6 +631,8 @@ void AccountManager::slotGetAccountListFinish(DAccount::List accountList)
                 Qt::UniqueConnection);
         connect(p.data(), &AccountItem::signalScheduleTypeUpdate, this, &AccountManager::signalScheduleTypeUpdate,
                 Qt::UniqueConnection);
+        connect(p.data(), &AccountItem::signalAccountScheduleTypeUpdate, this,
+                &AccountManager::signalAccountScheduleTypeUpdate, Qt::UniqueConnection);
         connect(p.data(), &AccountItem::signalLogout, this, &AccountManager::signalLogout,
                 Qt::UniqueConnection);
         connect(p.data(), &AccountItem::signalAccountStateChange, this, &AccountManager::signalAccountStateChange,

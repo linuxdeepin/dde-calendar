@@ -450,12 +450,8 @@ void CAllDayEventWeekView::createItemWidget(int index, bool average)
 void CAllDayEventWeekView::slotStateChange(bool bState)
 {
     qCDebug(ClientLogger) << "CAllDayEventWeekView::slotStateChange called with state:" << bState;
-    if(bState) {
-        qCDebug(ClientLogger) << "Hiding" << m_baseShowItem.count() << "schedule items";
-        for (int i = 0; i < m_baseShowItem.count(); i++) {
-            m_baseShowItem[i]->setVisible(false);
-        }
-    }
+    // Keep the current items visible until the asynchronous query returns.
+    // The refreshed data will replace them without exposing an empty scene.
 }
 
 void CAllDayEventWeekView::updateItemHeightByFontSize()

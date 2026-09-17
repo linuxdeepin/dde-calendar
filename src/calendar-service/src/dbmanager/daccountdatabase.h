@@ -43,6 +43,7 @@ public:
     DSchedule::List getScheduleListByTypeID(const QString &typeID);
     bool deleteScheduleByScheduleID(const QString &scheduleID, const int isDeleted = 0);
     bool deleteSchedulesByScheduleTypeID(const QString &typeID, const int isDeleted = 0);
+    bool restoreSchedulesByScheduleTypeID(const QString &typeID);
     //根据关键字查询一定范围内的日程
     DSchedule::List querySchedulesByKey(const QString &key);
     //根据重复规则查询一定范围内的日程
@@ -61,6 +62,7 @@ public:
     virtual DScheduleType::List getScheduleTypeList(const int isDeleted = 0);
     bool scheduleTypeByUsed(const QString &typeID, const int isDeleted = 0);
     bool deleteScheduleTypeByID(const QString &typeID, const int isDeleted = 0);
+    bool restoreScheduleTypeByID(const QString &typeID);
     bool updateScheduleType(const DScheduleType::Ptr &scheduleType);
 
     //获取节假日类型ID

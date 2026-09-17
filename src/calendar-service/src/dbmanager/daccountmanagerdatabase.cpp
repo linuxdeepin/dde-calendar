@@ -237,7 +237,7 @@ QString DAccountManagerDataBase::getCalDavAccountStatusList()
                         " WHERE outbox.accountID = caldavAccount.accountID) AS pendingOperationCount, "
                         "(SELECT COUNT(*) FROM caldavOutbox deleteBox "
                         " WHERE deleteBox.accountID = caldavAccount.accountID "
-                        " AND deleteBox.operationType = 2) AS pendingDeleteCount, "
+                        " AND deleteBox.operationType IN (2, 3)) AS pendingDeleteCount, "
                         "(SELECT COUNT(*) FROM caldavOutbox conflictBox "
                         " WHERE conflictBox.accountID = caldavAccount.accountID AND conflictBox.failureType = 4) AS conflictCount, "
                         "(SELECT COUNT(*) FROM caldavCalendar calendarCount "
@@ -398,6 +398,24 @@ bool DAccountManagerDataBase::deleteCalDavAccountInfo(const QString &accountID)
         return false;
     }
     return query.numRowsAffected() == 1;
+}
+
+bool DAccountManagerDataBase::hasPendingCalDavCalendarDelete(
+    const QString &accountID, const QString &scheduleTypeID) const
+{
+    if (accountID.isEmpty() || scheduleTypeID.isEmpty()) {
+        return false;
+    }
+    SqliteQuery query(m_database);
+    if (!query.prepare(QStringLiteral(
+            "SELECT 1 FROM caldavOutbox WHERE accountID = ? AND localScheduleID = ? "
+            "AND operationType = ? LIMIT 1"))) {
+        return false;
+    }
+    query.addBindValue(accountID);
+    query.addBindValue(scheduleTypeID);
+    query.addBindValue(static_cast<int>(DCalDavOutboxItem::DeleteCalendarOperation));
+    return query.exec() && query.next();
 }
 
 DCalDavOutboxItem DAccountManagerDataBase::getCalDavOutboxItem(const QString &accountID,
@@ -683,6 +701,25 @@ bool DAccountManagerDataBase::deleteCalDavOutboxItem(const QString &accountID,
     }
     query.addBindValue(accountID);
     query.addBindValue(localScheduleID);
+    return query.exec();
+}
+
+bool DAccountManagerDataBase::deleteCalDavCalendarEventOutboxItems(
+    const QString &accountID, const QString &calendarID)
+{
+    if (accountID.isEmpty() || calendarID.isEmpty()) {
+        return false;
+    }
+    SqliteQuery query(m_database);
+    if (!query.prepare(QStringLiteral(
+            "DELETE FROM caldavOutbox WHERE accountID = ? AND localScheduleID IN ("
+            "SELECT localScheduleID FROM caldavEventMapping "
+            "WHERE accountID = ? AND calendarID = ?)"))) {
+        return false;
+    }
+    query.addBindValue(accountID);
+    query.addBindValue(accountID);
+    query.addBindValue(calendarID);
     return query.exec();
 }
 
@@ -994,6 +1031,129 @@ DCalDavCalendarInfo DAccountManagerDataBase::getCalDavCalendarByScheduleTypeID(
     calendar.initialSyncCompleted = query.value("initialSyncCompleted").toBool();
     calendar.enabled = query.value("enabled").toBool();
     return calendar;
+}
+
+DCalDavCalendarInfo DAccountManagerDataBase::getCalDavCalendarByScheduleTypeIDIncludingDisabled(
+    const QString &accountID, const QString &scheduleTypeID)
+{
+    DCalDavCalendarInfo calendar;
+    if (accountID.isEmpty() || scheduleTypeID.isEmpty()) {
+        return calendar;
+    }
+
+    SqliteQuery query(m_database);
+    if (!query.prepare("SELECT calendarID, accountID, href, displayName, color, scheduleTypeID, privileges, "
+                       "syncToken, initialSyncCompleted, enabled FROM caldavCalendar "
+                       "WHERE accountID = ? AND scheduleTypeID = ?")) {
+        return calendar;
+    }
+    query.addBindValue(accountID);
+    query.addBindValue(scheduleTypeID);
+    if (!query.exec() || !query.next()) {
+        return calendar;
+    }
+    calendar.calendarId = query.value("calendarID").toString();
+    calendar.accountId = query.value("accountID").toString();
+    calendar.href = query.value("href").toString();
+    calendar.displayName = query.value("displayName").toString();
+    calendar.color = query.value("color").toString();
+    calendar.scheduleTypeID = query.value("scheduleTypeID").toString();
+    calendar.privileges = query.value("privileges").toInt();
+    calendar.syncToken = query.value("syncToken").toString();
+    calendar.initialSyncCompleted = query.value("initialSyncCompleted").toBool();
+    calendar.enabled = query.value("enabled").toBool();
+    return calendar;
+}
+
+DCalDavCalendarInfo DAccountManagerDataBase::getCalDavCalendarByIDIncludingDisabled(
+    const QString &accountID, const QString &calendarID)
+{
+    DCalDavCalendarInfo calendar;
+    if (accountID.isEmpty() || calendarID.isEmpty()) {
+        return calendar;
+    }
+
+    SqliteQuery query(m_database);
+    if (!query.prepare("SELECT calendarID, accountID, href, displayName, color, scheduleTypeID, privileges, "
+                       "syncToken, initialSyncCompleted, enabled FROM caldavCalendar "
+                       "WHERE accountID = ? AND calendarID = ?")) {
+        return calendar;
+    }
+    query.addBindValue(accountID);
+    query.addBindValue(calendarID);
+    if (!query.exec() || !query.next()) {
+        return calendar;
+    }
+    calendar.calendarId = query.value("calendarID").toString();
+    calendar.accountId = query.value("accountID").toString();
+    calendar.href = query.value("href").toString();
+    calendar.displayName = query.value("displayName").toString();
+    calendar.color = query.value("color").toString();
+    calendar.scheduleTypeID = query.value("scheduleTypeID").toString();
+    calendar.privileges = query.value("privileges").toInt();
+    calendar.syncToken = query.value("syncToken").toString();
+    calendar.initialSyncCompleted = query.value("initialSyncCompleted").toBool();
+    calendar.enabled = query.value("enabled").toBool();
+    return calendar;
+}
+
+bool DAccountManagerDataBase::deleteCalDavCalendarData(const QString &accountID,
+                                                        const QString &calendarID,
+                                                        bool startTransaction)
+{
+    if (accountID.isEmpty() || calendarID.isEmpty()) {
+        return false;
+    }
+    SqliteQuery query(m_database);
+    if (startTransaction && !query.transaction()) {
+        return false;
+    }
+    struct DeleteStatement {
+        QString sql;
+        QVariantList bindings;
+    };
+    const QList<DeleteStatement> statements = {
+        {
+            QStringLiteral("DELETE FROM caldavOutbox WHERE accountID = ? "
+                           "AND localScheduleID IN ("
+                           "SELECT localScheduleID FROM caldavEventMapping "
+                           "WHERE accountID = ? AND calendarID = ?)"),
+            {accountID, accountID, calendarID},
+        },
+        {
+            QStringLiteral(
+                "DELETE FROM caldavEventMapping WHERE accountID = ? AND calendarID = ?"),
+            {accountID, calendarID},
+        },
+        {
+            QStringLiteral(
+                "DELETE FROM caldavCategoryMapping WHERE accountID = ? AND calendarID = ?"),
+            {accountID, calendarID},
+        },
+        {
+            QStringLiteral(
+                "DELETE FROM caldavCalendar WHERE accountID = ? AND calendarID = ?"),
+            {accountID, calendarID},
+        },
+    };
+    for (const DeleteStatement &statement : statements) {
+        if (!query.prepare(statement.sql)) {
+            if (startTransaction) {
+                query.rollback();
+            }
+            return false;
+        }
+        for (const QVariant &binding : statement.bindings) {
+            query.addBindValue(binding);
+        }
+        if (!query.exec()) {
+            if (startTransaction) {
+                query.rollback();
+            }
+            return false;
+        }
+    }
+    return !startTransaction || query.commit();
 }
 
 bool DAccountManagerDataBase::upsertCalDavCalendar(const DCalDavCalendarInfo &calendar)
