@@ -280,6 +280,7 @@ void DCalDavReadOnlySync::sendCollectionsRequest(const QUrl &homeUrl)
                                  << "count:" << discovery.calendarCollections.size();
         m_result.discovery.calendarHomeSetHref = homeUrl.toString();
         const QUrl baseUrl = response.finalUrl.isValid() ? response.finalUrl : homeUrl;
+        int readableCalendarCount = 0;
         for (DCalDavXmlReader::CalendarCollection &collection : discovery.calendarCollections) {
             collection.href = DCalDavDiscovery::resolveHref(baseUrl, collection.href).toString();
             if (collection.href.isEmpty()) {
@@ -287,13 +288,17 @@ void DCalDavReadOnlySync::sendCollectionsRequest(const QUrl &homeUrl)
                        DCalDavValidationError::ParseError);
                 return;
             }
-            if (collection.privilegesKnown
-                && !(collection.privileges & DCalDavXmlReader::ReadPrivilege)) {
-                continue;
+            // Keep inaccessible collections in the discovery result. The
+            // registrar must distinguish a remote permission loss from a
+            // collection that was actually deleted; dropping it here would
+            // make the caller incorrectly delete local data.
+            if (!collection.privilegesKnown
+                || (collection.privileges & DCalDavXmlReader::ReadPrivilege)) {
+                ++readableCalendarCount;
             }
             m_result.discovery.calendarCollections.append(collection);
         }
-        if (m_result.discovery.calendarCollections.isEmpty()) {
+        if (readableCalendarCount == 0 && m_request.requireReadableCalendar) {
             finish(false, QStringLiteral("No readable CalDAV calendar was found."),
                    DCalDavValidationError::UnsupportedCalDav);
             return;
@@ -305,6 +310,15 @@ void DCalDavReadOnlySync::sendCollectionsRequest(const QUrl &homeUrl)
 
 void DCalDavReadOnlySync::sendCalendarQuery()
 {
+    while (m_collectionIndex < m_result.discovery.calendarCollections.size()) {
+        const DCalDavXmlReader::CalendarCollection &candidate =
+            m_result.discovery.calendarCollections.at(m_collectionIndex);
+        if (!candidate.privilegesKnown
+            || (candidate.privileges & DCalDavXmlReader::ReadPrivilege)) {
+            break;
+        }
+        ++m_collectionIndex;
+    }
     if (m_collectionIndex >= m_result.discovery.calendarCollections.size()) {
         finish(true);
         return;

@@ -287,7 +287,7 @@ DCalDavTransport::Request DCalDavCalendarQuery::resourceListRequest(
     request.headers.insert("Depth", "1");
     request.body = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
                    "<c:calendar-query xmlns:d=\"DAV:\" xmlns:c=\"urn:ietf:params:xml:ns:caldav\">"
-                   "<d:prop><d:getetag/><d:getcontenttype/><c:calendar-data/></d:prop>"
+                   "<d:prop><d:getetag/><d:getcontenttype/></d:prop>"
                    "<c:filter><c:comp-filter name=\"VCALENDAR\">"
                    "<c:comp-filter name=\"VEVENT\"/>"
                    "</c:comp-filter></c:filter>"

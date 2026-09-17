@@ -68,7 +68,8 @@ void SidebarView::initConnection()
     qCDebug(ClientLogger) << "Initializing SidebarView connections";
     //监听日程类型更新事件
     connect(gAccountManager, &AccountManager::signalAccountUpdate, this, &SidebarView::slotAccountUpdate);
-    connect(gAccountManager, &AccountManager::signalScheduleTypeUpdate, this, &SidebarView::slotScheduleTypeUpdate);
+    connect(gAccountManager, &AccountManager::signalAccountScheduleTypeUpdate,
+            this, &SidebarView::slotAccountScheduleTypeUpdate);
     connect(gAccountManager, &AccountManager::signalLogout, this, &SidebarView::signalLogout);
 }
 
@@ -267,6 +268,27 @@ void SidebarView::slotAccountUpdate()
  * @brief SidebarView::slotScheduleTypeUpdate
  * 日程类型更新事件
  */
+void SidebarView::slotAccountScheduleTypeUpdate(const QString &accountID)
+{
+    if (accountID.isEmpty()) {
+        return;
+    }
+    if (m_localItemWidget && m_localItemWidget->getAccountItem()->getAccount()->accountID() == accountID) {
+        resetJobTypeChildItem(m_localItemWidget);
+    } else if (m_unionItemWidget
+               && m_unionItemWidget->getAccountItem()->getAccount()->accountID() == accountID) {
+        resetJobTypeChildItem(m_unionItemWidget);
+    } else {
+        for (SidebarAccountItemWidget *widget : m_calDavItemWidgets) {
+            if (widget && widget->getAccountItem()->getAccount()->accountID() == accountID) {
+                resetJobTypeChildItem(widget);
+                break;
+            }
+        }
+    }
+    initExpandStatus();
+}
+
 void SidebarView::slotScheduleTypeUpdate()
 {
     qCDebug(ClientLogger) << "Schedule type update received";

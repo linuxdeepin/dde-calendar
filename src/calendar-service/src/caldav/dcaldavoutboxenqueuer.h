@@ -10,6 +10,7 @@
 #include <QString>
 
 class DAccountManagerDataBase;
+class DCalDavCalendarInfo;
 
 class DCalDavOutboxEnqueuer
 {
@@ -22,6 +23,8 @@ public:
 
     static bool enqueue(DAccountManagerDataBase *database, const QString &accountID,
                         const DSchedule::Ptr &schedule, ChangeType change);
+    static bool enqueueCalendarDelete(DAccountManagerDataBase *database, const QString &accountID,
+                                      const DCalDavCalendarInfo &calendar);
 };
 
 #endif // DCALDAVOUTBOXENQUEUER_H

@@ -145,6 +145,8 @@ void DCalDavIncrementalSync::start(const Request &request, const Callback &callb
     m_fallbackAttempted = false;
     m_resourceListHasEventFilter = false;
     m_syncCollectionMode = false;
+    m_resourceInventoryOnly = false;
+    m_hasCompleteRemoteResourceList = false;
     m_running = true;
 
     if (!DCalDavTransport::isSecureUrl(request.calendarUrl) || request.username.isEmpty()) {
@@ -165,18 +167,19 @@ void DCalDavIncrementalSync::start(const Request &request, const Callback &callb
     if (firstSync) {
         sendResourceListRequest(true);
     } else if (request.syncToken.isEmpty() || providerHasNoSyncToken) {
-        // Some providers, including WeCom, return only resource metadata for an
-        // unbounded REPORT and reject the subsequent event GET. Reuse the
-        // product-defined range query so calendar-data is returned inline.
-        sendResourceListRequest(true);
+        // Providers without sync tokens need a complete resource inventory to
+        // detect remote deletions. Fetch that inventory separately because the
+        // product-defined range query intentionally omits older events.
+        sendResourceListRequest(false, true);
     } else {
         sendRequest(false);
     }
 }
 
-void DCalDavIncrementalSync::sendResourceListRequest(bool firstSync)
+void DCalDavIncrementalSync::sendResourceListRequest(bool firstSync, bool inventoryOnly)
 {
     m_resourceListHasEventFilter = firstSync;
+    m_resourceInventoryOnly = inventoryOnly;
     const QDateTime referenceTime = m_request.referenceTime.isValid()
         ? m_request.referenceTime
         : QDateTime::currentDateTimeUtc();
@@ -221,6 +224,9 @@ void DCalDavIncrementalSync::sendResourceListRequest(bool firstSync)
                 ++metadataOnlyResourceCount;
             }
             m_remoteHrefs.insert(resource.href);
+            if (m_resourceInventoryOnly) {
+                continue;
+            }
             if (!m_resourceListHasEventFilter && !isEventResource(resource)) {
                 continue;
             }
@@ -236,7 +242,19 @@ void DCalDavIncrementalSync::sendResourceListRequest(bool firstSync)
                                << "responseResourceCount:" << resources.size()
                                << "collectionResourceCount:" << collectionResourceCount
                                << "metadataOnlyResourceCount:" << metadataOnlyResourceCount
-                               << "pendingResourceCount:" << pendingResourceCount;
+                               << "pendingResourceCount:" << pendingResourceCount
+                               << "inventoryOnly:" << m_resourceInventoryOnly;
+        if (m_resourceInventoryOnly) {
+            // The inventory is complete, but its metadata may not contain
+            // usable calendar data. The next range query will fetch only the
+            // events needed for the current UI window.
+            m_hasCompleteRemoteResourceList = true;
+            m_resourceInventoryOnly = false;
+            m_pendingResources.clear();
+            m_resourceIndex = 0;
+            sendResourceListRequest(true);
+            return;
+        }
         fetchNextResource();
     });
 }
@@ -279,7 +297,7 @@ bool DCalDavIncrementalSync::appendResourceCalendarData(
 void DCalDavIncrementalSync::fetchNextResource()
 {
     if (m_resourceIndex >= m_pendingResources.size()) {
-        if (!m_resourceListHasEventFilter && !m_syncCollectionMode) {
+        if (m_hasCompleteRemoteResourceList && !m_syncCollectionMode) {
             appendDeletedResources();
         }
         if (m_result.syncToken.isEmpty()) {
@@ -471,7 +489,7 @@ void DCalDavIncrementalSync::sendRequest(bool fullRange)
             if (!fullRange && shouldFallbackToFullRange(response)) {
                 m_fallbackAttempted = true;
                 m_result.usedFullRangeFallback = true;
-                sendResourceListRequest(false);
+                sendResourceListRequest(false, true);
             } else {
                 m_result.failureResponse = response;
                 finish(false, DCalDavUtils::transportErrorText(response));
@@ -482,7 +500,7 @@ void DCalDavIncrementalSync::sendRequest(bool fullRange)
         if (!fullRange && response.body.contains("valid-sync-token")) {
             m_fallbackAttempted = true;
             m_result.usedFullRangeFallback = true;
-            sendResourceListRequest(false);
+            sendResourceListRequest(false, true);
             return;
         }
 

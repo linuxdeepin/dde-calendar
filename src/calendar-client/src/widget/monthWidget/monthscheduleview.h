@@ -89,7 +89,6 @@ public:
     }
     void updateSchedule(const bool isNormalDisplay, const DSchedule::Ptr &info = DSchedule::Ptr());
     void clearItem();
-    void hideItem();
 private:
     void setMaxNum();
     void mScheduleClear();

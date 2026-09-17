@@ -55,7 +55,7 @@ public:
 
 private:
     void sendRequest(bool fullRange);
-    void sendResourceListRequest(bool firstSync);
+    void sendResourceListRequest(bool firstSync, bool inventoryOnly = false);
     void fetchNextResource();
     void requestCalendarDataBatch(const DCalDavCalendarQuery::ResourceList &resources);
     void fetchResourceByGet(const DCalDavCalendarQuery::ResourceList &resources, int index);
@@ -77,6 +77,8 @@ private:
     bool m_fallbackAttempted = false;
     bool m_resourceListHasEventFilter = false;
     bool m_syncCollectionMode = false;
+    bool m_resourceInventoryOnly = false;
+    bool m_hasCompleteRemoteResourceList = false;
 };
 
 #endif // DCALDAVINCREMENTALSYNC_H

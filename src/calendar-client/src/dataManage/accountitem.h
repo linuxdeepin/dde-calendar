@@ -110,6 +110,7 @@ signals:
     void signalAccountDataUpdate();
     void signalScheduleUpdate();
     void signalScheduleTypeUpdate();
+    void signalAccountScheduleTypeUpdate(const QString &accountID);
     void signalSearchScheduleUpdate();
     void signalLogout(DAccount::Type);
     void signalDtLastUpdate(QString);

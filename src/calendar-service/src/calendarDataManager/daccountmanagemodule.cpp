@@ -337,9 +337,20 @@ DAccountManageModule::DAccountManageModule(QObject *parent)
         }
     });
     connect(&m_calDavSyncJobManager, &DCalDavSyncJobManager::accountSyncFinished,
-            this, [this](const QString &, bool, const QString &,
+            this, [this](const QString &accountID, bool, const QString &,
                         const DCalDavTransport::Response &) {
         scheduleNextCalDavRetry();
+        if (!m_pendingCalDavDiscoveryTriggers.contains(accountID)) {
+            return;
+        }
+        const DCalDavSyncStateMachine::Trigger trigger =
+            m_pendingCalDavDiscoveryTriggers.take(accountID);
+        const DAccount::Ptr account = m_accountManagerDB->getAccountByID(accountID);
+        if (account && account->accountType() == DAccount::Account_CalDav) {
+            QTimer::singleShot(0, this, [this, account, trigger]() {
+                registerCalDavAccount(account, trigger);
+            });
+        }
     });
 
     qCDebug(ServiceLogger) << "DAccountManageModule constructed.";
@@ -454,16 +465,7 @@ void DAccountManageModule::downloadByAccountID(const QString &accountID)
     qCDebug(ServiceLogger) << "Triggering download for account:" << accountID;
     const DAccount::Ptr account = m_accountManagerDB->getAccountByID(accountID);
     if (account && account->accountType() == DAccount::Account_CalDav) {
-        if (!m_calDavSyncJobManager.requestSync(accountID,
-                                                DCalDavSyncStateMachine::ManualTrigger)) {
-            qCWarning(ServiceLogger) << "Unable to request CalDAV manual sync"
-                                     << "accountID:" << accountID;
-            m_accountManagerDB->updateCalDavSyncStatus(
-                accountID, DCalDavSyncStatus::Failed, QDateTime(),
-                QStringLiteral("CalDAV account is not ready for synchronization."),
-                DCalDavErrorCode::InvalidRequest);
-            emit calDavAccountStatusChanged(accountID);
-        }
+        registerCalDavAccount(account, DCalDavSyncStateMachine::ManualTrigger);
         return;
     }
     if (m_accountModuleMap.contains(accountID)) {
@@ -924,6 +926,7 @@ bool DAccountManageModule::deleteCalDavAccountInternal(const QString &accountID,
     if (!m_calDavSyncJobManager.cancelAccount(accountID)) {
         return false;
     }
+    m_pendingCalDavDiscoveryTriggers.remove(accountID);
     const auto restoreSyncJob = [&]() {
         registerCalDavAccount(account);
     };
@@ -1027,7 +1030,11 @@ void DAccountManageModule::scheduleNextCalDavDailySync()
 
 void DAccountManageModule::slotCalDavDailySync()
 {
-    m_calDavSyncJobManager.requestSyncForAll(DCalDavSyncStateMachine::DailyTrigger);
+    for (const DAccount::Ptr &account : m_accountList) {
+        if (account && account->accountType() == DAccount::Account_CalDav) {
+            registerCalDavAccount(account, DCalDavSyncStateMachine::DailyTrigger);
+        }
+    }
     scheduleNextCalDavDailySync();
 }
 
@@ -1062,7 +1069,7 @@ void DAccountManageModule::slotCalDavRetry()
         }
         for (const DAccount::Ptr &account : m_accountList) {
             if (!account.isNull() && account->accountID() == accountID) {
-                registerCalDavAccount(account);
+                registerCalDavAccount(account, DCalDavSyncStateMachine::RetryTrigger);
                 break;
             }
         }
@@ -1072,32 +1079,43 @@ void DAccountManageModule::slotCalDavRetry()
 
 void DAccountManageModule::slotCalDavOnlineStateChanged(bool isOnline)
 {
-    if (isOnline) {
-        m_calDavSyncJobManager.requestSyncForAll(DCalDavSyncStateMachine::NetworkRestoredTrigger);
+    if (!isOnline) {
+        return;
+    }
+    for (const DAccount::Ptr &account : m_accountList) {
+        if (account && account->accountType() == DAccount::Account_CalDav) {
+            registerCalDavAccount(account, DCalDavSyncStateMachine::NetworkRestoredTrigger);
+        }
     }
 }
 
 void DAccountManageModule::registerCalDavAccounts()
 {
-    if (m_calDavAccountsRegistrationStarted) {
-        return;
-    }
-    m_calDavAccountsRegistrationStarted = true;
-
-    qCDebug(ServiceLogger) << "Registering existing CalDAV accounts after client open.";
+    qCDebug(ServiceLogger) << "Rediscovering existing CalDAV accounts after client open.";
     for (const DAccount::Ptr &account : m_accountList) {
-        if (account->accountType() == DAccount::Account_CalDav) {
-            registerCalDavAccount(account, false);
+        if (account && account->accountType() == DAccount::Account_CalDav) {
+            registerCalDavAccount(account, DCalDavSyncStateMachine::ForegroundTrigger);
         }
     }
 }
 
-void DAccountManageModule::registerCalDavAccount(const DAccount::Ptr &account,
-                                                 bool triggerInitialSync)
+void DAccountManageModule::registerCalDavAccount(
+    const DAccount::Ptr &account, DCalDavSyncStateMachine::Trigger syncTrigger)
 {
     if (account.isNull() || account->accountID().isEmpty()
-        || !m_accountModuleMap.contains(account->accountID())
-        || m_calDavRegistrars.contains(account->accountID())) {
+        || !m_accountModuleMap.contains(account->accountID())) {
+        return;
+    }
+    const QString accountID = account->accountID();
+    if (m_calDavRegistrars.contains(accountID)
+        || m_calDavSyncJobManager.stateFor(accountID) == DCalDavSyncStateMachine::Running) {
+        const DCalDavSyncStateMachine::Trigger pendingTrigger =
+            m_pendingCalDavDiscoveryTriggers.value(
+                accountID, DCalDavSyncStateMachine::NoTrigger);
+        if (pendingTrigger == DCalDavSyncStateMachine::NoTrigger
+            || syncTrigger == DCalDavSyncStateMachine::ManualTrigger) {
+            m_pendingCalDavDiscoveryTriggers.insert(accountID, syncTrigger);
+        }
         return;
     }
 
@@ -1110,7 +1128,8 @@ void DAccountManageModule::registerCalDavAccount(const DAccount::Ptr &account,
         emit calDavAccountStatusChanged(account->accountID());
         return;
     }
-    if (accountInfo.nextRetryAt.isValid()
+    if (syncTrigger != DCalDavSyncStateMachine::ManualTrigger
+        && accountInfo.nextRetryAt.isValid()
         && accountInfo.nextRetryAt > QDateTime::currentDateTimeUtc()) {
         return;
     }
@@ -1122,12 +1141,10 @@ void DAccountManageModule::registerCalDavAccount(const DAccount::Ptr &account,
     request.localDatabase = accountModule->accountDatabase();
     request.accountManagerDatabase = m_accountManagerDB.data();
     request.jobManager = &m_calDavSyncJobManager;
-    request.triggerInitialSync = triggerInitialSync;
 
-    const QString accountID = account->accountID();
     DCalDavAccountRegistrar *registrar = new DCalDavAccountRegistrar(this);
     m_calDavRegistrars.insert(accountID, registrar);
-    registrar->start(request, [this, accountID, registrar, triggerInitialSync](
+    registrar->start(request, [this, accountID, registrar, syncTrigger](
                          const DCalDavAccountRegistrar::Result &result) {
         m_calDavRegistrars.remove(accountID);
         if (result.success) {
@@ -1135,11 +1152,17 @@ void DAccountManageModule::registerCalDavAccount(const DAccount::Ptr &account,
             if (!accountModule.isNull()) {
                 accountModule->notifyScheduleDataChanged();
             }
-            if (!triggerInitialSync && m_clientIsOpen) {
-                m_calDavSyncJobManager.requestSync(
-                    accountID, DCalDavSyncStateMachine::ForegroundTrigger);
+            const DCalDavSyncStateMachine::Trigger effectiveTrigger =
+                m_pendingCalDavDiscoveryTriggers.contains(accountID)
+                ? m_pendingCalDavDiscoveryTriggers.take(accountID)
+                : syncTrigger;
+            if (!m_calDavSyncJobManager.requestSync(accountID, effectiveTrigger)) {
+                qCWarning(ServiceLogger) << "Unable to request CalDAV sync after discovery"
+                                         << "accountID:" << accountID
+                                         << "trigger:" << static_cast<int>(effectiveTrigger);
             }
         } else {
+            m_pendingCalDavDiscoveryTriggers.remove(accountID);
             DCalDavAccountInfo accountInfo;
             if (m_accountManagerDB->getCalDavAccountInfo(accountID, accountInfo)
                 && result.failureResponse.error != DCalDavTransport::NoError) {
@@ -1216,7 +1239,6 @@ void DAccountManageModule::calendarOpen(bool isOpen)
             }
             iter.value()->accountDownload();
         }
-        m_calDavSyncJobManager.requestSyncForAll(DCalDavSyncStateMachine::ForegroundTrigger);
     }
 }
 

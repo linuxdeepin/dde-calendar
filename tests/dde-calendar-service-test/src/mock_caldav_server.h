@@ -38,6 +38,7 @@ public:
     void setCalendarMultiGetResponseStatus(int status);
     void setResponseEtag(const QByteArray &etag);
     void setCalendarQueryReturnsCalendarData(bool enabled);
+    void setInvalidSyncTokenOnce(bool enabled);
 
 protected:
     void incomingConnection(qintptr socketDescriptor) override;
@@ -56,6 +57,7 @@ private:
     int m_calendarMultiGetResponseStatus = 0;
     QByteArray m_responseEtag;
     bool m_calendarQueryReturnsCalendarData = true;
+    bool m_invalidSyncTokenOnce = false;
     QList<Request> m_requests;
     int m_connectionCount = 0;
     QHash<QSslSocket *, QByteArray> m_buffers;

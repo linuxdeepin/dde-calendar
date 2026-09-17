@@ -84,14 +84,8 @@ void CMonthScheduleView::slotFontChange()
 void CMonthScheduleView::slotStateChange(bool bState)
 {
     qCDebug(ClientLogger) << "CMonthScheduleView::slotStateChange, state:" << bState;
-    if(bState) {
-        qCDebug(ClientLogger) << "Hiding schedule items";
-        //日程显示
-        for (int i = 0; i < m_weekSchedule.size(); ++i) {
-            m_weekSchedule[i]->hideItem();
-        }
-    }
-
+    // Keep the current items visible until the asynchronous query returns.
+    // Hiding every item here makes deleting one event flash the whole view.
 }
 
 /**
@@ -412,15 +406,6 @@ void CWeekScheduleView::clearItem()
     }
     m_scheduleShowItem.clear();
 }
-
-void CWeekScheduleView::hideItem()
-{
-    qCDebug(ClientLogger) << "CWeekScheduleView::hideItem";
-    for (int i = 0; i < m_scheduleShowItem.count(); i++) {
-        m_scheduleShowItem[i]->setVisible(false);
-    }
-}
-
 
 void CWeekScheduleView::setMaxNum()
 {

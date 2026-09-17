@@ -106,8 +106,7 @@ void DCalDavSyncJobManager::processNext(const QString &requestedAccountID)
     m_requests[accountID].forceOutboxRetry = false;
     job->start(request, [this, accountID](const DCalDavAccountSync::Result &result) {
         m_stateMachine.complete(accountID, result.success);
-        if (result.success
-            && (result.createdCount > 0 || result.updatedCount > 0 || result.deletedCount > 0)) {
+        if (result.createdCount > 0 || result.updatedCount > 0 || result.deletedCount > 0) {
             emit accountSyncDataChanged(accountID);
         }
         if (result.createFailure != DCalDavScheduleCreateError::NoError) {

@@ -95,6 +95,7 @@ void DCalDavAccountSync::flushOutbox()
             m_result.failureCode = DCalDavErrorCode::Unknown;
         }
         m_result.createFailure = result.createFailure;
+        m_result.updatedCount += result.restoredCalendarCount;
         if (!result.success) {
             if (result.retryScheduledCount > 0 && result.permanentFailureCount == 0) {
                 m_request.accountManagerDatabase->updateCalDavSyncStatus(
@@ -128,7 +129,20 @@ void DCalDavAccountSync::syncNextCalendar()
         return;
     }
 
-    const CalendarRequest &calendar = m_request.calendars.at(m_calendarIndex);
+    const CalendarRequest &cachedCalendar = m_request.calendars.at(m_calendarIndex);
+    const DCalDavCalendarInfo currentCalendar = m_request.accountManagerDatabase
+        ->getCalDavCalendarByIDIncludingDisabled(
+            m_request.accountID, cachedCalendar.calendar.calendarId);
+    if (currentCalendar.calendarId.isEmpty() || !currentCalendar.enabled
+        || m_request.accountManagerDatabase->hasPendingCalDavCalendarDelete(
+               m_request.accountID, cachedCalendar.scheduleTypeID)) {
+        ++m_calendarIndex;
+        syncNextCalendar();
+        return;
+    }
+    CalendarRequest calendar = cachedCalendar;
+    calendar.calendar = currentCalendar;
+    calendar.scheduleTypeID = currentCalendar.scheduleTypeID;
     qCDebug(ServiceLogger) << "CalDAV calendar sync started"
                              << "account:" << m_request.accountID
                              << "calendar:" << calendar.calendar.displayName

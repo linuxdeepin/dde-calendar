@@ -121,7 +121,9 @@ private:
     // 保存通用配置
     void setGeneralSettings(const DCalendarGeneralSettings::Ptr &cgSet);
     void registerCalDavAccounts();
-    void registerCalDavAccount(const DAccount::Ptr &account, bool triggerInitialSync = true);
+    void registerCalDavAccount(
+        const DAccount::Ptr &account,
+        DCalDavSyncStateMachine::Trigger syncTrigger = DCalDavSyncStateMachine::StartupTrigger);
     void scheduleNextCalDavDailySync();
     void scheduleNextCalDavRetry();
     bool migrateCalDavSchedulesToLocal(const DAccountModule::Ptr &calDavModule,
@@ -173,11 +175,11 @@ private:
     QTimer m_timer;
     bool m_isSupportUid = false;
     bool m_clientIsOpen = false;
-    bool m_calDavAccountsRegistrationStarted = false;
     QSettings m_settings;
     DBusTimedate m_timeDateDbus;
     DCalDavSyncJobManager m_calDavSyncJobManager;
     QMap<QString, DCalDavAccountRegistrar *> m_calDavRegistrars;
+    QHash<QString, DCalDavSyncStateMachine::Trigger> m_pendingCalDavDiscoveryTriggers;
     QHash<QString, DCalDavReadOnlySync *> m_calDavValidationJobs;
     QTimer m_calDavDailyTimer;
     QTimer m_calDavRetryTimer;
