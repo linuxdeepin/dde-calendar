@@ -22,6 +22,7 @@
 #include <QHash>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QRegularExpression>
 #include <DSysInfo>
 
 #include <limits>
@@ -35,10 +36,10 @@ namespace {
 
 QString localTypeIDForCategories(DAccountDataBase *localDatabase,
                                 const QStringList &categories,
-                                QString *unmatchedOriginalType)
+                                QString *originalType)
 {
-    if (unmatchedOriginalType != nullptr) {
-        unmatchedOriginalType->clear();
+    if (originalType != nullptr) {
+        originalType->clear();
     }
 
     QStringList originalTypes;
@@ -66,14 +67,12 @@ QString localTypeIDForCategories(DAccountDataBase *localDatabase,
                         QCoreApplication::translate("DAccountDataBase", "Other")});
 
     QString targetName = QStringLiteral("Other");
-    bool matched = false;
     for (const QString &typeName : originalTypes) {
         const auto target = categoryTypeMap.constFind(typeName.toLower());
         if (target == categoryTypeMap.constEnd()) {
             continue;
         }
         targetName = target.value();
-        matched = true;
         break;
     }
 
@@ -81,11 +80,14 @@ QString localTypeIDForCategories(DAccountDataBase *localDatabase,
         if (!type.isNull()
             && (type->typeName().compare(targetName, Qt::CaseInsensitive) == 0
                 || type->displayName().compare(targetName, Qt::CaseInsensitive) == 0)) {
-            if (!matched && unmatchedOriginalType != nullptr) {
-                *unmatchedOriginalType = originalTypes.join(QStringLiteral(", "));
+            if (originalType != nullptr) {
+                *originalType = originalTypes.join(QStringLiteral(", "));
             }
             return type->typeID();
         }
+    }
+    if (originalType != nullptr) {
+        *originalType = originalTypes.join(QStringLiteral(", "));
     }
     return QString();
 }
@@ -122,16 +124,30 @@ bool restoreCalDavConflictSnapshot(const DAccountModule::Ptr &module,
     return database->updateSchedule(snapshot);
 }
 
-void appendOriginalTypeToSummary(const DSchedule::Ptr &schedule, const QString &originalType)
+void updateOriginalTypeInSummary(const DSchedule::Ptr &schedule, const QString &originalType)
 {
-    if (schedule.isNull() || originalType.trimmed().isEmpty()) {
+    if (schedule.isNull()) {
         return;
     }
-    const QString suffix = QCoreApplication::translate(
-        "DAccountManageModule", "[Original Type: %1]").arg(originalType.trimmed());
-    if (!schedule->summary().contains(suffix)) {
-        schedule->setSummary(schedule->summary() + suffix);
+
+    const QString suffixTemplate = QCoreApplication::translate(
+        "DAccountManageModule", "[Original Type: %1]");
+    QString escapedTemplate = QRegularExpression::escape(suffixTemplate);
+    const QString escapedPlaceholder = QRegularExpression::escape(QStringLiteral("%1"));
+    // Match one or more complete original-type suffixes at the end of the
+    // summary. The label is built from the current translation context rather
+    // than hard-coded for a fixed set of languages.
+    const QRegularExpression originalTypeSuffix(
+        QStringLiteral("(?:%1\\s*)+$").arg(escapedTemplate.replace(
+            escapedPlaceholder, QStringLiteral("[^\\]\\r\\n]*"))));
+    QString summary = schedule->summary();
+    summary.remove(originalTypeSuffix);
+
+    const QString normalizedOriginalType = originalType.trimmed();
+    if (!normalizedOriginalType.isEmpty()) {
+        summary.append(suffixTemplate.arg(normalizedOriginalType));
     }
+    schedule->setSummary(summary);
 }
 
 bool applyServerSnapshotToLocal(const DAccountModule::Ptr &module,
@@ -879,9 +895,15 @@ bool DAccountManageModule::migrateCalDavSchedulesToLocal(
                 continue;
             }
 
-            QString unmatchedOriginalType;
+            QString originalType;
             const QString targetTypeID = localTypeIDForCategories(
-                targetDatabase, sourceSchedule->categories(), &unmatchedOriginalType);
+                targetDatabase, sourceSchedule->categories(), &originalType);
+            if (originalType.isEmpty()) {
+                originalType = sourceType->displayName().trimmed();
+                if (originalType.isEmpty()) {
+                    originalType = sourceType->typeName().trimmed();
+                }
+            }
             if (targetTypeID.isEmpty()) {
                 return false;
             }
@@ -896,10 +918,26 @@ bool DAccountManageModule::migrateCalDavSchedulesToLocal(
                 return false;
             }
             if (targetDatabase->scheduleExistsByScheduleID(localScheduleID)) {
+                const DSchedule::Ptr existingSchedule =
+                    targetDatabase->getScheduleByScheduleID(localScheduleID);
+                if (existingSchedule.isNull()) {
+                    qCWarning(ServiceLogger)
+                        << "Skipping unreadable existing local schedule during CalDAV migration"
+                        << "scheduleID:" << localScheduleID;
+                    continue;
+                }
+
+                const QString existingUid = existingSchedule->uid().isEmpty()
+                    ? localScheduleID : existingSchedule->uid();
+                targetSchedule->setSchedulingID(localScheduleID, existingUid);
+                updateOriginalTypeInSummary(targetSchedule, originalType);
+                if (!targetDatabase->updateSchedule(targetSchedule)) {
+                    return false;
+                }
                 continue;
             }
             targetSchedule->setSchedulingID(localScheduleID, localScheduleID);
-            appendOriginalTypeToSummary(targetSchedule, unmatchedOriginalType);
+            updateOriginalTypeInSummary(targetSchedule, originalType);
             const QString targetScheduleID = targetDatabase->createSchedule(targetSchedule);
             if (targetScheduleID.isEmpty()) {
                 return false;
