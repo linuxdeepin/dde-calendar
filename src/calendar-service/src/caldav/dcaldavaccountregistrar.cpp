@@ -335,7 +335,11 @@ bool DCalDavAccountRegistrar::persistCalendars(const DCalDavXmlReader::Discovery
             // not re-enable or sync a collection that discovery still returns.
             continue;
         }
-        const bool writable = (collection.privileges & DCalDavXmlReader::WritePrivilege) != 0;
+        // Some CalDAV servers omit current-user-privilege-set even though the
+        // authenticated user can write. Try writes optimistically in that
+        // case; an explicit privilege response without write remains read-only.
+        const bool writable = !collection.privilegesKnown
+            || (collection.privileges & DCalDavXmlReader::WritePrivilege);
         if (scheduleTypeID.isEmpty()) {
             scheduleTypeID = createCalendarScheduleType(
                 m_request.localDatabase, m_request.account.accountId, calendarID,
@@ -369,7 +373,10 @@ bool DCalDavAccountRegistrar::persistCalendars(const DCalDavXmlReader::Discovery
         calendar.displayName = collection.displayName;
         calendar.color = collection.color;
         calendar.scheduleTypeID = scheduleTypeID;
-        calendar.privileges = collection.privileges;
+        calendar.privileges = collection.privilegesKnown
+            ? collection.privileges
+            : (DCalDavXmlReader::ReadPrivilege | DCalDavXmlReader::WritePrivilege);
+        calendar.privilegesKnown = collection.privilegesKnown;
         calendar.syncToken = syncToken;
         calendar.initialSyncCompleted = initialSyncCompleted;
         calendar.enabled = true;

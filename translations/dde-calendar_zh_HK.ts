@@ -969,6 +969,11 @@
             <translation>更改賬戶</translation>
         </message>
         <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="235" />
+            <source>Unable to save the account password, Please try again</source>
+            <translation>無法儲存賬戶密碼，請重試</translation>
+        </message>
+        <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="510" />
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="558" />
             <source>Please enter a valid server address.</source>

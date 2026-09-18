@@ -502,12 +502,8 @@ bool DCalDavCalendarQuery::parseResponseWithSyncToken(const QByteArray &xml, Rem
             }
             return false;
         }
-        if (!event.deleted && !event.calendarData.isEmpty() && event.uid.isEmpty()) {
-            if (errorMessage != nullptr) {
-                *errorMessage = QStringLiteral("Calendar data is missing UID.");
-            }
-            return false;
-        }
+        // Individual malformed resources are handled by the sync layer so one
+        // bad event does not abort the whole calendar synchronization.
     }
 
     events = parsed;
