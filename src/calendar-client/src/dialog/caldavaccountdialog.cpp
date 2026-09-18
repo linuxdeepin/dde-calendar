@@ -232,7 +232,7 @@ void CalDavAccountDialog::slotLogin()
 
     clearPendingCredential(true);
     if (!storePendingCredential()) {
-        showError(QString(), true, false);
+        showError(tr("Unable to save the account password, Please try again"));
         setLoginEnabled(true);
         return;
     }
@@ -534,6 +534,10 @@ void CalDavAccountDialog::setInputError(DLineEdit *edit, bool error, const QStri
 void CalDavAccountDialog::showError(const QString &message, bool serverError, bool credentialError)
 {
     m_errorLabel->hide();
+    if (!message.isEmpty() && !serverError && !credentialError) {
+        m_errorLabel->setText(message);
+        m_errorLabel->show();
+    }
     if (serverError) {
         setInputError(m_serverUrlEdit, true, message.isEmpty()
             ? tr("Please enter a valid server address.") : message);

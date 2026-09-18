@@ -107,7 +107,7 @@ DCalDavTransport::Error DCalDavTransport::classifyError(QNetworkReply::NetworkEr
     if (httpStatus == 429) {
         return RateLimited;
     }
-    if (httpStatus == 503) {
+    if (httpStatus == 500 || httpStatus == 502 || httpStatus == 503 || httpStatus == 504) {
         return ServerUnavailable;
     }
     // An HTTP response, including conflict and not-found responses, is not a

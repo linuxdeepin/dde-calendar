@@ -1434,6 +1434,11 @@
         <translation>Leave empty to keep the current password</translation>
     </message>
     <message>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="235"/>
+        <source>Unable to save the account password, Please try again</source>
+        <translation>Unable to save the account password, Please try again</translation>
+    </message>
+    <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="510"/>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="558"/>
         <source>Please enter a valid server address.</source>

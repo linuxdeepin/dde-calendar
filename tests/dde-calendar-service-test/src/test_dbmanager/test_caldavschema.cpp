@@ -1057,7 +1057,7 @@ TEST(CalDavCalendarQuery, AcceptsSyncMetadataWithoutCalendarData)
     EXPECT_EQ(QStringLiteral("next-token"), syncToken);
 }
 
-TEST(CalDavCalendarQuery, RejectsCalendarDataWithoutUid)
+TEST(CalDavCalendarQuery, KeepsCalendarDataWithoutUidForSyncLayerValidation)
 {
     const QByteArray xml = R"(
         <d:multistatus xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:caldav">
@@ -1068,8 +1068,10 @@ TEST(CalDavCalendarQuery, RejectsCalendarDataWithoutUid)
 
     DCalDavCalendarQuery::RemoteEventList events;
     QString errorMessage;
-    EXPECT_FALSE(DCalDavCalendarQuery::parseResponse(xml, events, &errorMessage));
-    EXPECT_EQ(QStringLiteral("Calendar data is missing UID."), errorMessage);
+    ASSERT_TRUE(DCalDavCalendarQuery::parseResponse(xml, events, &errorMessage));
+    ASSERT_EQ(1, events.size());
+    EXPECT_TRUE(events.first().uid.isEmpty());
+    EXPECT_TRUE(events.first().calendarData.contains(QStringLiteral("SUMMARY:Missing UID")));
 }
 
 
@@ -2227,7 +2229,7 @@ TEST(CalDavIntegration, FallsBackToGetWhenCalendarMultiGetIsForbidden)
     EXPECT_EQ(QByteArray("/calendars/user/mock-event-1.ics"), server.requests().at(2).target);
 }
 
-TEST(CalDavIntegration, HidesTechnicalUidErrorForMalformedRemoteEvent)
+TEST(CalDavIntegration, SkipsMalformedRemoteEventWithoutFailingSync)
 {
     if (!QSslSocket::supportsSsl()) {
         GTEST_SKIP() << "Qt SSL backend is unavailable";
@@ -2259,12 +2261,11 @@ TEST(CalDavIntegration, HidesTechnicalUidErrorForMalformedRemoteEvent)
 
     DCalDavIncrementalSync::Result result;
     ASSERT_TRUE(runIncrementalSync(request, &result));
-    EXPECT_FALSE(result.success);
-    EXPECT_EQ(DCalDavErrorCode::ParseError, result.failureCode);
-    EXPECT_EQ(
-        QStringLiteral("Unable to parse the data returned by the server. Please verify the server address or try again later."),
-        result.errorMessage);
-    EXPECT_FALSE(result.errorMessage.contains(QStringLiteral("VEVENT UID")));
+    EXPECT_TRUE(result.success);
+    EXPECT_EQ(DCalDavErrorCode::NoError, result.failureCode);
+    EXPECT_TRUE(result.errorMessage.isEmpty());
+    EXPECT_TRUE(result.schedules.isEmpty());
+    EXPECT_TRUE(result.remoteEvents.isEmpty());
     ASSERT_EQ(3, server.requests().size());
     EXPECT_EQ(QByteArray("GET"), server.requests().last().method);
 }
@@ -2611,13 +2612,16 @@ TEST(CalDavIntegration, SendsWriteRequestAndClassifiesServerResponses)
     EXPECT_EQ(QByteArray("/calendars/user/event.ics"), server.requests().first().target);
     EXPECT_EQ(request.body, server.requests().first().body);
 
-    const QList<int> statuses = {401, 403, 409, 412, 429, 503};
+    const QList<int> statuses = {401, 403, 409, 412, 429, 500, 502, 503, 504};
     const QList<DCalDavTransport::Error> errors = {
         DCalDavTransport::AuthenticationFailed,
         DCalDavTransport::PermissionDenied,
         DCalDavTransport::NoError,
         DCalDavTransport::NoError,
         DCalDavTransport::RateLimited,
+        DCalDavTransport::ServerUnavailable,
+        DCalDavTransport::ServerUnavailable,
+        DCalDavTransport::ServerUnavailable,
         DCalDavTransport::ServerUnavailable,
     };
     for (int i = 0; i < statuses.size(); ++i) {

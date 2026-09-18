@@ -61,8 +61,9 @@ private:
     void fetchNextResource();
     void requestCalendarDataBatch(const DCalDavCalendarQuery::ResourceList &resources);
     void fetchResourceByGet(const DCalDavCalendarQuery::ResourceList &resources, int index);
-    bool appendResourceCalendarData(const DCalDavCalendarQuery::Resource &resource,
-                                    const QString &calendarData, QString *errorMessage);
+    void appendResourceCalendarData(const DCalDavCalendarQuery::Resource &resource,
+                                    const QString &calendarData);
+    void appendRemoteEvent(DCalDavCalendarQuery::RemoteEvent event);
     void appendDeletedResource(const DCalDavCalendarQuery::Resource &resource);
     void appendDeletedResources();
     void finish(bool success, const QString &errorMessage = QString(),
