@@ -1434,7 +1434,7 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="235"/>
         <source>Unable to save the account password, Please try again</source>
-        <translation type="unfinished"/>
+        <translation>Nie udało się zapisać hasła konta, spróbuj ponownie</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="510"/>
