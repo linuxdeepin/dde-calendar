@@ -1,25 +1,25 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS version="2.1" language="ne">
+<?xml version="1.0" ?><!DOCTYPE TS><TS version="2.1" language="kk">
 <context>
     <name>AccountItem</name>
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="41"/>
         <source>Sync successful</source>
-        <translation>सिंक सफल भयो</translation>
+        <translation>Синхронизация бағдарламалы</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="42"/>
         <source>Network error</source>
-        <translation>रेटर्वर त्रुटी</translation>
+        <translation>Интернет қате</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="43"/>
         <source>Server exception</source>
-        <translation>सर्वर विधान</translation>
+        <translation>Сервердің кешірімі</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="44"/>
         <source>Storage full</source>
-        <translation>स्टोरेज भरिएको</translation>
+        <translation>Қамтыма толы</translation>
     </message>
 </context>
 <context>
@@ -27,12 +27,12 @@
     <message>
         <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="227"/>
         <source>Local account</source>
-        <translation>ल्यास्टो खाता</translation>
+        <translation>Жетілдірілген смета</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="229"/>
         <source>Event types</source>
-        <translation>परिस्थितिहरू</translation>
+        <translation>Жылдыздар түрлері</translation>
     </message>
 </context>
 <context>
@@ -40,19 +40,19 @@
     <message>
         <location filename="../calendar-client/src/customWidget/colorWidget/colorpickerWidget.cpp" line="77"/>
         <source>Color</source>
-        <translation>रंग</translation>
+        <translation>Ren</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/colorWidget/colorpickerWidget.cpp" line="90"/>
         <source>Cancel</source>
         <comment>button</comment>
-        <translation>रद्द गर्नुहोस्</translation>
+        <translation>Отмена</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/colorWidget/colorpickerWidget.cpp" line="92"/>
         <source>Save</source>
         <comment>button</comment>
-        <translation>विन्यास बनाउनुहोस्</translation>
+        <translation>Таңдау</translation>
     </message>
 </context>
 <context>
@@ -60,37 +60,37 @@
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="33"/>
         <source>Monday</source>
-        <translation>लोमदारी</translation>
+        <translation>Дүйшөмбү</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="34"/>
         <source>Tuesday</source>
-        <translation>सोमदारी</translation>
+        <translation>Шейшөмбү</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="35"/>
         <source>Wednesday</source>
-        <translation>मंगलदारी</translation>
+        <translation>Шейшембей</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="36"/>
         <source>Thursday</source>
-        <translation>बुधदारी</translation>
+        <translation>Жума</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="37"/>
         <source>Friday</source>
-        <translation>बिधारी</translation>
+        <translation>Жетишөмбү</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="38"/>
         <source>Saturday</source>
-        <translation>शनिवार</translation>
+        <translation>Күншы</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="39"/>
         <source>Sunday</source>
-        <translation>रविवार</translation>
+        <translation>Бейтшы</translation>
     </message>
 </context>
 <context>
@@ -98,22 +98,22 @@
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daywindow.cpp" line="112"/>
         <source>Y</source>
-        <translation>य</translation>
+        <translation>Ж</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daywindow.cpp" line="113"/>
         <source>M</source>
-        <translation>म</translation>
+        <translation>Л</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daywindow.cpp" line="114"/>
         <source>D</source>
-        <translation>द</translation>
+        <translation>Д</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/dayWidget/daywindow.cpp" line="170"/>
         <source>Lunar</source>
-        <translation>लूनार</translation>
+        <translation>Луналық</translation>
     </message>
 </context>
 <context>
@@ -121,7 +121,7 @@
     <message>
         <location filename="../calendar-client/src/view/graphicsview.cpp" line="628"/>
         <source>New Event</source>
-        <translation>नयाँ घटना</translation>
+        <translation>Жаңы жылдыз</translation>
     </message>
 </context>
 <context>
@@ -129,7 +129,7 @@
     <message>
         <location filename="../calendar-client/src/view/graphicsItem/cmonthschedulenumitem.cpp" line="80"/>
         <source>%1 more</source>
-        <translation>%1 अधिक</translation>
+        <translation>Жаңы жылдыз</translation>
     </message>
 </context>
 <context>
@@ -137,12 +137,12 @@
     <message>
         <location filename="../calendar-client/src/widget/monthWidget/monthview.cpp" line="50"/>
         <source>New event</source>
-        <translation>नयाँ घटना</translation>
+        <translation>%1 қалып</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/monthWidget/monthview.cpp" line="230"/>
         <source>New Event</source>
-        <translation>नयाँ घटना</translation>
+        <translation>Жаңы жылдыз</translation>
     </message>
 </context>
 <context>
@@ -150,7 +150,7 @@
     <message>
         <location filename="../calendar-client/src/widget/monthWidget/monthwindow.cpp" line="98"/>
         <source>Y</source>
-        <translation>य</translation>
+        <translation>Ж</translation>
     </message>
 </context>
 <context>
@@ -158,25 +158,25 @@
     <message>
         <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="284"/>
         <source>My Event</source>
-        <translation>मेरो घटना</translation>
+        <translation>Мүмкүнчүлүк</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="326"/>
         <source>OK</source>
         <comment>button</comment>
-        <translation>सही</translation>
+        <translation>Тугалыш</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="331"/>
         <source>Delete</source>
         <comment>button</comment>
-        <translation>हटाउन</translation>
+        <translation>Өсө</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="332"/>
         <source>Edit</source>
         <comment>button</comment>
-        <translation>सम्पादन</translation>
+        <translation>Редагу</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/myscheduleview.cpp" line="193"/>
@@ -216,7 +216,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/cpushbutton.cpp" line="17"/>
         <source>New event type</source>
-        <translation>नयाँ घटना प्रकार</translation>
+        <translation>Жаңы мүмкүнчүлүк түрү</translation>
     </message>
 </context>
 <context>
@@ -224,240 +224,240 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="46"/>
         <source>New Event</source>
-        <translation>नयाँ घटना</translation>
+        <translation>Жаңы мүмкүнчүлүк</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="60"/>
         <source>Edit Event</source>
-        <translation>घटना सम्पादन</translation>
+        <translation>Мүмкүнчүлүкді редагу</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="270"/>
         <source>End time must be greater than start time</source>
-        <translation>अंतिम समय शुरुवात समयसँग बढी छन्</translation>
+        <translation>Түштүк узундугы башталыш узундугундагы болуу керек</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="271"/>
         <source>OK</source>
         <comment>button</comment>
-        <translation>सही</translation>
+        <translation>Тугалыш</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="506"/>
         <source>Never</source>
-        <translation>निरन्तर</translation>
+        <translation>Бироктөр</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="507"/>
         <source>At time of event</source>
-        <translation>घटनामा</translation>
+        <translation>Мүмкүнчүлүкчүнүн узундугунда</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="508"/>
         <source>15 minutes before</source>
-        <translation>15 मिनिटहरै पहिले</translation>
+        <translation>15 минутдо кабылданып</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="509"/>
         <source>30 minutes before</source>
-        <translation>30 मिनिटहरै पहिले</translation>
+        <translation>30 минутдо кабылданып</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="510"/>
         <source>1 hour before</source>
-        <translation>1 घण्टाहरै पहिले</translation>
+        <translation>1 ортоңдо кабылданып</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="511"/>
         <source>1 day before</source>
-        <translation>1 दिनहरै पहिले</translation>
+        <translation>1 күндө кабылданып</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="512"/>
         <source>2 days before</source>
-        <translation>2 दिनहरै पहिले</translation>
+        <translation>2 күндө кабылданып</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="513"/>
         <source>1 week before</source>
-        <translation>1 सप्ताहहरै पहिले</translation>
+        <translation>1 күнүнө кабылданып</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="536"/>
         <source>On start day (9:00 AM)</source>
-        <translation>शुरुवात दिन (9:00 अ.प्र.)</translation>
+        <translation>Башталыш күнүнүн узундугунда (9:00 уу)</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="583"/>
         <source>time(s)</source>
-        <translation>समय(हरै),</translation>
+        <translation>минут(s)</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="598"/>
         <source>Enter a name please</source>
-        <translation>कृपया नाव दर्शाउन</translation>
+        <translation>Лобосо атын киргизин</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="693"/>
         <source>The name can not only contain whitespaces</source>
-        <translation>नाव अतिरिक्त शुद्ध राइट विशेष प्रतीकहरै समावेश गर्न सकिन्छ</translation>
+        <translation>Атын бардык эле түштүктөрдү түзүү керек эмес</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="749"/>
         <source>Type:</source>
-        <translation>प्रकार:</translation>
+        <translation>Түр:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="754"/>
         <source>Description:</source>
-        <translation>विवरण:</translation>
+        <translation>Айтыш:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="759"/>
         <source>All Day:</source>
-        <translation>सम्पूर्ण दिन:</translation>
+        <translation>Бүттү күн:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="764"/>
         <source>Starts:</source>
-        <translation>शुरुवात:</translation>
+        <translation>Башталышы:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="769"/>
         <source>Ends:</source>
-        <translation>अन्तिम:</translation>
+        <translation>Терминалда:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="774"/>
         <source>Remind Me:</source>
-        <translation>मुद्रण गर्न मन राख्नुहोस:</translation>
+        <translation>Туғызумен білдіріңіз:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="779"/>
         <source>Repeat:</source>
-        <translation>पनि रिपेट:</translation>
+        <translation>Қайта жасаңыз:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="784"/>
         <source>End Repeat:</source>
-        <translation>पनि अन्तिम रिपेट:</translation>
+        <translation>Қайта жасаңыз бастау:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="840"/>
         <source>Calendar account:</source>
-        <translation>कैलेंडर खाता:</translation>
+        <translation>Календар счегі:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="841"/>
         <source>Calendar account</source>
-        <translation>कैलेंडर खाता</translation>
+        <translation>Календар счегі</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="868"/>
         <source>Type</source>
-        <translation>प्रकार</translation>
+        <translation>Түр</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="910"/>
         <source>Description</source>
-        <translation>विवरण</translation>
+        <translation>Түсінік</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="940"/>
         <source>All Day</source>
-        <translation>सम्पूर्ण दिन</translation>
+        <translation>Бүгінгі күн</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="964"/>
         <source>Time:</source>
-        <translation>समय:</translation>
+        <translation>Сағат:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="965"/>
         <source>Time</source>
-        <translation>समय</translation>
+        <translation>Сағат</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="972"/>
         <source>Solar</source>
-        <translation>सौर</translation>
+        <translation>Соларлық</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="973"/>
         <source>Lunar</source>
-        <translation>लूनार</translation>
+        <translation>Луналық</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1006"/>
         <source>Starts</source>
-        <translation>शुरू गर्ने</translation>
+        <translation>Негізделетін</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1047"/>
         <source>Ends</source>
-        <translation>अन्तिम</translation>
+        <translation>Терминалда:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1092"/>
         <source>Remind Me</source>
-        <translation>मुद्रण गर्न मन राख्नुहोस</translation>
+        <translation>Туғызумен білдіріңіз:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1119"/>
         <source>Repeat</source>
-        <translation>रिपेट</translation>
+        <translation>Қайта жасаңыз:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1134"/>
         <source>Daily</source>
-        <translation>रोजी</translation>
+        <translation>Күндінде</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1135"/>
         <source>Weekdays</source>
-        <translation>सप्ताहको दिनहरू</translation>
+        <translation>Күндерінде</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1136"/>
         <source>Weekly</source>
-        <translation>हर सप्ताह</translation>
+        <translation>Недеңде</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1137"/>
         <source>Monthly</source>
-        <translation>हर महता</translation>
+        <translation>Айда</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1138"/>
         <source>Yearly</source>
-        <translation>हर वर्ष</translation>
+        <translation>Жылда</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1158"/>
         <source>End Repeat</source>
-        <translation>अन्तिम रिपेट</translation>
+        <translation>Қайта жасаңыз бастау:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1169"/>
         <source>After</source>
-        <translation>बादेको</translation>
+        <translation>Негізделетін</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1170"/>
         <source>On</source>
-        <translation>को</translation>
+        <translation>Осы күн</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1240"/>
         <source>Cancel</source>
         <comment>button</comment>
-        <translation>रद्द गर्नुहोस्</translation>
+        <translation>Бас тарту</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1241"/>
         <source>Save</source>
         <comment>button</comment>
-        <translation>सुरक्षित गर्नुहोस्</translation>
+        <translation>Сақтау</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1407"/>
@@ -486,7 +486,7 @@
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="76"/>
         <source>Cancel</source>
         <comment>button</comment>
-        <translation>रद्द गर्नुहोस्</translation>
+        <translation>Бас тарту</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="77"/>
@@ -512,7 +512,7 @@
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="130"/>
         <source>Delete</source>
         <comment>button</comment>
-        <translation>मेटाउनुहोस्</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="150"/>
@@ -578,7 +578,7 @@
         <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="417"/>
         <source>OK</source>
         <comment>button</comment>
-        <translation>ठिक छ</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -586,17 +586,17 @@
     <message>
         <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="905"/>
         <source>Y</source>
-        <translation>वर्ष</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="905"/>
         <source>M</source>
-        <translation>महिना</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="905"/>
         <source>D</source>
-        <translation>D</translation>
+        <translation>Д</translation>
     </message>
 </context>
 <context>
@@ -604,17 +604,17 @@
     <message>
         <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="42"/>
         <source>Edit</source>
-        <translation>सम्पादन</translation>
+        <translation>Тазау</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="43"/>
         <source>Delete</source>
-        <translation>हटाउनु</translation>
+        <translation>Өшрүү</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="267"/>
         <source>All Day</source>
-        <translation>सम्पूर्ण दिन</translation>
+        <translation>Бүттөн күн</translation>
     </message>
 </context>
 <context>
@@ -622,7 +622,7 @@
     <message>
         <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="648"/>
         <source>No search results</source>
-        <translation>पछाडीकारी रिसल्ट छैन</translation>
+        <translation>Көрсөткүч бар эмес</translation>
     </message>
 </context>
 <context>
@@ -630,7 +630,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/scheduleview.cpp" line="316"/>
         <source>ALL DAY</source>
-        <translation>सम्पूर्ण दिन</translation>
+        <translation>БҮТТӨН КҮН</translation>
     </message>
 </context>
 <context>
@@ -638,67 +638,67 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="345"/>
         <source>Sunday</source>
-        <translation>वार्षिक</translation>
+        <translation>Жеке</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="346"/>
         <source>Monday</source>
-        <translation>सोमवार</translation>
+        <translation>Жалпы</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="347"/>
         <source>Use System Setting</source>
-        <translation>सिस्टम सेटिंग उपयोग गर्नुहोस्</translation>
+        <translation>Система параметрлерин өзгөртүү</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="364"/>
         <source>24-hour clock</source>
-        <translation>24 घण्टा घंटेला व्यापार</translation>
+        <translation>24-саатlıq саат</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="365"/>
         <source>12-hour clock</source>
-        <translation>12 घण्टा घंटेला व्यापार</translation>
+        <translation>12-саатlıq саат</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="389"/>
         <source>import ICS file</source>
-        <translation>ICS फाइल इनपोर्ट गर्नुहोस्</translation>
+        <translation>ICS файлын иштеп көрсөтүү</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="403"/>
         <source>Manual</source>
-        <translation>हाती गर्नुहोस्</translation>
+        <translation>Көйгөйлөр</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="404"/>
         <source>15 mins</source>
-        <translation>15 मिनिटहरू</translation>
+        <translation>15 минут</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="405"/>
         <source>30 mins</source>
-        <translation>30 मिनिटहरू</translation>
+        <translation>30 минут</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="406"/>
         <source>1 hour</source>
-        <translation>1 घण्टा</translation>
+        <translation>1 саат</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="407"/>
         <source>24 hours</source>
-        <translation>24 घण्टा</translation>
+        <translation>24 саат</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="418"/>
         <source>Sync Now</source>
-        <translation>अब सिकार्नुहोस्</translation>
+        <translation>Кийин синхрондойтуу</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="585"/>
         <source>Last sync</source>
-        <translation>योगेमा सिकारिएको छ</translation>
+        <translation>Ар кандай синхрондойтуу</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="779"/>
@@ -794,7 +794,7 @@
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="1049"/>
         <source>Please go to the &lt;a href=&apos;/&apos;&gt;Control Center&lt;/a&gt; to change system settings</source>
-        <translation>कृपया &lt;a href=&apos;/&apos;&gt;कार्यक्रम सेंटरमा&lt;/a&gt; चल्नुहोस् र सिस्टम सेटिंगहरू बदल्नुहोस्</translation>
+        <translation>Системалык параметрлерди өзгөртүү үчүн &lt;a href=&apos;/&apos;&gt;Контрол Центрына&lt;/a&gt; жүктуү керек</translation>
     </message>
 </context>
 <context>
@@ -802,17 +802,17 @@
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="71"/>
         <source>(%1 mins)</source>
-        <translation>(%1 मिनिटहरू</translation>
+        <translation>(%1 минут), </translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="73"/>
         <source>(%1 hour)</source>
-        <translation>(%1 घण्टा</translation>
+        <translation>(%1 саат), </translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="75"/>
         <source>(%1 hours)</source>
-        <translation>(%1 घण्टा</translation>
+        <translation>(%1 саат), </translation>
     </message>
 </context>
 <context>
@@ -820,27 +820,27 @@
     <message>
         <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="30"/>
         <source>Y</source>
-        <translation>य</translation>
+        <translation>Ж</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="42"/>
         <source>M</source>
-        <translation>म</translation>
+        <translation>М</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="50"/>
         <source>W</source>
-        <translation>व</translation>
+        <translation>W</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="58"/>
         <source>D</source>
-        <translation>ड</translation>
+        <translation>D</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="92"/>
         <source>Search events and festivals</source>
-        <translation>यस्तै अवसर र फेस्टिवल खोज्नुहोस्</translation>
+        <translation>Ойындарды жана фестивалдарды табыңыз</translation>
     </message>
 </context>
 <context>
@@ -848,12 +848,12 @@
     <message>
         <location filename="../calendar-client/src/widget/weekWidget/weekwindow.cpp" line="90"/>
         <source>Week</source>
-        <translation>हफ्ता</translation>
+        <translation>Неделя</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/weekWidget/weekwindow.cpp" line="280"/>
         <source>Y</source>
-        <translation>नेपाली: व</translation>
+        <translation>Ж</translation>
     </message>
 </context>
 <context>
@@ -861,12 +861,12 @@
     <message>
         <location filename="../calendar-client/src/widget/yearWidget/yearscheduleview.cpp" line="268"/>
         <source>All Day</source>
-        <translation>सम्पूर्ण दिन</translation>
+        <translation>Бүгүнкү күн</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/yearWidget/yearscheduleview.cpp" line="288"/>
         <source>No event</source>
-        <translation>कुनै घटना छैन</translation>
+        <translation>Ойноку жок</translation>
     </message>
 </context>
 <context>
@@ -874,7 +874,7 @@
     <message>
         <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="615"/>
         <source>Y</source>
-        <translation>नेपाली: व</translation>
+        <translation>Ж</translation>
     </message>
 </context>
 <context>
@@ -882,12 +882,12 @@
     <message>
         <location filename="../calendar-client/src/main.cpp" line="66"/>
         <source>Calendar</source>
-        <translation>कैलेंडर</translation>
+        <translation>Календар</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/main.cpp" line="69"/>
         <source>Calendar is a tool to view dates, and also a smart daily planner to schedule all things in life. </source>
-        <translation>कैलेंडर एक देख्ने लागि यस्तो उपकार छ, र रोजाना योजनालाई जीवनको सारी घटनाहरूको लागि सूचनालाई निर्धारण गर्ने एक निर्णयशील सालाना योजनाकारी भी छ।</translation>
+        <translation>Календар - даталарды түзөү үчүн көрсөтүү үйрөнүшү жана күндөрдүн убакыттарын көзөмөлдөө үчүн эсептөө календар.</translation>
     </message>
 </context>
 <context>
@@ -895,32 +895,32 @@
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="89"/>
         <source>Calendar</source>
-        <translation>कैलेंडर</translation>
+        <translation>Календар</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="372"/>
         <source>Manage</source>
-        <translation>नियन्त्रण</translation>
+        <translation>Багыттау</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="379"/>
         <source>Privacy Policy</source>
-        <translation>गैर-वित्तीय नीति</translation>
+        <translation>Таанымалдык политикасы</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="962"/>
         <source>Syncing...</source>
-        <translation>संकल्पना गरिरहेको...</translation>
+        <translation>Синхронизация...</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="973"/>
         <source>Sync successful</source>
-        <translation>संकल्पना सफल भयो</translation>
+        <translation>Синхронизация успеш</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="982"/>
         <source>Sync failed, please try later</source>
-        <translation>संकल्पना फलित भयो, कृपया बाद मा प्रयास गर्नुहोस्</translation>
+        <translation>Синхронизация катышканында жана кайттык көрсөтүү</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/widget/calendarmainwindow.cpp" line="1266"/>
@@ -938,7 +938,7 @@
     <message>
         <location filename="../calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="174"/>
         <source>All Day</source>
-        <translation>सम्पूर्ण दिन</translation>
+        <translation>Бүгүнкү күн</translation>
     </message>
 </context>
 <context>
@@ -946,17 +946,17 @@
     <message>
         <location filename="../calendar-service/src/dbmanager/daccountdatabase.cpp" line="1155"/>
         <source>Work</source>
-        <translation>काम</translation>
+        <translation>Ашық</translation>
     </message>
     <message>
         <location filename="../calendar-service/src/dbmanager/daccountdatabase.cpp" line="1157"/>
         <source>Life</source>
-        <translation>जीवन</translation>
+        <translation>Жаңылықтар</translation>
     </message>
     <message>
         <location filename="../calendar-service/src/dbmanager/daccountdatabase.cpp" line="1159"/>
         <source>Other</source>
-        <translation>अन्य</translation>
+        <translation>Басқа</translation>
     </message>
 </context>
 <context>
@@ -965,57 +965,57 @@
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="187"/>
         <source>Close</source>
         <comment>button</comment>
-        <translation>विराम दिने</translation>
+        <translation>Жариялау</translation>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="191"/>
         <source>One day before start</source>
-        <translation>सुरुवात साने एक दिन बाहिर</translation>
+        <translation>Басталуынан 1 күн кейін</translation>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="197"/>
         <source>Remind me tomorrow</source>
-        <translation>मलाई केही भएक भने अर्को दिन सोचाउनुहोस्</translation>
+        <translation>Бесперсім күнінен келгенде түсіндіру</translation>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="202"/>
         <source>Remind me later</source>
-        <translation>मलाई बाहिर सोचाउनुहोस्</translation>
+        <translation>Жариялау</translation>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="204"/>
         <source>15 mins later</source>
-        <translation>15 मिनिटहरू बाहिर</translation>
+        <translation>15 минут кейін</translation>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="205"/>
         <source>1 hour later</source>
-        <translation>1 घण्टा बाहिर</translation>
+        <translation>1 сағат кейін</translation>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="206"/>
         <source>4 hours later</source>
-        <translation>4 घण्टा बाहिर</translation>
+        <translation>4 сағат кейін</translation>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="207"/>
         <source>Tomorrow</source>
-        <translation>भोलि</translation>
+        <translation>Күнінен келгенде</translation>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="215"/>
         <source>Schedule Reminder</source>
-        <translation>समय सारणीमा नोेले</translation>
+        <translation>Түсіндірун қалайту</translation>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="258"/>
         <source>%1 to %2</source>
-        <translation>%1 भएको %2</translation>
+        <translation>%1 - %2</translation>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="296"/>
         <source>Today</source>
-        <translation>आज</translation>
+        <translation>Бүгін</translation>
     </message>
 </context>
 <context>
@@ -1023,22 +1023,22 @@
     <message>
         <location filename="../calendar-client/src/view/draginfographicsview.cpp" line="48"/>
         <source>Edit</source>
-        <translation>संपादन</translation>
+        <translation>Тортуруу</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/view/draginfographicsview.cpp" line="49"/>
         <source>Delete</source>
-        <translation> удален्नुहोस्</translation>
+        <translation>Тастық</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/view/draginfographicsview.cpp" line="50"/>
         <source>New event</source>
-        <translation>नयाँ घटक</translation>
+        <translation>Алдыңыз калуу</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/view/draginfographicsview.cpp" line="759"/>
         <source>New Event</source>
-        <translation>नयाँ घटक</translation>
+        <translation>Алдыңыз калуу</translation>
     </message>
 </context>
 <context>
@@ -1046,34 +1046,34 @@
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="144"/>
         <source>export</source>
-        <translation>सारणी बाह्रा</translation>
+        <translation>Экспорт</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="219"/>
         <source>import ICS file</source>
-        <translation>ICS फाइल भेट्नुहोस्</translation>
+        <translation>ICS файлын импорттау</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="450"/>
         <source>You are deleting an event type.</source>
-        <translation>तपाईं एक घटक प्रकार छुड्न्छन्।</translation>
+        <translation>Сіз бұл калуу түрін тастықтаңыз.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="451"/>
         <source>All events under this type will be deleted and cannot be recovered.</source>
-        <translation>यस प्रकारको पार्थ्याङ्क र सबै घटकहरू छुडिन्थ्यो र पुनः संकल्पन गर्न सकिन्छैन।</translation>
+        <translation>Бұл түрінде барған әр бір калуы тастықталады және аны жөндеу үшін мүмкіндік жоқ.</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="452"/>
         <source>Cancel</source>
         <comment>button</comment>
-        <translation>रद्द गर्नुहोस्</translation>
+        <translation>Отмена</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="453"/>
         <source>Delete</source>
         <comment>button</comment>
-        <translation>छुड्नुहोस्</translation>
+        <translation>Тастықтау</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="213"/>
@@ -1103,62 +1103,62 @@
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="96"/>
         <source>Manage calendar</source>
-        <translation>कालेंदर नियमित्त गर्नुहोस्</translation>
+        <translation>Календарды көрсету</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="112"/>
         <source>Event types</source>
-        <translation>घटक प्रकारहरू</translation>
+        <translation>Калуу түрлері</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="38"/>
         <source>Account settings</source>
-        <translation>खाता सेटिङहरू</translation>
+        <translation>Акаунт түрілдіктері</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="42"/>
         <source>Account</source>
-        <translation>खाता</translation>
+        <translation>Акаунт</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="53"/>
         <source>Select items to be synced</source>
-        <translation>सिंक गर्ने वस्तुहरू निविद्द गर्नुहोस्</translation>
+        <translation>Синхрондыруы үшін таңдаңыз элементтер</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="56"/>
         <source>Events</source>
-        <translation>घटकहरू</translation>
+        <translation>Калуы</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="63"/>
         <source>General settings</source>
-        <translation>सार नियमित्तहरू</translation>
+        <translation>Жалпы түрілдіктер</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="74"/>
         <source>Sync interval</source>
-        <translation>सिंक अवधि</translation>
+        <translation>Синхрондыру интервалы</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="104"/>
         <source>Calendar account</source>
-        <translation>कालेंदर खाता</translation>
+        <translation>Календар сәті</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="150"/>
         <source>General</source>
-        <translation>सार</translation>
+        <translation>Жалпы</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="152"/>
         <source>First day of week</source>
-        <translation>सप्ताहको पहिलो दिन</translation>
+        <translation>Недең бірінші күні</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="153"/>
         <source>Time</source>
-        <translation>समय</translation>
+        <translation>Саат</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="54"/>
@@ -1182,7 +1182,7 @@
         <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="611"/>
         <source>Today</source>
         <comment>Return</comment>
-        <translation>आज</translation>
+        <translation>Бүгін</translation>
     </message>
 </context>
 <context>
@@ -1191,7 +1191,7 @@
         <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="339"/>
         <source>Today</source>
         <comment>Return Today</comment>
-        <translation>आज</translation>
+        <translation>Бүгін</translation>
     </message>
 </context>
 <context>
@@ -1199,27 +1199,27 @@
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="22"/>
         <source>New event type</source>
-        <translation>नयाँ घटक प्रकार</translation>
+        <translation>Алдыңыз калуу түрі</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="32"/>
         <source>Edit event type</source>
-        <translation>घटक प्रकार सम्पादन गर्नुहोस्</translation>
+        <translation>Калуу түрін өзгертіңіз</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="43"/>
         <source>Import ICS file</source>
-        <translation>ICS फाइल इनपोर्ट</translation>
+        <translation>ICS файлын түзүү</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="151"/>
         <source>Name:</source>
-        <translation>नाम:</translation>
+        <translation>Аты:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="152"/>
         <source>Color:</source>
-        <translation>रंग:</translation>
+        <translation>Рети:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="156"/>
@@ -1230,28 +1230,28 @@
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="167"/>
         <source>Cancel</source>
         <comment>button</comment>
-        <translation>रद्द गर्न</translation>
+        <translation>Толтыруу сакташы</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="168"/>
         <source>Save</source>
         <comment>button</comment>
-        <translation>संरक्षण गर्न</translation>
+        <translation>Сакташы</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="219"/>
         <source>The name can not only contain whitespaces</source>
-        <translation>नामलाई केवल अंतराल छान्न सक्छैं</translation>
+        <translation>Ат сүйлөмдөрдүн баруунда же башталышына ээ болбойт</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="256"/>
         <source>Enter a name please</source>
-        <translation>कृपया नाम द्नुहोस्</translation>
+        <translation>Аты киргизин</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="164"/>
         <source>&lt;a href=&apos;https://wikipedia.org/wiki/ICalendar&apos;&gt;ICS&lt;/a&gt; File:</source>
-        <translation>&lt;a href=&apos;&apos;https://wikipedia.org/wiki/ICalendar&apos;&apos;&gt;ICS&lt;/a&gt; फाइल:</translation>
+        <translation>&lt;a href=&apos;https://wikipedia.org/wiki/ICalendar&apos;&gt;ICS&lt;/a&gt; файлы:</translation>
     </message>
 </context>
 <context>
@@ -1259,37 +1259,37 @@
     <message>
         <location filename="../calendar-client/src/shortcut.cpp" line="16"/>
         <source>Help</source>
-        <translation>सहायता</translation>
+        <translation>Дайыма көрсөтүү</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/shortcut.cpp" line="17"/>
         <source>Delete event</source>
-        <translation>इवेंट छुट्छान्न</translation>
+        <translation>Маселени жоюу</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/shortcut.cpp" line="20"/>
         <source>Copy</source>
-        <translation>कॉपी</translation>
+        <translation>Көп көрсөтүү</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/shortcut.cpp" line="21"/>
         <source>Cut</source>
-        <translation>कट्छान्न</translation>
+        <translation>Жарыялашуу</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/shortcut.cpp" line="22"/>
         <source>Paste</source>
-        <translation>पेस्ट</translation>
+        <translation>Толуу</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/shortcut.cpp" line="25"/>
         <source>Delete</source>
-        <translation>हटाउन</translation>
+        <translation>Жоюу</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/shortcut.cpp" line="26"/>
         <source>Select all</source>
-        <translation>सबै निर्वाचन गर्न</translation>
+        <translation>Бардыгын таңдайын</translation>
     </message>
 </context>
 <context>
@@ -1311,7 +1311,7 @@
         <location filename="../calendar-client/src/dialog/timejumpdialog.cpp" line="29"/>
         <source>Go</source>
         <comment>button</comment>
-        <translation>गो</translation>
+        <translation>Болуш</translation>
     </message>
 </context>
 <context>
@@ -1320,13 +1320,13 @@
         <location filename="../calendar-client/src/widget/settingWidget/userloginwidget.cpp" line="48"/>
         <source>Sign In</source>
         <comment>button</comment>
-        <translation>लग इन गर्न</translation>
+        <translation>Киргизүү</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/widget/settingWidget/userloginwidget.cpp" line="49"/>
         <source>Sign Out</source>
         <comment>button</comment>
-        <translation>लग आउट गर्न</translation>
+        <translation>Чыгуу</translation>
     </message>
     <message>
         <location filename="../src/calendar-client/src/widget/settingWidget/userloginwidget.cpp" line="203"/>
@@ -1348,7 +1348,7 @@
         <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="188"/>
         <source>Today</source>
         <comment>Today</comment>
-        <translation>आज</translation>
+        <translation>Бүгүн</translation>
     </message>
 </context>
     <context>
