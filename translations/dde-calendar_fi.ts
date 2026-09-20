@@ -1742,7 +1742,7 @@
         <message>
             <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="91"/>
             <source>Unable to save calendar data. Please try again later.</source>
-            <translation type="unfinished"/>
+            <translation>Kalenterin tietojen tallennus epäonnistui. Yritä myöhemmin uudelleen.</translation>
         </message>
     </context>
     <context>
