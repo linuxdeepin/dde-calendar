@@ -56,6 +56,7 @@ public:
     void cancel(bool notifyCallback = true);
 
 private:
+    void startDiscovery();
     QString findScheduleTypeID(const QString &calendarID,
                                const DCalDavCalendarInfo::List &existing);
     /**

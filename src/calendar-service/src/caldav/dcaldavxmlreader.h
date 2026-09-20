@@ -19,7 +19,7 @@ public:
     void skipCurrentElement();
     QString readElementText(QXmlStreamReader::ReadElementTextBehaviour behavior);
 
-    QStringRef name() const;
+    QString name() const;
     bool atEnd() const;
     bool hasError() const;
     QString errorString() const;

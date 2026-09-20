@@ -136,19 +136,42 @@ void DCalDavAccountRegistrar::start(const Request &request, const Callback &call
         return;
     }
 
-    QString errorMessage;
-    const bool passwordRead = request.credentialReader
-        ? request.credentialReader(request.account.credentialRef, m_password, &errorMessage)
-        : DCalDavCredentialStore::readPassword(request.account.credentialRef, m_password, &errorMessage);
-    if (!passwordRead) {
-        finish(false, errorMessage, DCalDavTransport::Response(),
-               DCalDavErrorCode::StorageError);
+    if (request.credentialReader) {
+        QString errorMessage;
+        if (!request.credentialReader(request.account.credentialRef, m_password, &errorMessage)) {
+            finish(false, errorMessage, DCalDavTransport::Response(),
+                   DCalDavErrorCode::StorageError);
+            return;
+        }
+        startDiscovery();
+        return;
+    }
+
+    DCalDavCredentialStore::readPasswordAsync(
+        request.account.credentialRef,
+        [this](bool success, const QString &password, const QString &errorMessage) {
+            if (!m_running) {
+                return;
+            }
+            if (!success) {
+                finish(false, errorMessage, DCalDavTransport::Response(),
+                       DCalDavErrorCode::StorageError);
+                return;
+            }
+            m_password = password;
+            startDiscovery();
+        }, this);
+}
+
+void DCalDavAccountRegistrar::startDiscovery()
+{
+    if (!m_running) {
         return;
     }
 
     DCalDavReadOnlySync::Request discoveryRequest;
-    discoveryRequest.serverUrl = QUrl(request.account.serverUrl);
-    discoveryRequest.username = request.account.username;
+    discoveryRequest.serverUrl = QUrl(m_request.account.serverUrl);
+    discoveryRequest.username = m_request.account.username;
     discoveryRequest.password = m_password;
     discoveryRequest.requireReadableCalendar = false;
     m_discovery.start(discoveryRequest, [this](const DCalDavReadOnlySync::Result &result) {
