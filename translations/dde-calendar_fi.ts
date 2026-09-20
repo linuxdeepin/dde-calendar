@@ -1156,7 +1156,7 @@
         <message>
             <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="217"/>
             <source>Delete</source>
-            <translation type="unfinished"/>
+            <translation>Poista</translation>
         </message>
 </context>
 <context>
@@ -1508,7 +1508,7 @@
     <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="250"/>
         <source>Unable to save the account password, Please try again</source>
-        <translation type="unfinished"/>
+        <translation>Salasanaa ei voitu tallentaa. Yritä uudelleen</translation>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="490"/>
@@ -1717,27 +1717,27 @@
         <message>
             <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="51"/>
             <source>The server request is invalid.</source>
-            <translation type="unfinished"/>
+            <translation>Pyyntö palvelimelle on virheellinen.</translation>
         </message>
         <message>
             <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="71"/>
             <source>The server is busy. Please try again later.</source>
-            <translation type="unfinished"/>
+            <translation>Palvelin on varattu. Yritä myöhemmin uudelleen.</translation>
         </message>
         <message>
             <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="74"/>
             <source>The server is unavailable. Please try again later.</source>
-            <translation type="unfinished"/>
+            <translation>Palvelin ei ole linjoilla. Yritä myöhemmin uudelleen.</translation>
         </message>
         <message>
             <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="77"/>
             <source>The calendar data conflicts with the server.</source>
-            <translation type="unfinished"/>
+            <translation>Kalenterin tiedot ovat ristiriidassa palvelimen tietojen kanssa.</translation>
         </message>
         <message>
             <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="80"/>
             <source>The server returned too much data. Please try again later.</source>
-            <translation type="unfinished"/>
+            <translation>Palvelin palautti liikaa tietoa. Yritä myöhemmin uudelleen.</translation>
         </message>
         <message>
             <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="91"/>
