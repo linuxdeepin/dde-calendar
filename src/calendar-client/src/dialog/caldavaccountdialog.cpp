@@ -176,7 +176,7 @@ CalDavAccountDialog::CalDavAccountDialog(QWidget *parent)
 CalDavAccountDialog::~CalDavAccountDialog()
 {
     if (!m_pendingCredentialRef.isEmpty()) {
-        DCalDavCredentialStore::deletePassword(m_pendingCredentialRef);
+        DCalDavCredentialStore::deletePasswordAsync(m_pendingCredentialRef, {}, nullptr);
     }
 }
 
@@ -231,13 +231,33 @@ void CalDavAccountDialog::slotLogin()
                             << "editMode:" << m_editMode;
 
     clearPendingCredential(true);
-    if (!storePendingCredential()) {
-        showError(tr("Unable to save the account password, Please try again"));
-        setLoginEnabled(true);
+    setLoginEnabled(false);
+    if (m_passwordEdit->text().isEmpty()) {
+        startCalDavValidation();
         return;
     }
 
-    setLoginEnabled(false);
+    const int providerType = m_providerComboBox->currentData().toInt();
+    const DCalDavProviderProfile profile = DCalDavProviderProfile::forProvider(
+        static_cast<DCalDavProviderProfile::ProviderType>(providerType));
+    DCalDavCredentialStore::storePasswordAsync(
+        profile.displayName, m_passwordEdit->text(),
+        [this](bool success, const QString &credentialRef, const QString &errorMessage) {
+            if (!success) {
+                qCWarning(ClientLogger) << "Failed to save CalDAV account password"
+                                        << "errorPresent:" << !errorMessage.isEmpty()
+                                        << "error:" << errorMessage;
+                showToast(tr("Unable to save the account password, Please try again"));
+                setLoginEnabled(true);
+                return;
+            }
+            m_pendingCredentialRef = credentialRef;
+            startCalDavValidation();
+        }, this);
+}
+
+void CalDavAccountDialog::startCalDavValidation()
+{
     const int providerType = m_providerComboBox->currentData().toInt();
     if (m_editMode) {
         gAccountManager->validateCalDavAccountForUpdate(
@@ -407,34 +427,13 @@ void CalDavAccountDialog::slotValidationTimedOut()
     setLoginEnabled(true);
 }
 
-bool CalDavAccountDialog::storePendingCredential()
-{
-    if (m_passwordEdit->text().isEmpty()) {
-        return true;
-    }
-
-    const int providerType = m_providerComboBox->currentData().toInt();
-    const DCalDavProviderProfile profile = DCalDavProviderProfile::forProvider(
-        static_cast<DCalDavProviderProfile::ProviderType>(providerType));
-    QString credentialRef;
-    QString errorMessage;
-    if (!DCalDavCredentialStore::storePassword(profile.displayName, m_passwordEdit->text(),
-                                                credentialRef, &errorMessage)) {
-        qCWarning(ClientLogger) << "Failed to store CalDAV credential"
-                                << "errorPresent:" << !errorMessage.isEmpty();
-        return false;
-    }
-    m_pendingCredentialRef = credentialRef;
-    return true;
-}
-
 void CalDavAccountDialog::clearPendingCredential(bool deleteSecret)
 {
     if (m_pendingCredentialRef.isEmpty()) {
         return;
     }
     if (deleteSecret) {
-        DCalDavCredentialStore::deletePassword(m_pendingCredentialRef);
+        DCalDavCredentialStore::deletePasswordAsync(m_pendingCredentialRef, {}, nullptr);
     }
     m_pendingCredentialRef.clear();
 }
@@ -569,13 +568,20 @@ QString CalDavAccountDialog::validationErrorText(
     }
 }
 
-void CalDavAccountDialog::showValidationToast(DCalDavValidationError::Type validationError)
+void CalDavAccountDialog::showToast(const QString &toastText)
 {
-    const QString toastText = validationErrorText(validationError);
+    if (toastText.isEmpty()) {
+        return;
+    }
 
     DFloatingMessage *message = new DFloatingMessage(DFloatingMessage::TransientType);
-    message->setIcon(QIcon::fromTheme(QStringLiteral("dialog-error")));
+    message->setIcon(QIcon(QStringLiteral(":/icons/deepin/builtin/icons/dde_calendar_sync_failed_32px.svg")));
     message->setMessage(toastText);
     message->setDuration(2000);
     DMessageManager::instance()->sendMessage(window(), message);
+}
+
+void CalDavAccountDialog::showValidationToast(DCalDavValidationError::Type validationError)
+{
+    showToast(validationErrorText(validationError));
 }

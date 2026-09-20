@@ -74,9 +74,9 @@ QString DCalDavXmlStreamReader::readElementText(
     return text;
 }
 
-QStringRef DCalDavXmlStreamReader::name() const
+QString DCalDavXmlStreamReader::name() const
 {
-    return m_reader.name();
+    return m_reader.name().toString();
 }
 
 bool DCalDavXmlStreamReader::atEnd() const

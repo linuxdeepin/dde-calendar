@@ -47,8 +47,9 @@ private:
     void setInputError(DLineEdit *edit, bool error, const QString &message = QString());
     void showError(const QString &message, bool serverError = false, bool credentialError = false);
     QString validationErrorText(DCalDavValidationError::Type validationError) const;
+    void showToast(const QString &message);
     void showValidationToast(DCalDavValidationError::Type validationError);
-    bool storePendingCredential();
+    void startCalDavValidation();
     void clearPendingCredential(bool deleteSecret);
 
     QComboBox *m_providerComboBox = nullptr;

@@ -552,35 +552,38 @@ QString DAccountManageModule::validateCalDavAccount(int providerType, const QStr
         return requestID;
     }
 
-    QString password;
-    QString errorMessage;
-    if (!DCalDavCredentialStore::readPassword(credentialRef, password, &errorMessage)) {
-        qCWarning(ServiceLogger) << "Failed to read CalDAV validation credential"
-                                 << "errorPresent:" << !errorMessage.isEmpty();
-        DCalendarEventLog::instance().reportLoginValidationFinished(
-            false, DCalDavValidationError::Other);
-        finishValidationFailure(DCalDavValidationError::Other);
-        return requestID;
-    }
+    DCalDavCredentialStore::readPasswordAsync(
+        credentialRef,
+        [this, requestID, normalizedServerUrl, username, finishValidationFailure](
+            bool success, const QString &password, const QString &errorMessage) {
+            if (!success) {
+                qCWarning(ServiceLogger) << "Failed to read CalDAV validation credential"
+                                         << "errorPresent:" << !errorMessage.isEmpty();
+                DCalendarEventLog::instance().reportLoginValidationFinished(
+                    false, DCalDavValidationError::Other);
+                finishValidationFailure(DCalDavValidationError::Other);
+                return;
+            }
 
-    DCalDavReadOnlySync *validator = new DCalDavReadOnlySync(this);
-    m_calDavValidationJobs.insert(requestID, validator);
+            DCalDavReadOnlySync *validator = new DCalDavReadOnlySync(this);
+            m_calDavValidationJobs.insert(requestID, validator);
 
-    DCalDavReadOnlySync::Request request;
-    request.serverUrl = normalizedServerUrl;
-    request.username = username.trimmed();
-    request.password = password;
-    password.clear();
-    validator->start(request, [this, requestID, validator](const DCalDavReadOnlySync::Result &result) {
-        DCalendarEventLog::instance().reportLoginValidationFinished(
-            result.success, result.validationError);
-        m_calDavValidationJobs.remove(requestID);
-        validator->deleteLater();
-        emit calDavAccountValidationFinished(requestID, result.success,
-                                             static_cast<int>(result.validationError),
-                                             result.errorMessage,
-                                             result.discovery.principalDisplayName);
-    });
+            DCalDavReadOnlySync::Request request;
+            request.serverUrl = normalizedServerUrl;
+            request.username = username.trimmed();
+            request.password = password;
+            validator->start(request, [this, requestID, validator](
+                                           const DCalDavReadOnlySync::Result &result) {
+                DCalendarEventLog::instance().reportLoginValidationFinished(
+                    result.success, result.validationError);
+                m_calDavValidationJobs.remove(requestID);
+                validator->deleteLater();
+                emit calDavAccountValidationFinished(
+                    requestID, result.success,
+                    static_cast<int>(result.validationError), result.errorMessage,
+                    result.discovery.principalDisplayName);
+            });
+        }, this);
     return requestID;
 }
 
@@ -595,15 +598,6 @@ QString DAccountManageModule::createCalDavAccount(int providerType, const QStrin
         || username.trimmed().isEmpty() || credentialRef.isEmpty()) {
         return QString();
     }
-
-    QString password;
-    QString errorMessage;
-    if (!DCalDavCredentialStore::readPassword(credentialRef, password, &errorMessage)) {
-        qCWarning(ServiceLogger) << "Failed to read CalDAV account credential"
-                                 << "errorPresent:" << !errorMessage.isEmpty();
-        return QString();
-    }
-    password.clear();
 
     const DCalDavProviderProfile profile = DCalDavProviderProfile::forProvider(
         static_cast<DCalDavProviderProfile::ProviderType>(providerType));
@@ -668,8 +662,17 @@ QString DAccountManageModule::createCalDavAccount(int providerType, const QStrin
     m_accountList.append(account);
     m_accountModuleMap.insert(account->accountID(), accountModule);
     m_AccountServiceMap[account->accountType()].insert(account->accountID(), accountService);
+
+    // Show the account as syncing immediately while the background discovery
+    // is still preparing the first synchronization.
+    if (!m_accountManagerDB->updateCalDavSyncStatus(
+            account->accountID(), DCalDavSyncStatus::Running, QDateTime(), QString())) {
+        qCWarning(ServiceLogger) << "Failed to mark new CalDAV account as syncing"
+                                 << "accountID:" << account->accountID();
+    }
     registerCalDavAccount(account);
     emit signalLoginStatusChange();
+    emit calDavAccountStatusChanged(account->accountID());
     return account->accountID();
 }
 
@@ -710,14 +713,6 @@ bool DAccountManageModule::updateCalDavAccount(const QString &accountID, int pro
     newInfo.username = normalizedUsername;
 
     if (!credentialRef.isEmpty()) {
-        QString password;
-        QString errorMessage;
-        if (!DCalDavCredentialStore::readPassword(credentialRef, password, &errorMessage)) {
-            qCWarning(ServiceLogger) << "Failed to read CalDAV update credential"
-                                     << "errorPresent:" << !errorMessage.isEmpty();
-            return false;
-        }
-        password.clear();
         newInfo.credentialRef = credentialRef;
     }
 
@@ -737,9 +732,16 @@ bool DAccountManageModule::updateCalDavAccount(const QString &accountID, int pro
     }
 
     if (!credentialRef.isEmpty() && credentialRef != oldInfo.credentialRef
-        && !oldInfo.credentialRef.isEmpty()
-        && !DCalDavCredentialStore::deletePassword(oldInfo.credentialRef)) {
-        qCWarning(ServiceLogger) << "CalDAV account was updated but its previous credential could not be removed.";
+        && !oldInfo.credentialRef.isEmpty()) {
+        DCalDavCredentialStore::deletePasswordAsync(
+            oldInfo.credentialRef,
+            [](bool success, const QString &errorMessage) {
+                if (!success) {
+                    qCWarning(ServiceLogger)
+                        << "CalDAV account was updated but its previous credential could not be removed."
+                        << "errorPresent:" << !errorMessage.isEmpty();
+                }
+            }, nullptr);
     }
 
     registerCalDavAccount(account);
@@ -1017,9 +1019,16 @@ bool DAccountManageModule::deleteCalDavAccountInternal(const QString &accountID,
         return false;
     }
 
-    if (!accountInfo.credentialRef.isEmpty()
-        && !DCalDavCredentialStore::deletePassword(accountInfo.credentialRef)) {
-        qCWarning(ServiceLogger) << "CalDAV account was deleted but its credential could not be removed.";
+    if (!accountInfo.credentialRef.isEmpty()) {
+        DCalDavCredentialStore::deletePasswordAsync(
+            accountInfo.credentialRef,
+            [](bool success, const QString &errorMessage) {
+                if (!success) {
+                    qCWarning(ServiceLogger)
+                        << "CalDAV account was deleted but its credential could not be removed."
+                        << "errorPresent:" << !errorMessage.isEmpty();
+                }
+            }, nullptr);
     }
 
     QDBusConnection::sessionBus().unregisterObject(account->dbusPath());
