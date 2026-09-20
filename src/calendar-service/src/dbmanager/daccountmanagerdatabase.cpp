@@ -752,6 +752,7 @@ bool DAccountManagerDataBase::deleteCalDavAccountData(const QString &accountID)
     }
     const QStringList statements = {
         QStringLiteral("DELETE FROM caldavEventMapping WHERE accountID = ?"),
+        QStringLiteral("DELETE FROM caldavSkippedResource WHERE accountID = ?"),
         QStringLiteral("DELETE FROM caldavCategoryMapping WHERE accountID = ?"),
         QStringLiteral("DELETE FROM caldavOutbox WHERE accountID = ?"),
         QStringLiteral("DELETE FROM caldavCalendar WHERE accountID = ?"),
@@ -1132,6 +1133,11 @@ bool DAccountManagerDataBase::deleteCalDavCalendarData(const QString &accountID,
         },
         {
             QStringLiteral(
+                "DELETE FROM caldavSkippedResource WHERE accountID = ? AND calendarID = ?"),
+            {accountID, calendarID},
+        },
+        {
+            QStringLiteral(
                 "DELETE FROM caldavCalendar WHERE accountID = ? AND calendarID = ?"),
             {accountID, calendarID},
         },
@@ -1481,6 +1487,145 @@ DCalDavEventMappingInfo::List DAccountManagerDataBase::getCalDavEventMappingList
     return mappings;
 }
 
+bool DAccountManagerDataBase::getCalDavSkippedResources(
+    const QString &accountID, const QString &calendarID,
+    DCalDavSkippedResource::List &resources) const
+{
+    resources.clear();
+    if (accountID.isEmpty() || calendarID.isEmpty()) {
+        return false;
+    }
+
+    SqliteQuery query(m_database);
+    if (!query.prepare(QStringLiteral(
+            "SELECT calendarID, href, etag, reason "
+            "FROM caldavSkippedResource WHERE accountID = ? AND calendarID = ? ORDER BY href"))) {
+        qCWarning(ServiceLogger) << "Failed to prepare CalDAV skipped resource query:"
+                                  << query.lastError().text();
+        return false;
+    }
+    query.addBindValue(accountID);
+    query.addBindValue(calendarID);
+    if (!query.exec()) {
+        qCWarning(ServiceLogger) << "Failed to query CalDAV skipped resources:"
+                                  << query.lastError().text();
+        return false;
+    }
+
+    while (query.next()) {
+        DCalDavSkippedResource resource;
+        resource.calendarId = query.value("calendarID").toString();
+        resource.href = query.value("href").toString();
+        resource.etag = query.value("etag").toString();
+        resource.reason = query.value("reason").toString();
+        resources.append(resource);
+    }
+    return true;
+}
+
+bool DAccountManagerDataBase::upsertCalDavSkippedResource(
+    const QString &accountID, const DCalDavSkippedResource &resource)
+{
+    if (accountID.isEmpty() || resource.calendarId.isEmpty() || resource.href.isEmpty()
+        || resource.reason.isEmpty()) {
+        return false;
+    }
+
+    const QString now = dtToString(QDateTime::currentDateTimeUtc());
+    SqliteQuery insertQuery(m_database);
+    if (!insertQuery.prepare(QStringLiteral(
+            "INSERT OR IGNORE INTO caldavSkippedResource "
+            "(accountID, calendarID, href, etag, reason, firstSeenAt, lastSeenAt) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?)"))) {
+        qCWarning(ServiceLogger) << "Failed to prepare CalDAV skipped resource insert:"
+                                  << insertQuery.lastError().text();
+        return false;
+    }
+    insertQuery.addBindValue(accountID);
+    insertQuery.addBindValue(resource.calendarId);
+    insertQuery.addBindValue(resource.href);
+    insertQuery.addBindValue(resource.etag);
+    insertQuery.addBindValue(resource.reason);
+    insertQuery.addBindValue(now);
+    insertQuery.addBindValue(now);
+    if (!insertQuery.exec()) {
+        qCWarning(ServiceLogger) << "Failed to insert CalDAV skipped resource:"
+                                  << insertQuery.lastError().text();
+        return false;
+    }
+
+    SqliteQuery updateQuery(m_database);
+    if (!updateQuery.prepare(QStringLiteral(
+            "UPDATE caldavSkippedResource SET etag = ?, reason = ?, lastSeenAt = ? "
+            "WHERE accountID = ? AND calendarID = ? AND href = ?"))) {
+        qCWarning(ServiceLogger) << "Failed to prepare CalDAV skipped resource update:"
+                                  << updateQuery.lastError().text();
+        return false;
+    }
+    updateQuery.addBindValue(resource.etag);
+    updateQuery.addBindValue(resource.reason);
+    updateQuery.addBindValue(now);
+    updateQuery.addBindValue(accountID);
+    updateQuery.addBindValue(resource.calendarId);
+    updateQuery.addBindValue(resource.href);
+    if (!updateQuery.exec()) {
+        qCWarning(ServiceLogger) << "Failed to update CalDAV skipped resource:"
+                                  << updateQuery.lastError().text();
+        return false;
+    }
+    return true;
+}
+
+bool DAccountManagerDataBase::deleteCalDavSkippedResource(
+    const QString &accountID, const QString &calendarID, const QString &href)
+{
+    if (accountID.isEmpty() || calendarID.isEmpty() || href.isEmpty()) {
+        return false;
+    }
+
+    SqliteQuery query(m_database);
+    if (!query.prepare(QStringLiteral(
+            "DELETE FROM caldavSkippedResource "
+            "WHERE accountID = ? AND calendarID = ? AND href = ?"))) {
+        qCWarning(ServiceLogger) << "Failed to prepare CalDAV skipped resource deletion:"
+                                  << query.lastError().text();
+        return false;
+    }
+    query.addBindValue(accountID);
+    query.addBindValue(calendarID);
+    query.addBindValue(href);
+    if (!query.exec()) {
+        qCWarning(ServiceLogger) << "Failed to delete CalDAV skipped resource:"
+                                  << query.lastError().text();
+        return false;
+    }
+    return true;
+}
+
+bool DAccountManagerDataBase::deleteCalDavSkippedResourcesByCalendar(
+    const QString &accountID, const QString &calendarID)
+{
+    if (accountID.isEmpty() || calendarID.isEmpty()) {
+        return false;
+    }
+
+    SqliteQuery query(m_database);
+    if (!query.prepare(QStringLiteral(
+            "DELETE FROM caldavSkippedResource WHERE accountID = ? AND calendarID = ?"))) {
+        qCWarning(ServiceLogger) << "Failed to prepare CalDAV skipped resource cleanup:"
+                                  << query.lastError().text();
+        return false;
+    }
+    query.addBindValue(accountID);
+    query.addBindValue(calendarID);
+    if (!query.exec()) {
+        qCWarning(ServiceLogger) << "Failed to clean CalDAV skipped resources:"
+                                  << query.lastError().text();
+        return false;
+    }
+    return true;
+}
+
 bool DAccountManagerDataBase::upsertCalDavEventMapping(const DCalDavEventMappingInfo &mapping)
 {
     if (mapping.localScheduleID.isEmpty() || mapping.accountID.isEmpty() || mapping.calendarID.isEmpty()
@@ -1699,6 +1844,12 @@ void DAccountManagerDataBase::createDB()
         res = query.exec(sql_create_caldavAccountDeletionCleanup);
         if (!res) {
             qCWarning(ServiceLogger) << "Failed to create CalDAV deletion cleanup table:"
+                                     << query.lastError().text();
+        }
+
+        res = query.exec(sql_create_caldavSkippedResource);
+        if (!res) {
+            qCWarning(ServiceLogger) << "Failed to create CalDAV skipped resource table:"
                                      << query.lastError().text();
         }
 

@@ -41,14 +41,18 @@ public:
     typedef std::function<void(const Result &)> Callback;
 
     explicit DCalDavAccountRegistrar(QObject *parent = nullptr);
+    ~DCalDavAccountRegistrar() override;
 
     void start(const Request &request, const Callback &callback);
+    /**
+     * @brief Cancels account discovery and registration.
+     * @param notifyCallback Whether to complete the registration callback with a cancellation result.
+     */
+    void cancel(bool notifyCallback = true);
 
 private:
     QString findScheduleTypeID(const QString &calendarID,
-                               const DCalDavXmlReader::CalendarCollection &collection,
-                               const DCalDavCalendarInfo::List &existing,
-                               QString *errorMessage);
+                               const DCalDavCalendarInfo::List &existing);
     /**
      * @brief Persists discovered collections and prepares their initial sync requests.
      *

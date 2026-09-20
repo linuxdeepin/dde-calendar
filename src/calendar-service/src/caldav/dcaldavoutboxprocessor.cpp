@@ -133,12 +133,16 @@ DCalDavOutboxProcessor::DCalDavOutboxProcessor(QObject *parent)
 {
 }
 
-void DCalDavOutboxProcessor::cancel()
+void DCalDavOutboxProcessor::cancel(bool notifyCallback)
 {
     if (!m_running) {
         return;
     }
     m_transport.cancel();
+    if (notifyCallback) {
+        finish(false, QStringLiteral("CalDAV Outbox processing cancelled."));
+        return;
+    }
     m_request.password.clear();
     m_callback = Callback();
     m_running = false;
@@ -629,7 +633,7 @@ void DCalDavOutboxProcessor::fetchConflictSnapshot(const DCalDavOutboxItem &item
                     "Failed to record a CalDAV synchronization conflict.");
             }
         } else {
-            ++m_result.conflictDiscardedCount;
+            ++m_result.conflictRecordedCount;
             ++m_result.permanentFailureCount;
             if (m_result.errorMessage.isEmpty()) {
                 m_result.errorMessage = hasServerSnapshot

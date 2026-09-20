@@ -40,8 +40,14 @@ public:
     typedef std::function<void(const Result &)> Callback;
 
     explicit DCalDavReadOnlySync(QObject *parent = nullptr);
+    ~DCalDavReadOnlySync() override;
 
     void start(const Request &request, const Callback &callback);
+    /**
+     * @brief Cancels the current validation request.
+     * @param notifyCallback Whether to complete the validation callback with a cancellation result.
+     */
+    void cancel(bool notifyCallback = true);
 
 private:
     void sendPrincipalRequest();

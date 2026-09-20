@@ -215,6 +215,18 @@ const QString DDataBase::sql_create_caldavAccountDeletionCleanup =
     " accountID TEXT NOT NULL PRIMARY KEY,"
     " sourceDbName TEXT NOT NULL)";
 
+// CalDAV 畸形远端资源记录
+const QString DDataBase::sql_create_caldavSkippedResource =
+    " CREATE TABLE if not exists caldavSkippedResource ("
+    " accountID TEXT NOT NULL,"
+    " calendarID TEXT NOT NULL,"
+    " href TEXT NOT NULL,"
+    " etag TEXT,"
+    " reason TEXT NOT NULL,"
+    " firstSeenAt DATETIME NOT NULL,"
+    " lastSeenAt DATETIME NOT NULL,"
+    " PRIMARY KEY(accountID, calendarID, href))";
+
 //日历通用设置
 const QString DDataBase::sql_create_calendargeneralsettings =
     " CREATE TABLE  if not exists calendargeneralsettings(     "

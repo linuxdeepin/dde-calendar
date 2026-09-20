@@ -54,6 +54,8 @@ public:
     //CalDAV 跨数据库操作恢复记录（保存在账户本地数据库）
     static const QString sql_create_caldavRecovery;
     static const QString sql_create_caldavAccountDeletionCleanup;
+    // CalDAV 畸形远端资源记录
+    static const QString sql_create_caldavSkippedResource;
     //日历通用设置
     static const QString sql_create_calendargeneralsettings;
 

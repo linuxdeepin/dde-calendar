@@ -22,4 +22,14 @@ public:
     QString originalIcs;
 };
 
+struct DCalDavSkippedResource
+{
+    typedef QVector<DCalDavSkippedResource> List;
+
+    QString calendarId;
+    QString href;
+    QString etag;
+    QString reason;
+};
+
 #endif // DCALDAVEVENTMAPPINGINFO_H

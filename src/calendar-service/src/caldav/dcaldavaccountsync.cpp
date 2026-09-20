@@ -29,8 +29,8 @@ void DCalDavAccountSync::cancel(bool notifyCallback)
     if (!m_running) {
         return;
     }
-    m_outboxProcessor.cancel();
-    m_calendarSync.cancel();
+    m_outboxProcessor.cancel(false);
+    m_calendarSync.cancel(false);
     m_request.password.clear();
     Callback callback = m_callback;
     m_callback = Callback();
@@ -95,7 +95,6 @@ void DCalDavAccountSync::flushOutbox()
             m_result.failureCode = DCalDavErrorCode::Unknown;
         }
         m_result.createFailure = result.createFailure;
-        m_result.updatedCount += result.restoredCalendarCount;
         if (!result.success) {
             if (result.retryScheduledCount > 0 && result.permanentFailureCount == 0) {
                 m_request.accountManagerDatabase->updateCalDavSyncStatus(
@@ -153,10 +152,17 @@ void DCalDavAccountSync::syncNextCalendar()
     syncRequest.password = m_request.password;
     syncRequest.syncToken = calendar.calendar.syncToken;
     syncRequest.initialSyncCompleted = calendar.calendar.initialSyncCompleted;
+    syncRequest.calendarId = calendar.calendar.calendarId;
     const DCalDavEventMappingInfo::List existingMappings =
         m_request.accountManagerDatabase->getCalDavEventMappingList(
             m_request.accountID, calendar.calendar.calendarId);
     syncRequest.existingMappings = existingMappings;
+    if (!m_request.accountManagerDatabase->getCalDavSkippedResources(
+            m_request.accountID, calendar.calendar.calendarId,
+            syncRequest.existingSkippedResources)) {
+        fail(QStringLiteral("Failed to load malformed CalDAV resource records."));
+        return;
+    }
     m_calendarSync.start(syncRequest, [this, calendar, existingMappings](
                                         const DCalDavIncrementalSync::Result &syncResult) {
         if (!syncResult.success) {
@@ -229,6 +235,21 @@ void DCalDavAccountSync::syncNextCalendar()
         m_result.deletedCount += applyResult.deletedCount;
         if (syncResult.usedFullRangeFallback) {
             ++m_result.fullRangeFallbackCount;
+        }
+
+        for (const DCalDavSkippedResource &resource : syncResult.skippedResources) {
+            if (!m_request.accountManagerDatabase->upsertCalDavSkippedResource(
+                    m_request.accountID, resource)) {
+                fail(QStringLiteral("Failed to save malformed CalDAV resource record."));
+                return;
+            }
+        }
+        for (const QString &href : syncResult.clearedSkippedResourceHrefs) {
+            if (!m_request.accountManagerDatabase->deleteCalDavSkippedResource(
+                    m_request.accountID, calendar.calendar.calendarId, href)) {
+                fail(QStringLiteral("Failed to clear malformed CalDAV resource record."));
+                return;
+            }
         }
 
         if (syncResult.usedFullRangeFallback || !syncResult.syncToken.isEmpty()) {
