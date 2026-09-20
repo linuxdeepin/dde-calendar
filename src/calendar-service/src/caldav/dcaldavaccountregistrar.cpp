@@ -96,6 +96,27 @@ DCalDavAccountRegistrar::DCalDavAccountRegistrar(QObject *parent)
 {
 }
 
+DCalDavAccountRegistrar::~DCalDavAccountRegistrar()
+{
+    cancel(false);
+}
+
+void DCalDavAccountRegistrar::cancel(bool notifyCallback)
+{
+    if (!m_running) {
+        return;
+    }
+
+    m_discovery.cancel(false);
+    if (notifyCallback) {
+        finish(false, QStringLiteral("CalDAV account registration cancelled."));
+        return;
+    }
+    m_password.clear();
+    m_callback = Callback();
+    m_running = false;
+}
+
 void DCalDavAccountRegistrar::start(const Request &request, const Callback &callback)
 {
     if (m_running) {
@@ -128,6 +149,9 @@ void DCalDavAccountRegistrar::start(const Request &request, const Callback &call
     discoveryRequest.password = m_password;
     discoveryRequest.requireReadableCalendar = false;
     m_discovery.start(discoveryRequest, [this](const DCalDavReadOnlySync::Result &result) {
+        if (!m_running) {
+            return;
+        }
         if (!result.success) {
             finish(false, result.errorMessage, result.failureResponse, result.failureCode);
             return;
@@ -156,8 +180,7 @@ void DCalDavAccountRegistrar::start(const Request &request, const Callback &call
 }
 
 QString DCalDavAccountRegistrar::findScheduleTypeID(
-    const QString &calendarID, const DCalDavXmlReader::CalendarCollection &,
-    const DCalDavCalendarInfo::List &existing, QString *)
+    const QString &calendarID, const DCalDavCalendarInfo::List &existing)
 {
     for (const DCalDavCalendarInfo &calendar : existing) {
         if (calendar.calendarId == calendarID) {
@@ -327,7 +350,7 @@ bool DCalDavAccountRegistrar::persistCalendars(const DCalDavXmlReader::Discovery
             calendarID = DDataBase::createUuid();
         }
 
-        QString scheduleTypeID = findScheduleTypeID(calendarID, collection, existing, errorMessage);
+        QString scheduleTypeID = findScheduleTypeID(calendarID, existing);
         if (!scheduleTypeID.isEmpty()
             && m_request.accountManagerDatabase->hasPendingCalDavCalendarDelete(
                    m_request.account.accountId, scheduleTypeID)) {

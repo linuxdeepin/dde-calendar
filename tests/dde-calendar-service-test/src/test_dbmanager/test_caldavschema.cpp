@@ -180,6 +180,7 @@ TEST(CalDavSchema, CreatesTablesIdempotently)
             DDataBase::sql_create_caldavOutbox,
             DDataBase::sql_create_caldavRecovery,
             DDataBase::sql_create_caldavAccountDeletionCleanup,
+            DDataBase::sql_create_caldavSkippedResource,
         };
         for (const QString &statement : statements) {
             QSqlQuery query(database);
@@ -193,10 +194,63 @@ TEST(CalDavSchema, CreatesTablesIdempotently)
         EXPECT_TRUE(tableExists(database, QStringLiteral("caldavOutbox")));
         EXPECT_TRUE(tableExists(database, QStringLiteral("caldavRecovery")));
         EXPECT_TRUE(tableExists(database, QStringLiteral("caldavAccountDeletionCleanup")));
+        EXPECT_TRUE(tableExists(database, QStringLiteral("caldavSkippedResource")));
 
         database.close();
     }
     QSqlDatabase::removeDatabase(connectionName);
+}
+
+TEST(CalDavSkippedResource, PersistsUpdatesAndCleansUpRecords)
+{
+    QTemporaryDir directory;
+    ASSERT_TRUE(directory.isValid());
+
+    DAccountManagerDataBase database;
+    database.setDBPath(directory.filePath(QStringLiteral("account-manager.db")));
+    database.setLoaclDB(directory.filePath(QStringLiteral("local.db")));
+    database.initDBData();
+
+    DCalDavSkippedResource resource;
+    resource.calendarId = QStringLiteral("calendar-1");
+    resource.href = QStringLiteral("https://example.test/calendar/event.ics");
+    resource.etag = QStringLiteral("\"etag-1\"");
+    resource.reason = QStringLiteral("missing-vevent-uid");
+    ASSERT_TRUE(database.upsertCalDavSkippedResource(QStringLiteral("account-1"), resource));
+
+    DCalDavSkippedResource::List resources;
+    ASSERT_TRUE(database.getCalDavSkippedResources(
+        QStringLiteral("account-1"), resource.calendarId, resources));
+    ASSERT_EQ(1, resources.size());
+    EXPECT_EQ(resource.href, resources.first().href);
+    EXPECT_EQ(resource.etag, resources.first().etag);
+    EXPECT_EQ(resource.reason, resources.first().reason);
+
+    resource.etag = QStringLiteral("\"etag-2\"");
+    resource.reason = QStringLiteral("event-mapping-failed");
+    ASSERT_TRUE(database.upsertCalDavSkippedResource(QStringLiteral("account-1"), resource));
+    ASSERT_TRUE(database.getCalDavSkippedResources(
+        QStringLiteral("account-1"), resource.calendarId, resources));
+    ASSERT_EQ(1, resources.size());
+    EXPECT_EQ(resource.etag, resources.first().etag);
+    EXPECT_EQ(resource.reason, resources.first().reason);
+
+    DCalDavSkippedResource otherCalendarResource = resource;
+    otherCalendarResource.calendarId = QStringLiteral("calendar-2");
+    ASSERT_TRUE(database.upsertCalDavSkippedResource(
+        QStringLiteral("account-1"), otherCalendarResource));
+    ASSERT_TRUE(database.deleteCalDavSkippedResource(
+        QStringLiteral("account-1"), resource.calendarId, resource.href));
+    resources.clear();
+    ASSERT_TRUE(database.getCalDavSkippedResources(
+        QStringLiteral("account-1"), resource.calendarId, resources));
+    EXPECT_TRUE(resources.isEmpty());
+    ASSERT_TRUE(database.deleteCalDavSkippedResourcesByCalendar(
+        QStringLiteral("account-1"), otherCalendarResource.calendarId));
+    resources.clear();
+    ASSERT_TRUE(database.getCalDavSkippedResources(
+        QStringLiteral("account-1"), otherCalendarResource.calendarId, resources));
+    EXPECT_TRUE(resources.isEmpty());
 }
 
 TEST(CalDavRecovery, PersistsRecoveryItemsAndTracksSoftDeletedSchedules)
@@ -1646,6 +1700,79 @@ TEST(CalDavAccountSync, RejectsIncompleteRequestBeforeDatabaseAccess)
 }
 
 
+TEST(CalDavAccountSync, FailsWhenSkippedResourceRecordsCannotBeLoaded)
+{
+    QTemporaryDir directory;
+    ASSERT_TRUE(directory.isValid());
+
+    DAccount::Ptr account(new DAccount(DAccount::Account_CalDav));
+    account->setAccountID(QStringLiteral("skipped-resource-query-account"));
+
+    DAccountDataBase localDatabase(account);
+    localDatabase.setDBPath(directory.filePath(QStringLiteral("local.db")));
+    localDatabase.initDBData();
+
+    DAccountManagerDataBase accountManagerDatabase;
+    accountManagerDatabase.setDBPath(directory.filePath(QStringLiteral("account-manager.db")));
+    accountManagerDatabase.setLoaclDB(directory.filePath(QStringLiteral("local.db")));
+    accountManagerDatabase.initDBData();
+
+    DCalDavAccountInfo accountInfo;
+    accountInfo.accountId = account->accountID();
+    accountInfo.providerType = DCalDavProviderProfile::Provider_Other;
+    accountInfo.serverUrl = QStringLiteral("https://caldav.example.test");
+    accountInfo.username = QStringLiteral("user");
+    accountInfo.credentialRef = QStringLiteral("secret-service:/mock");
+    ASSERT_TRUE(accountManagerDatabase.upsertCalDavAccountInfo(accountInfo));
+
+    DCalDavCalendarInfo calendar;
+    calendar.accountId = account->accountID();
+    calendar.calendarId = QStringLiteral("calendar-1");
+    calendar.href = QStringLiteral("https://caldav.example.test/calendars/user/");
+    calendar.displayName = QStringLiteral("Calendar");
+    calendar.scheduleTypeID = QStringLiteral("schedule-type-1");
+    calendar.syncToken = QStringLiteral("old-token");
+    calendar.enabled = true;
+    ASSERT_TRUE(accountManagerDatabase.upsertCalDavCalendar(calendar));
+
+    QSqlQuery dropSkippedResourceTable(
+        QSqlDatabase::database(accountManagerDatabase.getConnectionName()));
+    ASSERT_TRUE(dropSkippedResourceTable.exec(QStringLiteral(
+        "DROP TABLE caldavSkippedResource")));
+
+    DCalDavAccountSync::Request request;
+    request.accountID = account->accountID();
+    request.username = accountInfo.username;
+    request.password = QStringLiteral("password");
+    request.localDatabase = &localDatabase;
+    request.accountManagerDatabase = &accountManagerDatabase;
+    request.calendars.append({calendar, calendar.scheduleTypeID});
+
+    DCalDavAccountSync synchronizer;
+    DCalDavAccountSync::Result result;
+    bool callbackCalled = false;
+    QEventLoop loop;
+    synchronizer.start(request, [&](const DCalDavAccountSync::Result &syncResult) {
+        result = syncResult;
+        callbackCalled = true;
+        loop.quit();
+    });
+    QTimer::singleShot(5000, &loop, &QEventLoop::quit);
+    if (!callbackCalled) {
+        loop.exec();
+    }
+
+    ASSERT_TRUE(callbackCalled);
+    EXPECT_FALSE(result.success);
+    EXPECT_EQ(QStringLiteral("Failed to load malformed CalDAV resource records."),
+              result.errorMessage);
+    const DCalDavCalendarInfo storedCalendar = accountManagerDatabase
+        .getCalDavCalendarByIDIncludingDisabled(account->accountID(), calendar.calendarId);
+    ASSERT_FALSE(storedCalendar.calendarId.isEmpty());
+    EXPECT_EQ(QStringLiteral("old-token"), storedCalendar.syncToken);
+}
+
+
 TEST(CalDavSyncJobManager, RegistersAndUnregistersAccounts)
 {
     DCalDavSyncJobManager manager;
@@ -2257,6 +2384,7 @@ TEST(CalDavIntegration, SkipsMalformedRemoteEventWithoutFailingSync)
     request.calendarUrl = calendarUrl;
     request.username = QStringLiteral("user");
     request.password = QStringLiteral("password");
+    request.calendarId = QStringLiteral("calendar");
     request.referenceTime = QDateTime(QDate(2026, 8, 31), QTime(0, 0), Qt::UTC);
 
     DCalDavIncrementalSync::Result result;
@@ -2266,6 +2394,12 @@ TEST(CalDavIntegration, SkipsMalformedRemoteEventWithoutFailingSync)
     EXPECT_TRUE(result.errorMessage.isEmpty());
     EXPECT_TRUE(result.schedules.isEmpty());
     EXPECT_TRUE(result.remoteEvents.isEmpty());
+    ASSERT_EQ(1, result.skippedResources.size());
+    EXPECT_EQ(QStringLiteral("calendar"), result.skippedResources.first().calendarId);
+    EXPECT_EQ(calendarUrl.resolved(QUrl(QStringLiteral("mock-event-1.ics"))).toString(),
+              result.skippedResources.first().href);
+    EXPECT_EQ(QStringLiteral("missing-vevent-uid"), result.skippedResources.first().reason);
+    EXPECT_TRUE(result.clearedSkippedResourceHrefs.isEmpty());
     ASSERT_EQ(3, server.requests().size());
     EXPECT_EQ(QByteArray("GET"), server.requests().last().method);
 }

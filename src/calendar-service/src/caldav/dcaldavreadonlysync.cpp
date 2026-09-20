@@ -115,6 +115,29 @@ DCalDavReadOnlySync::DCalDavReadOnlySync(QObject *parent)
 {
 }
 
+DCalDavReadOnlySync::~DCalDavReadOnlySync()
+{
+    cancel(false);
+}
+
+void DCalDavReadOnlySync::cancel(bool notifyCallback)
+{
+    if (!m_running) {
+        return;
+    }
+
+    m_transport.cancel();
+    if (notifyCallback) {
+        finish(false, QStringLiteral("CalDAV validation cancelled."),
+               DCalDavValidationError::Other);
+        return;
+    }
+    m_request.password.clear();
+    m_candidates.clear();
+    m_callback = Callback();
+    m_running = false;
+}
+
 void DCalDavReadOnlySync::start(const Request &request, const Callback &callback)
 {
     if (m_running) {

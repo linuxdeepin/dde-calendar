@@ -36,7 +36,7 @@ public:
         DCalDavTransport::Response failureResponse;
         int processedCount = 0;
         int retryScheduledCount = 0;
-        int conflictDiscardedCount = 0;
+        int conflictRecordedCount = 0;
         DCalDavScheduleCreateError::Type createFailure = DCalDavScheduleCreateError::NoError;
         int permanentFailureCount = 0;
         int restoredCalendarCount = 0;
@@ -52,7 +52,11 @@ public:
      * @param callback Invoked exactly once after processing or cancellation.
      */
     void start(const Request &request, const Callback &callback);
-    void cancel();
+    /**
+     * @brief Cancels the current Outbox processing request.
+     * @param notifyCallback Whether to complete the callback with a cancellation result.
+     */
+    void cancel(bool notifyCallback = true);
 
 private:
     void processNext();

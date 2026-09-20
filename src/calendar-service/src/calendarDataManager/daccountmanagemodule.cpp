@@ -951,7 +951,7 @@ bool DAccountManageModule::migrateCalDavSchedulesToLocal(
 bool DAccountManageModule::deleteCalDavAccountInternal(const QString &accountID,
                                                          bool deleteLocalData)
 {
-    if (!m_accountModuleMap.contains(accountID) || m_calDavRegistrars.contains(accountID)) {
+    if (!m_accountModuleMap.contains(accountID)) {
         return false;
     }
     const DAccountModule::Ptr accountModule = m_accountModuleMap.value(accountID);
@@ -960,6 +960,10 @@ bool DAccountManageModule::deleteCalDavAccountInternal(const QString &accountID,
     if (account.isNull() || account->accountType() != DAccount::Account_CalDav
         || !m_accountManagerDB->getCalDavAccountInfo(accountID, accountInfo)) {
         return false;
+    }
+    if (DCalDavAccountRegistrar *registrar = m_calDavRegistrars.take(accountID)) {
+        registrar->cancel(false);
+        registrar->deleteLater();
     }
     if (!m_calDavSyncJobManager.cancelAccount(accountID)) {
         return false;

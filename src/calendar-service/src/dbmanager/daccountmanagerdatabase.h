@@ -93,6 +93,16 @@ public:
                                                                      const QString &localScheduleID);
     DCalDavEventMappingInfo::List getCalDavEventMappingList(const QString &accountID,
                                                             const QString &calendarID);
+    bool getCalDavSkippedResources(const QString &accountID,
+                                   const QString &calendarID,
+                                   DCalDavSkippedResource::List &resources) const;
+    bool upsertCalDavSkippedResource(const QString &accountID,
+                                     const DCalDavSkippedResource &resource);
+    bool deleteCalDavSkippedResource(const QString &accountID,
+                                     const QString &calendarID,
+                                     const QString &href);
+    bool deleteCalDavSkippedResourcesByCalendar(const QString &accountID,
+                                                const QString &calendarID);
     bool upsertCalDavEventMapping(const DCalDavEventMappingInfo &mapping);
     bool deleteCalDavEventMapping(const QString &accountID, const QString &href);
     DCalDavOutboxItem getCalDavOutboxItem(const QString &accountID,

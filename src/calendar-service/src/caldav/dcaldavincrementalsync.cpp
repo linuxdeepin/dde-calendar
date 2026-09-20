@@ -138,12 +138,17 @@ DCalDavIncrementalSync::DCalDavIncrementalSync(QObject *parent)
 {
 }
 
-void DCalDavIncrementalSync::cancel()
+void DCalDavIncrementalSync::cancel(bool notifyCallback)
 {
     if (!m_running) {
         return;
     }
     m_transport.cancel();
+    if (notifyCallback) {
+        finish(false, QStringLiteral("CalDAV calendar synchronization cancelled."),
+               DCalDavErrorCode::Unknown);
+        return;
+    }
     m_request.password.clear();
     m_callback = Callback();
     m_running = false;
@@ -299,16 +304,40 @@ void DCalDavIncrementalSync::appendResourceCalendarData(
     appendRemoteEvent(event);
 }
 
+void DCalDavIncrementalSync::appendSkippedResource(
+    const DCalDavCalendarQuery::RemoteEvent &event, const QString &reason)
+{
+    if (event.href.isEmpty()) {
+        return;
+    }
+
+    DCalDavSkippedResource resource;
+    resource.calendarId = m_request.calendarId;
+    resource.href = event.href;
+    resource.etag = event.etag;
+    resource.reason = reason;
+    m_result.skippedResources.append(resource);
+}
+
 void DCalDavIncrementalSync::appendRemoteEvent(DCalDavCalendarQuery::RemoteEvent event)
 {
     event.uid = uidFromCalendarData(event.calendarData);
     const bool hasEvent = hasEventComponent(event.calendarData);
-    if (event.calendarData.isEmpty() || !hasEvent || event.uid.isEmpty()) {
+    QString malformedReason;
+    if (event.calendarData.isEmpty()) {
+        malformedReason = QStringLiteral("missing-calendar-data");
+    } else if (!hasEvent) {
+        malformedReason = QStringLiteral("missing-vevent");
+    } else if (event.uid.isEmpty()) {
+        malformedReason = QStringLiteral("missing-vevent-uid");
+    }
+    if (!malformedReason.isEmpty()) {
         qCWarning(ServiceLogger) << "Skipping malformed remote CalDAV resource"
                                  << "href:" << event.href
                                  << "calendarDataEmpty:" << event.calendarData.isEmpty()
                                  << "hasEventComponent:" << hasEvent
                                  << "uidPresent:" << !event.uid.isEmpty();
+        appendSkippedResource(event, malformedReason);
         return;
     }
 
@@ -318,8 +347,10 @@ void DCalDavIncrementalSync::appendRemoteEvent(DCalDavCalendarQuery::RemoteEvent
         qCWarning(ServiceLogger) << "Skipping unparsable remote CalDAV resource"
                                  << "href:" << event.href
                                  << "details:" << mappingError;
+        appendSkippedResource(event, QStringLiteral("event-mapping-failed"));
         return;
     }
+    m_result.clearedSkippedResourceHrefs.append(event.href);
     if (m_resourceListHasEventFilter) {
         const QDateTime referenceTime = m_request.referenceTime.isValid()
             ? m_request.referenceTime
@@ -501,6 +532,9 @@ void DCalDavIncrementalSync::fetchResourceByGet(
 void DCalDavIncrementalSync::appendDeletedResource(
     const DCalDavCalendarQuery::Resource &resource)
 {
+    if (!resource.href.isEmpty()) {
+        m_result.clearedSkippedResourceHrefs.append(resource.href);
+    }
     const auto mapping = m_mappingByHref.constFind(resource.href);
     if (mapping == m_mappingByHref.constEnd()) {
         return;
@@ -524,6 +558,11 @@ void DCalDavIncrementalSync::appendDeletedResources()
         event.uid = it->uid;
         event.deleted = true;
         m_result.remoteEvents.append(event);
+    }
+    for (const DCalDavSkippedResource &resource : m_request.existingSkippedResources) {
+        if (!resource.href.isEmpty() && !m_remoteHrefs.contains(resource.href)) {
+            m_result.clearedSkippedResourceHrefs.append(resource.href);
+        }
     }
 }
 
@@ -587,6 +626,7 @@ void DCalDavIncrementalSync::sendRequest(bool fullRange)
                 continue;
             }
             if (event.deleted) {
+                m_result.clearedSkippedResourceHrefs.append(event.href);
                 m_result.remoteEvents.append(event);
                 continue;
             }

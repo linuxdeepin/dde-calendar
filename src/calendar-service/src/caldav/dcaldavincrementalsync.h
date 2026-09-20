@@ -14,6 +14,7 @@
 #include <QDateTime>
 #include <QHash>
 #include <QSet>
+#include <QStringList>
 #include <QUrl>
 
 #include <functional>
@@ -29,7 +30,9 @@ public:
         QString syncToken;
         QDateTime referenceTime;
         bool initialSyncCompleted = false;
+        QString calendarId;
         DCalDavEventMappingInfo::List existingMappings;
+        DCalDavSkippedResource::List existingSkippedResources;
     };
 
     struct Result {
@@ -41,6 +44,8 @@ public:
         DCalDavErrorCode failureCode = DCalDavErrorCode::NoError;
         DCalDavCalendarQuery::RemoteEventList remoteEvents;
         DSchedule::List schedules;
+        DCalDavSkippedResource::List skippedResources;
+        QStringList clearedSkippedResourceHrefs;
     };
 
     typedef std::function<void(const Result &)> Callback;
@@ -53,7 +58,11 @@ public:
      * @param callback Invoked exactly once with remote changes or a failure.
      */
     void start(const Request &request, const Callback &callback);
-    void cancel();
+    /**
+     * @brief Cancels the current request.
+     * @param notifyCallback Whether to complete the request callback with a cancellation result.
+     */
+    void cancel(bool notifyCallback = true);
 
 private:
     void sendRequest(bool fullRange);
@@ -63,6 +72,8 @@ private:
     void fetchResourceByGet(const DCalDavCalendarQuery::ResourceList &resources, int index);
     void appendResourceCalendarData(const DCalDavCalendarQuery::Resource &resource,
                                     const QString &calendarData);
+    void appendSkippedResource(const DCalDavCalendarQuery::RemoteEvent &event,
+                               const QString &reason);
     void appendRemoteEvent(DCalDavCalendarQuery::RemoteEvent event);
     void appendDeletedResource(const DCalDavCalendarQuery::Resource &resource);
     void appendDeletedResources();
