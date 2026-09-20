@@ -1156,7 +1156,7 @@
         <message>
             <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="217"/>
             <source>Delete</source>
-            <translation type="unfinished"/>
+            <translation>Excluir</translation>
         </message>
 </context>
 <context>
@@ -1717,32 +1717,32 @@
         <message>
             <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="51"/>
             <source>The server request is invalid.</source>
-            <translation type="unfinished"/>
+            <translation>A solicitação ao servidor é inválida.</translation>
         </message>
         <message>
             <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="71"/>
             <source>The server is busy. Please try again later.</source>
-            <translation type="unfinished"/>
+            <translation>O servidor está ocupado. Tente novamente mais tarde.</translation>
         </message>
         <message>
             <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="74"/>
             <source>The server is unavailable. Please try again later.</source>
-            <translation type="unfinished"/>
+            <translation>O servidor está indisponível. Tente novamente mais tarde.</translation>
         </message>
         <message>
             <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="77"/>
             <source>The calendar data conflicts with the server.</source>
-            <translation type="unfinished"/>
+            <translation>Os dados do calendário estão em conflito com os dados do servidor.</translation>
         </message>
         <message>
             <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="80"/>
             <source>The server returned too much data. Please try again later.</source>
-            <translation type="unfinished"/>
+            <translation>O servidor retornou dados demais. Tente novamente mais tarde.</translation>
         </message>
         <message>
             <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="91"/>
             <source>Unable to save calendar data. Please try again later.</source>
-            <translation type="unfinished"/>
+            <translation>Não foi possível salvar os dados do calendário. Tente novamente mais tarde.</translation>
         </message>
     </context>
     <context>
