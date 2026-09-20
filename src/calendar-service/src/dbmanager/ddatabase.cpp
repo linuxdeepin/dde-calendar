@@ -158,6 +158,7 @@ const QString DDataBase::sql_create_caldavCalendar =
     " color TEXT,"
     " scheduleTypeID TEXT,"
     " privileges INTEGER NOT NULL DEFAULT 0,"
+    " privilegesKnown INTEGER NOT NULL DEFAULT 0,"
     " syncToken TEXT,"
     " initialSyncCompleted INTEGER NOT NULL DEFAULT 0,"
     " enabled INTEGER NOT NULL DEFAULT 1,"

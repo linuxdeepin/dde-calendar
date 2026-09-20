@@ -973,7 +973,7 @@ DCalDavCalendarInfo::List DAccountManagerDataBase::getCalDavCalendarList(const Q
     }
 
     SqliteQuery query(m_database);
-    if (!query.prepare("SELECT calendarID, accountID, href, displayName, color, scheduleTypeID, privileges, syncToken, "
+    if (!query.prepare("SELECT calendarID, accountID, href, displayName, color, scheduleTypeID, privileges, privilegesKnown, syncToken, "
                        "initialSyncCompleted, enabled "
                        "FROM caldavCalendar WHERE accountID = ? ORDER BY calendarID")) {
         qCWarning(ServiceLogger) << "Failed to prepare CalDAV calendar query:" << query.lastError().text();
@@ -994,6 +994,7 @@ DCalDavCalendarInfo::List DAccountManagerDataBase::getCalDavCalendarList(const Q
         calendar.color = query.value("color").toString();
         calendar.scheduleTypeID = query.value("scheduleTypeID").toString();
         calendar.privileges = query.value("privileges").toInt();
+        calendar.privilegesKnown = query.value("privilegesKnown").toBool();
         calendar.syncToken = query.value("syncToken").toString();
         calendar.initialSyncCompleted = query.value("initialSyncCompleted").toBool();
         calendar.enabled = query.value("enabled").toBool();
@@ -1011,7 +1012,7 @@ DCalDavCalendarInfo DAccountManagerDataBase::getCalDavCalendarByScheduleTypeID(
     }
 
     SqliteQuery query(m_database);
-    if (!query.prepare("SELECT calendarID, accountID, href, displayName, color, scheduleTypeID, privileges, "
+    if (!query.prepare("SELECT calendarID, accountID, href, displayName, color, scheduleTypeID, privileges, privilegesKnown, "
                        "syncToken, initialSyncCompleted, enabled FROM caldavCalendar "
                        "WHERE accountID = ? AND scheduleTypeID = ? AND enabled = 1")) {
         return calendar;
@@ -1028,6 +1029,7 @@ DCalDavCalendarInfo DAccountManagerDataBase::getCalDavCalendarByScheduleTypeID(
     calendar.color = query.value("color").toString();
     calendar.scheduleTypeID = query.value("scheduleTypeID").toString();
     calendar.privileges = query.value("privileges").toInt();
+    calendar.privilegesKnown = query.value("privilegesKnown").toBool();
     calendar.syncToken = query.value("syncToken").toString();
     calendar.initialSyncCompleted = query.value("initialSyncCompleted").toBool();
     calendar.enabled = query.value("enabled").toBool();
@@ -1043,7 +1045,7 @@ DCalDavCalendarInfo DAccountManagerDataBase::getCalDavCalendarByScheduleTypeIDIn
     }
 
     SqliteQuery query(m_database);
-    if (!query.prepare("SELECT calendarID, accountID, href, displayName, color, scheduleTypeID, privileges, "
+    if (!query.prepare("SELECT calendarID, accountID, href, displayName, color, scheduleTypeID, privileges, privilegesKnown, "
                        "syncToken, initialSyncCompleted, enabled FROM caldavCalendar "
                        "WHERE accountID = ? AND scheduleTypeID = ?")) {
         return calendar;
@@ -1060,6 +1062,7 @@ DCalDavCalendarInfo DAccountManagerDataBase::getCalDavCalendarByScheduleTypeIDIn
     calendar.color = query.value("color").toString();
     calendar.scheduleTypeID = query.value("scheduleTypeID").toString();
     calendar.privileges = query.value("privileges").toInt();
+    calendar.privilegesKnown = query.value("privilegesKnown").toBool();
     calendar.syncToken = query.value("syncToken").toString();
     calendar.initialSyncCompleted = query.value("initialSyncCompleted").toBool();
     calendar.enabled = query.value("enabled").toBool();
@@ -1075,7 +1078,7 @@ DCalDavCalendarInfo DAccountManagerDataBase::getCalDavCalendarByIDIncludingDisab
     }
 
     SqliteQuery query(m_database);
-    if (!query.prepare("SELECT calendarID, accountID, href, displayName, color, scheduleTypeID, privileges, "
+    if (!query.prepare("SELECT calendarID, accountID, href, displayName, color, scheduleTypeID, privileges, privilegesKnown, "
                        "syncToken, initialSyncCompleted, enabled FROM caldavCalendar "
                        "WHERE accountID = ? AND calendarID = ?")) {
         return calendar;
@@ -1092,6 +1095,7 @@ DCalDavCalendarInfo DAccountManagerDataBase::getCalDavCalendarByIDIncludingDisab
     calendar.color = query.value("color").toString();
     calendar.scheduleTypeID = query.value("scheduleTypeID").toString();
     calendar.privileges = query.value("privileges").toInt();
+    calendar.privilegesKnown = query.value("privilegesKnown").toBool();
     calendar.syncToken = query.value("syncToken").toString();
     calendar.initialSyncCompleted = query.value("initialSyncCompleted").toBool();
     calendar.enabled = query.value("enabled").toBool();
@@ -1170,7 +1174,7 @@ bool DAccountManagerDataBase::upsertCalDavCalendar(const DCalDavCalendarInfo &ca
 
     SqliteQuery updateQuery(m_database);
     if (!updateQuery.prepare("UPDATE caldavCalendar SET accountID = ?, href = ?, displayName = ?, color = ?, scheduleTypeID = ?, "
-                             "privileges = ?, syncToken = ?, initialSyncCompleted = ?, enabled = ? WHERE calendarID = ?")) {
+                             "privileges = ?, privilegesKnown = ?, syncToken = ?, initialSyncCompleted = ?, enabled = ? WHERE calendarID = ?")) {
         qCWarning(ServiceLogger) << "Failed to prepare CalDAV calendar update:" << updateQuery.lastError().text();
         return false;
     }
@@ -1180,6 +1184,7 @@ bool DAccountManagerDataBase::upsertCalDavCalendar(const DCalDavCalendarInfo &ca
     updateQuery.addBindValue(calendar.color);
     updateQuery.addBindValue(calendar.scheduleTypeID);
     updateQuery.addBindValue(calendar.privileges);
+    updateQuery.addBindValue(calendar.privilegesKnown ? 1 : 0);
     updateQuery.addBindValue(calendar.syncToken);
     updateQuery.addBindValue(calendar.initialSyncCompleted ? 1 : 0);
     updateQuery.addBindValue(calendar.enabled ? 1 : 0);
@@ -1194,9 +1199,9 @@ bool DAccountManagerDataBase::upsertCalDavCalendar(const DCalDavCalendarInfo &ca
 
     SqliteQuery insertQuery(m_database);
     if (!insertQuery.prepare("INSERT INTO caldavCalendar "
-                             "(calendarID, accountID, href, displayName, color, scheduleTypeID, privileges, syncToken, "
+                             "(calendarID, accountID, href, displayName, color, scheduleTypeID, privileges, privilegesKnown, syncToken, "
                              "initialSyncCompleted, enabled) "
-                             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+                             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
         qCWarning(ServiceLogger) << "Failed to prepare CalDAV calendar insert:" << insertQuery.lastError().text();
         return false;
     }
@@ -1207,6 +1212,7 @@ bool DAccountManagerDataBase::upsertCalDavCalendar(const DCalDavCalendarInfo &ca
     insertQuery.addBindValue(calendar.color);
     insertQuery.addBindValue(calendar.scheduleTypeID);
     insertQuery.addBindValue(calendar.privileges);
+    insertQuery.addBindValue(calendar.privilegesKnown ? 1 : 0);
     insertQuery.addBindValue(calendar.syncToken);
     insertQuery.addBindValue(calendar.initialSyncCompleted ? 1 : 0);
     insertQuery.addBindValue(calendar.enabled ? 1 : 0);

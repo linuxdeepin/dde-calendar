@@ -5,8 +5,34 @@
 #ifndef DCALDAVXMLREADER_H
 #define DCALDAVXMLREADER_H
 
+#include <QByteArray>
 #include <QString>
 #include <QVector>
+#include <QXmlStreamReader>
+
+class DCalDavXmlStreamReader
+{
+public:
+    explicit DCalDavXmlStreamReader(const QByteArray &xml);
+
+    bool readNextStartElement();
+    void skipCurrentElement();
+    QString readElementText(QXmlStreamReader::ReadElementTextBehaviour behavior);
+
+    QStringRef name() const;
+    bool atEnd() const;
+    bool hasError() const;
+    QString errorString() const;
+    bool depthExceeded() const;
+
+private:
+    QXmlStreamReader::TokenType readNext();
+
+    enum { MaximumDepth = 64 };
+    QXmlStreamReader m_reader;
+    int m_depth = 0;
+    bool m_depthExceeded = false;
+};
 
 class DCalDavXmlReader
 {

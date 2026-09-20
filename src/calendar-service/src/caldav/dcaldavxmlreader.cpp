@@ -6,28 +6,103 @@
 
 #include <QXmlStreamReader>
 
+DCalDavXmlStreamReader::DCalDavXmlStreamReader(const QByteArray &xml)
+    : m_reader(xml)
+{
+}
+
+QXmlStreamReader::TokenType DCalDavXmlStreamReader::readNext()
+{
+    const QXmlStreamReader::TokenType token = m_reader.readNext();
+    if (token == QXmlStreamReader::StartElement) {
+        ++m_depth;
+        if (m_depth > MaximumDepth) {
+            m_depthExceeded = true;
+        }
+    } else if (token == QXmlStreamReader::EndElement) {
+        --m_depth;
+    }
+    return token;
+}
+
+bool DCalDavXmlStreamReader::readNextStartElement()
+{
+    while (!m_reader.atEnd()) {
+        const QXmlStreamReader::TokenType token = readNext();
+        if (token == QXmlStreamReader::StartElement) {
+            return true;
+        }
+        if (token == QXmlStreamReader::EndElement
+            || token == QXmlStreamReader::Invalid) {
+            return false;
+        }
+    }
+    return false;
+}
+
+void DCalDavXmlStreamReader::skipCurrentElement()
+{
+    const int parentDepth = m_depth - 1;
+    while (!m_reader.atEnd() && m_depth > parentDepth) {
+        readNext();
+    }
+}
+
+QString DCalDavXmlStreamReader::readElementText(
+    QXmlStreamReader::ReadElementTextBehaviour behaviour)
+{
+    const int parentDepth = m_depth - 1;
+    QString text;
+    while (!m_reader.atEnd()) {
+        const QXmlStreamReader::TokenType token = readNext();
+        if (token == QXmlStreamReader::Characters
+            || token == QXmlStreamReader::EntityReference) {
+            text += m_reader.text().toString();
+        } else if (token == QXmlStreamReader::StartElement) {
+            if (behaviour == QXmlStreamReader::SkipChildElements) {
+                skipCurrentElement();
+            } else if (behaviour == QXmlStreamReader::ErrorOnUnexpectedElement) {
+                m_reader.raiseError(QStringLiteral("Unexpected child element."));
+                return text;
+            }
+        } else if (token == QXmlStreamReader::EndElement && m_depth == parentDepth) {
+            return text;
+        } else if (token == QXmlStreamReader::Invalid) {
+            return text;
+        }
+    }
+    return text;
+}
+
+QStringRef DCalDavXmlStreamReader::name() const
+{
+    return m_reader.name();
+}
+
+bool DCalDavXmlStreamReader::atEnd() const
+{
+    return m_reader.atEnd();
+}
+
+bool DCalDavXmlStreamReader::hasError() const
+{
+    return m_reader.hasError();
+}
+
+QString DCalDavXmlStreamReader::errorString() const
+{
+    return m_reader.errorString();
+}
+
+bool DCalDavXmlStreamReader::depthExceeded() const
+{
+    return m_depthExceeded;
+}
+
 namespace {
-constexpr int kMaximumXmlDepth = 64;
 constexpr qint64 kMaximumDiscoveryXmlBytes = 4 * 1024 * 1024;
 constexpr int kMaximumCalendarCollections = 256;
 constexpr int kMaximumPropertyLength = 4096;
-}
-
-static bool hasAcceptableXmlDepth(const QByteArray &xml)
-{
-    QXmlStreamReader reader(xml);
-    int depth = 0;
-    while (!reader.atEnd()) {
-        reader.readNext();
-        if (reader.isStartElement()) {
-            if (++depth > kMaximumXmlDepth) {
-                return false;
-            }
-        } else if (reader.isEndElement()) {
-            --depth;
-        }
-    }
-    return !reader.hasError() && depth == 0;
 }
 
 namespace {
@@ -54,7 +129,7 @@ int httpStatusCode(const QString &status)
     return ok ? code : -1;
 }
 
-void readPrivilegeSet(QXmlStreamReader &reader, int &privileges)
+void readPrivilegeSet(DCalDavXmlStreamReader &reader, int &privileges)
 {
     while (reader.readNextStartElement()) {
         if (reader.name() != QStringLiteral("privilege")) {
@@ -78,7 +153,7 @@ void readPrivilegeSet(QXmlStreamReader &reader, int &privileges)
     }
 }
 
-bool readResourceType(QXmlStreamReader &reader)
+bool readResourceType(DCalDavXmlStreamReader &reader)
 {
     bool isCalendar = false;
     while (reader.readNextStartElement()) {
@@ -90,7 +165,7 @@ bool readResourceType(QXmlStreamReader &reader)
     return isCalendar;
 }
 
-void readProperty(QXmlStreamReader &reader, DiscoveryProperties &properties)
+void readProperty(DCalDavXmlStreamReader &reader, DiscoveryProperties &properties)
 {
     while (reader.readNextStartElement()) {
         const auto name = reader.name();
@@ -153,7 +228,7 @@ void mergeProperties(const DiscoveryProperties &source,
     }
 }
 
-void readPropertyStatus(QXmlStreamReader &reader, DCalDavXmlReader::DiscoveryResult &result,
+void readPropertyStatus(DCalDavXmlStreamReader &reader, DCalDavXmlReader::DiscoveryResult &result,
                         DCalDavXmlReader::CalendarCollection &collection, bool &isCalendar)
 {
     DiscoveryProperties properties;
@@ -172,7 +247,7 @@ void readPropertyStatus(QXmlStreamReader &reader, DCalDavXmlReader::DiscoveryRes
     }
 }
 
-void readResponse(QXmlStreamReader &reader, DCalDavXmlReader::DiscoveryResult &result)
+void readResponse(DCalDavXmlStreamReader &reader, DCalDavXmlReader::DiscoveryResult &result)
 {
     DCalDavXmlReader::CalendarCollection collection;
     bool isCalendar = false;
@@ -198,19 +273,13 @@ void readResponse(QXmlStreamReader &reader, DCalDavXmlReader::DiscoveryResult &r
 
 bool DCalDavXmlReader::parseDiscovery(const QByteArray &xml, DiscoveryResult &result, QString *errorMessage)
 {
-    if (!hasAcceptableXmlDepth(xml)) {
-        if (errorMessage != nullptr) {
-            *errorMessage = QStringLiteral("DAV discovery response is too deeply nested.");
-        }
-        return false;
-    }
     if (xml.size() > kMaximumDiscoveryXmlBytes) {
         if (errorMessage != nullptr) {
             *errorMessage = QStringLiteral("DAV discovery response is too large.");
         }
         return false;
     }
-    QXmlStreamReader reader(xml);
+    DCalDavXmlStreamReader reader(xml);
     DiscoveryResult parsed;
     if (!reader.readNextStartElement() || reader.name() != QStringLiteral("multistatus")) {
         if (errorMessage != nullptr) {
@@ -233,6 +302,12 @@ bool DCalDavXmlReader::parseDiscovery(const QByteArray &xml, DiscoveryResult &re
         }
     }
 
+    if (reader.depthExceeded()) {
+        if (errorMessage != nullptr) {
+            *errorMessage = QStringLiteral("DAV discovery response is too deeply nested.");
+        }
+        return false;
+    }
     if (reader.hasError()) {
         if (errorMessage != nullptr) {
             *errorMessage = reader.errorString();
