@@ -40,6 +40,7 @@ public:
     void setResponseEtag(const QByteArray &etag);
     void setCalendarQueryReturnsCalendarData(bool enabled);
     void setInvalidSyncTokenOnce(bool enabled);
+    void setResponseDelay(int milliseconds);
 
 protected:
     void incomingConnection(qintptr socketDescriptor) override;
@@ -60,6 +61,7 @@ private:
     QByteArray m_responseEtag;
     bool m_calendarQueryReturnsCalendarData = true;
     bool m_invalidSyncTokenOnce = false;
+    int m_responseDelay = 0;
     QList<Request> m_requests;
     int m_connectionCount = 0;
     QHash<QSslSocket *, QByteArray> m_buffers;

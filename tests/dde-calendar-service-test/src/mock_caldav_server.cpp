@@ -9,6 +9,7 @@
 #include <QSslConfiguration>
 #include <QSslKey>
 #include <QSslSocket>
+#include <QTimer>
 #include <QUrl>
 
 namespace {
@@ -156,6 +157,11 @@ void MockCalDavServer::setInvalidSyncTokenOnce(bool enabled)
     m_invalidSyncTokenOnce = enabled;
 }
 
+void MockCalDavServer::setResponseDelay(int milliseconds)
+{
+    m_responseDelay = qMax(0, milliseconds);
+}
+
 void MockCalDavServer::incomingConnection(qintptr socketDescriptor)
 {
     ++m_connectionCount;
@@ -277,6 +283,17 @@ void MockCalDavServer::sendResponse(QSslSocket *socket, const QByteArray &method
         response += "Retry-After: 1\r\n";
     }
     response += "Connection: close\r\n\r\n" + body;
-    socket->write(response);
-    socket->disconnectFromHost();
+    if (m_responseDelay <= 0) {
+        socket->write(response);
+        socket->disconnectFromHost();
+        return;
+    }
+
+    QTimer::singleShot(m_responseDelay, socket, [socket, response]() {
+        if (socket->state() != QAbstractSocket::ConnectedState) {
+            return;
+        }
+        socket->write(response);
+        socket->disconnectFromHost();
+    });
 }

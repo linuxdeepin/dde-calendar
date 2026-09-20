@@ -137,7 +137,10 @@ void DCalDavAccountRegistrar::start(const Request &request, const Callback &call
     }
 
     QString errorMessage;
-    if (!DCalDavCredentialStore::readPassword(request.account.credentialRef, m_password, &errorMessage)) {
+    const bool passwordRead = request.credentialReader
+        ? request.credentialReader(request.account.credentialRef, m_password, &errorMessage)
+        : DCalDavCredentialStore::readPassword(request.account.credentialRef, m_password, &errorMessage);
+    if (!passwordRead) {
         finish(false, errorMessage, DCalDavTransport::Response(),
                DCalDavErrorCode::StorageError);
         return;

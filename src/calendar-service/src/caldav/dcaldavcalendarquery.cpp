@@ -3,32 +3,14 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "dcaldavcalendarquery.h"
+#include "dcaldavxmlreader.h"
 #include <QRegularExpression>
 
 #include <QXmlStreamReader>
 namespace {
-constexpr int kMaximumXmlDepth = 64;
-
 constexpr qint64 kMaximumCalDavXmlBytes = 4 * 1024 * 1024;
 constexpr int kMaximumCalDavResources = 4096;
 constexpr int kMaximumCalDavPropertyLength = 4096;
-}
-static bool hasAcceptableXmlDepth(const QByteArray &xml)
-{
-    QXmlStreamReader reader(xml);
-
-    int depth = 0;
-    while (!reader.atEnd()) {
-        reader.readNext();
-        if (reader.isStartElement()) {
-            if (++depth > kMaximumXmlDepth) {
-                return false;
-            }
-        } else if (reader.isEndElement()) {
-            --depth;
-        }
-    }
-    return !reader.hasError() && depth == 0;
 }
 namespace {
 QString formatUtcDateTime(const QDateTime &dateTime)
@@ -85,7 +67,7 @@ int httpStatusCode(const QString &status)
     return ok ? code : -1;
 
 }
-void readProperties(QXmlStreamReader &reader, DCalDavCalendarQuery::RemoteEvent &properties)
+void readProperties(DCalDavXmlStreamReader &reader, DCalDavCalendarQuery::RemoteEvent &properties)
 {
     while (reader.readNextStartElement()) {
         if (reader.name() == QStringLiteral("getetag")) {
@@ -114,7 +96,7 @@ void mergeProperties(const DCalDavCalendarQuery::RemoteEvent &source,
 
     }
 }
-void readPropertyStatus(QXmlStreamReader &reader, DCalDavCalendarQuery::RemoteEvent &event)
+void readPropertyStatus(DCalDavXmlStreamReader &reader, DCalDavCalendarQuery::RemoteEvent &event)
 {
     DCalDavCalendarQuery::RemoteEvent properties;
     int statusCode = -1;
@@ -137,7 +119,7 @@ void readPropertyStatus(QXmlStreamReader &reader, DCalDavCalendarQuery::RemoteEv
     }
 }
 
-void readResourceProperties(QXmlStreamReader &reader, DCalDavCalendarQuery::Resource &properties)
+void readResourceProperties(DCalDavXmlStreamReader &reader, DCalDavCalendarQuery::Resource &properties)
 {
     while (reader.readNextStartElement()) {
         if (reader.name() == QStringLiteral("getetag")) {
@@ -177,7 +159,7 @@ void applyResourceStatus(int statusCode, DCalDavCalendarQuery::Resource &resourc
     }
 }
 
-void readResourcePropertyStatus(QXmlStreamReader &reader,
+void readResourcePropertyStatus(DCalDavXmlStreamReader &reader,
                                 DCalDavCalendarQuery::Resource &resource)
 {
     DCalDavCalendarQuery::Resource properties;
@@ -197,7 +179,7 @@ void readResourcePropertyStatus(QXmlStreamReader &reader,
     applyResourceStatus(statusCode, resource);
 }
 
-void readResponse(QXmlStreamReader &reader, DCalDavCalendarQuery::RemoteEventList &events)
+void readResponse(DCalDavXmlStreamReader &reader, DCalDavCalendarQuery::RemoteEventList &events)
 {
     DCalDavCalendarQuery::RemoteEvent event;
     while (reader.readNextStartElement()) {
@@ -349,19 +331,13 @@ DCalDavTransport::Request DCalDavCalendarQuery::resourceMultiGetRequest(
 bool DCalDavCalendarQuery::parseResourceList(const QByteArray &xml, ResourceList &resources,
                                              QString *errorMessage)
 {
-    if (!hasAcceptableXmlDepth(xml)) {
-        if (errorMessage != nullptr) {
-            *errorMessage = QStringLiteral("DAV response is too deeply nested.");
-        }
-        return false;
-    }
     if (xml.size() > kMaximumCalDavXmlBytes) {
         if (errorMessage != nullptr) {
             *errorMessage = QStringLiteral("DAV resource response is too large.");
         }
         return false;
     }
-    QXmlStreamReader reader(xml);
+    DCalDavXmlStreamReader reader(xml);
     ResourceList parsed;
     if (!reader.readNextStartElement() || reader.name() != QStringLiteral("multistatus")) {
         if (errorMessage != nullptr) {
@@ -404,6 +380,12 @@ bool DCalDavCalendarQuery::parseResourceList(const QByteArray &xml, ResourceList
         }
     }
 
+    if (reader.depthExceeded()) {
+        if (errorMessage != nullptr) {
+            *errorMessage = QStringLiteral("DAV response is too deeply nested.");
+        }
+        return false;
+    }
     if (reader.hasError()) {
         if (errorMessage != nullptr) {
             *errorMessage = reader.errorString();
@@ -440,19 +422,13 @@ bool DCalDavCalendarQuery::parseResponse(const QByteArray &xml, RemoteEventList 
 bool DCalDavCalendarQuery::parseResponseWithSyncToken(const QByteArray &xml, RemoteEventList &events,
                                                         QString *syncToken, QString *errorMessage)
 {
-    if (!hasAcceptableXmlDepth(xml)) {
-        if (errorMessage != nullptr) {
-            *errorMessage = QStringLiteral("DAV response is too deeply nested.");
-        }
-        return false;
-    }
     if (xml.size() > kMaximumCalDavXmlBytes) {
         if (errorMessage != nullptr) {
             *errorMessage = QStringLiteral("DAV event response is too large.");
         }
         return false;
     }
-    QXmlStreamReader reader(xml);
+    DCalDavXmlStreamReader reader(xml);
     RemoteEventList parsed;
     QString parsedSyncToken;
     if (!reader.readNextStartElement() || reader.name() != QStringLiteral("multistatus")) {
@@ -478,6 +454,12 @@ bool DCalDavCalendarQuery::parseResponseWithSyncToken(const QByteArray &xml, Rem
         }
     }
 
+    if (reader.depthExceeded()) {
+        if (errorMessage != nullptr) {
+            *errorMessage = QStringLiteral("DAV response is too deeply nested.");
+        }
+        return false;
+    }
     if (reader.hasError()) {
         if (errorMessage != nullptr) {
             *errorMessage = reader.errorString();

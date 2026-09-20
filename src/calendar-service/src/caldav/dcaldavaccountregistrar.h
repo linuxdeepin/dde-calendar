@@ -23,11 +23,16 @@ class DCalDavAccountRegistrar : public QObject
 {
     Q_OBJECT
 public:
+    using CredentialReader = std::function<bool(const QString &credentialRef,
+                                                 QString &password,
+                                                 QString *errorMessage)>;
+
     struct Request {
         DCalDavAccountInfo account;
         DAccountDataBase *localDatabase = nullptr;
         DAccountManagerDataBase *accountManagerDatabase = nullptr;
         DCalDavSyncJobManager *jobManager = nullptr;
+        CredentialReader credentialReader;
     };
 
     struct Result {

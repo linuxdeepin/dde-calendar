@@ -6,6 +6,7 @@
 #include "dcaldavvalidationerror.h"
 #include "dcaldavaccountstatus.h"
 #include "dcaldavaccountsync.h"
+#include "dcaldavaccountregistrar.h"
 #include "dcaldavdiscovery.h"
 #include "dcaldavcalendarquery.h"
 #include "dcaldavcredentialstore.h"
@@ -30,6 +31,7 @@
 #include "units.h"
 
 #include <QEventLoop>
+#include <QElapsedTimer>
 #include <QFile>
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -119,6 +121,25 @@ QByteArray headerValue(const QMap<QByteArray, QByteArray> &headers, const QByteA
         }
     }
     return QByteArray();
+}
+
+bool waitForMockRequestCount(const MockCalDavServer &server, int count, int timeoutMs = 5000)
+{
+    QElapsedTimer timer;
+    timer.start();
+    while (server.requests().size() < count && timer.elapsed() < timeoutMs) {
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 20);
+    }
+    return server.requests().size() >= count;
+}
+
+void processEventsFor(int durationMs)
+{
+    QElapsedTimer timer;
+    timer.start();
+    while (timer.elapsed() < durationMs) {
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 20);
+    }
 }
 
 bool runIncrementalSync(const DCalDavIncrementalSync::Request &request,
@@ -984,6 +1005,16 @@ TEST(CalDavXmlReader, RejectsMalformedXml)
     EXPECT_FALSE(errorMessage.isEmpty());
 }
 
+TEST(CalDavXmlReader, IncludesNestedElementText)
+{
+    DCalDavXmlStreamReader reader(
+        QByteArrayLiteral("<root>before<child>inside</child>after</root>"));
+    ASSERT_TRUE(reader.readNextStartElement());
+    EXPECT_EQ(QStringLiteral("root"), reader.name());
+    EXPECT_EQ(QStringLiteral("beforeinsideafter"),
+              reader.readElementText(QXmlStreamReader::IncludeChildElements));
+    EXPECT_FALSE(reader.hasError());
+}
 
 TEST(CalDavCalendarQuery, BuildsReadOnlyReportRequest)
 {
@@ -1466,12 +1497,15 @@ TEST(CalDavRepository, PersistsCalendarTokenAndAccountStatus)
     calendar.displayName = QStringLiteral("Calendar");
     calendar.scheduleTypeID = QStringLiteral("type-1");
     calendar.privileges = DCalDavXmlReader::ReadPrivilege;
+    calendar.privilegesKnown = true;
     ASSERT_TRUE(database.upsertCalDavCalendar(calendar));
 
     DCalDavCalendarInfo::List calendars = database.getCalDavCalendarList(QStringLiteral("account-1"));
     ASSERT_EQ(1, calendars.size());
     EXPECT_EQ(calendar.href, calendars.first().href);
     EXPECT_EQ(calendar.scheduleTypeID, calendars.first().scheduleTypeID);
+    EXPECT_EQ(calendar.privileges, calendars.first().privileges);
+    EXPECT_TRUE(calendars.first().privilegesKnown);
     EXPECT_FALSE(calendars.first().initialSyncCompleted);
 
     ASSERT_TRUE(database.updateCalDavCalendarInitialSyncCompleted(
@@ -1487,6 +1521,7 @@ TEST(CalDavRepository, PersistsCalendarTokenAndAccountStatus)
     const DCalDavCalendarInfo calendarByType = database.getCalDavCalendarByScheduleTypeID(
         QStringLiteral("account-1"), QStringLiteral("type-1"));
     EXPECT_EQ(calendar.calendarId, calendarByType.calendarId);
+    EXPECT_TRUE(calendarByType.privilegesKnown);
     EXPECT_TRUE(calendarByType.initialSyncCompleted);
 
     const QDateTime syncTime = QDateTime::fromString(QStringLiteral("2026-08-10T12:00:00Z"), Qt::ISODate);
@@ -1847,6 +1882,313 @@ TEST(CalDavCommon, SerializesNegativeTimezoneOffset)
     const QDateTime dateTime(QDate(2026, 8, 31), QTime(12, 0),
                              QTimeZone(QByteArrayLiteral("America/New_York")));
     EXPECT_EQ(QStringLiteral("2026-08-31T12:00:00-04:00"), dtToString(dateTime));
+}
+
+TEST(CalDavCancellation, AccountRegistrarNotifiesCallbackOnce)
+{
+    if (!QSslSocket::supportsSsl()) {
+        GTEST_SKIP() << "Qt SSL backend is unavailable";
+    }
+
+    QByteArray certificate;
+    QByteArray privateKey;
+    ASSERT_TRUE(createMockTlsCredentials(certificate, privateKey));
+    trustMockCertificate(certificate);
+
+    MockCalDavServer server;
+    ASSERT_TRUE(server.start(certificate, privateKey));
+    server.setResponseDelay(1000);
+
+    QTemporaryDir directory;
+    ASSERT_TRUE(directory.isValid());
+    DAccount::Ptr account(new DAccount(DAccount::Account_CalDav));
+    account->setAccountID(QStringLiteral("cancel-registrar-account"));
+
+    DAccountDataBase localDatabase(account);
+    localDatabase.setDBPath(directory.filePath(QStringLiteral("local.db")));
+    localDatabase.initDBData();
+
+    DAccountManagerDataBase accountManagerDatabase;
+    accountManagerDatabase.setDBPath(directory.filePath(QStringLiteral("account-manager.db")));
+    accountManagerDatabase.setLoaclDB(directory.filePath(QStringLiteral("local.db")));
+    accountManagerDatabase.initDBData();
+
+    DCalDavSyncJobManager jobManager;
+    DCalDavAccountRegistrar::Request request;
+    request.account.accountId = account->accountID();
+    request.account.serverUrl = server.url().toString();
+    request.account.username = QStringLiteral("user");
+    request.account.credentialRef = QStringLiteral("secret-service:/test");
+    request.localDatabase = &localDatabase;
+    request.accountManagerDatabase = &accountManagerDatabase;
+    request.jobManager = &jobManager;
+    request.credentialReader = [](const QString &, QString &password, QString *) {
+        password = QStringLiteral("password");
+        return true;
+    };
+
+    DCalDavAccountRegistrar registrar;
+    int callbackCount = 0;
+    DCalDavAccountRegistrar::Result result;
+    registrar.start(request, [&](const DCalDavAccountRegistrar::Result &registrarResult) {
+        ++callbackCount;
+        result = registrarResult;
+    });
+    ASSERT_TRUE(waitForMockRequestCount(server, 1));
+    registrar.cancel();
+    processEventsFor(1200);
+
+    EXPECT_EQ(1, callbackCount);
+    EXPECT_EQ(1, server.requests().size());
+    EXPECT_FALSE(result.success);
+    EXPECT_EQ(QStringLiteral("CalDAV account registration cancelled."), result.errorMessage);
+    EXPECT_FALSE(jobManager.containsAccount(account->accountID()));
+}
+
+TEST(CalDavCancellation, ReadOnlySyncNotifiesCallbackOnce)
+{
+    if (!QSslSocket::supportsSsl()) {
+        GTEST_SKIP() << "Qt SSL backend is unavailable";
+    }
+
+    QByteArray certificate;
+    QByteArray privateKey;
+    ASSERT_TRUE(createMockTlsCredentials(certificate, privateKey));
+    trustMockCertificate(certificate);
+
+    MockCalDavServer server;
+    ASSERT_TRUE(server.start(certificate, privateKey));
+    server.setResponseDelay(1000);
+
+    DCalDavReadOnlySync synchronizer;
+    DCalDavReadOnlySync::Request request;
+    request.serverUrl = server.url();
+    request.username = QStringLiteral("user");
+    request.password = QStringLiteral("password");
+
+    int callbackCount = 0;
+    DCalDavReadOnlySync::Result result;
+    synchronizer.start(request, [&](const DCalDavReadOnlySync::Result &syncResult) {
+        ++callbackCount;
+        result = syncResult;
+    });
+    ASSERT_TRUE(waitForMockRequestCount(server, 1));
+    synchronizer.cancel();
+    processEventsFor(1200);
+
+    EXPECT_EQ(1, callbackCount);
+    EXPECT_EQ(1, server.requests().size());
+    EXPECT_FALSE(result.success);
+    EXPECT_EQ(QStringLiteral("CalDAV validation cancelled."), result.errorMessage);
+    EXPECT_EQ(DCalDavValidationError::Other, result.validationError);
+}
+
+TEST(CalDavCancellation, IncrementalSyncNotifiesCallbackOnce)
+{
+    if (!QSslSocket::supportsSsl()) {
+        GTEST_SKIP() << "Qt SSL backend is unavailable";
+    }
+
+    QByteArray certificate;
+    QByteArray privateKey;
+    ASSERT_TRUE(createMockTlsCredentials(certificate, privateKey));
+    trustMockCertificate(certificate);
+
+    MockCalDavServer server;
+    ASSERT_TRUE(server.start(certificate, privateKey));
+    server.setResponseDelay(1000);
+
+    DCalDavIncrementalSync synchronizer;
+    DCalDavIncrementalSync::Request request;
+    request.calendarUrl = server.url().resolved(QUrl(QStringLiteral("/calendars/user/")));
+    request.username = QStringLiteral("user");
+    request.password = QStringLiteral("password");
+    request.calendarId = QStringLiteral("calendar");
+
+    int callbackCount = 0;
+    DCalDavIncrementalSync::Result result;
+    synchronizer.start(request, [&](const DCalDavIncrementalSync::Result &syncResult) {
+        ++callbackCount;
+        result = syncResult;
+    });
+    ASSERT_TRUE(waitForMockRequestCount(server, 1));
+    synchronizer.cancel();
+    processEventsFor(1200);
+
+    EXPECT_EQ(1, callbackCount);
+    EXPECT_EQ(1, server.requests().size());
+    EXPECT_FALSE(result.success);
+    EXPECT_EQ(QStringLiteral("CalDAV calendar synchronization cancelled."), result.errorMessage);
+    EXPECT_EQ(DCalDavErrorCode::Unknown, result.failureCode);
+}
+
+TEST(CalDavCancellation, AccountSyncNotifiesCallbackOnce)
+{
+    if (!QSslSocket::supportsSsl()) {
+        GTEST_SKIP() << "Qt SSL backend is unavailable";
+    }
+
+    QByteArray certificate;
+    QByteArray privateKey;
+    ASSERT_TRUE(createMockTlsCredentials(certificate, privateKey));
+    trustMockCertificate(certificate);
+
+    MockCalDavServer server;
+    ASSERT_TRUE(server.start(certificate, privateKey));
+    server.setResponseDelay(1000);
+
+    QTemporaryDir directory;
+    ASSERT_TRUE(directory.isValid());
+    DAccount::Ptr account(new DAccount(DAccount::Account_CalDav));
+    account->setAccountID(QStringLiteral("cancel-account"));
+
+    DAccountDataBase localDatabase(account);
+    localDatabase.setDBPath(directory.filePath(QStringLiteral("local.db")));
+    localDatabase.initDBData();
+
+    DAccountManagerDataBase accountManagerDatabase;
+    accountManagerDatabase.setDBPath(directory.filePath(QStringLiteral("account-manager.db")));
+    accountManagerDatabase.setLoaclDB(directory.filePath(QStringLiteral("local.db")));
+    accountManagerDatabase.initDBData();
+
+    DCalDavAccountInfo accountInfo;
+    accountInfo.accountId = account->accountID();
+    accountInfo.providerType = DCalDavProviderProfile::Provider_Other;
+    accountInfo.serverUrl = server.url().toString();
+    accountInfo.username = QStringLiteral("user");
+    accountInfo.credentialRef = QStringLiteral("secret-service:/mock");
+    ASSERT_TRUE(accountManagerDatabase.upsertCalDavAccountInfo(accountInfo));
+
+    DCalDavCalendarInfo calendar;
+    calendar.accountId = account->accountID();
+    calendar.calendarId = QStringLiteral("calendar");
+    calendar.href = server.url().resolved(QUrl(QStringLiteral("/calendars/user/"))).toString();
+    calendar.scheduleTypeID = QStringLiteral("schedule-type");
+    calendar.initialSyncCompleted = true;
+    calendar.syncToken = QStringLiteral("old-token");
+    ASSERT_TRUE(accountManagerDatabase.upsertCalDavCalendar(calendar));
+
+    DCalDavAccountSync::Request request;
+    request.accountID = account->accountID();
+    request.username = accountInfo.username;
+    request.password = QStringLiteral("password");
+    request.localDatabase = &localDatabase;
+    request.accountManagerDatabase = &accountManagerDatabase;
+    request.calendars.append({calendar, calendar.scheduleTypeID});
+
+    DCalDavAccountSync synchronizer;
+    int callbackCount = 0;
+    DCalDavAccountSync::Result result;
+    synchronizer.start(request, [&](const DCalDavAccountSync::Result &syncResult) {
+        ++callbackCount;
+        result = syncResult;
+    });
+    ASSERT_TRUE(waitForMockRequestCount(server, 1));
+    synchronizer.cancel();
+    processEventsFor(1200);
+
+    EXPECT_EQ(1, callbackCount);
+    EXPECT_EQ(1, server.requests().size());
+    EXPECT_FALSE(result.success);
+    EXPECT_EQ(QStringLiteral("CalDAV synchronization cancelled."), result.errorMessage);
+}
+
+TEST(CalDavCancellation, OutboxProcessorNotifiesCallbackOnce)
+{
+    if (!QSslSocket::supportsSsl()) {
+        GTEST_SKIP() << "Qt SSL backend is unavailable";
+    }
+
+    QByteArray certificate;
+    QByteArray privateKey;
+    ASSERT_TRUE(createMockTlsCredentials(certificate, privateKey));
+    trustMockCertificate(certificate);
+
+    MockCalDavServer server;
+    ASSERT_TRUE(server.start(certificate, privateKey));
+    server.setResponseDelay(1000);
+
+    QTemporaryDir directory;
+    ASSERT_TRUE(directory.isValid());
+    DAccount::Ptr account(new DAccount(DAccount::Account_CalDav));
+    account->setAccountID(QStringLiteral("cancel-outbox-account"));
+
+    DAccountDataBase localDatabase(account);
+    localDatabase.setDBPath(directory.filePath(QStringLiteral("local.db")));
+    localDatabase.initDBData();
+
+    DAccountManagerDataBase accountManagerDatabase;
+    accountManagerDatabase.setDBPath(directory.filePath(QStringLiteral("account-manager.db")));
+    accountManagerDatabase.setLoaclDB(directory.filePath(QStringLiteral("local.db")));
+    accountManagerDatabase.initDBData();
+
+    DCalDavAccountInfo accountInfo;
+    accountInfo.accountId = account->accountID();
+    accountInfo.providerType = DCalDavProviderProfile::Provider_Other;
+    accountInfo.serverUrl = server.url().toString();
+    accountInfo.username = QStringLiteral("user");
+    accountInfo.credentialRef = QStringLiteral("secret-service:/mock");
+    ASSERT_TRUE(accountManagerDatabase.upsertCalDavAccountInfo(accountInfo));
+
+    DTypeColor color;
+    color.setColorID(DDataBase::createUuid());
+    color.setColorCode(QStringLiteral("#4381D5"));
+    color.setPrivilege(DTypeColor::PriSystem);
+    ASSERT_TRUE(localDatabase.addTypeColor(color));
+
+    DScheduleType::Ptr type(new DScheduleType(account->accountID()));
+    type->setTypeName(QStringLiteral("Outbox cancellation calendar"));
+    type->setDisplayName(QStringLiteral("Outbox cancellation calendar"));
+    type->setTypeColor(color);
+    type->setPrivilege(DScheduleType::Write);
+    ASSERT_FALSE(localDatabase.createScheduleType(type).isEmpty());
+
+    DSchedule::Ptr schedule(new DSchedule);
+    schedule->setUid(QStringLiteral("cancel-outbox-event"));
+    schedule->setScheduleTypeID(type->typeID());
+    schedule->setSummary(QStringLiteral("Outbox cancellation event"));
+    schedule->setDtStart(QDateTime(QDate(2026, 9, 20), QTime(10, 0), Qt::UTC));
+    schedule->setDtEnd(QDateTime(QDate(2026, 9, 20), QTime(11, 0), Qt::UTC));
+    ASSERT_FALSE(localDatabase.createSchedule(schedule).isEmpty());
+
+    DCalDavCalendarInfo calendar;
+    calendar.accountId = account->accountID();
+    calendar.calendarId = QStringLiteral("cancel-outbox-calendar");
+    calendar.href = server.url().resolved(QUrl(QStringLiteral("/calendars/user/"))).toString();
+    calendar.scheduleTypeID = type->typeID();
+    calendar.privileges = DCalDavXmlReader::ReadPrivilege | DCalDavXmlReader::WritePrivilege;
+    calendar.privilegesKnown = true;
+    ASSERT_TRUE(accountManagerDatabase.upsertCalDavCalendar(calendar));
+
+    DCalDavOutboxItem item;
+    item.operationID = QStringLiteral("cancel-outbox-operation");
+    item.accountID = account->accountID();
+    item.localScheduleID = schedule->uid();
+    item.operationType = DCalDavOutboxItem::CreateOperation;
+    ASSERT_TRUE(accountManagerDatabase.upsertCalDavOutboxItem(item));
+
+    DCalDavOutboxProcessor processor;
+    DCalDavOutboxProcessor::Request request;
+    request.accountID = account->accountID();
+    request.username = accountInfo.username;
+    request.password = QStringLiteral("password");
+    request.localDatabase = &localDatabase;
+    request.accountManagerDatabase = &accountManagerDatabase;
+
+    int callbackCount = 0;
+    DCalDavOutboxProcessor::Result result;
+    processor.start(request, [&](const DCalDavOutboxProcessor::Result &processorResult) {
+        ++callbackCount;
+        result = processorResult;
+    });
+    ASSERT_TRUE(waitForMockRequestCount(server, 1));
+    processor.cancel();
+    processEventsFor(1200);
+
+    EXPECT_EQ(1, callbackCount);
+    EXPECT_EQ(1, server.requests().size());
+    EXPECT_FALSE(result.success);
+    EXPECT_EQ(QStringLiteral("CalDAV Outbox processing cancelled."), result.errorMessage);
 }
 
 TEST(CalDavIntegration, ClassifiesAuthenticationFailure)
@@ -2402,6 +2744,196 @@ TEST(CalDavIntegration, SkipsMalformedRemoteEventWithoutFailingSync)
     EXPECT_TRUE(result.clearedSkippedResourceHrefs.isEmpty());
     ASSERT_EQ(3, server.requests().size());
     EXPECT_EQ(QByteArray("GET"), server.requests().last().method);
+}
+
+TEST(CalDavIntegration, SkipsRemoteEventsWithoutVeventOrWithInvalidIcs)
+{
+    if (!QSslSocket::supportsSsl()) {
+        GTEST_SKIP() << "Qt SSL backend is unavailable";
+    }
+
+    QByteArray certificate;
+    QByteArray privateKey;
+    ASSERT_TRUE(createMockTlsCredentials(certificate, privateKey));
+    trustMockCertificate(certificate);
+
+    const QList<QPair<QByteArray, QString>> malformedEvents = {
+        {QByteArrayLiteral(
+             "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nBEGIN:VTODO\r\n"
+             "UID:todo-1\r\nSUMMARY:Not an event\r\nEND:VTODO\r\nEND:VCALENDAR\r\n"),
+         QStringLiteral("missing-vevent")},
+        {QByteArrayLiteral(
+             "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nBEGIN:VEVENT\r\n"
+             "UID:invalid-ics\r\nDTSTART:20260831T120000Z\r\n"
+             "SUMMARY:Invalid event\r\n"),
+         QStringLiteral("event-mapping-failed")},
+    };
+
+    for (const auto &malformedEvent : malformedEvents) {
+        MockCalDavServer server;
+        ASSERT_TRUE(server.start(certificate, privateKey));
+        server.setCalendarQueryReturnsCalendarData(false);
+        server.setCalendarMultiGetResponseStatus(403);
+        server.setResponseStatusForMethod("GET", 200);
+        server.setResponseBodyForTarget(
+            "/calendars/user/mock-event-1.ics", malformedEvent.first);
+
+        DCalDavIncrementalSync::Request request;
+        QUrl calendarUrl = server.url();
+        calendarUrl.setPath(QStringLiteral("/calendars/user/"));
+        request.calendarUrl = calendarUrl;
+        request.username = QStringLiteral("user");
+        request.password = QStringLiteral("password");
+        request.calendarId = QStringLiteral("calendar");
+        request.referenceTime = QDateTime(QDate(2026, 8, 31), QTime(0, 0), Qt::UTC);
+
+        DCalDavIncrementalSync::Result result;
+        ASSERT_TRUE(runIncrementalSync(request, &result));
+        EXPECT_TRUE(result.success);
+        EXPECT_EQ(DCalDavErrorCode::NoError, result.failureCode);
+        EXPECT_TRUE(result.schedules.isEmpty());
+        EXPECT_TRUE(result.remoteEvents.isEmpty());
+        ASSERT_EQ(1, result.skippedResources.size());
+        EXPECT_EQ(malformedEvent.second, result.skippedResources.first().reason);
+    }
+}
+
+TEST(CalDavIntegration, PersistsAndClearsMalformedResourceAcrossAccountSync)
+{
+    if (!QSslSocket::supportsSsl()) {
+        GTEST_SKIP() << "Qt SSL backend is unavailable";
+    }
+
+    QByteArray certificate;
+    QByteArray privateKey;
+    ASSERT_TRUE(createMockTlsCredentials(certificate, privateKey));
+    trustMockCertificate(certificate);
+
+    MockCalDavServer server;
+    ASSERT_TRUE(server.start(certificate, privateKey));
+    server.setCalendarQueryReturnsCalendarData(false);
+    server.setCalendarMultiGetResponseStatus(403);
+    server.setResponseStatusForMethod("GET", 200);
+    server.setResponseBodyForTarget(
+        "/calendars/user/mock-event-1.ics",
+        "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nBEGIN:VEVENT\r\n"
+        "DTSTART:20260831T120000Z\r\nDTEND:20260831T130000Z\r\n"
+        "SUMMARY:Missing UID\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
+
+    QTemporaryDir directory;
+    ASSERT_TRUE(directory.isValid());
+    DAccount::Ptr account(new DAccount(DAccount::Account_CalDav));
+    account->setAccountID(QStringLiteral("malformed-resource-account"));
+
+    DAccountDataBase localDatabase(account);
+    localDatabase.setDBPath(directory.filePath(QStringLiteral("local.db")));
+    localDatabase.initDBData();
+
+    DAccountManagerDataBase accountManagerDatabase;
+    accountManagerDatabase.setDBPath(directory.filePath(QStringLiteral("account-manager.db")));
+    accountManagerDatabase.setLoaclDB(directory.filePath(QStringLiteral("local.db")));
+    accountManagerDatabase.initDBData();
+
+    DCalDavAccountInfo accountInfo;
+    accountInfo.accountId = account->accountID();
+    accountInfo.providerType = DCalDavProviderProfile::Provider_Other;
+    accountInfo.serverUrl = server.url().toString();
+    accountInfo.username = QStringLiteral("user");
+    accountInfo.credentialRef = QStringLiteral("secret-service:/mock");
+    ASSERT_TRUE(accountManagerDatabase.upsertCalDavAccountInfo(accountInfo));
+
+    DTypeColor color;
+    color.setColorID(DDataBase::createUuid());
+    color.setColorCode(QStringLiteral("#4381D5"));
+    color.setPrivilege(DTypeColor::PriSystem);
+    ASSERT_TRUE(localDatabase.addTypeColor(color));
+
+    DScheduleType::Ptr type(new DScheduleType(account->accountID()));
+    type->setTypeName(QStringLiteral("Malformed event calendar"));
+    type->setDisplayName(QStringLiteral("Malformed event calendar"));
+    type->setTypeColor(color);
+    type->setPrivilege(DScheduleType::Read);
+    type->setShowState(DScheduleType::Show);
+    ASSERT_FALSE(localDatabase.createScheduleType(type).isEmpty());
+
+    DCalDavCalendarInfo calendar;
+    calendar.calendarId = QStringLiteral("calendar");
+    calendar.accountId = account->accountID();
+    calendar.href = server.url().resolved(QUrl(QStringLiteral("/calendars/user/"))).toString();
+    calendar.displayName = QStringLiteral("Mock Calendar");
+    calendar.scheduleTypeID = type->typeID();
+    calendar.privileges = DCalDavXmlReader::ReadPrivilege;
+    calendar.privilegesKnown = true;
+    calendar.initialSyncCompleted = true;
+    calendar.syncToken = QStringLiteral("old-token");
+    ASSERT_TRUE(accountManagerDatabase.upsertCalDavCalendar(calendar));
+
+    DCalDavAccountSync::Request request;
+    request.accountID = account->accountID();
+    request.username = accountInfo.username;
+    request.password = QStringLiteral("password");
+    request.localDatabase = &localDatabase;
+    request.accountManagerDatabase = &accountManagerDatabase;
+    request.calendars.append({calendar, type->typeID()});
+
+    auto runAccountSync = [&](DCalDavAccountSync::Result *result) {
+        DCalDavAccountSync synchronizer;
+        bool callbackCalled = false;
+        QEventLoop loop;
+        QTimer timeout;
+        timeout.setSingleShot(true);
+        QObject::connect(&timeout, &QTimer::timeout, &loop, &QEventLoop::quit);
+        synchronizer.start(request, [&](const DCalDavAccountSync::Result &syncResult) {
+            *result = syncResult;
+            callbackCalled = true;
+            loop.quit();
+        });
+        timeout.start(5000);
+        if (!callbackCalled) {
+            loop.exec();
+        }
+        return callbackCalled;
+    };
+
+    DCalDavAccountSync::Result firstResult;
+    ASSERT_TRUE(runAccountSync(&firstResult));
+    ASSERT_TRUE(firstResult.success) << firstResult.errorMessage.toStdString();
+    EXPECT_EQ(0, firstResult.createdCount);
+
+    DCalDavSkippedResource::List skippedResources;
+    ASSERT_TRUE(accountManagerDatabase.getCalDavSkippedResources(
+        account->accountID(), calendar.calendarId, skippedResources));
+    ASSERT_EQ(1, skippedResources.size());
+    EXPECT_EQ(QStringLiteral("missing-vevent-uid"), skippedResources.first().reason);
+    EXPECT_EQ(QStringLiteral("mock-token-1"),
+              accountManagerDatabase.getCalDavCalendarByIDIncludingDisabled(
+                  account->accountID(), calendar.calendarId).syncToken);
+
+    server.setResponseBodyForTarget(
+        "/calendars/user/mock-event-1.ics",
+        "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nBEGIN:VEVENT\r\n"
+        "UID:mock-event-1\r\nDTSTART:20260831T120000Z\r\n"
+        "DTEND:20260831T130000Z\r\nSUMMARY:Recovered event\r\n"
+        "END:VEVENT\r\nEND:VCALENDAR\r\n");
+
+    DCalDavAccountSync::Result secondResult;
+    ASSERT_TRUE(runAccountSync(&secondResult));
+    ASSERT_TRUE(secondResult.success) << secondResult.errorMessage.toStdString();
+    EXPECT_EQ(1, secondResult.createdCount);
+
+    skippedResources.clear();
+    ASSERT_TRUE(accountManagerDatabase.getCalDavSkippedResources(
+        account->accountID(), calendar.calendarId, skippedResources));
+    EXPECT_TRUE(skippedResources.isEmpty());
+
+    const DCalDavEventMappingInfo::List mappings = accountManagerDatabase
+        .getCalDavEventMappingList(account->accountID(), calendar.calendarId);
+    ASSERT_EQ(1, mappings.size());
+    EXPECT_EQ(QStringLiteral("mock-event-1"), mappings.first().uid);
+    const DSchedule::Ptr recoveredSchedule = localDatabase.getScheduleByScheduleID(
+        mappings.first().localScheduleID);
+    ASSERT_TRUE(recoveredSchedule);
+    EXPECT_EQ(QStringLiteral("Recovered event"), recoveredSchedule->summary());
 }
 
 TEST(CalDavIntegration, TreatsCalendarMultiGetMissingResourceAsDeleted)
