@@ -1,25 +1,23 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="bn">
+<?xml version="1.0" ?><!DOCTYPE TS><TS version="2.1" language="bn">
 <context>
     <name>AccountItem</name>
     <message>
-        <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="41"/>
+            <location filename="../src/calendar-client/src/dataManage/accountitem.cpp" line="52"/>
         <source>Sync successful</source>
-        <translation>সিঙ্ক সাফল্যপূর্বক</translation>
+        <translation>স��ন সম্পন্ন</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="42"/>
+            <location filename="../src/calendar-client/src/dataManage/accountitem.cpp" line="56"/>
         <source>Network error</source>
         <translation>নেটওয়ার্ক ত্রুটি</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="43"/>
+            <location filename="../src/calendar-client/src/dataManage/accountitem.cpp" line="60"/>
         <source>Server exception</source>
-        <translation>সার্ভার বিস্তার</translation>
+        <translation>সভাপতি ত্রুটি</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dataManage/accountitem.cpp" line="44"/>
+            <location filename="../src/calendar-client/src/dataManage/accountitem.cpp" line="64"/>
         <source>Storage full</source>
         <translation>স্টোরেজ পূর্ণ</translation>
     </message>
@@ -27,109 +25,111 @@
 <context>
     <name>AccountManager</name>
     <message>
-        <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="227"/>
+            <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="224"/>
+            <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="551"/>
         <source>Local account</source>
-        <translation>স্থানীয় অ্যাকাউন্ট</translation>
+        <translation>লোকাল অ্যাকাউন্ট</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dataManage/accountmanager.cpp" line="229"/>
+            <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="224"/>
+            <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="554"/>
         <source>Event types</source>
-        <translation>সম্পর্কিত ধরণ</translation>
+        <translation>ক্যাগ্রেন ধরণ</translation>
     </message>
 </context>
 <context>
     <name>CColorPickerWidget</name>
     <message>
-        <location filename="../calendar-client/src/customWidget/colorWidget/colorpickerWidget.cpp" line="77"/>
+            <location filename="../src/calendar-client/src/customWidget/colorWidget/colorpickerWidget.cpp" line="91"/>
         <source>Color</source>
-        <translation>রং</translation>
+        <translation>বর্ণ</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/customWidget/colorWidget/colorpickerWidget.cpp" line="90"/>
+            <location filename="../src/calendar-client/src/customWidget/colorWidget/colorpickerWidget.cpp" line="104"/>
         <source>Cancel</source>
         <comment>button</comment>
-        <translation>বাতিল</translation>
+        <translation>ফেরত দিতে</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/customWidget/colorWidget/colorpickerWidget.cpp" line="92"/>
+            <location filename="../src/calendar-client/src/customWidget/colorWidget/colorpickerWidget.cpp" line="106"/>
         <source>Save</source>
         <comment>button</comment>
-        <translation>সংরক্ষণ</translation>
+        <translation>পেরেক রাখতে</translation>
     </message>
 </context>
 <context>
     <name>CDayMonthView</name>
     <message>
-        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="33"/>
+            <location filename="../src/calendar-client/src/widget/dayWidget/daymonthview.cpp" line="35"/>
         <source>Monday</source>
-        <translation>শনিবার</translation>
-    </message>
-    <message>
-        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="34"/>
-        <source>Tuesday</source>
         <translation>রবিবার</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="35"/>
-        <source>Wednesday</source>
+            <location filename="../src/calendar-client/src/widget/dayWidget/daymonthview.cpp" line="36"/>
+        <source>Tuesday</source>
         <translation>সোমবার</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="36"/>
-        <source>Thursday</source>
+            <location filename="../src/calendar-client/src/widget/dayWidget/daymonthview.cpp" line="37"/>
+        <source>Wednesday</source>
         <translation>মঙ্গলবার</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="37"/>
-        <source>Friday</source>
+            <location filename="../src/calendar-client/src/widget/dayWidget/daymonthview.cpp" line="38"/>
+        <source>Thursday</source>
         <translation>বুধবার</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="38"/>
-        <source>Saturday</source>
+            <location filename="../src/calendar-client/src/widget/dayWidget/daymonthview.cpp" line="39"/>
+        <source>Friday</source>
         <translation>বৃহস্পতিবার</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="39"/>
-        <source>Sunday</source>
+            <location filename="../src/calendar-client/src/widget/dayWidget/daymonthview.cpp" line="40"/>
+        <source>Saturday</source>
         <translation>শুক্রবার</translation>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/widget/dayWidget/daymonthview.cpp" line="41"/>
+        <source>Sunday</source>
+        <translation>শনিবার</translation>
     </message>
 </context>
 <context>
     <name>CDayWindow</name>
     <message>
-        <location filename="../calendar-client/src/widget/dayWidget/daywindow.cpp" line="112"/>
+            <location filename="../src/calendar-client/src/widget/dayWidget/daywindow.cpp" line="136"/>
         <source>Y</source>
-        <translation>য়</translation>
+        <translation>Y</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/dayWidget/daywindow.cpp" line="113"/>
+            <location filename="../src/calendar-client/src/widget/dayWidget/daywindow.cpp" line="137"/>
         <source>M</source>
-        <translation>ম</translation>
+        <translation>M</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/dayWidget/daywindow.cpp" line="114"/>
+            <location filename="../src/calendar-client/src/widget/dayWidget/daywindow.cpp" line="138"/>
         <source>D</source>
-        <translation>ড</translation>
+        <translation>D</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/dayWidget/daywindow.cpp" line="170"/>
+            <location filename="../src/calendar-client/src/widget/dayWidget/daywindow.cpp" line="205"/>
         <source>Lunar</source>
-        <translation>চাঁদের</translation>
+        <translation>লুনার</translation>
     </message>
 </context>
 <context>
     <name>CGraphicsView</name>
     <message>
-        <location filename="../calendar-client/src/view/graphicsview.cpp" line="628"/>
+            <location filename="../src/calendar-client/src/view/graphicsview.cpp" line="680"/>
         <source>New Event</source>
-        <translation>নতুন ঘটনা</translation>
+        <translation>নতুন ক্যাগ্রেন</translation>
     </message>
 </context>
 <context>
     <name>CMonthScheduleNumItem</name>
     <message>
-        <location filename="../calendar-client/src/view/graphicsItem/cmonthschedulenumitem.cpp" line="80"/>
+            <location filename="../src/calendar-client/src/view/graphicsItem/cmonthschedulenumitem.cpp" line="88"/>
         <source>%1 more</source>
         <translation>%1 আরও</translation>
     </message>
@@ -137,54 +137,86 @@
 <context>
     <name>CMonthView</name>
     <message>
-        <location filename="../calendar-client/src/widget/monthWidget/monthview.cpp" line="50"/>
+            <location filename="../src/calendar-client/src/widget/monthWidget/monthview.cpp" line="52"/>
         <source>New event</source>
-        <translation>নতুন ঘটনা</translation>
+        <translation>নতুন ক্যাগ্রেন</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/monthWidget/monthview.cpp" line="230"/>
+            <location filename="../src/calendar-client/src/widget/monthWidget/monthview.cpp" line="247"/>
         <source>New Event</source>
-        <translation>নতুন ঘটনা</translation>
+        <translation>নতুন ক্যাগ্রেন</translation>
     </message>
 </context>
 <context>
     <name>CMonthWindow</name>
     <message>
-        <location filename="../calendar-client/src/widget/monthWidget/monthwindow.cpp" line="98"/>
+            <location filename="../src/calendar-client/src/widget/monthWidget/monthwindow.cpp" line="111"/>
         <source>Y</source>
-        <translation>য়</translation>
+        <translation>Y</translation>
     </message>
 </context>
 <context>
     <name>CMyScheduleView</name>
     <message>
-        <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="284"/>
+            <location filename="../src/calendar-client/src/dialog/myscheduleview.cpp" line="369"/>
         <source>My Event</source>
         <translation>আমার ঘটনা</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="326"/>
+            <location filename="../src/calendar-client/src/dialog/myscheduleview.cpp" line="432"/>
         <source>OK</source>
         <comment>button</comment>
-        <translation>ও.কি.</translation>
+        <translation>স্বীকার</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="331"/>
+            <location filename="../src/calendar-client/src/dialog/myscheduleview.cpp" line="437"/>
         <source>Delete</source>
         <comment>button</comment>
-        <translation>মুছুন</translation>
+        <translation>Ջোড়া</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/myscheduleview.cpp" line="332"/>
+            <location filename="../src/calendar-client/src/dialog/myscheduleview.cpp" line="438"/>
         <source>Edit</source>
         <comment>button</comment>
         <translation>সম্পাদনা</translation>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/myscheduleview.cpp" line="195"/>
+        <source>Calendar Source</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="196"/>
+            <location filename="../src/calendar-client/src/dialog/myscheduleview.cpp" line="179"/>
+        <source>Local calendar</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="198"/>
+            <location filename="../src/calendar-client/src/dialog/myscheduleview.cpp" line="181"/>
+        <source>UOS ID</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="209"/>
+        <source>Source: %1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="184"/>
+        <source>Organizer</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="185"/>
+        <source>Attendees</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>CPushButton</name>
     <message>
-        <location filename="../calendar-client/src/customWidget/cpushbutton.cpp" line="17"/>
+            <location filename="../src/calendar-client/src/customWidget/cpushbutton.cpp" line="19"/>
         <source>New event type</source>
         <translation>নতুন ঘটনা ধরণ</translation>
     </message>
@@ -192,548 +224,693 @@
 <context>
     <name>CScheduleDlg</name>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="46"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="48"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="705"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1021"/>
         <source>New Event</source>
-        <translation>নতুন ইভেন্ট</translation>
+        <translation>নতুন ঘটনা</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="60"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="62"/>
         <source>Edit Event</source>
-        <translation>সম্পাদনা করুন ইভেন্ট</translation>
+        <translation>ঘটনাটি সম্পাদনা</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="270"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="303"/>
         <source>End time must be greater than start time</source>
-        <translation>শেষ সময় শুরু সাময়িক হতে হবে</translation>
+        <translation>শেষ সময় শুরুর সময়ের থেকে বড় হতে হবে</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="271"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="304"/>
         <source>OK</source>
         <comment>button</comment>
-        <translation>ও.কি.</translation>
+        <translation>স্বীকার</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="506"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="564"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="601"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1238"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1273"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1619"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1624"/>
         <source>Never</source>
-        <translation>কখনো না</translation>
+        <translation>এবারও নয়</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="507"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="565"/>
         <source>At time of event</source>
-        <translation>ইভেন্ট সময়ে</translation>
+        <translation>ঘটনার সময়ে</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="508"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="566"/>
         <source>15 minutes before</source>
         <translation>15 মিনিট আগে</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="509"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="567"/>
         <source>30 minutes before</source>
         <translation>30 মিনিট আগে</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="510"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="568"/>
         <source>1 hour before</source>
-        <translation>1 ঘন্টা আগে</translation>
+        <translation>1 ঘণ্টা আগে</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="511"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="569"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="603"/>
         <source>1 day before</source>
         <translation>1 দিন আগে</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="512"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="570"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="604"/>
         <source>2 days before</source>
         <translation>2 দিন আগে</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="513"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="571"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="605"/>
         <source>1 week before</source>
         <translation>1 সপ্তাহ আগে</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="536"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="602"/>
         <source>On start day (9:00 AM)</source>
-        <translation>শুরু দিনে (9:00 সকাল)</translation>
+        <translation>শুরুর দিনে (9:00 বিক্রম সংখ্যাঃ সকাল)</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="583"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="657"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="888"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1294"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1295"/>
         <source>time(s)</source>
-        <translation>সময়(গুলি)</translation>
+        <translation>সময়(সময়)</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="598"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="675"/>
         <source>Enter a name please</source>
-        <translation>নাম দিন দয়া করে</translation>
+        <translation>আইটি একটি নাম দিন অনুরোধ করা হচ্ছে</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="693"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="784"/>
         <source>The name can not only contain whitespaces</source>
-        <translation>নাম কেবলমাত্র হুবহু স্পেস বা খালি স্থান সম্পূর্ণ হতে পারে না</translation>
+        <translation>নামে শুধুমাত্র অন্তর যোগ করা যাবে না</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="749"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="846"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="971"/>
         <source>Type:</source>
-        <translation>ধরন:</translation>
+        <translation>ধরণ:</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="754"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="851"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1006"/>
         <source>Description:</source>
         <translation>বর্ণনা:</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="759"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="856"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1043"/>
         <source>All Day:</source>
         <translation>সমস্ত দিন:</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="764"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="861"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1114"/>
         <source>Starts:</source>
-        <translation>শুরু হয়:</translation>
+        <translation>শুরু হবে:</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="769"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="866"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1155"/>
         <source>Ends:</source>
-        <translation>শেষ হয়:</translation>
+        <translation>মুক্তি:</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="774"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="871"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1195"/>
         <source>Remind Me:</source>
-        <translation>আমাকে অনুস্মরণ দিন:</translation>
+        <translation>আমাকে অনুসন্ধান করতে:</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="779"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="876"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1227"/>
         <source>Repeat:</source>
-        <translation>পুনরাবৃত্তি:</translation>
+        <translation>পুনরায়:</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="784"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="881"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1261"/>
         <source>End Repeat:</source>
-        <translation>পুনরাবৃত্তি শেষ করুন:</translation>
+        <translation>পুনরায় মুক্তি:</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="840"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="939"/>
         <source>Calendar account:</source>
-        <translation>ক্যালেন্ডার অ্যাকাউন্ট:</translation>
+        <translation>ক্যালেনダー অ্যাকাউন্ট:</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="841"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="940"/>
         <source>Calendar account</source>
-        <translation>ক্যালেন্ডার অ্যাকাউন্ট</translation>
+        <translation>ক্যালেনダー অ্যাকাউন্ট</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="868"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="968"/>
         <source>Type</source>
         <translation>ধরন</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="910"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1010"/>
         <source>Description</source>
         <translation>বর্ণনা</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="940"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1040"/>
         <source>All Day</source>
         <translation>সমস্ত দিন</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="964"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1064"/>
         <source>Time:</source>
         <translation>সময়:</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="965"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1065"/>
         <source>Time</source>
         <translation>সময়</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="972"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1072"/>
         <source>Solar</source>
         <translation>সৌর</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="973"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1075"/>
         <source>Lunar</source>
-        <translation>চাঁদের</translation>
+        <translation>লুনার</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1006"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1111"/>
         <source>Starts</source>
         <translation>শুরু হয়</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1047"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1152"/>
         <source>Ends</source>
-        <translation>শেষ হয়</translation>
+        <translation>মুক্তি</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1092"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1197"/>
         <source>Remind Me</source>
-        <translation>আমাকে অনুরোধ করুন</translation>
+        <translation>আমাকে অনুসন্ধান করতে</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1119"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1224"/>
         <source>Repeat</source>
-        <translation>পুনরাবৃ হওয়া</translation>
+        <translation>পুনরায়</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1134"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1239"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1625"/>
         <source>Daily</source>
-        <translation>দৈনিক</translation>
+        <translation>রোজগারী</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1135"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1240"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1626"/>
         <source>Weekdays</source>
-        <translation>পর্বত দিবস</translation>
+        <translation>প্রাক্তন দিনের</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1136"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1241"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1627"/>
         <source>Weekly</source>
-        <translation>নৃত্য দিবস</translation>
+        <translation>সপ্তাহে</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1137"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1242"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1620"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1628"/>
         <source>Monthly</source>
         <translation>মাসিক</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1138"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1243"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1621"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1629"/>
         <source>Yearly</source>
         <translation>বার্ষিক</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1158"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1263"/>
         <source>End Repeat</source>
-        <translation>পুনরাবৃ শেষ করুন</translation>
+        <translation>পুনরায় মুক্তি</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1169"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1274"/>
         <source>After</source>
         <translation>পরে</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1170"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1275"/>
         <source>On</source>
-        <translation>না</translation>
+        <translation>এর উপর</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1240"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1345"/>
         <source>Cancel</source>
         <comment>button</comment>
         <translation>বাতিল</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduledlg.cpp" line="1241"/>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1346"/>
         <source>Save</source>
         <comment>button</comment>
-        <translation>সংরক্ষণ</translation>
+        <translation>পরিসংখ্যান</translation>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1441"/>
+        <source>Local calendar</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/scheduledlg.cpp" line="1443"/>
+        <source>UOS ID</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>CScheduleOperation</name>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="74"/>
+            <location filename="../src/calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="74"/>
         <source>All occurrences of a repeating event must have the same all-day status.</source>
-        <translation>পুনরাবৃত ঘটনার সব ঘটনা একই সম্পূর্ণ দিনের অবস্থা থাকতে হবে।</translation>
+        <translation>পুনরাবৰ্ত্তিত ঘটনার সব আনুষ্ঠানিক দিনের অবস্থার সাথে একই হতে হবে।</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="75"/>
+            <location filename="../src/calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="75"/>
+            <location filename="../src/calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="95"/>
         <source>Do you want to change all occurrences?</source>
-        <translation>আপনি সব ঘটনা পরিবর্তন করতে চান?</translation>
+        <translation>সব ঘটনার পরিবর্তন করতে চান?</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="76"/>
+            <location filename="../src/calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="76"/>
+            <location filename="../src/calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="96"/>
+            <location filename="../src/calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="129"/>
+            <location filename="../src/calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="151"/>
+            <location filename="../src/calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="174"/>
+            <location filename="../src/calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="259"/>
+            <location filename="../src/calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="292"/>
         <source>Cancel</source>
         <comment>button</comment>
         <translation>বাতিল</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="77"/>
+            <location filename="../src/calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="77"/>
+            <location filename="../src/calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="97"/>
         <source>Change All</source>
         <translation>সব পরিবর্তন করুন</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="94"/>
+            <location filename="../src/calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="94"/>
         <source>You are changing the repeating rule of this event.</source>
-        <translation>আপনি এই ঘটনার পুনরাবৃত নিয়ম পরিবর্তন করছেন।</translation>
+        <translation>এই ঘটনার পুনরাবৰ্ত্তিত নিয়ম পরিবর্তন করছেন।</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="127"/>
+            <location filename="../src/calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="127"/>
+            <location filename="../src/calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="149"/>
+            <location filename="../src/calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="172"/>
         <source>You are deleting an event.</source>
-        <translation>আপনি একটি ঘটনা মুছছেন।</translation>
+        <translation>একটি ঘটনা ডিলিট করছেন।</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="128"/>
+            <location filename="../src/calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="128"/>
         <source>Are you sure you want to delete this event?</source>
-        <translation>আপনি এই ঘটনা মুঁছতে চান কি?</translation>
+        <translation>আপনি এই ঘটনাটি ডিলিট করতে সত্যিই চান?</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="130"/>
+            <location filename="../src/calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="130"/>
         <source>Delete</source>
         <comment>button</comment>
-        <translation>মুছুন</translation>
+        <translation>ডিলিট</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="150"/>
+            <location filename="../src/calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="150"/>
         <source>Do you want to delete all occurrences of this event, or only the selected occurrence?</source>
-        <translation>আপনি এই ঘটনার সব ঘটনা মুছতে চান কি, বা কেবল বাছাই করা ঘটনাটি মুছতে চান?</translation>
+        <translation>এই ঘটনার সব ঘটনা কিনা কেবল একটি পন্থার ঘটনা ডিলিট করতে চান?</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="152"/>
+            <location filename="../src/calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="152"/>
         <source>Delete All</source>
-        <translation>সব মুছুন</translation>
+        <translation>সব ডিলিট</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="153"/>
+            <location filename="../src/calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="153"/>
+            <location filename="../src/calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="176"/>
         <source>Delete Only This Event</source>
-        <translation>কেবল এই ঘটনাটি মুছুন</translation>
+        <translation>এই ঘটনাটি শুধু ডিলিট</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="173"/>
+            <location filename="../src/calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="173"/>
         <source>Do you want to delete this and all future occurrences of this event, or only the selected occurrence?</source>
-        <translation>আপনি এই ঘটনাটি এবং এর সব ভবিষ্যতের ঘটনা মুছতে চান কি, বা কেবল বাছাই করা ঘটনাটি মুছতে চান?</translation>
+        <translation>এই ঘটনা এবং সব অধীন ঘটনা কিনা কেবল একটি পন্থার ঘটনা ডিলিট করতে চান?</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="175"/>
+            <location filename="../src/calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="175"/>
         <source>Delete All Future Events</source>
-        <translation>সব ভবিষ্যতের ঘটনাটি মুছুন</translation>
+        <translation>সব অধীন ঘটনা ডিলিট</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="255"/>
+            <location filename="../src/calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="255"/>
+            <location filename="../src/calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="288"/>
         <source>You are changing a repeating event.</source>
-        <translation>আপনি একটি পুনরাবৃত্তি ঘটনা পরিবর্তন করছেন।</translation>
+        <translation>একটি পুনরাবৰ্ত্তিত ঘটনা পরিবর্তন করছেন।</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="257"/>
+            <location filename="../src/calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="257"/>
         <source>Do you want to change only this occurrence of the event, or all occurrences?</source>
-        <translation>আপনি ঘটনার কেবল এই ঘটনাটি পরিবর্তন করতে চান নাকি সবগুলি ঘটনাটি?</translation>
+        <translation>এই ঘটনার একটি পন্থা কিনা সব পন্থার ঘটনা পরিবর্তন করতে চান?</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="260"/>
+            <location filename="../src/calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="260"/>
         <source>All</source>
-        <translation>সবগুলি</translation>
+        <translation>সব</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="261"/>
+            <location filename="../src/calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="261"/>
+            <location filename="../src/calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="294"/>
         <source>Only This Event</source>
-        <translation>কেবল এই ঘটনাটি</translation>
+        <translation>এই ঘটনাটি শুধু</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="290"/>
+            <location filename="../src/calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="290"/>
         <source>Do you want to change only this occurrence of the event, or this and all future occurrences?</source>
-        <translation>আপনি ঘটনার কেবল এই ঘটনাটি পরিবর্তন করতে চান নাকি এটি এবং সবগুলি ভবিষ্যতের ঘটনা?</translation>
+        <translation>এই ঘটনার একটি পন্থা কিনা এই ঘটনা এবং সব অধীন ঘটনা পরিবর্তন করতে চান?</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="293"/>
+            <location filename="../src/calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="293"/>
         <source>All Future Events</source>
-        <translation>সবগুলি ভবিষ্যতের ঘটনা</translation>
+        <translation>সব অধীন ঘটনা</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="416"/>
+            <location filename="../src/calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="416"/>
         <source>You have selected a leap month, and will be reminded according to the rules of the lunar calendar.</source>
-        <translation>আপনি একটি ক্রুসান্ড মাস বেছে নিয়েছেন, এবং চান্দ্র ক্যালেন্ডারের নিয়ম অনুযায়ী আপনাকে অনুস্মারক দেওয়া হবে।</translation>
+        <translation>আপনি একটি বার্ষিক মাস সিলেক্ট করেছেন, এবং লুনার ক্যালেন্ডারের নিয়ম অনুযায়ী অনুযায়ী অনুসন্ধান করা হবে।</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="417"/>
+            <location filename="../src/calendar-client/src/scheduleTask/cscheduleoperation.cpp" line="417"/>
         <source>OK</source>
         <comment>button</comment>
-        <translation>ও.কি.</translation>
+        <translation>টাইম চালান</translation>
     </message>
 </context>
 <context>
     <name>CScheduleSearchDateItem</name>
     <message>
-        <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="905"/>
+            <location filename="../src/calendar-client/src/widget/schedulesearchview.cpp" line="984"/>
         <source>Y</source>
         <translation>হ্যাঁ</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="905"/>
+            <location filename="../src/calendar-client/src/widget/schedulesearchview.cpp" line="984"/>
         <source>M</source>
         <translation>মাস</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="905"/>
+            <location filename="../src/calendar-client/src/widget/schedulesearchview.cpp" line="984"/>
         <source>D</source>
-        <translation>দিন</translation>
+        <translation>D</translation>
     </message>
 </context>
 <context>
     <name>CScheduleSearchItem</name>
     <message>
-        <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="42"/>
+            <location filename="../src/calendar-client/src/widget/schedulesearchview.cpp" line="44"/>
         <source>Edit</source>
-        <translation>সম্পাদনা</translation>
+        <translation>এডিট</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="43"/>
+            <location filename="../src/calendar-client/src/widget/schedulesearchview.cpp" line="46"/>
         <source>Delete</source>
-        <translation>মুছুন</translation>
+        <translation>ডিলিট</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="267"/>
+            <location filename="../src/calendar-client/src/widget/schedulesearchview.cpp" line="291"/>
         <source>All Day</source>
-        <translation>সম্পূর্ণ দিন</translation>
+        <translation>সমস্ত দিন</translation>
     </message>
 </context>
 <context>
     <name>CScheduleSearchView</name>
     <message>
-        <location filename="../calendar-client/src/widget/schedulesearchview.cpp" line="648"/>
+            <location filename="../src/calendar-client/src/widget/schedulesearchview.cpp" line="704"/>
         <source>No search results</source>
-        <translation>কোন অনুসন্ধান ফলাফল পাওয়া যায়নি</translation>
+        <translation>নেই সার্চ ফলাফল</translation>
     </message>
 </context>
 <context>
     <name>CScheduleView</name>
     <message>
-        <location filename="../calendar-client/src/customWidget/scheduleview.cpp" line="316"/>
+            <location filename="../src/calendar-client/src/customWidget/scheduleview.cpp" line="346"/>
         <source>ALL DAY</source>
-        <translation>সম্পূর্ণ দিন</translation>
+        <translation>সমস্ত দিন</translation>
     </message>
 </context>
 <context>
     <name>CSettingDialog</name>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="345"/>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="469"/>
         <source>Sunday</source>
-        <translation>রবিবার</translation>
+        <translation>বুধবার</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="346"/>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="470"/>
         <source>Monday</source>
         <translation>সোমবার</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="347"/>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="471"/>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="492"/>
         <source>Use System Setting</source>
-        <translation>সিস্টেম সেটিং ব্যবহার করুন</translation>
+        <translation>সিস্টেমের সেটিং ব্যবহার করুন</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="364"/>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="490"/>
         <source>24-hour clock</source>
-        <translation>24 ঘন্টা ঘড়ি</translation>
+        <translation>24 ঘন্টা ক্লক</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="365"/>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="491"/>
         <source>12-hour clock</source>
-        <translation>12 ঘন্টা ঘড়ি</translation>
+        <translation>12 ঘন্টা ক্লক</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="389"/>
         <source>import ICS file</source>
-        <translation>ICS ফাইল আমদানি করুন</translation>
+        <translation>ICS ফাইল ইমপোর্ট করুন</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="403"/>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="535"/>
         <source>Manual</source>
-        <translation>ম্যানুয়াল</translation>
+        <translation>হাউইন্স</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="404"/>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="536"/>
         <source>15 mins</source>
         <translation>15 মিনিট</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="405"/>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="537"/>
         <source>30 mins</source>
         <translation>30 মিনিট</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="406"/>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="538"/>
         <source>1 hour</source>
         <translation>1 ঘন্টা</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="407"/>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="539"/>
         <source>24 hours</source>
         <translation>24 ঘন্টা</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="418"/>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="561"/>
         <source>Sync Now</source>
-        <translation>এখন সিঙ্ক করুন</translation>
+        <translation>এখন সিক্স্যান্ড করুন</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="585"/>
         <source>Last sync</source>
-        <translation>শেষ সিঙ্ক</translation>
+        <translation>শেষ সিক্স্যান্ড</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="779"/>
         <source>Please go to the Control Center to change system settings</source>
-        <translation>দৃষ্টিকেন্দ্র বা সিস্টেম সেটিং পরিবর্তন করতে অনুগ্রহ করে ক্লিক করুন কন্ট্রোল সেন্টার এ</translation>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="217"/>
+        <source>More</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="249"/>
+        <source>Third-party accounts</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="258"/>
+        <source>Add</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="307"/>
+        <source>Sync items</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="308"/>
+        <source>Sync interval</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="515"/>
+        <source>Add schedule</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="516"/>
+        <source>Import ICS file</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="517"/>
+        <source>Import events from an ICS file</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="716"/>
+        <source>Remove Calendar Account</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="724"/>
+        <source>Are you sure you want to remove the account &quot;%1&quot;?</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="728"/>
+        <source>Also remove synced events from this calendar</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="733"/>
+        <source>Cancel</source>
+        <comment>button</comment>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="734"/>
+        <source>Delete</source>
+        <comment>button</comment>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="869"/>
+        <source>Last sync time</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="793"/>
+        <source>Syncing...</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Last sync: %1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="1010"/>
+        <source>Local account</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="1155"/>
+        <source>Please go to the &lt;a href=&apos;/&apos;&gt;Control Center&lt;/a&gt; to change system settings</source>
+        <translation>প্রয়োজন হলে &lt;a href=&apos;/&apos;&gt;কন্ট্রোল সেন্টারে&lt;/a&gt; যান এবং সিস্টেমের সেটিং পরিবর্তন করুন</translation>
     </message>
 </context>
 <context>
     <name>CTimeEdit</name>
     <message>
-        <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="71"/>
+            <location filename="../src/calendar-client/src/customWidget/timeedit.cpp" line="81"/>
         <source>(%1 mins)</source>
-        <translation>(%1 মিনিট)</translation>
+        <translation>(%1 মিনিট</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="73"/>
+            <location filename="../src/calendar-client/src/customWidget/timeedit.cpp" line="83"/>
         <source>(%1 hour)</source>
-        <translation>(%1 ঘন্টা)</translation>
+        <translation>(%1 ঘন্টা</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/customWidget/timeedit.cpp" line="75"/>
+            <location filename="../src/calendar-client/src/customWidget/timeedit.cpp" line="85"/>
         <source>(%1 hours)</source>
-        <translation>(%1 ঘন্টা)</translation>
+        <translation>(%1 ঘন্টা</translation>
     </message>
 </context>
 <context>
     <name>CTitleWidget</name>
     <message>
-        <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="30"/>
+            <location filename="../src/calendar-client/src/customWidget/ctitlewidget.cpp" line="35"/>
         <source>Y</source>
-        <translation>য়</translation>
+        <translation>Y</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="42"/>
+            <location filename="../src/calendar-client/src/customWidget/ctitlewidget.cpp" line="47"/>
         <source>M</source>
-        <translation>এম</translation>
+        <translation>M</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="50"/>
+            <location filename="../src/calendar-client/src/customWidget/ctitlewidget.cpp" line="55"/>
         <source>W</source>
-        <translation>ওয়</translation>
+        <translation>W</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="58"/>
+            <location filename="../src/calendar-client/src/customWidget/ctitlewidget.cpp" line="63"/>
         <source>D</source>
-        <translation>ড়</translation>
+        <translation>D</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/customWidget/ctitlewidget.cpp" line="92"/>
+            <location filename="../src/calendar-client/src/customWidget/ctitlewidget.cpp" line="97"/>
+            <location filename="../src/calendar-client/src/customWidget/ctitlewidget.cpp" line="98"/>
         <source>Search events and festivals</source>
-        <translation>সংগঠন ও উৎসব খুঁজুন</translation>
+        <translation>অনুসন্ধান করুন এবং ফেস্টিভাল</translation>
     </message>
 </context>
 <context>
     <name>CWeekWindow</name>
     <message>
-        <location filename="../calendar-client/src/widget/weekWidget/weekwindow.cpp" line="90"/>
+            <location filename="../src/calendar-client/src/widget/weekWidget/weekwindow.cpp" line="96"/>
         <source>Week</source>
         <translation>সপ্তাহ</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/weekWidget/weekwindow.cpp" line="280"/>
+            <location filename="../src/calendar-client/src/widget/weekWidget/weekwindow.cpp" line="301"/>
         <source>Y</source>
-        <translation>য়</translation>
+        <translation>বছর</translation>
     </message>
 </context>
 <context>
     <name>CYearScheduleView</name>
     <message>
-        <location filename="../calendar-client/src/widget/yearWidget/yearscheduleview.cpp" line="268"/>
+            <location filename="../src/calendar-client/src/widget/yearWidget/yearscheduleview.cpp" line="348"/>
+            <location filename="../src/calendar-client/src/widget/yearWidget/yearscheduleview.cpp" line="351"/>
         <source>All Day</source>
         <translation>সমস্ত দিন</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/yearWidget/yearscheduleview.cpp" line="288"/>
+            <location filename="../src/calendar-client/src/widget/yearWidget/yearscheduleview.cpp" line="369"/>
         <source>No event</source>
         <translation>কোনও ঘটনা নেই</translation>
     </message>
@@ -741,61 +918,71 @@
 <context>
     <name>CYearWindow</name>
     <message>
-        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="615"/>
+            <location filename="../src/calendar-client/src/widget/yearWidget/yearwindow.cpp" line="685"/>
         <source>Y</source>
-        <translation>য়</translation>
+        <translation>বছর</translation>
     </message>
 </context>
 <context>
     <name>CalendarWindow</name>
     <message>
-        <location filename="../calendar-client/src/main.cpp" line="66"/>
+            <location filename="../src/calendar-client/src/main.cpp" line="75"/>
         <source>Calendar</source>
         <translation>ক্যালেন্ডার</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/main.cpp" line="69"/>
+            <location filename="../src/calendar-client/src/main.cpp" line="78"/>
         <source>Calendar is a tool to view dates, and also a smart daily planner to schedule all things in life. </source>
-        <translation>ক্যালেন্ডার তারিখ দেখার একটি উপকরণ এবং সমস্ত জিনিসের জন্য এর একটি স্মার্ট দৈনিক পরিকল্পনা করার জন্যও ব্যবহৃত হয়।</translation>
+        <translation>ক্যালেন্ডার একটি তারিখ দেখার উপকরণ এবং জীবনের সব কিছুর জন্য একটি সМАজার্ট দৈনিক প্ল্যানার।</translation>
     </message>
 </context>
 <context>
     <name>Calendarmainwindow</name>
     <message>
-        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="89"/>
+            <location filename="../src/calendar-client/src/widget/calendarmainwindow.cpp" line="90"/>
         <source>Calendar</source>
         <translation>ক্যালেন্ডার</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="372"/>
+            <location filename="../src/calendar-client/src/widget/calendarmainwindow.cpp" line="433"/>
         <source>Manage</source>
-        <translation>পরিচালনা করুন</translation>
+        <translation>পরিচালনা</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="379"/>
+            <location filename="../src/calendar-client/src/widget/calendarmainwindow.cpp" line="440"/>
         <source>Privacy Policy</source>
-        <translation>গোপনীয় নীতি</translation>
+        <translation>خصوصতি নীতি</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="962"/>
+            <location filename="../src/calendar-client/src/widget/calendarmainwindow.cpp" line="1229"/>
         <source>Syncing...</source>
-        <translation>সিঙ্কিং...</translation>
+        <translation>সিংকিং...</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="973"/>
+            <location filename="../src/calendar-client/src/widget/calendarmainwindow.cpp" line="1242"/>
         <source>Sync successful</source>
-        <translation>সিঙ্কিং সফল</translation>
+        <translation>সিংক সফল</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/calendarmainwindow.cpp" line="982"/>
+            <location filename="../src/calendar-client/src/widget/calendarmainwindow.cpp" line="1252"/>
         <source>Sync failed, please try later</source>
-        <translation>সিঙ্কিং ব্যর্থ, অনুগ্রহ করে আবার চেষ্টা করুন</translation>
+        <translation>সিংক ব্যর্থ হয়েছে, আপনাকে আরেকবার পরে চেষ্টা করতে হবে</translation>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/widget/calendarmainwindow.cpp" line="1316"/>
+        <source>%1 does not allow creating events. Please check account permissions.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/widget/calendarmainwindow.cpp" line="1319"/>
+        <source>Unable to connect to the server. Please check your network connection and server address.</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>CenterWidget</name>
     <message>
-        <location filename="../calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="174"/>
+            <location filename="../src/calendar-client/src/customWidget/scheduleRemindWidget.cpp" line="414"/>
         <source>All Day</source>
         <translation>সমস্ত দিন</translation>
     </message>
@@ -803,99 +990,109 @@
 <context>
     <name>DAccountDataBase</name>
     <message>
-        <location filename="../calendar-service/src/dbmanager/daccountdatabase.cpp" line="1155"/>
+            <location filename="../src/calendar-service/src/calendarDataManager/daccountmanagemodule.cpp" line="61"/>
+            <location filename="../src/calendar-service/src/dbmanager/daccountdatabase.cpp" line="1332"/>
         <source>Work</source>
-        <translation>কাজ</translation>
+        <translation>কর্ম</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/dbmanager/daccountdatabase.cpp" line="1157"/>
+            <location filename="../src/calendar-service/src/calendarDataManager/daccountmanagemodule.cpp" line="64"/>
+            <location filename="../src/calendar-service/src/dbmanager/daccountdatabase.cpp" line="1334"/>
         <source>Life</source>
         <translation>জীবন</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/dbmanager/daccountdatabase.cpp" line="1159"/>
+            <location filename="../src/calendar-service/src/calendarDataManager/daccountmanagemodule.cpp" line="67"/>
+            <location filename="../src/calendar-service/src/dbmanager/daccountdatabase.cpp" line="1336"/>
         <source>Other</source>
-        <translation>অন্য</translation>
+        <translation>অন্যান্য</translation>
     </message>
 </context>
 <context>
     <name>DAlarmManager</name>
     <message>
-        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="187"/>
+            <location filename="../src/calendar-service/src/alarmManager/dalarmmanager.cpp" line="194"/>
+            <location filename="../src/calendar-service/src/alarmManager/dalarmmanager.cpp" line="203"/>
+            <location filename="../src/calendar-service/src/alarmManager/dalarmmanager.cpp" line="208"/>
+            <location filename="../src/calendar-service/src/alarmManager/dalarmmanager.cpp" line="219"/>
         <source>Close</source>
         <comment>button</comment>
-        <translation>বন্ধ করুন</translation>
+        <translation>বন্ধ</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="191"/>
+            <location filename="../src/calendar-service/src/alarmManager/dalarmmanager.cpp" line="198"/>
         <source>One day before start</source>
-        <translation>শুরুর এক দিন আগে</translation>
+        <translation>প্রারম্ভের আগে এক দিন</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="197"/>
+            <location filename="../src/calendar-service/src/alarmManager/dalarmmanager.cpp" line="204"/>
         <source>Remind me tomorrow</source>
-        <translation>আমাকে আগামীকাল অনুস্মরণ দিন</translation>
+        <translation>আমাকে আগামী দিনে আবার মনে করান</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="202"/>
+            <location filename="../src/calendar-service/src/alarmManager/dalarmmanager.cpp" line="209"/>
         <source>Remind me later</source>
-        <translation>আমাকে আর বেশি অনুস্মরণ দিন</translation>
+        <translation>আমাকে পরবর্তীতে মনে করান</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="204"/>
+            <location filename="../src/calendar-service/src/alarmManager/dalarmmanager.cpp" line="211"/>
         <source>15 mins later</source>
-        <translation>15 মিনিট পর</translation>
+        <translation>15 মিনিট পরে</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="205"/>
+            <location filename="../src/calendar-service/src/alarmManager/dalarmmanager.cpp" line="212"/>
         <source>1 hour later</source>
-        <translation>এক ঘন্টা পরে</translation>
+        <translation>1 ঘণ্টা পরে</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="206"/>
+            <location filename="../src/calendar-service/src/alarmManager/dalarmmanager.cpp" line="213"/>
         <source>4 hours later</source>
-        <translation>চার ঘন্টা পরে</translation>
+        <translation>4 ঘণ্টা পরে</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="207"/>
+            <location filename="../src/calendar-service/src/alarmManager/dalarmmanager.cpp" line="214"/>
+            <location filename="../src/calendar-service/src/alarmManager/dalarmmanager.cpp" line="311"/>
+            <location filename="../src/calendar-service/src/alarmManager/dalarmmanager.cpp" line="324"/>
         <source>Tomorrow</source>
         <translation>আগামীকাল</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="215"/>
+            <location filename="../src/calendar-service/src/alarmManager/dalarmmanager.cpp" line="222"/>
         <source>Schedule Reminder</source>
-        <translation>যোগাযোগ অনুস্মারক</translation>
+        <translation>সময়সূচিত সনাক্তকরণ</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="258"/>
+            <location filename="../src/calendar-service/src/alarmManager/dalarmmanager.cpp" line="268"/>
+            <location filename="../src/calendar-service/src/alarmManager/dalarmmanager.cpp" line="280"/>
         <source>%1 to %2</source>
-        <translation>'%1 থেকে %2'</translation>
+        <translation>%1 এর থেকে %2</translation>
     </message>
     <message>
-        <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="296"/>
+            <location filename="../src/calendar-service/src/alarmManager/dalarmmanager.cpp" line="307"/>
+            <location filename="../src/calendar-service/src/alarmManager/dalarmmanager.cpp" line="320"/>
         <source>Today</source>
-        <translation>আজ</translation>
+        <translation>আজকে</translation>
     </message>
 </context>
 <context>
     <name>DragInfoGraphicsView</name>
     <message>
-        <location filename="../calendar-client/src/view/draginfographicsview.cpp" line="48"/>
+            <location filename="../src/calendar-client/src/view/draginfographicsview.cpp" line="49"/>
         <source>Edit</source>
         <translation>সম্পাদনা</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/view/draginfographicsview.cpp" line="49"/>
+            <location filename="../src/calendar-client/src/view/draginfographicsview.cpp" line="51"/>
         <source>Delete</source>
         <translation>মুছুন</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/view/draginfographicsview.cpp" line="50"/>
+            <location filename="../src/calendar-client/src/view/draginfographicsview.cpp" line="53"/>
         <source>New event</source>
         <translation>নতুন ঘটনা</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/view/draginfographicsview.cpp" line="759"/>
+            <location filename="../src/calendar-client/src/view/draginfographicsview.cpp" line="849"/>
         <source>New Event</source>
         <translation>নতুন ঘটনা</translation>
     </message>
@@ -905,77 +1102,107 @@
     <message>
         <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="144"/>
         <source>export</source>
-        <translation>প্রকাশ</translation>
+        <translation>eksport</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="219"/>
+            <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="324"/>
         <source>import ICS file</source>
-        <translation>ICS ফাইল আমদানি করুন</translation>
+        <translation>ICS ফাইল ইনপোর্ট</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="450"/>
+            <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="575"/>
         <source>You are deleting an event type.</source>
-        <translation>আপনি একটি ঘটনা ধরন মুছছেন।</translation>
+        <translation>আপনি একটি ঘটনা তাক্সিয়াল মুছে দিচ্ছেন।</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="451"/>
+            <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="576"/>
         <source>All events under this type will be deleted and cannot be recovered.</source>
-        <translation>এই ধরনের সব ঘটনা মুছে ফেলা হবে এবং পুনরুদ্ধার করা যাবে না।</translation>
+        <translation>এই তাক্সিয়ালের বাইরে সব ঘটনা মুছে দিয়ে যাবে এবং পুনরুদ্ধার করা যাবে না।</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="452"/>
+            <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="577"/>
         <source>Cancel</source>
         <comment>button</comment>
         <translation>বাতিল</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/customWidget/jobtypelistview.cpp" line="453"/>
+            <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="578"/>
         <source>Delete</source>
         <comment>button</comment>
         <translation>মুছুন</translation>
     </message>
+    <message>
+            <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="214"/>
+        <source>Edit</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="220"/>
+            <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="234"/>
+        <source>Export</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="324"/>
+            <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="427"/>
+        <source>ICS files (*.ics)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="426"/>
+        <source>Export ICS file</source>
+        <translation type="unfinished"/>
+    </message>
+        <message>
+            <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="217"/>
+            <source>Delete</source>
+            <translation type="unfinished"/>
+        </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="96"/>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="70"/>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="101"/>
         <source>Manage calendar</source>
-        <translation>এলক্যালেন্ডার পরিচালনা করুন</translation>
+        <translation>ক্যালেন্ডার পরিচালনা</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="112"/>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="86"/>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="105"/>
         <source>Event types</source>
-        <translation>ঘটনা ধরন</translation>
+        <translation>ঘটনা তাক্সিয়াল</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="38"/>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="53"/>
         <source>Account settings</source>
-        <translation>অ্যাকাউন্ট সেটিংস</translation>
+        <translation>পরিস্থিতি সেটিংস</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="42"/>
         <source>Account</source>
-        <translation>অ্যাকাউন্ট</translation>
+        <translation>পরিস্থিতি</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="53"/>
         <source>Select items to be synced</source>
-        <translation>সিনক করার জন্য আইটেম বাছাই করুন</translation>
+        <translation>সিংক করার জন্য অবস্থান ঠিক করুন</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="56"/>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="591"/>
         <source>Events</source>
         <translation>ঘটনা</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="63"/>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="120"/>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="593"/>
         <source>General settings</source>
         <translation>সাধারণ সেটিংস</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="74"/>
         <source>Sync interval</source>
-        <translation>সিনক সময় অন্তরাল</translation>
+        <translation>সিংক অন্তরাল</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="104"/>
@@ -983,25 +1210,40 @@
         <translation>ক্যালেন্ডার অ্যাকাউন্ট</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="150"/>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="124"/>
         <source>General</source>
         <translation>সাধারণ</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="152"/>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="126"/>
         <source>First day of week</source>
         <translation>সপ্তাহের প্রথম দিন</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/settingdialog.cpp" line="153"/>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="127"/>
         <source>Time</source>
-        <translation>সম্পর্কে সময়</translation>
+        <translation>মুহূর্ত</translation>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="57"/>
+        <source>UOS ID</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="62"/>
+        <source>Third-party accounts</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="78"/>
+        <source>Associated account</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>Return</name>
     <message>
-        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="611"/>
+            <location filename="../src/calendar-client/src/widget/yearWidget/yearwindow.cpp" line="681"/>
         <source>Today</source>
         <comment>Return</comment>
         <translation>আজ</translation>
@@ -1010,7 +1252,9 @@
 <context>
     <name>Return Today</name>
     <message>
-        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="339"/>
+            <location filename="../src/calendar-client/src/widget/dayWidget/daymonthview.cpp" line="361"/>
+            <location filename="../src/calendar-client/src/widget/monthWidget/monthwindow.cpp" line="108"/>
+            <location filename="../src/calendar-client/src/widget/weekWidget/weekwindow.cpp" line="298"/>
         <source>Today</source>
         <comment>Return Today</comment>
         <translation>আজ</translation>
@@ -1019,148 +1263,504 @@
 <context>
     <name>ScheduleTypeEditDlg</name>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="22"/>
+            <location filename="../src/calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="22"/>
+            <location filename="../src/calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="50"/>
         <source>New event type</source>
-        <translation>নতুন ইভেন্ট ধরন</translation>
+        <translation>নতুন ঘটনা তাক্সিয়াল</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="32"/>
+            <location filename="../src/calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="33"/>
         <source>Edit event type</source>
-        <translation>ইভেন্ট ধরন সম্পাদনা করুন</translation>
+        <translation>ঘটনা তাক্সিয়াল সম্পাদনা</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="43"/>
+            <location filename="../src/calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="45"/>
         <source>Import ICS file</source>
-        <translation>ICS ফাইল আমদানি করুন</translation>
+        <translation>ICS ফাইল ইনপোর্ট</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="151"/>
+            <location filename="../src/calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="162"/>
         <source>Name:</source>
         <translation>নাম:</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="152"/>
+            <location filename="../src/calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="163"/>
         <source>Color:</source>
-        <translation>রং:</translation>
+        <translation>বর্ণ:</translation>
     </message>
     <message>
         <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="156"/>
         <source>ICS File:</source>
-        <translation>ICS ফাইল:</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="167"/>
+            <location filename="../src/calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="179"/>
         <source>Cancel</source>
         <comment>button</comment>
-        <translation>বাতিল</translation>
+        <translation>বন্ধ করুন</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="168"/>
+            <location filename="../src/calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="180"/>
         <source>Save</source>
         <comment>button</comment>
-        <translation>সংরক্ষণ</translation>
+        <translation>পরিবর্তন সংরক্ষণ করুন</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="219"/>
+            <location filename="../src/calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="236"/>
         <source>The name can not only contain whitespaces</source>
-        <translation>নাম কেবলমাত্র হোয়াইটস্পেস বা ফাঁকা জায়গা ধারণ করতে পারে না</translation>
+        <translation>নামে কেবল বাঁধা থাকা অন্য কোনো বাক্য থাকতে পারে না</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="256"/>
+            <location filename="../src/calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="279"/>
         <source>Enter a name please</source>
-        <translation>নাম প্রবেশ করুন</translation>
+        <translation>অনুগ্রহ করে একটি নাম প্রদান করুন</translation>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/scheduletypeeditdlg.cpp" line="168"/>
+        <source>&lt;a href=&apos;https://wikipedia.org/wiki/ICalendar&apos;&gt;ICS&lt;/a&gt; File:</source>
+        <translation>&lt;a href=&apos;https://wikipedia.org/wiki/ICalendar&apos;&gt;ICS&lt;/a&gt; ফাইল:</translation>
     </message>
 </context>
 <context>
     <name>Shortcut</name>
     <message>
-        <location filename="../calendar-client/src/shortcut.cpp" line="16"/>
+            <location filename="../src/calendar-client/src/shortcut.cpp" line="18"/>
         <source>Help</source>
-        <translation>সাহায্য</translation>
+        <translation>পомাহ্য</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/shortcut.cpp" line="17"/>
+            <location filename="../src/calendar-client/src/shortcut.cpp" line="19"/>
         <source>Delete event</source>
-        <translation>ইভেন্ট মুছুন</translation>
+        <translation>ইভেন্ট ডিলিট করুন</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/shortcut.cpp" line="20"/>
+            <location filename="../src/calendar-client/src/shortcut.cpp" line="22"/>
         <source>Copy</source>
-        <translation>কপি</translation>
+        <translation>কপি করুন</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/shortcut.cpp" line="21"/>
+            <location filename="../src/calendar-client/src/shortcut.cpp" line="23"/>
         <source>Cut</source>
-        <translation>কাট</translation>
+        <translation>কাট করুন</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/shortcut.cpp" line="22"/>
+            <location filename="../src/calendar-client/src/shortcut.cpp" line="24"/>
         <source>Paste</source>
-        <translation>পেস্ট</translation>
+        <translation>পেস্ট করুন</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/shortcut.cpp" line="25"/>
+            <location filename="../src/calendar-client/src/shortcut.cpp" line="27"/>
         <source>Delete</source>
-        <translation>মুছুন</translation>
+        <translation>ডিলিট</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/shortcut.cpp" line="26"/>
+            <location filename="../src/calendar-client/src/shortcut.cpp" line="28"/>
         <source>Select all</source>
-        <translation>সবগুলো বাছুন</translation>
+        <translation>সব নির্বাচন করুন</translation>
     </message>
 </context>
 <context>
     <name>SidebarCalendarWidget</name>
     <message>
-        <location filename="../calendar-client/src/widget/sidebarWidget/sidebarcalendarwidget.cpp" line="126"/>
+            <location filename="../src/calendar-client/src/widget/sidebarWidget/sidebarcalendarwidget.cpp" line="141"/>
         <source>Y</source>
-        <translation>বছর</translation>
+        <translation>Y</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/sidebarWidget/sidebarcalendarwidget.cpp" line="126"/>
+            <location filename="../src/calendar-client/src/widget/sidebarWidget/sidebarcalendarwidget.cpp" line="141"/>
         <source>M</source>
-        <translation>মাস</translation>
+        <translation>M</translation>
     </message>
 </context>
 <context>
     <name>TimeJumpDialog</name>
     <message>
-        <location filename="../calendar-client/src/dialog/timejumpdialog.cpp" line="29"/>
+            <location filename="../src/calendar-client/src/dialog/timejumpdialog.cpp" line="38"/>
         <source>Go</source>
         <comment>button</comment>
-        <translation>যান</translation>
+        <translation>গো</translation>
     </message>
 </context>
 <context>
     <name>UserloginWidget</name>
     <message>
-        <location filename="../calendar-client/src/widget/settingWidget/userloginwidget.cpp" line="48"/>
+            <location filename="../src/calendar-client/src/widget/settingWidget/userloginwidget.cpp" line="110"/>
         <source>Sign In</source>
         <comment>button</comment>
-        <translation>সাইন ইন</translation>
+        <translation>লগইন করুন</translation>
     </message>
     <message>
-        <location filename="../calendar-client/src/widget/settingWidget/userloginwidget.cpp" line="49"/>
+            <location filename="../src/calendar-client/src/widget/settingWidget/userloginwidget.cpp" line="111"/>
         <source>Sign Out</source>
         <comment>button</comment>
-        <translation>সাইন আউট</translation>
+        <translation>লগআউট করুন</translation>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/widget/settingWidget/userloginwidget.cpp" line="208"/>
+        <source>Not signed in</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>YearFrame</name>
     <message>
-        <location filename="../calendar-client/src/widget/yearWidget/yearwindow.cpp" line="928"/>
+            <location filename="../src/calendar-client/src/widget/yearWidget/yearwindow.cpp" line="1045"/>
         <source>Y</source>
-        <translation>বছর</translation>
+        <translation>Y</translation>
     </message>
 </context>
 <context>
     <name>today</name>
     <message>
-        <location filename="../calendar-client/src/widget/dayWidget/daymonthview.cpp" line="188"/>
+            <location filename="../src/calendar-client/src/widget/dayWidget/daymonthview.cpp" line="202"/>
+            <location filename="../src/calendar-client/src/widget/dayWidget/daymonthview.cpp" line="359"/>
+            <location filename="../src/calendar-client/src/widget/monthWidget/monthwindow.cpp" line="106"/>
+            <location filename="../src/calendar-client/src/widget/monthWidget/monthwindow.cpp" line="276"/>
+            <location filename="../src/calendar-client/src/widget/weekWidget/weekwindow.cpp" line="61"/>
+            <location filename="../src/calendar-client/src/widget/weekWidget/weekwindow.cpp" line="296"/>
+            <location filename="../src/calendar-client/src/widget/yearWidget/yearwindow.cpp" line="288"/>
+            <location filename="../src/calendar-client/src/widget/yearWidget/yearwindow.cpp" line="679"/>
         <source>Today</source>
         <comment>Today</comment>
         <translation>আজ</translation>
     </message>
 </context>
+    <context>
+        <name>CalDavAccountDialog</name>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="40"/>
+        <source>:</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="50"/>
+        <source>Add Calendar Account</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="73"/>
+        <source>Select account type</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="84"/>
+        <source>Automatically filled after selecting account type</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="85"/>
+        <source>Enter username or email</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="86"/>
+        <source>Enter password</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="93"/>
+        <source>Account Type</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="94"/>
+        <source>Server Address</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="95"/>
+        <source>Username</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="96"/>
+        <source>Password</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="107"/>
+        <source>Cancel</source>
+        <comment>button</comment>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="108"/>
+        <source>Sign In</source>
+        <comment>button</comment>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="199"/>
+        <source>Edit Account</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="200"/>
+        <source>Save</source>
+        <comment>button</comment>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="207"/>
+        <source>Leave empty to keep the current password</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="250"/>
+        <source>Unable to save the account password, Please try again</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="490"/>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="542"/>
+        <source>Please enter a valid server address.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="545"/>
+        <source>Please enter the correct username.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="546"/>
+        <source>Please enter the correct password.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="555"/>
+        <source>Incorrect username or password. Please try again.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="557"/>
+        <source>This server does not support CalDAV.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="559"/>
+        <source>The server rejected your login request. Please check your account permissions.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="561"/>
+        <source>Unable to parse the data returned by the server. Please verify the server address or try again later.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="563"/>
+        <source>The server certificate is invalid.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="567"/>
+        <source>Unable to connect to the server. Please check your network connection and server address.</source>
+        <translation type="unfinished"/>
+    </message>
+    </context>
+    <context>
+        <name>CalDavAccountListWidget</name>
+    <message>
+        <source>Last sync: %1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="46"/>
+        <source>Last sync time</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="140"/>
+        <source>No third-party accounts added</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="146"/>
+        <source>Add</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="199"/>
+        <source>Pending synchronization</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="199"/>
+        <source>Delete</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="256"/>
+        <source>Sync conflict</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="257"/>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="320"/>
+        <source>A synchronization conflict was detected. The server version will replace the local changes.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="262"/>
+        <source>Sync Failed: %1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="263"/>
+        <source>Deleting...</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="263"/>
+        <source>Syncing...</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="276"/>
+        <source>Sync Now</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="302"/>
+        <source>Calendar synchronization conflict</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="308"/>
+        <source>Use server version</source>
+        <translation type="unfinished"/>
+    </message>
+    </context>
+    <context>
+        <name>DCalDavProviderProfile</name>
+    <message>
+            <location filename="../src/calendar-common/src/dcaldavprofile.h" line="37"/>
+        <source>DingTalk</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-common/src/dcaldavprofile.h" line="39"/>
+        <source>WeCom</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-common/src/dcaldavprofile.h" line="41"/>
+        <source>Tencent Meeting</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-common/src/dcaldavprofile.h" line="43"/>
+        <source>QQ Mail</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-common/src/dcaldavprofile.h" line="45"/>
+        <source>Feishu</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-common/src/dcaldavprofile.h" line="48"/>
+        <source>Other CalDAV</source>
+        <translation type="unfinished"/>
+    </message>
+    </context>
+    <context>
+        <name>DCalDavSyncStatus</name>
+    <message>
+            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="64"/>
+        <source>Unable to parse the data returned by the server. Please verify the server address or try again later.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="54"/>
+        <source>The server certificate is invalid.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="57"/>
+        <source>Incorrect username or password. Please try again.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="60"/>
+        <source>This server does not support CalDAV.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>The server rejected your login request. Please check your account permissions.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="68"/>
+        <source>The server denied access.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="83"/>
+        <source>The server request timed out.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="87"/>
+        <source>Unable to connect to the server. Please check your network connection and server address.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="94"/>
+        <source>Synchronization failed.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="879"/>
+        <source>Sync Failed</source>
+        <translation type="unfinished"/>
+    </message>
+        <message>
+            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="51"/>
+            <source>The server request is invalid.</source>
+            <translation type="unfinished"/>
+        </message>
+        <message>
+            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="71"/>
+            <source>The server is busy. Please try again later.</source>
+            <translation type="unfinished"/>
+        </message>
+        <message>
+            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="74"/>
+            <source>The server is unavailable. Please try again later.</source>
+            <translation type="unfinished"/>
+        </message>
+        <message>
+            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="77"/>
+            <source>The calendar data conflicts with the server.</source>
+            <translation type="unfinished"/>
+        </message>
+        <message>
+            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="80"/>
+            <source>The server returned too much data. Please try again later.</source>
+            <translation type="unfinished"/>
+        </message>
+        <message>
+            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="91"/>
+            <source>Unable to save calendar data. Please try again later.</source>
+            <translation type="unfinished"/>
+        </message>
+    </context>
+    <context>
+        <name>SidebarAccountItemWidget</name>
+    <message>
+            <location filename="../src/calendar-client/src/widget/sidebarWidget/sidebaritemwidget.cpp" line="347"/>
+        <source>Sync</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/widget/sidebarWidget/sidebaritemwidget.cpp" line="346"/>
+        <source>Deleting...</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/widget/sidebarWidget/sidebaritemwidget.cpp" line="347"/>
+        <source>Syncing...</source>
+        <translation type="unfinished"/>
+    </message>
+    </context>
 </TS>
