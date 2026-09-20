@@ -1,3 +1,19 @@
+dde-calendar (6.6.1) unstable; urgency=medium
+
+  * refactor(caldav): make credential access asynchronous
+  * refactor(caldav): track XML depth inline and persist privilege state
+  * feat(caldav): persist malformed remote resources for later retry
+  * fix(caldav): tolerate malformed remote resources during sync
+  * feat(caldav): preserve original schedule type on local migration
+  * feat(caldav): sync calendar and schedule deletion operations
+  * fix(title): replace collapsed search icon with bundled theme-aware SVG
+  * fix(day-view): add right margin to today button in mini calendar
+  * fix(widget): keep popup inside schedule view bounds
+  * fix(widget): clear press state on popup dismiss
+  * fix(calendar): adapt week divider for dark theme
+
+ -- Wang Yu <wangyu@uniontech.com>  Sun, 20 Sep 2026 17:47:11 +0800
+
 dde-calendar (6.6.0) unstable; urgency=medium
 
   * feat(year): show tooltip for truncated schedule titles in year view
