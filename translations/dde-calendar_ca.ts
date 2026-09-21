@@ -1156,7 +1156,7 @@
         <message>
             <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="217"/>
             <source>Delete</source>
-            <translation type="unfinished"/>
+            <translation>Elimina</translation>
         </message>
 </context>
 <context>
