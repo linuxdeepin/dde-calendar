@@ -78,6 +78,15 @@ CalDavAccountDialog::CalDavAccountDialog(QWidget *parent)
 
     m_providerComboBox->setFixedHeight(36);
     m_providerComboBox->setIconSize(QSize(24, 24));
+    m_providerErrorLabel = new DLabel(content);
+    m_providerErrorLabel->setForegroundRole(DPalette::TextWarning);
+    m_providerErrorLabel->hide();
+    QWidget *providerField = new QWidget(content);
+    QVBoxLayout *providerFieldLayout = new QVBoxLayout(providerField);
+    providerFieldLayout->setContentsMargins(0, 0, 0, 0);
+    providerFieldLayout->setSpacing(2);
+    providerFieldLayout->addWidget(m_providerComboBox);
+    providerFieldLayout->addWidget(m_providerErrorLabel);
     m_serverUrlEdit = new DLineEdit(content);
     m_usernameEdit = new DLineEdit(content);
     m_passwordEdit = new DPasswordEdit(content);
@@ -90,7 +99,7 @@ CalDavAccountDialog::CalDavAccountDialog(QWidget *parent)
     m_passwordEdit->setEchoButtonIsVisible(true);
     m_passwordEdit->lineEdit()->setInputMethodHints(Qt::ImhHiddenText | Qt::ImhNoPredictiveText);
 
-    form->addRow(formLabel(tr("Account Type"), content), m_providerComboBox);
+    form->addRow(formLabel(tr("Account Type"), content), providerField);
     form->addRow(formLabel(tr("Server Address"), content), m_serverUrlEdit);
     form->addRow(formLabel(tr("Username"), content), m_usernameEdit);
     form->addRow(formLabel(tr("Password"), content), m_passwordEdit);
@@ -106,7 +115,7 @@ CalDavAccountDialog::CalDavAccountDialog(QWidget *parent)
     setOnButtonClickedClose(false);
     addButton(tr("Cancel", "button"));
     addButton(tr("Sign In", "button"), false, DDialog::ButtonRecommend);
-    getButton(1)->setEnabled(false);
+    getButton(1)->setEnabled(true);
     for (int i = 0; i < buttonCount(); ++i) {
         getButton(i)->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         getButton(i)->setFixedHeight(36);
@@ -211,6 +220,8 @@ void CalDavAccountDialog::setEditAccount(const QString &config)
 
 void CalDavAccountDialog::slotProviderChanged(int)
 {
+    m_providerErrorLabel->clear();
+    m_providerErrorLabel->hide();
     updateProviderFields();
 }
 
@@ -445,6 +456,8 @@ void CalDavAccountDialog::updateProviderFields()
     setInputError(m_serverUrlEdit, false);
     setInputError(m_usernameEdit, false);
     setInputError(m_passwordEdit, false);
+    m_providerErrorLabel->clear();
+    m_providerErrorLabel->hide();
     const int providerType = m_providerComboBox->currentData().toInt();
     if (providerType < DCalDavProviderProfile::Provider_DingTalk) {
         m_serverUrlEdit->clear();
@@ -463,15 +476,9 @@ void CalDavAccountDialog::updateProviderFields()
 
 void CalDavAccountDialog::updateLoginButtonState()
 {
-    const int providerType = m_providerComboBox->currentData().toInt();
-    const bool providerSelected = providerType >= DCalDavProviderProfile::Provider_DingTalk
-        && providerType <= DCalDavProviderProfile::Provider_Other;
-    const bool serverAddressValid = !DCalDavProviderProfile::normalizeServerUrl(
-        m_serverUrlEdit->text()).isEmpty();
-    const bool usernamePresent = !m_usernameEdit->text().trimmed().isEmpty();
-    const bool passwordPresent = m_editMode || !m_passwordEdit->text().isEmpty();
-    getButton(1)->setEnabled(providerSelected && serverAddressValid
-                              && usernamePresent && passwordPresent);
+    // Keep the button clickable so validation messages can be shown for all
+    // missing fields after the user presses Sign In.
+    getButton(1)->setEnabled(true);
 }
 
 bool CalDavAccountDialog::validateInput()
@@ -479,28 +486,33 @@ bool CalDavAccountDialog::validateInput()
     setInputError(m_serverUrlEdit, false);
     setInputError(m_usernameEdit, false);
     setInputError(m_passwordEdit, false);
-    if (m_providerComboBox->currentData().toInt() < DCalDavProviderProfile::Provider_DingTalk) {
-        m_errorLabel->hide();
-        return false;
+    m_providerErrorLabel->clear();
+    m_providerErrorLabel->hide();
+    m_errorLabel->hide();
+
+    bool valid = true;
+    const int providerType = m_providerComboBox->currentData().toInt();
+    if (providerType < DCalDavProviderProfile::Provider_DingTalk) {
+        m_providerErrorLabel->setText(tr("Please select an account type"));
+        m_providerErrorLabel->show();
+        valid = false;
     }
 
     const QUrl serverUrl = DCalDavProviderProfile::normalizeServerUrl(
         m_serverUrlEdit->text());
-    if (!serverUrl.isValid()) {
-        const QString message = tr("Please enter a valid server address.");
-        setInputError(m_serverUrlEdit, true, message);
-        m_errorLabel->hide();
-        return false;
+    if (!serverUrl.isValid() || serverUrl.isEmpty()) {
+        setInputError(m_serverUrlEdit, true, tr("Please enter a valid server address"));
+        valid = false;
     }
-    // Username and secret are required by the button enable rule. They do not
-    // produce a separate dialog prompt when the button is disabled.
-    if (m_usernameEdit->text().trimmed().isEmpty()
-        || (!m_editMode && m_passwordEdit->text().isEmpty())) {
-        m_errorLabel->hide();
-        return false;
+    if (m_usernameEdit->text().trimmed().isEmpty()) {
+        setInputError(m_usernameEdit, true, tr("Please enter username"));
+        valid = false;
     }
-    m_errorLabel->hide();
-    return true;
+    if (!m_editMode && m_passwordEdit->text().isEmpty()) {
+        setInputError(m_passwordEdit, true, tr("Please enter password"));
+        valid = false;
+    }
+    return valid;
 }
 
 void CalDavAccountDialog::setLoginEnabled(bool enabled)

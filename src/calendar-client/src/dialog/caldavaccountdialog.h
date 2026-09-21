@@ -53,6 +53,7 @@ private:
     void clearPendingCredential(bool deleteSecret);
 
     QComboBox *m_providerComboBox = nullptr;
+    DLabel *m_providerErrorLabel = nullptr;
     DLineEdit *m_serverUrlEdit = nullptr;
     DLineEdit *m_usernameEdit = nullptr;
     DPasswordEdit *m_passwordEdit = nullptr;

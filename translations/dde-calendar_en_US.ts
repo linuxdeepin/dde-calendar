@@ -1444,6 +1444,27 @@
         <source>Select account type</source>
         <translation>Select account type</translation>
     </message>
+        <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="494" />
+            <source>Please select an account type</source>
+            <translation>Please select an account type</translation>
+        </message>
+        <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="502" />
+            <source>Please enter a valid server address</source>
+            <translation>Please enter a valid server address</translation>
+        </message>
+        <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="506" />
+            <source>Please enter username</source>
+            <translation>Please enter username</translation>
+        </message>
+        <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="510" />
+            <source>Please enter password</source>
+            <translation>Please enter password</translation>
+        </message>
+
     <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="84" />
         <source>Automatically filled after selecting account type</source>
