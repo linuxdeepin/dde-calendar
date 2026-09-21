@@ -1445,22 +1445,22 @@
         <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="494"/>
             <source>Please select an account type</source>
-            <translation type="unfinished"/>
+            <translation>Si us plau, seleccioneu un tipus de compte.</translation>
         </message>
         <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="502"/>
             <source>Please enter a valid server address</source>
-            <translation type="unfinished"/>
+            <translation>Si us plau, introduïu una adreça de servidor vàlida.</translation>
         </message>
         <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="506"/>
             <source>Please enter username</source>
-            <translation type="unfinished"/>
+            <translation>Introduïu el nom d&apos;usuari.</translation>
         </message>
         <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="510"/>
             <source>Please enter password</source>
-            <translation type="unfinished"/>
+            <translation>Introduïu la contrasenya.</translation>
         </message>
 
     <message>
@@ -1738,32 +1738,32 @@
         <message>
             <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="51"/>
             <source>The server request is invalid.</source>
-            <translation type="unfinished"/>
+            <translation>La sol·licitud al servidor no és vàlida.</translation>
         </message>
         <message>
             <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="71"/>
             <source>The server is busy. Please try again later.</source>
-            <translation type="unfinished"/>
+            <translation>El servidor està ocupat. Si us plau, torneu-ho a intentar més tard.</translation>
         </message>
         <message>
             <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="74"/>
             <source>The server is unavailable. Please try again later.</source>
-            <translation type="unfinished"/>
+            <translation>El servidor no està disponible. Si us plau, torneu-ho a intentar més tard.</translation>
         </message>
         <message>
             <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="77"/>
             <source>The calendar data conflicts with the server.</source>
-            <translation type="unfinished"/>
+            <translation>Les dades del calendari entren en conflicte amb el servidor.</translation>
         </message>
         <message>
             <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="80"/>
             <source>The server returned too much data. Please try again later.</source>
-            <translation type="unfinished"/>
+            <translation>El servidor ha retornat massa dades. Si us plau, torneu-ho a provar més tard.</translation>
         </message>
         <message>
             <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="91"/>
             <source>Unable to save calendar data. Please try again later.</source>
-            <translation type="unfinished"/>
+            <translation>No s&apos;han pogut desar les dades del calendari. Si us plau, torneu-ho a intentar més tard.</translation>
         </message>
     </context>
     <context>
