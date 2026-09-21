@@ -1025,6 +1025,27 @@
             <translation>选择账户类型</translation>
         </message>
         <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="494" />
+            <source>Please select an account type</source>
+            <translation>请选择一个账户类型</translation>
+        </message>
+        <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="502" />
+            <source>Please enter a valid server address</source>
+            <translation>请输入有效的服务器地址</translation>
+        </message>
+        <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="506" />
+            <source>Please enter username</source>
+            <translation>请输入用户名</translation>
+        </message>
+        <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="510" />
+            <source>Please enter password</source>
+            <translation>请输入密码</translation>
+        </message>
+
+        <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="107" />
             <source>Cancel</source>
             <comment>button</comment>
