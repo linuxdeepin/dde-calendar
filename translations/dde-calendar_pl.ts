@@ -1445,22 +1445,22 @@
         <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="494"/>
             <source>Please select an account type</source>
-            <translation type="unfinished"/>
+            <translation>Wybierz typ konta</translation>
         </message>
         <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="502"/>
             <source>Please enter a valid server address</source>
-            <translation type="unfinished"/>
+            <translation>Wprowadź prawidłowy adres serwera</translation>
         </message>
         <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="506"/>
             <source>Please enter username</source>
-            <translation type="unfinished"/>
+            <translation>Wprowadź nazwę użytkownika</translation>
         </message>
         <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="510"/>
             <source>Please enter password</source>
-            <translation type="unfinished"/>
+            <translation>Wprowadź hasło</translation>
         </message>
 
     <message>
@@ -1763,7 +1763,7 @@
         <message>
             <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="91"/>
             <source>Unable to save calendar data. Please try again later.</source>
-            <translation type="unfinished"/>
+            <translation>Nie można zapisać danych kalendarza. Spróbuj ponownie później.</translation>
         </message>
     </context>
     <context>
