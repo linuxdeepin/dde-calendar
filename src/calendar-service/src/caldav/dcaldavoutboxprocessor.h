@@ -5,6 +5,7 @@
 #ifndef DCALDAVOUTBOXPROCESSOR_H
 #define DCALDAVOUTBOXPROCESSOR_H
 
+#include "dcaldaverrorcode.h"
 #include "dcaldaveventmappinginfo.h"
 #include "dcaldavoutboxitem.h"
 #include "dcaldavtransport.h"
@@ -34,6 +35,7 @@ public:
         bool success = false;
         QString errorMessage;
         DCalDavTransport::Response failureResponse;
+        DCalDavErrorCode failureCode = DCalDavErrorCode::NoError;
         int processedCount = 0;
         int retryScheduledCount = 0;
         int conflictRecordedCount = 0;

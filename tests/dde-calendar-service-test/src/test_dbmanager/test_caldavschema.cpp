@@ -823,6 +823,17 @@ TEST(CalDavSyncStatusMapper, DoesNotUseFallbackText)
               DCalDavSyncStatusMapper::errorCodeForFailure(response));
 }
 
+TEST(CalDavAccountStatus, DoesNotExposeRawUnknownFailureReason)
+{
+    DCalDavAccountStatus status;
+    status.failureCode = static_cast<int>(DCalDavErrorCode::Unknown);
+    status.failureReason = QStringLiteral(
+        "CalDAV synchronization failure requires manual retry.");
+
+    EXPECT_EQ(QStringLiteral("Synchronization failed."),
+              DCalDavAccountStatus::resolveFailureReason(status));
+}
+
 TEST(CalDavAccountStatus, SerializesWithoutCredentialData)
 {
     DCalDavAccountStatus input;

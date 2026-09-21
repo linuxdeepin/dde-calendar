@@ -8,6 +8,7 @@
 #include "daccountmanagerdatabase.h"
 #include "dcaldavprofile.h"
 #include "dcaldavretrypolicy.h"
+#include "dcaldavsyncstatusmapper.h"
 #include "dcaldavutils.h"
 #include "dcaldavxmlreader.h"
 #include "ddatabase.h"
@@ -27,6 +28,25 @@ namespace {
 bool isSuccessful(int httpStatus)
 {
     return httpStatus >= 200 && httpStatus < 300;
+}
+
+DCalDavErrorCode errorCodeForFailureType(DCalDavOutboxItem::FailureType failureType)
+{
+    switch (failureType) {
+    case DCalDavOutboxItem::NetworkFailure:
+        return DCalDavErrorCode::NetworkError;
+    case DCalDavOutboxItem::AuthenticationFailure:
+        return DCalDavErrorCode::AuthenticationFailed;
+    case DCalDavOutboxItem::PermissionFailure:
+        return DCalDavErrorCode::PermissionDenied;
+    case DCalDavOutboxItem::ConflictFailure:
+        return DCalDavErrorCode::Conflict;
+    case DCalDavOutboxItem::PermanentFailure:
+        return DCalDavErrorCode::Unknown;
+    case DCalDavOutboxItem::NoFailure:
+        return DCalDavErrorCode::NoError;
+    }
+    return DCalDavErrorCode::Unknown;
 }
 
 QString responseError(const DCalDavOutboxItem &item, const DCalDavTransport::Response &response)
@@ -183,6 +203,9 @@ void DCalDavOutboxProcessor::start(const Request &request, const Callback &callb
     if (hasConflict || (!request.forceRetry && !blockedItems.isEmpty())) {
         m_result.permanentFailureCount = blockedItems.size();
         for (const DCalDavOutboxItem &item : blockedItems) {
+            if (m_result.failureCode == DCalDavErrorCode::NoError) {
+                m_result.failureCode = errorCodeForFailureType(item.failureType);
+            }
             switch (item.failureType) {
             case DCalDavOutboxItem::AuthenticationFailure:
                 m_result.errorMessage = QStringLiteral(
@@ -214,6 +237,7 @@ void DCalDavOutboxProcessor::start(const Request &request, const Callback &callb
             request.accountID, now);
     if (!request.forceRetry && !retryScheduledItems.isEmpty()) {
         m_result.retryScheduledCount = retryScheduledItems.size();
+        m_result.failureCode = errorCodeForFailureType(retryScheduledItems.first().failureType);
         m_result.errorMessage = QStringLiteral(
             "CalDAV synchronization retry is scheduled.");
         finish(false, m_result.errorMessage);
@@ -802,6 +826,12 @@ void DCalDavOutboxProcessor::recordFailure(const DCalDavOutboxItem &item,
     }
     DCalDavOutboxItem updated = item;
     m_result.failureResponse = response;
+    if (m_result.failureCode == DCalDavErrorCode::NoError) {
+        m_result.failureCode = DCalDavSyncStatusMapper::errorCodeForFailure(response);
+        if (m_result.failureCode == DCalDavErrorCode::NoError) {
+            m_result.failureCode = DCalDavErrorCode::Unknown;
+        }
+    }
     const DCalDavRetryPolicy::Decision retry = DCalDavRetryPolicy::decide(response, item.retryCount);
     if (retry.retry) {
         updated.retryCount = item.retryCount + 1;
