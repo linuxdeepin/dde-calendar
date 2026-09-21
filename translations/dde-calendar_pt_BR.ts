@@ -1445,22 +1445,22 @@
         <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="494"/>
             <source>Please select an account type</source>
-            <translation type="unfinished"/>
+            <translation>Selecione um tipo de conta</translation>
         </message>
         <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="502"/>
             <source>Please enter a valid server address</source>
-            <translation type="unfinished"/>
+            <translation>Insira um endereço de servidor válido</translation>
         </message>
         <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="506"/>
             <source>Please enter username</source>
-            <translation type="unfinished"/>
+            <translation>Insira o nome de usuário</translation>
         </message>
         <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="510"/>
             <source>Please enter password</source>
-            <translation type="unfinished"/>
+            <translation>Insira a senha</translation>
         </message>
 
     <message>
