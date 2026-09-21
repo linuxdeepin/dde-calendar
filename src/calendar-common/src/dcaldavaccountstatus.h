@@ -132,19 +132,13 @@ public:
 
     /**
      * @brief Returns the user-facing reason for a failed synchronization.
-     * @param status Synchronization status containing the error code and raw reason.
-     * @return The raw reason for unknown errors when available, otherwise a
-     * localized message for the error code.
+     * @param status Synchronization status containing the error code.
+     * @return A localized message for the error code.
      */
     static QString resolveFailureReason(const DCalDavAccountStatus &status)
     {
         const DCalDavErrorCode errorCode =
             static_cast<DCalDavErrorCode>(status.failureCode);
-        if ((errorCode == DCalDavErrorCode::Unknown
-             || errorCode == DCalDavErrorCode::NoError)
-            && !status.failureReason.isEmpty()) {
-            return status.failureReason;
-        }
         return DCalDavSyncStatus::localizedFailureReason(errorCode);
     }
 

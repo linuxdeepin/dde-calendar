@@ -90,7 +90,9 @@ void DCalDavAccountSync::flushOutbox()
     outboxRequest.forceRetry = m_request.forceOutboxRetry;
     m_outboxProcessor.start(outboxRequest, [this](const DCalDavOutboxProcessor::Result &result) {
         m_result.failureResponse = result.failureResponse;
-        m_result.failureCode = DCalDavSyncStatusMapper::errorCodeForFailure(m_result.failureResponse);
+        m_result.failureCode = result.failureCode != DCalDavErrorCode::NoError
+            ? result.failureCode
+            : DCalDavSyncStatusMapper::errorCodeForFailure(m_result.failureResponse);
         if (!result.success && m_result.failureCode == DCalDavErrorCode::NoError) {
             m_result.failureCode = DCalDavErrorCode::Unknown;
         }
