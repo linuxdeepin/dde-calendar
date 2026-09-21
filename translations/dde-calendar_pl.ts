@@ -1156,7 +1156,7 @@
         <message>
             <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="217"/>
             <source>Delete</source>
-            <translation type="unfinished"/>
+            <translation>Usuń</translation>
         </message>
 </context>
 <context>
@@ -1717,27 +1717,27 @@
         <message>
             <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="51"/>
             <source>The server request is invalid.</source>
-            <translation type="unfinished"/>
+            <translation>Nieprawidłowe żądanie serwera.</translation>
         </message>
         <message>
             <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="71"/>
             <source>The server is busy. Please try again later.</source>
-            <translation type="unfinished"/>
+            <translation>Serwer jest zajęty. Spróbuj ponownie później.</translation>
         </message>
         <message>
             <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="74"/>
             <source>The server is unavailable. Please try again later.</source>
-            <translation type="unfinished"/>
+            <translation>Serwer jest niedostępny. Spróbuj ponownie później.</translation>
         </message>
         <message>
             <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="77"/>
             <source>The calendar data conflicts with the server.</source>
-            <translation type="unfinished"/>
+            <translation>Dane kalendarza są niezgodne z danymi na serwerze.</translation>
         </message>
         <message>
             <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="80"/>
             <source>The server returned too much data. Please try again later.</source>
-            <translation type="unfinished"/>
+            <translation>Serwer zwrócił zbyt dużą ilość danych. Spróbuj ponownie później.</translation>
         </message>
         <message>
             <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="91"/>
