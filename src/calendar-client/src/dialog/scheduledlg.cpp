@@ -13,6 +13,8 @@
 #include "accountmanager.h"
 #include "units.h"
 #include "commondef.h"
+#include "dcaldavaccountstatus.h"
+#include "dcaldavprofile.h"
 
 
 #include <DFontSizeManager>
@@ -24,11 +26,10 @@
 #include <QShortcut>
 #include <QVBoxLayout>
 #include <QKeyEvent>
-#include <QPainter>
-#include <QBitmap>
 #include <QTimer>
 
 const int  dialog_width = 468;      //对话框宽度
+
 DGUI_USE_NAMESPACE
 CScheduleDlg::CScheduleDlg(int type, QWidget *parent, const bool isAllDay)
     : DCalendarDDialog(parent)
@@ -44,7 +45,7 @@ CScheduleDlg::CScheduleDlg(int type, QWidget *parent, const bool isAllDay)
 
     if (type == 1) {
         qCDebug(ClientLogger) << "Setting up new event dialog";
-        m_titleLabel->setText(tr("New Event"));
+        setTitle(tr("New Event"));
         m_beginDateEdit->setDate(QDate::currentDate());
         int hours = QTime::currentTime().hour();
         int minnutes = QTime::currentTime().minute() % DDECalendar::QuarterOfAnhourWithMinute;
@@ -58,16 +59,14 @@ CScheduleDlg::CScheduleDlg(int type, QWidget *parent, const bool isAllDay)
         m_endTimeEdit->setTime(QTime(hours, minnutes).addSecs(3600));
     } else {
         qCDebug(ClientLogger) << "Setting up edit event dialog";
-        m_titleLabel->setText(tr("Edit Event"));
+        setTitle(tr("Edit Event"));
     }
-    setFixedSize(dialog_width, 561);
+    setFixedSize(dialog_width, 591);
     if (!gAccountManager->getIsSupportUid()) {
         qCDebug(ClientLogger) << "UID not supported, adjusting dialog size";
-        setFixedSize(dialog_width, 561 - 36);
+        setFixedSize(dialog_width, 591 - 36);
     }
 
-    //焦点设置到输入框
-    m_textEdit->setFocus();
 }
 
 CScheduleDlg::~CScheduleDlg()
@@ -96,11 +95,13 @@ void CScheduleDlg::setData(const DSchedule::Ptr &info)
         m_accountComBox->setEnabled(false);
     }
 
-    if (nullptr != m_accountItem) {
+    if (m_accountItem && m_accountItem->getAccount()) {
         qCDebug(ClientLogger) << "Updating account and type selection for account:" << m_accountItem->getAccount()->accountName();
         //更新帐户下拉框和类型选择框
-        m_accountComBox->setCurrentText(m_accountItem->getAccount()->accountName());
+        const int accountIndex = m_accountComBox->findData(m_accountItem->getAccount()->accountID());
+        m_accountComBox->setCurrentIndex(accountIndex);
         m_typeComBox->updateJobType(m_accountItem);
+        getButtons()[1]->setEnabled(canWriteCurrentCalDavCollection());
     } else {
         qCWarning(ClientLogger) << "No account found, falling back to local account";
         m_accountItem = gAccountManager->getLocalAccountItem();
@@ -111,12 +112,14 @@ void CScheduleDlg::setData(const DSchedule::Ptr &info)
         m_typeComBox->setCurrentJobTypeNo(m_scheduleDataInfo->scheduleTypeID());
     }
 
-    m_beginDateEdit->setDate(info->dtStart().date());
-    m_beginTimeEdit->setTime(info->dtStart().time());
-    m_endDateEdit->setDate(info->dtEnd().date());
-    m_endTimeEdit->setTime(info->dtEnd().time());
+    const QDateTime displayStart = info->allDay() ? info->dtStart() : info->dtStart().toLocalTime();
+    const QDateTime displayEnd = info->allDay() ? info->dtEnd() : info->dtEnd().toLocalTime();
+    m_beginDateEdit->setDate(displayStart.date());
+    m_beginTimeEdit->setTime(displayStart.time());
+    m_endDateEdit->setDate(displayEnd.date());
+    m_endTimeEdit->setTime(displayEnd.time());
     m_allDayCheckbox->setChecked(info->allDay());
-    m_endRepeatDate->setMinimumDate(info->dtStart().date());
+    m_endRepeatDate->setMinimumDate(displayStart.date());
 
     m_currentDate = info->dtStart();
     m_EndDate = info->dtEnd();
@@ -184,6 +187,12 @@ void CScheduleDlg::setAllDay(bool flag)
 bool CScheduleDlg::clickOkBtn()
 {
     qCDebug(ClientLogger) << "CScheduleDlg::clickOkBtn";
+    const bool editingExistingSchedule = m_type == 0;
+    if (m_accountItem.isNull() || !m_accountItem->isCanSyncShedule()
+        || (editingExistingSchedule && !canWriteCurrentCalDavCollection())) {
+        qCWarning(ClientLogger) << "Cannot save an existing schedule for the current read-only account or collection.";
+        return false;
+    }
     return selectScheduleType();
 }
 
@@ -195,6 +204,11 @@ bool CScheduleDlg::clickOkBtn()
 bool CScheduleDlg::selectScheduleType()
 {
     qCDebug(ClientLogger) << "CScheduleDlg::selectScheduleType";
+    if (m_typeComBox->isEditable() && m_accountItem && m_accountItem->getAccount()
+        && m_accountItem->getAccount()->accountType() == DAccount::Account_CalDav) {
+        qCWarning(ClientLogger) << "Cannot create a schedule type for a CalDAV account.";
+        return false;
+    }
     //编辑状态，需要创建日程
     if (m_typeComBox->isEditable()) {
         qCDebug(ClientLogger) << "Type combobox is editable, creating new schedule type";
@@ -559,12 +573,16 @@ void CScheduleDlg::slotallDayStateChanged(int state)
 
         if (m_type == 0) {
             qCDebug(ClientLogger) << "Restoring edit mode time values";
-            m_beginDateEdit->setDate(m_scheduleDataInfo->dtStart().date());
-            m_beginTimeEdit->setTime(m_scheduleDataInfo->dtStart().time());
-            m_endDateEdit->setDate(m_scheduleDataInfo->dtEnd().date());
-            m_endTimeEdit->setTime(m_scheduleDataInfo->dtEnd().time());
-            if (m_scheduleDataInfo->dtStart().time() == m_scheduleDataInfo->dtEnd().time()
-                    && m_scheduleDataInfo->dtEnd().time().toString() == "00:00:00") {
+            const QDateTime displayStart = m_scheduleDataInfo->allDay()
+                ? m_scheduleDataInfo->dtStart() : m_scheduleDataInfo->dtStart().toLocalTime();
+            const QDateTime displayEnd = m_scheduleDataInfo->allDay()
+                ? m_scheduleDataInfo->dtEnd() : m_scheduleDataInfo->dtEnd().toLocalTime();
+            m_beginDateEdit->setDate(displayStart.date());
+            m_beginTimeEdit->setTime(displayStart.time());
+            m_endDateEdit->setDate(displayEnd.date());
+            m_endTimeEdit->setTime(displayEnd.time());
+            if (displayStart.time() == displayEnd.time()
+                    && displayEnd.time().toString() == "00:00:00") {
                 qCDebug(ClientLogger) << "Adjusting end time to end of day for zero time";
                 m_endTimeEdit->setTime(QTime(23, 59, 59));
             }
@@ -660,10 +678,12 @@ void CScheduleDlg::slotJobComboBoxEditingFinished()
 void CScheduleDlg::slotAccoutBoxActivated(const QString &text)
 {
     qCDebug(ClientLogger) << "Account selected:" << text;
-    m_accountItem = gAccountManager->getAccountItemByAccountName(text);
+    Q_UNUSED(text)
+    m_accountItem = gAccountManager->getAccountItemByAccountId(
+        m_accountComBox->currentData().toString());
     m_typeComBox->updateJobType(m_accountItem);
     resetColor(m_accountItem);
-    getButtons()[1]->setEnabled(true);
+    getButtons()[1]->setEnabled(canWriteCurrentCalDavCollection());
     //将焦点转移到类型选择框上
     m_typeComBox->setFocus();
     setShowState(m_lunarRadioBtn->isChecked());
@@ -680,7 +700,7 @@ void CScheduleDlg::signalLogout(DAccount::Type type)
             qCDebug(ClientLogger) << "Switching to new event mode after account logout";
             m_accountComBox->setEnabled(true);
             m_type = 1;
-            m_titleLabel->setText(tr("New Event"));
+            setTitle(tr("New Event"));
         }
     }
 }
@@ -891,22 +911,14 @@ void CScheduleDlg::initUI()
     this->setAccessibleName("ScheduleEditDialog");
     //在点击任何对话框上的按钮后不关闭对话框，保证关闭子窗口时不被一起关掉
     setOnButtonClickedClose(false);
-
-    m_titleLabel = new QLabel(this);
-    QFont titlelabelF;
-    titlelabelF.setWeight(QFont::DemiBold);
-    titlelabelF.setPixelSize(17);
-    m_titleLabel->setFixedSize(148, 51);
-    m_titleLabel->setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
-    m_titleLabel->move(145, 0);
-    m_titleLabel->setFont(titlelabelF);
+    setIcon(QIcon::fromTheme("dde-calendar"));
 
     setSpacing(0);
     QFont mlabelF;
     mlabelF.setWeight(QFont::Medium);
 
     QVBoxLayout *maintlayout = new QVBoxLayout;
-    maintlayout->setContentsMargins(0, 0, 0, 0);
+    maintlayout->setContentsMargins(0, 20, 0, 0);
     maintlayout->setSpacing(10);
     //帐户
     {
@@ -923,17 +935,17 @@ void CScheduleDlg::initUI()
         aLabel->setFixedSize(label_Fixed_Width, item_Fixed_Height);
 
         m_accountComBox = new DComboBox(this);
-        m_accountComBox->setFixedSize(350, item_Fixed_Height);
+        m_accountComBox->setObjectName("AccountComBox");
+        m_accountComBox->setAccessibleName("AccountComBox");
+        m_accountComBox->setFixedSize(370, item_Fixed_Height);
         hlayout->addWidget(aLabel);
         hlayout->addWidget(m_accountComBox);
         QWidget *widget = new QWidget;
         widget->setLayout(hlayout);
         widget->setFixedHeight(item_Fixed_Height);
         maintlayout->addWidget(widget);
-        if (!gAccountManager->getIsSupportUid()) {
-            qCDebug(ClientLogger) << "UID not supported, hiding account widget";
-            widget->hide();
-        }
+        // Third-party CalDAV accounts are independent of UOS ID support.
+        // Keep this selector visible even on systems without UOS ID.
     }
 
     //类型
@@ -957,7 +969,7 @@ void CScheduleDlg::initUI()
         //设置对象名称和辅助显示名称
         m_typeComBox->setObjectName("ScheduleTypeCombobox");
         m_typeComBox->setAccessibleName("ScheduleTypeCombobox");
-        m_typeComBox->setFixedSize(350, item_Fixed_Height);
+        m_typeComBox->setFixedSize(370, item_Fixed_Height);
 
         m_colorSeletorWideget = new ColorSeletorWidget();
         m_colorSeletorWideget->hide();
@@ -987,13 +999,13 @@ void CScheduleDlg::initUI()
         m_contentLabel->setFont(mlabelF);
         m_contentLabel->setToolTip(tr("Description"));
         m_contentLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-        m_contentLabel->setFixedSize(label_Fixed_Width, item_Fixed_Height);
+        m_contentLabel->setFixedSize(label_Fixed_Width, 25);
 
         m_textEdit = new DTextEdit(this);
         //设置对象名称和辅助显示名称
         m_textEdit->setObjectName("ScheduleTitleEdit");
         m_textEdit->setAccessibleName("ScheduleTitleEdit");
-        m_textEdit->setFixedSize(350, 86);
+        m_textEdit->setFixedSize(370, 86);
         m_textEdit->setAcceptRichText(false);
 
         m_textEdit->setPlaceholderText(tr("New Event"));
@@ -1004,16 +1016,20 @@ void CScheduleDlg::initUI()
         mpContentWidget->installEventFilter(this);
 
         contentLabellayout->addWidget(m_contentLabel, 0, Qt::AlignTop);
-        contentLabellayout->addWidget(m_textEdit);
+        contentLabellayout->addWidget(m_textEdit, 0, Qt::AlignTop);
         contentLabellayout->addStretch();
-        maintlayout->addLayout(contentLabellayout);
+        QWidget *contentWidget = new QWidget;
+        contentWidget->setLayout(contentLabellayout);
+        contentWidget->setContentsMargins(0, 0, 0, 0);
+        contentWidget->setFixedHeight(86);
+        maintlayout->addWidget(contentWidget);
     }
 
     //全天
     {
         QHBoxLayout *alldayLabellayout = new QHBoxLayout;
         alldayLabellayout->setSpacing(0);
-        alldayLabellayout->setContentsMargins(0, 0, 0, 0);
+        alldayLabellayout->setContentsMargins(0, 10, 0, 0);
         m_adllDayLabel = new QLabel(this);
         m_adllDayLabel->setToolTip(tr("All Day"));
         DFontSizeManager::instance()->bind(m_adllDayLabel, DFontSizeManager::T6);
@@ -1033,7 +1049,7 @@ void CScheduleDlg::initUI()
         alldayLabellayout->addWidget(m_allDayCheckbox);
         QWidget *widget = new QWidget;
         widget->setLayout(alldayLabellayout);
-        widget->setFixedHeight(25);
+        widget->setFixedHeight(35);
         maintlayout->addWidget(widget);
     }
 
@@ -1048,13 +1064,18 @@ void CScheduleDlg::initUI()
         tLabel->setFixedSize(DDECalendar::NewScheduleLabelWidth, 25);
 
         m_solarRadioBtn = new DRadioButton(tr("Solar"));
+        m_solarRadioBtn->setObjectName("SolarRadioBtn");
+        m_solarRadioBtn->setAccessibleName("SolarRadioBtn");
         m_lunarRadioBtn = new DRadioButton(tr("Lunar"));
+        m_lunarRadioBtn->setObjectName("LunarRadioBtn");
+        m_lunarRadioBtn->setAccessibleName("LunarRadioBtn");
         m_solarRadioBtn->setMinimumWidth(72);
         m_lunarRadioBtn->setMinimumWidth(72);
         m_solarRadioBtn->setFixedHeight(25);
         m_lunarRadioBtn->setFixedHeight(25);
 
         m_calendarCategoryRadioGroup = new QButtonGroup(this);
+        m_calendarCategoryRadioGroup->setObjectName("CalendarCategoryRadioGroup");
         m_calendarCategoryRadioGroup->setExclusive(true);
         m_calendarCategoryRadioGroup->addButton(m_solarRadioBtn, RadioSolarId);
         m_calendarCategoryRadioGroup->addButton(m_lunarRadioBtn, RadioLunarId);
@@ -1095,14 +1116,14 @@ void CScheduleDlg::initUI()
         //设置对象名称和辅助显示名称
         m_beginDateEdit->setObjectName("ScheduleBeginDateEdit");
         m_beginDateEdit->setAccessibleName("ScheduleBeginDateEdit");
-        m_beginDateEdit->setFixedSize(200, item_Fixed_Height);
+        m_beginDateEdit->setFixedSize(210, item_Fixed_Height);
         m_beginDateEdit->setCalendarPopup(true);
 
         m_beginTimeEdit = new CTimeEdit(this);
         //设置对象名称和辅助显示名称
         m_beginTimeEdit->setObjectName("ScheduleBeginTimeEdit");
         m_beginTimeEdit->setAccessibleName("ScheduleBeginTimeEdit");
-        m_beginTimeEdit->setFixedSize(140, item_Fixed_Height);
+        m_beginTimeEdit->setFixedSize(150, item_Fixed_Height);
 
         beginLabellayout->addWidget(m_beginTimeLabel);
         beginLabellayout->addWidget(m_beginDateEdit);
@@ -1136,14 +1157,14 @@ void CScheduleDlg::initUI()
         //设置对象名称和辅助显示名称
         m_endDateEdit->setObjectName("ScheduleEndDateEdit");
         m_endDateEdit->setAccessibleName("ScheduleEndDateEdit");
-        m_endDateEdit->setFixedSize(200, item_Fixed_Height);
+        m_endDateEdit->setFixedSize(210, item_Fixed_Height);
         m_endDateEdit->setCalendarPopup(true);
 
         m_endTimeEdit = new CTimeEdit(this);
         //设置对象名称和辅助显示名称
         m_endTimeEdit->setObjectName("ScheduleEndTimeEdit");
         m_endTimeEdit->setAccessibleName("ScheduleEndTimeEdit");
-        m_endTimeEdit->setFixedSize(140, item_Fixed_Height);
+        m_endTimeEdit->setFixedSize(150, item_Fixed_Height);
 
         enQLabellayout->addWidget(m_endTimeLabel);
         enQLabellayout->addWidget(m_endDateEdit);
@@ -1177,7 +1198,7 @@ void CScheduleDlg::initUI()
         //设置对象名称和辅助显示名称
         m_rmindCombox->setObjectName("RmindComboBox");
         m_rmindCombox->setAccessibleName("RmindComboBox");
-        m_rmindCombox->setFixedSize(200, item_Fixed_Height);
+        m_rmindCombox->setFixedSize(210, item_Fixed_Height);
         m_rmindCombox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         rminQLabellayout->addWidget(m_remindSetLabel);
         rminQLabellayout->addWidget(m_rmindCombox);
@@ -1207,7 +1228,7 @@ void CScheduleDlg::initUI()
         //设置对象名称和辅助显示名称
         m_beginrepeatCombox->setObjectName("BeginRepeatComboBox");
         m_beginrepeatCombox->setAccessibleName("BeginRepeatComboBox");
-        m_beginrepeatCombox->setFixedSize(200, item_Fixed_Height);
+        m_beginrepeatCombox->setFixedSize(210, item_Fixed_Height);
         m_beginrepeatCombox->addItem(tr("Never"));
         m_beginrepeatCombox->addItem(tr("Daily"));
         m_beginrepeatCombox->addItem(tr("Weekdays"));
@@ -1242,7 +1263,7 @@ void CScheduleDlg::initUI()
         //设置对象名称和辅助显示名称
         m_endrepeatCombox->setObjectName("EndRepeatComboBox");
         m_endrepeatCombox->setAccessibleName("EndRepeatComboBox");
-        m_endrepeatCombox->setFixedSize(200, item_Fixed_Height);
+        m_endrepeatCombox->setFixedSize(210, item_Fixed_Height);
         m_endrepeatCombox->addItem(tr("Never"));
         m_endrepeatCombox->addItem(tr("After"));
         m_endrepeatCombox->addItem(tr("On"));
@@ -1277,7 +1298,7 @@ void CScheduleDlg::initUI()
         m_endrepeattimesWidget->setAccessibleName("EndRepeatTimeWidget");
         m_endrepeattimesWidget->setLayout(endrepeattimeslayout);
         m_endrepeattimesWidget->setVisible(false);
-        m_endrepeattimesWidget->setFixedSize(140, item_Fixed_Height);
+        m_endrepeattimesWidget->setFixedSize(150, item_Fixed_Height);
         endrepeatLabellayout->addWidget(m_endrepeattimesWidget);
 
         m_endRepeatDate = new CDateEdit;
@@ -1285,7 +1306,7 @@ void CScheduleDlg::initUI()
         m_endRepeatDate->setObjectName("EndRepeatDateEdit");
         m_endRepeatDate->setAccessibleName("EndRepeatDateEdit");
         m_endRepeatDate->setCalendarPopup(true);
-        m_endRepeatDate->setFixedSize(140, item_Fixed_Height);
+        m_endRepeatDate->setFixedSize(150, item_Fixed_Height);
         m_endRepeatDate->setDate(QDate::currentDate());
         m_endRepeatDate->setDisplayFormat(m_dateFormat);
         m_endRepeatDate->setCurrentSectionIndex(2);
@@ -1310,7 +1331,9 @@ void CScheduleDlg::initUI()
     m_gwi = new DFrame(this);
     m_gwi->setFrameShape(QFrame::NoFrame);
     m_gwi->setLayout(maintlayout);
-    addContent(m_gwi, Qt::AlignCenter);
+    setContentLayoutContentsMargins(QMargins(10, 0, 10, 0));
+    addContent(m_gwi);
+    addSpacing(20);
     initDateEdit();
     if (m_type == 1)
         slotallDayStateChanged(0);
@@ -1319,7 +1342,7 @@ void CScheduleDlg::initUI()
     addButton(tr("Save", "button"), false, DDialog::ButtonRecommend);
     for (int i = 0; i < buttonCount(); i++) {
         QAbstractButton *button = getButton(i);
-        button->setFixedSize(189, 36);
+        button->setFixedSize(214, 36);
     }
 }
 
@@ -1329,6 +1352,8 @@ void CScheduleDlg::initConnection()
     QObject::connect(DGuiApplicationHelper::instance(), &DGuiApplicationHelper::themeTypeChanged,
                      this,
                      &CScheduleDlg::setTheMe);
+    QObject::connect(DGuiApplicationHelper::instance(), &DGuiApplicationHelper::themeTypeChanged,
+                     this, [this]() { setIcon(QIcon::fromTheme("dde-calendar")); });
     connect(this, &DDialog::buttonClicked, this, &CScheduleDlg::slotBtClick);
     connect(m_textEdit, &DTextEdit::textChanged, this, &CScheduleDlg::slotTextChange);
     connect(m_endrepeattimes, &DLineEdit::textChanged, this, &CScheduleDlg::slotendrepeatTextchange);
@@ -1380,11 +1405,59 @@ void CScheduleDlg::initConnection()
 void CScheduleDlg::slotAccountUpdate()
 {
     qCDebug(ClientLogger) << "CScheduleDlg::slotAccountUpdate";
+    const QString previousAccountID = m_accountComBox->currentData().toString();
     m_accountComBox->clear();
-    QList<AccountItem::Ptr> accountList = gAccountManager->getAccountList();
-    for (AccountItem::Ptr p : accountList) {
-        m_accountComBox->addItem(p->getAccount()->accountName());
+    const QList<AccountItem::Ptr> accountList = gAccountManager->getAccountList();
+    QList<AccountItem::Ptr> localAccounts;
+    QList<AccountItem::Ptr> unionAccounts;
+    QList<AccountItem::Ptr> calDavAccounts;
+    for (const AccountItem::Ptr &item : accountList) {
+        if (item.isNull()) {
+            continue;
+        }
+        const DAccount::Ptr account = item->getAccount();
+        if (account.isNull()) {
+            qCWarning(ClientLogger) << "Skipping account without account data";
+            continue;
+        }
+        switch (account->accountType()) {
+        case DAccount::Account_Local:
+            localAccounts.append(item);
+            break;
+        case DAccount::Account_UnionID:
+            unionAccounts.append(item);
+            break;
+        case DAccount::Account_CalDav:
+            calDavAccounts.append(item);
+            break;
+        }
     }
+
+    auto addAccount = [this](const AccountItem::Ptr &item) {
+        const DAccount::Ptr account = item->getAccount();
+        QString label = account->accountType() == DAccount::Account_Local
+            ? tr("Local calendar")
+            : (account->accountType() == DAccount::Account_UnionID
+                ? tr("UOS ID")
+                : account->displayName());
+        if (account->accountType() == DAccount::Account_CalDav) {
+            const DCalDavAccountStatus status = gAccountManager->getCalDavAccountStatus(account->accountID());
+            label = DCalDavProviderProfile::accountDisplayName(
+                static_cast<DCalDavProviderProfile::ProviderType>(status.providerType), label);
+        }
+        m_accountComBox->addItem(label, account->accountID());
+    };
+    for (const AccountItem::Ptr &item : localAccounts) {
+        addAccount(item);
+    }
+    for (const AccountItem::Ptr &item : unionAccounts) {
+        addAccount(item);
+    }
+    for (const AccountItem::Ptr &item : calDavAccounts) {
+        addAccount(item);
+    }
+    int index = m_accountComBox->findData(previousAccountID);
+    m_accountComBox->setCurrentIndex(index >= 0 ? index : 0);
     initJobTypeComboBox();
 }
 
@@ -1411,9 +1484,12 @@ void CScheduleDlg::initDateEdit()
 void CScheduleDlg::initJobTypeComboBox()
 {
     qCDebug(ClientLogger) << "CScheduleDlg::initJobTypeComboBox";
-    m_accountItem = gAccountManager->getAccountItemByAccountName(m_accountComBox->currentText());
+    m_accountItem = gAccountManager->getAccountItemByAccountId(
+        m_accountComBox->currentData().toString());
     m_typeComBox->updateJobType(m_accountItem);
     resetColor(m_accountItem);
+    setShowState(m_lunarRadioBtn->isChecked());
+    setOkBtnEnabled();
 }
 
 void CScheduleDlg::initRmindRpeatUI()
@@ -1576,19 +1652,21 @@ bool CScheduleDlg::isShowLunar()
 void CScheduleDlg::setShowState(bool jobIsLunar)
 {
     qCDebug(ClientLogger) << "Setting show state for lunar mode:" << jobIsLunar;
-    m_solarRadioBtn->setEnabled(true);
-    m_lunarRadioBtn->setEnabled(true);
-    setWidgetEnabled(true);
-    getButton(1)->setEnabled(true);
-    if (!m_accountItem || !m_accountItem->isCanSyncShedule()) {
-        //不可同步日程，除帐户选择外其他的控件都置灰
-        qCDebug(ClientLogger) << "Account cannot sync schedule, disabling controls";
+    const bool editingExistingSchedule = m_type == 0;
+    const bool canEdit = !m_accountItem.isNull()
+        && m_accountItem->isCanSyncShedule()
+        && (!editingExistingSchedule || canWriteCurrentCalDavCollection());
+
+    m_solarRadioBtn->setEnabled(canEdit);
+    m_lunarRadioBtn->setEnabled(canEdit);
+    setWidgetEnabled(canEdit);
+    getButton(1)->setEnabled(canEdit);
+
+    if (!canEdit) {
+        qCDebug(ClientLogger) << "Current account or CalDAV collection is read-only, disabling controls";
         m_solarRadioBtn->setEnabled(false);
         m_lunarRadioBtn->setEnabled(false);
-        setWidgetEnabled(false);
-        getButton(1)->setEnabled(false);
     } else if (isShowLunar()) {
-        //如果不显示农历
         qCDebug(ClientLogger) << "Locale supports lunar calendar, enabling lunar radio button";
         m_lunarRadioBtn->setEnabled(true);
         m_beginDateEdit->setLunarCalendarStatus(jobIsLunar);
@@ -1697,13 +1775,44 @@ void CScheduleDlg::resize()
 
     //573: 默认界面高度, h: 新增控件高度
     qCDebug(ClientLogger) << "Setting dialog size:" << dialog_width << "x" << (573 + h);
-    setFixedSize(dialog_width, 573 + h);
+    setFixedSize(dialog_width, 603 + h);
+}
+
+bool CScheduleDlg::canWriteCurrentCalDavCollection() const
+{
+    if (m_accountItem.isNull()) {
+        return true;
+    }
+    const DAccount::Ptr account = m_accountItem->getAccount();
+    if (account.isNull() || account->accountType() != DAccount::Account_CalDav) {
+        return true;
+    }
+
+    const QString accountID = account->accountID();
+    const bool accountWritable = gAccountManager->canWriteCalDavAccount(accountID);
+    qCDebug(ClientLogger) << "CalDAV account write capability:" << accountWritable
+                          << "accountID:" << accountID;
+    if (!accountWritable) {
+        return false;
+    }
+
+    // The account status is the authoritative editor capability. Per-calendar
+    // privileges are validated by the service before it sends the remote PUT.
+    return true;
 }
 
 void CScheduleDlg::setOkBtnEnabled()
 {
     qCDebug(ClientLogger) << "Checking if OK button should be enabled";
     QAbstractButton *m_OkBt = getButton(1);
+    if (m_OkBt == nullptr) {
+        return;
+    }
+    const bool editingExistingSchedule = m_type == 0;
+    if (editingExistingSchedule && !canWriteCurrentCalDavCollection()) {
+        m_OkBt->setEnabled(false);
+        return;
+    }
 
     //根据类型输入框的内容判断保存按钮是否有效
     if (m_OkBt != nullptr && m_typeComBox->lineEdit() != nullptr) {

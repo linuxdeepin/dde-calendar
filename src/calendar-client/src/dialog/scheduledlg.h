@@ -167,6 +167,7 @@ private:
      * @brief setOkBtnEnabled   根据选项设置保存按钮是否有效
      */
     void setOkBtnEnabled();
+    bool canWriteCurrentCalDavCollection() const;
 
 private:
 
@@ -199,7 +200,6 @@ private:
     CDateEdit *m_endRepeatDate = nullptr;
     DWidget *m_endrepeatWidget = nullptr;
     DFrame *m_gwi = nullptr;
-    QLabel *m_titleLabel = nullptr;
     QButtonGroup *m_calendarCategoryRadioGroup = nullptr;    //日历类别选择控件组
     DRadioButton *m_solarRadioBtn = nullptr;      //公历选择按钮
     DRadioButton *m_lunarRadioBtn = nullptr;        //农历选择按钮
