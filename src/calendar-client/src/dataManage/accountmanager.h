@@ -73,6 +73,8 @@ public:
 
     bool getIsSupportUid() const;
     DCalDavAccountStatus getCalDavAccountStatus(const QString &accountID) const;
+    static QString calDavFailureReason(const DCalDavAccountStatus &status);
+    static QString calDavSyncFailedText();
     bool canWriteCalDavAccount(const QString &accountID) const;
 
     /**

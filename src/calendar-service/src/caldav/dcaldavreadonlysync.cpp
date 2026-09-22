@@ -171,7 +171,8 @@ void DCalDavReadOnlySync::sendPrincipalRequest()
         if (m_result.failureResponse.error != DCalDavTransport::NoError) {
             finish(false, transportErrorText(m_result.failureResponse));
         } else {
-            finish(false, QStringLiteral("This server does not support CalDAV."));
+            // Return the classification only. The client owns user-facing localization.
+            finish(false, QString(), DCalDavValidationError::UnsupportedCalDav);
         }
         return;
     }
@@ -442,7 +443,11 @@ void DCalDavReadOnlySync::finish(bool success, const QString &errorMessage,
     m_result.failureCode = success
         ? DCalDavErrorCode::NoError
         : errorCodeForValidation(m_result.validationError, m_result.failureResponse);
-    m_result.errorMessage = errorMessage;
+    // User-facing text is localized by the client from validationError. Keep
+    // unsupported-server results code-only across the DBus boundary.
+    m_result.errorMessage = m_result.validationError == DCalDavValidationError::UnsupportedCalDav
+        ? QString()
+        : errorMessage;
     qCDebug(ServiceLogger) << "CalDAV validation finished"
                           << "success:" << success
                           << "validationError:" << static_cast<int>(m_result.validationError)

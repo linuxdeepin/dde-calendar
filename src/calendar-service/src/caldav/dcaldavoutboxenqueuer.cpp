@@ -13,7 +13,8 @@
 namespace {
 
 bool supportsWrite(DAccountManagerDataBase *database, const QString &accountID,
-                   const QString &scheduleTypeID, DCalDavEventMappingInfo &mapping)
+                   const QString &scheduleTypeID, bool checkCalendarPrivilege,
+                   DCalDavEventMappingInfo &mapping)
 {
     DCalDavAccountInfo accountInfo;
     if (!database->getCalDavAccountInfo(accountID, accountInfo)
@@ -49,7 +50,8 @@ bool supportsWrite(DAccountManagerDataBase *database, const QString &accountID,
         }
     }
     return !calendar.calendarId.isEmpty()
-        && (calendar.privileges & DCalDavXmlReader::WritePrivilege);
+        && (!checkCalendarPrivilege
+            || (calendar.privileges & DCalDavXmlReader::WritePrivilege));
 }
 
 DCalDavOutboxItem::OperationType operationFor(DCalDavOutboxItem::OperationType existing,
@@ -97,7 +99,10 @@ bool DCalDavOutboxEnqueuer::enqueue(DAccountManagerDataBase *database, const QSt
             return false;
         }
         mapping = database->getCalDavEventMappingByLocalScheduleID(accountID, schedule->uid());
-    } else if (!supportsWrite(database, accountID, schedule->scheduleTypeID(), mapping)) {
+    // Let CREATE reach the server so a real 403 can be reported to the user
+    // instead of being pre-filtered by the last discovered privilege state.
+    } else if (!supportsWrite(database, accountID, schedule->scheduleTypeID(),
+                              change != CreateChange, mapping)) {
         return false;
     }
 

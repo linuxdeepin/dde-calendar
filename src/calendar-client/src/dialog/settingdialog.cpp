@@ -876,7 +876,7 @@ void CSettingDialog::updateSyncStatusDisplay(const QString &datetime,
 
     if (failed) {
         m_syncTimeValueLabel->setText(
-            QCoreApplication::translate("DCalDavSyncStatus", "Sync Failed"));
+            AccountManager::calDavSyncFailedText());
     } else {
         m_syncTimeValueLabel->setText(QStringLiteral("(%1)").arg(dtstr));
     }

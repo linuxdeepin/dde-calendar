@@ -566,7 +566,7 @@ QString CalDavAccountDialog::validationErrorText(
     case DCalDavValidationError::AuthenticationFailed:
         return tr("Incorrect username or password. Please try again.");
     case DCalDavValidationError::UnsupportedCalDav:
-        return tr("This server does not support CalDAV.");
+        return tr("This server does not support CalDAV. Please check your network server address.");
     case DCalDavValidationError::ServerRejected:
         return tr("The server rejected your login request. Please check your account permissions.");
     case DCalDavValidationError::ParseError:

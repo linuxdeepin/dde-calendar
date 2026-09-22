@@ -257,7 +257,7 @@ void CalDavAccountListWidget::rebuildCards()
             stateLabel->setToolTip(tr("A synchronization conflict was detected. The server version will replace the local changes."));
             statusLayout->addWidget(stateLabel);
         } else if (running || pendingDelete || failed) {
-            const QString failureReason = DCalDavAccountStatus::resolveFailureReason(status);
+            const QString failureReason = AccountManager::calDavFailureReason(status);
             const QString stateText = failed
                 ? tr("Sync Failed: %1").arg(failureReason)
                 : (pendingDelete ? tr("Deleting...") : tr("Syncing..."));

@@ -1276,7 +1276,7 @@ void Calendarmainwindow::slotCalDavAccountStatusChanged(const QString &accountID
         return;
     }
 
-    const QString failureReason = DCalDavAccountStatus::resolveFailureReason(status);
+    const QString failureReason = AccountManager::calDavFailureReason(status);
     QWidget *messageParent = syncToastParent();
     removeAllSyncToasts();
     DMessageManager::instance()->sendMessage(

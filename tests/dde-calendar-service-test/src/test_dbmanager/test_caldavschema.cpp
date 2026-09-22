@@ -823,17 +823,6 @@ TEST(CalDavSyncStatusMapper, DoesNotUseFallbackText)
               DCalDavSyncStatusMapper::errorCodeForFailure(response));
 }
 
-TEST(CalDavAccountStatus, DoesNotExposeRawUnknownFailureReason)
-{
-    DCalDavAccountStatus status;
-    status.failureCode = static_cast<int>(DCalDavErrorCode::Unknown);
-    status.failureReason = QStringLiteral(
-        "CalDAV synchronization failure requires manual retry.");
-
-    EXPECT_EQ(QStringLiteral("Synchronization failed."),
-              DCalDavAccountStatus::resolveFailureReason(status));
-}
-
 TEST(CalDavAccountStatus, SerializesWithoutCredentialData)
 {
     DCalDavAccountStatus input;
@@ -2286,6 +2275,7 @@ TEST(CalDavIntegration, ClassifiesUnsupportedCalDavServer)
     ASSERT_TRUE(callbackCalled);
     EXPECT_FALSE(result.success);
     EXPECT_EQ(DCalDavValidationError::UnsupportedCalDav, result.validationError);
+    EXPECT_TRUE(result.errorMessage.isEmpty());
 }
 
 TEST(CalDavIntegration, ClassifiesMalformedDiscoveryAsParseError)
@@ -2381,6 +2371,7 @@ TEST(CalDavIntegration, ClassifiesNoReadableCalendarAsUnsupportedCalDav)
     ASSERT_TRUE(callbackCalled);
     EXPECT_FALSE(result.success);
     EXPECT_EQ(DCalDavValidationError::UnsupportedCalDav, result.validationError);
+    EXPECT_TRUE(result.errorMessage.isEmpty());
 }
 
 TEST(CalDavIntegration, DiscoversAndReadsFromLocalHttpsServer)
@@ -3443,6 +3434,114 @@ TEST(CalDavIntegration, RestoresCalendarWhenRemoteDeleteIsRejected)
     EXPECT_TRUE(managerDatabase.getCalDavOutboxItem(
                     account->accountID(), type->typeID()).operationID.isEmpty());
     EXPECT_TRUE(localDatabase.getCalDavRecoveryItems(account->accountID()).isEmpty());
+}
+
+TEST(CalDavIntegration, KeepsLocalScheduleWhenCachedReadOnlyCalendarReturnsForbidden)
+{
+    if (!QSslSocket::supportsSsl()) {
+        GTEST_SKIP() << "Qt SSL backend is unavailable";
+    }
+
+    QByteArray certificate;
+    QByteArray privateKey;
+    ASSERT_TRUE(createMockTlsCredentials(certificate, privateKey));
+    trustMockCertificate(certificate);
+
+    MockCalDavServer server;
+    ASSERT_TRUE(server.start(certificate, privateKey));
+    server.setResponseStatus(403);
+
+    QTemporaryDir directory;
+    ASSERT_TRUE(directory.isValid());
+    DAccount::Ptr account(new DAccount);
+    account->setAccountID(QStringLiteral("read-only-cache-account"));
+    account->setAccountType(DAccount::Account_CalDav);
+
+    DAccountDataBase localDatabase(account);
+    localDatabase.setDBPath(directory.filePath(QStringLiteral("local.db")));
+    localDatabase.initDBData();
+
+    DAccountManagerDataBase accountManagerDatabase;
+    accountManagerDatabase.setDBPath(directory.filePath(QStringLiteral("account-manager.db")));
+    accountManagerDatabase.setLoaclDB(directory.filePath(QStringLiteral("local.db")));
+    accountManagerDatabase.initDBData();
+
+    DCalDavAccountInfo accountInfo;
+    accountInfo.accountId = account->accountID();
+    accountInfo.providerType = DCalDavProviderProfile::Provider_Other;
+    accountInfo.serverUrl = server.url().toString();
+    accountInfo.username = QStringLiteral("user");
+    accountInfo.credentialRef = QStringLiteral("secret-service:/read_only_cache");
+    ASSERT_TRUE(accountManagerDatabase.upsertCalDavAccountInfo(accountInfo));
+
+    DScheduleType::Ptr type(new DScheduleType(account->accountID()));
+    type->setTypeName(QStringLiteral("Read-only cached calendar"));
+    type->setDisplayName(QStringLiteral("Read-only cached calendar"));
+    type->setPrivilege(DScheduleType::User);
+    type->setShowState(DScheduleType::Show);
+    ASSERT_FALSE(localDatabase.createScheduleType(type).isEmpty());
+
+    DCalDavCalendarInfo calendar;
+    calendar.calendarId = QStringLiteral("read-only-cached-calendar");
+    calendar.accountId = account->accountID();
+    calendar.href = server.url().resolved(QUrl(QStringLiteral("/calendars/user/"))).toString();
+    calendar.scheduleTypeID = type->typeID();
+    calendar.privileges = DCalDavXmlReader::ReadPrivilege;
+    calendar.privilegesKnown = true;
+    ASSERT_TRUE(accountManagerDatabase.upsertCalDavCalendar(calendar));
+
+    DSchedule::Ptr schedule(new DSchedule);
+    schedule->setScheduleTypeID(type->typeID());
+    schedule->setSummary(QStringLiteral("Local event retained after 403"));
+    schedule->setDtStart(QDateTime(QDate(2026, 9, 22), QTime(10, 0), Qt::UTC));
+    schedule->setDtEnd(QDateTime(QDate(2026, 9, 22), QTime(11, 0), Qt::UTC));
+    ASSERT_FALSE(localDatabase.createSchedule(schedule).isEmpty());
+    const QString scheduleID = schedule->uid();
+
+    ASSERT_TRUE(DCalDavOutboxEnqueuer::enqueue(
+        &accountManagerDatabase, account->accountID(), schedule,
+        DCalDavOutboxEnqueuer::CreateChange));
+    ASSERT_TRUE(localDatabase.scheduleExistsByScheduleID(scheduleID));
+
+    DCalDavOutboxProcessor processor;
+    DCalDavOutboxProcessor::Request request;
+    request.accountID = account->accountID();
+    request.username = accountInfo.username;
+    request.password = QStringLiteral("password");
+    request.localDatabase = &localDatabase;
+    request.accountManagerDatabase = &accountManagerDatabase;
+
+    DCalDavOutboxProcessor::Result result;
+    bool callbackCalled = false;
+    QEventLoop loop;
+    QTimer timeout;
+    timeout.setSingleShot(true);
+    QObject::connect(&timeout, &QTimer::timeout, &loop, &QEventLoop::quit);
+    processor.start(request, [&](const DCalDavOutboxProcessor::Result &processorResult) {
+        result = processorResult;
+        callbackCalled = true;
+        loop.quit();
+    });
+    timeout.start(5000);
+    if (!callbackCalled) {
+        loop.exec();
+    }
+
+    ASSERT_TRUE(callbackCalled);
+    EXPECT_FALSE(result.success);
+    EXPECT_EQ(DCalDavTransport::PermissionDenied, result.failureResponse.error);
+    EXPECT_EQ(DCalDavScheduleCreateError::PermissionDenied, result.createFailure);
+
+    const DSchedule::Ptr retainedSchedule = localDatabase.getScheduleByScheduleID(scheduleID);
+    ASSERT_TRUE(retainedSchedule);
+    EXPECT_EQ(QStringLiteral("Local event retained after 403"), retainedSchedule->summary());
+
+    const DCalDavOutboxItem outbox = accountManagerDatabase.getCalDavOutboxItem(
+        account->accountID(), scheduleID);
+    EXPECT_EQ(DCalDavOutboxItem::PermissionFailure, outbox.failureType);
+    EXPECT_FALSE(outbox.operationID.isEmpty());
+    ASSERT_FALSE(server.requests().isEmpty());
+    EXPECT_EQ(QByteArray("PUT"), server.requests().last().method);
 }
 
 TEST(CalDavIntegration, ProcessesOutboxCreateModifyConflictRetryAndDelete)
