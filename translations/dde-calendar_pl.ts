@@ -39,27 +39,27 @@
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="246"/>
         <source>Unable to parse the data returned by the server. Please verify the server address or try again later.</source>
-        <translation type="unfinished"/>
+        <translation>Nie można przetworzyć danych zwróconych przez serwer. Sprawdź adres serwera lub spróbuj ponownie później.</translation>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="240"/>
         <source>The server certificate is invalid.</source>
-        <translation type="unfinished"/>
+        <translation>Certyfikat serwera jest nieprawidłowy.</translation>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="242"/>
         <source>Incorrect username or password. Please try again.</source>
-        <translation type="unfinished"/>
+        <translation>Nieprawidłowa nazwa użytkownika lub hasło. Spróbuj ponownie.</translation>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="244"/>
         <source>This server does not support CalDAV. Please check your network server address.</source>
-        <translation type="unfinished"/>
+        <translation>Serwer nie wspiera CalDAV. Sprawdź adres serwera.</translation>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="248"/>
         <source>The server denied access.</source>
-        <translation type="unfinished"/>
+        <translation>Serwer odmówił dostępu.</translation>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="258"/>
