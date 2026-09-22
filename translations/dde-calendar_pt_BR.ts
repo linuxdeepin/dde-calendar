@@ -39,32 +39,32 @@
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="246"/>
         <source>Unable to parse the data returned by the server. Please verify the server address or try again later.</source>
-        <translation type="unfinished"/>
+        <translation>Não foi possível interpretar os dados retornados pelo servidor. Verifique o endereço do servidor ou tente novamente mais tarde.</translation>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="240"/>
         <source>The server certificate is invalid.</source>
-        <translation type="unfinished"/>
+        <translation>O certificado do servidor é inválido.</translation>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="242"/>
         <source>Incorrect username or password. Please try again.</source>
-        <translation type="unfinished"/>
+        <translation>O nome de usuário ou a senha estão incorretos. Tente novamente.</translation>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="244"/>
         <source>This server does not support CalDAV. Please check your network server address.</source>
-        <translation type="unfinished"/>
+        <translation>Este servidor não oferece suporte ao CalDAV. Verifique o endereço do servidor de rede.</translation>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="248"/>
         <source>The server denied access.</source>
-        <translation type="unfinished"/>
+        <translation>O servidor negou o acesso.</translation>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="258"/>
         <source>The server request timed out.</source>
-        <translation type="unfinished"/>
+        <translation>A solicitação ao servidor expirou.</translation>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="261"/>
