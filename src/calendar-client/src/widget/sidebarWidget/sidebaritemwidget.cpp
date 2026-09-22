@@ -10,6 +10,8 @@
 #include <QTimer>
 #include <QApplication>
 #include <QSizePolicy>
+#include <QPainter>
+#include <DGuiApplicationHelper>
 
 SidebarItemWidget::SidebarItemWidget(QWidget *parent)
     : QWidget(parent)
@@ -230,10 +232,17 @@ void SidebarAccountItemWidget::initView()
 
     m_warningLabel = new DLabel();
     m_warningLabel->setFixedSize(QSize(20, 20));
-    m_warningLabel->setPixmap(QIcon(":/icons/deepin/builtin/icons/dde_calendar_warning_light_32px.svg").pixmap(18, 18));
+    m_warningLabel->installEventFilter(this);
+    m_warningLabel->setAttribute(Qt::WA_Hover, true);
+    m_warningLabel->setMouseTracking(true);
+    m_warningHovered = false;
+    updateWarningIcon();
+    QObject::connect(DGuiApplicationHelper::instance(), &DGuiApplicationHelper::themeTypeChanged,
+                     m_warningLabel, [this]() { updateWarningIcon(); });
 
     hLayout->addWidget(m_headIconButton);
     hLayout->addWidget(m_titleLabel, 1);
+    hLayout->addSpacing(6);
     hLayout->addWidget(m_syncIconButton);
     hLayout->addWidget(m_warningLabel);
     //给控件右部留出足够的距离，防止被滚动条覆盖无法被点击事件
@@ -287,6 +296,38 @@ void SidebarAccountItemWidget::slotNetworkStateChange(DOANetWorkDBus::NetWorkSta
             m_syncIconButton->hide();
         }
     }
+}
+
+void SidebarAccountItemWidget::updateWarningIcon()
+{
+    int opacity = m_warningHovered ? 102 : 77; // 30% normal, 40% on hover (+10%)
+    DGuiApplicationHelper::ColorType theme = DGuiApplicationHelper::instance()->themeType();
+    QColor iconColor = (theme == DGuiApplicationHelper::DarkType)
+        ? QColor(255, 255, 255, opacity)
+        : QColor(0, 0, 0, opacity);
+    QPixmap basePixmap = QIcon(":/icons/deepin/builtin/icons/dde_calendar_warning_light_32px.svg").pixmap(QSize(18, 18));
+    QPixmap tintedPixmap(basePixmap.size());
+    tintedPixmap.fill(Qt::transparent);
+    QPainter painter(&tintedPixmap);
+    painter.drawPixmap(0, 0, basePixmap);
+    painter.setCompositionMode(QPainter::CompositionMode_SourceIn);
+    painter.fillRect(tintedPixmap.rect(), iconColor);
+    painter.end();
+    m_warningLabel->setPixmap(tintedPixmap);
+}
+
+bool SidebarAccountItemWidget::eventFilter(QObject *obj, QEvent *event)
+{
+    if (obj == m_warningLabel) {
+        if (event->type() == QEvent::Enter) {
+            m_warningHovered = true;
+            updateWarningIcon();
+        } else if (event->type() == QEvent::Leave) {
+            m_warningHovered = false;
+            updateWarningIcon();
+        }
+    }
+    return SidebarItemWidget::eventFilter(obj, event);
 }
 
 void SidebarAccountItemWidget::resetRearIconButton()
