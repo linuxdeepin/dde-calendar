@@ -69,47 +69,47 @@
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="261"/>
         <source>Unable to connect to the server. Please check your network connection and server address.</source>
-        <translation type="unfinished"/>
+        <translation>Não foi possível conectar-se ao servidor. Verifique sua conexão de rede e o endereço do servidor.</translation>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="265"/>
         <source>Synchronization failed.</source>
-        <translation type="unfinished"/>
+        <translation>Falha na sincronização.</translation>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="271"/>
         <source>Sync Failed</source>
-        <translation type="unfinished"/>
+        <translation>Falha na sincronização</translation>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="238"/>
             <source>The server request is invalid.</source>
-            <translation type="unfinished"/>
+            <translation>A solicitação ao servidor é inválida.</translation>
         </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="250"/>
             <source>The server is busy. Please try again later.</source>
-            <translation type="unfinished"/>
+            <translation>O servidor está ocupado. Tente novamente mais tarde.</translation>
         </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="252"/>
             <source>The server is unavailable. Please try again later.</source>
-            <translation type="unfinished"/>
+            <translation>O servidor está indisponível. Tente novamente mais tarde.</translation>
         </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="254"/>
             <source>The calendar data conflicts with the server.</source>
-            <translation type="unfinished"/>
+            <translation>Os dados do calendário estão em conflito com o servidor.</translation>
         </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="256"/>
             <source>The server returned too much data. Please try again later.</source>
-            <translation type="unfinished"/>
+            <translation>O servidor retornou dados demais. Tente novamente mais tarde.</translation>
         </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="263"/>
             <source>Unable to save calendar data. Please try again later.</source>
-            <translation type="unfinished"/>
+            <translation>Não foi possível salvar os dados do calendário. Tente novamente mais tarde.</translation>
         </message>
 </context>
 <context>
