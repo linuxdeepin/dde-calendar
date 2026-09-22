@@ -36,6 +36,81 @@
         <source>Event types</source>
         <translation>Tapahtumatyypit</translation>
     </message>
+    <message>
+            <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="246"/>
+        <source>Unable to parse the data returned by the server. Please verify the server address or try again later.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="240"/>
+        <source>The server certificate is invalid.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="242"/>
+        <source>Incorrect username or password. Please try again.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="244"/>
+        <source>This server does not support CalDAV. Please check your network server address.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="248"/>
+        <source>The server denied access.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="258"/>
+        <source>The server request timed out.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="261"/>
+        <source>Unable to connect to the server. Please check your network connection and server address.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="265"/>
+        <source>Synchronization failed.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="271"/>
+        <source>Sync Failed</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+            <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="238"/>
+            <source>The server request is invalid.</source>
+            <translation type="unfinished"/>
+        </message>
+    <message>
+            <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="250"/>
+            <source>The server is busy. Please try again later.</source>
+            <translation type="unfinished"/>
+        </message>
+    <message>
+            <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="252"/>
+            <source>The server is unavailable. Please try again later.</source>
+            <translation type="unfinished"/>
+        </message>
+    <message>
+            <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="254"/>
+            <source>The calendar data conflicts with the server.</source>
+            <translation type="unfinished"/>
+        </message>
+    <message>
+            <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="256"/>
+            <source>The server returned too much data. Please try again later.</source>
+            <translation type="unfinished"/>
+        </message>
+    <message>
+            <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="263"/>
+            <source>Unable to save calendar data. Please try again later.</source>
+            <translation type="unfinished"/>
+        </message>
 </context>
 <context>
     <name>CColorPickerWidget</name>
@@ -1553,9 +1628,9 @@
         <translation>Virheellinen käyttäjänimi tai salasana. Yritä uudelleen.</translation>
     </message>
     <message>
-            <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="557"/>
-        <source>This server does not support CalDAV.</source>
-        <translation>Palvelin ei tue CalDAV-protokollaa.</translation>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="569"/>
+        <source>This server does not support CalDAV. Please check your network server address.</source>
+        <translation type="unfinished"/>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="559"/>
@@ -1683,88 +1758,6 @@
         <source>Other CalDAV</source>
         <translation>Muu CalDAV</translation>
     </message>
-    </context>
-    <context>
-        <name>DCalDavSyncStatus</name>
-    <message>
-            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="64"/>
-        <source>Unable to parse the data returned by the server. Please verify the server address or try again later.</source>
-        <translation>Palvelimen jäsentäminen epäonnistui. Tarkista osoite tai yritä uudelleen.</translation>
-    </message>
-    <message>
-            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="54"/>
-        <source>The server certificate is invalid.</source>
-        <translation>Palvelimen sertifikaatti on virheellinen.</translation>
-    </message>
-    <message>
-            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="57"/>
-        <source>Incorrect username or password. Please try again.</source>
-        <translation>Virheellinen käyttäjänimi tai salasana. Yritä uudelleen.</translation>
-    </message>
-    <message>
-            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="60"/>
-        <source>This server does not support CalDAV.</source>
-        <translation>Palvelin ei tue CalDAV-protokollaa.</translation>
-    </message>
-    <message>
-        <source>The server rejected your login request. Please check your account permissions.</source>
-        <translation>Palvelin hylkäsi kirjautumisen. Tarkista tilisi käyttöoikeudet.</translation>
-    </message>
-    <message>
-            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="68"/>
-        <source>The server denied access.</source>
-        <translation>Palvelin eväsi pääsyn.</translation>
-    </message>
-    <message>
-            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="83"/>
-        <source>The server request timed out.</source>
-        <translation>Palvelimen aikakatkaisu.</translation>
-    </message>
-    <message>
-            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="87"/>
-        <source>Unable to connect to the server. Please check your network connection and server address.</source>
-        <translation>Palvelimeen ei saatu yhteyttä. Tarkista verkko ja palvelimen osoite.</translation>
-    </message>
-    <message>
-            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="94"/>
-        <source>Synchronization failed.</source>
-        <translation>Synkronointivirhe.</translation>
-    </message>
-    <message>
-            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="879"/>
-        <source>Sync Failed</source>
-        <translation>Synkronointi epäonnistui</translation>
-    </message>
-        <message>
-            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="51"/>
-            <source>The server request is invalid.</source>
-            <translation>Pyyntö palvelimelle on virheellinen.</translation>
-        </message>
-        <message>
-            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="71"/>
-            <source>The server is busy. Please try again later.</source>
-            <translation>Palvelin on varattu. Yritä myöhemmin uudelleen.</translation>
-        </message>
-        <message>
-            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="74"/>
-            <source>The server is unavailable. Please try again later.</source>
-            <translation>Palvelin ei ole linjoilla. Yritä myöhemmin uudelleen.</translation>
-        </message>
-        <message>
-            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="77"/>
-            <source>The calendar data conflicts with the server.</source>
-            <translation>Kalenterin tiedot ovat ristiriidassa palvelimen tietojen kanssa.</translation>
-        </message>
-        <message>
-            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="80"/>
-            <source>The server returned too much data. Please try again later.</source>
-            <translation>Palvelin palautti liikaa tietoa. Yritä myöhemmin uudelleen.</translation>
-        </message>
-        <message>
-            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="91"/>
-            <source>Unable to save calendar data. Please try again later.</source>
-            <translation>Kalenterin tietojen tallennus epäonnistui. Yritä myöhemmin uudelleen.</translation>
-        </message>
     </context>
     <context>
         <name>SidebarAccountItemWidget</name>
