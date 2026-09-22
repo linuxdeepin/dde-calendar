@@ -97,6 +97,9 @@ void DCalDavAccountSync::flushOutbox()
             m_result.failureCode = DCalDavErrorCode::Unknown;
         }
         m_result.createFailure = result.createFailure;
+        m_result.retryDeferred = result.retryScheduledCount > 0
+            && result.permanentFailureCount == 0
+            && !result.requestAttempted;
         if (!result.success) {
             if (result.retryScheduledCount > 0 && result.permanentFailureCount == 0) {
                 m_request.accountManagerDatabase->updateCalDavSyncStatus(

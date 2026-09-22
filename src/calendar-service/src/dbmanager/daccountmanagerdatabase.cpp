@@ -397,7 +397,77 @@ bool DAccountManagerDataBase::deleteCalDavAccountInfo(const QString &accountID)
         qCWarning(ServiceLogger) << "Failed to delete CalDAV account configuration:" << query.lastError().text();
         return false;
     }
-    return query.numRowsAffected() == 1;
+    const bool deleted = query.numRowsAffected() == 1;
+    if (deleted && !removePendingCalDavScheduleSyncNotification(accountID)) {
+        qCWarning(ServiceLogger)
+            << "Failed to remove pending CalDAV sync notification after account deletion:"
+            << accountID;
+    }
+    return deleted;
+}
+
+bool DAccountManagerDataBase::hasPendingCalDavScheduleSyncNotification(
+    const QString &accountID) const
+{
+    if (accountID.isEmpty()) {
+        return false;
+    }
+
+    SqliteQuery query(m_database);
+    if (!query.prepare(QStringLiteral(
+            "SELECT 1 FROM caldavScheduleSyncNotification WHERE accountID = ?"))) {
+        return false;
+    }
+    query.addBindValue(accountID);
+    return query.exec() && query.next();
+}
+
+bool DAccountManagerDataBase::addPendingCalDavScheduleSyncNotification(
+    const QString &accountID)
+{
+    if (accountID.isEmpty()) {
+        return false;
+    }
+
+    SqliteQuery query(m_database);
+    if (!query.prepare(QStringLiteral(
+            "INSERT OR IGNORE INTO caldavScheduleSyncNotification (accountID, createdAt) "
+            "VALUES (?, ?)"))) {
+        qCWarning(ServiceLogger) << "Failed to prepare CalDAV pending notification insert:"
+                                  << query.lastError().text();
+        return false;
+    }
+    query.addBindValue(accountID);
+    query.addBindValue(QDateTime::currentDateTimeUtc().toString(Qt::ISODate));
+    if (!query.exec()) {
+        qCWarning(ServiceLogger) << "Failed to persist CalDAV pending notification:"
+                                  << query.lastError().text();
+        return false;
+    }
+    return true;
+}
+
+bool DAccountManagerDataBase::removePendingCalDavScheduleSyncNotification(
+    const QString &accountID)
+{
+    if (accountID.isEmpty()) {
+        return false;
+    }
+
+    SqliteQuery query(m_database);
+    if (!query.prepare(QStringLiteral(
+            "DELETE FROM caldavScheduleSyncNotification WHERE accountID = ?"))) {
+        qCWarning(ServiceLogger) << "Failed to prepare CalDAV pending notification deletion:"
+                                  << query.lastError().text();
+        return false;
+    }
+    query.addBindValue(accountID);
+    if (!query.exec()) {
+        qCWarning(ServiceLogger) << "Failed to remove CalDAV pending notification:"
+                                  << query.lastError().text();
+        return false;
+    }
+    return true;
 }
 
 bool DAccountManagerDataBase::hasPendingCalDavCalendarDelete(
@@ -755,6 +825,7 @@ bool DAccountManagerDataBase::deleteCalDavAccountData(const QString &accountID)
         QStringLiteral("DELETE FROM caldavSkippedResource WHERE accountID = ?"),
         QStringLiteral("DELETE FROM caldavCategoryMapping WHERE accountID = ?"),
         QStringLiteral("DELETE FROM caldavOutbox WHERE accountID = ?"),
+        QStringLiteral("DELETE FROM caldavScheduleSyncNotification WHERE accountID = ?"),
         QStringLiteral("DELETE FROM caldavCalendar WHERE accountID = ?"),
         QStringLiteral("DELETE FROM caldavAccount WHERE accountID = ?"),
         QStringLiteral("DELETE FROM accountManager WHERE accountID = ?"),
@@ -772,6 +843,32 @@ bool DAccountManagerDataBase::deleteCalDavAccountData(const QString &accountID)
     }
     if (!query.commit()) {
         query.rollback();
+        return false;
+    }
+    return true;
+}
+
+bool DAccountManagerDataBase::removePendingCalDavScheduleSyncNotificationIfNoCreates(
+    const QString &accountID)
+{
+    if (accountID.isEmpty()) {
+        return false;
+    }
+
+    SqliteQuery query(m_database);
+    if (!query.prepare(QStringLiteral(
+            "DELETE FROM caldavScheduleSyncNotification WHERE accountID = ? "
+            "AND NOT EXISTS (SELECT 1 FROM caldavOutbox WHERE accountID = ? AND operationType = ?)"))) {
+        qCWarning(ServiceLogger) << "Failed to prepare CalDAV pending notification cleanup:"
+                                  << query.lastError().text();
+        return false;
+    }
+    query.addBindValue(accountID);
+    query.addBindValue(accountID);
+    query.addBindValue(static_cast<int>(DCalDavOutboxItem::CreateOperation));
+    if (!query.exec()) {
+        qCWarning(ServiceLogger) << "Failed to remove stale CalDAV pending notification:"
+                                  << query.lastError().text();
         return false;
     }
     return true;
@@ -1856,6 +1953,12 @@ void DAccountManagerDataBase::createDB()
         res = query.exec(sql_create_caldavSkippedResource);
         if (!res) {
             qCWarning(ServiceLogger) << "Failed to create CalDAV skipped resource table:"
+                                     << query.lastError().text();
+        }
+
+        res = query.exec(sql_create_caldavScheduleSyncNotification);
+        if (!res) {
+            qCWarning(ServiceLogger) << "Failed to create CalDAV schedule sync notification table:"
                                      << query.lastError().text();
         }
 

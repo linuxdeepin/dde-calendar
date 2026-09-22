@@ -52,6 +52,10 @@ public:
     bool upsertCalDavAccountInfo(const DCalDavAccountInfo &accountInfo);
     bool deleteCalDavAccountInfo(const QString &accountID);
     bool deleteCalDavAccountData(const QString &accountID);
+    bool hasPendingCalDavScheduleSyncNotification(const QString &accountID) const;
+    bool addPendingCalDavScheduleSyncNotification(const QString &accountID);
+    bool removePendingCalDavScheduleSyncNotification(const QString &accountID);
+    bool removePendingCalDavScheduleSyncNotificationIfNoCreates(const QString &accountID);
     bool upsertCalDavAccountDeletionCleanup(const QString &accountID, const QString &sourceDbName);
     QMap<QString, QString> getCalDavAccountDeletionCleanups() const;
     bool deleteCalDavAccountDeletionCleanup(const QString &accountID);

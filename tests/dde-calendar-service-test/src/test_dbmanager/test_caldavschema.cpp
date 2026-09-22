@@ -202,6 +202,7 @@ TEST(CalDavSchema, CreatesTablesIdempotently)
             DDataBase::sql_create_caldavRecovery,
             DDataBase::sql_create_caldavAccountDeletionCleanup,
             DDataBase::sql_create_caldavSkippedResource,
+            DDataBase::sql_create_caldavScheduleSyncNotification,
         };
         for (const QString &statement : statements) {
             QSqlQuery query(database);
@@ -216,10 +217,58 @@ TEST(CalDavSchema, CreatesTablesIdempotently)
         EXPECT_TRUE(tableExists(database, QStringLiteral("caldavRecovery")));
         EXPECT_TRUE(tableExists(database, QStringLiteral("caldavAccountDeletionCleanup")));
         EXPECT_TRUE(tableExists(database, QStringLiteral("caldavSkippedResource")));
+        EXPECT_TRUE(tableExists(database, QStringLiteral("caldavScheduleSyncNotification")));
 
         database.close();
     }
     QSqlDatabase::removeDatabase(connectionName);
+}
+
+TEST(CalDavScheduleSyncNotification, PersistsUntilSuccessfullyRemoved)
+{
+    QTemporaryDir directory;
+    ASSERT_TRUE(directory.isValid());
+
+    DAccountManagerDataBase database;
+    database.setDBPath(directory.filePath(QStringLiteral("account-manager.db")));
+    database.setLoaclDB(directory.filePath(QStringLiteral("local.db")));
+    database.initDBData();
+
+    const QString accountID = QStringLiteral("notification-account");
+    EXPECT_FALSE(database.hasPendingCalDavScheduleSyncNotification(accountID));
+    ASSERT_TRUE(database.addPendingCalDavScheduleSyncNotification(accountID));
+    EXPECT_TRUE(database.hasPendingCalDavScheduleSyncNotification(accountID));
+    ASSERT_TRUE(database.addPendingCalDavScheduleSyncNotification(accountID));
+    EXPECT_TRUE(database.hasPendingCalDavScheduleSyncNotification(accountID));
+    ASSERT_TRUE(database.removePendingCalDavScheduleSyncNotification(accountID));
+    EXPECT_FALSE(database.hasPendingCalDavScheduleSyncNotification(accountID));
+}
+
+TEST(CalDavScheduleSyncNotification, KeepsPendingWhileCreateOperationsRemain)
+{
+    QTemporaryDir directory;
+    ASSERT_TRUE(directory.isValid());
+
+    DAccountManagerDataBase database;
+    database.setDBPath(directory.filePath(QStringLiteral("account-manager.db")));
+    database.setLoaclDB(directory.filePath(QStringLiteral("local.db")));
+    database.initDBData();
+
+    const QString accountID = QStringLiteral("notification-account");
+    ASSERT_TRUE(database.addPendingCalDavScheduleSyncNotification(accountID));
+
+    DCalDavOutboxItem item;
+    item.operationID = QStringLiteral("pending-create");
+    item.accountID = accountID;
+    item.localScheduleID = QStringLiteral("schedule-1");
+    item.operationType = DCalDavOutboxItem::CreateOperation;
+    ASSERT_TRUE(database.upsertCalDavOutboxItem(item));
+    ASSERT_TRUE(database.removePendingCalDavScheduleSyncNotificationIfNoCreates(accountID));
+    EXPECT_TRUE(database.hasPendingCalDavScheduleSyncNotification(accountID));
+
+    ASSERT_TRUE(database.deleteCalDavOutboxItem(accountID, item.localScheduleID));
+    ASSERT_TRUE(database.removePendingCalDavScheduleSyncNotificationIfNoCreates(accountID));
+    EXPECT_FALSE(database.hasPendingCalDavScheduleSyncNotification(accountID));
 }
 
 TEST(CalDavSkippedResource, PersistsUpdatesAndCleansUpRecords)
@@ -3612,7 +3661,7 @@ TEST(CalDavIntegration, ProcessesOutboxCreateModifyConflictRetryAndDelete)
         &accountManagerDatabase, account->accountID(), schedule,
         DCalDavOutboxEnqueuer::CreateChange));
 
-    auto processOutbox = [&](DCalDavOutboxProcessor::Result &result) {
+    auto processOutbox = [&](DCalDavOutboxProcessor::Result &result, bool forceRetry = false) {
         DCalDavOutboxProcessor processor;
         DCalDavOutboxProcessor::Request request;
         request.accountID = account->accountID();
@@ -3620,6 +3669,7 @@ TEST(CalDavIntegration, ProcessesOutboxCreateModifyConflictRetryAndDelete)
         request.password = QStringLiteral("password");
         request.localDatabase = &localDatabase;
         request.accountManagerDatabase = &accountManagerDatabase;
+        request.forceRetry = forceRetry;
         bool called = false;
         QEventLoop loop;
         processor.start(request, [&](const DCalDavOutboxProcessor::Result &processorResult) {
@@ -3737,10 +3787,24 @@ TEST(CalDavIntegration, ProcessesOutboxCreateModifyConflictRetryAndDelete)
         DCalDavOutboxEnqueuer::ModifyChange));
     ASSERT_TRUE(processOutbox(result));
     EXPECT_FALSE(result.success);
+    EXPECT_TRUE(result.requestAttempted);
     const DCalDavOutboxItem retry = accountManagerDatabase.getCalDavOutboxItem(
         account->accountID(), scheduleID);
     EXPECT_EQ(DCalDavOutboxItem::NetworkFailure, retry.failureType);
     EXPECT_TRUE(retry.nextRetryAt.isValid());
+
+    // A retry that is still waiting for its backoff deadline must not be
+    // reported as an attempted synchronization.
+    ASSERT_TRUE(processOutbox(result));
+    EXPECT_FALSE(result.success);
+    EXPECT_FALSE(result.requestAttempted);
+    EXPECT_EQ(1, result.retryScheduledCount);
+
+    // Manual retry bypasses the deadline and records the actual request.
+    server.setResponseStatus(204);
+    ASSERT_TRUE(processOutbox(result, true));
+    EXPECT_TRUE(result.success);
+    EXPECT_TRUE(result.requestAttempted);
 
     server.setResponseStatus(204);
     ASSERT_TRUE(DCalDavOutboxEnqueuer::enqueue(

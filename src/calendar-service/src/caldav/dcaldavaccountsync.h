@@ -50,6 +50,7 @@ public:
         int deletedCount = 0;
         int fullRangeFallbackCount = 0;
         DCalDavScheduleCreateError::Type createFailure = DCalDavScheduleCreateError::NoError;
+        bool retryDeferred = false;
     };
 
     typedef std::function<void(const Result &)> Callback;

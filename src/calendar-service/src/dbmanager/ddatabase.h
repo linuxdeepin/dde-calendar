@@ -56,6 +56,8 @@ public:
     static const QString sql_create_caldavAccountDeletionCleanup;
     // CalDAV 畸形远端资源记录
     static const QString sql_create_caldavSkippedResource;
+    // CalDAV 新建日程同步结果待通知记录
+    static const QString sql_create_caldavScheduleSyncNotification;
     //日历通用设置
     static const QString sql_create_calendargeneralsettings;
 

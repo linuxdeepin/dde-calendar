@@ -16,10 +16,12 @@
 
 class DCalDavAccountRegistrar;
 class DCalDavReadOnlySync;
+class DBusNotify;
 
 #include <QObject>
 #include <QSharedPointer>
 #include <QHash>
+#include <QSet>
 #include <QTimer>
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 #include <QNetworkInformation>
@@ -138,6 +140,9 @@ private:
      */
     bool deleteCalDavAccountInternal(const QString &accountID, bool deleteLocalData);
     void resumeCalDavAccountDeletionCleanups();
+    bool notifyCalDavScheduleSyncResult(const QString &accountID, bool success,
+                                        DCalDavErrorCode failureCode,
+                                        const DCalDavTransport::Response &response);
 
 signals:
     void firstDayOfWeekChange();
@@ -183,6 +188,8 @@ private:
     QHash<QString, DCalDavReadOnlySync *> m_calDavValidationJobs;
     QTimer m_calDavDailyTimer;
     QTimer m_calDavRetryTimer;
+    DBusNotify *m_dbusNotify = nullptr;
+    QSet<QString> m_calDavCreateFailuresInCurrentSync;
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QNetworkConfigurationManager m_networkConfigurationManager;
 #endif
