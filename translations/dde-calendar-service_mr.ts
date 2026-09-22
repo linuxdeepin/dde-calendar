@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="mr">
+<?xml version="1.0" ?><!DOCTYPE TS><TS version="2.1" language="mr">
 <context>
     <name>AccountItem</name>
     <message>
@@ -869,7 +867,7 @@
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="258"/>
         <source>%1 to %2</source>
-        <translation>'%1 ते %2'</translation>
+        <translation>&apos;%1 ते %2&apos;</translation>
     </message>
     <message>
         <location filename="../calendar-service/src/alarmManager/dalarmmanager.cpp" line="296"/>
@@ -1163,4 +1161,53 @@
         <translation>आज</translation>
     </message>
 </context>
+    <context>
+        <name>DAccountManageModule</name>
+    <message>
+        <location filename="../src/calendar-service/src/calendarDataManager/daccountmanagemodule.cpp" line="125"/>
+        <source>[Original Type: %1]</source>
+        <translation type="unfinished"/>
+    </message>
+    </context>
+    <context>
+        <name>DCalDavAccountRegistrar</name>
+    <message>
+        <location filename="../src/calendar-service/src/caldav/dcaldavaccountregistrar.cpp" line="60"/>
+        <source>Calendar</source>
+        <translation type="unfinished"/>
+    </message>
+    </context>
+    <context>
+        <name>DCalDavProviderProfile</name>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavprofile.h" line="37"/>
+        <source>DingTalk</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavprofile.h" line="39"/>
+        <source>WeCom</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavprofile.h" line="41"/>
+        <source>Tencent Meeting</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavprofile.h" line="43"/>
+        <source>QQ Mail</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavprofile.h" line="45"/>
+        <source>Feishu</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavprofile.h" line="48"/>
+        <source>Other CalDAV</source>
+        <translation type="unfinished"/>
+    </message>
+    </context>
 </TS>
