@@ -64,52 +64,52 @@
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="258"/>
         <source>The server request timed out.</source>
-        <translation type="unfinished"/>
+        <translation>Upłynął czas oczekiwania żądania serwera.</translation>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="261"/>
         <source>Unable to connect to the server. Please check your network connection and server address.</source>
-        <translation type="unfinished"/>
+        <translation>Nie można połączyć się z serwerem. Sprawdź stan połączenia i adres serwera.</translation>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="265"/>
         <source>Synchronization failed.</source>
-        <translation type="unfinished"/>
+        <translation>Błąd synchronizacji.</translation>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="271"/>
         <source>Sync Failed</source>
-        <translation type="unfinished"/>
+        <translation>Błąd synchronizacji</translation>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="238"/>
             <source>The server request is invalid.</source>
-            <translation type="unfinished"/>
+            <translation>Żądanie serwera jest nieprawidłowe.</translation>
         </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="250"/>
             <source>The server is busy. Please try again later.</source>
-            <translation type="unfinished"/>
+            <translation>Serwer jest zajęty. Spróbuj ponownie później.</translation>
         </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="252"/>
             <source>The server is unavailable. Please try again later.</source>
-            <translation type="unfinished"/>
+            <translation>Serwer jest niedostępny. Spróbuj ponownie później.</translation>
         </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="254"/>
             <source>The calendar data conflicts with the server.</source>
-            <translation type="unfinished"/>
+            <translation>Dane kalendarza są niezgodne z danymi na serwerze.</translation>
         </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="256"/>
             <source>The server returned too much data. Please try again later.</source>
-            <translation type="unfinished"/>
+            <translation>Serwer zwrócił zbyt dużą ilość danych. Spróbuj ponownie później.</translation>
         </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="263"/>
             <source>Unable to save calendar data. Please try again later.</source>
-            <translation type="unfinished"/>
+            <translation>Nie można zapisać danych kalendarza. Spróbuj ponownie później.</translation>
         </message>
 </context>
 <context>
@@ -1630,7 +1630,7 @@
     <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="569"/>
         <source>This server does not support CalDAV. Please check your network server address.</source>
-        <translation type="unfinished"/>
+        <translation>Serwer nie wspiera CalDAV. Sprawdź adres serwera.</translation>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="559"/>
