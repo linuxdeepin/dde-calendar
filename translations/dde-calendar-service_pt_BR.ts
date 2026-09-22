@@ -1161,4 +1161,53 @@
         <translation>Hoje</translation>
     </message>
 </context>
+    <context>
+        <name>DAccountManageModule</name>
+    <message>
+        <location filename="../src/calendar-service/src/calendarDataManager/daccountmanagemodule.cpp" line="125"/>
+        <source>[Original Type: %1]</source>
+        <translation>[Tipo original: %1]</translation>
+    </message>
+    </context>
+    <context>
+        <name>DCalDavAccountRegistrar</name>
+    <message>
+        <location filename="../src/calendar-service/src/caldav/dcaldavaccountregistrar.cpp" line="60"/>
+        <source>Calendar</source>
+        <translation>Calendário</translation>
+    </message>
+    </context>
+    <context>
+        <name>DCalDavProviderProfile</name>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavprofile.h" line="37"/>
+        <source>DingTalk</source>
+        <translation>DingTalk</translation>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavprofile.h" line="39"/>
+        <source>WeCom</source>
+        <translation>WeCom</translation>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavprofile.h" line="41"/>
+        <source>Tencent Meeting</source>
+        <translation>Tencent Meeting</translation>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavprofile.h" line="43"/>
+        <source>QQ Mail</source>
+        <translation>QQ Mail</translation>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavprofile.h" line="45"/>
+        <source>Feishu</source>
+        <translation>Feishu</translation>
+    </message>
+    <message>
+        <location filename="../src/calendar-common/src/dcaldavprofile.h" line="48"/>
+        <source>Other CalDAV</source>
+        <translation>Outro CalDAV</translation>
+    </message>
+    </context>
 </TS>
