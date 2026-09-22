@@ -103,7 +103,11 @@ void CScheduleDlg::setData(const DSchedule::Ptr &info)
         const int accountIndex = m_accountComBox->findData(m_accountItem->getAccount()->accountID());
         m_accountComBox->setCurrentIndex(accountIndex);
         m_typeComBox->updateJobType(m_accountItem);
-        getButtons()[1]->setEnabled(canWriteCurrentCalDavCollection());
+        if (m_type == 0) {
+            getButtons()[1]->setEnabled(canWriteCurrentCalDavCollection());
+        } else {
+            setOkBtnEnabled();
+        }
     } else {
         qCWarning(ClientLogger) << "No account found, falling back to local account";
         m_accountItem = gAccountManager->getLocalAccountItem();
@@ -685,7 +689,8 @@ void CScheduleDlg::slotAccoutBoxActivated(const QString &text)
         m_accountComBox->currentData().toString());
     m_typeComBox->updateJobType(m_accountItem);
     resetColor(m_accountItem);
-    getButtons()[1]->setEnabled(canWriteCurrentCalDavCollection());
+    // 新建日程允许先保存到本地，由服务端在实际写入时返回权限结果
+    setOkBtnEnabled();
     //将焦点转移到类型选择框上
     m_typeComBox->setFocus();
     setShowState(m_lunarRadioBtn->isChecked());

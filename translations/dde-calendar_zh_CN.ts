@@ -38,7 +38,82 @@
             <source>Event types</source>
             <translation>日程类型</translation>
         </message>
-    </context>
+        <message>
+            <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="238" />
+            <source>The server request is invalid.</source>
+            <translation>服务器请求无效</translation>
+        </message>
+    <message>
+            <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="250" />
+            <source>The server is busy. Please try again later.</source>
+            <translation>服务器繁忙，请稍后重试</translation>
+        </message>
+    <message>
+            <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="252" />
+            <source>The server is unavailable. Please try again later.</source>
+            <translation>服务器不可用，请稍后重试</translation>
+        </message>
+    <message>
+            <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="254" />
+            <source>The calendar data conflicts with the server.</source>
+            <translation>日历数据与服务器存在冲突</translation>
+        </message>
+    <message>
+            <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="256" />
+            <source>The server returned too much data. Please try again later.</source>
+            <translation>服务器返回的数据过大，请稍后重试</translation>
+        </message>
+    <message>
+            <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="263" />
+            <source>Unable to save calendar data. Please try again later.</source>
+            <translation>无法保存日历数据，请稍后重试</translation>
+        </message>
+    <message>
+            <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="246" />
+            <source>Unable to parse the data returned by the server. Please verify the server address or try again later.</source>
+            <translation>服务器返回的数据无法解析，请确认服务器地址或稍后重试</translation>
+        </message>
+    <message>
+            <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="240" />
+            <source>The server certificate is invalid.</source>
+            <translation>服务器证书无效</translation>
+        </message>
+    <message>
+            <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="242" />
+            <source>Incorrect username or password. Please try again.</source>
+            <translation>用户名或密码错误，请重试</translation>
+        </message>
+    <message>
+            <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="244" />
+            <source>This server does not support CalDAV. Please check your network server address.</source>
+            <translation>该服务器不支持CalDAV协议，请确认服务器地址</translation>
+        </message>
+    <message>
+            <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="248" />
+            <source>The server denied access.</source>
+            <translation>服务器拒绝访问</translation>
+        </message>
+    <message>
+            <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="258" />
+            <source>The server request timed out.</source>
+            <translation>服务器请求超时</translation>
+        </message>
+    <message>
+            <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="261" />
+            <source>Unable to connect to the server. Please check your network connection and server address.</source>
+            <translation>无法连接到服务器，请检查网络连接和服务器地址</translation>
+        </message>
+    <message>
+            <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="265" />
+            <source>Synchronization failed.</source>
+            <translation>同步失败</translation>
+        </message>
+    <message>
+            <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="271" />
+            <source>Sync Failed</source>
+            <translation>同步失败</translation>
+        </message>
+</context>
     <context>
         <name>CColorPickerWidget</name>
         <message>
@@ -1000,9 +1075,9 @@
             <translation>用户名或密码错误，请重试</translation>
         </message>
         <message>
-            <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="557" />
-            <source>This server does not support CalDAV.</source>
-            <translation>该服务器不支持CalDAV协议</translation>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="569" />
+            <source>This server does not support CalDAV. Please check your network server address.</source>
+            <translation>该服务器不支持CalDAV协议，请确认服务器地址</translation>
         </message>
         <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="563" />
@@ -1231,88 +1306,6 @@
             <location filename="../src/calendar-common/src/dcaldavprofile.h" line="48" />
             <source>Other CalDAV</source>
             <translation>其他 CalDAV</translation>
-        </message>
-    </context>
-    <context>
-        <name>DCalDavSyncStatus</name>
-        <message>
-            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="51" />
-            <source>The server request is invalid.</source>
-            <translation>服务器请求无效</translation>
-        </message>
-        <message>
-            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="71" />
-            <source>The server is busy. Please try again later.</source>
-            <translation>服务器繁忙，请稍后重试</translation>
-        </message>
-        <message>
-            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="74" />
-            <source>The server is unavailable. Please try again later.</source>
-            <translation>服务器不可用，请稍后重试</translation>
-        </message>
-        <message>
-            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="77" />
-            <source>The calendar data conflicts with the server.</source>
-            <translation>日历数据与服务器存在冲突</translation>
-        </message>
-        <message>
-            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="80" />
-            <source>The server returned too much data. Please try again later.</source>
-            <translation>服务器返回的数据过大，请稍后重试</translation>
-        </message>
-        <message>
-            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="91" />
-            <source>Unable to save calendar data. Please try again later.</source>
-            <translation>无法保存日历数据，请稍后重试</translation>
-        </message>
-        <message>
-            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="64" />
-            <source>Unable to parse the data returned by the server. Please verify the server address or try again later.</source>
-            <translation>服务器返回的数据无法解析，请确认服务器地址或稍后重试</translation>
-        </message>
-        <message>
-            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="54" />
-            <source>The server certificate is invalid.</source>
-            <translation>服务器证书无效</translation>
-        </message>
-        <message>
-            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="57" />
-            <source>Incorrect username or password. Please try again.</source>
-            <translation>用户名或密码错误，请重试</translation>
-        </message>
-        <message>
-            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="60" />
-            <source>This server does not support CalDAV.</source>
-            <translation>该服务器不支持CalDAV协议</translation>
-        </message>
-        <message>
-            <source>The server rejected your login request. Please check your account permissions.</source>
-            <translation type="vanished">服务器拒绝了登录请求，请检查账号是否有访问权限</translation>
-        </message>
-        <message>
-            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="68" />
-            <source>The server denied access.</source>
-            <translation>服务器拒绝访问</translation>
-        </message>
-        <message>
-            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="83" />
-            <source>The server request timed out.</source>
-            <translation>服务器请求超时</translation>
-        </message>
-        <message>
-            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="87" />
-            <source>Unable to connect to the server. Please check your network connection and server address.</source>
-            <translation>无法连接到服务器，请检查网络连接和服务器地址</translation>
-        </message>
-        <message>
-            <location filename="../src/calendar-common/src/dcaldavaccountstatus.h" line="94" />
-            <source>Synchronization failed.</source>
-            <translation>同步失败</translation>
-        </message>
-        <message>
-            <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="879" />
-            <source>Sync Failed</source>
-            <translation>同步失败</translation>
         </message>
     </context>
     <context>

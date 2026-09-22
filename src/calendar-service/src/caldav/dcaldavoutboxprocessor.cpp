@@ -441,7 +441,10 @@ void DCalDavOutboxProcessor::processItem(const DCalDavOutboxItem &item)
     }
 
     const DCalDavCalendarInfo calendar = calendarFor(item, schedule, m_request.accountManagerDatabase);
-    if (calendar.calendarId.isEmpty() || !(calendar.privileges & DCalDavXmlReader::WritePrivilege)) {
+    // Cached privileges are only a hint. Let the server make the final
+    // authorization decision so a 403 can be reported without losing the
+    // local schedule or its pending outbox operation.
+    if (calendar.calendarId.isEmpty()) {
         DCalDavTransport::Response response;
         response.httpStatus = 403;
         response.error = DCalDavTransport::PermissionDenied;

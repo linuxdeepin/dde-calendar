@@ -230,6 +230,47 @@ void AccountManager::slotGetIsSupportUidFinish(bool supported)
     }
 }
 
+QString AccountManager::calDavFailureReason(const DCalDavAccountStatus &status)
+{
+    const DCalDavErrorCode errorCode = static_cast<DCalDavErrorCode>(status.failureCode);
+    switch (errorCode) {
+    case DCalDavErrorCode::InvalidRequest:
+        return tr("The server request is invalid.");
+    case DCalDavErrorCode::CertificateInvalid:
+        return tr("The server certificate is invalid.");
+    case DCalDavErrorCode::AuthenticationFailed:
+        return tr("Incorrect username or password. Please try again.");
+    case DCalDavErrorCode::UnsupportedCalDav:
+        return tr("This server does not support CalDAV. Please check your network server address.");
+    case DCalDavErrorCode::ParseError:
+        return tr("Unable to parse the data returned by the server. Please verify the server address or try again later.");
+    case DCalDavErrorCode::PermissionDenied:
+        return tr("The server denied access.");
+    case DCalDavErrorCode::RateLimited:
+        return tr("The server is busy. Please try again later.");
+    case DCalDavErrorCode::ServerUnavailable:
+        return tr("The server is unavailable. Please try again later.");
+    case DCalDavErrorCode::Conflict:
+        return tr("The calendar data conflicts with the server.");
+    case DCalDavErrorCode::ResponseTooLarge:
+        return tr("The server returned too much data. Please try again later.");
+    case DCalDavErrorCode::RequestTimedOut:
+        return tr("The server request timed out.");
+    case DCalDavErrorCode::NetworkUnavailable:
+    case DCalDavErrorCode::NetworkError:
+        return tr("Unable to connect to the server. Please check your network connection and server address.");
+    case DCalDavErrorCode::StorageError:
+        return tr("Unable to save calendar data. Please try again later.");
+    default:
+        return tr("Synchronization failed.");
+    }
+}
+
+QString AccountManager::calDavSyncFailedText()
+{
+    return tr("Sync Failed");
+}
+
 AccountManager::~AccountManager()
 {
     qCDebug(ClientLogger) << "Destroying AccountManager";
