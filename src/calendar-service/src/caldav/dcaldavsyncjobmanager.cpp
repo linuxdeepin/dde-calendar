@@ -113,7 +113,7 @@ void DCalDavSyncJobManager::processNext(const QString &requestedAccountID)
             emit accountScheduleCreateFailed(accountID, static_cast<int>(result.createFailure));
         }
         emit accountSyncFinished(accountID, result.success, result.errorMessage,
-                                  result.failureResponse);
+                                  result.failureResponse, result.failureCode, result.retryDeferred);
         QTimer::singleShot(0, this, [this, accountID]() {
             processNext(accountID);
         });

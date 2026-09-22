@@ -671,6 +671,26 @@
             <source>[Original Type: %1]</source>
             <translation>[Original Type: %1]</translation>
         </message>
+        <message>
+            <location filename="../src/calendar-service/src/calendarDataManager/daccountmanagemodule.cpp" line="407" />
+            <source>Sync successful</source>
+            <translation>Sync successful</translation>
+        </message>
+        <message>
+            <location filename="../src/calendar-service/src/calendarDataManager/daccountmanagemodule.cpp" line="411" />
+            <source>Unable to connect to the server. Please check your network connection and server address.</source>
+            <translation>Unable to connect to the server. Please check your network connection and server address.</translation>
+        </message>
+        <message>
+            <location filename="../src/calendar-service/src/calendarDataManager/daccountmanagemodule.cpp" line="414" />
+            <source>Sync failed, please try later</source>
+            <translation>Sync failed, please try later</translation>
+        </message>
+        <message>
+            <location filename="../src/calendar-service/src/calendarDataManager/daccountmanagemodule.cpp" line="425" />
+            <source>Calendar</source>
+            <translation>Calendar</translation>
+        </message>
     </context>
     <context>
         <name>DAlarmManager</name>

@@ -940,6 +940,7 @@ bool DAccountModule::deleteScheduleByScheduleID(const QString &scheduleID)
     DCalDavEventMappingInfo calDavMapping;
     bool hasRecoveryItem = false;
     bool shouldSyncCalDav = false;
+    bool cancelledPendingCreate = false;
     if (m_account->accountType() == DAccount::Account_CalDav) {
         if (m_calDavAccountManagerDatabase == nullptr) {
             return false;
@@ -977,6 +978,11 @@ bool DAccountModule::deleteScheduleByScheduleID(const QString &scheduleID)
         uploadNetWorkAccountData();
     } else if (m_account->accountType() == DAccount::Account_CalDav) {
         if (calDavMapping.href.isEmpty()) {
+            const DCalDavOutboxItem outboxItem =
+                m_calDavAccountManagerDatabase->getCalDavOutboxItem(m_account->accountID(), scheduleID);
+            cancelledPendingCreate =
+                outboxItem.operationType == DCalDavOutboxItem::CreateOperation
+                && !outboxItem.operationID.isEmpty();
             // A schedule without a remote mapping cannot be addressed with a
             // CalDAV DELETE. It is a local-only/orphaned row, so remove it and
             // cancel any unsent local operation instead of rolling the delete
@@ -1036,6 +1042,11 @@ bool DAccountModule::deleteScheduleByScheduleID(const QString &scheduleID)
     if (hasRecoveryItem
         && !m_accountDB->deleteCalDavRecoveryItem(m_account->accountID(), scheduleID)) {
         qCWarning(ServiceLogger) << "Failed to clear completed CalDAV deletion recovery record.";
+    }
+    if (cancelledPendingCreate
+        && !m_calDavAccountManagerDatabase->removePendingCalDavScheduleSyncNotificationIfNoCreates(
+            m_account->accountID())) {
+        qCWarning(ServiceLogger) << "Failed to clear stale CalDAV schedule sync notification after deleting an unsent create.";
     }
     if (shouldSyncCalDav) {
         // Only mapped schedules have a remote DELETE to process. A local-only

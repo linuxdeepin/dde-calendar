@@ -42,6 +42,7 @@ public:
         DCalDavScheduleCreateError::Type createFailure = DCalDavScheduleCreateError::NoError;
         int permanentFailureCount = 0;
         int restoredCalendarCount = 0;
+        bool requestAttempted = false;
     };
 
     typedef std::function<void(const Result &)> Callback;

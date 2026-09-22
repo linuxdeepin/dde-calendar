@@ -228,6 +228,11 @@ const QString DDataBase::sql_create_caldavSkippedResource =
     " lastSeenAt DATETIME NOT NULL,"
     " PRIMARY KEY(accountID, calendarID, href))";
 
+const QString DDataBase::sql_create_caldavScheduleSyncNotification =
+    " CREATE TABLE if not exists caldavScheduleSyncNotification ("
+    " accountID TEXT NOT NULL PRIMARY KEY,"
+    " createdAt DATETIME NOT NULL)";
+
 //日历通用设置
 const QString DDataBase::sql_create_calendargeneralsettings =
     " CREATE TABLE  if not exists calendargeneralsettings(     "

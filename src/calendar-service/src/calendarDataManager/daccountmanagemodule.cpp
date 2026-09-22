@@ -16,6 +16,7 @@
 #include "dcaldavretrypolicy.h"
 #include "dcaldavsyncstatusmapper.h"
 #include "dcaldavtransport.h"
+#include "dbusnotify.h"
 #include <qstandardpaths.h>
 #include <QUrl>
 #include <QCoreApplication>
@@ -227,6 +228,17 @@ DAccountManageModule::DAccountManageModule(QObject *parent)
     , m_settings( getAppConfigDir().filePath( "config.ini"), QSettings::IniFormat)
 {
     qCDebug(ServiceLogger) << "DAccountManageModule constructor called.";
+    m_dbusNotify = new DBusNotify("org.deepin.dde.Notification1",
+                                  "/org/deepin/dde/Notification1",
+                                  "org.deepin.dde.Notification1",
+                                  QDBusConnection::sessionBus(), this);
+    if (!m_dbusNotify->isValid()) {
+        delete m_dbusNotify;
+        m_dbusNotify = new DBusNotify("com.deepin.dde.Notification",
+                                      "/com/deepin/dde/Notification",
+                                      "com.deepin.dde.Notification",
+                                      QDBusConnection::sessionBus(), this);
+    }
     if (m_reginFormatConfig->isValid()) {
         connect(m_reginFormatConfig,
                 &DTK_CORE_NAMESPACE::DConfig::valueChanged,
@@ -347,14 +359,35 @@ DAccountManageModule::DAccountManageModule(QObject *parent)
     });
     connect(&m_calDavSyncJobManager, &DCalDavSyncJobManager::accountScheduleCreateFailed,
             this, [this](const QString &accountID, int createFailure) {
+        if (createFailure == DCalDavScheduleCreateError::NetworkUnavailable) {
+            const bool notificationAlreadyPending =
+                m_accountManagerDB->hasPendingCalDavScheduleSyncNotification(accountID);
+            if (m_accountManagerDB->addPendingCalDavScheduleSyncNotification(accountID)
+                && !notificationAlreadyPending) {
+                m_calDavCreateFailuresInCurrentSync.insert(accountID);
+            }
+        }
         const DAccountModule::Ptr accountModule = m_accountModuleMap.value(accountID);
         if (!accountModule.isNull()) {
             accountModule->notifyCalDavScheduleCreateFailed(createFailure);
         }
     });
     connect(&m_calDavSyncJobManager, &DCalDavSyncJobManager::accountSyncFinished,
-            this, [this](const QString &accountID, bool, const QString &,
-                        const DCalDavTransport::Response &) {
+            this, [this](const QString &accountID, bool success, const QString &,
+                        const DCalDavTransport::Response &response,
+                        DCalDavErrorCode failureCode, bool retryDeferred) {
+        const bool createFailureInCurrentSync =
+            m_calDavCreateFailuresInCurrentSync.remove(accountID) > 0;
+        if (!retryDeferred && !createFailureInCurrentSync
+            && m_accountManagerDB->hasPendingCalDavScheduleSyncNotification(accountID)
+            && notifyCalDavScheduleSyncResult(accountID, success, failureCode, response)
+            && success) {
+            if (!m_accountManagerDB->removePendingCalDavScheduleSyncNotification(accountID)) {
+                qCWarning(ServiceLogger)
+                    << "CalDAV sync notification was sent but its pending record could not be removed."
+                    << "account:" << accountID;
+            }
+        }
         scheduleNextCalDavRetry();
         if (!m_pendingCalDavDiscoveryTriggers.contains(accountID)) {
             return;
@@ -370,6 +403,39 @@ DAccountManageModule::DAccountManageModule(QObject *parent)
     });
 
     qCDebug(ServiceLogger) << "DAccountManageModule constructed.";
+}
+
+bool DAccountManageModule::notifyCalDavScheduleSyncResult(
+    const QString &accountID, bool success, DCalDavErrorCode failureCode,
+    const DCalDavTransport::Response &response)
+{
+    if (m_dbusNotify == nullptr || !m_dbusNotify->isValid()) {
+        return false;
+    }
+
+    QString body = success ? tr("Sync successful") : tr("Sync failed, please try later");
+    if (!success && (failureCode == DCalDavErrorCode::NetworkUnavailable
+                     || failureCode == DCalDavErrorCode::RequestTimedOut
+                     || failureCode == DCalDavErrorCode::NetworkError
+                     || failureCode == DCalDavErrorCode::ServerUnavailable
+                     || response.error == DCalDavTransport::NetworkUnavailable
+                     || response.error == DCalDavTransport::RequestTimedOut
+                     || response.error == DCalDavTransport::NetworkError
+                     || response.error == DCalDavTransport::ServerUnavailable)) {
+        body = tr("Unable to connect to the server. Please check your network connection and server address.");
+    }
+
+    const DAccount::Ptr account = m_accountManagerDB->getAccountByID(accountID);
+    const QString accountName = account.isNull() ? QString() : account->displayName();
+    if (!accountName.isEmpty()) {
+        body = QStringLiteral("%1: %2").arg(accountName, body);
+    }
+
+    QList<QVariant> arguments;
+    arguments << QStringLiteral("dde-calendar") << quint32(0)
+              << QStringLiteral("dde-calendar") << tr("Calendar") << body
+              << QStringList() << QVariantMap() << qint32(5000);
+    return m_dbusNotify->Notify(arguments) >= 0;
 }
 
 QString DAccountManageModule::getAccountList()
@@ -971,6 +1037,7 @@ bool DAccountManageModule::deleteCalDavAccountInternal(const QString &accountID,
         return false;
     }
     m_pendingCalDavDiscoveryTriggers.remove(accountID);
+    m_calDavCreateFailuresInCurrentSync.remove(accountID);
     const auto restoreSyncJob = [&]() {
         registerCalDavAccount(account);
     };
@@ -1233,6 +1300,10 @@ void DAccountManageModule::registerCalDavAccount(
                 m_accountManagerDB->updateCalDavSyncStatus(
                     accountID, DCalDavSyncStatus::fromErrorCode(result.failureCode),
                     QDateTime(), result.errorMessage, result.failureCode);
+            }
+            if (m_accountManagerDB->hasPendingCalDavScheduleSyncNotification(accountID)) {
+                notifyCalDavScheduleSyncResult(accountID, false, result.failureCode,
+                                               result.failureResponse);
             }
         }
         scheduleNextCalDavRetry();

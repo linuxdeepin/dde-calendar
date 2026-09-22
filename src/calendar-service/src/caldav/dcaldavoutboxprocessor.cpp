@@ -324,6 +324,7 @@ void DCalDavOutboxProcessor::sendDeleteRequest(const DCalDavOutboxItem &item,
     if (!item.baseEtag.isEmpty()) {
         request.headers.insert("If-Match", item.baseEtag.toUtf8());
     }
+    m_result.requestAttempted = true;
     m_transport.send(request, [this, item, resourceUrl](const DCalDavTransport::Response &response) {
         handleWriteResponse(item, resourceUrl, response);
     });
@@ -352,6 +353,7 @@ void DCalDavOutboxProcessor::sendDeleteCalendarRequest(const DCalDavOutboxItem &
     request.method = "DELETE";
     request.username = m_request.username;
     request.password = m_request.password;
+    m_result.requestAttempted = true;
     m_transport.send(request, [this, item, resourceUrl](const DCalDavTransport::Response &response) {
         handleWriteResponse(item, resourceUrl, response);
     });
@@ -488,6 +490,7 @@ void DCalDavOutboxProcessor::fetchWriteEtag(const DCalDavOutboxItem &item, const
     request.body = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
                    "<d:propfind xmlns:d=\"DAV:\"><d:prop><d:getetag/>"
                    "</d:prop></d:propfind>";
+    m_result.requestAttempted = true;
     m_transport.send(request, [this, item, resourceUrl](const DCalDavTransport::Response &response) {
         if (!isCurrentItem(item)) {
             processCurrentItemOrAdvance(item);
@@ -549,6 +552,7 @@ void DCalDavOutboxProcessor::sendWriteRequest(const DCalDavOutboxItem &item,
         request.headers.insert("If-Match", etag);
     }
 
+    m_result.requestAttempted = true;
     m_transport.send(request, [this, item, resourceUrl](const DCalDavTransport::Response &response) {
         handleWriteResponse(item, resourceUrl, response);
     });
@@ -599,6 +603,7 @@ void DCalDavOutboxProcessor::fetchEtag(const DCalDavOutboxItem &item, const QUrl
     request.body = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
                    "<d:propfind xmlns:d=\"DAV:\"><d:prop><d:getetag/>"
                    "</d:prop></d:propfind>";
+    m_result.requestAttempted = true;
     m_transport.send(request, [this, item, resourceUrl](const DCalDavTransport::Response &response) {
         if (isSuccessful(response.httpStatus)) {
             completeSuccess(item, resourceUrl, parseEtag(response.body).toUtf8());
@@ -618,6 +623,7 @@ void DCalDavOutboxProcessor::fetchConflictSnapshot(const DCalDavOutboxItem &item
     request.method = "GET";
     request.username = m_request.username;
     request.password = m_request.password;
+    m_result.requestAttempted = true;
     m_transport.send(request, [this, item](const DCalDavTransport::Response &response) {
         if (!isCurrentItem(item)) {
             processCurrentItemOrAdvance(item);
@@ -869,7 +875,9 @@ void DCalDavOutboxProcessor::recordFailure(const DCalDavOutboxItem &item,
     } else if (notifyCreateFailure
                && (response.error == DCalDavTransport::NetworkUnavailable
                    || response.error == DCalDavTransport::RequestTimedOut
-                   || response.error == DCalDavTransport::NetworkError)) {
+                   || response.error == DCalDavTransport::NetworkError
+                   || response.error == DCalDavTransport::ServerUnavailable
+                   || response.error == DCalDavTransport::RateLimited)) {
         m_result.createFailure = DCalDavScheduleCreateError::NetworkUnavailable;
     }
     if (!m_request.accountManagerDatabase->upsertCalDavOutboxItem(updated)

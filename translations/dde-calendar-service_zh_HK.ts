@@ -683,6 +683,26 @@
             <source>[Original Type: %1]</source>
             <translation>[原類型: %1]</translation>
         </message>
+        <message>
+            <location filename="../src/calendar-service/src/calendarDataManager/daccountmanagemodule.cpp" line="407" />
+            <source>Sync successful</source>
+            <translation>同步成功</translation>
+        </message>
+        <message>
+            <location filename="../src/calendar-service/src/calendarDataManager/daccountmanagemodule.cpp" line="411" />
+            <source>Unable to connect to the server. Please check your network connection and server address.</source>
+            <translation>無法連接到服務器，請檢查網絡連接和服務器地址</translation>
+        </message>
+        <message>
+            <location filename="../src/calendar-service/src/calendarDataManager/daccountmanagemodule.cpp" line="414" />
+            <source>Sync failed, please try later</source>
+            <translation>同步失敗，請稍後再試</translation>
+        </message>
+        <message>
+            <location filename="../src/calendar-service/src/calendarDataManager/daccountmanagemodule.cpp" line="425" />
+            <source>Calendar</source>
+            <translation>日曆</translation>
+        </message>
     </context>
     <context>
         <name>DAlarmManager</name>

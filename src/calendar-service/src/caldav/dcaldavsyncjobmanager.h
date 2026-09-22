@@ -29,7 +29,8 @@ public:
 signals:
     void accountSyncStateChanged(const QString &accountID, DCalDavSyncStateMachine::State state);
     void accountSyncFinished(const QString &accountID, bool success, const QString &errorMessage,
-                             const DCalDavTransport::Response &failureResponse);
+                             const DCalDavTransport::Response &failureResponse,
+                             DCalDavErrorCode failureCode, bool retryDeferred);
     void accountSyncDataChanged(const QString &accountID);
     void accountScheduleCreateFailed(const QString &accountID, int createFailure);
 
