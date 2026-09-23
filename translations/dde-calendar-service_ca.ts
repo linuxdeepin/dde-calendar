@@ -1171,22 +1171,22 @@
         <message>
             <location filename="../src/calendar-service/src/calendarDataManager/daccountmanagemodule.cpp" line="407"/>
             <source>Sync successful</source>
-            <translation type="unfinished"/>
+            <translation>Sincronització correcta</translation>
         </message>
         <message>
             <location filename="../src/calendar-service/src/calendarDataManager/daccountmanagemodule.cpp" line="411"/>
             <source>Unable to connect to the server. Please check your network connection and server address.</source>
-            <translation type="unfinished"/>
+            <translation>No s&apos;ha pogut connectar amb el servidor. Comproveu la connexió de xarxa i l&apos;adreça del servidor.</translation>
         </message>
         <message>
             <location filename="../src/calendar-service/src/calendarDataManager/daccountmanagemodule.cpp" line="414"/>
             <source>Sync failed, please try later</source>
-            <translation type="unfinished"/>
+            <translation>La sincronització ha fallat. Si us plau, proveu-ho més tard.</translation>
         </message>
         <message>
             <location filename="../src/calendar-service/src/calendarDataManager/daccountmanagemodule.cpp" line="425"/>
             <source>Calendar</source>
-            <translation type="unfinished"/>
+            <translation>Calendari</translation>
         </message>
     </context>
     <context>
