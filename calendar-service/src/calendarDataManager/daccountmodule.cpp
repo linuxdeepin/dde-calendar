@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2019 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2019 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -584,11 +584,12 @@ void DAccountModule::updateRemindSchedules(bool isClear)
 void DAccountModule::notifyMsgHanding(const QString &alarmID, const qint32 operationNum)
 {
     DRemindData::Ptr remindData = m_accountDB->getRemindData(alarmID);
-    remindData->setAccountID(m_account->accountID());
     //如果相应的日程被删除,则不做处理
     if (remindData.isNull()) {
+        qCWarning(calendar_service) << "No corresponding reminder ID found";
         return;
     }
+    remindData->setAccountID(m_account->accountID());
     //如果为稍后提醒操作则需要更新对应的重复次数和提醒时间
     qint64 Minute = 60 * 1000;
     qint64 Hour = Minute * 60;
@@ -619,6 +620,12 @@ void DAccountModule::notifyMsgHanding(const QString &alarmID, const qint32 opera
     case 4: { //提前1天提醒
         DSchedule::Ptr schedule = getScheduleByRemind(remindData);
         //TODO:如果是重复日程是否需要修改所有日程的提醒？还是只修改此日程？
+        if (schedule.isNull()) {
+            qCWarning(calendar_service) << "No corresponding schedule found";
+            //删除对应提醒任务数据
+            m_accountDB->deleteRemindInfoByAlarmID(alarmID);
+            break;
+        }
         if (schedule->allDay()) {
             schedule->setAlarmType(DSchedule::Alarm_15Min_Front);
         } else {
@@ -641,8 +648,16 @@ void DAccountModule::notifyMsgHanding(const QString &alarmID, const qint32 opera
 void DAccountModule::remindJob(const QString &alarmID)
 {
     DRemindData::Ptr remindData = m_accountDB->getRemindData(alarmID);
+    if (remindData.isNull()) {
+        qCWarning(calendar_service) << "No corresponding reminder ID found";
+        return;
+    }
     remindData->setAccountID(m_account->accountID());
     DSchedule::Ptr schedule = getScheduleByRemind(remindData);
+    if (schedule.isNull()) {
+        qCWarning(calendar_service) << "No corresponding schedule found";
+        return;
+    }
 
     int notifyid = m_alarm->remindJob(remindData, schedule);
     remindData->setNotifyid(notifyid);
