@@ -142,6 +142,9 @@ private:
     QColor m_defaultTextColor = Qt::black;
     QColor m_notCurrentTextColor = "#b2b2b2";
     QColor m_ceventColor = "#FF5D00";
+    QColor m_hoverColor;        // hover background color (theme-aware)
+    int m_hoverCell = -1;        // index of hovered cell, -1 = none
+    QRectF cellCircleRect(const QRect &rect) const;
     QFont m_dayNumFont;
     bool m_isFocus;
     QPoint m_startPos;
