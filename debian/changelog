@@ -1,3 +1,13 @@
+dde-calendar (6.6.2) unstable; urgency=medium
+
+  * chore(linglong): declare build deps via buildext and drop helper scripts
+  * feat(caldav): notify schedule sync result after network recovery
+  * fix(caldav): localize failure text in client and keep 403 events locally
+  * fix(caldav): show field-level validation errors in account dialog
+  * fix(caldav): always report localized failure reason for sync errors
+
+ -- Wang Yu <wangyu@uniontech.com>  Wed, 23 Sep 2026 14:35:51 +0800
+
 dde-calendar (6.6.1) unstable; urgency=medium
 
   * refactor(caldav): make credential access asynchronous
