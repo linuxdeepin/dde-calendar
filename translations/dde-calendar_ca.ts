@@ -39,77 +39,77 @@
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="246"/>
         <source>Unable to parse the data returned by the server. Please verify the server address or try again later.</source>
-        <translation type="unfinished"/>
+        <translation>No s&apos;han pogut analitzar les dades tornades pel servidor. Si us plau, verifiqueu l&apos;adreça del servidor o torneu-ho a intentar més tard.</translation>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="240"/>
         <source>The server certificate is invalid.</source>
-        <translation type="unfinished"/>
+        <translation>El certificat del servidor no és vàlid.</translation>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="242"/>
         <source>Incorrect username or password. Please try again.</source>
-        <translation type="unfinished"/>
+        <translation>Nom d&apos;usuari o contrasenya incorrectes. Si us plau, torneu-ho a provar.</translation>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="244"/>
         <source>This server does not support CalDAV. Please check your network server address.</source>
-        <translation type="unfinished"/>
+        <translation>Aquest servidor no és compatible amb CalDAV. Si us plau, comproveu l&apos;adreça del servidor de xarxa.</translation>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="248"/>
         <source>The server denied access.</source>
-        <translation type="unfinished"/>
+        <translation>El servidor n&apos;ha denegat l&apos;accés.</translation>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="258"/>
         <source>The server request timed out.</source>
-        <translation type="unfinished"/>
+        <translation>La sol·licitud al servidor ha superat el temps límit.</translation>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="261"/>
         <source>Unable to connect to the server. Please check your network connection and server address.</source>
-        <translation type="unfinished"/>
+        <translation>No s&apos;ha pogut connectar amb el servidor. Comproveu la connexió de xarxa i l&apos;adreça del servidor.</translation>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="265"/>
         <source>Synchronization failed.</source>
-        <translation type="unfinished"/>
+        <translation>La sincronització ha fallat.</translation>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="271"/>
         <source>Sync Failed</source>
-        <translation type="unfinished"/>
+        <translation>Ha fallat la sincronització.</translation>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="238"/>
             <source>The server request is invalid.</source>
-            <translation type="unfinished"/>
+            <translation>La sol·licitud al servidor no és vàlida.</translation>
         </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="250"/>
             <source>The server is busy. Please try again later.</source>
-            <translation type="unfinished"/>
+            <translation>El servidor està ocupat. Si us plau, torneu-ho a intentar més tard.</translation>
         </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="252"/>
             <source>The server is unavailable. Please try again later.</source>
-            <translation type="unfinished"/>
+            <translation>El servidor no està disponible. Si us plau, torneu-ho a intentar més tard.</translation>
         </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="254"/>
             <source>The calendar data conflicts with the server.</source>
-            <translation type="unfinished"/>
+            <translation>Les dades del calendari entren en conflicte amb el servidor.</translation>
         </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="256"/>
             <source>The server returned too much data. Please try again later.</source>
-            <translation type="unfinished"/>
+            <translation>El servidor ha retornat massa dades. Si us plau, torneu-ho a provar més tard.</translation>
         </message>
     <message>
             <location filename="../src/calendar-client/src/dataManage/accountmanager.cpp" line="263"/>
             <source>Unable to save calendar data. Please try again later.</source>
-            <translation type="unfinished"/>
+            <translation>No s&apos;han pogut desar les dades del calendari. Si us plau, torneu-ho a intentar més tard.</translation>
         </message>
 </context>
 <context>
@@ -1630,7 +1630,7 @@
     <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="569"/>
         <source>This server does not support CalDAV. Please check your network server address.</source>
-        <translation type="unfinished"/>
+        <translation>Aquest servidor no és compatible amb CalDAV. Si us plau, comproveu l&apos;adreça del servidor de xarxa.</translation>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="559"/>
