@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2015 - 2022 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2015 - 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -52,7 +52,8 @@ void CTimeEdit::setTime(const QTime &time)
 {
     m_time = time;
     setSelectItem(m_time);
-    m_timeEdit->getLineEdit()->setText(time.toString(m_timeFormat));
+    //必须设置QTimeEdit自身的值：仅改lineEdit文本时，微调框重新校验会用内部默认值00:00覆盖显示
+    m_timeEdit->setTime(time);
 }
 
 QTime CTimeEdit::getTime()
