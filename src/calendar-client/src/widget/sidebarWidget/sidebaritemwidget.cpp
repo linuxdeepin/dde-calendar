@@ -314,7 +314,7 @@ void SidebarAccountItemWidget::slotNetworkStateChange(DOANetWorkDBus::NetWorkSta
         m_warningLabel->hide();
         if (m_accountItem->isCanSyncSetting() || m_accountItem->isCanSyncShedule()) {
             qCDebug(ClientLogger) << "Account can sync, showing sync button";
-            m_syncIconButton->show();
+            m_syncIconButton->setVisible(underMouse());
         } else {
             qCDebug(ClientLogger) << "Account cannot sync, hiding sync button";
             m_syncIconButton->hide();
@@ -340,7 +340,7 @@ void SidebarAccountItemWidget::resetRearIconButton()
             m_warningLabel->setToolTip(AccountManager::calDavFailureReason(status));
             m_warningLabel->show();
         } else {
-            m_syncIconButton->show();
+            m_syncIconButton->setVisible(underMouse());
             m_syncIconButton->setEnabled(!running && !pendingDelete);
             m_warningLabel->hide();
             m_syncIconButton->setToolTip(pendingDelete ? tr("Deleting...")
@@ -359,7 +359,7 @@ void SidebarAccountItemWidget::resetRearIconButton()
             m_warningLabel->hide();
             if (m_accountItem->isCanSyncSetting() || m_accountItem->isCanSyncShedule()) {
                 qCDebug(ClientLogger) << "Account can sync, showing sync button";
-                m_syncIconButton->show();
+                m_syncIconButton->setVisible(underMouse());
             } else {
                 qCDebug(ClientLogger) << "Account cannot sync, hiding sync button";
                 m_syncIconButton->hide();
@@ -399,6 +399,24 @@ void SidebarAccountItemWidget::updateStatus()
         m_headIconButton->setIcon(DStyle::SP_ArrowDown);
     } else {
         m_headIconButton->setIcon(DStyle::SP_ArrowRight);
+    }
+}
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+void SidebarAccountItemWidget::enterEvent(QEnterEvent *event)
+#else
+void SidebarAccountItemWidget::enterEvent(QEvent *event)
+#endif
+{
+    QWidget::enterEvent(event);
+    resetRearIconButton();
+}
+
+void SidebarAccountItemWidget::leaveEvent(QEvent *event)
+{
+    QWidget::leaveEvent(event);
+    if (m_syncIconButton != nullptr) {
+        m_syncIconButton->hide();
     }
 }
 
