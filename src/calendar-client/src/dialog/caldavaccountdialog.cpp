@@ -12,8 +12,6 @@
 #include "dcalendareventlog.h"
 
 #include <DComboBox>
-#include <DFloatingMessage>
-#include <DMessageManager>
 #include <DLabel>
 #include <DLineEdit>
 #include <DPalette>
@@ -258,7 +256,7 @@ void CalDavAccountDialog::slotLogin()
                 qCWarning(ClientLogger) << "Failed to save CalDAV account password"
                                         << "errorPresent:" << !errorMessage.isEmpty()
                                         << "error:" << errorMessage;
-                showToast(tr("Unable to save the account password, Please try again"));
+                showError(tr("Unable to save the account password. Please try again."));
                 setLoginEnabled(true);
                 return;
             }
@@ -350,7 +348,6 @@ void CalDavAccountDialog::slotValidationFinished(const QString &requestID, bool 
             static_cast<DCalDavValidationError::Type>(validationError);
         const bool credentialError = errorType == DCalDavValidationError::AuthenticationFailed;
         clearPendingCredential(true);
-        showValidationToast(errorType);
         showError(validationErrorText(errorType), !credentialError, credentialError);
         setLoginEnabled(true);
         return;
@@ -414,7 +411,6 @@ void CalDavAccountDialog::slotCalDavRequestFailed(const QString &method, const Q
     if (validationRequest) {
         const DCalDavValidationError::Type errorType = DCalDavValidationError::NetworkUnavailable;
         DCalendarEventLog::instance().reportLoginValidationFinished(false, errorType);
-        showValidationToast(errorType);
         showError(validationErrorText(errorType), true, false);
     }
     clearPendingCredential(true);
@@ -433,7 +429,6 @@ void CalDavAccountDialog::slotValidationTimedOut()
     clearPendingCredential(true);
     const DCalDavValidationError::Type errorType = DCalDavValidationError::NetworkUnavailable;
     DCalendarEventLog::instance().reportLoginValidationFinished(false, errorType);
-    showValidationToast(errorType);
     showError(validationErrorText(errorType), true, false);
     setLoginEnabled(true);
 }
@@ -578,22 +573,4 @@ QString CalDavAccountDialog::validationErrorText(
     default:
         return tr("Unable to connect to the server. Please check your network connection and server address.");
     }
-}
-
-void CalDavAccountDialog::showToast(const QString &toastText)
-{
-    if (toastText.isEmpty()) {
-        return;
-    }
-
-    DFloatingMessage *message = new DFloatingMessage(DFloatingMessage::TransientType);
-    message->setIcon(QIcon(QStringLiteral(":/icons/deepin/builtin/icons/dde_calendar_sync_failed_32px.svg")));
-    message->setMessage(toastText);
-    message->setDuration(2000);
-    DMessageManager::instance()->sendMessage(window(), message);
-}
-
-void CalDavAccountDialog::showValidationToast(DCalDavValidationError::Type validationError)
-{
-    showToast(validationErrorText(validationError));
 }
