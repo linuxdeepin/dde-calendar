@@ -557,7 +557,7 @@ void CSettingDialog::initManualSyncButton()
     m_syncBtn->setObjectName("SyncBtn");
     m_syncBtn->setAccessibleName("SyncBtn");
     m_syncBtn->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
-    m_syncBtn->setFixedHeight(36);
+    m_syncBtn->setMinimumSize(98, 36);
     m_syncBtn->setText(tr("Sync Now"));
 
     m_syncTimeLabel = new QLabel;
