@@ -1171,22 +1171,22 @@
         <message>
             <location filename="../src/calendar-service/src/calendarDataManager/daccountmanagemodule.cpp" line="407"/>
             <source>Sync successful</source>
-            <translation type="unfinished"/>
+            <translation>Synkronointi onnistui</translation>
         </message>
         <message>
             <location filename="../src/calendar-service/src/calendarDataManager/daccountmanagemodule.cpp" line="411"/>
             <source>Unable to connect to the server. Please check your network connection and server address.</source>
-            <translation type="unfinished"/>
+            <translation>Ei yhteyttä palvelimeen. Tarkista verkko ja palvelimen osoite.</translation>
         </message>
         <message>
             <location filename="../src/calendar-service/src/calendarDataManager/daccountmanagemodule.cpp" line="414"/>
             <source>Sync failed, please try later</source>
-            <translation type="unfinished"/>
+            <translation>Synkronointi epäonnistui, yritä myöhemmin</translation>
         </message>
         <message>
             <location filename="../src/calendar-service/src/calendarDataManager/daccountmanagemodule.cpp" line="425"/>
             <source>Calendar</source>
-            <translation type="unfinished"/>
+            <translation>Kalenteri</translation>
         </message>
     </context>
     <context>
