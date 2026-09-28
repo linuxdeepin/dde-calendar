@@ -410,6 +410,7 @@ void CMyScheduleView::initUI()
     m_sourceLabel = new DLabel(this);
     m_sourceLabel->setAlignment(Qt::AlignCenter);
     m_sourceLabel->setFixedHeight(22);
+    DFontSizeManager::instance()->bind(m_sourceLabel, DFontSizeManager::T10);
     m_sourceLabel->hide();
     mainLayout->addWidget(m_sourceLabel);
 
