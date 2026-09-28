@@ -30,6 +30,23 @@ QString sidebarAccountTitle(const AccountItem::Ptr &item)
     return title;
 }
 
+void updateTitleToolTip(DLabel *label)
+{
+    if (label == nullptr) {
+        return;
+    }
+
+    QWidget *parent = label->parentWidget();
+    if (parent != nullptr && parent->layout() != nullptr) {
+        parent->layout()->activate();
+    }
+
+    const QString title = label->text();
+    const QString elidedTitle = QFontMetrics(label->font()).elidedText(
+        title, Qt::ElideRight, label->contentsRect().width());
+    label->setToolTip(elidedTitle == title ? QString() : title);
+}
+
 } // namespace
 
 SidebarItemWidget::SidebarItemWidget(QWidget *parent)
@@ -172,12 +189,12 @@ void SidebarTypeItemWidget::initView()
     m_titleLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     m_titleLabel->setTextFormat(Qt::PlainText);
     m_titleLabel->setText(m_scheduleType->displayName());
-    m_titleLabel->setToolTip(m_scheduleType->displayName());
 
     vLayout->addSpacing(2);
     vLayout->addWidget(m_checkBox);
     vLayout->addWidget(m_titleLabel, 1);
     this->setLayout(vLayout);
+    updateTitleToolTip(m_titleLabel);
 
     setFixedHeight(40);
 }
@@ -241,9 +258,7 @@ void SidebarAccountItemWidget::initView()
     m_titleLabel->setFont(labelF);
     m_titleLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     m_titleLabel->setTextFormat(Qt::PlainText);
-    const QString title = sidebarAccountTitle(m_accountItem);
-    m_titleLabel->setText(title);
-    m_titleLabel->setToolTip(title);
+    m_titleLabel->setText(sidebarAccountTitle(m_accountItem));
 
     m_syncIconButton = new DIconButton(this);
     m_syncIconButton->setObjectName("SyncIconButton");
@@ -275,6 +290,7 @@ void SidebarAccountItemWidget::initView()
         m_syncIconButton->hide();
         m_warningLabel->hide();
     }
+    updateTitleToolTip(m_titleLabel);
     setFixedHeight(36);
 }
 
@@ -320,6 +336,7 @@ void SidebarAccountItemWidget::slotNetworkStateChange(DOANetWorkDBus::NetWorkSta
             m_syncIconButton->hide();
         }
     }
+    updateTitleToolTip(m_titleLabel);
 }
 
 void SidebarAccountItemWidget::resetRearIconButton()
@@ -346,10 +363,12 @@ void SidebarAccountItemWidget::resetRearIconButton()
             m_syncIconButton->setToolTip(pendingDelete ? tr("Deleting...")
                                                          : (running ? tr("Syncing...") : tr("Sync")));
         }
+        updateTitleToolTip(m_titleLabel);
         return;
     }
 
     if (m_accountItem->getAccount()->accountType() != DAccount::Account_UnionID) {
+        updateTitleToolTip(m_titleLabel);
         return;
     }
 
@@ -374,6 +393,7 @@ void SidebarAccountItemWidget::resetRearIconButton()
             m_warningLabel->setToolTip(msg);
         }
     }
+    updateTitleToolTip(m_titleLabel);
 }
 
 AccountItem::Ptr SidebarAccountItemWidget::getAccountItem()
@@ -418,6 +438,7 @@ void SidebarAccountItemWidget::leaveEvent(QEvent *event)
     if (m_syncIconButton != nullptr) {
         m_syncIconButton->hide();
     }
+    updateTitleToolTip(m_titleLabel);
 }
 
 //尾部图标控件点击事件
