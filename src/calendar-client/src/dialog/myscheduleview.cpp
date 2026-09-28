@@ -175,9 +175,7 @@ void CMyScheduleView::slotAccountStateChange()
     if (m_sourceLabel != nullptr) {
         const DAccount::Ptr account = item->getAccount();
         QString source;
-        if (account->accountType() == DAccount::Account_Local) {
-            source = tr("Local calendar");
-        } else if (account->accountType() == DAccount::Account_UnionID) {
+        if (account->accountType() == DAccount::Account_UnionID) {
             source = tr("UOS ID") + QStringLiteral("-") + account->accountName();
         } else if (account->accountType() == DAccount::Account_CalDav) {
             const DCalDavAccountStatus status =

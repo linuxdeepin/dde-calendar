@@ -192,9 +192,7 @@ void CenterWidget::setData(const DSchedule::Ptr &vScheduleInfo, const CSchedules
     if (accountItem) {
         const DAccount::Ptr account = accountItem->getAccount();
         QString source;
-        if (account->accountType() == DAccount::Account_Local) {
-            source = QCoreApplication::translate("CMyScheduleView", "Local calendar");
-        } else if (account->accountType() == DAccount::Account_UnionID) {
+        if (account->accountType() == DAccount::Account_UnionID) {
             source = QCoreApplication::translate("CMyScheduleView", "UOS ID")
                 + QStringLiteral("-") + account->accountName();
         } else if (account->accountType() == DAccount::Account_CalDav) {
