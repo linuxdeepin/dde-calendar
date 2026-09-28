@@ -100,6 +100,27 @@ CalDavAccountListWidget::CalDavAccountListWidget(QWidget *parent)
     }
 }
 
+bool CalDavAccountListWidget::eventFilter(QObject *watched, QEvent *event)
+{
+    QWidget *accountRow = qobject_cast<QWidget *>(watched);
+    if (accountRow == nullptr) {
+        return QWidget::eventFilter(watched, event);
+    }
+
+    Dtk::Widget::DToolButton *deleteButton = accountRow->findChild<Dtk::Widget::DToolButton *>();
+    if (deleteButton == nullptr) {
+        return QWidget::eventFilter(watched, event);
+    }
+
+    if (event->type() == QEvent::Enter) {
+        deleteButton->show();
+    } else if (event->type() == QEvent::Leave) {
+        deleteButton->hide();
+    }
+
+    return QWidget::eventFilter(watched, event);
+}
+
 void CalDavAccountListWidget::rebuildCards()
 {
     while (QLayoutItem *item = m_cardsLayout->takeAt(0)) {
@@ -170,6 +191,7 @@ void CalDavAccountListWidget::rebuildCards()
 
         QWidget *accountRow = new QWidget(accountGroup);
         accountRow->setFixedHeight(36);
+        accountRow->installEventFilter(this);
         QHBoxLayout *accountRowLayout = new QHBoxLayout(accountRow);
         accountRowLayout->setContentsMargins(10, 0, 10, 0);
         accountRowLayout->setSpacing(8);
@@ -195,6 +217,7 @@ void CalDavAccountListWidget::rebuildCards()
         deleteButton->setIcon(QIcon(QStringLiteral(
             ":/icons/deepin/builtin/icons/dde_calendar_delete_16px.svg")));
         deleteButton->setIconSize(QSize(16, 16));
+        deleteButton->hide();
         const bool pendingOperations = status.pendingOperationCount > 0;
         deleteButton->setToolTip(pendingOperations ? tr("Pending synchronization") : tr("Delete"));
         deleteButton->setEnabled(true);

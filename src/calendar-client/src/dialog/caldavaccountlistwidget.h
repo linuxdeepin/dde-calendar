@@ -25,6 +25,7 @@ private slots:
     void slotStatusChanged(const QString &accountID);
 
 private:
+    bool eventFilter(QObject *watched, QEvent *event) override;
     void rebuildCards();
     void showConflictNotice(const QString &accountID);
     QVBoxLayout *m_cardsLayout = nullptr;
