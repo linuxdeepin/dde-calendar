@@ -99,7 +99,7 @@ void UserloginWidget::initView()
     m_buttonLoginOut->setMinimumWidth(65);
     m_buttonLoginOut->setFixedHeight(36);
     QHBoxLayout *layout = new QHBoxLayout(this);
-    m_buttonImg->setIcon(QIcon::fromTheme("dde_calendar_account"));
+    m_buttonImg->setIcon(QIcon(QStringLiteral(":/icons/deepin/builtin/icons/dde_calendar_uos_id_36px.svg")));
     m_buttonImg->setIconSize(QSize(36, 36));
     m_buttonImg->setFlat(true);
     layout->setContentsMargins(0, 0, 0, 0);
@@ -207,7 +207,7 @@ void UserloginWidget::slotAccountUpdate()
         m_buttonLogin->show();
         m_userNameLabel->setText(tr("Not signed in"));
         m_userNameLabel->setToolTip("");
-        m_buttonImg->setIcon(QIcon::fromTheme("dde_calendar_account"));
+        m_buttonImg->setIcon(QIcon(QStringLiteral(":/icons/deepin/builtin/icons/dde_calendar_uos_id_36px.svg")));
     }
 }
 
