@@ -58,11 +58,10 @@ QString syncTimeValue(const DCalDavAccountStatus &status)
     return QStringLiteral("(%1)").arg(time);
 }
 
-QIcon syncResultIcon(bool failed)
+QIcon syncFailureIcon()
 {
-    return QIcon(failed
-        ? QStringLiteral(":/icons/deepin/builtin/icons/dde_calendar_sync_failed_32px.svg")
-        : QStringLiteral(":/icons/deepin/builtin/icons/dde_calendar_sync_success_32px.svg"));
+    return QIcon(QStringLiteral(
+        ":/icons/deepin/builtin/icons/dde_calendar_sync_failed_32px.svg"));
 }
 
 QIcon syncRunningIcon()
@@ -242,8 +241,7 @@ void CalDavAccountListWidget::rebuildCards()
 
         // The last successful sync time remains visible while a sync operation
         // is running or has failed. The current state is shown alongside it.
-        const bool showResultIcon = status.syncStatus == DCalDavSyncStatus::Succeeded
-            || status.conflictCount > 0 || failed;
+        const bool showResultIcon = status.conflictCount > 0 || failed;
         QWidget *timeWidget = new QWidget(statusRow);
         QHBoxLayout *timeLayout = new QHBoxLayout(timeWidget);
         timeLayout->setContentsMargins(0, 0, 0, 0);
@@ -256,7 +254,7 @@ void CalDavAccountListWidget::rebuildCards()
         if (showResultIcon) {
             Dtk::Widget::DLabel *resultIconLabel = new Dtk::Widget::DLabel(timeWidget);
             resultIconLabel->setFixedSize(16, 16);
-            resultIconLabel->setPixmap(syncResultIcon(status.conflictCount > 0 || failed).pixmap(16, 16));
+            resultIconLabel->setPixmap(syncFailureIcon().pixmap(16, 16));
             timeLayout->addWidget(resultIconLabel);
         } else if (running || pendingDelete) {
             Dtk::Widget::DLabel *stateIconLabel = new Dtk::Widget::DLabel(timeWidget);
