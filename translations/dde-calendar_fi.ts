@@ -1530,12 +1530,12 @@
         <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="506"/>
             <source>Please enter username</source>
-            <translation type="unfinished"/>
+            <translation>Anna käyttäjänimi</translation>
         </message>
         <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="510"/>
             <source>Please enter password</source>
-            <translation type="unfinished"/>
+            <translation>Anna salasana</translation>
         </message>
 
     <message>
@@ -1630,7 +1630,7 @@
     <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="569"/>
         <source>This server does not support CalDAV. Please check your network server address.</source>
-        <translation type="unfinished"/>
+        <translation>Tämä palvelin ei tue CalDAV-protokollaa. Tarkista verkko ja palvelimen osoite.</translation>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="559"/>
