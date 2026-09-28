@@ -880,11 +880,14 @@ void CSettingDialog::updateSyncStatusDisplay(const QString &datetime,
     } else {
         m_syncTimeValueLabel->setText(QStringLiteral("(%1)").arg(dtstr));
     }
-    m_syncStatusIconLabel->setPixmap(QIcon(failed
-        ? QStringLiteral(":/icons/deepin/builtin/icons/dde_calendar_sync_failed_32px.svg")
-        : QStringLiteral(":/icons/deepin/builtin/icons/dde_calendar_sync_success_32px.svg"))
-        .pixmap(16, 16));
-    m_syncStatusIconLabel->show();
+    if (failed) {
+        m_syncStatusIconLabel->setPixmap(QIcon(QStringLiteral(
+            ":/icons/deepin/builtin/icons/dde_calendar_sync_failed_32px.svg"))
+            .pixmap(16, 16));
+        m_syncStatusIconLabel->show();
+    } else {
+        m_syncStatusIconLabel->hide();
+    }
 }
 
 void CSettingDialog::slotLastSyncTimeUpdate(const QString &datetime)
