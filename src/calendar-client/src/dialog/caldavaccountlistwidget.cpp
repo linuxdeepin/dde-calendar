@@ -280,7 +280,7 @@ void CalDavAccountListWidget::rebuildCards()
         } else if (running || pendingDelete || failed) {
             const QString failureReason = AccountManager::calDavFailureReason(status);
             const QString stateText = failed
-                ? tr("Sync Failed: %1").arg(failureReason)
+                ? tr("Sync Failed")
                 : (pendingDelete ? tr("Deleting...") : tr("Syncing..."));
             Dtk::Widget::DLabel *stateLabel = new Dtk::Widget::DLabel(stateText, statusRow);
             stateLabel->setForegroundRole(Dtk::Gui::DPalette::TextTips);
