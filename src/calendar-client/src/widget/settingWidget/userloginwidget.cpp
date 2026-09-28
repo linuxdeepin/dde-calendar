@@ -95,8 +95,9 @@ void UserloginWidget::initView()
     m_buttonLogin->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     m_buttonLoginOut->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     m_buttonLoginOut->setFocusPolicy(Qt::NoFocus);
+    m_buttonLogin->setMinimumWidth(98);
+    m_buttonLoginOut->setMinimumWidth(98);
     m_buttonLogin->setFixedHeight(36);
-    m_buttonLoginOut->setMinimumWidth(65);
     m_buttonLoginOut->setFixedHeight(36);
     QHBoxLayout *layout = new QHBoxLayout(this);
     m_buttonImg->setIcon(QIcon(QStringLiteral(":/icons/deepin/builtin/icons/dde_calendar_uos_id_36px.svg")));
