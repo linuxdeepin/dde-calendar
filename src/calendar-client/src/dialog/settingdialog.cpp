@@ -23,6 +23,7 @@
 #include <QMenu>
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <QWheelEvent>
 #include <QTimer>
 
 #include <DBackgroundGroup>
@@ -453,6 +454,22 @@ void CSettingDialog::initData()
     qCDebug(ClientLogger) << "Settings dialog data initialized";
 }
 
+namespace {
+
+class NoWheelComboBox final : public QComboBox
+{
+public:
+    using QComboBox::QComboBox;
+
+protected:
+    void wheelEvent(QWheelEvent *event) override
+    {
+        event->ignore();
+    }
+};
+
+} // namespace
+
 void CSettingDialog::initWidgetDisplayStatus()
 {
 
@@ -462,7 +479,7 @@ void CSettingDialog::initFirstDayofWeekWidget()
 {
     m_firstDayofWeekWidget = new QWidget();
 
-    m_firstDayofWeekCombobox = new QComboBox(m_firstDayofWeekWidget);
+    m_firstDayofWeekCombobox = new NoWheelComboBox(m_firstDayofWeekWidget);
     m_firstDayofWeekCombobox->setObjectName("FirstDayofWeekCombobox");
     m_firstDayofWeekCombobox->setAccessibleName("FirstDayofWeekCombobox");
     m_firstDayofWeekCombobox->setFixedSize(150, 36);
@@ -483,7 +500,7 @@ void CSettingDialog::initTimeTypeWidget()
 {
     m_timeTypeWidget = new QWidget();
 
-    m_timeTypeCombobox = new QComboBox(m_timeTypeWidget);
+    m_timeTypeCombobox = new NoWheelComboBox(m_timeTypeWidget);
     m_timeTypeCombobox->setObjectName("TimeTypeCombobox");
     m_timeTypeCombobox->setAccessibleName("TimeTypeCombobox");
     m_timeTypeCombobox->setFixedSize(150, 36);
@@ -502,7 +519,7 @@ void CSettingDialog::initTimeTypeWidget()
 
 void CSettingDialog::initAccountComboBoxWidget()
 {
-    m_accountComboBox = new QComboBox();
+    m_accountComboBox = new NoWheelComboBox();
     m_accountComboBox->setObjectName("AccountComboBox");
     m_accountComboBox->setAccessibleName("AccountComboBox");
     m_accountComboBox->setMinimumWidth(200);
@@ -525,7 +542,7 @@ void CSettingDialog::initScheduleTypeWidget()
 
 void CSettingDialog::initSyncFreqWidget()
 {
-    m_syncFreqComboBox = new QComboBox;
+    m_syncFreqComboBox = new NoWheelComboBox;
     m_syncFreqComboBox->setObjectName("SyncFreqComboBox");
     m_syncFreqComboBox->setAccessibleName("SyncFreqComboBox");
     m_syncFreqComboBox->setSizeAdjustPolicy(QComboBox::AdjustToContents);
