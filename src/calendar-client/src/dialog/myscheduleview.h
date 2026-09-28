@@ -69,7 +69,6 @@ private:
 private:
     QLabel *m_scheduleLabel = nullptr;
     QLabel *m_timeLabel = nullptr;
-    QLabel *m_Title = nullptr;
     QLabel *m_sourceLabel = nullptr;
     QWidget *m_timeSpacing = nullptr;
     QWidget *m_sourceSpacing = nullptr;

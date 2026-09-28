@@ -358,14 +358,8 @@ void CMyScheduleView::initUI()
     //在点击任何对话框上的按钮后不关闭对话框，保证关闭子窗口时不被一起关掉
     setOnButtonClickedClose(false);
 
-    m_Title = new QLabel(this);
-    m_Title->setFixedSize(220, 51);
-    m_Title->setAlignment(Qt::AlignCenter);
-    DFontSizeManager::instance()->bind(m_Title, DFontSizeManager::T5, QFont::DemiBold);
     //设置日期图标
     updateDialogIcon();
-    m_Title->setText(tr("My Event"));
-    m_Title->move(90, 0); // center x: (400-220)/2
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->setContentsMargins(0, 0, 0, 0);
