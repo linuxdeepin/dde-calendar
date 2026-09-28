@@ -38,11 +38,15 @@ CPushButton::CPushButton(QWidget *parent) : QWidget(parent)
     //设置深浅色主题下正常状态时的文本颜色，与下拉框颜色对其
     if (DGuiApplicationHelper::instance()->themeType() == DGuiApplicationHelper::DarkType) {
         qCDebug(ClientLogger) << "Dark theme detected, setting text color to white";
-        pa.setBrush(QPalette::WindowText, QColor("#FFFFFF"));
+        pa.setBrush(QPalette::Active, QPalette::WindowText, QColor("#FFFFFF"));
+        pa.setBrush(QPalette::Inactive, QPalette::WindowText, QColor("#FFFFFF"));
     } else {
         qCDebug(ClientLogger) << "Light theme detected, setting text color to black";
-        pa.setBrush(QPalette::WindowText, QColor("#000000"));
+        pa.setBrush(QPalette::Active, QPalette::WindowText, QColor("#000000"));
+        pa.setBrush(QPalette::Inactive, QPalette::WindowText, QColor("#000000"));
     }
+    pa.setBrush(QPalette::Disabled, QPalette::WindowText,
+                palette.brush(QPalette::Disabled, DPalette::TextTips));
     m_textLabel->setPalette(pa);
 
     layoutAddType->setContentsMargins(33,0,0,0);
