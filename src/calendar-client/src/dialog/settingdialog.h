@@ -13,6 +13,7 @@
 #include <DIconButton>
 #include <DCommandLinkButton>
 #include <DLabel>
+#include <DSpinner>
 
 DWIDGET_USE_NAMESPACE
 
@@ -123,6 +124,7 @@ private:
     QLabel *m_syncTimeLabel = nullptr;
     DLabel *m_syncTimeValueLabel = nullptr;
     QLabel *m_syncStatusIconLabel = nullptr;
+    DSpinner *m_syncSpinner = nullptr;
     QPushButton *m_syncBtn = nullptr;
     QWidget *m_manualSyncWidget = nullptr;
     QWidget *m_uosSyncItemsWidget = nullptr;
