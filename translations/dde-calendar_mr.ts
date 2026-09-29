@@ -1186,13 +1186,13 @@
     </message>
     <message>
             <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="575"/>
-        <source>You are deleting an event type.</source>
-        <translation>आपण एक घटना प्रकार हटवत आहात.</translation>
+        <source>You are deleting an event type</source>
+        <translation type="unfinished"/>
     </message>
     <message>
             <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="576"/>
-        <source>All events under this type will be deleted and cannot be recovered.</source>
-        <translation>ह्या प्रकाराखालील सर्व घटना हटवल्या जातील आणि पुनर्स्थापित केल्या जाऊ शकत नाहीत.</translation>
+        <source>All events under this type will be deleted and cannot be recovered</source>
+        <translation type="unfinished"/>
     </message>
     <message>
             <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="577"/>
@@ -1666,7 +1666,7 @@
     </message>
     <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="140"/>
-        <source>No third-party accounts added</source>
+        <source>Not added</source>
         <translation type="unfinished"/>
     </message>
     <message>
