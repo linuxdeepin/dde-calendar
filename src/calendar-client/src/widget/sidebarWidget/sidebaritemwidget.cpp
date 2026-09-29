@@ -263,6 +263,7 @@ void SidebarAccountItemWidget::initView()
     m_syncIconButton = new DIconButton(this);
     m_syncIconButton->setObjectName("SyncIconButton");
     m_syncIconButton->setAccessibleName("SyncIconButton");
+    m_syncIconButton->setFlat(true);
     m_syncIconButton->setIcon(QIcon(":/icons/deepin/builtin/icons/icon_refresh.svg"));
     m_syncIconButton->setFixedSize(QSize(20, 20));
     qreal ratio = qApp->devicePixelRatio();
@@ -270,6 +271,7 @@ void SidebarAccountItemWidget::initView()
         m_syncIconButton->setIconSize(QSize(10, 10));
     }
     m_syncIconButton->setFocusPolicy(Qt::NoFocus);
+    m_syncIconButton->installEventFilter(this);
 
     m_warningLabel = new DLabel();
     m_warningLabel->setFixedSize(QSize(20, 20));
@@ -436,9 +438,22 @@ void SidebarAccountItemWidget::leaveEvent(QEvent *event)
 {
     QWidget::leaveEvent(event);
     if (m_syncIconButton != nullptr) {
+        m_syncIconButton->setFlat(true);
         m_syncIconButton->hide();
     }
     updateTitleToolTip(m_titleLabel);
+}
+
+bool SidebarAccountItemWidget::eventFilter(QObject *watched, QEvent *event)
+{
+    if (watched == m_syncIconButton) {
+        if (event->type() == QEvent::Enter) {
+            m_syncIconButton->setFlat(false);
+        } else if (event->type() == QEvent::Leave) {
+            m_syncIconButton->setFlat(true);
+        }
+    }
+    return QWidget::eventFilter(watched, event);
 }
 
 //尾部图标控件点击事件

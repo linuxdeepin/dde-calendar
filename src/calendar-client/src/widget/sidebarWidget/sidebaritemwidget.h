@@ -113,6 +113,7 @@ protected:
     void enterEvent(QEvent *event) override;
 #endif
     void leaveEvent(QEvent *event) override;
+    bool eventFilter(QObject *watched, QEvent *event) override;
 
 private:
     AccountItem::Ptr m_accountItem;
