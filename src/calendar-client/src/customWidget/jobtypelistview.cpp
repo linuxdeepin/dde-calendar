@@ -572,8 +572,8 @@ void JobTypeListView::slotDeleteJobType()
     if (account->scheduleTypeIsUsed(typeNo)) {
         qCDebug(ClientLogger) << "Schedule type is in use, showing confirmation dialog";
         CScheduleCtrlDlg msgBox(this);
-        msgBox.setText(tr("You are deleting an event type."));
-        msgBox.setInformativeText(tr("All events under this type will be deleted and cannot be recovered."));
+        msgBox.setText(tr("You are deleting an event type"));
+        msgBox.setInformativeText(tr("All events under this type will be deleted and cannot be recovered"));
         msgBox.addPushButton(tr("Cancel", "button"), true);
         msgBox.addWaringButton(tr("Delete", "button"), true);
         msgBox.exec();

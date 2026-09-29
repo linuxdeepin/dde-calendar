@@ -8,12 +8,16 @@
 #include "commondef.h"
 #include <DSettingsOption>
 #include <DSettingsWidgetFactory>
+#include <DGuiApplicationHelper>
+#include <DPalette>
+#include <DFontSizeManager>
 #include <QHBoxLayout>
 #include <QPainter>
 #include <QStyleOptionToolButton>
 #include <QStylePainter>
 #include <QPainterPath>
 #include <QNetworkReply>
+#include <QPalette>
 
 namespace {
 class SignOutButton final : public DToolButton
@@ -82,6 +86,8 @@ void UserloginWidget::initView()
     m_userNameLabel = new DLabel();
     m_userNameLabel->setElideMode(Qt::ElideMiddle);
     m_userNameLabel->setTextFormat(Qt::PlainText);
+    m_userNameDefaultFont = m_userNameLabel->font();
+    m_userNameDefaultPalette = m_userNameLabel->palette();
     m_buttonImg = new DIconButton(this);
     m_buttonImg->setObjectName("ButtonImg");
     m_buttonImg->setAccessibleName("ButtonImg");
@@ -140,6 +146,27 @@ void UserloginWidget::initConnect()
     connect(gAccountManager, &AccountManager::signalAccountUpdate, this, &UserloginWidget::slotAccountUpdate);
     connect(m_networkManager, &QNetworkAccessManager::finished, this, &UserloginWidget::slotReplyPixmapLoad);
     connect(m_ptrDoaNetwork, &DOANetWorkDBus::sign_NetWorkChange, this, &UserloginWidget::slotNetworkStateChange);
+    connect(Dtk::Gui::DGuiApplicationHelper::instance(),
+            &Dtk::Gui::DGuiApplicationHelper::themeTypeChanged,
+            this,
+            [this]() {
+                if (!gUosAccountItem) {
+                    updateLoggedOutStyle();
+                }
+            });
+}
+
+void UserloginWidget::updateLoggedOutStyle()
+{
+    DFontSizeManager::instance()->bind(m_userNameLabel, DFontSizeManager::T8);
+    QColor textColor = Dtk::Gui::DGuiApplicationHelper::instance()->themeType()
+            == Dtk::Gui::DGuiApplicationHelper::DarkType
+        ? QColor(Qt::white)
+        : QColor(Qt::black);
+    textColor.setAlphaF(0.5);
+    Dtk::Gui::DPalette palette = m_userNameLabel->palette();
+    palette.setColor(Dtk::Gui::DPalette::WindowText, textColor);
+    m_userNameLabel->setPalette(palette);
 }
 
 QPixmap UserloginWidget::pixmapToRound(const QPixmap &src, int radius)
@@ -196,6 +223,8 @@ void UserloginWidget::slotAccountUpdate()
         qCDebug(ClientLogger) << "Account is logged in";
         m_buttonLogin->hide();
         m_buttonLoginOut->show();
+        m_userNameLabel->setFont(m_userNameDefaultFont);
+        m_userNameLabel->setPalette(m_userNameDefaultPalette);
         DAccount::Ptr account = gUosAccountItem->getAccount();
         m_userNameLabel->setText(account->accountName());
         m_userNameLabel->setToolTip(account->accountName());
@@ -206,7 +235,10 @@ void UserloginWidget::slotAccountUpdate()
         qCDebug(ClientLogger) << "Account is logged out";
         m_buttonLoginOut->hide();
         m_buttonLogin->show();
+        m_userNameLabel->setFont(m_userNameDefaultFont);
+        m_userNameLabel->setPalette(m_userNameDefaultPalette);
         m_userNameLabel->setText(tr("Not signed in"));
+        updateLoggedOutStyle();
         m_userNameLabel->setToolTip("");
         m_buttonImg->setIcon(QIcon(QStringLiteral(":/icons/deepin/builtin/icons/dde_calendar_uos_id_36px.svg")));
     }

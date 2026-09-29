@@ -1099,8 +1099,8 @@
         </message>
         <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="151" />
-            <source>No third-party accounts added</source>
-            <translation>No third-party accounts added</translation>
+            <source>Not added</source>
+            <translation>Not added</translation>
         </message>
         <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="157" />
@@ -1378,13 +1378,13 @@
         </message>
         <message>
             <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="565" />
-            <source>You are deleting an event type.</source>
-            <translation>You are deleting an event type.</translation>
+            <source>You are deleting an event type</source>
+            <translation>You are deleting an event type</translation>
         </message>
         <message>
             <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="566" />
-            <source>All events under this type will be deleted and cannot be recovered.</source>
-            <translation>All events under this type will be deleted and cannot be recovered.</translation>
+            <source>All events under this type will be deleted and cannot be recovered</source>
+            <translation>All events under this type will be deleted and cannot be recovered</translation>
         </message>
         <message>
             <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="567" />

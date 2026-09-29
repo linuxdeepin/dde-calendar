@@ -48,6 +48,8 @@ private slots:
 private:
     QLabel                           *m_firstLabel = nullptr;
     QLabel                           *m_seconLabel = nullptr;
+    QString                          m_firstText;
+    QString                          m_secondText;
     int                              m_id = -1;
     QVBoxLayout *m_mainBoxLayout = nullptr;
     DFrame *gwi = nullptr;

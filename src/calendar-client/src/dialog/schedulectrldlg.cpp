@@ -9,6 +9,8 @@
 #include "constants.h"
 #include "commondef.h"
 #include <QTimer>
+#include <QTextLayout>
+#include <QTextOption>
 
 #include <DMessageBox>
 #include <DPushButton>
@@ -19,6 +21,70 @@
 #include <QVBoxLayout>
 
 DGUI_USE_NAMESPACE
+
+namespace {
+QStringList wrapLabelText(const QFont &font, const QString &text, int width)
+{
+    QTextLayout textLayout(text, font);
+    QTextOption textOption;
+    textOption.setWrapMode(QTextOption::WrapAnywhere);
+    textLayout.setTextOption(textOption);
+
+    QStringList lines;
+    textLayout.beginLayout();
+    while (true) {
+        QTextLine line = textLayout.createLine();
+        if (!line.isValid()) {
+            break;
+        }
+        line.setLineWidth(width);
+        lines.append(text.mid(line.textStart(), line.textLength()));
+    }
+    textLayout.endLayout();
+    return lines;
+}
+
+void updateLabelDisplay(QLabel *label, const QString &fullText)
+{
+    if (label == nullptr) {
+        return;
+    }
+
+    const int width = label->contentsRect().width();
+    const int height = label->contentsRect().height();
+    const int lineSpacing = QFontMetrics(label->font()).lineSpacing();
+    if (width <= 0 || height <= 0 || lineSpacing <= 0) {
+        label->setText(fullText);
+        label->setToolTip(QString());
+        return;
+    }
+
+    const int maxLines = qMax(1, height / lineSpacing);
+    const QStringList fullLines = wrapLabelText(label->font(), fullText, width);
+    if (fullLines.size() <= maxLines) {
+        label->setText(fullLines.join(QLatin1Char('\n')));
+        label->setToolTip(QString());
+        return;
+    }
+
+    int left = 0;
+    int right = fullText.size();
+    while (left < right) {
+        const int middle = left + (right - left + 1) / 2;
+        const QString candidate = fullText.left(middle) + QStringLiteral("...");
+        if (wrapLabelText(label->font(), candidate, width).size() <= maxLines) {
+            left = middle;
+        } else {
+            right = middle - 1;
+        }
+    }
+
+    const QString elidedText = fullText.left(left) + QStringLiteral("...");
+    label->setText(wrapLabelText(label->font(), elidedText, width).join(QLatin1Char('\n')));
+    label->setToolTip(fullText);
+}
+} // namespace
+
 CScheduleCtrlDlg::CScheduleCtrlDlg(QWidget *parent)
     : DCalendarDDialog(parent)
 {
@@ -141,8 +207,8 @@ void CScheduleCtrlDlg::changeEvent(QEvent *event)
     QFontMetrics font_button(font);
     QFontMetrics font_firstLabel(font);
     QFontMetrics font_seconLabel(font);
-    int height_firstLabel = (font_firstLabel.horizontalAdvance(m_firstLabel->text()) / 300 + 1) * font_firstLabel.height();
-    int height_seconLabel = (font_seconLabel.horizontalAdvance(m_seconLabel->text()) / 300 + 1) * font_seconLabel.height();
+    int height_firstLabel = (font_firstLabel.horizontalAdvance(m_firstText) / 300 + 1) * font_firstLabel.height();
+    int height_seconLabel = (font_seconLabel.horizontalAdvance(m_secondText) / 300 + 1) * font_seconLabel.height();
 
     for (int i = 0; i < buttonCount(); i++) {
         QAbstractButton *button = getButton(i);
@@ -161,6 +227,8 @@ void CScheduleCtrlDlg::changeEvent(QEvent *event)
         qCDebug(ClientLogger) << "Adjusting dialog height to:" << (36 + 48 + height_firstLabel + height_seconLabel + 30);
         setFixedHeight(36 + 48 + height_firstLabel + height_seconLabel + 30);
         gwi->setFixedHeight(height_firstLabel + height_seconLabel);
+        updateLabelDisplay(m_firstLabel, m_firstText);
+        updateLabelDisplay(m_seconLabel, m_secondText);
     });
 }
 
@@ -237,15 +305,17 @@ QAbstractButton *CScheduleCtrlDlg::addWaringButton(QString btName, bool type)
 void CScheduleCtrlDlg::setText(QString str)
 {
     qCDebug(ClientLogger) << "Setting text:" << str;
+    m_firstText = str;
     m_firstLabel->setText(str);
-    m_firstLabel->setToolTip(str);
+    QTimer::singleShot(0, this, [this]() { updateLabelDisplay(m_firstLabel, m_firstText); });
 }
 
 void CScheduleCtrlDlg::setInformativeText(QString str)
 {
     qCDebug(ClientLogger) << "Setting informative text:" << str;
+    m_secondText = str;
     m_seconLabel->setText(str);
-    m_seconLabel->setToolTip(str);
+    QTimer::singleShot(0, this, [this]() { updateLabelDisplay(m_seconLabel, m_secondText); });
 }
 
 int CScheduleCtrlDlg::clickButton()

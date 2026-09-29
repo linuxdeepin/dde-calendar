@@ -14,6 +14,7 @@
 #include <QIcon>
 #include <DFloatingMessage>
 #include <DLabel>
+#include <DGuiApplicationHelper>
 #include <DMessageManager>
 #include <DPalette>
 #include <DFontSizeManager>
@@ -63,6 +64,20 @@ QIcon syncFailureIcon()
 {
     return QIcon(QStringLiteral(
         ":/icons/deepin/builtin/icons/dde_calendar_sync_failed_32px.svg"));
+}
+
+void updateEmptyStateTextStyle(Dtk::Widget::DLabel *label)
+{
+    Dtk::Widget::DFontSizeManager::instance()->bind(
+        label, Dtk::Widget::DFontSizeManager::T8);
+    QColor textColor = Dtk::Gui::DGuiApplicationHelper::instance()->themeType()
+            == Dtk::Gui::DGuiApplicationHelper::DarkType
+        ? QColor(Qt::white)
+        : QColor(Qt::black);
+    textColor.setAlphaF(0.5);
+    Dtk::Gui::DPalette palette = label->palette();
+    palette.setColor(Dtk::Gui::DPalette::WindowText, textColor);
+    label->setPalette(palette);
 }
 
 
@@ -153,9 +168,14 @@ void CalDavAccountListWidget::rebuildCards()
                                  .pixmap(36, 36));
         emptyRowLayout->addWidget(iconLabel);
 
-        Dtk::Widget::DLabel *emptyLabel = new Dtk::Widget::DLabel(tr("No third-party accounts added"), emptyRow);
+        Dtk::Widget::DLabel *emptyLabel = new Dtk::Widget::DLabel(tr("Not added"), emptyRow);
         emptyLabel->setTextFormat(Qt::PlainText);
         emptyLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+        updateEmptyStateTextStyle(emptyLabel);
+        connect(Dtk::Gui::DGuiApplicationHelper::instance(),
+                &Dtk::Gui::DGuiApplicationHelper::themeTypeChanged,
+                emptyLabel,
+                [emptyLabel]() { updateEmptyStateTextStyle(emptyLabel); });
         emptyRowLayout->addWidget(emptyLabel);
         emptyRowLayout->addStretch();
 

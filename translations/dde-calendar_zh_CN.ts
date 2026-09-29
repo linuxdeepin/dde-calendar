@@ -1197,13 +1197,13 @@
         </message>
         <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="140" />
-            <source>No third-party accounts added</source>
-            <translation>未添加第三方账户</translation>
+            <source>Not added</source>
+            <translation>未添加</translation>
         </message>
         <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="146" />
             <source>Add</source>
-            <translation>添加</translation>
+            <translation>添 加</translation>
         </message>
         <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="199" />
@@ -1340,13 +1340,13 @@
         </message>
         <message>
             <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="575" />
-            <source>You are deleting an event type.</source>
-            <translation>您正在删除日程类型。</translation>
+            <source>You are deleting an event type</source>
+            <translation>您正在删除日程类型</translation>
         </message>
         <message>
             <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="576" />
-            <source>All events under this type will be deleted and cannot be recovered.</source>
-            <translation>此日程类型下的所有日程都会删除且不可恢复。</translation>
+            <source>All events under this type will be deleted and cannot be recovered</source>
+            <translation>此日程类型下的所有日程都会删除且不可恢复</translation>
         </message>
         <message>
             <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="577" />
@@ -1609,13 +1609,13 @@
             <location filename="../src/calendar-client/src/widget/settingWidget/userloginwidget.cpp" line="110" />
             <source>Sign In</source>
             <comment>button</comment>
-            <translation>登录</translation>
+            <translation>登 录</translation>
         </message>
         <message>
             <location filename="../src/calendar-client/src/widget/settingWidget/userloginwidget.cpp" line="111" />
             <source>Sign Out</source>
             <comment>button</comment>
-            <translation>退出</translation>
+            <translation>退 出</translation>
         </message>
         <message>
             <location filename="../src/calendar-client/src/widget/settingWidget/userloginwidget.cpp" line="208" />

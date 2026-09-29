@@ -12,6 +12,8 @@
 #include <DToolButton>
 #include <DPushButton>
 #include <QNetworkAccessManager>
+#include <QFont>
+#include <QPalette>
 DWIDGET_USE_NAMESPACE
 
 //配置界面账户登录部件
@@ -39,12 +41,15 @@ public slots:
 private:
     void initView();
     void initConnect();
+    void updateLoggedOutStyle();
 
     QPixmap pixmapToRound(const QPixmap &src, int radius);
 private:
     bool m_loginStatus;
     bool m_isManualQuit = false;
     DLabel *m_userNameLabel = nullptr;
+    QFont m_userNameDefaultFont;
+    QPalette m_userNameDefaultPalette;
     DIconButton *m_buttonImg = nullptr;
     QPushButton *m_buttonLogin = nullptr;
     DToolButton *m_buttonLoginOut = nullptr;
