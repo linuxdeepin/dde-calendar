@@ -1197,7 +1197,7 @@
         </message>
         <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="140" />
-            <source>No third-party accounts added</source>
+            <source>Not added</source>
             <translation>未添加第三方賬戶</translation>
         </message>
         <message>
@@ -1340,13 +1340,13 @@
         </message>
         <message>
             <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="575" />
-            <source>You are deleting an event type.</source>
-            <translation>您正在刪除日程類型。</translation>
+            <source>You are deleting an event type</source>
+            <translation>您正在刪除日程類型</translation>
         </message>
         <message>
             <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="576" />
-            <source>All events under this type will be deleted and cannot be recovered.</source>
-            <translation>此日程類型下的所有日程都會刪除且不可恢復。</translation>
+            <source>All events under this type will be deleted and cannot be recovered</source>
+            <translation>此日程類型下的所有日程都會刪除且不可恢復</translation>
         </message>
         <message>
             <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="577" />
