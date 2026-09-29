@@ -35,6 +35,7 @@
 #include <DIcon>
 #include <DPalette>
 #include <DFontSizeManager>
+#include <DSpinner>
 #include <DToolButton>
 
 #include <qglobal.h>
@@ -581,15 +582,19 @@ void CSettingDialog::initManualSyncButton()
     m_syncTimeValueLabel = new DLabel;
     m_syncTimeValueLabel->setForegroundRole(Dtk::Gui::DPalette::TextTips);
     DFontSizeManager::instance()->bind(m_syncTimeValueLabel, DFontSizeManager::T8);
-    m_syncStatusIconLabel = new QLabel;
+    m_syncStatusIconLabel = new QLabel(m_manualSyncWidget);
     m_syncStatusIconLabel->setFixedSize(16, 16);
     m_syncStatusIconLabel->hide();
+    m_syncSpinner = new DSpinner(m_manualSyncWidget);
+    m_syncSpinner->setFixedSize(16, 16);
+    m_syncSpinner->hide();
 
     QHBoxLayout *layout = new QHBoxLayout(m_manualSyncWidget);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(6);
     layout->addWidget(m_syncTimeLabel);
     layout->addWidget(m_syncStatusIconLabel);
+    layout->addWidget(m_syncSpinner);
     layout->addWidget(m_syncTimeValueLabel);
     layout->addStretch();
     layout->addWidget(m_syncBtn);
@@ -806,12 +811,11 @@ void CSettingDialog::slotUosManualSync()
         return;
     }
     qCDebug(ClientLogger) << "Manual sync requested for account:" << gUosAccountItem->getAccount()->accountID();
-    if (m_syncTimeValueLabel && m_syncStatusIconLabel) {
+    if (m_syncTimeValueLabel && m_syncStatusIconLabel && m_syncSpinner) {
         m_syncTimeValueLabel->setText(tr("Syncing..."));
-        m_syncStatusIconLabel->setPixmap(QIcon(QStringLiteral(
-            ":/icons/deepin/builtin/icons/dde_calendar_spinner_32px.svg"))
-            .pixmap(16, 16));
-        m_syncStatusIconLabel->show();
+        m_syncStatusIconLabel->hide();
+        m_syncSpinner->show();
+        m_syncSpinner->start();
     }
     if (m_syncTimeoutTimer) {
         m_syncTimeoutTimer->start(10000);
@@ -872,9 +876,12 @@ void CSettingDialog::slotSyncAccountStateUpdate(bool status)
 void CSettingDialog::updateSyncStatusDisplay(const QString &datetime,
                                               DAccount::AccountSyncState state)
 {
-    if (!m_syncTimeLabel || !m_syncTimeValueLabel || !m_syncStatusIconLabel || !gUosAccountItem) {
+    if (!m_syncTimeLabel || !m_syncTimeValueLabel || !m_syncStatusIconLabel
+        || !m_syncSpinner || !gUosAccountItem) {
         return;
     }
+    m_syncSpinner->stop();
+    m_syncSpinner->hide();
 
     QString dtstr;
     if (gCalendarManager->getTimeShowType()) {

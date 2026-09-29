@@ -22,6 +22,7 @@
 #include <QTimer>
 #include <QVBoxLayout>
 
+#include <DSpinner>
 #include <DToolButton>
 
 #include <DBackgroundGroup>
@@ -62,11 +63,6 @@ QIcon syncFailureIcon()
 {
     return QIcon(QStringLiteral(
         ":/icons/deepin/builtin/icons/dde_calendar_sync_failed_32px.svg"));
-}
-
-QIcon syncRunningIcon()
-{
-    return QIcon(QStringLiteral(":/icons/deepin/builtin/icons/dde_calendar_spinner_32px.svg"));
 }
 
 
@@ -257,10 +253,10 @@ void CalDavAccountListWidget::rebuildCards()
             resultIconLabel->setPixmap(syncFailureIcon().pixmap(16, 16));
             timeLayout->addWidget(resultIconLabel);
         } else if (running || pendingDelete) {
-            Dtk::Widget::DLabel *stateIconLabel = new Dtk::Widget::DLabel(timeWidget);
-            stateIconLabel->setFixedSize(16, 16);
-            stateIconLabel->setPixmap(syncRunningIcon().pixmap(16, 16));
-            timeLayout->addWidget(stateIconLabel);
+            Dtk::Widget::DSpinner *stateSpinner = new Dtk::Widget::DSpinner(timeWidget);
+            stateSpinner->setFixedSize(16, 16);
+            stateSpinner->start();
+            timeLayout->addWidget(stateSpinner);
         }
 
         const QString timeValue = syncTimeValue(status);
