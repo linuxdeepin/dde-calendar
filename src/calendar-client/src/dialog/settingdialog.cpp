@@ -178,10 +178,13 @@ void CSettingDialog::initView()
     setResetVisible(false);
     //QList<Widget>
     QList<QWidget *> lstwidget = findChildren<QWidget *>();
+    QWidget *uosTitleRow = nullptr;
     QWidget *thirdPartyTitleRow = nullptr;
     if (lstwidget.size() > 0) { //accessibleName
         for (QWidget *wid : lstwidget) {
-            if ("ContentWidgetForsetting_account.third_party_accounts" == wid->accessibleName()) {
+            if ("ContentWidgetForsetting_account.account" == wid->accessibleName()) {
+                uosTitleRow = wid;
+            } else if ("ContentWidgetForsetting_account.third_party_accounts" == wid->accessibleName()) {
                 thirdPartyTitleRow = wid;
             }
             if (wid->accessibleName().contains("DefaultWidgetAtContentRow")
@@ -244,12 +247,16 @@ void CSettingDialog::initView()
             titleLayout->setSpacing(thirdPartyTitleRow->layout()->spacing());
 
             QLabel *titleLabel = thirdPartyTitleRow->findChild<QLabel *>();
+            QLabel *uosTitleLabel = uosTitleRow ? uosTitleRow->findChild<QLabel *>() : nullptr;
             if (titleLabel) {
                 titleLabel->setParent(titleWidget);
-                titleLayout->addWidget(titleLabel);
             } else {
-                titleLayout->addWidget(new QLabel(tr("Third-party accounts"), titleWidget));
+                titleLabel = new QLabel(tr("Third-party accounts"), titleWidget);
             }
+            if (uosTitleLabel) {
+                titleLabel->setFont(uosTitleLabel->font());
+            }
+            titleLayout->addWidget(titleLabel);
             titleLayout->addStretch();
 
             m_calDavAccountAddButton = new DIconButton(titleWidget);
