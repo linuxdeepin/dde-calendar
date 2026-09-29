@@ -25,6 +25,8 @@
 #include <QVBoxLayout>
 #include <QWheelEvent>
 #include <QTimer>
+#include <QTextLayout>
+#include <QTextOption>
 
 #include <DBackgroundGroup>
 #include <DComboBox>
@@ -44,6 +46,8 @@
 const QString ControlCenterDBusName = "org.deepin.dde.ControlCenter1";
 const QString ControlCenterDBusPath = "/org/deepin/dde/ControlCenter1";
 const QString ControlCenterPage = "datetime/region";
+
+constexpr int kDeleteAccountContentSpacing = 3;
 
 using namespace SettingWidget;
 
@@ -750,7 +754,6 @@ void CSettingDialog::slotDeleteCalDavAccount()
     }
 
     DDialog dialog(this);
-    dialog.setWindowTitle(tr("Remove Calendar Account"));
     const auto updateDialogIcon = [&dialog]() {
         dialog.setIcon(QIcon::fromTheme(QStringLiteral("dde-calendar"),
                                         QIcon(CDynamicIcon::getInstance()->getPixmap())));
@@ -762,20 +765,118 @@ void CSettingDialog::slotDeleteCalDavAccount()
             updateDialogIcon);
     QWidget *content = new QWidget(&dialog);
     QVBoxLayout *layout = new QVBoxLayout(content);
+    layout->setSpacing(0);
     const DCalDavAccountStatus status = gAccountManager->getCalDavAccountStatus(accountID);
     const QString accountName = DCalDavProviderProfile::accountDisplayName(
         static_cast<DCalDavProviderProfile::ProviderType>(status.providerType),
         account->getAccount()->accountName());
-    QLabel *message = new QLabel(
-        tr("Are you sure you want to remove the account \"%1\"?").arg(
-            accountName.isEmpty() ? account->getAccount()->displayName() : accountName), content);
-    message->setWordWrap(true);
+    const QString displayName = accountName.isEmpty()
+        ? account->getAccount()->displayName()
+        : accountName;
+    const QString messageTemplate = tr("Are you sure you want to remove the account \"%1\"?");
+    QLabel *message = new QLabel(content);
+    message->setText(messageTemplate.arg(displayName));
+    message->setWordWrap(false);
+    message->setAlignment(Qt::AlignCenter);
+    message->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     QCheckBox *deleteLocalData = new QCheckBox(
         tr("Also remove synced events from this calendar"), content);
+    deleteLocalData->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
     deleteLocalData->setChecked(true);
+
+    const auto updateTextColor = [message, deleteLocalData]() {
+        QColor titleColor = DGuiApplicationHelper::instance()->themeType()
+                == DGuiApplicationHelper::DarkType
+            ? QColor(Qt::white)
+            : QColor(Qt::black);
+        titleColor.setAlphaF(0.9);
+        QColor contentColor = titleColor;
+        contentColor.setAlphaF(0.7);
+
+        Dtk::Gui::DPalette messagePalette = message->palette();
+        messagePalette.setColor(Dtk::Gui::DPalette::WindowText, titleColor);
+        message->setPalette(messagePalette);
+
+        Dtk::Gui::DPalette checkboxPalette = deleteLocalData->palette();
+        checkboxPalette.setColor(Dtk::Gui::DPalette::WindowText, contentColor);
+        deleteLocalData->setPalette(checkboxPalette);
+    };
+    updateTextColor();
+    connect(DGuiApplicationHelper::instance(),
+            &DGuiApplicationHelper::themeTypeChanged,
+            &dialog,
+            updateTextColor);
+
+    const auto updateMessageText = [message, displayName, messageTemplate]() {
+        const int messageWidth = message->contentsRect().width();
+        if (messageWidth <= 0) {
+            return;
+        }
+
+        const QFontMetrics fontMetrics(message->font());
+        const int maxMessageHeight = 2 * fontMetrics.lineSpacing();
+        const auto wrapText = [message, messageWidth](const QString &text) {
+            QTextLayout textLayout(text, message->font());
+            QTextOption textOption;
+            textOption.setWrapMode(QTextOption::WrapAnywhere);
+            textLayout.setTextOption(textOption);
+
+            QStringList lines;
+            textLayout.beginLayout();
+            while (true) {
+                QTextLine line = textLayout.createLine();
+                if (!line.isValid()) {
+                    break;
+                }
+                line.setLineWidth(messageWidth);
+                lines.append(text.mid(line.textStart(), line.textLength()));
+            }
+            textLayout.endLayout();
+            return lines;
+        };
+        const auto textForName = [&messageTemplate](const QString &name) {
+            return messageTemplate.arg(name);
+        };
+        const auto fitsWithinTwoLines = [&fontMetrics, messageWidth, maxMessageHeight](
+                                            const QString &text) {
+            const QRect textRect(0, 0, messageWidth, maxMessageHeight);
+            return fontMetrics.boundingRect(textRect, Qt::TextWrapAnywhere, text).height()
+                <= maxMessageHeight;
+        };
+
+        const QString fullText = textForName(displayName);
+        const QStringList fullLines = wrapText(fullText);
+        if (fullLines.size() <= 2) {
+            message->setText(fullLines.join(QLatin1Char('\n')));
+            message->setFixedHeight(fullLines.size() * fontMetrics.lineSpacing());
+            message->setToolTip(QString());
+            return;
+        }
+
+        int left = 0;
+        int right = displayName.size();
+        while (left < right) {
+            const int middle = left + (right - left + 1) / 2;
+            const QString candidate = textForName(displayName.left(middle) + QStringLiteral("..."));
+            if (fitsWithinTwoLines(candidate)) {
+                left = middle;
+            } else {
+                right = middle - 1;
+            }
+        }
+
+        const QString elidedText = textForName(displayName.left(left) + QStringLiteral("..."));
+        const QStringList elidedLines = wrapText(elidedText);
+        message->setText(elidedLines.join(QLatin1Char('\n')));
+        message->setFixedHeight(elidedLines.size() * fontMetrics.lineSpacing());
+        message->setToolTip(displayName);
+    };
+    connect(&dialog, &DDialog::sizeChanged, &dialog, updateMessageText);
     layout->addWidget(message);
-    layout->addWidget(deleteLocalData);
-    dialog.addContent(content, Qt::AlignCenter);
+    layout->addSpacing(kDeleteAccountContentSpacing);
+    layout->addWidget(deleteLocalData, 0, Qt::AlignHCenter);
+    dialog.addContent(content, Qt::AlignVCenter);
+    QTimer::singleShot(0, &dialog, updateMessageText);
     dialog.addButton(tr("Cancel", "button"));
     dialog.addButton(tr("Delete", "button"), false, DDialog::ButtonWarning);
     QObject::connect(dialog.getButton(0), &QAbstractButton::clicked, &dialog, &QDialog::reject);
