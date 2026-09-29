@@ -150,7 +150,15 @@ CSettingDialog::CSettingDialog(QWidget *parent) : DSettingsDialog(parent)
 void CSettingDialog::initView()
 {
     qCDebug(ClientLogger) << "Initializing settings dialog view";
-    setIcon(CDynamicIcon::getInstance()->getPixmap());
+    const auto updateDialogIcon = [this]() {
+        setIcon(QIcon::fromTheme(QStringLiteral("dde-calendar"),
+                                 QIcon(CDynamicIcon::getInstance()->getPixmap())));
+    };
+    updateDialogIcon();
+    connect(DGuiApplicationHelper::instance(),
+            &DGuiApplicationHelper::themeTypeChanged,
+            this,
+            updateDialogIcon);
     widgetFactory()->registerWidget("FirstDayofWeek",     std::bind(&CSettingDialog::createFirstDayofWeekWidget,  this, std::placeholders::_1));
     widgetFactory()->registerWidget("Time",               std::bind(&CSettingDialog::createTimeTypeWidget,        this, std::placeholders::_1));
     widgetFactory()->registerWidget("ControlCenterLink",  std::bind(&CSettingDialog::createControlCenterLink,     this, std::placeholders::_1));
@@ -743,6 +751,15 @@ void CSettingDialog::slotDeleteCalDavAccount()
 
     DDialog dialog(this);
     dialog.setWindowTitle(tr("Remove Calendar Account"));
+    const auto updateDialogIcon = [&dialog]() {
+        dialog.setIcon(QIcon::fromTheme(QStringLiteral("dde-calendar"),
+                                        QIcon(CDynamicIcon::getInstance()->getPixmap())));
+    };
+    updateDialogIcon();
+    connect(DGuiApplicationHelper::instance(),
+            &DGuiApplicationHelper::themeTypeChanged,
+            &dialog,
+            updateDialogIcon);
     QWidget *content = new QWidget(&dialog);
     QVBoxLayout *layout = new QVBoxLayout(content);
     const DCalDavAccountStatus status = gAccountManager->getCalDavAccountStatus(accountID);

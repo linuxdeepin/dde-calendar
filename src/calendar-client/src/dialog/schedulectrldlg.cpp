@@ -35,8 +35,15 @@ void CScheduleCtrlDlg::initUI()
     qCDebug(ClientLogger) << "Initializing UI for schedule control dialog";
     //在点击任何对话框上的按钮后不关闭对话框，保证关闭子窗口时不被一起关掉
     setOnButtonClickedClose(false);
-    QIcon t_icon(CDynamicIcon::getInstance()->getPixmap());// = QIcon::fromTheme("dde-calendar");
-    setIcon(t_icon);
+    const auto updateDialogIcon = [this]() {
+        setIcon(QIcon::fromTheme(QStringLiteral("dde-calendar"),
+                                 QIcon(CDynamicIcon::getInstance()->getPixmap())));
+    };
+    updateDialogIcon();
+    connect(DGuiApplicationHelper::instance(),
+            &DGuiApplicationHelper::themeTypeChanged,
+            this,
+            updateDialogIcon);
 
     m_mainBoxLayout = new QVBoxLayout();
     m_mainBoxLayout->setContentsMargins(0, 0, 0, 0);
