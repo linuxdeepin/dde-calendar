@@ -241,7 +241,8 @@ void CMyScheduleView::setLabelTextColor(const int type)
 
 void CMyScheduleView::updateDialogIcon()
 {
-    setIcon(QIcon::fromTheme("dde-calendar"));
+    setIcon(QIcon::fromTheme(QStringLiteral("dde-calendar"),
+                             QIcon(CDynamicIcon::getInstance()->getPixmap())));
 }
 
 /**

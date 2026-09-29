@@ -10,7 +10,9 @@
 #include "caldavprovidericon.h"
 #include "dcaldavcredentialstore.h"
 #include "dcalendareventlog.h"
+#include "cdynamicicon.h"
 
+#include <DGuiApplicationHelper>
 #include <DComboBox>
 #include <DLabel>
 #include <DLineEdit>
@@ -42,10 +44,21 @@ DLabel *formLabel(const QString &text, QWidget *parent)
 
 } // namespace
 
+DGUI_USE_NAMESPACE
+
 CalDavAccountDialog::CalDavAccountDialog(QWidget *parent)
     : DDialog(parent)
 {
     setWindowTitle(tr("Add Calendar Account"));
+    const auto updateDialogIcon = [this]() {
+        setIcon(QIcon::fromTheme(QStringLiteral("dde-calendar"),
+                                 QIcon(CDynamicIcon::getInstance()->getPixmap())));
+    };
+    updateDialogIcon();
+    connect(DGuiApplicationHelper::instance(),
+            &DGuiApplicationHelper::themeTypeChanged,
+            this,
+            updateDialogIcon);
     setFixedSize(500, 300);
     setContentLayoutContentsMargins(QMargins(20, 0, 20, 0));
 

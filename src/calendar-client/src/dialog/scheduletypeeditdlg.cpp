@@ -8,14 +8,19 @@
 #include "configsettings.h"
 #include "units.h"
 #include "commondef.h"
+#include "cdynamicicon.h"
 
 #include <DFrame>
+#include <DGuiApplicationHelper>
 #include <DTitlebar>
 #include <DIconButton>
 
 #include <QLabel>
 #include <QRadioButton>
 #include <QFormLayout>
+#include <QIcon>
+
+DGUI_USE_NAMESPACE
 
 ScheduleTypeEditDlg::ScheduleTypeEditDlg(QWidget *parent)
     : DDialog(parent)
@@ -136,6 +141,15 @@ void ScheduleTypeEditDlg::init()
 void ScheduleTypeEditDlg::initView()
 {
     qCDebug(ClientLogger) << "Initializing schedule type dialog view";
+    const auto updateDialogIcon = [this]() {
+        setIcon(QIcon::fromTheme(QStringLiteral("dde-calendar"),
+                                 QIcon(CDynamicIcon::getInstance()->getPixmap())));
+    };
+    updateDialogIcon();
+    connect(DGuiApplicationHelper::instance(),
+            &DGuiApplicationHelper::themeTypeChanged,
+            this,
+            updateDialogIcon);
     setFixedSize(QSize(400, 220));
 
     m_titleLabel = new QLabel(this);

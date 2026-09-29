@@ -18,6 +18,7 @@
 
 
 #include <DFontSizeManager>
+#include <DGuiApplicationHelper>
 #include <DRadioButton>
 #include <DLabel>
 
@@ -918,6 +919,16 @@ void CScheduleDlg::initUI()
     this->setAccessibleName("ScheduleEditDialog");
     //在点击任何对话框上的按钮后不关闭对话框，保证关闭子窗口时不被一起关掉
     setOnButtonClickedClose(false);
+
+    const auto updateDialogIcon = [this]() {
+        setIcon(QIcon::fromTheme(QStringLiteral("dde-calendar"),
+                                 QIcon(CDynamicIcon::getInstance()->getPixmap())));
+    };
+    updateDialogIcon();
+    connect(DGuiApplicationHelper::instance(),
+            &DGuiApplicationHelper::themeTypeChanged,
+            this,
+            updateDialogIcon);
 
     m_titleLabel = new QLabel(this);
     QFont titlelabelF;
