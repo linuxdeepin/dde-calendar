@@ -25,6 +25,8 @@
 
 DGUI_USE_NAMESPACE
 namespace {
+// Maximum height of the schedule description area in pixels.
+constexpr int kMaxContentHeight = 100;
 QHBoxLayout *findDialogButtonLayout(QObject *object, QAbstractButton *button)
 {
     if (QHBoxLayout *layout = qobject_cast<QHBoxLayout *>(object)) {
@@ -103,7 +105,6 @@ void CMyScheduleView::slotAutoFeed(const QFont &font)
         const QString next = line + strText.at(i);
         if (!line.isEmpty() && fm.horizontalAdvance(next) > titleWidth) {
             strList.append(line);
-            resultStr += line + QLatin1Char('\n');
             line.clear();
             continue;
         }
@@ -112,20 +113,25 @@ void CMyScheduleView::slotAutoFeed(const QFont &font)
     }
     if (!line.isEmpty() || strText.isEmpty()) {
         strList.append(line);
-        resultStr += line;
     }
 
+    const int maxLineCount = qMax(1, kMaxContentHeight / lineHeight);
+    const bool isElided = strList.count() > maxLineCount;
+    if (isElided) {
+        strList = strList.mid(0, maxLineCount);
+        strList.last() = fm.elidedText(strList.last(),
+                                       Qt::ElideRight, titleWidth);
+    }
+    resultStr = strList.join(QLatin1Char('\n'));
+    m_scheduleLabel->setToolTip(isElided ? strText : QString());
+
     const int contentHeight = qMax(17, strList.count() * lineHeight);
-    const bool needScroll = contentHeight > 100;
-    // Keep the designed popup height for normal titles. Long titles remain
-    // fully available through the existing scroll area instead of being
-    // clipped at the bottom.
-    m_scheduleLabelH = qMin(contentHeight, 100);
+    m_scheduleLabelH = qMin(contentHeight, kMaxContentHeight);
     area->setFixedHeight(m_scheduleLabelH);
-    area->setVerticalScrollBarPolicy(needScroll ? Qt::ScrollBarAsNeeded : Qt::ScrollBarAlwaysOff);
+    area->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     area->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_scheduleLabel->setText(resultStr);
-    m_scheduleLabel->setFixedHeight(contentHeight);
+    m_scheduleLabel->setFixedHeight(m_scheduleLabelH);
 
     QString timeName = m_timeLabel->text();
     if (m_scheduleInfo->lunnar()) {
@@ -212,22 +218,16 @@ void CMyScheduleView::slotAccountStateChange()
 void CMyScheduleView::setLabelTextColor(const int type)
 {
     qCDebug(ClientLogger) << "Setting label text colors for theme type:" << type;
-    //标题显示颜色
-    QColor titleColor;
     //日程显示颜色
     QColor scheduleTitleColor;
     //时间显示颜色
     QColor timeColor;
     if (type == 2) {
-        titleColor = "#FFFFFF";
-        titleColor.setAlphaF(0.85);
         scheduleTitleColor = "#FFFFFF";
         timeColor = "#FFFFFF";
         timeColor.setAlphaF(0.7);
         qCDebug(ClientLogger) << "Using dark theme colors";
     } else {
-        titleColor = "#000000";
-        titleColor.setAlphaF(0.85);
         scheduleTitleColor = "#000000";
         scheduleTitleColor.setAlphaF(0.9);
         timeColor = "#000000";
@@ -235,7 +235,6 @@ void CMyScheduleView::setLabelTextColor(const int type)
         qCDebug(ClientLogger) << "Using light theme colors";
     }
     //设置颜色
-    setPaletteTextColor(m_Title, titleColor);
     setPaletteTextColor(m_scheduleLabel, scheduleTitleColor);
     setPaletteTextColor(m_timeLabel, timeColor);
 }
