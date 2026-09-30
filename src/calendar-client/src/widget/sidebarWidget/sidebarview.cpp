@@ -9,6 +9,7 @@
 #include "commondef.h"
 #include <QVBoxLayout>
 #include <QPixmap>
+#include <DGuiApplicationHelper>
 
 SidebarView::SidebarView(QWidget *parent) : QWidget(parent)
 {
@@ -52,9 +53,23 @@ void SidebarView::initView()
     m_calendarWidget->setFixedHeight(220);
 //    m_calendarWidget->setFixedSize(180, 220);
 
-    DPushButton *btn = new DPushButton;
-    btn->setFocusPolicy(Qt::NoFocus);
+    QFrame *btn = new QFrame;
     btn->setFixedHeight(1);
+    btn->setFrameShape(QFrame::NoFrame);
+    // Set divider color: 10% white for dark theme, 10% black for light theme
+    auto updateDividerColor = [btn]() {
+        DGuiApplicationHelper::ColorType theme = DGuiApplicationHelper::instance()->themeType();
+        QString colorStr;
+        if (theme == DGuiApplicationHelper::DarkType) {
+            colorStr = "rgba(255, 255, 255, 25)";
+        } else {
+            colorStr = "rgba(0, 0, 0, 25)";
+        }
+        btn->setStyleSheet(QString("QFrame { background-color: %1; border: none; }").arg(colorStr));
+    };
+    updateDividerColor();
+    QObject::connect(DGuiApplicationHelper::instance(), &DGuiApplicationHelper::themeTypeChanged,
+                     btn, [updateDividerColor]() { updateDividerColor(); });
     vLayout->addWidget(m_treeWidget, 1);
     vLayout->addWidget(btn);
     vLayout->addWidget(m_calendarWidget, 1);
