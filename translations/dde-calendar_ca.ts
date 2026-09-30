@@ -1187,12 +1187,12 @@
     <message>
             <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="575"/>
         <source>You are deleting an event type</source>
-        <translation type="unfinished"/>
+        <translation>Elimineu un tipus d&apos;esdeveniment.</translation>
     </message>
     <message>
             <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="576"/>
         <source>All events under this type will be deleted and cannot be recovered</source>
-        <translation type="unfinished"/>
+        <translation>Tots els esdeveniments d&apos;aquest tipus s&apos;eliminaran i no es podran recuperar.</translation>
     </message>
     <message>
             <location filename="../src/calendar-client/src/customWidget/jobtypelistview.cpp" line="577"/>
@@ -1658,7 +1658,7 @@
         <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="299"/>
             <source>Sync Failed</source>
-            <translation type="unfinished"/>
+            <translation>Ha fallat la sincronització.</translation>
         </message>
     <message>
         <source>Last sync: %1</source>
@@ -1672,7 +1672,7 @@
     <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="140"/>
         <source>Not added</source>
-        <translation type="unfinished"/>
+        <translation>No afegit</translation>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="146"/>
