@@ -54,7 +54,6 @@ CMyScheduleView::CMyScheduleView(const DSchedule::Ptr &schduleInfo, QWidget *par
     //根据主题type设置颜色
     setLabelTextColor(DGuiApplicationHelper::instance()->themeType());
     setFixedWidth(400);
-    setMinimumHeight(160);
     //设置初始化弹窗内容
     updateDateTimeFormat();
     focusNextPrevChild(false);
@@ -89,12 +88,9 @@ void CMyScheduleView::slotAutoFeed(const QFont &font)
 
     const QString strText = m_scheduleInfo->summary();
     QString resultStr;
-    QFont labelF;
-    labelF.setWeight(QFont::Medium);
-    labelF = DFontSizeManager::instance()->get(DFontSizeManager::T6, labelF);
-    const QFontMetrics fm(labelF);
-    const int titleWidth = 330;
-    const int lineHeight = fm.height();
+    const QFontMetrics fm(m_scheduleLabel->font());
+    const int titleWidth = m_scheduleLabel->contentsRect().width();
+    const int lineHeight = fm.lineSpacing();
     QStringList strList;
     QString line;
 
@@ -155,19 +151,9 @@ void CMyScheduleView::slotAutoFeed(const QFont &font)
     //更新控件高度
     m_timeLabel->setFixedHeight(m_timeLabelH);
 
-    const int timeSpacing = m_timeSpacing != nullptr ? m_timeSpacing->height() : 0;
-    const int sourceHeight = m_sourceLabel != nullptr && m_sourceLabel->isVisible()
-        ? m_sourceLabel->height() : 0;
-    const int sourceSpacing = m_sourceSpacing != nullptr && m_sourceSpacing->isVisible()
-        ? m_sourceSpacing->height() : 0;
-    const int sourceBottomSpacing = m_sourceBottomSpacing != nullptr && m_sourceBottomSpacing->isVisible()
-        ? m_sourceBottomSpacing->height() : 0;
-    //更新界面高度
-    setFixedHeight(m_defaultH + m_scheduleLabelH + timeSpacing + m_timeLabelH
-                   + sourceSpacing + sourceHeight + sourceBottomSpacing);
-    qCDebug(ClientLogger) << "Updated view height to:"
-                          << (m_defaultH + m_scheduleLabelH + timeSpacing + m_timeLabelH
-                              + sourceSpacing + sourceHeight + sourceBottomSpacing);
+    // Let DDialog calculate its title-bar, content, and button-area heights.
+    adjustSize();
+    qCDebug(ClientLogger) << "Updated view height to:" << height();
 }
 
 void CMyScheduleView::slotAccountStateChange()
@@ -234,9 +220,12 @@ void CMyScheduleView::setLabelTextColor(const int type)
         timeColor.setAlphaF(0.6);
         qCDebug(ClientLogger) << "Using light theme colors";
     }
+    QColor sourceColor(type == DGuiApplicationHelper::DarkType ? Qt::white : Qt::black);
+    sourceColor.setAlphaF(0.5);
     //设置颜色
     setPaletteTextColor(m_scheduleLabel, scheduleTitleColor);
     setPaletteTextColor(m_timeLabel, timeColor);
+    setPaletteTextColor(m_sourceLabel, sourceColor);
 }
 
 void CMyScheduleView::updateDialogIcon()
@@ -403,19 +392,22 @@ void CMyScheduleView::initUI()
     mainLayout->addWidget(m_timeLabel);
 
     m_sourceSpacing = new QWidget(this);
-    m_sourceSpacing->setFixedHeight(15);
+    // The date label is vertically centered in a 26 px row. Its internal
+    // padding contributes about 5 px, so use 10 px here for a 15 px visual gap.
+    m_sourceSpacing->setFixedHeight(10);
     m_sourceSpacing->hide();
     mainLayout->addWidget(m_sourceSpacing);
 
     m_sourceLabel = new DLabel(this);
     m_sourceLabel->setAlignment(Qt::AlignCenter);
-    m_sourceLabel->setFixedHeight(22);
-    DFontSizeManager::instance()->bind(m_sourceLabel, DFontSizeManager::T10);
+    m_sourceLabel->setFixedHeight(17);
+    DFontSizeManager::instance()->bind(m_sourceLabel, DFontSizeManager::T8, QFont::Light);
     m_sourceLabel->hide();
     mainLayout->addWidget(m_sourceLabel);
 
     m_sourceBottomSpacing = new QWidget(this);
-    m_sourceBottomSpacing->setFixedHeight(15);
+    // DDialog already leaves the required gap before the button area.
+    m_sourceBottomSpacing->setFixedHeight(0);
     m_sourceBottomSpacing->hide();
     mainLayout->addWidget(m_sourceBottomSpacing);
 
@@ -436,7 +428,7 @@ void CMyScheduleView::initUI()
 
         if (QHBoxLayout *buttonLayout = findDialogButtonLayout(this, getButton(0))) {
             const QMargins margins = buttonLayout->contentsMargins();
-            buttonLayout->setContentsMargins(10, margins.top(), 10, margins.bottom());
+            buttonLayout->setContentsMargins(10, 0, 10, margins.bottom());
             buttonLayout->setSpacing(9);
             for (int i = 0; i < buttonLayout->count(); ++i) {
                 QWidget *widget = buttonLayout->itemAt(i)->widget();

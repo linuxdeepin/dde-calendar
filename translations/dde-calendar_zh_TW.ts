@@ -1141,6 +1141,11 @@
     <context>
         <name>CalDavAccountListWidget</name>
         <message>
+            <location filename="../src/calendar-client/src/dialog/caldavaccountlistwidget.cpp" line="299" />
+            <source>Sync Failed</source>
+            <translation>同步失敗</translation>
+        </message>
+        <message>
             <source>Last sync: %1</source>
             <translation type="vanished">上次同步：%1</translation>
         </message>
