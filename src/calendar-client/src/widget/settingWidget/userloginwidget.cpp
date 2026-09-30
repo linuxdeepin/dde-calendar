@@ -116,8 +116,7 @@ void UserloginWidget::initView()
     layout->addStretch();
     m_buttonLogin->setText(tr("Sign In", "button"));
     signOutButton->setText(tr("Sign Out", "button"));
-    signOutButton->setIcon(QIcon(QStringLiteral(
-        ":/icons/deepin/builtin/icons/dde_calendar_logout_16px.svg")));
+    signOutButton->setIcon(QIcon::fromTheme("dde_calendar_logout"));
     signOutButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     m_buttonLoginOut->setIconSize(QSize(16, 16));
     m_buttonLoginOut->hide();

@@ -229,8 +229,7 @@ void CSettingDialog::initView()
         moreButton->setAttribute(Qt::WA_Hover, true);
         moreButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
         moreButton->setFocusPolicy(Qt::NoFocus);
-        moreButton->setIcon(QIcon(QStringLiteral(
-            ":/icons/deepin/builtin/icons/dde_calendar_schedule_more_16px.svg")));
+        moreButton->setIcon(QIcon::fromTheme("dde_calendar_schedule_more"));
         moreButton->setFixedSize(32, 32);
         moreButton->setIconSize(QSize(16, 16));
         moreButton->setToolTip(tr("More"));
@@ -275,7 +274,7 @@ void CSettingDialog::initView()
 
             m_calDavAccountAddButton = new DIconButton(titleWidget);
             m_calDavAccountAddButton->setObjectName(QStringLiteral("CalDavAccountAddButton"));
-            m_calDavAccountAddButton->setIcon(QIcon(":/icons/deepin/builtin/icons/dde_calendar_add_16px.svg"));
+            m_calDavAccountAddButton->setIcon(QIcon::fromTheme("dde_calendar_add"));
             m_calDavAccountAddButton->setFixedSize(36, 36);
             m_calDavAccountAddButton->setIconSize(QSize(16, 16));
             m_calDavAccountAddButton->setToolTip(tr("Add"));
