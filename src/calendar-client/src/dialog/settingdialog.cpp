@@ -48,6 +48,7 @@ const QString ControlCenterDBusPath = "/org/deepin/dde/ControlCenter1";
 const QString ControlCenterPage = "datetime/region";
 
 constexpr int kDeleteAccountContentSpacing = 3;
+constexpr int kSettingsDialogWidthIncrease = 100;
 
 using namespace SettingWidget;
 
@@ -185,6 +186,7 @@ void CSettingDialog::initView()
     auto settings = Dtk::Core::DSettings::fromJson(strJson.toLatin1());
     setObjectName("SettingDialog");
     updateSettings(settings);
+    setFixedWidth(width() + kSettingsDialogWidthIncrease);
 
     //恢复默认设置按钮不显示
     setResetVisible(false);
@@ -853,11 +855,23 @@ void CSettingDialog::slotDeleteCalDavAccount()
             return;
         }
 
+        const auto middleElidedName = [&displayName](int visibleCharacterCount) {
+            if (visibleCharacterCount >= displayName.size()) {
+                return displayName;
+            }
+
+            const int leftCharacterCount = (visibleCharacterCount + 1) / 2;
+            const int rightCharacterCount = visibleCharacterCount / 2;
+            return displayName.left(leftCharacterCount)
+                + QStringLiteral("...")
+                + displayName.right(rightCharacterCount);
+        };
+
         int left = 0;
         int right = displayName.size();
         while (left < right) {
             const int middle = left + (right - left + 1) / 2;
-            const QString candidate = textForName(displayName.left(middle) + QStringLiteral("..."));
+            const QString candidate = textForName(middleElidedName(middle));
             if (fitsWithinTwoLines(candidate)) {
                 left = middle;
             } else {
@@ -865,7 +879,7 @@ void CSettingDialog::slotDeleteCalDavAccount()
             }
         }
 
-        const QString elidedText = textForName(displayName.left(left) + QStringLiteral("..."));
+        const QString elidedText = textForName(middleElidedName(left));
         const QStringList elidedLines = wrapText(elidedText);
         message->setText(elidedLines.join(QLatin1Char('\n')));
         message->setFixedHeight(elidedLines.size() * fontMetrics.lineSpacing());
