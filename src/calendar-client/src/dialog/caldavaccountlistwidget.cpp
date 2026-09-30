@@ -229,8 +229,7 @@ void CalDavAccountListWidget::rebuildCards()
         deleteButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
         deleteButton->setFocusPolicy(Qt::NoFocus);
         deleteButton->setFixedSize(28, 28);
-        deleteButton->setIcon(QIcon(QStringLiteral(
-            ":/icons/deepin/builtin/icons/dde_calendar_delete_16px.svg")));
+        deleteButton->setIcon(QIcon::fromTheme("dde_calendar_delete"));
         deleteButton->setIconSize(QSize(16, 16));
         deleteButton->hide();
         const bool pendingOperations = status.pendingOperationCount > 0;

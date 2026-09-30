@@ -194,7 +194,7 @@ bool JobTypeListView::viewportEvent(QEvent *event)
                     actionLayout->setContentsMargins(0, 0, 0, 0);
                     actionLayout->setSpacing(0);
 
-                    auto createActionButton = [actionWidget](const QString &iconPath,
+                    auto createActionButton = [actionWidget](const QString &iconName,
                                                               const QString &toolTip) {
                         auto *button = new DToolButton(actionWidget);
                         button->setAutoRaise(true);
@@ -203,20 +203,20 @@ bool JobTypeListView::viewportEvent(QEvent *event)
                         button->setFocusPolicy(Qt::NoFocus);
                         button->setFixedSize(30, 30);
                         button->setIconSize(QSize(16, 16));
-                        button->setIcon(QIcon(iconPath));
+                        button->setIcon(QIcon::fromTheme(iconName));
                         button->setToolTip(toolTip);
                         return button;
                     };
 
                     if (editable) {
                         auto *editButton = createActionButton(
-                            QStringLiteral(":/icons/deepin/builtin/icons/dde_calendar_schedule_edit_16px.svg"),
+                            QStringLiteral("dde_calendar_schedule_edit"),
                             tr("Edit"));
                         auto *deleteButton = createActionButton(
-                            QStringLiteral(":/icons/deepin/builtin/icons/dde_calendar_delete_16px.svg"),
+                            QStringLiteral("dde_calendar_delete"),
                             tr("Delete"));
                         auto *exportButton = createActionButton(
-                            QStringLiteral(":/icons/deepin/builtin/icons/dde_calendar_schedule_export_16px.svg"),
+                            QStringLiteral("dde_calendar_schedule_export"),
                             tr("Export"));
                         actionLayout->addWidget(editButton);
                         actionLayout->addWidget(deleteButton);
@@ -230,7 +230,7 @@ bool JobTypeListView::viewportEvent(QEvent *event)
                         qCDebug(ClientLogger) << "JobTypeListView: Adding edit, delete, and export actions to editable item";
                     } else {
                         auto *exportButton = createActionButton(
-                            QStringLiteral(":/icons/deepin/builtin/icons/dde_calendar_schedule_export_16px.svg"),
+                            QStringLiteral("dde_calendar_schedule_export"),
                             tr("Export"));
                         actionLayout->addWidget(exportButton);
                         connect(exportButton, &DToolButton::clicked,

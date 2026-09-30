@@ -55,8 +55,6 @@
     <qresource prefix="/icons/deepin">
         <file>builtin/icons/dde_calendar_ban_32px.svg</file>
         <file>builtin/icons/dde_calendar_delete_32px.svg</file>
-        <file>builtin/icons/dde_calendar_add_16px.svg</file>
-        <file>builtin/icons/dde_calendar_delete_16px.svg</file>
         <file>builtin/icons/dde_calendar_edit_32px.svg</file>
         <file>builtin/icons/dde_calendar_fail_200px.png</file>
         <file>builtin/icons/dde_calendar_ji_32px.svg</file>
@@ -74,11 +72,7 @@
         <file>builtin/icons/dde_calendar_caldav_feishu_24px.svg</file>
         <file>builtin/icons/dde_calendar_caldav_other_24px.svg</file>
         <file>builtin/icons/dde_calendar_uos_id_36px.svg</file>
-        <file>builtin/icons/dde_calendar_schedule_more_16px.svg</file>
-        <file>builtin/icons/dde_calendar_schedule_export_16px.svg</file>
-        <file>builtin/icons/dde_calendar_schedule_edit_16px.svg</file>
         <file>builtin/icons/dde_calendar_third_party_36px.svg</file>
-        <file>builtin/icons/dde_calendar_logout_16px.svg</file>
         <file>builtin/icons/dde_calendar_warning.svg</file>
         <file>builtin/icons/dde_calendar_xiu.svg</file>
         <file>builtin/icons/dde_calendar_yi_32px.svg</file>
@@ -88,8 +82,20 @@
         <file>builtin/dark/icons/dde_calendar_account_32px.svg</file>
         <file>builtin/dark/icons/dde_calendar_create_32px.svg</file>
         <file>builtin/dark/icons/dde_calendar_sidebar_32px.svg</file>
+        <file>builtin/dark/icons/dde_calendar_add_16px.svg</file>
+        <file>builtin/dark/icons/dde_calendar_delete_16px.svg</file>
+        <file>builtin/dark/icons/dde_calendar_logout_16px.svg</file>
+        <file>builtin/dark/icons/dde_calendar_schedule_edit_16px.svg</file>
+        <file>builtin/dark/icons/dde_calendar_schedule_export_16px.svg</file>
+        <file>builtin/dark/icons/dde_calendar_schedule_more_16px.svg</file>
         <file>builtin/light/icons/dde_calendar_account_32px.svg</file>
         <file>builtin/light/icons/dde_calendar_create_32px.svg</file>
         <file>builtin/light/icons/dde_calendar_sidebar_32px.svg</file>
+        <file>builtin/light/icons/dde_calendar_add_16px.svg</file>
+        <file>builtin/light/icons/dde_calendar_delete_16px.svg</file>
+        <file>builtin/light/icons/dde_calendar_logout_16px.svg</file>
+        <file>builtin/light/icons/dde_calendar_schedule_edit_16px.svg</file>
+        <file>builtin/light/icons/dde_calendar_schedule_export_16px.svg</file>
+        <file>builtin/light/icons/dde_calendar_schedule_more_16px.svg</file>
     </qresource>
 </RCC>

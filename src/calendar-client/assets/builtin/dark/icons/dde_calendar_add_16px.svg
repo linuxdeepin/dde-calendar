@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>添加</title>
+    <g id="添加" stroke="none" fill="none" fill-opacity="0.7" fill-rule="evenodd" stroke-width="1">
+        <g transform="translate(3, 2)" fill="#FFFFFF" id="形状结合">
+            <polygon fill-rule="nonzero" points="6 0 6 5 11 5 11 6 6 6 6 12 5 12 5 6 0 6 0 5 5 5 5 0"></polygon>
+        </g>
+    </g>
+</svg>
