@@ -1,3 +1,32 @@
+dde-calendar (6.6.3) unstable; urgency=medium
+
+  * fix(calendar): add theme-aware management icons
+  * fix(calendar): refine settings dialog width and account name elision
+  * fix(calendar): refine schedule dialog layout and font updates
+  * fix(calendar): refine account empty state and dialog text
+  * fix(calendar): refine delete account dialog layout and text colors
+  * fix(calendar): hide sync button background when not hovered
+  * fix(calendar): update dialog icons with system theme
+  * fix(calendar): match third-party title font with UOS ID
+  * feat(calendar): show spinner while syncing
+  * fix(calendar): elide long schedule descriptions
+  * fix(calendar): dim disabled add type button text
+  * fix(calendar): bind reminder source label to T10
+  * fix(calendar): simplify sync failure list text
+  * fix(calendar): remove duplicate login failure toast
+  * fix(calendar): prevent combo boxes from consuming wheel events
+  * fix(calendar): hide success icon after synchronization
+  * fix(calendar): show account delete icon on hover
+  * fix(calendar): unify login and sync button size
+  * fix(calendar): hide tooltip for fully visible text
+  * fix(calendar): show sidebar sync button on hover
+  * fix(calendar): remove My Event title from schedule dialog
+  * fix(calendar): use cloud icon for UOS ID account
+  * fix(calendar): hide local calendar source information
+  * fix(calendar): remove rectangle lines from capsule events
+
+ -- Wang Yu <wangyu@uniontech.com>  Wed, 30 Sep 2026 11:51:18 +0800
+
 dde-calendar (6.6.2) unstable; urgency=medium
 
   * chore(linglong): declare build deps via buildext and drop helper scripts
