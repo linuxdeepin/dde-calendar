@@ -76,7 +76,6 @@ private:
     DSchedule::Ptr m_scheduleInfo; //日程
     QScrollArea *area = nullptr;
     QFont labelF;
-    int m_defaultH = 117; //标题和按钮区域高度
     int m_timeLabelH = 0; //时间显示高度
     int m_scheduleLabelH = 0; //日程详情显示高度
 };

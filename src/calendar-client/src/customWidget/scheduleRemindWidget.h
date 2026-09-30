@@ -48,6 +48,7 @@ public:
     ~CenterWidget() override;
     void setData(const DSchedule::Ptr &vScheduleInfo, const CSchedulesColor &gcolor);
     void setTheMe(const int type = 0);
+    void updateFont();
     void setTimeFormat(QString timeFormat = "h:mm");
 private:
     void UpdateTextList();

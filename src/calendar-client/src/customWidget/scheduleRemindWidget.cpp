@@ -11,7 +11,9 @@
 #include "dcaldavaccountstatus.h"
 #include "dcaldavprofile.h"
 
+#include <DApplication>
 #include <DGuiApplicationHelper>
+#include <DFontSizeManager>
 
 #include <QCoreApplication>
 #include <QPainter>
@@ -100,6 +102,10 @@ ScheduleRemindWidget::ScheduleRemindWidget(QWidget *parent)
     QObject::connect(DGuiApplicationHelper::instance(), &DGuiApplicationHelper::themeTypeChanged,
                      m_centerWidget,
                      &CenterWidget::setTheMe);
+    QObject::connect(qGuiApp, &DApplication::fontChanged, this, [this] {
+        m_centerWidget->updateFont();
+        updatePopupGeometry();
+    });
     m_centerWidget->setTheMe(DGuiApplicationHelper::instance()->themeType());
     updatePopupGeometry();
 }
@@ -212,6 +218,16 @@ void CenterWidget::setData(const DSchedule::Ptr &vScheduleInfo, const CSchedules
     update();
 }
 
+void CenterWidget::updateFont()
+{
+    if (m_ScheduleInfo.isNull()) {
+        return;
+    }
+
+    UpdateTextList();
+    update();
+}
+
 void CenterWidget::setTheMe(const int type)
 {
     qCDebug(ClientLogger) << "CenterWidget::setTheMe with type:" << type;
@@ -247,7 +263,7 @@ void CenterWidget::UpdateTextList()
     m_organizerLines.clear();
     m_attendeeLines.clear();
 
-    sourceFont.setPixelSize(DDECalendar::FontSizeTwelve);
+    sourceFont = DFontSizeManager::instance()->get(DFontSizeManager::T10, sourceFont);
     const QFontMetrics metrics(textfont);
     const QFontMetrics sourceMetrics(sourceFont);
     const QString organizer = personDisplayName(m_ScheduleInfo->organizer());
