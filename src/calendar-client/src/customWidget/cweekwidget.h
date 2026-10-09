@@ -6,6 +6,7 @@
 #define CWEEKWIDGET_H
 
 #include <QPushButton>
+#include <QColor>
 
 class CWeekWidget : public QPushButton
 {
@@ -19,6 +20,8 @@ public:
     void setAutoFirstDay(bool);
     //设置字体大小是否跟随界面大小
     void setAutoFontSizeByWindow(bool);
+    //设置文字颜色
+    void setTextColor(const QColor &color);
 
 signals:
 
@@ -32,6 +35,7 @@ private:
     bool m_autoFontSizeByWindow = true; //字体大小是否跟随界面大小
 
     Qt::DayOfWeek m_firstDay = Qt::Monday;  //一周首日
+    QColor m_textColor;  //文字颜色
 };
 
 #endif // CWEEKWIDGET_H

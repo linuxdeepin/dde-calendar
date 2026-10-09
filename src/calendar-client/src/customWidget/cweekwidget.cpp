@@ -38,6 +38,12 @@ void CWeekWidget::setAutoFontSizeByWindow(bool is)
     m_autoFontSizeByWindow = is;
 }
 
+void CWeekWidget::setTextColor(const QColor &color)
+{
+    m_textColor = color;
+    update();
+}
+
 void CWeekWidget::paintEvent(QPaintEvent *event)
 {
     // qCDebug(ClientLogger) << "CWeekWidget::paintEvent";
@@ -84,6 +90,8 @@ void CWeekWidget::paintEvent(QPaintEvent *event)
         QString weekDayName = locale.dayName(i, QLocale::NarrowFormat);
         weekStr << weekDayName;
     }
+
+    painter.setPen(m_textColor.isValid() ? m_textColor : palette().color(QPalette::WindowText));
 
     //绘制周一到周日
     for (int i = Qt::Monday; i <= Qt::Sunday; ++i) {
