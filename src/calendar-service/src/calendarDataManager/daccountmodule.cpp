@@ -541,9 +541,9 @@ DAccount::Ptr DAccountModule::account() const
 void DAccountModule::updateRemindSchedules(bool isClear)
 {
     qCDebug(ServiceLogger) << "Updating remind schedules for account:" << m_account->accountID() << "isClear:" << isClear;
-    //因为全天的当前提醒日程会在开始时间延后9小时提醒
+    //全天日程的当天提醒发生在开始时间后9小时，保留回溯范围以便补发尚未执行的提醒
     QDateTime dtCurrent = QDateTime::currentDateTime();
-    QDateTime dtStart = dtCurrent.addSecs(-9*60*60);
+    QDateTime dtStart = dtCurrent.addSecs(-9 * 60 * 60);
     QDateTime dtEnd = dtCurrent.addMSecs(UPDATEREMINDJOBTIMEINTERVAL);
 
     //获取未提醒的日程相关信息
@@ -551,32 +551,69 @@ void DAccountModule::updateRemindSchedules(bool isClear)
 
     //获取每个账户下需要提醒的日程信息
     DRemindData::List accountRemind;
+    DRemindData::List newRemindList;
 
     DSchedule::List scheduleList = getRemindScheduleList(dtStart, dtEnd);
     foreach (auto &remind, scheduleList) {
-        DRemindData::Ptr remindData = DRemindData::Ptr(new DRemindData);
-        remindData->setScheduleID(remind->uid());
-        remindData->setAccountID(m_account->accountID());
-        remindData->setDtStart(remind->dtStart());
-        remindData->setDtEnd(remind->dtEnd());
-        remindData->setRecurrenceId(remind->recurrenceId());
-        //由于获取的都是需要提醒的日程,所以日程的提醒列表size必然是大于0的
-        remindData->setDtRemind(remind->alarms()[0]->time());
-        remindData->setNotifyid(0);
-        remindData->setRemindCount(0);
-        accountRemind.append(remindData);
+        DRemindData::Ptr existingRemind;
+        bool hasTriggeredRemind = false;
+        if (!isClear) {
+            const DRemindData::List existingReminds = m_accountDB->getRemindByScheduleID(remind->uid());
+            foreach (const auto &storedRemind, existingReminds) {
+                if (storedRemind->recurrenceId() != remind->recurrenceId()
+                        || storedRemind->dtRemind() != remind->alarms()[0]->time()) {
+                    continue;
+                }
+                if (storedRemind->notifyid() > 0) {
+                    // 系统时间回拨到原提醒时间之前时，重新挂起该提醒，
+                    // 使再次调到提醒时间时可以正常触发通知。
+                    if (dtCurrent < storedRemind->dtRemind()) {
+                        storedRemind->setNotifyid(0);
+                        m_accountDB->updateRemindInfo(storedRemind);
+                    } else {
+                        hasTriggeredRemind = true;
+                        break;
+                    }
+                }
+                if (existingRemind.isNull()) {
+                    existingRemind = storedRemind;
+                }
+            }
+        }
+
+        if (hasTriggeredRemind) {
+            continue;
+        }
+
+        if (existingRemind.isNull()) {
+            existingRemind = DRemindData::Ptr(new DRemindData);
+            existingRemind->setScheduleID(remind->uid());
+            existingRemind->setAccountID(m_account->accountID());
+            existingRemind->setDtStart(remind->dtStart());
+            existingRemind->setDtEnd(remind->dtEnd());
+            existingRemind->setRecurrenceId(remind->recurrenceId());
+            //由于获取的都是需要提醒的日程,所以日程的提醒列表size必然是大于0的
+            existingRemind->setDtRemind(remind->alarms()[0]->time());
+            existingRemind->setNotifyid(0);
+            existingRemind->setRemindCount(0);
+            newRemindList.append(existingRemind);
+        }
+        accountRemind.append(existingRemind);
     }
 
-    //获取未提醒的稍后日程信息,由于15分钟后，1xxx后等不会修改提醒次数
-    //所以需要根据提醒时间，日程id，日程重复id来判断是否是没有被触发点提醒日程
+    //保留未触发的稍后提醒，避免刷新时恢复同一日程的原始提醒时间
     for (int i = 0; i < noRemindList.size(); i++) {
         for (int j = accountRemind.size() - 1; j >= 0; j--) {
             if (accountRemind.at(j)->scheduleID() == noRemindList.at(i)->scheduleID()
-                    && accountRemind.at(j)->recurrenceId() == noRemindList.at(i)->recurrenceId()
-                    && accountRemind.at(j)->dtRemind() == noRemindList.at(i)->dtRemind())
-                //如果该日程没有被触发提醒过(创建后没有被提醒，而不是提醒后点了15分钟后等不改变提醒次数的日程)
-                //则移除
+                    && accountRemind.at(j)->recurrenceId() == noRemindList.at(i)->recurrenceId()) {
                 accountRemind.removeAt(j);
+            }
+        }
+        for (int j = newRemindList.size() - 1; j >= 0; j--) {
+            if (newRemindList.at(j)->scheduleID() == noRemindList.at(i)->scheduleID()
+                    && newRemindList.at(j)->recurrenceId() == noRemindList.at(i)->recurrenceId()) {
+                newRemindList.removeAt(j);
+            }
         }
     }
 
@@ -589,8 +626,8 @@ void DAccountModule::updateRemindSchedules(bool isClear)
             m_accountDB->createRemindInfo(remind);
         }
     }
-    //添加从账户中获取到的需要提醒的日程信息
-    foreach (auto remind, accountRemind) {
+    //只为没有持久化提醒记录的日程创建新记录
+    foreach (auto remind, newRemindList) {
         m_accountDB->createRemindInfo(remind);
     }
     accountRemind.append(noRemindList);
