@@ -2,6 +2,7 @@
 Description=Calendar Schedule Task
 
 [Service]
+Type=oneshot
 ExecStart=@COMMAND@
 Restart=on-failure
 RestartSec=5s
