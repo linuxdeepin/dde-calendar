@@ -499,6 +499,7 @@ void CDayMonthWidget::setTheMe(int type)
         m_selectedTextColor = Qt::white;
         m_notCurrentTextColor = "#b2b2b2";
         m_ceventColor = QColor(255, 93, 0);
+        m_hoverColor = QColor(0, 0, 0, 26); // black 10%
     } else if (type == 2) {
         qCDebug(ClientLogger) << "Applying dark theme";
         m_defaultTextColor = "#C0C6D4";
@@ -506,6 +507,7 @@ void CDayMonthWidget::setTheMe(int type)
         m_notCurrentTextColor = "#C0C6D4";
         m_notCurrentTextColor.setAlphaF(0.5);
         m_ceventColor = QColor(204, 77, 3);
+        m_hoverColor = QColor(255, 255, 255, 26); // white 10%
     }
     update();
 }
@@ -540,6 +542,14 @@ const QDate CDayMonthWidget::getCellDate(int pos)
     return m_showDays[pos];
 }
 
+QRectF CDayMonthWidget::cellCircleRect(const QRect &rect) const
+{
+    const qreal r = qMin(rect.width(), rect.height()) * 0.9;
+    const qreal x = rect.x() + (rect.width() - r) / 2;
+    const qreal y = rect.y() + (rect.height() - r) / 2;
+    return QRectF(x, y, r, r).marginsRemoved(QMarginsF(1.5, 2.5, 1.5, 1.5));
+}
+
 void CDayMonthWidget::paintCell(QWidget *cell)
 {
     // qCDebug(ClientLogger) << "CDayMonthWidget::paintCell";
@@ -551,14 +561,14 @@ void CDayMonthWidget::paintCell(QWidget *cell)
     QPainter painter(cell);
     painter.setRenderHint(QPainter::Antialiasing);
 
-    // draw selected cell background circle
-    if (isSelectedCell) {
-        const qreal r = rect.width() > rect.height() ? rect.height() * 0.9 : rect.width() * 0.9;
-        const qreal x = rect.x() + (rect.width() - r) / 2;
-        const qreal y = rect.y() + (rect.height() - r) / 2;
-        QRectF fillRect = QRectF(x, y, r, r).marginsRemoved(QMarginsF(1.5, 2.5, 1.5, 1.5));
+    // draw selected or hover background circle
+    const bool isHoverCell = !isSelectedCell && pos == m_hoverCell;
+    if (isSelectedCell || isHoverCell) {
+        QRectF fillRect = cellCircleRect(rect);
         painter.save();
-        painter.setBrush(QBrush(CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor()));
+        painter.setBrush(isSelectedCell
+            ? QBrush(CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor())
+            : QBrush(m_hoverColor));
         painter.setPen(Qt::NoPen);
         painter.drawEllipse(fillRect);
         painter.restore();
@@ -673,6 +683,15 @@ bool CDayMonthWidget::eventFilter(QObject *o, QEvent *e)
                     }
                 }
             }
+        } else if (e->type() == QEvent::Enter) {
+            int old = m_hoverCell;
+            m_hoverCell = pos;
+            if (old >= 0 && old < m_cellList.size())
+                m_cellList[old]->update();
+            cell->update();
+        } else if (e->type() == QEvent::Leave) {
+            m_hoverCell = -1;
+            cell->update();
         } else if (e->type() == QEvent::MouseButtonRelease) {
             // qCDebug(ClientLogger) << "Mouse release on cell:" << pos;
             QMouseEvent *mouseEvent = dynamic_cast<QMouseEvent *>(e);
