@@ -88,7 +88,7 @@ The sidebar shows calendar accounts and a mini-calendar view.
 </tr>
 <tr>
    <td>Calendar Account</td>
-   <td>Defaults to local account; supports UOS ID and other network accounts.</td>
+   <td>Defaults to **Local Calendar**; after you log in to deepin ID or add a third-party account, **deepin ID** and the third-party accounts also appear in the list.</td>
 </tr>
 <tr>
    <td>Type</td>
@@ -260,6 +260,7 @@ Access management settings, view privacy policy, switch themes, view help, or le
 
 Click ![icon_menu](../common/icon_menu.svg) > **Manage** to:
 - Manage schedule types
+- Add third-party accounts
 - Sync schedule data/calendar settings to cloud via deepin ID
 - Configure general settings
 
@@ -282,12 +283,29 @@ Sync schedule data and settings to cloud via deepin ID.
 
 > ![notes](../common/notes.svg) Note: Requires enabling **deepin Cloud Sync** in Control Center.
 
+#### Adding a Third-Party Account
+
+Calendar supports adding third-party accounts, so that schedules in a third-party calendar service can be synced into Calendar. After an account is added, it appears in the **Calendar Account** list when you create a schedule.
+
+1. In Calendar Management, select **Account Settings** > **Third-Party Accounts**.
+2. Click the add button on the right of the third-party account setting.
+3. In the Add Calendar Account window, select an account type from the **Account Type** dropdown list. Calendar supports DingTalk, WeCom, Tencent Meeting, QQ Mail, Feishu, and other CalDAV.
+4. Fill in **Server Address**, **Username**, and **Password**. The server address is filled in automatically after you select an account type.
+5. Click **Log In** to add the third-party account.
+
 #### Managing Schedule Types
 
 **Add Type**
-1. Click ![icon](../common/add1.svg) in Calendar Management.
-2. Enter name and set color.
-3. Click **Save**.
+1. In Calendar Management, click the menu button ![icon](../common/more.svg) on the right of the schedule type setting.
+2. Select **Add Schedule** from the menu.
+3. Enter the type name and set the color.
+4. Click **Save**.
+
+**Import ICS File**
+
+1. In Calendar Management, click the menu button ![icon](../common/more.svg) on the right of the schedule type setting.
+2. Select **Import ICS File** from the menu.
+3. In the file selection window, select a file with the .ics extension and click **Open**.
 
 **Edit Type**
 1. Select a custom type.
