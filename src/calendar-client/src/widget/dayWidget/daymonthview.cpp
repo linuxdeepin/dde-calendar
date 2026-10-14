@@ -73,6 +73,7 @@ void CDayMonthView::setTheMe(int type)
 {
     qCDebug(ClientLogger) << "CDayMonthView::setTheMe, type:" << type;
     QColor todayColor = CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
+    QColor infoTextColor = DGuiApplicationHelper::instance()->applicationPalette().windowText().color();
     m_dayMonthWidget->setTheMe(type);
     if (type == 0 || type == 1) {
         qCDebug(ClientLogger) << "Applying light theme";
@@ -95,15 +96,19 @@ void CDayMonthView::setTheMe(int type)
         nextPa.setColor(DPalette::Dark, QColor("#E6E6E6"));
         nextPa.setColor(DPalette::Light, QColor("#E3E3E3"));
 
-        m_currentMouth->setTextColor(QColor("#3B3B3B"));
+        QColor weekTextColor = QColor("#000000");
+        weekTextColor.setAlphaF(0.5);
+        m_weekWidget->setTextColor(weekTextColor);
+
+        QColor monthTextColor = QColor("#000000");
+        monthTextColor.setAlphaF(0.8);
+        m_currentMouth->setTextColor(monthTextColor);
 
         m_currentDay->setTextColor(todayColor);
 
-        m_currentWeek->setTextColor(QColor("#414D68"));
-
-        m_currentLuna->setTextColor(QColor("#414D68"));
-
-        m_currentYear->setTextColor(QColor("#414D68"));
+        m_currentWeek->setTextColor(infoTextColor);
+        m_currentLuna->setTextColor(infoTextColor);
+        m_currentYear->setTextColor(infoTextColor);
 
         QFont hLabelF;
         hLabelF.setPixelSize(DDECalendar::FontSizeFourteen);
@@ -111,12 +116,12 @@ void CDayMonthView::setTheMe(int type)
         QColor yiColor = QColor("#75C18E");
         yiColor.setAlphaF(0.1);
         m_yiLabel->setbackgroundColor(yiColor);
-        m_yiLabel->setTextInfo(QColor("#7B7B7B"), hLabelF);
+        m_yiLabel->setTextInfo(QColor("#767676"), hLabelF);
 
         QColor jiColor = QColor("#C17575");
         jiColor.setAlphaF(0.1);
         m_jiLabel->setbackgroundColor(jiColor);
-        m_jiLabel->setTextInfo(QColor("#7B7B7B"), hLabelF);
+        m_jiLabel->setTextInfo(QColor("#767676"), hLabelF);
 
         m_topBorderColor = Qt::red;
         m_backgroundCircleColor = "#0081FF";
@@ -139,27 +144,32 @@ void CDayMonthView::setTheMe(int type)
         nextPa.setColor(DPalette::Dark, QColor("#484848"));
         nextPa.setColor(DPalette::Light, QColor("#414141"));
 
-        m_currentMouth->setTextColor(QColor("#C0C6D4"));
+        QColor weekTextColor = QColor("#FFFFFF");
+        weekTextColor.setAlphaF(0.5);
+        m_weekWidget->setTextColor(weekTextColor);
+
+        QColor monthTextColor = QColor("#FFFFFF");
+        monthTextColor.setAlphaF(0.8);
+        m_currentMouth->setTextColor(monthTextColor);
 
         m_currentDay->setTextColor(todayColor);
 
-        m_currentWeek->setTextColor(QColor("#C0C6D4"));
+        m_currentWeek->setTextColor(infoTextColor);
+        m_currentLuna->setTextColor(infoTextColor);
+        m_currentYear->setTextColor(infoTextColor);
 
-        m_currentLuna->setTextColor(QColor("#C0C6D4"));
-
-        m_currentYear->setTextColor(QColor("#C0C6D4"));
         QFont hLabelF;
         hLabelF.setPixelSize(DDECalendar::FontSizeFourteen);
 
         QColor yiColor = QColor("#2F8C4D");
         yiColor.setAlphaF(0.2);
         m_yiLabel->setbackgroundColor(yiColor);
-        m_yiLabel->setTextInfo(QColor("#C0C6D4"), hLabelF);
+        m_yiLabel->setTextInfo(QColor("#9C9CA2"), hLabelF);
 
         QColor jiColor = QColor("#A43B3B");
         jiColor.setAlphaF(0.2);
         m_jiLabel->setbackgroundColor(jiColor);
-        m_jiLabel->setTextInfo(QColor("#C0C6D4"), hLabelF);
+        m_jiLabel->setTextInfo(QColor("#9C9CA2"), hLabelF);
 
         m_topBorderColor = Qt::red;
         m_backgroundCircleColor = "#0059D2";
@@ -292,7 +302,7 @@ void CDayMonthView::initUI()
     hLabelF.setPixelSize(DDECalendar::FontSizeFourteen);
     m_yiLabel = new CDayHuangLiLabel(this);
     m_yiLabel->setbackgroundColor(QColor("#75C18E"));
-    m_yiLabel->setTextInfo(QColor("#7B7B7B "), hLabelF);
+    m_yiLabel->setTextInfo(QColor("#767676"), hLabelF);
     m_yiLabel->setMinimumHeight(DDEDayCalendar::DHuangLiLabelHeight);
     m_yiLabel->setMaximumHeight(DDEDayCalendar::DHuangLiLabelMaxHeight);
     m_yiLabel->setHuangLiText(QStringList());
@@ -304,7 +314,7 @@ void CDayMonthView::initUI()
 
     m_jiLabel = new CDayHuangLiLabel(this);
     m_jiLabel->setbackgroundColor(QColor("#C17575"));
-    m_jiLabel->setTextInfo(QColor("#7B7B7B "), hLabelF);
+    m_jiLabel->setTextInfo(QColor("#767676"), hLabelF);
     m_jiLabel->setMinimumHeight(DDEDayCalendar::DHuangLiLabelHeight);
     m_jiLabel->setMaximumHeight(DDEDayCalendar::DHuangLiLabelMaxHeight);
     m_jiLabel->setHuangLiText(QStringList(), 1);
@@ -495,13 +505,13 @@ void CDayMonthWidget::setTheMe(int type)
     m_currentDayTextColor = CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
     if (type == 0 || type == 1) {
         qCDebug(ClientLogger) << "Applying light theme";
-        m_defaultTextColor = Qt::black;
+        m_defaultTextColor = DGuiApplicationHelper::instance()->applicationPalette().windowText().color();
         m_selectedTextColor = Qt::white;
         m_notCurrentTextColor = "#b2b2b2";
         m_ceventColor = QColor(255, 93, 0);
     } else if (type == 2) {
         qCDebug(ClientLogger) << "Applying dark theme";
-        m_defaultTextColor = "#C0C6D4";
+        m_defaultTextColor = DGuiApplicationHelper::instance()->applicationPalette().windowText().color();
         m_selectedTextColor = "#B8D3FF";
         m_notCurrentTextColor = "#C0C6D4";
         m_notCurrentTextColor.setAlphaF(0.5);
