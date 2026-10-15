@@ -1544,6 +1544,10 @@
         <translation>S&apos;emplena automàticament després de seleccionar el tipus de compte.</translation>
     </message>
     <message>
+        <source>Enter server address</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="85"/>
         <source>Enter username or email</source>
         <translation>Introduïu el nom d&apos;usuari o el correu electrònic.</translation>
@@ -1603,8 +1607,8 @@
     </message>
     <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="250"/>
-        <source>Unable to save the account password, Please try again</source>
-        <translation>No s&apos;ha pogut desar la contrasenya del compte. Si us plau, torneu-ho a provar.</translation>
+        <source>Unable to save the account password. Please try again.</source>
+        <translation type="unfinished"/>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="490"/>
