@@ -852,7 +852,7 @@
     <message>
             <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="515"/>
         <source>Add event type</source>
-        <translation type="unfinished"/>
+        <translation>Dodaj typ wydarzenia</translation>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="516"/>
@@ -1545,7 +1545,7 @@
     </message>
     <message>
         <source>Enter server address</source>
-        <translation type="unfinished"/>
+        <translation>Wprowadź adres serwera</translation>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="85"/>
@@ -1608,7 +1608,7 @@
     <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="250"/>
         <source>Unable to save the account password. Please try again.</source>
-        <translation type="unfinished"/>
+        <translation>Nie udało się zapisać hasła konta, spróbuj ponownie.</translation>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="490"/>
