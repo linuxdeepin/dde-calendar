@@ -1544,6 +1544,10 @@
         <translation>Wypełniane automatycznie po wybraniu typu konta</translation>
     </message>
     <message>
+        <source>Enter server address</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="85"/>
         <source>Enter username or email</source>
         <translation>Wprowadź nazwę użytkownika lub adres e-mail</translation>
@@ -1603,8 +1607,8 @@
     </message>
     <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="250"/>
-        <source>Unable to save the account password, Please try again</source>
-        <translation>Nie udało się zapisać hasła konta, spróbuj ponownie</translation>
+        <source>Unable to save the account password. Please try again.</source>
+        <translation type="unfinished"/>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="490"/>
