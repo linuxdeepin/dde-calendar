@@ -1545,6 +1545,10 @@ Localizzazione italiana a cura di Massimo A. Carofano.</translation>
         <translation type="unfinished"/>
     </message>
     <message>
+        <source>Enter server address</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="85"/>
         <source>Enter username or email</source>
         <translation type="unfinished"/>
@@ -1604,7 +1608,7 @@ Localizzazione italiana a cura di Massimo A. Carofano.</translation>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="250"/>
-        <source>Unable to save the account password, Please try again</source>
+        <source>Unable to save the account password. Please try again.</source>
         <translation type="unfinished"/>
     </message>
     <message>
