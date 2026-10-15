@@ -1544,6 +1544,10 @@
         <translation>Täytetään automaattisesti tilityypin valinnan jälkeen</translation>
     </message>
     <message>
+        <source>Enter server address</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="85"/>
         <source>Enter username or email</source>
         <translation>Anna käyttäjänimi tai sähköpostiosoite</translation>
@@ -1603,8 +1607,8 @@
     </message>
     <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="250"/>
-        <source>Unable to save the account password, Please try again</source>
-        <translation>Salasanaa ei voitu tallentaa. Yritä uudelleen</translation>
+        <source>Unable to save the account password. Please try again.</source>
+        <translation type="unfinished"/>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="490"/>
