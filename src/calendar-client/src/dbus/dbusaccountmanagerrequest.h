@@ -34,6 +34,7 @@ public:
     void getAccountList();
     //根据帐户id下拉数据
     void downloadByAccountID(const QString &accountID);
+    void requestCalDavManualSync(const QString &accountID, const QString &requestID);
     //更新网络帐户数据
     void uploadNetWorkAccountData();
     void getCalDavAccountStatusList();
@@ -75,6 +76,8 @@ signals:
     void signalGetIsSupportUidFinish(bool supported);
     void signalGetCalDavAccountStatusListFinish(DCalDavAccountStatus::List statusList);
     void signalCalDavAccountStatusRefreshRequested(const QString &accountID);
+    void signalCalDavManualSyncStatusRefreshFinished(const QString &accountID,
+                                                    const QString &requestID, bool statusLoaded);
     void signalGetCalDavAccountConfigFinish(const QString &config);
     void signalValidateCalDavAccountForUpdateStart(const QString &requestID);
     void signalValidateCalDavAccountStart(const QString &requestID);

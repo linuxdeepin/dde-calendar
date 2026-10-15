@@ -77,6 +77,7 @@ public:
     void notifyMsgHanding(const QString &accountID, const QString &alarmID, const qint32 operationNum);
 
     void downloadByAccountID(const QString &accountID);
+    bool requestCalDavManualSync(const QString &accountID, const QString &requestID);
     void uploadNetWorkAccountData();
 
     QString getCalDavAccountStatusList();
@@ -126,6 +127,7 @@ private:
     void registerCalDavAccount(
         const DAccount::Ptr &account,
         DCalDavSyncStateMachine::Trigger syncTrigger = DCalDavSyncStateMachine::StartupTrigger);
+    void finishCalDavManualSync(const QString &accountID);
     void scheduleNextCalDavDailySync();
     void scheduleNextCalDavRetry();
     bool migrateCalDavSchedulesToLocal(const DAccountModule::Ptr &calDavModule,
@@ -149,6 +151,7 @@ signals:
     void timeFormatTypeChange();
     void signalLoginStatusChange();
     void calDavAccountStatusChanged(const QString &accountID);
+    void calDavManualSyncFinished(const QString &accountID, const QString &requestID);
     void calDavAccountValidationFinished(const QString &requestID, bool success, int validationError,
                                          const QString &errorMessage,
                                          const QString &principalDisplayName);
@@ -185,6 +188,8 @@ private:
     DCalDavSyncJobManager m_calDavSyncJobManager;
     QMap<QString, DCalDavAccountRegistrar *> m_calDavRegistrars;
     QHash<QString, DCalDavSyncStateMachine::Trigger> m_pendingCalDavDiscoveryTriggers;
+    QHash<QString, QString> m_calDavManualSyncRequests;
+    QSet<QString> m_activeCalDavManualSyncAccounts;
     QHash<QString, DCalDavReadOnlySync *> m_calDavValidationJobs;
     QTimer m_calDavDailyTimer;
     QTimer m_calDavRetryTimer;

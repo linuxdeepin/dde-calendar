@@ -47,6 +47,7 @@ public slots:
     Q_SCRIPTABLE void notifyMsgHanding(const QString &accountID, const QString &alarmID, const qint32 operationNum);
 
     Q_SCRIPTABLE void downloadByAccountID(const QString &accountID);
+    Q_SCRIPTABLE bool requestCalDavManualSync(const QString &accountID, const QString &requestID);
     Q_SCRIPTABLE void uploadNetWorkAccountData();
     Q_SCRIPTABLE QString getCalDavAccountStatusList();
     Q_SCRIPTABLE QString getCalDavAccountConfig(const QString &accountID);
@@ -88,6 +89,7 @@ signals:
                                                       int validationError, const QString &errorMessage,
                                                       const QString &principalDisplayName);
     Q_SCRIPTABLE void calDavAccountStatusChanged(const QString &accountID);
+    Q_SCRIPTABLE void calDavManualSyncFinished(const QString &accountID, const QString &requestID);
 private:
     int getfirstDayOfWeek() const;
     void setFirstDayOfWeek(const int firstday);

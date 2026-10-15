@@ -6,6 +6,9 @@
 #include "commondef.h"
 #include "units.h"
 
+#include <QPointer>
+#include <QUuid>
+
 AccountManager *AccountManager::m_accountManager = nullptr;
 AccountManager::AccountManager(QObject *parent)
     : QObject(parent)
@@ -36,6 +39,23 @@ void AccountManager::initConnect()
     connect(m_dbusRequest, &DbusAccountManagerRequest::signalGetIsSupportUidFinish, this, &AccountManager::slotGetIsSupportUidFinish);
     connect(m_dbusRequest, &DbusAccountManagerRequest::signalGetCalDavAccountStatusListFinish,
             this, &AccountManager::slotGetCalDavAccountStatusListFinish);
+    connect(m_dbusRequest, &DbusAccountManagerRequest::signalCalDavManualSyncStatusRefreshFinished,
+            this, [this](const QString &accountID, const QString &requestID, bool statusLoaded) {
+        if (!m_pendingCalDavSyncAccounts.contains(accountID)
+            || m_pendingCalDavSyncAccounts.value(accountID) != requestID) {
+            return;
+        }
+        m_pendingCalDavSyncAccounts.remove(accountID);
+        if (!statusLoaded || !m_calDavAccountStatuses.contains(accountID)
+            || m_calDavAccountStatuses.value(accountID).syncStatus == DCalDavSyncStatus::Running) {
+            m_manualCalDavSyncAccounts.remove(accountID);
+        }
+        if (statusLoaded && m_calDavAccountStatuses.contains(accountID)) {
+            emit signalCalDavAccountStatusChanged(accountID);
+        } else {
+            emit signalCalDavSyncPendingChanged(accountID);
+        }
+    });
     connect(m_dbusRequest, &DbusAccountManagerRequest::signalCalDavAccountStatusRefreshRequested,
             this, [this](const QString &accountID) {
         if (!m_calDavStatusesInitialized && !accountID.isEmpty()) {
@@ -114,6 +134,28 @@ DCalDavAccountStatus AccountManager::getCalDavAccountStatus(const QString &accou
     return m_calDavAccountStatuses.value(accountID);
 }
 
+/**
+ * @brief Checks whether a manual CalDAV request has not yet completed.
+ * @param accountID Account to check.
+ * @return True while the client is waiting for the matching completion event.
+ */
+bool AccountManager::isCalDavSyncPending(const QString &accountID) const
+{
+    return m_pendingCalDavSyncAccounts.contains(accountID);
+}
+
+AccountManager::CalDavSyncUiState AccountManager::calDavSyncUiState(
+    const QString &accountID, int syncStatus) const
+{
+    const bool pending = isCalDavSyncPending(accountID);
+    const bool running = pending || syncStatus == DCalDavSyncStatus::Running;
+    const bool failed = !pending && (syncStatus == DCalDavSyncStatus::Failed
+        || syncStatus == DCalDavSyncStatus::AuthenticationRequired
+        || syncStatus == DCalDavSyncStatus::PermissionDenied
+        || syncStatus == DCalDavSyncStatus::RetryScheduled);
+    return {pending, running, failed};
+}
+
 bool AccountManager::canWriteCalDavAccount(const QString &accountID) const
 {
     const DCalDavAccountStatus status = m_calDavAccountStatuses.value(accountID);
@@ -127,7 +169,8 @@ bool AccountManager::takeManualCalDavSyncRequest(const QString &accountID, int s
         || syncStatus == DCalDavSyncStatus::AuthenticationRequired
         || syncStatus == DCalDavSyncStatus::PermissionDenied
         || syncStatus == DCalDavSyncStatus::RetryScheduled;
-    if (!completed || !m_manualCalDavSyncAccounts.contains(accountID)) {
+    if (!completed || m_pendingCalDavSyncAccounts.contains(accountID)
+        || !m_manualCalDavSyncAccounts.contains(accountID)) {
         return false;
     }
 
@@ -431,7 +474,34 @@ void AccountManager::downloadByAccountID(const QString &accountID, CallbackFunc 
     const AccountItem::Ptr account = getAccountItemByAccountId(accountID);
     if (account && account->getAccount()
         && account->getAccount()->accountType() == DAccount::Account_CalDav) {
+        if (m_pendingCalDavSyncAccounts.contains(accountID)) {
+            if (callback) {
+                callback({1, QStringLiteral("CalDAV synchronization is already in progress.")});
+            }
+            return;
+        }
         m_manualCalDavSyncAccounts.insert(accountID);
+        const QString requestID = QUuid::createUuid().toString(QUuid::WithoutBraces);
+        m_pendingCalDavSyncAccounts.insert(accountID, requestID);
+        emit signalCalDavSyncPendingChanged(accountID);
+        const CallbackFunc originalCallback = callback;
+        const QPointer<AccountManager> guard(this);
+        callback = [guard, accountID, requestID, originalCallback](CallMessge result) {
+            if (!guard) {
+                return;
+            }
+            if (result.code != 0 && guard->m_pendingCalDavSyncAccounts.value(accountID) == requestID) {
+                guard->m_pendingCalDavSyncAccounts.remove(accountID);
+                guard->m_manualCalDavSyncAccounts.remove(accountID);
+                emit guard->signalCalDavSyncPendingChanged(accountID);
+            }
+            if (originalCallback) {
+                originalCallback(result);
+            }
+        };
+        m_dbusRequest->setCallbackFunc(callback);
+        m_dbusRequest->requestCalDavManualSync(accountID, requestID);
+        return;
     } else {
         if (account && account->getAccount()
             && account->getAccount()->accountType() == DAccount::Account_UnionID) {

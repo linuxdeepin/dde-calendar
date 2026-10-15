@@ -20,6 +20,12 @@ class AccountManager : public QObject
 public:
     ~AccountManager() override;
 
+    struct CalDavSyncUiState {
+        bool pending;
+        bool running;
+        bool failed;
+    };
+
     static AccountManager *getInstance();
     QList<AccountItem::Ptr> getAccountList();
     AccountItem::Ptr getLocalAccountItem();
@@ -73,6 +79,14 @@ public:
 
     bool getIsSupportUid() const;
     DCalDavAccountStatus getCalDavAccountStatus(const QString &accountID) const;
+    bool isCalDavSyncPending(const QString &accountID) const;
+    /**
+     * @brief Resolves the sync indicators shared by the account list and sidebar.
+     * @param accountID Account whose manual request may still be pending.
+     * @param syncStatus Latest known status for that account (may be stale during a request).
+     * @return Pending, running and failure flags for the current UI state.
+     */
+    CalDavSyncUiState calDavSyncUiState(const QString &accountID, int syncStatus) const;
     static QString calDavFailureReason(const DCalDavAccountStatus &status);
     static QString calDavSyncFailedText();
     bool canWriteCalDavAccount(const QString &accountID) const;
@@ -98,6 +112,7 @@ signals:
     void signalSearchScheduleUpdate();
     void signalAccountStateChange();
     void signalCalDavAccountStatusChanged(const QString &accountID);
+    void signalCalDavSyncPendingChanged(const QString &accountID);
     void signalCalDavAccountStatusReady();
     void signalCalDavScheduleCreateFailed(const QString &accountID, int createFailure);
     void signalCalDavAccountValidationStarted(const QString &requestID);
@@ -140,6 +155,7 @@ private:
     QList<AccountItem::Ptr> m_calDavAccountItems;
     QHash<QString, DCalDavAccountStatus> m_calDavAccountStatuses;
     QSet<QString> m_manualCalDavSyncAccounts;
+    QHash<QString, QString> m_pendingCalDavSyncAccounts;
     QSet<QString> m_manualUnionSyncAccounts;
     QSet<QString> m_pendingCalDavStatusChanges;
     bool m_calDavStatusesInitialized = false;

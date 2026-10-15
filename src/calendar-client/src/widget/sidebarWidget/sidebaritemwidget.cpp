@@ -304,6 +304,8 @@ void SidebarAccountItemWidget::initConnect()
     connect(gAccountManager, &AccountManager::signalAccountStateChange, this, &SidebarAccountItemWidget::slotAccountStateChange);
     connect(gAccountManager, &AccountManager::signalCalDavAccountStatusChanged,
             this, &SidebarAccountItemWidget::slotCalDavStatusChange);
+    connect(gAccountManager, &AccountManager::signalCalDavSyncPendingChanged,
+            this, &SidebarAccountItemWidget::slotCalDavStatusChange);
     connect(gAccountManager, &AccountManager::signalCalDavAccountStatusReady, this, [this]() {
         if (m_accountItem && m_accountItem->getAccount()->accountType() == DAccount::Account_CalDav) {
             resetRearIconButton();
@@ -348,12 +350,11 @@ void SidebarAccountItemWidget::resetRearIconButton()
     if (m_accountItem->getAccount()->accountType() == DAccount::Account_CalDav) {
         const DCalDavAccountStatus status = gAccountManager->getCalDavAccountStatus(
             m_accountItem->getAccount()->accountID());
-        const bool running = status.syncStatus == DCalDavSyncStatus::Running;
+        const AccountManager::CalDavSyncUiState syncState = gAccountManager->calDavSyncUiState(
+            m_accountItem->getAccount()->accountID(), status.syncStatus);
+        const bool running = syncState.running;
         const bool pendingDelete = status.pendingDeleteCount > 0;
-        const bool failed = status.syncStatus == DCalDavSyncStatus::Failed
-            || status.syncStatus == DCalDavSyncStatus::AuthenticationRequired
-            || status.syncStatus == DCalDavSyncStatus::PermissionDenied
-            || status.syncStatus == DCalDavSyncStatus::RetryScheduled;
+        const bool failed = syncState.failed;
         if (failed) {
             m_syncIconButton->hide();
             m_warningLabel->setToolTip(AccountManager::calDavFailureReason(status));

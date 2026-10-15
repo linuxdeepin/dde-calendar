@@ -21,6 +21,8 @@ DAccountManagerService::DAccountManagerService(QObject *parent)
     connect(m_accountManager.data(), &DAccountManageModule::signalLoginStatusChange, this, &DAccountManagerService::accountUpdate);
     connect(m_accountManager.data(), &DAccountManageModule::calDavAccountStatusChanged,
             this, &DAccountManagerService::calDavAccountStatusChanged);
+    connect(m_accountManager.data(), &DAccountManageModule::calDavManualSyncFinished,
+            this, &DAccountManagerService::calDavManualSyncFinished);
     connect(m_accountManager.data(), &DAccountManageModule::calDavAccountValidationFinished,
             this, &DAccountManagerService::calDavAccountValidationFinished);
     qCDebug(ServiceLogger) << "Connected login status change signal";
@@ -80,6 +82,12 @@ void DAccountManagerService::downloadByAccountID(const QString &accountID)
     DServiceExitControl exitControl;
     m_accountManager->downloadByAccountID(accountID);
     qCDebug(ServiceLogger) << "Completed download for accountID:" << accountID;
+}
+
+bool DAccountManagerService::requestCalDavManualSync(const QString &accountID, const QString &requestID)
+{
+    DServiceExitControl exitControl;
+    return m_accountManager->requestCalDavManualSync(accountID, requestID);
 }
 
 QString DAccountManagerService::validateCalDavAccount(int providerType, const QString &serverUrl,

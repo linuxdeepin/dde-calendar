@@ -100,6 +100,8 @@ CalDavAccountListWidget::CalDavAccountListWidget(QWidget *parent)
             this, &CalDavAccountListWidget::slotAccountUpdate);
     connect(gAccountManager, &AccountManager::signalCalDavAccountStatusChanged,
             this, &CalDavAccountListWidget::slotStatusChanged);
+    connect(gAccountManager, &AccountManager::signalCalDavSyncPendingChanged,
+            this, &CalDavAccountListWidget::rebuildCards);
     connect(gAccountManager, &AccountManager::signalCalDavAccountStatusReady,
             this, &CalDavAccountListWidget::rebuildCards);
     rebuildCards();
@@ -247,16 +249,14 @@ void CalDavAccountListWidget::rebuildCards()
         statusLayout->setContentsMargins(10, 0, 10, 0);
         statusLayout->setSpacing(6);
 
-        const bool running = status.syncStatus == DCalDavSyncStatus::Running;
+        const AccountManager::CalDavSyncUiState syncState =
+            gAccountManager->calDavSyncUiState(accountID, status.syncStatus);
+        const bool pendingSync = syncState.pending;
+        const bool running = syncState.running;
         const bool pendingDelete = status.pendingDeleteCount > 0;
-        const bool failed = status.syncStatus == DCalDavSyncStatus::Failed
-            || status.syncStatus == DCalDavSyncStatus::AuthenticationRequired
-            || status.syncStatus == DCalDavSyncStatus::PermissionDenied
-            || status.syncStatus == DCalDavSyncStatus::RetryScheduled;
+        const bool failed = syncState.failed;
 
-        // The last successful sync time remains visible while a sync operation
-        // is running or has failed. The current state is shown alongside it.
-        const bool showResultIcon = status.conflictCount > 0 || failed;
+        const bool showResultIcon = (!pendingSync && status.conflictCount > 0) || failed;
         QWidget *timeWidget = new QWidget(statusRow);
         QHBoxLayout *timeLayout = new QHBoxLayout(timeWidget);
         timeLayout->setContentsMargins(0, 0, 0, 0);
@@ -278,7 +278,7 @@ void CalDavAccountListWidget::rebuildCards()
             timeLayout->addWidget(stateSpinner);
         }
 
-        const QString timeValue = syncTimeValue(status);
+        const QString timeValue = running ? QString() : syncTimeValue(status);
         if (!timeValue.isEmpty()) {
             Dtk::Widget::DLabel *timeValueLabel = new Dtk::Widget::DLabel(timeValue, timeWidget);
             Dtk::Widget::DFontSizeManager::instance()->bind(timeValueLabel,
@@ -288,7 +288,7 @@ void CalDavAccountListWidget::rebuildCards()
         }
         statusLayout->addWidget(timeWidget);
 
-        if (status.conflictCount > 0) {
+        if (status.conflictCount > 0 && !pendingSync) {
             Dtk::Widget::DLabel *stateLabel = new Dtk::Widget::DLabel(tr("Sync conflict"), statusRow);
             stateLabel->setToolTip(tr("A synchronization conflict was detected. The server version will replace the local changes."));
             statusLayout->addWidget(stateLabel);
@@ -312,7 +312,8 @@ void CalDavAccountListWidget::rebuildCards()
         Dtk::Widget::DPushButton *syncButton = new Dtk::Widget::DPushButton(tr("Sync Now"), statusRow);
         syncButton->setFixedSize(98, 36);
         syncButton->setEnabled(!running);
-        connect(syncButton, &Dtk::Widget::DPushButton::clicked, this, [accountID]() {
+        connect(syncButton, &Dtk::Widget::DPushButton::clicked, this, [accountID, syncButton]() {
+            syncButton->setEnabled(false);
             gAccountManager->downloadByAccountID(accountID);
         });
         statusLayout->addWidget(syncButton);

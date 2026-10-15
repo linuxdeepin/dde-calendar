@@ -22,6 +22,7 @@ DbusAccountManagerRequest::DbusAccountManagerRequest(QObject *parent)
     };
     connectSignal("accountUpdate", "");
     connectSignal("calDavAccountStatusChanged", "s");
+    connectSignal("calDavManualSyncFinished", "ss");
     connectSignal("calDavAccountValidationFinished", "sbiss");
 }
 
@@ -126,6 +127,12 @@ void DbusAccountManagerRequest::getAccountList()
 void DbusAccountManagerRequest::downloadByAccountID(const QString &accountID)
 {
     asyncCall("downloadByAccountID", {QVariant(accountID)});
+}
+
+void DbusAccountManagerRequest::requestCalDavManualSync(const QString &accountID,
+                                                       const QString &requestID)
+{
+    asyncCall("requestCalDavManualSync", {accountID, requestID});
 }
 
 /**
@@ -355,6 +362,9 @@ void DbusAccountManagerRequest::slotCallFinished(CDBusPendingCallWatcher *call)
                                 << "requestIdPresent:" << !requestID.isEmpty();
         emit signalValidateCalDavAccountForUpdateStart(requestID);
         ret = requestID.isEmpty() ? 1 : 0;
+    } else if (call->getmember() == "requestCalDavManualSync") {
+        QDBusPendingReply<bool> reply = *call;
+        ret = reply.argumentAt<0>() ? 0 : 1;
     } else if (call->getmember() == "getCalDavAccountStatusList") {
         QDBusPendingReply<QString> reply = *call;
         DCalDavAccountStatus::List statusList;
@@ -417,6 +427,14 @@ void DbusAccountManagerRequest::slotDbusCall(const QDBusMessage &msg)
     } else if (msg.member() == "calDavAccountStatusChanged") {
         emit signalCalDavAccountStatusRefreshRequested(
             msg.arguments().value(0).toString());
+        getCalDavAccountStatusList();
+    } else if (msg.member() == "calDavManualSyncFinished") {
+        const QString accountID = msg.arguments().value(0).toString();
+        const QString requestID = msg.arguments().value(1).toString();
+        setCallbackFunc([this, accountID, requestID](CallMessge result) {
+            emit signalCalDavManualSyncStatusRefreshFinished(accountID, requestID,
+                                                             result.code == 0);
+        });
         getCalDavAccountStatusList();
     } else if (msg.member() == "calDavAccountValidationFinished") {
         const QString requestID = msg.arguments().value(0).toString();

@@ -28,6 +28,21 @@ signals:
     void calDavAccountValidationFinished(const QString &requestID, bool success,
                                          int validationError, const QString &errorMessage,
                                          const QString &principalDisplayName);
+    void calDavAccountStatusChanged(const QString &accountID);
+    void calDavManualSyncFinished(const QString &accountID, const QString &requestID);
+
+public slots:
+    QString getCalDavAccountStatusList() { return QStringLiteral("[]"); }
+    bool requestCalDavManualSync(const QString &accountID, const QString &requestID)
+    {
+        lastAccountID = accountID;
+        lastRequestID = requestID;
+        return true;
+    }
+
+public:
+    QString lastAccountID;
+    QString lastRequestID;
 };
 
 class AccountSignalService : public QObject
@@ -107,6 +122,81 @@ TEST(CalDavDbusSignals, PreservesValidationAndCreateFailureArgumentOrder)
     EXPECT_TRUE(validationReceived);
     EXPECT_TRUE(createFailureReceived);
     bus.unregisterObject(QString::fromLatin1(kAccountPath));
+    bus.unregisterObject(QString::fromLatin1(kAccountManagerPath));
+    bus.unregisterService(QStringLiteral("com.deepin.dataserver.Calendar"));
+}
+
+TEST(CalDavDbusSignals, CompletesSyncRefreshOnlyForSyncEvent)
+{
+    QDBusConnection bus = QDBusConnection::sessionBus();
+    if (!bus.isConnected()) {
+        GTEST_SKIP() << "Session DBus is unavailable";
+    }
+    if (!bus.registerService(QStringLiteral("com.deepin.dataserver.Calendar"))) {
+        GTEST_SKIP() << "Calendar DBus service is already owned";
+    }
+
+    AccountManagerSignalService service;
+    ASSERT_TRUE(bus.registerObject(QString::fromLatin1(kAccountManagerPath), &service,
+                                   QDBusConnection::ExportAllSignals | QDBusConnection::ExportAllSlots));
+    DbusAccountManagerRequest request;
+    const QString accountID = QStringLiteral("account-1");
+    const QString requestID = QStringLiteral("manual-1");
+    int refreshCount = 0;
+    int syncRefreshCount = 0;
+    int requestResult = -1;
+    QEventLoop loop;
+    QTimer timeout;
+    timeout.setSingleShot(true);
+    QObject::connect(&timeout, &QTimer::timeout, &loop, &QEventLoop::quit);
+    QObject::connect(&request, &DbusAccountManagerRequest::signalGetCalDavAccountStatusListFinish,
+                     &loop, [&](const DCalDavAccountStatus::List &) {
+        ++refreshCount;
+        loop.quit();
+    });
+    QObject::connect(&request, &DbusAccountManagerRequest::signalCalDavManualSyncStatusRefreshFinished,
+                     &loop, [&](const QString &id, const QString &receivedRequestID, bool loaded) {
+        EXPECT_EQ(accountID, id);
+        EXPECT_EQ(requestID, receivedRequestID);
+        EXPECT_TRUE(loaded);
+        ++syncRefreshCount;
+        loop.quit();
+    });
+
+    request.setCallbackFunc([&](CallMessge result) {
+        requestResult = result.code;
+        loop.quit();
+    });
+    request.requestCalDavManualSync(accountID, requestID);
+    timeout.start(2000);
+    loop.exec();
+    timeout.stop();
+    EXPECT_EQ(0, requestResult);
+    EXPECT_EQ(accountID, service.lastAccountID);
+    EXPECT_EQ(requestID, service.lastRequestID);
+
+    emit service.calDavAccountStatusChanged(accountID);
+    timeout.start(2000);
+    loop.exec();
+    timeout.stop();
+    EXPECT_EQ(1, refreshCount);
+    EXPECT_EQ(0, syncRefreshCount);
+
+    emit service.calDavManualSyncFinished(accountID, requestID);
+    timeout.start(2000);
+    loop.exec();
+    timeout.stop();
+    EXPECT_EQ(2, refreshCount);
+    EXPECT_EQ(1, syncRefreshCount);
+
+    // The service returns the same status list; completion must still be delivered.
+    emit service.calDavManualSyncFinished(accountID, requestID);
+    timeout.start(2000);
+    loop.exec();
+    timeout.stop();
+    EXPECT_EQ(3, refreshCount);
+    EXPECT_EQ(2, syncRefreshCount);
+
     bus.unregisterObject(QString::fromLatin1(kAccountManagerPath));
     bus.unregisterService(QStringLiteral("com.deepin.dataserver.Calendar"));
 }
