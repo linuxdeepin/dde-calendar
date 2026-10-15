@@ -24,6 +24,16 @@
 
 DGUI_USE_NAMESPACE
 
+static bool containsScheduleInstance(const DSchedule::List &schedules, const DSchedule::Ptr &schedule)
+{
+    for (const DSchedule::Ptr &existing : schedules) {
+        if (existing.data() == schedule.data()) {
+            return true;
+        }
+    }
+    return false;
+}
+
 static int hourTextWidth = 50;
 static int hourTextHeight = 20;
 CScheduleView::CScheduleView(QWidget *parent, ScheduleViewPos viewType)
@@ -620,13 +630,13 @@ void CScheduleView::updateSchedule()
         for (int i = 0; i < _iterator->size(); ++i) {
             if (_iterator.value().at(i)->allDay()) {
                 //过滤
-                if (!allInfo.contains(_iterator.value().at(i))) {
+                if (!containsScheduleInstance(allInfo, _iterator.value().at(i))) {
                     // qCDebug(ClientLogger) << "Adding all-day schedule with ID:" << _iterator.value().at(i)->uid();
                     allInfo.append(_iterator.value().at(i));
                 }
             } else {
                 //过滤
-                if (!nonAllInfo.contains(_iterator.value().at(i))) {
+                if (!containsScheduleInstance(nonAllInfo, _iterator.value().at(i))) {
                     // qCDebug(ClientLogger) << "Adding non-all-day schedule with ID:" << _iterator.value().at(i)->uid();
                     nonAllInfo.append(_iterator.value().at(i));
                 }
