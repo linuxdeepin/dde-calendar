@@ -853,8 +853,8 @@
     </message>
     <message>
             <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="515" />
-        <source>Add schedule</source>
-        <translation>Add schedule</translation>
+        <source>Add event type</source>
+        <translation>Add event type</translation>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="516" />

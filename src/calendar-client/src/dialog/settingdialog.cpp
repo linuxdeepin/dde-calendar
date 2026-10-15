@@ -550,7 +550,7 @@ void CSettingDialog::initAccountComboBoxWidget()
 
 void CSettingDialog::initTypeAddWidget()
 {
-    m_typeAddAction = new QAction(tr("Add schedule"), this);
+    m_typeAddAction = new QAction(tr("Add event type"), this);
     m_typeImportAction = new QAction(tr("Import ICS file"), this);
     m_typeImportAction->setToolTip(tr("Import events from an ICS file"));
 }
@@ -914,7 +914,7 @@ void CSettingDialog::slotDeleteCalDavAccountFinished(bool success)
 
 void CSettingDialog::slotTypeAddBtnClickded()
 {
-    qCDebug(ClientLogger) << "Add schedule type button clicked";
+    qCDebug(ClientLogger) << "Add event type button clicked";
     if (m_scheduleTypeWidget) {
         m_scheduleTypeWidget->slotAddScheduleType();
     }

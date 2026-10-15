@@ -818,8 +818,8 @@
         </message>
         <message>
             <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="515" />
-            <source>Add schedule</source>
-            <translation>添加日程</translation>
+            <source>Add event type</source>
+            <translation>添加日程类型</translation>
         </message>
         <message>
             <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="516" />
