@@ -982,6 +982,10 @@
             <translation>Automatically filled after selecting account type</translation>
         </message>
         <message>
+            <source>Enter server address</source>
+            <translation>Enter server address</translation>
+        </message>
+        <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="110" />
             <source>Enter username or email</source>
             <translation>Enter username or email</translation>

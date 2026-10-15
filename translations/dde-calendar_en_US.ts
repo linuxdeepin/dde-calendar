@@ -1546,6 +1546,10 @@
         <translation>Automatically filled after selecting account type</translation>
     </message>
     <message>
+        <source>Enter server address</source>
+        <translation>Enter server address</translation>
+    </message>
+    <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="85" />
         <source>Enter username or email</source>
         <translation>Enter username or email</translation>
@@ -1605,8 +1609,8 @@
     </message>
     <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="250" />
-        <source>Unable to save the account password, Please try again</source>
-        <translation>Unable to save the account password, Please try again</translation>
+        <source>Unable to save the account password. Please try again.</source>
+        <translation>Unable to save the account password. Please try again.</translation>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="490" />

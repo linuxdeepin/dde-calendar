@@ -1013,6 +1013,10 @@
             <translation>選擇賬戶類型後自動填充</translation>
         </message>
         <message>
+            <source>Enter server address</source>
+            <translation>輸入伺服器地址</translation>
+        </message>
+        <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="95" />
             <source>Username</source>
             <translation>用戶名</translation>
@@ -1045,7 +1049,7 @@
         </message>
         <message>
             <location filename="../src/calendar-client/src/dialog/caldavaccountdialog.cpp" line="250" />
-            <source>Unable to save the account password, Please try again</source>
+            <source>Unable to save the account password. Please try again.</source>
             <translation>無法儲存賬戶密碼，請重試</translation>
         </message>
         <message>

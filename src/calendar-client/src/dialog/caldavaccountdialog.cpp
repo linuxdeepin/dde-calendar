@@ -467,6 +467,10 @@ void CalDavAccountDialog::updateProviderFields()
     m_providerErrorLabel->clear();
     m_providerErrorLabel->hide();
     const int providerType = m_providerComboBox->currentData().toInt();
+    m_serverUrlEdit->setPlaceholderText(
+        providerType == DCalDavProviderProfile::Provider_Other
+            ? tr("Enter server address")
+            : tr("Automatically filled after selecting account type"));
     if (providerType < DCalDavProviderProfile::Provider_DingTalk) {
         m_serverUrlEdit->clear();
         m_serverUrlEdit->lineEdit()->setReadOnly(false);
