@@ -851,8 +851,8 @@
     </message>
     <message>
             <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="515"/>
-        <source>Add schedule</source>
-        <translation>Afegiu-hi una programació</translation>
+        <source>Add event type</source>
+        <translation type="unfinished"/>
     </message>
     <message>
             <location filename="../src/calendar-client/src/dialog/settingdialog.cpp" line="516"/>
