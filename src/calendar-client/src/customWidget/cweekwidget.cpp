@@ -85,6 +85,10 @@ void CWeekWidget::paintEvent(QPaintEvent *event)
         weekStr << weekDayName;
     }
 
+    QColor weekColor = palette().color(QPalette::WindowText);
+    weekColor.setAlphaF(0.5);
+    painter.setPen(weekColor);
+
     //绘制周一到周日
     for (int i = Qt::Monday; i <= Qt::Sunday; ++i) {
         int index = (firstDay + i - Qt::Monday) % Qt::Sunday;
