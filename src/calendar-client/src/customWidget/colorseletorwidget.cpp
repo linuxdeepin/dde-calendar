@@ -229,6 +229,8 @@ void ColorSeletorWidget::initView()
     QHBoxLayout *hLayout = new QHBoxLayout();
     hLayout->addLayout(m_colorLayout);
     m_addColorButton = new QPushButton();
+    m_addColorButton->setObjectName("AddColorButton");
+    m_addColorButton->setAccessibleName("AddColorButton");
     m_addColorButton->setIcon(DStyle().standardIcon(DStyle::SP_IncreaseElement));
     m_addColorButton->setFixedSize(18, 18);
     m_addColorButton->setIconSize(QSize(10, 10));

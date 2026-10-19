@@ -274,6 +274,7 @@ void CSettingDialog::initView()
 
             m_calDavAccountAddButton = new DIconButton(titleWidget);
             m_calDavAccountAddButton->setObjectName(QStringLiteral("CalDavAccountAddButton"));
+            m_calDavAccountAddButton->setAccessibleName(QStringLiteral("CalDavAccountAddButton"));
             m_calDavAccountAddButton->setIcon(QIcon::fromTheme("dde_calendar_add"));
             m_calDavAccountAddButton->setFixedSize(36, 36);
             m_calDavAccountAddButton->setIconSize(QSize(16, 16));
@@ -632,8 +633,10 @@ void CSettingDialog::initUosAccountSettingsWidget()
     syncItemsLayout->addStretch();
     m_radiobuttonAccountCalendar = new QCheckBox(QObject::tr("Events"), m_uosSyncItemsWidget);
     m_radiobuttonAccountCalendar->setObjectName(QStringLiteral("Account_Calendar"));
+    m_radiobuttonAccountCalendar->setAccessibleName(QStringLiteral("Account_Calendar"));
     m_radiobuttonAccountSetting = new QCheckBox(QObject::tr("General settings"), m_uosSyncItemsWidget);
     m_radiobuttonAccountSetting->setObjectName(QStringLiteral("Account_Setting"));
+    m_radiobuttonAccountSetting->setAccessibleName(QStringLiteral("Account_Setting"));
     syncItemsLayout->addWidget(m_radiobuttonAccountCalendar);
     syncItemsLayout->addWidget(m_radiobuttonAccountSetting);
 }

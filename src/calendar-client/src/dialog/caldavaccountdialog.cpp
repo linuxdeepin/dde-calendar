@@ -73,6 +73,8 @@ CalDavAccountDialog::CalDavAccountDialog(QWidget *parent)
     form->setHorizontalSpacing(12);
     form->setVerticalSpacing(10);
     m_providerComboBox = new DComboBox(content);
+    m_providerComboBox->setObjectName("ProviderComboBox");
+    m_providerComboBox->setAccessibleName("ProviderComboBox");
     const DCalDavProviderProfile::ProviderType providers[] = {
         DCalDavProviderProfile::Provider_DingTalk,
         DCalDavProviderProfile::Provider_WeCom,
@@ -99,8 +101,14 @@ CalDavAccountDialog::CalDavAccountDialog(QWidget *parent)
     providerFieldLayout->addWidget(m_providerComboBox);
     providerFieldLayout->addWidget(m_providerErrorLabel);
     m_serverUrlEdit = new DLineEdit(content);
+    m_serverUrlEdit->setObjectName("ServerUrlEdit");
+    m_serverUrlEdit->setAccessibleName("ServerUrlEdit");
     m_usernameEdit = new DLineEdit(content);
+    m_usernameEdit->setObjectName("UsernameEdit");
+    m_usernameEdit->setAccessibleName("UsernameEdit");
     m_passwordEdit = new DPasswordEdit(content);
+    m_passwordEdit->setObjectName("PasswordEdit");
+    m_passwordEdit->setAccessibleName("PasswordEdit");
     m_serverUrlEdit->setPlaceholderText(tr("Automatically filled after selecting account type"));
     m_usernameEdit->setPlaceholderText(tr("Enter username or email"));
     m_passwordEdit->setPlaceholderText(tr("Enter password"));
