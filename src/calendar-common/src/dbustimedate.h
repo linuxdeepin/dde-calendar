@@ -23,9 +23,11 @@ signals:
     void ShortDateFormatChanged(int  value) const;
     void ShortTimeFormatChanged(int  value) const;
     void WeekBeginsChanged(int value) const;
+    void TimeChanged() const;
 
 public slots:
     void propertiesChanged(const QDBusMessage &msg);
+    void timeUpdated();
 private:
     QVariant getPropertyByName(const char *porpertyName);
     bool getHasDateTimeFormat();

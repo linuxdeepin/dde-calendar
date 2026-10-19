@@ -57,6 +57,13 @@ DBusTimedate::DBusTimedate(QObject *parent)
                                                SLOT(propertiesChanged(QDBusMessage)))) {
         qCWarning(CommonLogger) << "Failed to connect to PropertiesChanged signal:" << this->lastError().message();
     }
+    if (!QDBusConnection::sessionBus().connect(TIMEDATE_DBUS_SERVICE,
+                                               TIMEDATE_DBUS_PATH,
+                                               TIMEDATE_DBUS_INTERFACE,
+                                               QLatin1String("TimeUpdate"), this,
+                                               SLOT(timeUpdated()))) {
+        qCWarning(CommonLogger) << "Failed to connect to TimeUpdate signal:" << this->lastError().message();
+    }
 
     m_hasDateTimeFormat = getHasDateTimeFormat();
 }
@@ -112,6 +119,12 @@ void DBusTimedate::propertiesChanged(const QDBusMessage &msg)
             emit ShortDateFormatChanged(changedProps[prop].toInt());
         }
     }
+}
+
+void DBusTimedate::timeUpdated()
+{
+    qCDebug(CommonLogger) << "System time changed";
+    emit TimeChanged();
 }
 
 QVariant DBusTimedate::getPropertyByName(const char *porpertyName)

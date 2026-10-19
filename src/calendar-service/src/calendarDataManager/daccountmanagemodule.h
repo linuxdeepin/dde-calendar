@@ -183,11 +183,13 @@ private:
     QTimer m_timer;
     bool m_isSupportUid = false;
     bool m_clientIsOpen = false;
+    QDateTime m_lastSystemTime;
     QSettings m_settings;
     DBusTimedate m_timeDateDbus;
     DCalDavSyncJobManager m_calDavSyncJobManager;
     QMap<QString, DCalDavAccountRegistrar *> m_calDavRegistrars;
     QHash<QString, DCalDavSyncStateMachine::Trigger> m_pendingCalDavDiscoveryTriggers;
+    QSet<QString> m_calDavEarlySyncStatusAccounts;
     QHash<QString, QString> m_calDavManualSyncRequests;
     QSet<QString> m_activeCalDavManualSyncAccounts;
     QHash<QString, DCalDavReadOnlySync *> m_calDavValidationJobs;
