@@ -1,3 +1,19 @@
+dde-calendar (6.6.4) unstable; urgency=medium
+
+  * fix(dayview): use DTK palette colors for text
+  * fix(dayview): add hover effect for mini calendar cells
+  * fix(sidebar): adjust divider color for theme adaptation
+  * fix(calendar): add accessible names for interactive widgets
+  * fix: reschedule CalDAV daily sync on system time change
+  * fix(calendar): show loading state immediately on CalDAV sync
+  * fix(calendar): add dynamic placeholder for CalDAV server address input
+  * fix(calendar): correct Add schedule text to Add event type
+  * fix: use pointer comparison for schedule deduplication across accounts
+  * docs(calendar): update calendar help documentation
+  * fix: resolve missing reminder after system time change
+
+ -- Wang Yu <wangyu@uniontech.com>  Wed, 21 Oct 2026 09:21:36 +0800
+
 dde-calendar (6.6.3) unstable; urgency=medium
 
   * fix(calendar): add theme-aware management icons
