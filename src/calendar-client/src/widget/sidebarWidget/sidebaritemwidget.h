@@ -16,6 +16,7 @@
 #include <QLabel>
 #include <QHBoxLayout>
 #include <QTreeWidgetItem>
+#include <QEvent>
 #include "doanetworkdbus.h"
 
 DWIDGET_USE_NAMESPACE
@@ -114,6 +115,7 @@ protected:
 #endif
     void leaveEvent(QEvent *event) override;
     bool eventFilter(QObject *watched, QEvent *event) override;
+    void updateWarningIcon();
 
 private:
     AccountItem::Ptr m_accountItem;
@@ -122,6 +124,7 @@ private:
     DLabel *m_warningLabel = nullptr;           //尾部异常警告控件
     DIconButton *m_headIconButton = nullptr;    //头部展开控件
     DLabel *m_titleLabel = nullptr; //标题显示区域
+    bool m_warningHovered = false;
     DOANetWorkDBus   * m_ptrDoaNetwork;
 };
 
