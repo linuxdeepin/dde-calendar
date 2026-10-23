@@ -3,10 +3,10 @@ export builddir=build
 export reportdir=build-ut
 export scriptdir="$(cd "$(dirname "$0")" && pwd)"
 export projectdir="$(cd "${scriptdir}/.." && pwd)"
-rm -r $builddir
-rm -r ../$builddir
-rm -r $reportdir
-rm -r ../$reportdir
+rm -rf $builddir
+rm -rf ../$builddir
+rm -rf $reportdir
+rm -rf ../$reportdir
 mkdir ../$builddir
 mkdir ../$reportdir
 cd ../$builddir
@@ -14,10 +14,10 @@ cd ../$builddir
 cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON -DCMAKE_SAFETYTEST_ARG="CMAKE_SAFETYTEST_ARG_ON" ..
 make -j8
 #生成asan日志和ut测试xml结果
+mkdir -p report
 set +e
 ./tests/dde-calendar-client-test/dde-calendar-test --gtest_output=xml:./report/report_dde-calendar-client.xml
 test_exit_code=$?
-sleep 5
 ./tests/dde-calendar-service-test/dde-calendar-service-test --gtest_output=xml:./report/report_dde-calendar-service.xml
 test_exit_code=$((test_exit_code || $?))
 set -e

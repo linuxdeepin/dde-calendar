@@ -8,14 +8,12 @@
 #include <sanitizer/asan_interface.h>
 #endif
 
-#include <DApplication>
-
-DWIDGET_USE_NAMESPACE
+#include <QCoreApplication>
 
 int main(int argc, char **argv)
 {
     qputenv("QT_QPA_PLATFORM", "offscreen");
-    DApplication application(argc, argv);
+    QCoreApplication application(argc, argv);
     ::testing::InitGoogleTest(&argc, argv);
     int ret = RUN_ALL_TESTS();
 
