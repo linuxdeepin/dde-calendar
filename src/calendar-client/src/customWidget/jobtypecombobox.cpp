@@ -245,10 +245,10 @@ void JobTypeComboBox::addCustomWidget(QFrame *viewContainer)
             splitter->setFocusPolicy(Qt::NoFocus);
             hLayout->addWidget(splitter);
             hLayout->addWidget(m_addBtn);
-            hLayout->setContentsMargins(0, 0, 0, 0);
+            hLayout->setContentsMargins(0, 0, 0, 3); //底部3px间距使分割线和按钮上移
             hLayout->setSpacing(0);
             m_customWidget = new QWidget(this);
-            m_customWidget->setFixedHeight(35);
+            m_customWidget->setFixedHeight(45);
             m_customWidget->setLayout(hLayout);
             //添加自定义控件到最后
             layout->insertWidget(-1, m_customWidget);
@@ -336,6 +336,9 @@ bool JobTypeComboBox::eventFilter(QObject *obj, QEvent *event)
     } else if (m_addBtn == obj && (event->type() == QEvent::Enter)) {
         // qCDebug(ClientLogger) << "Mouse enter add button";
         m_addBtn->setFocus();
+    } else if (m_addBtn == obj && event->type() == QEvent::Leave) {
+        //鼠标离开按钮时将焦点交还列表，恢复高亮项可选状态
+        view()->setFocus();
     } else if (view() == obj && event->type() == QEvent::FocusIn) {
         // qCDebug(ClientLogger) << "View focus in";
         //列表框控件焦点进入事件
