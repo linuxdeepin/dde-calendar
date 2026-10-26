@@ -41,6 +41,7 @@ private:
      * @param textColor     显示颜色
      */
     void setPaletteTextColor(QWidget *widget, QColor textColor);
+    void updateDialogHeight();
 protected:
     void changeEvent(QEvent *event) override;
 private slots:
