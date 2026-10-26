@@ -205,10 +205,6 @@ void CScheduleCtrlDlg::changeEvent(QEvent *event)
     Q_UNUSED(event)
     QFont font;
     QFontMetrics font_button(font);
-    QFontMetrics font_firstLabel(font);
-    QFontMetrics font_seconLabel(font);
-    int height_firstLabel = (font_firstLabel.horizontalAdvance(m_firstText) / 300 + 1) * font_firstLabel.height();
-    int height_seconLabel = (font_seconLabel.horizontalAdvance(m_secondText) / 300 + 1) * font_seconLabel.height();
 
     for (int i = 0; i < buttonCount(); i++) {
         QAbstractButton *button = getButton(i);
@@ -221,15 +217,23 @@ void CScheduleCtrlDlg::changeEvent(QEvent *event)
             button->setText(text_button);
         }
     }
-    // 在changeEvent里使用setFixedHeight会导致弹出的确认对话框会显示在左上角
-    // 推测是窗口的问题, 先通过延迟在应用层临时解决
-    QTimer::singleShot(10, this, [this, height_firstLabel, height_seconLabel]{
-        qCDebug(ClientLogger) << "Adjusting dialog height to:" << (36 + 48 + height_firstLabel + height_seconLabel + 30);
-        setFixedHeight(36 + 48 + height_firstLabel + height_seconLabel + 30);
-        gwi->setFixedHeight(height_firstLabel + height_seconLabel);
-        updateLabelDisplay(m_firstLabel, m_firstText);
-        updateLabelDisplay(m_seconLabel, m_secondText);
-    });
+    updateLabelDisplay(m_firstLabel, m_firstText);
+    updateLabelDisplay(m_seconLabel, m_secondText);
+}
+
+void CScheduleCtrlDlg::updateDialogHeight()
+{
+    qCDebug(ClientLogger) << "Updating dialog height";
+    QFont font;
+    QFontMetrics font_firstLabel(font);
+    QFontMetrics font_seconLabel(font);
+    int height_firstLabel = (font_firstLabel.horizontalAdvance(m_firstText) / 300 + 1) * font_firstLabel.height();
+    int height_seconLabel = (font_seconLabel.horizontalAdvance(m_secondText) / 300 + 1) * font_seconLabel.height();
+
+    int totalHeight = 36 + 48 + height_firstLabel + height_seconLabel + 30;
+    qCDebug(ClientLogger) << "Adjusting dialog height to:" << totalHeight;
+    setFixedHeight(totalHeight);
+    gwi->setFixedHeight(height_firstLabel + height_seconLabel);
 }
 
 void CScheduleCtrlDlg::buttonJudge(int id)
@@ -307,6 +311,7 @@ void CScheduleCtrlDlg::setText(QString str)
     qCDebug(ClientLogger) << "Setting text:" << str;
     m_firstText = str;
     m_firstLabel->setText(str);
+    updateDialogHeight();
     QTimer::singleShot(0, this, [this]() { updateLabelDisplay(m_firstLabel, m_firstText); });
 }
 
@@ -315,6 +320,7 @@ void CScheduleCtrlDlg::setInformativeText(QString str)
     qCDebug(ClientLogger) << "Setting informative text:" << str;
     m_secondText = str;
     m_seconLabel->setText(str);
+    updateDialogHeight();
     QTimer::singleShot(0, this, [this]() { updateLabelDisplay(m_seconLabel, m_secondText); });
 }
 
