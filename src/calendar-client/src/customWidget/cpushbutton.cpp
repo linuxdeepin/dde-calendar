@@ -18,10 +18,9 @@ CPushButton::CPushButton(QWidget *parent) : QWidget(parent)
     QHBoxLayout *layoutAddType = new QHBoxLayout();
     m_textLabel = new QLabel(tr("New event type"));
 
-    m_textLabel->setFixedSize(100,34);
     m_textLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
 
-    m_textLabel->setFixedSize(200,34);
+    m_textLabel->setFixedSize(200, 34);
     layoutAddType->setSpacing(0);
     layoutAddType->setContentsMargins(0, 0, 0, 0);
     layoutAddType->setAlignment(Qt::AlignLeft);
@@ -53,7 +52,7 @@ CPushButton::CPushButton(QWidget *parent) : QWidget(parent)
     layoutAddType->addWidget(m_iconButton);
     layoutAddType->addSpacing(5);
     layoutAddType->addWidget(m_textLabel);
-    setFixedHeight(34);
+    setFixedHeight(40);
     setLayout(layoutAddType);
     qCDebug(ClientLogger) << "CPushButton initialization completed";
 }
@@ -103,18 +102,13 @@ void CPushButton::paintEvent(QPaintEvent *event)
 
     m_iconButton->setIcon(QIcon::fromTheme("dde_calendar_create"));
     if (m_Highlighted) {
-        // qCDebug(ClientLogger) << "Button is highlighted, setting highlight appearance";
-        //背景设置为高亮色
         m_iconButton->setIcon(QIcon(":/icons/deepin/builtin/dark/icons/dde_calendar_create_32px.svg"));
         painter.setBrush(palette.highlight());
-        m_textLabel->setBackgroundRole(QPalette::Highlight);       
+        m_textLabel->setBackgroundRole(QPalette::Highlight);
+        //绘制背景：四周留6px间距，6px圆角，符合菜单规范
+        QRect bgRect = this->rect().adjusted(6, 6, -6, -6);
+        painter.drawRoundedRect(bgRect, 6, 6);
     } else {
-        // qCDebug(ClientLogger) << "Button is not highlighted, setting normal appearance";
-        //背景透明
-        painter.setBrush(QBrush("#00000000"));
         m_textLabel->setBackgroundRole(QPalette::Window);
-
     }
-    //绘制背景
-    painter.drawRect(this->rect());
 }
