@@ -41,6 +41,7 @@ public:
     void setCalendarQueryReturnsCalendarData(bool enabled);
     void setInvalidSyncTokenOnce(bool enabled);
     void setResponseDelay(int milliseconds);
+    void setRedirectLocation(const QByteArray &location);
 
 protected:
     void incomingConnection(qintptr socketDescriptor) override;
@@ -62,6 +63,7 @@ private:
     bool m_calendarQueryReturnsCalendarData = true;
     bool m_invalidSyncTokenOnce = false;
     int m_responseDelay = 0;
+    QByteArray m_redirectLocation;
     QList<Request> m_requests;
     int m_connectionCount = 0;
     QHash<QSslSocket *, QByteArray> m_buffers;

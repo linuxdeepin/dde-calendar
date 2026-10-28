@@ -56,6 +56,7 @@ set(CALDAV_TEST_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/src/test_main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/test_dcalendareventlog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/test_dbmanager/test_caldavschema.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_caldav_transport_utils_xmlreader.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/mock_caldav_server.cpp
     ${CMAKE_SOURCE_DIR}/src/calendar-common/src/dcalendareventlog.cpp
 )
@@ -67,6 +68,7 @@ if(BUILD_LEGACY_CALENDAR_TESTS)
         ${CMAKE_CURRENT_SOURCE_DIR}/src/test_main.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/test_dcalendareventlog.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/test_dbmanager/test_caldavschema.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_caldav_transport_utils_xmlreader.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/mock_caldav_server.cpp)
     list(APPEND CALDAV_TEST_SRC ${LEGACY_CALENDAR_SERVICE_TEST_SRC})
 
