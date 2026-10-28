@@ -1,3 +1,14 @@
+dde-calendar (6.5.43) unstable; urgency=medium
+
+  * chore: Update version to 6.5.43
+  * build(calendar): migrate linglong.yaml to buildext.apt and drop helper scripts
+  * docs(calendar): add Portuguese help manual
+  * fix: resolve missing reminder after system time change
+  * i18n: Translate dde-calendar_en_US.ts in pt_BR
+  * i18n: Translate dde-calendar-service_en_US.ts in pt_BR
+
+ -- re2zero <yangwu@uniontech.com>  Wed, 28 Oct 2026 14:09:31 +0800
+
 dde-calendar (6.5.42) unstable; urgency=medium
 
   * chore: Update version to 6.5.42
