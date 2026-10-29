@@ -1,6 +1,6 @@
-// SPDX-FileCopyrightText: 2026 UnionTech Software Technology Co., Ltd.
-//
-// SPDX-License-Identifier: LGPL-3.0-or-later
+# SPDX-FileCopyrightText: 2026 UnionTech Software Technology Co., Ltd.
+#
+# SPDX-License-Identifier: LGPL-3.0-or-later
 
 cmake_minimum_required(VERSION 3.7)
 project(dde-calendar-schedule-plugin-test)
@@ -65,6 +65,9 @@ set(TEST_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/src/test_schedulestate.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/test_selectandquerystate.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/test_selectinquirystate.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_scheduleitemwidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_schedulelistwidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_viewschedulewidget.cpp
 )
 
 add_executable(${APP_BIN_NAME}

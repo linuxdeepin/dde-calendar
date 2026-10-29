@@ -1,6 +1,6 @@
-// SPDX-FileCopyrightText: 2026 UnionTech Software Technology Co., Ltd.
-//
-// SPDX-License-Identifier: LGPL-3.0-or-later
+# SPDX-FileCopyrightText: 2026 UnionTech Software Technology Co., Ltd.
+#
+# SPDX-License-Identifier: LGPL-3.0-or-later
 
 cmake_minimum_required(VERSION 3.7)
 include(${CMAKE_SOURCE_DIR}/cmake/qt-version-macros.cmake)

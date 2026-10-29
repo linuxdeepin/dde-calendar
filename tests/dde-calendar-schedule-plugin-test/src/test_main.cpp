@@ -3,17 +3,17 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include <gtest/gtest.h>
-#include <QCoreApplication>
+#include <QApplication>
 #include <QTimer>
 
 int main(int argc, char **argv)
 {
-    QCoreApplication app(argc, argv);
+    QApplication app(argc, argv);
     ::testing::InitGoogleTest(&argc, argv);
 
     QTimer::singleShot(0, &app, []() {
         int ret = RUN_ALL_TESTS();
-        QCoreApplication::exit(ret);
+        QApplication::exit(ret);
     });
 
     return app.exec();
