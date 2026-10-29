@@ -2,99 +2,160 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "test_graphicsscene.h"
-
+#include <gtest/gtest.h>
+#include <QApplication>
 #include <QDate>
 #include <QFocusEvent>
-#include <QApplication>
+#include <QKeyEvent>
 #include <QGraphicsRectItem>
+
+#include "cgraphicsscene.h"
 #include "view/graphicsItem/cfocusitem.h"
+#include "keypress/ckeypressprxy.h"
 
-//test_graphicsscene::test_graphicsscene()
-//{
-//}
+class test_graphicsscene : public ::testing::Test
+{
+protected:
+    CGraphicsScene *scene = nullptr;
+    void SetUp() override
+    {
+        scene = new CGraphicsScene();
+    }
+    void TearDown() override
+    {
+        delete scene;
+        scene = nullptr;
+    }
+};
 
-//void test_graphicsscene::SetUp()
-//{
-//    m_Scene = new CGraphicsScene();
-//}
+TEST_F(test_graphicsscene, Constructor)
+{
+    EXPECT_NE(scene, nullptr);
+}
 
-//void test_graphicsscene::TearDown()
-//{
-//    delete m_Scene;
-//    m_Scene = nullptr;
-//}
+TEST_F(test_graphicsscene, setFirstFocusItem_getFirstFocusItem)
+{
+    QGraphicsRectItem *item = new QGraphicsRectItem();
+    scene->setFirstFocusItem(item);
+    EXPECT_EQ(scene->getFirstFocusItem(), item);
+    scene->removeItem(item);
+    delete item;
+}
 
-//TEST_F(test_graphicsscene, getCurrentFocusItem)
-//{
-//    QGraphicsItem *item = m_Scene->getCurrentFocusItem();
-//    Q_UNUSED(item)
-//}
+TEST_F(test_graphicsscene, setCurrentFocusItem_getCurrentFocusItem)
+{
+    QGraphicsRectItem *item = new QGraphicsRectItem();
+    scene->setCurrentFocusItem(item);
+    EXPECT_EQ(scene->getCurrentFocusItem(), item);
+    scene->removeItem(item);
+    delete item;
+}
 
-////setPrePage
-//TEST_F(test_graphicsscene, setPrePage)
-//{
-//    m_Scene->setPrePage(QDate::currentDate(), false);
-//}
+TEST_F(test_graphicsscene, setKeyPressPrxy)
+{
+    CKeyPressPrxy *prxy = new CKeyPressPrxy();
+    scene->setKeyPressPrxy(prxy);
+    scene->setKeyPressPrxy(nullptr);
+    delete prxy;
+}
 
-////focusInDeal
-//TEST_F(test_graphicsscene, focusInDeal)
-//{
-//    m_Scene->setIsShowCurrentItem(true);
-//    QFocusEvent event(QEvent::FocusIn, Qt::TabFocusReason);
-//    QApplication::sendEvent(m_Scene, &event);
-//}
+TEST_F(test_graphicsscene, currentFocusItemUpdate_nullptr)
+{
+    scene->currentFocusItemUpdate();
+}
 
-//TEST_F(test_graphicsscene, focusInDeal1)
-//{
-//    CFocusItem *item = new CFocusItem();
-//    m_Scene->setCurrentFocusItem(item);
-//    m_Scene->addItem(item);
-//    QFocusEvent event(QEvent::FocusIn, Qt::ActiveWindowFocusReason);
-//    QApplication::sendEvent(m_Scene, &event);
-//    m_Scene->clear();
-//}
+TEST_F(test_graphicsscene, currentFocusItemUpdate_withItem)
+{
+    CFocusItem *item = new CFocusItem();
+    scene->setCurrentFocusItem(item);
+    scene->addItem(item);
+    scene->currentFocusItemUpdate();
+    scene->clear();
+}
 
-////focusOutDeal
-//TEST_F(test_graphicsscene, focusOutDeal)
-//{
-//    QFocusEvent event(QEvent::FocusOut, Qt::TabFocusReason);
-//    m_Scene->setActiveSwitching(true);
-//    QApplication::sendEvent(m_Scene, &event);
-//}
+TEST_F(test_graphicsscene, setPrePage)
+{
+    scene->setPrePage(QDate::currentDate(), false);
+    scene->setPrePage(QDate::currentDate(), true);
+}
 
-////focusOutDeal
-//TEST_F(test_graphicsscene, focusOutDeal1)
-//{
-//    QFocusEvent event(QEvent::FocusOut, Qt::TabFocusReason);
-//    m_Scene->setActiveSwitching(false);
-//    QApplication::sendEvent(m_Scene, &event);
-//}
+TEST_F(test_graphicsscene, setNextPage)
+{
+    scene->setNextPage(QDate::currentDate(), false);
+    scene->setNextPage(QDate::currentDate(), true);
+}
 
-//TEST_F(test_graphicsscene, event)
-//{
-//    QFocusEvent event(QEvent::FocusOut);
-//    m_Scene->event(&event);
-//}
+TEST_F(test_graphicsscene, getActiveSwitching_setActiveSwitching)
+{
+    scene->setActiveSwitching(true);
+    EXPECT_TRUE(scene->getActiveSwitching());
+    scene->setActiveSwitching(false);
+    EXPECT_FALSE(scene->getActiveSwitching());
+}
 
-////setIsContextMenu
-//TEST_F(test_graphicsscene, setIsContextMenu)
-//{
-//    m_Scene->setIsShowCurrentItem(false);
-//}
+TEST_F(test_graphicsscene, currentItemInit_nullptr)
+{
+    scene->currentItemInit();
+}
 
-////currentItemInit
-//TEST_F(test_graphicsscene, currentItemInit)
-//{
-//    CFocusItem *item = new CFocusItem();
-//    m_Scene->setCurrentFocusItem(item);
-//    m_Scene->addItem(item);
-//    m_Scene->currentItemInit();
-//    m_Scene->clear();
-//}
+TEST_F(test_graphicsscene, setIsShowCurrentItem)
+{
+    scene->setIsShowCurrentItem(true);
+    scene->setIsShowCurrentItem(false);
+}
 
-////getActiveSwitching
-//TEST_F(test_graphicsscene, getActiveSwitching)
-//{
-//    m_Scene->getActiveSwitching();
-//}
+TEST_F(test_graphicsscene, setIsContextMenu)
+{
+    scene->setIsContextMenu(true);
+    scene->setIsContextMenu(false);
+}
+
+TEST_F(test_graphicsscene, event_FocusIn)
+{
+    QFocusEvent event(QEvent::FocusIn, Qt::TabFocusReason);
+    scene->event(&event);
+}
+
+TEST_F(test_graphicsscene, event_FocusOut)
+{
+    QFocusEvent event(QEvent::FocusOut, Qt::TabFocusReason);
+    scene->event(&event);
+}
+
+TEST_F(test_graphicsscene, event_KeyPress)
+{
+    QKeyEvent event(QEvent::KeyPress, Qt::Key_Left, Qt::NoModifier);
+    scene->event(&event);
+}
+
+TEST_F(test_graphicsscene, event_Other)
+{
+    QEvent event(QEvent::None);
+    scene->event(&event);
+}
+
+TEST_F(test_graphicsscene, focusInDeal_withItem)
+{
+    CFocusItem *item = new CFocusItem();
+    scene->setCurrentFocusItem(item);
+    scene->setFirstFocusItem(item);
+    scene->addItem(item);
+    scene->setIsShowCurrentItem(true);
+    QFocusEvent event(QEvent::FocusIn, Qt::ActiveWindowFocusReason);
+    scene->event(&event);
+    scene->clear();
+}
+
+TEST_F(test_graphicsscene, focusOutDeal_ActiveSwitching)
+{
+    scene->setActiveSwitching(true);
+    QFocusEvent event(QEvent::FocusOut, Qt::ActiveWindowFocusReason);
+    scene->event(&event);
+}
+
+TEST_F(test_graphicsscene, focusOutDeal_ContextMenu)
+{
+    scene->setIsContextMenu(true);
+    QFocusEvent event(QEvent::FocusOut, Qt::OtherFocusReason);
+    scene->event(&event);
+}

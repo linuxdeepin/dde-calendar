@@ -2,372 +2,292 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-//#include "test_alldayeventview.h"
-//#include "../dialog_stub.h"
+#include <gtest/gtest.h>
+#include <QApplication>
+#include <QEvent>
+#include <QFocusEvent>
+#include <QWheelEvent>
+#include <QMouseEvent>
+#include <QMenu>
 
-//#include <QTest>
-//#include <QEvent>
-//#include <QMenu>
+#include "alldayeventview.h"
+#include "schedulecoormanage.h"
+#include "dschedule.h"
+#include "../third-party_stub/stub.h"
+#include "../dialog_stub.h"
 
-//test_alldayeventview::test_alldayeventview()
-//{
-//}
+static void allday_stub_void()
+{
+}
 
-//void test_alldayeventview::SetUp()
-//{
-//    cAllDayEventWeekView = new CAllDayEventWeekView();
-//    cAllDayEventWeekView->setFixedSize(QSize(800, 300));
-//}
+static QAction *allday_QMenu_exec_stub(void *obj, const QPoint &, QAction *)
+{
+    Q_UNUSED(obj)
+    return nullptr;
+}
 
-//void test_alldayeventview::TearDown()
-//{
-//    delete cAllDayEventWeekView;
-//    cAllDayEventWeekView = nullptr;
-//}
+class test_alldayeventview : public ::testing::Test
+{
+protected:
+    CAllDayEventWeekView *view = nullptr;
+    void SetUp() override
+    {
+        view = new CAllDayEventWeekView();
+        view->setFixedSize(QSize(800, 300));
+        view->show();
+        QApplication::processEvents();
+    }
+    void TearDown() override
+    {
+        delete view;
+        view = nullptr;
+    }
+};
 
-////void CAllDayEventWeekView::setTheMe(int type)
-//TEST_F(test_alldayeventview, setTheMe)
-//{
-//    int type = 1;
-//    cAllDayEventWeekView->setTheMe();
-//    cAllDayEventWeekView->setTheMe(type);
-//}
+TEST_F(test_alldayeventview, Constructor)
+{
+    EXPECT_NE(view, nullptr);
+}
 
-////bool CAllDayEventWeekView::MeetCreationConditions(const QDateTime &date)
-//TEST_F(test_alldayeventview, MeetCreationConditions)
-//{
-//    QString begin = "2020-12-01 12:24:36";
-//    QDateTime date = QDateTime::fromString(begin, "yyyy-MM-dd hh:mm:ss");
-//    cAllDayEventWeekView->MeetCreationConditions(date);
-//}
+TEST_F(test_alldayeventview, setTheMe)
+{
+    view->setTheMe(0);
+    view->setTheMe(1);
+    view->setTheMe(2);
+}
 
-////bool CAllDayEventWeekView::IsEqualtime(const QDateTime &timeFirst, const QDateTime &timeSecond)
-//TEST_F(test_alldayeventview, IsEqualtime)
-//{
-//    QString begin = "2020-12-01 12:24:36";
-//    QDateTime begindate = QDateTime::fromString(begin, "yyyy-MM-dd hh:mm:ss");
-//    QString end = "2020-12-21 12:24:36";
-//    QDateTime enddate = QDateTime::fromString(end, "yyyy-MM-dd hh:mm:ss");
+TEST_F(test_alldayeventview, MeetCreationConditions)
+{
+    QDateTime date = QDateTime::currentDateTime();
+    EXPECT_TRUE(view->MeetCreationConditions(date));
+}
 
-//    assert(false == cAllDayEventWeekView->IsEqualtime(begindate, enddate));
+TEST_F(test_alldayeventview, IsEqualtime)
+{
+    QDateTime t1 = QDateTime::currentDateTime();
+    QDateTime t2 = QDateTime::currentDateTime();
+    EXPECT_TRUE(view->IsEqualtime(t1, t2));
 
-//    enddate = QDateTime::fromString(begin, "yyyy-MM-dd hh:mm:ss");
-//    assert(true == cAllDayEventWeekView->IsEqualtime(begindate, enddate));
-//}
+    QDateTime t3 = t1.addDays(1);
+    EXPECT_FALSE(view->IsEqualtime(t1, t3));
+}
 
-////void CAllDayEventWeekView::setRange(int w, int h, QDate begindate, QDate enddate, int rightmagin)
-//TEST_F(test_alldayeventview, setRange)
-//{
-//    int w = 3;
-//    int h = 2;
-//    QDate begindate(2020, 12, 01);
-//    QDate enddate(2020, 12, 21);
-//    int rightmagin = 2;
-//    cAllDayEventWeekView->setRange(w, h, begindate, enddate, rightmagin);
-//}
+TEST_F(test_alldayeventview, JudgeIsCreate)
+{
+    QPointF pos(100, 100);
+    view->JudgeIsCreate(pos);
+}
 
-//QVector<ScheduleDataInfo> getTestScheduleDataInfo()
-//{
-//    ScheduleDataInfo info1;
-//    info1.setID(1);
-//    info1.setType(2);
-//    info1.setAllDay(true);
-//    info1.setRecurID(2);
-//    info1.setTitleName("测试1");
-//    QString strDate = "2020-12-02 12:24:36";
-//    QDateTime ignoreDate = QDateTime::fromString(strDate, "yyyy-MM-dd hh:mm:ss");
-//    QVector<QDateTime> ignoreDateList;
-//    ignoreDateList.append(ignoreDate);
-//    info1.setIgnoreTime(ignoreDateList);
-//    QString begin = "2020-12-01 12:24:36";
-//    QDateTime begindate = QDateTime::fromString(begin, "yyyy-MM-dd hh:mm:ss");
-//    QString end = "2020-12-03 12:24:36";
-//    QDateTime enddate = QDateTime::fromString(end, "yyyy-MM-dd hh:mm:ss");
-//    info1.setBeginDateTime(begindate);
-//    info1.setEndDateTime(enddate);
+TEST_F(test_alldayeventview, setDayData)
+{
+    QVector<DSchedule::List> vlistData;
+    DSchedule::List list1;
+    DSchedule::Ptr sched1(new DSchedule());
+    sched1->setDtStart(QDateTime(QDate(2026, 10, 1), QTime(10, 0, 0)));
+    sched1->setDtEnd(QDateTime(QDate(2026, 10, 1), QTime(11, 0, 0)));
+    sched1->setAllDay(true);
+    list1.append(sched1);
+    vlistData.append(list1);
 
-//    ScheduleDataInfo info2;
-//    info2.setID(1);
-//    info2.setType(2);
-//    info2.setAllDay(true);
-//    info2.setRecurID(2);
-//    info2.setTitleName("测试2");
-//    QString strDate2 = "2020-12-12 12:24:36";
-//    QDateTime ignoreDate2 = QDateTime::fromString(strDate2, "yyyy-MM-dd hh:mm:ss");
-//    QVector<QDateTime> ignoreDateList2;
-//    ignoreDateList2.append(ignoreDate2);
-//    info2.setIgnoreTime(ignoreDateList2);
-//    QString begin2 = "2020-12-11 12:24:36";
-//    QDateTime begindate2 = QDateTime::fromString(begin2, "yyyy-MM-dd hh:mm:ss");
-//    QString end2 = "2020-12-13 12:24:36";
-//    QDateTime enddate2 = QDateTime::fromString(end2, "yyyy-MM-dd hh:mm:ss");
-//    info2.setBeginDateTime(begindate2);
-//    info2.setEndDateTime(enddate2);
+    view->setDayData(vlistData);
+    EXPECT_EQ(view->getListData().size(), 1);
+}
 
-//    ScheduleDataInfo info3;
-//    info3.setID(1);
-//    info3.setType(2);
-//    info3.setAllDay(true);
-//    info3.setRecurID(2);
-//    info3.setTitleName("测试3");
-//    QString strDate3 = "2020-12-22 12:24:36";
-//    QDateTime ignoreDate3 = QDateTime::fromString(strDate3, "yyyy-MM-dd hh:mm:ss");
-//    QVector<QDateTime> ignoreDateList3;
-//    ignoreDateList3.append(ignoreDate3);
-//    info3.setIgnoreTime(ignoreDateList3);
-//    QString begin3 = "2020-12-21 12:24:36";
-//    QDateTime begindate3 = QDateTime::fromString(begin3, "yyyy-MM-dd hh:mm:ss");
-//    QString end3 = "2020-12-23 12:24:36";
-//    QDateTime enddate3 = QDateTime::fromString(end3, "yyyy-MM-dd hh:mm:ss");
-//    info3.setBeginDateTime(begindate3);
-//    info3.setEndDateTime(enddate3);
+TEST_F(test_alldayeventview, setInfo)
+{
+    DSchedule::List info;
+    DSchedule::Ptr sched(new DSchedule());
+    sched->setDtStart(QDateTime::currentDateTime());
+    sched->setDtEnd(QDateTime::currentDateTime().addSecs(3600));
+    info.append(sched);
+    view->setInfo(info);
+}
 
-//    QVector<ScheduleDataInfo> infoList;
-//    infoList.append(info1);
-//    infoList.append(info2);
-//    infoList.append(info3);
+TEST_F(test_alldayeventview, getListData)
+{
+    auto &data = view->getListData();
+    EXPECT_EQ(data.size(), 0);
+}
 
-//    return infoList;
-//}
+TEST_F(test_alldayeventview, updateHeight)
+{
+    view->updateHeight();
+}
 
-////void CAllDayEventWeekView::setDayData(const QVector<QVector<ScheduleDataInfo>> &vlistData)
-//TEST_F(test_alldayeventview, setDayData)
-//{
-//    QVector<QVector<ScheduleDataInfo>> vlistData;
+TEST_F(test_alldayeventview, setSelectSearchSchedule)
+{
+    DSchedule::Ptr info(new DSchedule());
+    info->setDtStart(QDateTime::currentDateTime());
+    info->setDtEnd(QDateTime::currentDateTime().addSecs(3600));
+    view->setSelectSearchSchedule(info);
+}
 
-//    QVector<ScheduleDataInfo> infoList1;
-//    infoList1.append(getTestScheduleDataInfo().at(0));
-//    infoList1.append(getTestScheduleDataInfo().at(1));
+TEST_F(test_alldayeventview, setMargins)
+{
+    view->setMargins(10, 20, 30, 40);
+}
 
-//    QVector<ScheduleDataInfo> infoList2;
-//    infoList2.append(getTestScheduleDataInfo().at(2));
+TEST_F(test_alldayeventview, updateInfo)
+{
+    view->updateInfo();
+}
 
-//    vlistData.append(infoList1);
-//    vlistData.append(infoList2);
+TEST_F(test_alldayeventview, changeEvent_FontChange)
+{
+    QEvent event(QEvent::FontChange);
+    QApplication::sendEvent(view, &event);
+}
 
-//    cAllDayEventWeekView->setDayData(vlistData);
-//}
+TEST_F(test_alldayeventview, paintEvent)
+{
+    view->repaint();
+    QApplication::processEvents();
+}
 
+TEST_F(test_alldayeventview, slotCreate)
+{
+    Stub stub;
+    calendarDDialogExecStub(stub);
+    view->slotCreate(QDateTime::currentDateTime());
+}
 
-////void CAllDayEventWeekView::setInfo(const QVector<ScheduleDataInfo> &info)
-//TEST_F(test_alldayeventview, setInfo)
-//{
-//    cAllDayEventWeekView->setInfo(getTestScheduleDataInfo());
-//}
+TEST_F(test_alldayeventview, RightClickToCreate)
+{
+    Stub stub;
+    stub.set((QAction *(QMenu::*)(const QPoint &, QAction *))ADDR(QMenu, exec), allday_QMenu_exec_stub);
+    view->RightClickToCreate(nullptr, QPoint(30, 50));
+}
 
-////void CAllDayEventWeekView::slotDoubleEvent()
-//TEST_F(test_alldayeventview, slotDoubleEvent)
-//{
-//    cAllDayEventWeekView->slotDoubleEvent();
-//}
+TEST_F(test_alldayeventview, MoveInfoProcess_AllDay)
+{
+    DSchedule::Ptr info(new DSchedule());
+    QDateTime currentTime = QDateTime::currentDateTime();
+    info->setDtStart(currentTime);
+    info->setDtEnd(currentTime.addDays(1));
+    info->setAllDay(true);
+    view->m_PressDate = currentTime;
+    view->m_MoveDate = currentTime;
+    view->MoveInfoProcess(info, QPointF(0, 0));
+}
 
-////void CAllDayEventWeekView::createItemWidget(int index, bool average)
-//TEST_F(test_alldayeventview, createItemWidget)
-//{
-//    QVector<QVector<ScheduleDataInfo>> vlistData;
+TEST_F(test_alldayeventview, MoveInfoProcess_NonAllDay)
+{
+    DSchedule::Ptr info(new DSchedule());
+    QDateTime currentTime = QDateTime::currentDateTime();
+    info->setDtStart(currentTime);
+    info->setDtEnd(currentTime.addDays(1));
+    info->setAllDay(false);
+    view->m_PressDate = currentTime;
+    view->m_MoveDate = currentTime;
+    DSchedule::Ptr dragInfo(new DSchedule());
+    dragInfo->setDtStart(currentTime);
+    dragInfo->setDtEnd(currentTime.addDays(1));
+    view->m_DragScheduleInfo = dragInfo;
+    view->MoveInfoProcess(info, QPointF(0, 0));
+}
 
-//    QVector<ScheduleDataInfo> infoList1;
-//    infoList1.append(getTestScheduleDataInfo().at(0));
-//    infoList1.append(getTestScheduleDataInfo().at(1));
+TEST_F(test_alldayeventview, getDragScheduleInfoBeginTime)
+{
+    QDateTime time = QDateTime::currentDateTime();
+    view->m_InfoEndTime = time;
+    view->getDragScheduleInfoBeginTime(time);
+}
 
-//    QVector<ScheduleDataInfo> infoList2;
-//    infoList2.append(getTestScheduleDataInfo().at(2));
+TEST_F(test_alldayeventview, getDragScheduleInfoEndTime)
+{
+    QDateTime time = QDateTime::currentDateTime();
+    view->m_InfoBeginTime = time;
+    view->m_InfoEndTime = time.addDays(1);
+    view->getDragScheduleInfoEndTime(time);
+}
 
-//    vlistData.append(infoList1);
-//    vlistData.append(infoList2);
+TEST_F(test_alldayeventview, getPosInItem)
+{
+    QPoint p(50, 10);
+    QRectF itemRect(0, 0, 100, 20);
+    view->getPosInItem(p, itemRect);
+}
 
-//    cAllDayEventWeekView->setDayData(vlistData);
+TEST_F(test_alldayeventview, getPosDate)
+{
+    QPoint p(100, 100);
+    view->getPosDate(p);
+}
 
-//    int w = 1000;
-//    int h = 900;
-//    QDate begindate(2020, 12, 01);
-//    QDate enddate(2020, 12, 21);
-//    int rightmagin = 2;
-//    cAllDayEventWeekView->setRange(w, h, begindate, enddate, rightmagin);
+TEST_F(test_alldayeventview, upDateInfoShow_NONE)
+{
+    DSchedule::Ptr info(new DSchedule());
+    view->upDateInfoShow(DragInfoGraphicsView::NONE, info);
+}
 
-//    int index = 0;
-//    bool average = true;
-//    cAllDayEventWeekView->createItemWidget(index, average);
-//    cAllDayEventWeekView->updateHeight();
-//    //setSelectSearchSchedule
-//    cAllDayEventWeekView->setSelectSearchSchedule(getTestScheduleDataInfo().at(1));
-//}
+TEST_F(test_alldayeventview, upDateInfoShow_ChangeWhole)
+{
+    DSchedule::Ptr info(new DSchedule());
+    view->upDateInfoShow(DragInfoGraphicsView::ChangeWhole, info);
+}
 
-////void CAllDayEventWeekView::updateItemHeightByFontSize()
-//TEST_F(test_alldayeventview, updateItemHeightByFontSize)
-//{
-//    cAllDayEventWeekView->updateItemHeightByFontSize();
-//}
+TEST_F(test_alldayeventview, upDateInfoShow_IsCreate)
+{
+    DSchedule::Ptr info(new DSchedule());
+    view->upDateInfoShow(DragInfoGraphicsView::IsCreate, info);
+}
 
+TEST_F(test_alldayeventview, slotUpdateScene)
+{
+    view->slotUpdateScene();
+}
 
-////void CAllDayEventWeekView::upDateInfoShow(const DragStatus &status, const ScheduleDataInfo &info)
-//TEST_F(test_alldayeventview, upDateInfoShow)
-//{
-//    cAllDayEventWeekView->setInfo(getTestScheduleDataInfo());
-//    cAllDayEventWeekView->upDateInfoShow(DragInfoGraphicsView::DragStatus::ChangeEnd, getTestScheduleDataInfo().at(1));
-//    cAllDayEventWeekView->upDateInfoShow(DragInfoGraphicsView::DragStatus::ChangeBegin, getTestScheduleDataInfo().at(1));
-//    cAllDayEventWeekView->upDateInfoShow(DragInfoGraphicsView::DragStatus::ChangeWhole, getTestScheduleDataInfo().at(1));
-//    cAllDayEventWeekView->upDateInfoShow(DragInfoGraphicsView::DragStatus::IsCreate, getTestScheduleDataInfo().at(1));
-//}
+TEST_F(test_alldayeventview, slotStateChange)
+{
+    view->slotStateChange(true);
+    view->slotStateChange(false);
+}
 
-////
-//TEST_F(test_alldayeventview, getPixmap)
-//{
-//    cAllDayEventWeekView->setFixedSize(500, 800);
-//    QPixmap pixmap(cAllDayEventWeekView->size());
-//    pixmap = cAllDayEventWeekView->grab();
-//}
+TEST_F(test_alldayeventview, slotDoubleEvent)
+{
+    view->slotDoubleEvent();
+}
 
-////
-//TEST_F(test_alldayeventview, eventTest)
-//{
-//    QTest::keyEvent(QTest::Press, cAllDayEventWeekView, Qt::Key::Key_Enter);
-//    cAllDayEventWeekView->setFixedSize(500, 100);
-//    QTest::mouseDClick(cAllDayEventWeekView, Qt::LeftButton, Qt::NoModifier, QPoint(200, 50));
-//}
+TEST_F(test_alldayeventview, mouseDoubleClickEvent)
+{
+    Stub stub;
+    calendarDDialogExecStub(stub);
+    QMouseEvent event(QEvent::MouseButtonDblClick, QPointF(0, 0), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+    QApplication::sendEvent(view->viewport(), &event);
+}
 
-////slotCreate
-//TEST_F(test_alldayeventview, slotCreate)
-//{
-//    calendarDDialogExecReturn = 1;
-//    Stub stub;
-//    calendarDDialogExecStub(stub);
-//    cAllDayEventWeekView->slotCreate(QDateTime::currentDateTime());
-//}
+TEST_F(test_alldayeventview, wheelEvent)
+{
+    QWheelEvent event(QPointF(100, 100), QPointF(100, 100), QPoint(0, 0), QPoint(0, 120), Qt::NoButton, Qt::NoModifier, Qt::NoScrollPhase, false);
+    QApplication::sendEvent(view->viewport(), &event);
+}
 
-////getDragScheduleInfoBeginTime
-//TEST_F(test_alldayeventview, getDragScheduleInfoBeginTime)
-//{
-//    cAllDayEventWeekView->getDragScheduleInfoBeginTime(QDateTime::currentDateTime());
-//}
+TEST_F(test_alldayeventview, wheelEvent_Horizontal)
+{
+    QWheelEvent event(QPointF(100, 100), QPointF(100, 100), QPoint(120, 0), QPoint(0, 0), Qt::NoButton, Qt::NoModifier, Qt::NoScrollPhase, false);
+    QApplication::sendEvent(view->viewport(), &event);
+}
 
-////changeEvent
-//TEST_F(test_alldayeventview, changeEvent)
-//{
-//    QEvent event(QEvent::FontChange);
-//    QApplication::sendEvent(cAllDayEventWeekView, &event);
-//}
+TEST_F(test_alldayeventview, updateDateShow)
+{
+    view->updateDateShow();
+}
 
-////mousePressEvent
-//TEST_F(test_alldayeventview, mousePressEvent)
-//{
-//    QMouseEvent event(QEvent::MouseButtonPress, QPointF(32, 13), QPointF(646, 438), QPointF(646, 438),
-//                      Qt::LeftButton, Qt::LeftButton, Qt::NoModifier, Qt::MouseEventSynthesizedByQt);
-//    QApplication::sendEvent(cAllDayEventWeekView->viewport(), &event);
-//}
+TEST_F(test_alldayeventview, createItemWidget)
+{
+    QVector<DSchedule::List> vlistData;
+    DSchedule::List list1;
+    DSchedule::Ptr sched1(new DSchedule());
+    sched1->setDtStart(QDateTime(QDate(2026, 10, 1), QTime(10, 0, 0)));
+    sched1->setDtEnd(QDateTime(QDate(2026, 10, 1), QTime(11, 0, 0)));
+    sched1->setAllDay(true);
+    list1.append(sched1);
+    vlistData.append(list1);
+    view->setDayData(vlistData);
+    view->createItemWidget(0, false);
+}
 
-//TEST_F(test_alldayeventview, JudgeIsCreate)
-//{
-//    QPointF point(32, 13);
-//    cAllDayEventWeekView->JudgeIsCreate(point);
-//}
-
-//QAction *stub_exec(const QPoint &pos, QAction *at = nullptr)
-//{
-//    Q_UNUSED(pos)
-//    Q_UNUSED(at)
-//    return nullptr;
-//}
-
-////RightClickToCreate
-//TEST_F(test_alldayeventview, RightClickToCreate)
-//{
-//    Stub stub;
-//    stub.set((QAction * (QMenu::*)(const QPoint &, QAction *)) ADDR(QMenu, exec), stub_exec);
-//    cAllDayEventWeekView->RightClickToCreate(nullptr, QPoint(30, 50));
-//}
-
-////MoveInfoProcess
-//TEST_F(test_alldayeventview, MoveInfoProcess)
-//{
-//    ScheduleDataInfo info;
-//    QDateTime currentTime = QDateTime::currentDateTime();
-//    info.setBeginDateTime(currentTime);
-//    info.setEndDateTime(currentTime.addDays(1));
-//    info.setAllDay(true);
-//    cAllDayEventWeekView->MoveInfoProcess(info, QPointF(0, 0));
-//    info.setAllDay(false);
-//    cAllDayEventWeekView->MoveInfoProcess(info, QPointF(0, 0));
-//}
-
-////getDragScheduleInfoEndTime
-//TEST_F(test_alldayeventview, getDragScheduleInfoEndTime)
-//{
-//    cAllDayEventWeekView->getDragScheduleInfoEndTime(QDateTime::currentDateTime());
-//}
-
-////slotUpdateScene
-//TEST_F(test_alldayeventview, slotUpdateScene)
-//{
-//    cAllDayEventWeekView->slotUpdateScene();
-//}
-
-//TEST_F(test_alldayeventview, updateInfo)
-//{
-//    cAllDayEventWeekView->updateInfo();
-//    cAllDayEventWeekView->m_DragStatus = DragInfoGraphicsView::IsCreate;
-//    cAllDayEventWeekView->updateInfo();
-//}
-
-////mouseDoubleClickEvent
-//TEST_F(test_alldayeventview, mouseDoubleClickEvent)
-//{
-//    Stub stub;
-//    calendarDDialogExecStub(stub);
-//    QTest::mouseDClick(cAllDayEventWeekView->viewport(), Qt::LeftButton);
-//}
-
-////
-//TEST_F(test_alldayeventview, setSceneRect)
-//{
-//    cAllDayEventWeekView->setSceneRect(20, 20, 1000, 1500);
-//    cAllDayEventWeekView->updateBackgroundShowItem();
-//}
-
-////slotPosOnView
-//TEST_F(test_alldayeventview, slotPosOnView)
-//{
-//    cAllDayEventWeekView->slotPosOnView(1);
-//}
-
-////mouseReleaseEvent
-//TEST_F(test_alldayeventview, mouseReleaseEvent)
-//{
-//    QMouseEvent event(QEvent::MouseButtonRelease, QPointF(32, 13), QPointF(646, 438), QPointF(646, 438),
-//                      Qt::RightButton, Qt::RightButton, Qt::NoModifier, Qt::MouseEventSynthesizedByQt);
-//    QApplication::sendEvent(cAllDayEventWeekView->viewport(), &event);
-//}
-
-////mouseReleaseEvent
-//TEST_F(test_alldayeventview, mouseReleaseEvent1)
-//{
-//    cAllDayEventWeekView->m_TouchBeginTime = QDateTime::currentDateTime().toMSecsSinceEpoch() - 10;
-//    QMouseEvent event(QEvent::MouseButtonRelease, QPointF(32, 13), QPointF(646, 438), QPointF(646, 438),
-//                      Qt::LeftButton, Qt::LeftButton, Qt::NoModifier, Qt::MouseEventSynthesizedByQt);
-//    QApplication::sendEvent(cAllDayEventWeekView->viewport(), &event);
-//}
-
-////mouseMoveEvent
-//TEST_F(test_alldayeventview, mouseMoveEvent)
-//{
-//    cAllDayEventWeekView->m_touchState = DragInfoGraphicsView::TS_PRESS;
-//    QTest::mouseMove(cAllDayEventWeekView->viewport());
-//}
-
-////wheelEvent
-//TEST_F(test_alldayeventview, wheelEvent)
-//{
-//    QEvent event(QEvent::Wheel);
-//    QApplication::sendEvent(cAllDayEventWeekView->viewport(), &event);
-//}
-
-////contextMenuEvent
-//TEST_F(test_alldayeventview, contextMenuEvent)
-//{
-//    //    QEvent event(QEvent::ContextMenu);
-//    QContextMenuEvent event(QContextMenuEvent::Mouse, QPoint(20, 20), QPoint(120, 120), Qt::NoModifier);
-//    Stub stub;
-//    stub.set((QAction * (QMenu::*)(const QPoint &, QAction *)) ADDR(QMenu, exec), stub_exec);
-//    calendarDDialogExecStub(stub);
-//    QApplication::sendEvent(cAllDayEventWeekView->viewport(), &event);
-//}
+TEST_F(test_alldayeventview, updateItemHeightByFontSize)
+{
+    view->updateItemHeightByFontSize();
+}
