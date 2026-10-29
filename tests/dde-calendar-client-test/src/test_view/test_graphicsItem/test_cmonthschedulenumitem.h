@@ -5,27 +5,25 @@
 #ifndef TEST_CMONTHSCHEDULENUMITEM_H
 #define TEST_CMONTHSCHEDULENUMITEM_H
 
-//#include "graphicsItem/cmonthschedulenumitem.h"
-//#include <QObject>
-//#include <gtest/gtest.h>
+#include "graphicsItem/cmonthschedulenumitem.h"
+#include <QObject>
+#include <gtest/gtest.h>
 
-//class test_cmonthschedulenumItem: public::testing::Test
-//{
-//public:
-//    test_cmonthschedulenumItem();
+class test_cmonthschedulenumItem: public::testing::Test
+{
+public:
+    virtual void SetUp()
+    {
+        mItem = new CMonthScheduleNumItem();
+    }
 
-//    virtual void SetUp()
-//    {
-//        mItem = new CMonthScheduleNumItem();
-//    }
-
-//    virtual void TearDown()
-//    {
-//        delete mItem;
-//        mItem = nullptr;
-//    }
-//protected:
-//    CMonthScheduleNumItem *mItem = nullptr;
-//};
+    virtual void TearDown()
+    {
+        delete mItem;
+        mItem = nullptr;
+    }
+protected:
+    CMonthScheduleNumItem *mItem = nullptr;
+};
 
 #endif // TEST_CMONTHSCHEDULENUMITEM_H
