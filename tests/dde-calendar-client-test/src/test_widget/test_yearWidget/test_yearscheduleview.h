@@ -5,25 +5,21 @@
 #ifndef TEST_YEARSCHEDULEVIEW_H
 #define TEST_YEARSCHEDULEVIEW_H
 
-//#include "yearWidget/yearscheduleview.h"
-//#include "gtest/gtest.h"
-//#include <QObject>
+#include <QObject>
+#include <gtest/gtest.h>
+#include "widget/yearWidget/yearscheduleview.h"
 
-//class test_yearscheduleview : public QObject, public::testing::Test
-//{
-//public:
-//    test_yearscheduleview();
-//    ~test_yearscheduleview();
-//    void SetUp() override;
-//    void TearDown() override;
+class test_yearscheduleview : public QObject, public ::testing::Test
+{
+public:
+    test_yearscheduleview();
+    ~test_yearscheduleview();
+    void SetUp() override;
+    void TearDown() override;
 
-//protected:
-//    CYearScheduleView *cYearScheduleView = nullptr;
-//    CYearScheduleOutView *zYearScheduleOutView = nullptr;
-
-//public:
-//    QVector<ScheduleDataInfo> getScheduleDataInfo();
-//    QVector<ScheduleDataInfo> getScheduleDateAndTitle();
-//};
+protected:
+    CYearScheduleView *cYearScheduleView = nullptr;
+    CYearScheduleOutView *zYearScheduleOutView = nullptr;
+};
 
 #endif // TEST_YEARSCHEDULEVIEW_H

@@ -5,21 +5,21 @@
 #ifndef TEST_YEARVIEW_H
 #define TEST_YEARVIEW_H
 
-//#include "yearWidget/yearview.h"
-//#include "gtest/gtest.h"
-//#include <QObject>
+#include <QObject>
+#include <gtest/gtest.h>
+#include "widget/yearWidget/yearview.h"
 
-//class test_yearview : public QObject
-//    , public ::testing::Test
-//{
-//public:
-//    test_yearview();
-//    ~test_yearview();
-//    void SetUp() override;
-//    void TearDown() override;
+class test_yearview : public QObject
+    , public ::testing::Test
+{
+public:
+    test_yearview();
+    ~test_yearview();
+    void SetUp() override;
+    void TearDown() override;
 
-//protected:
-//    CYearView *cYearView = nullptr;
-//};
+protected:
+    CYearView *cYearView = nullptr;
+};
 
 #endif // TEST_YEARVIEW_H

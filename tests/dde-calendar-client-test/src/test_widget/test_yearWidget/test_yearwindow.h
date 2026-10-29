@@ -5,20 +5,19 @@
 #ifndef TEST_YEARWINDOW_H
 #define TEST_YEARWINDOW_H
 
-//#include "yearWidget/yearwindow.h"
-//#include "gtest/gtest.h"
-//#include <QObject>
+#include <QObject>
+#include <gtest/gtest.h>
+#include "widget/yearWidget/yearwindow.h"
 
-//class test_yearwindow : public QObject
-//    , public ::testing::Test
-//{
-//public:
-//    test_yearwindow();
-//    ~test_yearwindow();
+class test_yearwindow : public QObject
+    , public ::testing::Test
+{
+public:
+    test_yearwindow();
+    ~test_yearwindow();
 
-//protected:
-//    CYearWindow *mYearWindow = nullptr;
-//    CalendarDateDataManager *dateaManger = nullptr;
-//};
+protected:
+    CYearWindow *mYearWindow = nullptr;
+};
 
 #endif // TEST_YEARWINDOW_H

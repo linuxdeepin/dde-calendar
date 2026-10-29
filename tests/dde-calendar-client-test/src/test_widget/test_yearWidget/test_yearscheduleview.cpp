@@ -6,282 +6,287 @@
 #include "../third-party_stub/stub.h"
 #include "constants.h"
 #include <QDebug>
+#include <QMouseEvent>
+#include <QHelpEvent>
+#include <QPixmap>
+#include <QTest>
 
-//test_yearscheduleview::test_yearscheduleview()
-//{
-//}
+// free functions defined in yearscheduleview.cpp (external linkage)
+extern bool YScheduleDateThan(const DSchedule::Ptr &s1, const DSchedule::Ptr &s2);
+extern bool YScheduleDaysThan(const DSchedule::Ptr &s1, const DSchedule::Ptr &s2);
 
-//test_yearscheduleview::~test_yearscheduleview()
-//{
-//}
+test_yearscheduleview::test_yearscheduleview()
+{
+}
 
-//void test_yearscheduleview::SetUp()
-//{
-//    cYearScheduleView = new CYearScheduleView();
-//    zYearScheduleOutView = new CYearScheduleOutView();
-//}
+test_yearscheduleview::~test_yearscheduleview()
+{
+}
 
-//void test_yearscheduleview::TearDown()
-//{
-//    delete cYearScheduleView;
-//    cYearScheduleView = nullptr;
-//    delete zYearScheduleOutView;
-//    zYearScheduleOutView = nullptr;
-//}
+void test_yearscheduleview::SetUp()
+{
+    cYearScheduleView = new CYearScheduleView();
+    zYearScheduleOutView = new CYearScheduleOutView();
+}
 
-//QVector<ScheduleDataInfo> test_yearscheduleview::getScheduleDataInfo()
-//{
-//    QVector<ScheduleDataInfo> scheduleDate {};
-//    ScheduleDataInfo schedule1, schedule2, schedule3, schedule4, schedule5, scheduleFes;
+void test_yearscheduleview::TearDown()
+{
+    delete cYearScheduleView;
+    cYearScheduleView = nullptr;
+    delete zYearScheduleOutView;
+    zYearScheduleOutView = nullptr;
+}
 
-//    schedule1.setID(1);
-//    schedule1.setBeginDateTime(QDateTime(QDate(2021, 1, 1), QTime(0, 0, 0)));
-//    schedule1.setEndDateTime(QDateTime(QDate(2021, 1, 2), QTime(23, 59, 59)));
-//    schedule1.setTitleName("schedule test one");
-//    schedule1.setAllDay(true);
-//    schedule1.setType(1);
-//    schedule1.setRecurID(0);
+static DSchedule::Ptr makeSchedule(const QDate &begin, const QDate &end,
+                                   const QString &title, bool allDay = false)
+{
+    DSchedule::Ptr ptr(new DSchedule());
+    ptr->setSummary(title);
+    ptr->setDtStart(QDateTime(begin, QTime(0, 0, 0)));
+    ptr->setDtEnd(QDateTime(end, QTime(23, 59, 59)));
+    ptr->setAllDay(allDay);
+    return ptr;
+}
 
-//    schedule2.setID(2);
-//    schedule2.setBeginDateTime(QDateTime(QDate(2021, 1, 3), QTime(0, 0, 0)));
-//    schedule2.setEndDateTime(QDateTime(QDate(2021, 1, 5), QTime(23, 59, 59)));
-//    schedule2.setTitleName("schedule test two");
-//    schedule2.setAllDay(true);
-//    schedule2.setType(2);
-//    schedule2.setRecurID(0);
+static DSchedule::List getScheduleList()
+{
+    DSchedule::List list;
+    list.append(makeSchedule(QDate(2021, 1, 1), QDate(2021, 1, 2), "all-day one", true));
+    list.append(makeSchedule(QDate(2021, 1, 3), QDate(2021, 1, 5), "all-day two", true));
+    list.append(makeSchedule(QDate(2021, 1, 6), QDate(2021, 1, 9), "timed three", false));
+    list.append(makeSchedule(QDate(2021, 1, 10), QDate(2021, 1, 14), "timed four", false));
+    list.append(makeSchedule(QDate(2021, 1, 15), QDate(2021, 1, 20), "timed five", false));
+    return list;
+}
 
-//    schedule3.setID(3);
-//    schedule3.setBeginDateTime(QDateTime(QDate(2021, 1, 6), QTime(5, 23, 40)));
-//    schedule3.setEndDateTime(QDateTime(QDate(2021, 1, 9), QTime(6, 23, 40)));
-//    schedule3.setTitleName("schedule test three");
-//    schedule3.setAllDay(false);
-//    schedule3.setType(3);
-//    schedule3.setRecurID(0);
+// CYearScheduleView constructor
+TEST_F(test_yearscheduleview, constructor)
+{
+    ASSERT_NE(cYearScheduleView, nullptr);
+}
 
-//    schedule4.setID(4);
-//    schedule4.setBeginDateTime(QDateTime(QDate(2021, 1, 10), QTime(7, 23, 40)));
-//    schedule4.setEndDateTime(QDateTime(QDate(2021, 1, 14), QTime(8, 23, 40)));
-//    schedule4.setTitleName("schedule test four");
-//    schedule4.setAllDay(false);
-//    schedule4.setType(1);
-//    schedule4.setRecurID(0);
+// CYearScheduleView destructor (covered via TearDown, explicit smoke test)
+TEST_F(test_yearscheduleview, destructor)
+{
+    CYearScheduleView *view = new CYearScheduleView();
+    delete view;
+}
 
-//    schedule5.setID(5);
-//    schedule5.setBeginDateTime(QDateTime(QDate(2021, 1, 15), QTime(9, 23, 40)));
-//    schedule5.setEndDateTime(QDateTime(QDate(2021, 1, 20), QTime(10, 23, 40)));
-//    schedule5.setTitleName("schedule test five");
-//    schedule5.setAllDay(false);
-//    schedule5.setType(2);
-//    schedule5.setRecurID(0);
+// void CYearScheduleView::setData(DSchedule::List &vListData)
+TEST_F(test_yearscheduleview, setData)
+{
+    DSchedule::List list = getScheduleList();
+    cYearScheduleView->setData(list);
+}
 
-//    scheduleFes.setID(6);
-//    scheduleFes.setBeginDateTime(QDateTime(QDate(2021, 1, 21), QTime(0, 0, 0)));
-//    scheduleFes.setEndDateTime(QDateTime(QDate(2021, 1, 21), QTime(23, 59, 59)));
-//    scheduleFes.setTitleName("schedule test festival");
-//    scheduleFes.setAllDay(true);
-//    scheduleFes.setType(4);
-//    scheduleFes.setRecurID(0);
+// setData with empty list
+TEST_F(test_yearscheduleview, setData_empty)
+{
+    DSchedule::List list;
+    cYearScheduleView->setData(list);
+}
 
-//    scheduleDate.append(schedule1);
-//    scheduleDate.append(schedule2);
-//    scheduleDate.append(schedule3);
-//    scheduleDate.append(schedule4);
-//    scheduleDate.append(schedule5);
-//    scheduleDate.append(scheduleFes);
-//    return scheduleDate;
-//}
+// setData with more than max count (truncation path)
+TEST_F(test_yearscheduleview, setData_truncate)
+{
+    DSchedule::List list;
+    for (int i = 0; i < 10; ++i) {
+        list.append(makeSchedule(QDate(2021, 1, 1).addDays(i),
+                                 QDate(2021, 1, 2).addDays(i),
+                                 QString("item %1").arg(i), i % 2 == 0));
+    }
+    cYearScheduleView->setData(list);
+}
 
-//QVector<ScheduleDataInfo> test_yearscheduleview::getScheduleDateAndTitle()
-//{
-//    QVector<ScheduleDataInfo> scheduleDate {};
-//    ScheduleDataInfo s11, s12;
-//    s11.setBeginDateTime(QDateTime(QDate(2020, 12, 31), QTime(16, 23, 40)));
-//    s11.setEndDateTime(QDateTime(QDate(2021, 1, 1), QTime(16, 23, 40)));
-//    s12.setBeginDateTime(QDateTime(QDate(2020, 12, 31), QTime(16, 23, 40)));
-//    s12.setEndDateTime(QDateTime(QDate(2020, 12, 31), QTime(16, 23, 40)));
-//    ScheduleDataInfo s21, s22;
-//    s21.setBeginDateTime(QDateTime(QDate(2020, 12, 31), QTime(16, 23, 40)));
-//    s21.setEndDateTime(QDateTime(QDate(2020, 12, 31), QTime(16, 23, 40)));
-//    s22.setBeginDateTime(QDateTime(QDate(2020, 12, 31), QTime(16, 23, 40)));
-//    s22.setEndDateTime(QDateTime(QDate(2021, 1, 1), QTime(16, 23, 40)));
-//    ScheduleDataInfo s31, s32;
-//    s31.setBeginDateTime(QDateTime(QDate(2020, 12, 30), QTime(16, 23, 40)));
-//    s31.setEndDateTime(QDateTime(QDate(2021, 1, 1), QTime(16, 23, 40)));
-//    s32.setBeginDateTime(QDateTime(QDate(2020, 12, 31), QTime(16, 23, 40)));
-//    s32.setEndDateTime(QDateTime(QDate(2021, 1, 1), QTime(16, 23, 40)));
-//    ScheduleDataInfo s41, s42;
-//    s41.setBeginDateTime(QDateTime(QDate(2020, 12, 31), QTime(16, 23, 40)));
-//    s41.setEndDateTime(QDateTime(QDate(2021, 1, 1), QTime(16, 23, 40)));
-//    s42.setBeginDateTime(QDateTime(QDate(2020, 12, 30), QTime(16, 23, 40)));
-//    s42.setEndDateTime(QDateTime(QDate(2021, 1, 1), QTime(16, 23, 40)));
-//    ScheduleDataInfo s51, s52;
-//    s51.setBeginDateTime(QDateTime(QDate(2021, 1, 1), QTime(16, 23, 40)));
-//    s51.setEndDateTime(QDateTime(QDate(2021, 1, 1), QTime(16, 23, 40)));
-//    s51.setTitleName("ab");
-//    s52.setBeginDateTime(QDateTime(QDate(2021, 1, 1), QTime(16, 23, 40)));
-//    s52.setEndDateTime(QDateTime(QDate(2021, 1, 1), QTime(16, 23, 40)));
-//    s52.setTitleName("ba");
-//    ScheduleDataInfo s61, s62;
-//    s61.setBeginDateTime(QDateTime(QDate(2021, 1, 1), QTime(16, 23, 40)));
-//    s61.setEndDateTime(QDateTime(QDate(2021, 1, 1), QTime(16, 23, 40)));
-//    s61.setTitleName("ba");
-//    s62.setBeginDateTime(QDateTime(QDate(2021, 1, 1), QTime(16, 23, 40)));
-//    s62.setEndDateTime(QDateTime(QDate(2021, 1, 1), QTime(16, 23, 40)));
-//    s62.setTitleName("ab");
-//    ScheduleDataInfo s71, s72;
-//    s71.setBeginDateTime(QDateTime(QDate(2021, 1, 1), QTime(16, 2, 40)));
-//    s71.setEndDateTime(QDateTime(QDate(2021, 1, 1), QTime(16, 23, 40)));
-//    s72.setBeginDateTime(QDateTime(QDate(2021, 1, 1), QTime(16, 23, 40)));
-//    s72.setEndDateTime(QDateTime(QDate(2021, 1, 1), QTime(16, 23, 40)));
-//    ScheduleDataInfo s81, s82;
-//    s81.setBeginDateTime(QDateTime(QDate(2021, 1, 1), QTime(16, 23, 40)));
-//    s81.setEndDateTime(QDateTime(QDate(2021, 1, 1), QTime(16, 23, 40)));
-//    s82.setBeginDateTime(QDateTime(QDate(2021, 1, 1), QTime(16, 2, 40)));
-//    s82.setEndDateTime(QDateTime(QDate(2021, 1, 1), QTime(16, 23, 40)));
-//    ScheduleDataInfo s91, s92;
-//    s91.setBeginDateTime(QDateTime(QDate(2020, 12, 31), QTime(16, 23, 40)));
-//    s91.setEndDateTime(QDateTime(QDate(2021, 1, 1), QTime(16, 23, 40)));
-//    s92.setBeginDateTime(QDateTime(QDate(2020, 12, 31), QTime(16, 23, 40)));
-//    s92.setEndDateTime(QDateTime(QDate(2020, 12, 31), QTime(16, 23, 40)));
-//    ScheduleDataInfo sa1, sa2;
-//    sa1.setBeginDateTime(QDateTime(QDate(2020, 12, 31), QTime(16, 23, 40)));
-//    sa1.setEndDateTime(QDateTime(QDate(2021, 1, 1), QTime(16, 23, 40)));
-//    sa2.setBeginDateTime(QDateTime(QDate(2020, 12, 31), QTime(16, 23, 40)));
-//    sa2.setEndDateTime(QDateTime(QDate(2021, 12, 31), QTime(16, 23, 40)));
+// void CYearScheduleView::clearData()
+TEST_F(test_yearscheduleview, clearData)
+{
+    DSchedule::List list = getScheduleList();
+    cYearScheduleView->setData(list);
+    cYearScheduleView->clearData();
+}
 
-//    scheduleDate << s11 << s12 << s21 << s22 << s31 << s32 << s41 << s42
-//                 << s51 << s52 << s61 << s62 << s71 << s72 << s81 << s82
-//                 << s91 << s92 << sa1 << sa2;
-//    return scheduleDate;
-//}
+// void CYearScheduleView::showWindow()
+TEST_F(test_yearscheduleview, showWindow_empty)
+{
+    cYearScheduleView->showWindow();
+    cYearScheduleView->repaint();
+    QCoreApplication::processEvents();
+}
 
-////bool YScheduleDateThan(const ScheduleDataInfo &s1, const ScheduleDataInfo &s2)
-//bool YScheduleDateThan(const ScheduleDataInfo &s1, const ScheduleDataInfo &s2);
-//TEST_F(test_yearscheduleview, yschesuledatethan)
-//{
-//    //bdate1 != edate1 && bdate2 == edate2
-//    EXPECT_TRUE(YScheduleDateThan(getScheduleDateAndTitle().at(0), getScheduleDateAndTitle().at(1)));
-//    //bdate1 == edate1 && bdate2 != edate2
-//    EXPECT_FALSE(YScheduleDateThan(getScheduleDateAndTitle().at(2), getScheduleDateAndTitle().at(3)));
-//    //bdate1 != edate1 && bdate2 != edate2
-//    //bdate1 < bdate2
-//    EXPECT_TRUE(YScheduleDateThan(getScheduleDateAndTitle().at(4), getScheduleDateAndTitle().at(5)));
-//    //bdate1 != edate1 && bdate2 != edate2
-//    //bdate1 < bdate2
-//    EXPECT_FALSE(YScheduleDateThan(getScheduleDateAndTitle().at(6), getScheduleDateAndTitle().at(7)));
-//    //bdate1 = edate1 && bdate2 = edate2
-//    //s1.getTitleName() < s2.getTitleName()
-//    EXPECT_TRUE(YScheduleDateThan(getScheduleDateAndTitle().at(8), getScheduleDateAndTitle().at(9)));
-//    //bdate1 = edate1 && bdate2 = edate2
-//    //s1.getBeginDateTime() == s2.getBeginDateTime()
-//    //s1.getTitleName() < s2.getTitleName()
-//    EXPECT_FALSE(YScheduleDateThan(getScheduleDateAndTitle().at(10), getScheduleDateAndTitle().at(11)));
-//    //bdate1 = edate1 && bdate2 = edate2
-//    //s1.getBeginDateTime() != s2.getBeginDateTime()
-//    //s1.getBeginDateTime() < s2.getBeginDateTime()
-//    EXPECT_TRUE(YScheduleDateThan(getScheduleDateAndTitle().at(12), getScheduleDateAndTitle().at(13)));
-//    //bdate1 = edate1 && bdate2 = edate2
-//    //s1.getBeginDateTime() != s2.getBeginDateTime()
-//    //s1.getBeginDateTime() < s2.getBeginDateTime()
-//    EXPECT_FALSE(YScheduleDateThan(getScheduleDateAndTitle().at(14), getScheduleDateAndTitle().at(15)));
-//}
+TEST_F(test_yearscheduleview, showWindow_withData)
+{
+    DSchedule::List list = getScheduleList();
+    cYearScheduleView->setData(list);
+    cYearScheduleView->showWindow();
+    cYearScheduleView->repaint();
+    QCoreApplication::processEvents();
+}
 
-////bool YScheduleDaysThan(const ScheduleDataInfo &s1, const ScheduleDataInfo &s2)
-//bool YScheduleDaysThan(const ScheduleDataInfo &s1, const ScheduleDataInfo &s2);
-//TEST_F(test_yearscheduleview, yscheduleDaysThan)
-//{
-//    //s1.getBeginDateTime().date().daysTo(s1.getEndDateTime().date()) > s2.getBeginDateTime().date().daysTo(s2.getEndDateTime().date())
-//    EXPECT_TRUE(YScheduleDaysThan(getScheduleDateAndTitle().at(16), getScheduleDateAndTitle().at(17)));
-//    //s1.getBeginDateTime().date().daysTo(s1.getEndDateTime().date()) > s2.getBeginDateTime().date().daysTo(s2.getEndDateTime().date())
-//    EXPECT_FALSE(YScheduleDaysThan(getScheduleDateAndTitle().at(18), getScheduleDateAndTitle().at(19)));
-//}
+// void CYearScheduleView::setTheMe(int type)
+TEST_F(test_yearscheduleview, setTheMe)
+{
+    cYearScheduleView->setTheMe(1);
+    cYearScheduleView->setTheMe(2);
+    cYearScheduleView->setTheMe(0);
+}
 
-////void CYearScheduleView::setData(QVector<ScheduleDataInfo> &vListData)
-//TEST_F(test_yearscheduleview, setDate)
-//{
-//    QVector<ScheduleDataInfo> scheduleinfo = getScheduleDataInfo();
-//    cYearScheduleView->setData(scheduleinfo);
-//}
+// void CYearScheduleView::setCurrentDate(const QDate &cdate)
+TEST_F(test_yearscheduleview, setCurrentDate)
+{
+    cYearScheduleView->setCurrentDate(QDate(2021, 6, 15));
+}
 
-////void CYearScheduleView::clearData()
-//TEST_F(test_yearscheduleview, clearDate)
-//{
-//    cYearScheduleView->clearData();
-//}
+// QDate CYearScheduleView::getCurrentDate()
+TEST_F(test_yearscheduleview, getCurrentDate)
+{
+    QDate d(2021, 6, 15);
+    cYearScheduleView->setCurrentDate(d);
+    EXPECT_EQ(cYearScheduleView->getCurrentDate(), d);
+}
 
-////int CYearScheduleView::showWindow()
-//TEST_F(test_yearscheduleview, showWindow)
-//{
-//    QVector<ScheduleDataInfo> vlistData = getScheduleDataInfo();
-//    cYearScheduleView->showWindow();
-//    cYearScheduleView->setData(vlistData);
-//    cYearScheduleView->showWindow();
-//}
+// void CYearScheduleView::setTimeFormat(const QString &format)
+TEST_F(test_yearscheduleview, setTimeFormat)
+{
+    cYearScheduleView->setTimeFormat("hh:mm");
+}
 
-////void CYearScheduleView::setTheMe(int type)
-//TEST_F(test_yearscheduleview, setTheMe)
-//{
-//    int type = 1;
-//    cYearScheduleView->setTheMe(type);
+// int CYearScheduleView::getPressScheduleIndex()
+TEST_F(test_yearscheduleview, getPressScheduleIndex)
+{
+    // cursor not inside any draw rect -> -1
+    int idx = cYearScheduleView->getPressScheduleIndex();
+    EXPECT_EQ(idx, -1);
+}
 
-//    type = 2;
-//    cYearScheduleView->setTheMe(type);
-//}
+// bool CYearScheduleView::event(QEvent *event) — ToolTip path
+TEST_F(test_yearscheduleview, event_ToolTip)
+{
+    DSchedule::List list = getScheduleList();
+    cYearScheduleView->setData(list);
+    cYearScheduleView->resize(300, 300);
+    cYearScheduleView->showWindow();
+    cYearScheduleView->repaint();
+    QCoreApplication::processEvents();
+    QHelpEvent helpEvent(QEvent::ToolTip, QPoint(40, 20), cYearScheduleView->mapToGlobal(QPoint(40, 20)));
+    QApplication::sendEvent(cYearScheduleView, &helpEvent);
 
-////void CYearScheduleView::setCurrentDate(QDate cdate)
-//TEST_F(test_yearscheduleview, setCurrentDate)
-//{
-//    cYearScheduleView->setCurrentDate(QDate(2021, 1, 6));
-//}
+    QHelpEvent helpEvent2(QEvent::ToolTip, QPoint(500, 500), cYearScheduleView->mapToGlobal(QPoint(500, 500)));
+    QApplication::sendEvent(cYearScheduleView, &helpEvent2);
+}
 
-////QDate CYearScheduleView::getCurrentDate()
-//TEST_F(test_yearscheduleview, getCurrentDate)
-//{
-//    QDate currentDate = QDate::currentDate();
-//    cYearScheduleView->setCurrentDate(currentDate);
-//    bool iscurrent = currentDate == cYearScheduleView->getCurrentDate();
-//    EXPECT_TRUE(iscurrent);
+// bool CYearScheduleView::event(QEvent *event) — non-ToolTip path
+TEST_F(test_yearscheduleview, event_nonToolTip)
+{
+    QEvent e(QEvent::Move);
+    cYearScheduleView->event(&e);
+}
 
-//    QDate earlyDate = QDate(1999, 1, 1);
-//    cYearScheduleView->setCurrentDate(earlyDate);
-//    iscurrent = currentDate == cYearScheduleView->getCurrentDate();
-//    EXPECT_FALSE(iscurrent);
-//}
+// void CYearScheduleView::paintEvent(QPaintEvent *event)
+TEST_F(test_yearscheduleview, paintEvent_empty)
+{
+    cYearScheduleView->setFixedSize(300, 200);
+    QPaintEvent paintEvent(QRect(0, 0, 300, 200));
+    QApplication::sendEvent(cYearScheduleView, &paintEvent);
+}
 
+TEST_F(test_yearscheduleview, paintEvent_withData)
+{
+    DSchedule::List list = getScheduleList();
+    cYearScheduleView->setData(list);
+    cYearScheduleView->setFixedSize(300, 300);
+    cYearScheduleView->showWindow();
+    QPaintEvent paintEvent(QRect(0, 0, 300, 300));
+    QApplication::sendEvent(cYearScheduleView, &paintEvent);
+}
 
-////void CYearScheduleOutView::setData(QVector<ScheduleDataInfo> &vListData)
-//TEST_F(test_yearscheduleview, setOutData)
-//{
-//    QVector<ScheduleDataInfo> scheduleInfo = getScheduleDataInfo();
-//    zYearScheduleOutView->setData(scheduleInfo);
-//}
+// void CYearScheduleView::updateDateShow() — private, exercised via showWindow
+TEST_F(test_yearscheduleview, updateDateShow)
+{
+    DSchedule::List list = getScheduleList();
+    cYearScheduleView->setData(list);
+    cYearScheduleView->showWindow();
+    cYearScheduleView->repaint();
+    QCoreApplication::processEvents();
+}
 
-////void CYearScheduleOutView::clearData()
-//TEST_F(test_yearscheduleview, clearOutData)
-//{
-//    zYearScheduleOutView->clearData();
-//}
+// ===== CYearScheduleOutView =====
 
-////void CYearScheduleOutView::setTheMe(int type)
-//TEST_F(test_yearscheduleview, setTheOutMe)
-//{
-//    zYearScheduleOutView->setTheMe(1);
-//}
+// constructor
+TEST_F(test_yearscheduleview, outView_constructor)
+{
+    ASSERT_NE(zYearScheduleOutView, nullptr);
+}
 
-////void CYearScheduleOutView::setCurrentDate(QDate cdate)
-//TEST_F(test_yearscheduleview, setCurrentOutDate)
-//{
-//    zYearScheduleOutView->setCurrentDate(QDate(2021, 1, 6));
-//}
+// void CYearScheduleOutView::clearData()
+TEST_F(test_yearscheduleview, outView_clearData)
+{
+    zYearScheduleOutView->clearData();
+}
 
-//TEST_F(test_yearscheduleview, paintEvent)
-//{
-//    QPixmap pixmap(cYearScheduleView->size());
-//    QVector<ScheduleDataInfo> scheduleInfo = getScheduleDataInfo();
-//    cYearScheduleView->setData(scheduleInfo);
-//    cYearScheduleView->render(&pixmap);
-//}
+// void CYearScheduleOutView::setData(DSchedule::List &vListData)
+TEST_F(test_yearscheduleview, outView_setData)
+{
+    DSchedule::List list = getScheduleList();
+    zYearScheduleOutView->setData(list);
+}
 
-//TEST_F(test_yearscheduleview, mousePressEvent)
-//{
-//}
+// void CYearScheduleOutView::setTheMe(int type)
+TEST_F(test_yearscheduleview, outView_setTheMe)
+{
+    zYearScheduleOutView->setTheMe(1);
+    zYearScheduleOutView->setTheMe(2);
+}
+
+// void CYearScheduleOutView::setCurrentDate(const QDate &cDate)
+TEST_F(test_yearscheduleview, outView_setCurrentDate)
+{
+    zYearScheduleOutView->setCurrentDate(QDate(2021, 6, 15));
+}
+
+// void CYearScheduleOutView::setDirection(DArrowRectangle::ArrowDirection)
+TEST_F(test_yearscheduleview, outView_setDirection)
+{
+    zYearScheduleOutView->setDirection(DArrowRectangle::ArrowDirection::ArrowTop);
+    zYearScheduleOutView->setDirection(DArrowRectangle::ArrowDirection::ArrowBottom);
+}
+
+// void CYearScheduleOutView::setTimeFormat(const QString &format)
+TEST_F(test_yearscheduleview, outView_setTimeFormat)
+{
+    zYearScheduleOutView->setTimeFormat("hh:mm");
+}
+
+// void CYearScheduleOutView::mousePressEvent(QMouseEvent *event)
+TEST_F(test_yearscheduleview, outView_mousePressEvent)
+{
+    // empty data -> getPressScheduleIndex returns -1 -> early return, safe
+    QMouseEvent press(QEvent::MouseButtonPress, QPointF(10, 10), Qt::LeftButton,
+                      Qt::LeftButton, Qt::NoModifier);
+    QApplication::sendEvent(zYearScheduleOutView, &press);
+}
+
+// ===== Free functions =====
+
+TEST_F(test_yearscheduleview, YScheduleDateThan)
+{
+    DSchedule::Ptr s1 = makeSchedule(QDate(2021, 1, 1), QDate(2021, 1, 2), "aaa");
+    DSchedule::Ptr s2 = makeSchedule(QDate(2021, 1, 3), QDate(2021, 1, 4), "bbb");
+    // s1 starts before s2 -> s1 < s2
+    EXPECT_TRUE(YScheduleDateThan(s1, s2));
+    EXPECT_FALSE(YScheduleDateThan(s2, s1));
+
+    // same begin/end dates -> compare by summary
+    DSchedule::Ptr s3 = makeSchedule(QDate(2021, 1, 1), QDate(2021, 1, 1), "aaa");
+    DSchedule::Ptr s4 = makeSchedule(QDate(2021, 1, 1), QDate(2021, 1, 1), "bbb");
+    EXPECT_TRUE(YScheduleDateThan(s3, s4));
+    EXPECT_FALSE(YScheduleDateThan(s4, s3));
+}
+
+TEST_F(test_yearscheduleview, YScheduleDaysThan)
+{
+    DSchedule::Ptr s1 = makeSchedule(QDate(2021, 1, 1), QDate(2021, 1, 5), "short");  // 4 days
+    DSchedule::Ptr s2 = makeSchedule(QDate(2021, 1, 1), QDate(2021, 1, 10), "long");  // 9 days
+    EXPECT_FALSE(YScheduleDaysThan(s1, s2));  // 4 > 9 is false
+    EXPECT_TRUE(YScheduleDaysThan(s2, s1));   // 9 > 4 is true
+}
