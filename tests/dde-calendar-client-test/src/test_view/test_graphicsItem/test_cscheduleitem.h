@@ -2,33 +2,26 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#ifndef TEST_DRAGINFOITEM_H
-#define TEST_DRAGINFOITEM_H
+#ifndef TEST_CSCHEDULEITEM_H
+#define TEST_CSCHEDULEITEM_H
 
-//#include "graphicsItem/scheduleitem.h"
-//#include <gtest/gtest.h>
-//#include <../third-party_stub/stub.h>
-//#include <QObject>
-//#include <QGraphicsScene>
+#include "graphicsItem/scheduleitem.h"
+#include "dschedule.h"
 
-//class test_cscheduleitem: public::testing::Test
-//{
-//public:
-//    test_cscheduleitem();
+#include <gtest/gtest.h>
+#include <QObject>
+#include <QGraphicsScene>
 
-//    virtual void SetUp()
-//    {
-//        QRectF rect(0, 0, 100, 100);
-//        mItem = new CScheduleItem(rect);
-//    }
+class test_CScheduleItem : public testing::Test
+{
+public:
+    test_CScheduleItem();
+    void SetUp() override;
+    void TearDown() override;
 
-//    virtual void TearDown()
-//    {
-//        delete mItem;
-//        mItem = nullptr;
-//    }
-//protected:
-//    CScheduleItem *mItem = nullptr;
-//};
+protected:
+    CScheduleItem *m_item = nullptr;
+    QGraphicsScene *m_scene = nullptr;
+};
 
-#endif // TEST_DRAGINFOITEM_H
+#endif // TEST_CSCHEDULEITEM_H

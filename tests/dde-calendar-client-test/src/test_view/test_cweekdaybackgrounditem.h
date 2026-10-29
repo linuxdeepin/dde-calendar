@@ -5,29 +5,24 @@
 #ifndef TEST_CWEEKDAYBACKGROUNDITEM_H
 #define TEST_CWEEKDAYBACKGROUNDITEM_H
 
-//#include "graphicsItem/cweekdaybackgrounditem.h"
-//#include "gtest/gtest.h"
+#include "graphicsItem/cweekdaybackgrounditem.h"
+#include "gtest/gtest.h"
 
-//#include <QObject>
+#include <QObject>
+#include <QGraphicsScene>
 
-//class test_CWeekDayBackgroundItem : public QObject
-//    , public testing::Test
-//{
-//    Q_OBJECT
-//public:
-//    test_CWeekDayBackgroundItem();
-//    // Sets up the test fixture.
-//    void SetUp() override;
+class test_CWeekDayBackgroundItem : public QObject
+    , public testing::Test
+{
+    Q_OBJECT
+public:
+    test_CWeekDayBackgroundItem();
+    void SetUp() override;
+    void TearDown() override;
 
-//    // Tears down the test fixture.
-//    void TearDown() override;
-
-//signals:
-
-//public slots:
-
-//public:
-//    CWeekDayBackgroundItem *m_weekItem;
-//};
+public:
+    CWeekDayBackgroundItem *m_weekItem = nullptr;
+    QGraphicsScene *m_scene = nullptr;
+};
 
 #endif // TEST_CWEEKDAYBACKGROUNDITEM_H
