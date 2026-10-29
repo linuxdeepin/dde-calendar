@@ -5,17 +5,17 @@
 #ifndef TEST_MONTHGRAPHVIEW_H
 #define TEST_MONTHGRAPHVIEW_H
 
-//#include "monthgraphiview.h"
-//#include "gtest/gtest.h"
-//#include <QObject>
+#include "monthgraphiview.h"
+#include "gtest/gtest.h"
+#include <QObject>
 
-//class test_monthgraphiview : public QObject, public::testing::Test
-//{
-//public:
-//    test_monthgraphiview();
-//    ~test_monthgraphiview();
-//protected:
-//    CMonthGraphicsview *cMonthGraphiview = nullptr;
-//};
+class test_monthgraphiview : public QObject, public::testing::Test
+{
+public:
+    test_monthgraphiview();
+    ~test_monthgraphiview();
+protected:
+    CMonthGraphicsview *cMonthGraphiview = nullptr;
+};
 
 #endif // TEST_MONTHGRAPHVIEW_H

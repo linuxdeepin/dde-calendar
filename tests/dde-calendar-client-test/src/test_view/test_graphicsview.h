@@ -5,17 +5,17 @@
 #ifndef TEST_GRAPHICSVIEW_H
 #define TEST_GRAPHICSVIEW_H
 
-//#include "graphicsview.h"
-//#include "gtest/gtest.h"
-//#include <QObject>
+#include "graphicsview.h"
+#include "gtest/gtest.h"
+#include <QObject>
 
-//class test_graphicsview : public QObject, public::testing::Test
-//{
-//public:
-//    test_graphicsview();
-//    ~test_graphicsview();
-//protected:
-//    CGraphicsView *cGraphicsView = nullptr;
-//};
+class test_graphicsview : public QObject, public::testing::Test
+{
+public:
+    test_graphicsview();
+    ~test_graphicsview();
+protected:
+    CGraphicsView *cGraphicsView = nullptr;
+};
 
 #endif // TEST_GRAPHICSVIEW_H
