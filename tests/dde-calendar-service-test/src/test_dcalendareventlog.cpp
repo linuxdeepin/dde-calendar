@@ -78,4 +78,83 @@ TEST(DCalendarEventLog, MapsUnsupportedValidationErrorToOther)
     }
 }
 
+// --- Extended tests for instance / report methods ---
+
+TEST(DCalendarEventLog, InstanceReturnsSameSingleton)
+{
+    DCalendarEventLog &first = DCalendarEventLog::instance();
+    DCalendarEventLog &second = DCalendarEventLog::instance();
+    EXPECT_EQ(&first, &second);
+}
+
+TEST(DCalendarEventLog, ReportAddAccountClickedDoesNotCrash)
+{
+    // libdeepin-event-log.so is not present in the test environment, so
+    // m_available == false and writeEvent early-returns.  The call must
+    // not crash.
+    DCalendarEventLog::instance().reportAddAccountClicked();
+    SUCCEED();
+}
+
+TEST(DCalendarEventLog, ReportDeleteAccountDoesNotCrash)
+{
+    DCalendarEventLog::instance().reportDeleteAccount(true);
+    DCalendarEventLog::instance().reportDeleteAccount(false);
+    SUCCEED();
+}
+
+TEST(DCalendarEventLog, ReportLoginClickedDoesNotCrash)
+{
+    const std::array<DCalDavProviderProfile::ProviderType, 6> providers = {{
+        DCalDavProviderProfile::Provider_DingTalk,
+        DCalDavProviderProfile::Provider_WeCom,
+        DCalDavProviderProfile::Provider_TencentMeeting,
+        DCalDavProviderProfile::Provider_QQMail,
+        DCalDavProviderProfile::Provider_Feishu,
+        DCalDavProviderProfile::Provider_Other,
+    }};
+    for (const auto provider : providers) {
+        DCalendarEventLog::instance().reportLoginClicked(provider);
+    }
+    SUCCEED();
+}
+
+TEST(DCalendarEventLog, ReportLoginValidationFinishedDoesNotCrash)
+{
+    const std::array<DCalDavValidationError::Type, 7> errors = {{
+        DCalDavValidationError::NoError,
+        DCalDavValidationError::NetworkUnavailable,
+        DCalDavValidationError::AuthenticationFailed,
+        DCalDavValidationError::UnsupportedCalDav,
+        DCalDavValidationError::CertificateInvalid,
+        DCalDavValidationError::Other,
+        DCalDavValidationError::ServerRejected,
+    }};
+    for (const auto error : errors) {
+        DCalendarEventLog::instance().reportLoginValidationFinished(true, error);
+        DCalendarEventLog::instance().reportLoginValidationFinished(false, error);
+    }
+    SUCCEED();
+}
+
+TEST(DCalendarEventLog, WriteEventEarlyReturnsWhenUnavailable)
+{
+    // Access private writeEvent via -fno-access-control.
+    // Force m_available to false so that writeEvent takes the early-return
+    // path without invoking the function pointer.
+    DCalendarEventLog &log = DCalendarEventLog::instance();
+    const bool savedAvailable = log.m_available;
+    log.m_available = false;
+
+    QJsonObject fields;
+    fields.insert("test_key", "test_value");
+    log.writeEvent(DCalendarEventLog::AddAccountClicked, fields);
+    log.writeEvent(DCalendarEventLog::LoginClicked, fields);
+    log.writeEvent(DCalendarEventLog::LoginValidationFinished, fields);
+    log.writeEvent(DCalendarEventLog::DeleteAccount, fields);
+
+    log.m_available = savedAvailable;
+    SUCCEED();
+}
+
 } // namespace
