@@ -5,29 +5,30 @@
 #ifndef TEXT_CDATEEDIT_H
 #define TEXT_CDATEEDIT_H
 
-//#include "cdateedit.h"
-//#include <QObject>
-//#include <QTest>
-//#include <gtest/gtest.h>
+#include "cdateedit.h"
+#include <QObject>
+#include <QTest>
+#include <gtest/gtest.h>
 
-//class test_cdateedit : public QObject, public::testing::Test
-//{
-//    Q_OBJECT
-//public:
-//    explicit test_cdateedit(QObject *parent = nullptr);
+class test_cdateedit : public QObject, public testing::Test
+{
+    Q_OBJECT
+public:
+    explicit test_cdateedit(QObject *parent = nullptr)
+        : QObject(parent) {}
 
-//    virtual void SetUp()
-//    {
-//        mWidget = new CDateEdit();
-//    }
+    virtual void SetUp()
+    {
+        mWidget = new CDateEdit();
+    }
 
-//    virtual void TearDown()
-//    {
-//        delete mWidget;
-//        mWidget = nullptr;
-//    }
-//protected:
-//    CDateEdit *mWidget = nullptr;
-//};
+    virtual void TearDown()
+    {
+        delete mWidget;
+        mWidget = nullptr;
+    }
+protected:
+    CDateEdit *mWidget = nullptr;
+};
 
 #endif // TEXT_CDATEEDIT_H
