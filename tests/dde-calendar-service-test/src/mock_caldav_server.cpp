@@ -162,6 +162,11 @@ void MockCalDavServer::setResponseDelay(int milliseconds)
     m_responseDelay = qMax(0, milliseconds);
 }
 
+void MockCalDavServer::setRedirectLocation(const QByteArray &location)
+{
+    m_redirectLocation = location;
+}
+
 void MockCalDavServer::incomingConnection(qintptr socketDescriptor)
 {
     ++m_connectionCount;
@@ -281,6 +286,9 @@ void MockCalDavServer::sendResponse(QSslSocket *socket, const QByteArray &method
     }
     if (status == 429) {
         response += "Retry-After: 1\r\n";
+    }
+    if (status >= 300 && status < 400 && !m_redirectLocation.isEmpty()) {
+        response += "Location: " + m_redirectLocation + "\r\n";
     }
     response += "Connection: close\r\n\r\n" + body;
     if (m_responseDelay <= 0) {
