@@ -5,27 +5,33 @@
 #ifndef TEST_CMONTHDAYITEM_H
 #define TEST_CMONTHDAYITEM_H
 
-//#include "graphicsItem/cmonthdayitem.h"
-//#include <QObject>
-//#include <gtest/gtest.h>
+#include "graphicsItem/cmonthdayitem.h"
+#include <QObject>
+#include <QGraphicsScene>
+#include <gtest/gtest.h>
 
-//class test_cmonthdayitem: public::testing::Test
-//{
-//public:
-//    test_cmonthdayitem();
+class test_cmonthdayitem : public ::testing::Test
+{
+public:
+    test_cmonthdayitem() = default;
 
-//    virtual void SetUp()
-//    {
-//        mItem = new CMonthDayItem();
-//    }
+    virtual void SetUp()
+    {
+        m_scene = new QGraphicsScene();
+        mItem = new CMonthDayItem();
+        m_scene->addItem(mItem);
+        mItem->setRect(QRectF(0, 0, 100, 100));
+    }
 
-//    virtual void TearDown()
-//    {
-//        delete mItem;
-//        mItem = nullptr;
-//    }
-//protected:
-//    CMonthDayItem *mItem = nullptr;
-//};
+    virtual void TearDown()
+    {
+        delete m_scene;
+        mItem = nullptr;
+    }
+
+protected:
+    CMonthDayItem *mItem = nullptr;
+    QGraphicsScene *m_scene = nullptr;
+};
 
 #endif // TEST_CMONTHDAYITEM_H
