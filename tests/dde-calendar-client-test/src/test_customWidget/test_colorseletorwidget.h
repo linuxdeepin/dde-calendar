@@ -5,29 +5,28 @@
 #ifndef TEST_COLORSELETORWIDGET_H
 #define TEST_COLORSELETORWIDGET_H
 
-//#include <colorseletorwidget.h>
-//#include <QObject>
-//#include <QTest>
-//#include <gtest/gtest.h>
+#include "customWidget/colorseletorwidget.h"
+#include <QObject>
+#include <gtest/gtest.h>
 
-//class test_colorseletorwidget : public QObject, public::testing::Test
-//{
-//    Q_OBJECT
-//public:
-//    explicit test_colorseletorwidget(QObject *parent = nullptr);
+class test_colorseletorwidget : public QObject, public::testing::Test
+{
+    Q_OBJECT
+public:
+    explicit test_colorseletorwidget(QObject *parent = nullptr);
 
-//    virtual void SetUp()
-//    {
-//        mWidget = new ColorSeletorWidget();
-//    }
+    virtual void SetUp()
+    {
+        mWidget = new ColorSeletorWidget();
+    }
 
-//    virtual void TearDown()
-//    {
-//        delete mWidget;
-//        mWidget = nullptr;
-//    }
-//protected:
-//    ColorSeletorWidget *mWidget = nullptr;
-//};
+    virtual void TearDown()
+    {
+        delete mWidget;
+        mWidget = nullptr;
+    }
+protected:
+    ColorSeletorWidget *mWidget = nullptr;
+};
 
 #endif // TEST_COLORSELETORWIDGET_H

@@ -8,12 +8,12 @@
 #include <sanitizer/asan_interface.h>
 #endif
 
-#include <QCoreApplication>
+#include <QApplication>
 
 int main(int argc, char **argv)
 {
     qputenv("QT_QPA_PLATFORM", "offscreen");
-    QCoreApplication application(argc, argv);
+    QApplication application(argc, argv);
     ::testing::InitGoogleTest(&argc, argv);
     int ret = RUN_ALL_TESTS();
 
