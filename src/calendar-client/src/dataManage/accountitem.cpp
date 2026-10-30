@@ -7,6 +7,7 @@
 #include "commondef.h"
 
 #include <QSet>
+#include <QTimer>
 
 AccountItem::AccountItem(const DAccount::Ptr &account, QObject *parent)
     : QObject(parent)
@@ -77,18 +78,20 @@ void AccountItem::resetAccount()
                             << "accountId:" << m_account->accountID()
                             << "accountName:" << m_account->accountName();
 
-    // Optimization: Load only 3 months before and after the current month instead of the entire year
-    // Use symmetric range: first day of month -3 to last day of month +3
+    // CalDAV data is synchronized only for the rolling window around today.
     QDate currentDate = QDate::currentDate();
     if (!currentDate.isValid()) {
         qCWarning(ClientLogger) << "Current system date is invalid, aborting data load";
         return;
     }
 
-    QDate startMonth = currentDate.addMonths(-3);
-    QDate endMonth = currentDate.addMonths(3);
-    QDate startDate(startMonth.year(), startMonth.month(), 1);
-    QDate endDate(endMonth.year(), endMonth.month(), endMonth.daysInMonth());
+    const bool isCalDav = m_account->accountType() == DAccount::Account_CalDav;
+    const int monthsBefore = isCalDav ? 1 : 3;
+    const int monthsAfter = isCalDav ? 6 : 3;
+    QDate startMonth = currentDate.addMonths(-monthsBefore);
+    QDate endMonth = currentDate.addMonths(monthsAfter);
+    QDate startDate = isCalDav ? startMonth : QDate(startMonth.year(), startMonth.month(), 1);
+    QDate endDate = isCalDav ? endMonth : QDate(endMonth.year(), endMonth.month(), endMonth.daysInMonth());
 
     QDateTime start(startDate, QTime(0, 0, 0));
     QDateTime end(endDate, QTime(23, 59, 59));
@@ -449,14 +452,44 @@ void AccountItem::querySchedulesWithParameter(const QString &key, const QDateTim
  */
 void AccountItem::querySchedulesWithParameter(const DScheduleQueryPar::Ptr &params, CallbackFunc callback)
 {
+    DScheduleQueryPar::Ptr effectiveParams = params;
+    if (m_account->accountType() == DAccount::Account_CalDav
+        && params->queryType() == DScheduleQueryPar::Query_None) {
+        const QDateTime now = QDateTime::currentDateTime();
+        const QDateTime rangeStart(now.date().addMonths(-1), QTime(0, 0), now.timeZone());
+        const QDateTime rangeEnd(now.date().addMonths(6), QTime(23, 59, 59, 999), now.timeZone());
+
+        effectiveParams.reset(new DScheduleQueryPar);
+        effectiveParams->setKey(params->key());
+        effectiveParams->setQueryType(params->queryType());
+        effectiveParams->setQueryTop(params->queryTop());
+        effectiveParams->setRruleType(params->rruleType());
+        effectiveParams->setDtStart(qMax(params->dtStart(), rangeStart));
+        effectiveParams->setDtEnd(qMin(params->dtEnd(), rangeEnd));
+        if (effectiveParams->dtStart() > effectiveParams->dtEnd()) {
+            m_preQuery = effectiveParams;
+            QTimer::singleShot(0, this, [this, effectiveParams, callback]() {
+                if (effectiveParams->key().isEmpty()) {
+                    m_dbusRequest->completeEmptyScheduleQuery(effectiveParams);
+                } else {
+                    m_dbusRequest->completeEmptyScheduleSearchQuery();
+                }
+                if (callback) {
+                    callback({0, QVariant()});
+                }
+            });
+            return;
+        }
+    }
+
     qCDebug(ClientLogger) << "Querying schedules with parameters"
                             << "accountId:" << m_account->accountID()
-                            << "keyPresent:" << !params->key().isEmpty()
-                            << "start:" << params->dtStart()
-                            << "end:" << params->dtEnd();
-    m_preQuery = params;
+                            << "keyPresent:" << !effectiveParams->key().isEmpty()
+                            << "start:" << effectiveParams->dtStart()
+                            << "end:" << effectiveParams->dtEnd();
+    m_preQuery = effectiveParams;
     m_dbusRequest->setCallbackFunc(callback);
-    m_dbusRequest->querySchedulesWithParameter(params);
+    m_dbusRequest->querySchedulesWithParameter(effectiveParams);
 }
 
 QString AccountItem::querySchedulesByExternal(const QString &key, const QDateTime &start, const QDateTime &end)

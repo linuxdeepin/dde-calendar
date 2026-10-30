@@ -286,9 +286,22 @@ void DbusAccountRequest::querySchedulesWithParameter(const DScheduleQueryPar::Pt
     if (params->key().isEmpty()) {
         callName = "querySchedulesWithParameter";
         m_priParams = params;
+        m_primaryScheduleQueryEmpty = false;
     }
     QString jsonStr = DScheduleQueryPar::toJsonString(params);
     asyncCall("querySchedulesWithParameter", callName, {QVariant(jsonStr)});
+}
+
+void DbusAccountRequest::completeEmptyScheduleQuery(const DScheduleQueryPar::Ptr &params)
+{
+    m_priParams = params;
+    m_primaryScheduleQueryEmpty = true;
+    emit signalGetScheduleListFinish(QMap<QDate, DSchedule::List>());
+}
+
+void DbusAccountRequest::completeEmptyScheduleSearchQuery()
+{
+    emit signalSearchScheduleListFinish(QMap<QDate, DSchedule::List>());
 }
 
 bool DbusAccountRequest::querySchedulesByExternal(const DScheduleQueryPar::Ptr &params, QString &json)
@@ -451,6 +464,11 @@ void DbusAccountRequest::slotDbusCall(const QDBusMessage &msg)
     } else if (msg.member() == "scheduleUpdate") {
         //更新全局数据
         qCDebug(ClientLogger) << "Schedule update signal received, refreshing data";
+        if (m_primaryScheduleQueryEmpty) {
+            emit signalGetScheduleListFinish(QMap<QDate, DSchedule::List>());
+            emit signalSearchUpdate();
+            return;
+        }
         if (m_priParams.isNull()) {
             const QDate currentDate = QDate::currentDate();
             const QDate startDate = currentDate.addMonths(-3);

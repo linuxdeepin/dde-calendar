@@ -121,6 +121,8 @@ public:
      * @return                              查询到的日程集
      */
     void querySchedulesWithParameter(const DScheduleQueryPar::Ptr &params);
+    void completeEmptyScheduleQuery(const DScheduleQueryPar::Ptr &params);
+    void completeEmptyScheduleSearchQuery();
     //对外查询接口，同步
     bool querySchedulesByExternal(const DScheduleQueryPar::Ptr &params, QString &json);
 
@@ -155,6 +157,7 @@ private:
 
 private:
     DScheduleQueryPar::Ptr m_priParams; //上一次查询日程的数据
+    bool m_primaryScheduleQueryEmpty = false;
 
 };
 
