@@ -5,17 +5,26 @@
 #ifndef TEST_CKEYUPDEAL_H
 #define TEST_CKEYUPDEAL_H
 
+#include "keypressstub.h"
+#include "view/cgraphicsscene.h"
+#include "gtest/gtest.h"
+#include "keypress/ckeyupdeal.h"
+
 #include <QObject>
 
 class test_CKeyUpDeal : public QObject
+    , public ::testing::Test
 {
     Q_OBJECT
 public:
-    explicit test_CKeyUpDeal(QObject *parent = nullptr);
+    test_CKeyUpDeal();
+    void SetUp();
+    void TearDown();
 
-signals:
-
-public slots:
+public:
+    KeyPressStub stub;
+    QSharedPointer<CGraphicsScene> scene;
+    QSharedPointer<CKeyUpDeal> upDeal;
 };
 
 #endif // TEST_CKEYUPDEAL_H

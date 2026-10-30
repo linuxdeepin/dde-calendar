@@ -114,7 +114,7 @@ public:
     //设置矩阵大小
     void setRect(const QRectF &rect);
     //设置矩阵大小
-    inline void setRect(qreal x, qreal y, qreal w, qreal h);
+    void setRect(qreal x, qreal y, qreal w, qreal h);
     //绘制
     void paintItem(QPainter *painter, const QRectF &rect, bool drawFocus = false);
     //设置设备缩放比例

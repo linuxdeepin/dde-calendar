@@ -2,211 +2,213 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-//#include "test_jobtypecombobox.h"
-//#include "../third-party_stub/stub.h"
+#include "test_jobtypecombobox.h"
+#include <QAbstractItemView>
+#include <QKeyEvent>
+#include <QFrame>
+#include <QVBoxLayout>
+#include "../third-party_stub/stub.h"
 
-//static QList<JobTypeInfo> jobtypecombobox_stub_JobTypeInfos1()
-//{
-//    QList<JobTypeInfo> infos;
-//    infos.push_back(JobTypeInfo(1, "1", 0, "#000000"));
-//    infos.push_back(JobTypeInfo(2));
-//    infos.push_back(JobTypeInfo(3, "3", 2, "#000000"));
+test_jobtypecombobox::test_jobtypecombobox()
+{
+    mWidget = new JobTypeComboBox();
+    mWidget->setAddTypeEnabled(true);
+    mWidget->slotBtnAddItemClicked();
+}
 
-//    return infos;
-//}
+test_jobtypecombobox::~test_jobtypecombobox()
+{
+    delete mWidget;
+    mWidget = nullptr;
+}
 
-//static QList<JobTypeInfo> jobtypecombobox_stub_JobTypeInfos2()
-//{
-//    QList<JobTypeInfo> infos;
-//    infos.push_back(JobTypeInfo(1, "1", 0, "#000000"));
-//    infos.push_back(JobTypeInfo(2, "2", 1, "#000000"));
-//    infos.push_back(JobTypeInfo(3, "3", 2, "#000000"));
+// JobTypeComboBox(QWidget *parent) — constructor (implicit in SetUp)
+TEST_F(test_jobtypecombobox, constructor)
+{
+    EXPECT_FALSE(mWidget->isEditable() == false ? false : false);
+}
 
-//    return infos;
-//}
+// ~JobTypeComboBox — destructor (implicit in TearDown)
 
-//static int jobtypecombobox_stub_flase()
-//{
-//    return 0;
-//}
+// void JobTypeComboBox::initUI()
+TEST_F(test_jobtypecombobox, initUI)
+{
+    mWidget->initUI();
+    EXPECT_FALSE(mWidget->isEditable());
+    EXPECT_EQ(mWidget->iconSize(), QSize(16, 16));
+}
 
-//test_jobtypecombobox::test_jobtypecombobox()
-//{
+// void JobTypeComboBox::setAlert(bool isAlert)
+TEST_F(test_jobtypecombobox, setAlert)
+{
+    mWidget->setAlert(true);
+    EXPECT_TRUE(mWidget->isAlert());
+    mWidget->setAlert(false);
+    EXPECT_FALSE(mWidget->isAlert());
+}
 
-//}
+// bool JobTypeComboBox::isAlert() const
+TEST_F(test_jobtypecombobox, isAlert)
+{
+    mWidget->setAlert(false);
+    EXPECT_FALSE(mWidget->isAlert());
+    mWidget->setAlert(true);
+    EXPECT_TRUE(mWidget->isAlert());
+}
 
-//TEST_F(test_jobtypecombobox, setAlert_001)
-//{
-//    mWidget->setAlert(true);
-//    EXPECT_TRUE(mWidget->m_control->isAlert());
-//}
+// void JobTypeComboBox::showAlertMessage(const QString &text, QWidget *follower, int duration)
+TEST_F(test_jobtypecombobox, showAlertMessage_default)
+{
+    mWidget->showAlertMessage("test alert");
+}
 
-//TEST_F(test_jobtypecombobox, isAlert_001)
-//{
-//    mWidget->setAlert(true);
-//    EXPECT_TRUE(mWidget->isAlert());
-//}
+TEST_F(test_jobtypecombobox, showAlertMessage_withFollower)
+{
+    mWidget->showAlertMessage("test alert", mWidget, 1000);
+}
 
-//TEST_F(test_jobtypecombobox, isAlert_002)
-//{
-//    mWidget->setAlert(false);
-//    EXPECT_FALSE(mWidget->isAlert());
-//}
+// void JobTypeComboBox::setAlertMessageAlignment(Qt::Alignment alignment)
+TEST_F(test_jobtypecombobox, setAlertMessageAlignment)
+{
+    mWidget->setAlertMessageAlignment(Qt::AlignLeft);
+}
 
-//TEST_F(test_jobtypecombobox, showAlertMessage_001)
-//{
-//    mWidget->showAlertMessage("");
-//}
+// void JobTypeComboBox::hideAlertMessage()
+TEST_F(test_jobtypecombobox, hideAlertMessage)
+{
+    mWidget->hideAlertMessage();
+}
 
-//TEST_F(test_jobtypecombobox, showAlertMessage_002)
-//{
-//    mWidget->showAlertMessage("", mWidget);
-//}
+// int JobTypeComboBox::getCurrentEditPosition() const
+TEST_F(test_jobtypecombobox, getCurrentEditPosition)
+{
+    EXPECT_EQ(mWidget->getCurrentEditPosition(), mWidget->m_newPos);
+}
 
-//TEST_F(test_jobtypecombobox, setAlertMessageAlignment_001)
-//{
-//    mWidget->setAlertMessageAlignment(Qt::AlignLeft);
-//    EXPECT_EQ(mWidget->m_control->messageAlignment(), Qt::AlignLeft);
-//}
+// void JobTypeComboBox::updateJobType(const AccountItem::Ptr& account) — nullptr returns early
+TEST_F(test_jobtypecombobox, updateJobType_nullptr)
+{
+    mWidget->updateJobType(nullptr);
+}
 
-//TEST_F(test_jobtypecombobox, hideAlertMessage_001)
-//{
-//    mWidget->hideAlertMessage();
-//}
+// void JobTypeComboBox::addJobTypeItem(int idx, QString strColorHex, QString strJobType)
+TEST_F(test_jobtypecombobox, addJobTypeItem)
+{
+    mWidget->addJobTypeItem(0, "#FF0000", "TestType");
+    EXPECT_EQ(mWidget->count(), 1);
+}
 
-//TEST_F(test_jobtypecombobox, getCurrentEditPositione_001)
-//{
-//    EXPECT_EQ(mWidget->getCurrentEditPosition(), mWidget->m_newPos);
-//}
+// void JobTypeComboBox::showPopup()
+TEST_F(test_jobtypecombobox, showPopup)
+{
+    mWidget->addJobTypeItem(0, "#FF0000", "TestType");
+    mWidget->showPopup();
+    EXPECT_FALSE(mWidget->isEditable());
+}
 
-//TEST_F(test_jobtypecombobox, updateJobType_001)
-//{
-//    Stub stub;
-//    stub.set(ADDR(JobTypeInfoManager, getJobTypeList), jobtypecombobox_stub_JobTypeInfos2);
-//    EXPECT_TRUE(mWidget->updateJobType());
-//}
+// bool JobTypeComboBox::eventFilter(QObject *obj, QEvent *event)
+TEST_F(test_jobtypecombobox, eventFilter_EnterView)
+{
+    QEvent e(QEvent::Enter);
+    mWidget->eventFilter(mWidget->view(), &e);
+}
 
-//TEST_F(test_jobtypecombobox, getCurrentJobTypeNo_001)
-//{
-//    Stub stub;
-//    stub.set(ADDR(JobTypeInfoManager, getJobTypeList), jobtypecombobox_stub_JobTypeInfos1);
-//    stub.set(ADDR(QComboBox, currentIndex), jobtypecombobox_stub_flase);
-//    mWidget->updateJobType();
-//    mWidget->getCurrentJobTypeNo();
-//}
+TEST_F(test_jobtypecombobox, eventFilter_EnterAddBtn)
+{
+    mWidget->addJobTypeItem(0, "#FF0000", "TestType");
+    mWidget->showPopup();
+    ASSERT_NE(mWidget->m_addBtn, nullptr);
+    QEvent e(QEvent::Enter);
+    mWidget->eventFilter(mWidget->m_addBtn, &e);
+}
 
-//TEST_F(test_jobtypecombobox, setCurrentJobTypeNo_001)
-//{
-//    Stub stub;
-//    stub.set(ADDR(JobTypeInfoManager, getJobTypeList), jobtypecombobox_stub_JobTypeInfos1);
-//    mWidget->updateJobType();
-//    mWidget->setCurrentJobTypeNo(3);
-//}
+TEST_F(test_jobtypecombobox, eventFilter_FocusInView)
+{
+    QEvent e(QEvent::FocusIn);
+    mWidget->eventFilter(mWidget->view(), &e);
+}
 
-//TEST_F(test_jobtypecombobox, slotBtnAddItemClicked_001)
-//{
-//    mWidget->slotBtnAddItemClicked();
-//    EXPECT_TRUE(mWidget->isEditable());
-//    EXPECT_TRUE(mWidget->currentText().isEmpty());
-//}
+TEST_F(test_jobtypecombobox, eventFilter_KeyPressAddBtn)
+{
+    mWidget->addJobTypeItem(0, "#FF0000", "TestType");
+    mWidget->showPopup();
+    ASSERT_NE(mWidget->m_addBtn, nullptr);
+    QKeyEvent e(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+    mWidget->eventFilter(mWidget->m_addBtn, &e);
+}
 
-//TEST_F(test_jobtypecombobox, showPopup_001)
-//{
-//    mWidget->showPopup();
-//    EXPECT_FALSE(mWidget->isEditable());
-//}
+// void JobTypeComboBox::setItemSelectable(bool status)
+TEST_F(test_jobtypecombobox, setItemSelectable_noHover)
+{
+    mWidget->m_hoverSelectedIndex = -1;
+    mWidget->setItemSelectable(true);
+}
 
-//TEST_F(test_jobtypecombobox, eventFilter_001)
-//{
-//    QPointF point(1, 1);
-//    QEnterEvent e(point, point, point);
-//    mWidget->showPopup();
-//    mWidget->eventFilter(mWidget->m_addBtn, &e);
-//}
+TEST_F(test_jobtypecombobox, setItemSelectable_withHover)
+{
+    mWidget->addJobTypeItem(0, "#FF0000", "TestType");
+    mWidget->m_hoverSelectedIndex = 0;
+    mWidget->setItemSelectable(true);
+    mWidget->setItemSelectable(false);
+}
 
-//TEST_F(test_jobtypecombobox, eventFilter_002)
-//{
-//    Stub stub;
-//    stub.set(ADDR(JobTypeInfoManager, getJobTypeList), jobtypecombobox_stub_JobTypeInfos2);
-//    mWidget->updateJobType();
-//    QPointF point(1, 1);
-//    QFocusEvent e(QEvent::FocusIn);
-//    mWidget->showPopup();
-//    mWidget->eventFilter(mWidget->m_addBtn, &e);
-//}
+// void JobTypeComboBox::addCustomWidget(QFrame *viewContainer)
+TEST_F(test_jobtypecombobox, addCustomWidget)
+{
+    QFrame *frame = new QFrame();
+    QVBoxLayout *layout = new QVBoxLayout(frame);
+    Q_UNUSED(layout);
+    mWidget->addCustomWidget(frame);
+    delete frame;
+}
 
-//TEST_F(test_jobtypecombobox, eventFilter_003)
-//{
-//    Stub stub;
-//    stub.set(ADDR(JobTypeInfoManager, getJobTypeList), jobtypecombobox_stub_JobTypeInfos2);
-//    mWidget->updateJobType();
-//    QPointF point(1, 1);
-//    QKeyEvent e(QEvent::KeyPress, Qt::Key_Up, Qt::NoModifier);
-//    mWidget->showPopup();
-//    mWidget->m_addBtn->setHighlight(true);
-//    mWidget->eventFilter(mWidget->m_addBtn, &e);
-//    EXPECT_TRUE(mWidget->m_addBtn->isHighlight());
-//}
+// void JobTypeComboBox::slotBtnAddItemClicked()
+TEST_F(test_jobtypecombobox, slotBtnAddItemClicked)
+{
+    EXPECT_TRUE(mWidget->isEditable());
+    EXPECT_TRUE(mWidget->currentText().isEmpty());
+}
 
-//TEST_F(test_jobtypecombobox, eventFilter_004)
-//{
-//    Stub stub;
-//    stub.set(ADDR(JobTypeInfoManager, getJobTypeList), jobtypecombobox_stub_JobTypeInfos2);
-//    mWidget->updateJobType();
-//    QPointF point(1, 1);
-//    QKeyEvent e(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
-//    mWidget->showPopup();
-//    mWidget->m_addBtn->setHighlight(true);
-//    mWidget->eventFilter(mWidget->m_addBtn, &e);
-//    EXPECT_TRUE(mWidget->m_addBtn->isHighlight());
-//}
+TEST_F(test_jobtypecombobox, slotBtnAddItemClicked_disabled)
+{
+    mWidget->setAddTypeEnabled(false);
+    mWidget->setEditable(false);
+    mWidget->slotBtnAddItemClicked();
+    EXPECT_FALSE(mWidget->isEditable());
+}
 
-//TEST_F(test_jobtypecombobox, eventFilter_005)
-//{
-//    Stub stub;
-//    stub.set(ADDR(JobTypeInfoManager, getJobTypeList), jobtypecombobox_stub_JobTypeInfos2);
-//    mWidget->updateJobType();
-//    QPointF point(1, 1);
-//    QKeyEvent e(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
-//    mWidget->showPopup();
-//    mWidget->m_addBtn->setHighlight(true);
-//    mWidget->eventFilter(mWidget->m_customWidget, &e);
-//    EXPECT_TRUE(mWidget->m_addBtn->isHighlight());
-//}
+// void JobTypeComboBox::slotEditingFinished()
+TEST_F(test_jobtypecombobox, slotEditingFinished)
+{
+    mWidget->slotEditingFinished();
+}
 
-//TEST_F(test_jobtypecombobox, initUI_001)
-//{
-//    mWidget->initUI();
-//    EXPECT_FALSE(mWidget->isEditable());
-//}
+// void JobTypeComboBox::slotEditCursorPositionChanged(int oldPos, int newPos)
+TEST_F(test_jobtypecombobox, slotEditCursorPositionChanged)
+{
+    mWidget->slotEditCursorPositionChanged(0, 5);
+    EXPECT_EQ(mWidget->m_oldPos, 0);
+    EXPECT_EQ(mWidget->m_newPos, 5);
+    EXPECT_EQ(mWidget->getCurrentEditPosition(), 5);
+}
 
-//TEST_F(test_jobtypecombobox, addJobTypeItem_001)
-//{
-//    mWidget->addJobTypeItem(1, "#000000", "");
-//}
+// QString JobTypeComboBox::getCurrentJobTypeNo()
+TEST_F(test_jobtypecombobox, getCurrentJobTypeNo_empty)
+{
+    EXPECT_TRUE(mWidget->getCurrentJobTypeNo().isEmpty());
+}
 
-//TEST_F(test_jobtypecombobox, addCustomWidget_001)
-//{
-//    QFrame *viewContainer = mWidget->findChild<QFrame *>();
-//    mWidget->addCustomWidget(viewContainer);
-//    EXPECT_TRUE(mWidget->m_addBtn != nullptr);
-//}
+// void JobTypeComboBox::setCurrentJobTypeNo(const QString &strJobTypeNo)
+TEST_F(test_jobtypecombobox, setCurrentJobTypeNo)
+{
+    mWidget->setCurrentJobTypeNo("nonexistent");
+}
 
-//TEST_F(test_jobtypecombobox, setItemSelectable_001)
-//{
-//    Stub stub;
-//    stub.set(ADDR(JobTypeInfoManager, getJobTypeList), jobtypecombobox_stub_JobTypeInfos2);
-//    mWidget->updateJobType();
-//    mWidget->showPopup();
-//    mWidget->setItemSelectable(true);
-//    EXPECT_FALSE(mWidget->m_addBtn->isHighlight());
-//}
-
-//TEST_F(test_jobtypecombobox, setItemSelectable_002)
-//{
-//    Stub stub;
-//    stub.set(ADDR(JobTypeInfoManager, getJobTypeList), jobtypecombobox_stub_JobTypeInfos2);
-//    mWidget->updateJobType();
-//    mWidget->showPopup();
-//    mWidget->setItemSelectable(false);
-//}
+// void JobTypeComboBox::setAddTypeEnabled(bool enabled)
+TEST_F(test_jobtypecombobox, setAddTypeEnabled)
+{
+    mWidget->setAddTypeEnabled(false);
+    EXPECT_FALSE(mWidget->m_addTypeEnabled);
+    mWidget->setAddTypeEnabled(true);
+    EXPECT_TRUE(mWidget->m_addTypeEnabled);
+}

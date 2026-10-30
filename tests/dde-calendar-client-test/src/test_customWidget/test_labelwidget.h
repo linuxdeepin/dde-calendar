@@ -5,28 +5,17 @@
 #ifndef TEST_LABELWIDGET_H
 #define TEST_LABELWIDGET_H
 
-//#include "labelwidget.h"
-//#include <QObject>
-//#include <QTest>
-//#include <gtest/gtest.h>
+#include "customWidget/labelwidget.h"
+#include <QObject>
+#include <gtest/gtest.h>
 
-//class test_labelwidget: public::testing::Test
-//{
-//public:
-//    test_labelwidget();
-
-//    virtual void SetUp()
-//    {
-//        mWidget = new LabelWidget();
-//    }
-
-//    virtual void TearDown()
-//    {
-//        delete mWidget;
-//        mWidget = nullptr;
-//    }
-//protected:
-//    LabelWidget *mWidget = nullptr;
-//};
+class test_labelwidget: public QObject, public testing::Test
+{
+public:
+    test_labelwidget();
+    ~test_labelwidget();
+protected:
+    LabelWidget *mWidget = nullptr;
+};
 
 #endif // TEST_LABELWIDGET_H
