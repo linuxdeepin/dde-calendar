@@ -5,17 +5,27 @@
 #ifndef TEST_CSCENETABKEYDEAL_H
 #define TEST_CSCENETABKEYDEAL_H
 
+#include "keypressstub.h"
+#include "view/cgraphicsscene.h"
+#include "gtest/gtest.h"
+#include "keypress/cscenetabkeydeal.h"
+
 #include <QObject>
 
 class test_CSceneTabKeyDeal : public QObject
+    , public ::testing::Test
 {
     Q_OBJECT
 public:
-    explicit test_CSceneTabKeyDeal(QObject *parent = nullptr);
+    test_CSceneTabKeyDeal();
+    void SetUp();
+    void TearDown();
 
-signals:
-
-public slots:
+public:
+    KeyPressStub stub;
+    QSharedPointer<CGraphicsScene> scene;
+    QSharedPointer<QGraphicsView> view;
+    QSharedPointer<CSceneTabKeyDeal> tabDeal;
 };
 
 #endif // TEST_CSCENETABKEYDEAL_H
