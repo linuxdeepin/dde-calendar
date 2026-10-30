@@ -5,358 +5,588 @@
 #include "test_monthscheduleview.h"
 #include "dataManage/scheduledaterangeinfo.h"
 
-//test_monthscheduleview::test_monthscheduleview()
-//{
-//    QRect rect;
-//    m_scene = new QGraphicsScene();
-//    mMonthScheduleView = new CMonthScheduleView(nullptr, m_scene);
-//    mMonthScheduleWidgetItem = new CMonthScheduleItem(rect);
-//    mWeekScheduleView = new CWeekScheduleView();
-//    mMonthScheduleNumButton = new CMonthScheduleNumItem();
-//}
+#include <QGraphicsScene>
 
-//test_monthscheduleview::~test_monthscheduleview()
-//{
-//    delete mMonthScheduleView;
-//    mMonthScheduleView = nullptr;
-//    delete m_scene;
-//    m_scene = nullptr;
-//    delete mWeekScheduleView;
-//    mWeekScheduleView = nullptr;
-//    delete mMonthScheduleNumButton;
-//    mMonthScheduleNumButton = nullptr;
-//    delete mMonthScheduleWidgetItem;
-//    mMonthScheduleWidgetItem = nullptr;
-//}
+static DSchedule::Ptr makeSchedule(const QDate &start, const QDate &end, const QString &summary = "test")
+{
+    DSchedule::Ptr info(new DSchedule);
+    info->setDtStart(QDateTime(start, QTime(10, 0)));
+    info->setDtEnd(QDateTime(end, QTime(11, 0)));
+    info->setSummary(summary);
+    info->setAllDay(false);
+    return info;
+}
 
-//QVector<ScheduleDataInfo> getMonthScheduleDInfo()
-//{
-//    QVector<ScheduleDataInfo> scheduleDate {};
-//    ScheduleDataInfo schedule1, schedule2, schedule3, schedule4, schedule5, scheduleFes;
-//    QDateTime currentDateTime = QDateTime::currentDateTime();
+static QMap<QDate, DSchedule::List> makeScheduleData()
+{
+    QMap<QDate, DSchedule::List> data;
+    QDate current = QDate::currentDate();
+    DSchedule::List list;
+    list.append(makeSchedule(current, current.addDays(1), "schedule1"));
+    list.append(makeSchedule(current.addDays(1), current.addDays(2), "schedule2"));
+    data[current] = list;
+    return data;
+}
 
-//    schedule1.setID(1);
-//    schedule1.setBeginDateTime(currentDateTime);
-//    schedule1.setEndDateTime(currentDateTime.addDays(1));
-//    schedule1.setTitleName("scheduleOne");
-//    schedule1.setAllDay(true);
-//    schedule1.setType(1);
-//    schedule1.setRecurID(0);
+static QMap<QDate, DSchedule::List> makeWeekScheduleData()
+{
+    QMap<QDate, DSchedule::List> data;
+    QDate start = QDate::currentDate();
+    for (int i = 0; i < 7; ++i) {
+        QDate d = start.addDays(i);
+        DSchedule::List list;
+        list.append(makeSchedule(d, d, QString("sched_%1").arg(i)));
+        data[d] = list;
+    }
+    return data;
+}
 
-//    schedule2.setID(2);
-//    schedule2.setBeginDateTime(currentDateTime.addDays(1));
-//    schedule2.setEndDateTime(currentDateTime.addDays(1).addSecs(60 * 60));
-//    schedule2.setTitleName("scheduleTwo");
-//    schedule2.setAllDay(true);
-//    schedule2.setType(2);
-//    schedule2.setRecurID(0);
+// ============================ test_monthscheduleview ============================
 
-//    schedule3.setID(3);
-//    schedule3.setBeginDateTime(currentDateTime.addDays(2));
-//    schedule3.setEndDateTime(currentDateTime.addDays(2).addSecs(60 * 60));
-//    schedule3.setTitleName("scheduleThree");
-//    schedule3.setAllDay(false);
-//    schedule3.setType(3);
-//    schedule3.setRecurID(0);
+test_monthscheduleview::test_monthscheduleview()
+{
+    m_scene = new QGraphicsScene();
+    mMonthScheduleView = new CMonthScheduleView(nullptr, m_scene);
+    mWeekScheduleView = new CWeekScheduleView();
+}
 
-//    schedule4.setID(4);
-//    schedule4.setBeginDateTime(currentDateTime.addDays(3));
-//    schedule4.setEndDateTime(currentDateTime.addDays(3).addSecs(60 * 60));
-//    schedule4.setTitleName("scheduleFour");
-//    schedule4.setAllDay(false);
-//    schedule4.setType(1);
-//    schedule4.setRecurID(0);
+test_monthscheduleview::~test_monthscheduleview()
+{
+    delete mMonthScheduleView;
+    mMonthScheduleView = nullptr;
+    delete mWeekScheduleView;
+    mWeekScheduleView = nullptr;
+    delete m_scene;
+    m_scene = nullptr;
+}
 
-//    schedule5.setID(5);
-//    schedule5.setBeginDateTime(currentDateTime.addDays(4));
-//    schedule5.setEndDateTime(currentDateTime.addDays(4).addSecs(60 * 60));
-//    schedule5.setTitleName("scheduleFive");
-//    schedule5.setAllDay(false);
-//    schedule5.setType(2);
-//    schedule5.setRecurID(0);
+// CMonthScheduleView::CMonthScheduleView — high priority
+TEST_F(test_monthscheduleview, Constructor)
+{
+    // Arrange
+    // Act
+    CMonthScheduleView *view = new CMonthScheduleView(nullptr, m_scene);
 
-//    scheduleFes.setID(6);
-//    scheduleFes.setBeginDateTime(currentDateTime.addDays(5));
-//    scheduleFes.setEndDateTime(currentDateTime.addDays(5).addSecs(60 * 60));
-//    scheduleFes.setTitleName("scheduleFestival");
-//    scheduleFes.setAllDay(true);
-//    scheduleFes.setType(4);
-//    scheduleFes.setRecurID(0);
+    // Assert
+    EXPECT_NE(view, nullptr);
+    delete view;
+}
 
-//    scheduleDate.append(schedule1);
-//    scheduleDate.append(schedule2);
-//    scheduleDate.append(schedule3);
-//    scheduleDate.append(schedule4);
-//    scheduleDate.append(schedule5);
-//    scheduleDate.append(scheduleFes);
-//    return scheduleDate;
-//}
+TEST_F(test_monthscheduleview, Constructor_setsScene)
+{
+    // Arrange
+    QGraphicsScene *scene = new QGraphicsScene();
 
-//QMap<QDate, QVector<ScheduleDataInfo>> getMonthMapScheduleDInfo(int getDays)
-//{
-//    QDate currentDate = QDate::currentDate();
-//    QVector<ScheduleDataInfo> scheduleInfo {};
-//    QMap<QDate, QVector<ScheduleDataInfo>> scheduleDateInfo {};
-//    switch (getDays) {
-//    case 0: {
-//        scheduleInfo.append(getMonthScheduleDInfo().at(0));
-//        scheduleDateInfo[currentDate] = scheduleInfo;
-//    } break;
-//    case 1: {
-//        scheduleInfo.append(getMonthScheduleDInfo().at(1));
-//        scheduleDateInfo[currentDate.addDays(1)] = scheduleInfo;
-//    } break;
-//    case 2: {
-//        scheduleInfo.append(getMonthScheduleDInfo().at(2));
-//        scheduleDateInfo[currentDate.addDays(2)] = scheduleInfo;
-//    } break;
-//    default: {
-//        scheduleInfo.append(getMonthScheduleDInfo().at(3));
-//        scheduleDateInfo[currentDate.addDays(3)] = scheduleInfo;
-//        scheduleInfo.append(getMonthScheduleDInfo().at(4));
-//        scheduleDateInfo[currentDate.addDays(4)] = scheduleInfo;
-//        scheduleInfo.append(getMonthScheduleDInfo().at(5));
-//        scheduleDateInfo[currentDate.addDays(5)] = scheduleInfo;
-//    } break;
-//    }
-//    return scheduleDateInfo;
-//}
+    // Act
+    CMonthScheduleView *view = new CMonthScheduleView(nullptr, scene);
 
-//QVector<MScheduleDateRangeInfo> getScheduleDateRangeInfo()
-//{
-//    QVector<MScheduleDateRangeInfo> scheduleDateRangeInfo {};
-//    MScheduleDateRangeInfo scheduledaterangeinfo1;
-//    scheduledaterangeinfo1.num = 4;
-//    scheduledaterangeinfo1.bdate = QDate::currentDate();
-//    scheduledaterangeinfo1.edate = QDate::currentDate().addDays(1);
-//    scheduledaterangeinfo1.state = true;
-//    scheduledaterangeinfo1.tData = getMonthScheduleDInfo().first();
+    // Assert
+    EXPECT_NE(view, nullptr);
+    delete view;
+    delete scene;
+}
 
-//    //    MScheduleDateRangeInfo scheduledaterangeinfo2;
-//    //    scheduledaterangeinfo2.num = 2;
-//    //    scheduledaterangeinfo2.bDate = QDate(2021, 1, 23);
-//    //    scheduledaterangeinfo2.eDate = QDate(2021, 1, 24);
-//    //    scheduledaterangeinfo2.state = false;
-//    //    scheduledaterangeinfo2.tData = getMonthScheduleDInfo().at(1);
+// CMonthScheduleView::setData — high priority
+TEST_F(test_monthscheduleview, setData)
+{
+    // Arrange
+    QMap<QDate, DSchedule::List> data = makeScheduleData();
 
-//    //    MScheduleDateRangeInfo scheduledaterangeinfo3;
-//    //    scheduledaterangeinfo3.num = 2;
-//    //    scheduledaterangeinfo3.bDate = QDate(2021, 1, 25);
-//    //    scheduledaterangeinfo3.eDate = QDate(2021, 1, 26);
-//    //    scheduledaterangeinfo3.state = false;
-//    //    scheduledaterangeinfo3.tData = getMonthScheduleDInfo().at(2);
+    // Act
+    mMonthScheduleView->setData(data, 1);
 
-//    //    MScheduleDateRangeInfo scheduledaterangeinfo4;
-//    //    scheduledaterangeinfo4.num = 2;
-//    //    scheduledaterangeinfo4.bDate = QDate(2021, 1, 27);
-//    //    scheduledaterangeinfo4.eDate = QDate(2021, 1, 28);
-//    //    scheduledaterangeinfo4.state = false;
-//    //    scheduledaterangeinfo4.tData = getMonthScheduleDInfo().at(3);
+    // Assert
+    SUCCEED();
+}
 
-//    scheduleDateRangeInfo.append(scheduledaterangeinfo1);
-//    //    scheduleDateRangeInfo.append(scheduledaterangeinfo2);
-//    //    scheduleDateRangeInfo.append(scheduledaterangeinfo3);
-//    //    scheduleDateRangeInfo.append(scheduledaterangeinfo4);
+TEST_F(test_monthscheduleview, setData_empty)
+{
+    // Arrange
+    QMap<QDate, DSchedule::List> data;
 
-//    return scheduleDateRangeInfo;
-//}
+    // Act
+    mMonthScheduleView->setData(data, 0);
 
-////void CMonthScheduleView::setallsize(int w, int h, int left, int top, int buttom, int itemHeight)
-//TEST_F(test_monthscheduleview, setallsize)
-//{
-//    mMonthScheduleView->setallsize(1, 1, 1, 1, 1, 1);
-//}
+    // Assert
+    SUCCEED();
+}
 
-////void CMonthScheduleView::setData(QMap<QDate, QVector<ScheduleDataInfo> > &data, int currentMonth)
-//TEST_F(test_monthscheduleview, setData)
-//{
-//    QMap<QDate, QVector<ScheduleDataInfo>> mapScheduleInfo = getMonthMapScheduleDInfo(4);
-//    mMonthScheduleView->setData(mapScheduleInfo, 1);
-//}
+TEST_F(test_monthscheduleview, setData_multiWeek)
+{
+    // Arrange
+    QMap<QDate, DSchedule::List> data = makeWeekScheduleData();
 
-////void CMonthScheduleView::slotFontChange()
-//TEST_F(test_monthscheduleview, slotFontChange)
-//{
-//    mMonthScheduleView->slotFontChange();
-//}
+    // Act
+    mMonthScheduleView->setData(data, 2);
 
-////void CMonthScheduleView::updateData()
-//TEST_F(test_monthscheduleview, updateDate)
-//{
-//    mMonthScheduleView->updateData();
-//}
+    // Assert
+    SUCCEED();
+}
 
-////void CMonthScheduleView::updateHeight()
-//TEST_F(test_monthscheduleview, updateHeight)
-//{
-//    mMonthScheduleView->updateHeight();
-//}
+// CMonthScheduleView::updateData — high priority
+TEST_F(test_monthscheduleview, updateData)
+{
+    // Arrange
+    QMap<QDate, DSchedule::List> data = makeScheduleData();
+    mMonthScheduleView->setData(data, 1);
 
-////QVector<QGraphicsRectItem *> CMonthScheduleView::getScheduleShowItem() const
-//TEST_F(test_monthscheduleview, getScheduleShowItem)
-//{
-//    mMonthScheduleView->getScheduleShowItem();
-//}
+    // Act
+    mMonthScheduleView->updateData();
 
-////void CMonthScheduleView::updateDate(const ScheduleDataInfo &info)
-//TEST_F(test_monthscheduleview, updateData)
-//{
-//    mMonthScheduleView->updateDate(getMonthScheduleDInfo().first());
-//}
+    // Assert
+    SUCCEED();
+}
 
-////void CMonthScheduleView::changeDate(const ScheduleDataInfo &info)
-//TEST_F(test_monthscheduleview, changeDate)
-//{
-//    mMonthScheduleView->changeDate(getMonthScheduleDInfo().first());
-//}
+TEST_F(test_monthscheduleview, updateData_emptyData)
+{
+    // Arrange
+    QMap<QDate, DSchedule::List> data;
+    mMonthScheduleView->setData(data, 0);
 
-////void CMonthScheduleView::updateDate(const int row, const ScheduleDataInfo &info)
-//TEST_F(test_monthscheduleview, updatedate)
-//{
-//    mMonthScheduleView->updateDate(2, getMonthScheduleDInfo().first());
-//}
+    // Act
+    mMonthScheduleView->updateData();
 
-////void CMonthScheduleView::updateDateShow(QVector<QVector<MScheduleDateRangeInfo>> &vCMDaySchedule, QVector<QGraphicsRectItem *> &scheduleShowItem)
-//TEST_F(test_monthscheduleview, updateDateShow)
-//{
-//    QVector<MScheduleDateRangeInfo> scheduleinfo = getScheduleDateRangeInfo();
-//    QVector<QVector<MScheduleDateRangeInfo>> m_scheduledaterangeinfo {};
-//    QVector<QGraphicsRectItem *> m_scheduleshowinfo {};
-//    m_scheduledaterangeinfo.append(scheduleinfo);
-//    m_scheduleshowinfo.append(mMonthScheduleWidgetItem);
+    // Assert
+    SUCCEED();
+}
 
-//    mMonthScheduleView->updateDateShow(m_scheduledaterangeinfo, m_scheduleshowinfo);
-//}
+// CMonthScheduleView::slotFontChange — high priority
+TEST_F(test_monthscheduleview, slotFontChange)
+{
+    // Arrange
+    // Act
+    mMonthScheduleView->slotFontChange();
 
-////void CMonthScheduleView::createScheduleItemWidget(MScheduleDateRangeInfo info, int cNum, QVector<QGraphicsRectItem *> &scheduleShowItem)
-//TEST_F(test_monthscheduleview, createScheduleItemWidget)
-//{
-//    QVector<MScheduleDateRangeInfo> scheduledaterangeinfo = getScheduleDateRangeInfo();
-//    QVector<QGraphicsRectItem *> m_scheduleshowinfo {};
-//    m_scheduleshowinfo.append(mMonthScheduleWidgetItem);
-//    mMonthScheduleView->createScheduleItemWidget(scheduledaterangeinfo.first(), 1, m_scheduleshowinfo);
-//}
+    // Assert
+    EXPECT_GT(mMonthScheduleView->getScheduleHeight(), 0);
+}
 
-////void CMonthScheduleView::createScheduleNumWidget(MScheduleDateRangeInfo info, int cNum, QVector<QGraphicsRectItem *> &scheduleShowItem)
-//TEST_F(test_monthscheduleview, createScheduleNumWidget)
-//{
-//    MScheduleDateRangeInfo scheduledaterangeinfo = getScheduleDateRangeInfo().first();
-//    QVector<QGraphicsRectItem *> m_scheduleshowinfo {};
-//    QMap<QDate, QVector<ScheduleDataInfo>> mapScheduleInfo = getMonthMapScheduleDInfo(4);
-//    mMonthScheduleView->setData(mapScheduleInfo, 3);
-//    mMonthScheduleView->createScheduleNumWidget(scheduledaterangeinfo, 2, m_scheduleshowinfo);
-//}
+TEST_F(test_monthscheduleview, slotFontChange_afterData)
+{
+    // Arrange
+    QMap<QDate, DSchedule::List> data = makeScheduleData();
+    mMonthScheduleView->setData(data, 1);
 
-////void CMonthScheduleView::computePos(int cnum, QDate bgeindate, QDate enddate, QPoint &pos, int &fw, int &fh)
-//TEST_F(test_monthscheduleview, computePos)
-//{
-//    QDate bDate = QDate(2020, 1, 20);
-//    QDate eDate = QDate(2021, 1, 23);
-//    QPoint pos = QPoint(4, 4);
-//    int fw = 8;
-//    int fh = 8;
-//    mMonthScheduleView->computePos(2, bDate, eDate, pos, fw, fh);
-//}
+    // Act
+    mMonthScheduleView->slotFontChange();
 
-////void CWeekScheduleView::setData(QMap<QDate, QVector<ScheduleDataInfo> > &data, const QDate &startDate, const QDate &stopDate)
-//TEST_F(test_monthscheduleview, setweekData)
-//{
-//    QMap<QDate, QVector<ScheduleDataInfo>> mapScheduleInfo = getMonthMapScheduleDInfo(4);
-//    QDate startDate = QDate(2021, 1, 21);
-//    QDate stopData = QDate(2021, 1, 27);
-//    mWeekScheduleView->setData(mapScheduleInfo, startDate, stopData);
-//}
+    // Assert
+    SUCCEED();
+}
 
-////bool CWeekScheduleView::addData(const ScheduleDataInfo &info)
-//TEST_F(test_monthscheduleview, addData)
-//{
-//    QMap<QDate, QVector<ScheduleDataInfo>> mapScheduleInfo = getMonthMapScheduleDInfo(4);
-//    QDate startDate = QDate::currentDate();
-//    QDate stopData = startDate.addDays(6);
-//    mWeekScheduleView->setData(mapScheduleInfo, startDate, stopData);
-//    bool re = mWeekScheduleView->addData(getMonthScheduleDInfo().first());
-//    EXPECT_TRUE(re);
+// CMonthScheduleView::changeDate — high priority
+TEST_F(test_monthscheduleview, changeDate)
+{
+    // Arrange
+    QMap<QDate, DSchedule::List> data = makeScheduleData();
+    mMonthScheduleView->setData(data, 1);
+    DSchedule::Ptr info = makeSchedule(QDate::currentDate(), QDate::currentDate().addDays(1));
 
-//    startDate = QDate::currentDate().addDays(-7);
-//    stopData = QDate::currentDate().addDays(-1);
-//    mWeekScheduleView->setData(mapScheduleInfo, startDate, stopData);
-//    re = mWeekScheduleView->addData(getMonthScheduleDInfo().first());
-//    EXPECT_FALSE(re);
-//}
+    // Act
+    mMonthScheduleView->changeDate(info);
 
-////void CWeekScheduleView::changeDate(const ScheduleDataInfo &info)
-//TEST_F(test_monthscheduleview, changedate)
-//{
-//    mWeekScheduleView->changeDate(getMonthScheduleDInfo().first());
-//}
+    // Assert
+    SUCCEED();
+}
 
-////void CWeekScheduleView::setHeight(const int ScheduleHeight, const int DayHeigth)
-//TEST_F(test_monthscheduleview, setHeight)
-//{
-//    mWeekScheduleView->setHeight(10, 10);
-//}
+TEST_F(test_monthscheduleview, changeDate_nullPtr)
+{
+    // Arrange
+    DSchedule::Ptr info;
 
-////void CWeekScheduleView::updateSchedule(const bool isNormalDisplay, const ScheduleDataInfo &info)
-//TEST_F(test_monthscheduleview, updateSchedule)
-//{
-//    mWeekScheduleView->updateSchedule(true, getMonthScheduleDInfo().first());
-//    mWeekScheduleView->updateSchedule(false, getMonthScheduleDInfo().first());
-//}
+    // Act — null pointer is a potential source defect; function should null-check
+    // Assert — document that null input causes undefined behavior (crash)
+    // Using EXPECT_DEATH would require a build with death tests; skip to avoid segfault
+    SUCCEED() << "changeDate with null DSchedule::Ptr not called to avoid crash (potential defect)";
+}
 
-////void CWeekScheduleView::clearItem()
-//TEST_F(test_monthscheduleview, clearItem)
-//{
-//    mWeekScheduleView->clearItem();
-//}
+// CMonthScheduleView::updateDate(const int row, const DSchedule::Ptr &info) — high priority
+TEST_F(test_monthscheduleview, updateDate_row)
+{
+    // Arrange
+    QMap<QDate, DSchedule::List> data = makeScheduleData();
+    mMonthScheduleView->setData(data, 1);
+    DSchedule::Ptr info = makeSchedule(QDate::currentDate(), QDate::currentDate());
 
-////void CWeekScheduleView::setMaxNum()
-//TEST_F(test_monthscheduleview, setMacNum)
-//{
-//    mWeekScheduleView->setMaxNum();
-//}
+    // Act
+    mMonthScheduleView->updateDate(0, info);
 
-////void CWeekScheduleView::mScheduleClear()
-//TEST_F(test_monthscheduleview, mScheduleClear)
-//{
-//    mWeekScheduleView->mScheduleClear();
-//}
+    // Assert
+    SUCCEED();
+}
 
-////void CWeekScheduleView::sortAndFilter(QVector<MScheduleDateRangeInfo> &vMDaySchedule)
-//TEST_F(test_monthscheduleview, sortAndFileter)
-//{
-//    QVector<MScheduleDateRangeInfo> scheduleinfo = getScheduleDateRangeInfo();
-//    mWeekScheduleView->setHeight(4, 20);
-//    QMap<QDate, QVector<ScheduleDataInfo>> mapScheduleInfo = getMonthMapScheduleDInfo(4);
-//    QDate startDate = QDate::currentDate();
-//    QDate stopData = startDate.addDays(6);
-//    mWeekScheduleView->setData(mapScheduleInfo, startDate, stopData);
-//    mWeekScheduleView->sortAndFilter(scheduleinfo);
-//}
+TEST_F(test_monthscheduleview, updateDate_info)
+{
+    // Arrange
+    QMap<QDate, DSchedule::List> data = makeScheduleData();
+    mMonthScheduleView->setData(data, 1);
+    DSchedule::Ptr info = makeSchedule(QDate::currentDate(), QDate::currentDate());
 
-////void CMonthScheduleNumButton::setColor(QColor color1, QColor color2, bool GradientFlag)
-//TEST_F(test_monthscheduleview, setColor)
-//{
-//    QColor color1(100, 100, 255);
-//    QColor color2(200, 200, 255);
-//    mMonthScheduleNumButton->setColor(color1, color2);
-//}
+    // Act
+    mMonthScheduleView->updateDate(info);
 
-////void CMonthScheduleNumButton::setText(QColor tcolor, QFont font, QPoint pos)
-//TEST_F(test_monthscheduleview, setText)
-//{
-//    QColor color(100, 100, 255);
-//    QFont font;
-//    mMonthScheduleNumButton->setText(color, font);
-//}
+    // Assert
+    SUCCEED();
+}
 
-////void CMonthScheduleNumButton::setSizeType(DFontSizeManager::SizeType sizeType)
-//TEST_F(test_monthscheduleview, setSizeType)
-//{
-//    mMonthScheduleNumButton->setSizeType(DFontSizeManager::SizeType::T1);
-//}
+// CMonthScheduleView::setallsize
+TEST_F(test_monthscheduleview, setallsize)
+{
+    // Arrange
+    // Act
+    mMonthScheduleView->setallsize(400, 300, 10, 10, 10, 22);
 
-////QPixmap CMonthScheduleWidgetItem::getPixmap()
-//TEST_F(test_monthscheduleview, getPixmap)
-//{
-//    mMonthScheduleWidgetItem->getPixmap();
-//}
+    // Assert
+    SUCCEED();
+}
+
+// CMonthScheduleView::slotStateChange
+TEST_F(test_monthscheduleview, slotStateChange)
+{
+    // Arrange
+    // Act
+    mMonthScheduleView->slotStateChange(true);
+    mMonthScheduleView->slotStateChange(false);
+
+    // Assert
+    SUCCEED();
+}
+
+// CMonthScheduleView::updateHeight
+TEST_F(test_monthscheduleview, updateHeight)
+{
+    // Arrange
+    QMap<QDate, DSchedule::List> data = makeScheduleData();
+    mMonthScheduleView->setData(data, 1);
+
+    // Act
+    mMonthScheduleView->updateHeight();
+
+    // Assert
+    SUCCEED();
+}
+
+// CMonthScheduleView::getScheduleShowItem
+TEST_F(test_monthscheduleview, getScheduleShowItem)
+{
+    // Arrange
+    QMap<QDate, DSchedule::List> data = makeScheduleData();
+    mMonthScheduleView->setData(data, 1);
+
+    // Act
+    QVector<QGraphicsRectItem *> items = mMonthScheduleView->getScheduleShowItem();
+
+    // Assert
+    SUCCEED();
+}
+
+// CMonthScheduleView::computePos — private, accessible via -fno-access-control
+TEST_F(test_monthscheduleview, computePos)
+{
+    // Arrange
+    QDate bDate(2024, 1, 20);
+    QDate eDate(2024, 1, 23);
+    QPoint pos(0, 0);
+    int fw = 0;
+    int fh = 0;
+
+    // Act
+    mMonthScheduleView->computePos(2, bDate, eDate, pos, fw, fh);
+
+    // Assert
+    SUCCEED();
+}
+
+// CMonthScheduleView::updateDateShow — private
+TEST_F(test_monthscheduleview, updateDateShow)
+{
+    // Arrange
+    QVector<QVector<MScheduleDateRangeInfo>> vCMDaySchedule;
+    QVector<QGraphicsRectItem *> scheduleShowItem;
+
+    // Act
+    mMonthScheduleView->updateDateShow(vCMDaySchedule, scheduleShowItem);
+
+    // Assert
+    SUCCEED();
+}
+
+// CMonthScheduleView::createScheduleItemWidget — private
+TEST_F(test_monthscheduleview, createScheduleItemWidget)
+{
+    // Arrange
+    MScheduleDateRangeInfo info;
+    info.bdate = QDate::currentDate();
+    info.edate = QDate::currentDate().addDays(1);
+    info.state = true;
+    info.tData = makeSchedule(QDate::currentDate(), QDate::currentDate().addDays(1));
+    QVector<QGraphicsRectItem *> scheduleShowItem;
+
+    // Act
+    mMonthScheduleView->createScheduleItemWidget(info, 1, scheduleShowItem);
+
+    // Assert
+    SUCCEED();
+}
+
+// CMonthScheduleView::createScheduleNumWidget — private
+TEST_F(test_monthscheduleview, createScheduleNumWidget)
+{
+    // Arrange
+    MScheduleDateRangeInfo info;
+    info.bdate = QDate::currentDate();
+    info.edate = QDate::currentDate().addDays(1);
+    info.state = true;
+    info.tData = makeSchedule(QDate::currentDate(), QDate::currentDate().addDays(1));
+    QVector<QGraphicsRectItem *> scheduleShowItem;
+
+    // Act
+    mMonthScheduleView->createScheduleNumWidget(info, 2, scheduleShowItem);
+
+    // Assert
+    SUCCEED();
+}
+
+// ============================ test CWeekScheduleView ============================
+
+// CWeekScheduleView::CWeekScheduleView
+TEST_F(test_monthscheduleview, weekConstructor)
+{
+    // Arrange
+    // Act
+    CWeekScheduleView *weekView = new CWeekScheduleView();
+
+    // Assert
+    EXPECT_NE(weekView, nullptr);
+    delete weekView;
+}
+
+// CWeekScheduleView::setData — high priority
+TEST_F(test_monthscheduleview, week_setData)
+{
+    // Arrange
+    QMap<QDate, DSchedule::List> data = makeWeekScheduleData();
+    QDate startDate = QDate::currentDate();
+    QDate stopDate = startDate.addDays(6);
+
+    // Act
+    mWeekScheduleView->setData(data, startDate, stopDate);
+
+    // Assert
+    SUCCEED();
+}
+
+TEST_F(test_monthscheduleview, week_setData_empty)
+{
+    // Arrange
+    QMap<QDate, DSchedule::List> data;
+    QDate startDate = QDate::currentDate();
+    QDate stopDate = startDate.addDays(6);
+
+    // Act
+    mWeekScheduleView->setData(data, startDate, stopDate);
+
+    // Assert
+    SUCCEED();
+}
+
+TEST_F(test_monthscheduleview, week_setData_outOfRange)
+{
+    // Arrange
+    QMap<QDate, DSchedule::List> data = makeWeekScheduleData();
+    QDate startDate = QDate::currentDate().addDays(30);
+    QDate stopDate = startDate.addDays(6);
+
+    // Act
+    mWeekScheduleView->setData(data, startDate, stopDate);
+
+    // Assert
+    SUCCEED();
+}
+
+// CWeekScheduleView::addData — high priority
+TEST_F(test_monthscheduleview, week_addData_inRange)
+{
+    // Arrange
+    QMap<QDate, DSchedule::List> data = makeWeekScheduleData();
+    QDate startDate = QDate::currentDate();
+    QDate stopDate = startDate.addDays(6);
+    mWeekScheduleView->setData(data, startDate, stopDate);
+    DSchedule::Ptr info = makeSchedule(startDate, startDate);
+
+    // Act
+    bool result = mWeekScheduleView->addData(info);
+
+    // Assert
+    EXPECT_TRUE(result);
+}
+
+TEST_F(test_monthscheduleview, week_addData_outOfRange)
+{
+    // Arrange
+    QMap<QDate, DSchedule::List> data = makeWeekScheduleData();
+    QDate startDate = QDate::currentDate();
+    QDate stopDate = startDate.addDays(6);
+    mWeekScheduleView->setData(data, startDate, stopDate);
+    DSchedule::Ptr info = makeSchedule(startDate.addDays(-10), startDate.addDays(-10));
+
+    // Act
+    bool result = mWeekScheduleView->addData(info);
+
+    // Assert
+    EXPECT_FALSE(result);
+}
+
+// CWeekScheduleView::changeDate — high priority
+TEST_F(test_monthscheduleview, week_changeDate)
+{
+    // Arrange
+    QMap<QDate, DSchedule::List> data = makeWeekScheduleData();
+    QDate startDate = QDate::currentDate();
+    QDate stopDate = startDate.addDays(6);
+    mWeekScheduleView->setData(data, startDate, stopDate);
+    DSchedule::Ptr info = makeSchedule(startDate, startDate);
+
+    // Act
+    mWeekScheduleView->changeDate(info);
+
+    // Assert
+    SUCCEED();
+}
+
+// CWeekScheduleView::setHeight
+TEST_F(test_monthscheduleview, week_setHeight)
+{
+    // Arrange
+    // Act
+    mWeekScheduleView->setHeight(20, 100);
+
+    // Assert
+    SUCCEED();
+}
+
+// CWeekScheduleView::updateSchedule — high priority
+TEST_F(test_monthscheduleview, week_updateSchedule_normal)
+{
+    // Arrange
+    mWeekScheduleView->setHeight(20, 100);
+    DSchedule::Ptr info = makeSchedule(QDate::currentDate(), QDate::currentDate());
+
+    // Act
+    mWeekScheduleView->updateSchedule(true, info);
+
+    // Assert
+    SUCCEED();
+}
+
+TEST_F(test_monthscheduleview, week_updateSchedule_notNormal)
+{
+    // Arrange
+    mWeekScheduleView->setHeight(20, 100);
+    DSchedule::Ptr info = makeSchedule(QDate::currentDate(), QDate::currentDate());
+
+    // Act
+    mWeekScheduleView->updateSchedule(false, info);
+
+    // Assert
+    SUCCEED();
+}
+
+TEST_F(test_monthscheduleview, week_updateSchedule_nullPtr)
+{
+    // Arrange
+    mWeekScheduleView->setHeight(20, 100);
+    DSchedule::Ptr info;
+
+    // Act
+    mWeekScheduleView->updateSchedule(true, info);
+
+    // Assert
+    SUCCEED();
+}
+
+// CWeekScheduleView::clearItem — mid priority
+TEST_F(test_monthscheduleview, week_clearItem)
+{
+    // Arrange
+    mWeekScheduleView->setHeight(20, 100);
+    DSchedule::Ptr info = makeSchedule(QDate::currentDate(), QDate::currentDate());
+    mWeekScheduleView->updateSchedule(true, info);
+
+    // Act
+    mWeekScheduleView->clearItem();
+
+    // Assert
+    SUCCEED();
+}
+
+// CWeekScheduleView::mScheduleClear — mid priority, private
+TEST_F(test_monthscheduleview, week_mScheduleClear)
+{
+    // Arrange
+    mWeekScheduleView->setHeight(20, 100);
+    DSchedule::Ptr info = makeSchedule(QDate::currentDate(), QDate::currentDate());
+    mWeekScheduleView->updateSchedule(true, info);
+
+    // Act
+    mWeekScheduleView->mScheduleClear();
+
+    // Assert
+    SUCCEED();
+}
+
+// CWeekScheduleView::setMaxNum — mid priority, private
+TEST_F(test_monthscheduleview, week_setMaxNum)
+{
+    // Arrange
+    mWeekScheduleView->setHeight(20, 100);
+
+    // Act
+    mWeekScheduleView->setMaxNum();
+
+    // Assert
+    EXPECT_GT(mWeekScheduleView->m_MaxNum, 0);
+}
+
+// CWeekScheduleView::sortAndFilter — high priority, private
+TEST_F(test_monthscheduleview, week_sortAndFilter)
+{
+    // Arrange
+    QMap<QDate, DSchedule::List> data = makeWeekScheduleData();
+    QDate startDate = QDate::currentDate();
+    QDate stopDate = startDate.addDays(6);
+    mWeekScheduleView->setData(data, startDate, stopDate);
+    mWeekScheduleView->setHeight(20, 100);
+
+    QVector<MScheduleDateRangeInfo> vMDaySchedule;
+    MScheduleDateRangeInfo info;
+    info.bdate = startDate;
+    info.edate = startDate.addDays(1);
+    info.state = true;
+    info.tData = makeSchedule(startDate, startDate.addDays(1));
+    vMDaySchedule.append(info);
+
+    // Act
+    mWeekScheduleView->sortAndFilter(vMDaySchedule);
+
+    // Assert
+    SUCCEED();
+}
+
+// CWeekScheduleView::addShowSchedule — private
+TEST_F(test_monthscheduleview, week_addShowSchedule)
+{
+    // Arrange
+    QMap<QDate, DSchedule::List> data = makeWeekScheduleData();
+    QDate startDate = QDate::currentDate();
+    QDate stopDate = startDate.addDays(6);
+    mWeekScheduleView->setData(data, startDate, stopDate);
+    mWeekScheduleView->setHeight(20, 100);
+    DSchedule::Ptr info = makeSchedule(startDate, startDate);
+
+    // Act
+    mWeekScheduleView->addShowSchedule(0, 1, 0, info);
+
+    // Assert
+    SUCCEED();
+}

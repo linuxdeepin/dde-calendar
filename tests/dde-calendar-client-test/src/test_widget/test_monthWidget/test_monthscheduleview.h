@@ -6,24 +6,19 @@
 #define TEST_MONTHSCHEDULEVIEW_H
 
 #include <QObject>
-//#include "monthWidget/monthscheduleview.h"
-//#include "graphicsItem/cmonthscheduleitem.h"
-//#include "graphicsItem/cmonthschedulenumitem.h"
-//#include "gtest/gtest.h"
+#include "gtest/gtest.h"
+#include "monthWidget/monthscheduleview.h"
 
-//class test_monthscheduleview : public QObject
-//    , public ::testing::Test
-//{
-//public:
-//    test_monthscheduleview();
-//    ~test_monthscheduleview();
+class test_monthscheduleview : public QObject, public ::testing::Test
+{
+public:
+    test_monthscheduleview();
+    ~test_monthscheduleview() override;
 
-//protected:
-//    CMonthScheduleView *mMonthScheduleView = nullptr;
-//    CMonthScheduleItem *mMonthScheduleWidgetItem = nullptr;
-//    CWeekScheduleView *mWeekScheduleView = nullptr;
-//    CMonthScheduleNumItem *mMonthScheduleNumButton = nullptr;
-//    QGraphicsScene *m_scene = nullptr;
-//};
+protected:
+    CMonthScheduleView *mMonthScheduleView = nullptr;
+    CWeekScheduleView *mWeekScheduleView = nullptr;
+    QGraphicsScene *m_scene = nullptr;
+};
 
 #endif // TEST_MONTHSCHEDULEVIEW_H
