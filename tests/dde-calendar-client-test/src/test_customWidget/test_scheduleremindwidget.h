@@ -9,7 +9,7 @@
 #include <gtest/gtest.h>
 #include "customWidget/scheduleRemindWidget.h"
 
-class test_scheduleremindwidget : public::QObject, public::testing::Test
+class test_scheduleremindwidget : public QObject, public testing::Test
 {
 public:
     test_scheduleremindwidget();

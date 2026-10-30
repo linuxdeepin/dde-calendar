@@ -9,16 +9,14 @@
 #include <gtest/gtest.h>
 #include "customWidget/monthbrefwidget.h"
 
-class test_monthbrefwidget : public::QObject, public::testing::Test
+class test_monthbrefwidget : public QObject, public testing::Test
 {
 public:
     test_monthbrefwidget();
     ~test_monthbrefwidget();
-    void SetUp() override;
-    void TearDown() override;
 protected:
     MonthBrefWidget *mMonthBrefWidget = nullptr;
-    CMonthDayRect *mMonthDayRect = nullptr;
+    CMonthDayRectWidget *mMonthDayRectWidget = nullptr;
 };
 
 #endif // TEST_MONTHBREFWIDGET_H
