@@ -6,20 +6,40 @@
 #define TEST_MONTHDAYVIEW_H
 
 #include <QObject>
-//#include "monthWidget/monthdayview.h"
-//#include "gtest/gtest.h"
+#include "gtest/gtest.h"
+#include "monthWidget/monthdayview.h"
 
-//class test_monthdayview : public QObject
-//    , public ::testing::Test
-//{
-//public:
-//    test_monthdayview();
-//    ~test_monthdayview();
+class test_monthdayview : public QObject, public ::testing::Test
+{
+public:
+    test_monthdayview();
+    ~test_monthdayview() override;
+protected:
+    void SetUp() override;
+    void TearDown() override;
+    CMonthDayView *mMonthDayView = nullptr;
+};
 
-//protected:
-//    CMonthDayView *mMonthDayView = nullptr;
-//    CMonthWidget *mMonthWidget = nullptr;
-//    CMonthRect *mMonthRect = nullptr;
-//};
+class test_monthrect : public QObject, public ::testing::Test
+{
+public:
+    test_monthrect();
+    ~test_monthrect() override;
+protected:
+    void SetUp() override;
+    void TearDown() override;
+    CMonthRect *mMonthRect = nullptr;
+};
+
+class test_monthwidget : public QObject, public ::testing::Test
+{
+public:
+    test_monthwidget();
+    ~test_monthwidget() override;
+protected:
+    void SetUp() override;
+    void TearDown() override;
+    CMonthWidget *mMonthWidget = nullptr;
+};
 
 #endif // TEST_MONTHDAYVIEW_H

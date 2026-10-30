@@ -7,17 +7,16 @@
 
 #include <QObject>
 #include "gtest/gtest.h"
-//#include "monthWidget/monthview.h"
+#include "monthWidget/monthview.h"
 
-//class test_monthview : public QObject
-//    , public ::testing::Test
-//{
-//public:
-//    test_monthview();
-//    ~test_monthview();
+class test_monthview : public QObject, public ::testing::Test
+{
+public:
+    test_monthview();
+    ~test_monthview() override;
 
-//protected:
-//    CMonthView *mMonthView = nullptr;
-//};
+protected:
+    CMonthView *mMonthView = nullptr;
+};
 
 #endif // TEST_MONTHVIEW_H

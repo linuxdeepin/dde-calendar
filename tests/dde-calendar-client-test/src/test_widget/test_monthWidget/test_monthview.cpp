@@ -3,192 +3,346 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "test_monthview.h"
+#include <QTimer>
+#include <QApplication>
+#include "huangliData/dbusdatastruct.h"
 
-//test_monthview::test_monthview()
-//{
-//    mMonthView = new CMonthView();
-//}
+static DSchedule::Ptr makeMonthViewSchedule(const QDate &start, const QDate &end, const QString &summary = "test")
+{
+    DSchedule::Ptr info(new DSchedule);
+    info->setDtStart(QDateTime(start, QTime(10, 0)));
+    info->setDtEnd(QDateTime(end, QTime(11, 0)));
+    info->setSummary(summary);
+    info->setAllDay(false);
+    return info;
+}
 
-//test_monthview::~test_monthview()
-//{
-//    delete mMonthView;
-//    mMonthView = nullptr;
-//}
+static DSchedule::List makeMonthViewScheduleList()
+{
+    DSchedule::List list;
+    QDate current = QDate::currentDate();
+    list.append(makeMonthViewSchedule(current, current, "schedule1"));
+    list.append(makeMonthViewSchedule(current.addDays(1), current.addDays(1), "schedule2"));
+    list.append(makeMonthViewSchedule(current.addDays(2), current.addDays(2), "schedule3"));
+    return list;
+}
 
-//QVector<ScheduleDataInfo> getMonthViewScheduleDInfo()
-//{
-//    QVector<ScheduleDataInfo> scheduleDate {};
-//    ScheduleDataInfo schedule1, schedule2, schedule3, schedule4, schedule5, scheduleFes;
-//    QDateTime currentDateTime = QDateTime::currentDateTime();
+static QMap<QDate, DSchedule::List> makeMonthViewScheduleMap()
+{
+    QMap<QDate, DSchedule::List> data;
+    QDate current = QDate::currentDate();
+    data[current] = makeMonthViewScheduleList();
+    return data;
+}
 
-//    schedule1.setID(1);
-//    schedule1.setBeginDateTime(currentDateTime);
-//    schedule1.setEndDateTime(currentDateTime.addDays(1));
-//    schedule1.setTitleName("scheduleOne");
-//    schedule1.setAllDay(true);
-//    schedule1.setType(1);
-//    schedule1.setRecurID(0);
+static QVector<QDate> makeMonthViewDateList()
+{
+    QVector<QDate> list;
+    QDate current = QDate::currentDate();
+    for (int i = 0; i < 42; ++i) {
+        list.append(current.addDays(i));
+    }
+    return list;
+}
 
-//    schedule2.setID(2);
-//    schedule2.setBeginDateTime(currentDateTime.addDays(1));
-//    schedule2.setEndDateTime(currentDateTime.addDays(1).addSecs(60 * 60));
-//    schedule2.setTitleName("scheduleTwo");
-//    schedule2.setAllDay(true);
-//    schedule2.setType(2);
-//    schedule2.setRecurID(0);
+static QMap<QDate, CaHuangLiDayInfo> makeMonthViewHuangLi()
+{
+    QMap<QDate, CaHuangLiDayInfo> data;
+    CaHuangLiDayInfo info;
+    info.mGanZhiYear = "甲辰龙年";
+    info.mGanZhiMonth = "戊辰月";
+    info.mGanZhiDay = "甲子日";
+    info.mLunarMonthName = "三月";
+    info.mLunarDayName = "初一";
+    info.mLunarLeapMonth = 0;
+    info.mZodiac = "龙";
+    info.mTerm = "";
+    info.mSolarFestival = "";
+    info.mLunarFestival = "";
+    info.mSuit = "嫁娶";
+    info.mAvoid = "入土";
+    data[QDate::currentDate()] = info;
+    return data;
+}
 
-//    schedule3.setID(3);
-//    schedule3.setBeginDateTime(currentDateTime.addDays(2));
-//    schedule3.setEndDateTime(currentDateTime.addDays(2).addSecs(60 * 60));
-//    schedule3.setTitleName("scheduleThree");
-//    schedule3.setAllDay(false);
-//    schedule3.setType(3);
-//    schedule3.setRecurID(0);
+test_monthview::test_monthview()
+{
+    mMonthView = new CMonthView();
+}
 
-//    schedule4.setID(4);
-//    schedule4.setBeginDateTime(currentDateTime.addDays(3));
-//    schedule4.setEndDateTime(currentDateTime.addDays(3).addSecs(60 * 60));
-//    schedule4.setTitleName("scheduleFour");
-//    schedule4.setAllDay(false);
-//    schedule4.setType(1);
-//    schedule4.setRecurID(0);
+test_monthview::~test_monthview()
+{
+    delete mMonthView;
+    mMonthView = nullptr;
+}
 
-//    schedule5.setID(5);
-//    schedule5.setBeginDateTime(currentDateTime.addDays(4));
-//    schedule5.setEndDateTime(currentDateTime.addDays(4).addSecs(60 * 60));
-//    schedule5.setTitleName("scheduleFive");
-//    schedule5.setAllDay(false);
-//    schedule5.setType(2);
-//    schedule5.setRecurID(0);
+// CMonthView::CMonthView — mid priority
+TEST_F(test_monthview, Constructor)
+{
+    // Arrange
+    // Act
+    CMonthView *view = new CMonthView();
 
-//    scheduleFes.setID(6);
-//    scheduleFes.setBeginDateTime(currentDateTime.addDays(5));
-//    scheduleFes.setEndDateTime(currentDateTime.addDays(5).addSecs(60 * 60));
-//    scheduleFes.setTitleName("scheduleFestival");
-//    scheduleFes.setAllDay(true);
-//    scheduleFes.setType(4);
-//    scheduleFes.setRecurID(0);
+    // Assert
+    EXPECT_NE(view, nullptr);
+    delete view;
+}
 
-//    scheduleDate.append(schedule1);
-//    scheduleDate.append(schedule2);
-//    scheduleDate.append(schedule3);
-//    scheduleDate.append(schedule4);
-//    scheduleDate.append(schedule5);
-//    scheduleDate.append(scheduleFes);
-//    return scheduleDate;
-//}
+// CMonthView::setTheMe
+TEST_F(test_monthview, setTheMe)
+{
+    // Arrange
+    // Act
+    mMonthView->setTheMe(0);
+    mMonthView->setTheMe(1);
+    mMonthView->setTheMe(2);
 
-//QVector<QDate> MonthviewGetDayList()
-//{
-//    QVector<QDate> dateList {};
-//    QDate currentDate = QDate::currentDate();
-//    for (int i = 0; i < 42; i++) {
-//        dateList.append(currentDate.addDays(i));
-//    }
+    // Assert
+    SUCCEED();
+}
 
-//    return dateList;
-//}
+// CMonthView::setFirstWeekday
+TEST_F(test_monthview, setFirstWeekday)
+{
+    // Arrange
+    // Act
+    mMonthView->setFirstWeekday(Qt::Sunday);
+    mMonthView->setFirstWeekday(Qt::Monday);
 
-//QMap<QDate, CaHuangLiDayInfo> MonthViewGetHuangLiDayInfo()
-//{
-//    QMap<QDate, CaHuangLiDayInfo> huangLiDayinfo {};
-//    CaHuangLiDayInfo huangLiInfo1 {};
-//    huangLiInfo1.mGanZhiYear = "辛丑牛年"; //年干支
-//    huangLiInfo1.mGanZhiMonth = "庚寅月"; //月干支
-//    huangLiInfo1.mGanZhiDay = "辛卯日"; //日干支
-//    huangLiInfo1.mLunarMonthName = "正月"; //农历月名称
-//    huangLiInfo1.mLunarDayName = "初一"; //农历日名称
-//    huangLiInfo1.mLunarLeapMonth = 4; //闰月
-//    huangLiInfo1.mZodiac = "牛"; //生肖
-//    huangLiInfo1.mTerm = ""; //农历节气
-//    huangLiInfo1.mSolarFestival = "国庆节"; //阳历节日
-//    huangLiInfo1.mLunarFestival = "除夕"; //农历节日
-//    huangLiInfo1.mSuit = "嫁娶"; //黄历宜
-//    huangLiInfo1.mAvoid = "入土"; //黄历忌
+    // Assert
+    SUCCEED();
+}
 
-//    huangLiDayinfo.insert(QDate::currentDate(), huangLiInfo1);
-//    return huangLiDayinfo;
-//}
+// CMonthView::setShowDate
+TEST_F(test_monthview, setShowDate)
+{
+    // Arrange
+    QVector<QDate> dates = makeMonthViewDateList();
 
-////void CMonthView::setTheMe(int type)
-//TEST_F(test_monthview, setTheMe)
-//{
-//    mMonthView->setTheMe(1);
-//    mMonthView->setTheMe(2);
-//}
+    // Act
+    mMonthView->setShowDate(dates);
 
-////void CMonthView::setSelectSchedule(const ScheduleDataInfo &scheduleInfo)
-//TEST_F(test_monthview, setSelectSchedule)
-//{
-//    ScheduleDataInfo scheduleinfo = getMonthViewScheduleDInfo().first();
-//    mMonthView->setSelectSchedule(scheduleinfo);
-//}
+    // Assert
+    SUCCEED();
+}
 
-////void CMonthView::slotScheduleRemindWidget(const bool isShow, const ScheduleDataInfo &out)
-//TEST_F(test_monthview, slotScheduleRemindWidget)
-//{
-//    ScheduleDataInfo scheduleinfo = getMonthViewScheduleDInfo().first();
-//    mMonthView->slotScheduleRemindWidget(false, scheduleinfo);
-//    mMonthView->slotScheduleRemindWidget(true, scheduleinfo);
-//}
+// CMonthView::setHuangLiInfo
+TEST_F(test_monthview, setHuangLiInfo)
+{
+    // Arrange
+    QMap<QDate, CaHuangLiDayInfo> huangLi = makeMonthViewHuangLi();
 
-////void CMonthView::setFirstWeekday(Qt::DayOfWeek weekday)
-//TEST_F(test_monthview, setFirstWeekday)
-//{
-//    mMonthView->setFirstWeekday(Qt::Sunday);
-//}
+    // Act
+    mMonthView->setHuangLiInfo(huangLi);
 
-////void CMonthView::setShowDate(const QVector<QDate> &showDate)
-//TEST_F(test_monthview, setShowDate)
-//{
-//    mMonthView->setShowDate(MonthviewGetDayList());
-//}
+    // Assert
+    SUCCEED();
+}
 
-////void CMonthView::setHuangLiInfo(const QMap<QDate, CaHuangLiDayInfo> &huangLiInfo)
-//TEST_F(test_monthview, setHuangLiInfo)
-//{
-//    mMonthView->setHuangLiInfo(MonthViewGetHuangLiDayInfo());
-//}
+// CMonthView::setFestival
+TEST_F(test_monthview, setFestival)
+{
+    // Arrange
+    QMap<QDate, int> festivalInfo;
+    festivalInfo[QDate::currentDate()] = 1;
+    festivalInfo[QDate::currentDate().addDays(1)] = 2;
 
-////void CMonthView::setFestival(const QMap<QDate, int> &festivalInfo)
-//TEST_F(test_monthview, setFestival)
-//{
-//    QMap<QDate, int> festivalInfo {};
-//    festivalInfo.insert(QDate::currentDate(), 1);
-//    festivalInfo.insert(QDate::currentDate().addDays(1), 2);
-//    mMonthView->setFestival(festivalInfo);
-//}
+    // Act
+    mMonthView->setFestival(festivalInfo);
 
-////void CMonthView::setScheduleInfo(const QMap<QDate, QVector<ScheduleDataInfo> > &scheduleInfo)
-//TEST_F(test_monthview, setScheduleInfo)
-//{
-//    QMap<QDate, QVector<ScheduleDataInfo>> scheduleinfo {};
-//    scheduleinfo.insert(QDate::currentDate(), getMonthViewScheduleDInfo());
-//    mMonthView->setScheduleInfo(scheduleinfo);
-//}
+    // Assert
+    SUCCEED();
+}
 
-////void CMonthView::setSearchScheduleInfo(const QVector<ScheduleDataInfo> &searchScheduleInfo)
-//TEST_F(test_monthview, setSearchScheduleInfo)
-//{
-//    mMonthView->setSearchScheduleInfo(getMonthViewScheduleDInfo());
-//}
+// CMonthView::setScheduleInfo
+TEST_F(test_monthview, setScheduleInfo)
+{
+    // Arrange
+    QMap<QDate, DSchedule::List> data = makeMonthViewScheduleMap();
 
-////void CMonthView::setCurrentDate(const QDate &currentDate)
-//TEST_F(test_monthview, setCurrentDate)
-//{
-//    mMonthView->setCurrentDate(QDate::currentDate());
-//}
+    // Act
+    mMonthView->setScheduleInfo(data);
 
-////ScheduleDataInfo CMonthView::getScheduleInfo(const QDate &beginDate, const QDate &endDate)
-//TEST_F(test_monthview, getScheduleInfo)
-//{
-//    QDate currentDate = QDate::currentDate();
-//    QDate currentDate1 = QDate::currentDate().addDays(1);
-//    mMonthView->getScheduleInfo(currentDate, currentDate1);
-//    mMonthView->getScheduleInfo(currentDate1, currentDate);
-//}
+    // Assert
+    SUCCEED();
+}
 
-//TEST_F(test_monthview, isDragging)
-//{
-//    mMonthView->isDragging();
-//}
+// CMonthView::setSearchScheduleInfo
+TEST_F(test_monthview, setSearchScheduleInfo)
+{
+    // Arrange
+    DSchedule::List list = makeMonthViewScheduleList();
+
+    // Act
+    mMonthView->setSearchScheduleInfo(list);
+
+    // Assert
+    SUCCEED();
+}
+
+// CMonthView::setCurrentDate
+TEST_F(test_monthview, setCurrentDate)
+{
+    // Arrange
+    QDate date = QDate::currentDate();
+
+    // Act
+    mMonthView->setCurrentDate(date);
+
+    // Assert
+    SUCCEED();
+}
+
+// CMonthView::setRemindWidgetTimeFormat
+TEST_F(test_monthview, setRemindWidgetTimeFormat)
+{
+    // Arrange
+    // Act
+    mMonthView->setRemindWidgetTimeFormat("hh:mm");
+
+    // Assert
+    SUCCEED();
+}
+
+// CMonthView::setSelectSchedule
+TEST_F(test_monthview, setSelectSchedule)
+{
+    // Arrange
+    DSchedule::Ptr info = makeMonthViewSchedule(QDate::currentDate(), QDate::currentDate());
+
+    // Act
+    mMonthView->setSelectSchedule(info);
+
+    // Assert
+    SUCCEED();
+}
+
+// CMonthView::setLunarVisible
+TEST_F(test_monthview, setLunarVisible)
+{
+    // Arrange
+    // Act
+    mMonthView->setLunarVisible(true);
+    mMonthView->setLunarVisible(false);
+
+    // Assert
+    SUCCEED();
+}
+
+// CMonthView::deleteSelectSchedule — mid priority
+TEST_F(test_monthview, deleteSelectSchedule)
+{
+    // Arrange — dismiss any modal dialog that deleteSelectSchedule may pop up
+    QTimer::singleShot(100, []() {
+        QWidget *w = QApplication::activeModalWidget();
+        if (w) w->close();
+    });
+
+    // Act
+    mMonthView->deleteSelectSchedule();
+
+    // Assert
+    SUCCEED();
+}
+
+// CMonthView::slotScheduleRemindWidget — mid priority
+TEST_F(test_monthview, slotScheduleRemindWidget_hide)
+{
+    // Arrange
+    DSchedule::Ptr info = makeMonthViewSchedule(QDate::currentDate(), QDate::currentDate());
+
+    // Act
+    mMonthView->slotScheduleRemindWidget(false, info);
+
+    // Assert
+    SUCCEED();
+}
+
+TEST_F(test_monthview, slotScheduleRemindWidget_show)
+{
+    // Arrange
+    DSchedule::Ptr info = makeMonthViewSchedule(QDate::currentDate(), QDate::currentDate());
+
+    // Act
+    mMonthView->slotScheduleRemindWidget(true, info);
+
+    // Assert
+    SUCCEED();
+}
+
+// CMonthView::resizeEvent
+TEST_F(test_monthview, resizeEvent)
+{
+    // Arrange
+    QResizeEvent e(QSize(400, 300), QSize(200, 150));
+
+    // Act
+    mMonthView->resizeEvent(&e);
+
+    // Assert
+    SUCCEED();
+}
+
+// CMonthView::mousePressEvent
+TEST_F(test_monthview, mousePressEvent)
+{
+    // Arrange
+    QMouseEvent e(QEvent::MouseButtonPress, QPointF(10, 10), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+
+    // Act
+    mMonthView->mousePressEvent(&e);
+
+    // Assert
+    SUCCEED();
+}
+
+// CMonthView::event
+TEST_F(test_monthview, event)
+{
+    // Arrange
+    QFocusEvent e(QEvent::FocusIn, Qt::TabFocusReason);
+
+    // Act
+    mMonthView->event(&e);
+
+    // Assert
+    SUCCEED();
+}
+
+// CMonthView::getScheduleInfo — private
+TEST_F(test_monthview, getScheduleInfo_normal)
+{
+    // Arrange
+    QDate begin = QDate::currentDate();
+    QDate end = begin.addDays(1);
+
+    // Act
+    DSchedule::Ptr info = mMonthView->getScheduleInfo(begin, end);
+
+    // Assert
+    EXPECT_NE(info, nullptr);
+}
+
+TEST_F(test_monthview, getScheduleInfo_swapped)
+{
+    // Arrange
+    QDate begin = QDate::currentDate();
+    QDate end = begin.addDays(-1);
+
+    // Act
+    DSchedule::Ptr info = mMonthView->getScheduleInfo(begin, end);
+
+    // Assert
+    EXPECT_NE(info, nullptr);
+}
+
+// CMonthView::isDragging
+TEST_F(test_monthview, isDragging)
+{
+    // Arrange
+    // Act
+    bool result = mMonthView->isDragging();
+
+    // Assert
+    SUCCEED();
+}
