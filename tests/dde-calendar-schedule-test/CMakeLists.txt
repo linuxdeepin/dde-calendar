@@ -1,7 +1,3 @@
-// SPDX-FileCopyrightText: 2026 UnionTech Software Technology Co., Ltd.
-//
-// SPDX-License-Identifier: LGPL-3.0-or-later
-
 cmake_minimum_required(VERSION 3.7)
 include(${CMAKE_SOURCE_DIR}/cmake/qt-version-macros.cmake)
 
@@ -45,6 +41,8 @@ include_directories(${APP_PLUGIN_DIR}/src)
 include_directories(${APP_COMMON_DIR}/src)
 include_directories(${APP_3PARTY_DIR}/src)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
+include_directories(${CMAKE_SOURCE_DIR}/tests/third-party_stub)
+include_directories(${CMAKE_SOURCE_DIR}/tests/dde-calendar-schedule-plugin-test/src)  # test_helpers.h
 
 macro(SUBDIRLIST result curdir)
     file(GLOB children RELATIVE ${curdir} ${curdir}/*)
@@ -84,6 +82,36 @@ set(SCHEDULE_TEST_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/src/test_canceljsondata.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/test_changejsondata.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/test_clocaldata.cpp
+    # 本轮（V-6635/6637/6638/6642-6647）新增的插件测试
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_accountitem.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_accountmanager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_buttonwidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_cancelscheduletask.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_changescheduletask.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_createjsondata.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_createscheduletask.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_createschedulewidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_dscheduledatamanager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_icondframe.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_itemwidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_jsondata.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_modifyscheduleitem.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_opencalendarwidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_queryjsondata.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_queryscheduleproxy.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_queryscheduletask.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_repeatschedulewidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_schedulebasetask.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_scheduledatamanage.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_scheduleitemwidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_schedulelistwidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_schedulemanagetask.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_scheduleservice.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_semanticanalysistask.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_sp_cdbuspendingcallwatcher.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_sp_dbusaccountmanagerrequest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_sp_dbusaccountrequest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_viewschedulewidget.cpp
 )
 
 add_executable(${APP_BIN_NAME}
