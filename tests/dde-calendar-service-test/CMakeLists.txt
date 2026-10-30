@@ -3,6 +3,11 @@ project(dde-calendar-service-test)
 
 ADD_COMPILE_OPTIONS(-fno-access-control)
 
+if(NOT DEFINED SERVICE_INSTALL_DIR)
+    set(SERVICE_INSTALL_DIR "/usr/share/dde-calendar")
+endif()
+add_definitions(-DCALENDAR_SERVICE_PATH="${SERVICE_INSTALL_DIR}")
+
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
@@ -23,11 +28,16 @@ set(LINK_LIBS
     Qt${QT_VERSION_MAJOR}::DBus
     Qt${QT_VERSION_MAJOR}::Network
     Qt${QT_VERSION_MAJOR}::Sql
+    Qt${QT_VERSION_MAJOR}::Test
     Dtk${DTK_VERSION_MAJOR}::Core
 )
 
 include_directories(${APP_SERVICE_DIR}/src)
 include_directories(${CMAKE_SOURCE_DIR}/src/calendar-common/src)
+SUBDIRLIST(COMMON_SRC_DIRS ${CMAKE_SOURCE_DIR}/src/calendar-common/src)
+foreach(subdir ${COMMON_SRC_DIRS})
+    include_directories(${CMAKE_SOURCE_DIR}/src/calendar-common/src/${subdir})
+endforeach()
 include_directories(${CMAKE_SOURCE_DIR}/3rdparty/kcalendarcore/src)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
@@ -68,6 +78,14 @@ if(BUILD_LEGACY_CALENDAR_TESTS)
         ${CMAKE_CURRENT_SOURCE_DIR}/src/test_dcalendareventlog.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/test_dbmanager/test_caldavschema.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/mock_caldav_server.cpp)
+    # master 上既有的、引用已删除调度 API 头文件的 legacy 测试，暂不参与编译
+    list(REMOVE_ITEM LEGACY_CALENDAR_SERVICE_TEST_SRC
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/test_calendarservice.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/test_calendarscheduler.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/test_dbmanager/test_huanglidatabase.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/test_dbmanager/test_schedulerdatabase.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/test_calendarhuangli.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/test_jobremindmanager.cpp)
     list(APPEND CALDAV_TEST_SRC ${LEGACY_CALENDAR_SERVICE_TEST_SRC})
 
     file(GLOB_RECURSE LEGACY_CALENDAR_SERVICE_SRC
