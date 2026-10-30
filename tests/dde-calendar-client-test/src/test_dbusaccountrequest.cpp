@@ -556,6 +556,22 @@ TEST(DbusAccountRequestTest, SlotDbusCall_ScheduleUpdate_EmitsSearchUpdate)
     EXPECT_GE(spy.count(), 1);
 }
 
+TEST(DbusAccountRequestTest, CompleteEmptyScheduleSearchQuery_EmitsEmptyResult)
+{
+    BusGuard guard;
+    if (!guard.ensure()) GTEST_SKIP() << "Session bus unavailable or service owned";
+
+    DbusAccountRequest request(QString::fromUtf8(kAccountPath), QString::fromUtf8(kAccountInterface));
+    QSignalSpy spy(&request, &DbusAccountRequest::signalSearchScheduleListFinish);
+
+    request.completeEmptyScheduleSearchQuery();
+
+    ASSERT_EQ(spy.count(), 1);
+    const auto arguments = spy.takeFirst();
+    ASSERT_EQ(arguments.size(), 1);
+    EXPECT_TRUE(arguments.at(0).value<QMap<QDate, DSchedule::List>>().isEmpty());
+}
+
 // ---- slotDbusCall: scheduleTypeUpdate signal ----
 
 TEST(DbusAccountRequestTest, SlotDbusCall_ScheduleTypeUpdate_TriggersGetScheduleTypeList)
