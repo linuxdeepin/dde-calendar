@@ -29,6 +29,7 @@ public:
     //创建日程
     QString createSchedule(const DSchedule::Ptr &schedule);
     bool updateSchedule(const DSchedule::Ptr &schedule);
+    bool updateScheduleWithIcs(const DSchedule::Ptr &schedule, const QString &ics);
     //根据日程id获取日程信息
     DSchedule::Ptr getScheduleByScheduleID(const QString &scheduleID);
     bool scheduleExistsByScheduleID(const QString &scheduleID) const;

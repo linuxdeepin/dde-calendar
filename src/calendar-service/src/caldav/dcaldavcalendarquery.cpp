@@ -71,7 +71,7 @@ void readProperties(DCalDavXmlStreamReader &reader, DCalDavCalendarQuery::Remote
 {
     while (reader.readNextStartElement()) {
         if (reader.name() == QStringLiteral("getetag")) {
-            properties.etag = reader.readElementText(QXmlStreamReader::SkipChildElements);
+            properties.etag = reader.readElementText(QXmlStreamReader::SkipChildElements).trimmed();
         } else if (reader.name() == QStringLiteral("calendar-data")) {
             properties.calendarData = reader.readElementText(QXmlStreamReader::SkipChildElements);
         } else if (reader.name() == QStringLiteral("getcontenttype")) {
@@ -124,7 +124,7 @@ void readResourceProperties(DCalDavXmlStreamReader &reader, DCalDavCalendarQuery
     while (reader.readNextStartElement()) {
         if (reader.name() == QStringLiteral("getetag")) {
 
-            properties.etag = reader.readElementText(QXmlStreamReader::SkipChildElements);
+            properties.etag = reader.readElementText(QXmlStreamReader::SkipChildElements).trimmed();
         } else if (reader.name() == QStringLiteral("getcontenttype")) {
             properties.contentType = reader.readElementText(QXmlStreamReader::SkipChildElements);
         } else if (reader.name() == QStringLiteral("calendar-data")) {

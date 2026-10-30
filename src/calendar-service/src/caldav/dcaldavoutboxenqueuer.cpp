@@ -123,7 +123,7 @@ bool DCalDavOutboxEnqueuer::enqueue(DAccountManagerDataBase *database, const QSt
         item.operationID = DDataBase::createUuid();
         item.accountID = accountID;
         item.localScheduleID = schedule->uid();
-        item.baseEtag = mapping.etag;
+        item.baseEtag = mapping.etag.trimmed();
         item.operationType = change == DeleteChange ? DCalDavOutboxItem::DeleteOperation
             : (change == CreateChange || mapping.href.isEmpty()
                ? DCalDavOutboxItem::CreateOperation
@@ -131,7 +131,7 @@ bool DCalDavOutboxEnqueuer::enqueue(DAccountManagerDataBase *database, const QSt
     } else {
         item.operationType = operationFor(item.operationType, change, !mapping.href.isEmpty());
         if (item.baseEtag.isEmpty()) {
-            item.baseEtag = mapping.etag;
+            item.baseEtag = mapping.etag.trimmed();
         }
         item.retryCount = 0;
         item.nextRetryAt = QDateTime();
