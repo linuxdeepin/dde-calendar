@@ -298,7 +298,7 @@ bool DCalDavEventScheduleApplier::mapSchedule(const Request &request,
     mapping.calendarID = request.calendarID;
     mapping.uid = action.remoteEvent.uid;
     mapping.href = action.remoteEvent.href;
-    mapping.etag = action.remoteEvent.etag;
+    mapping.etag = action.remoteEvent.etag.trimmed();
     mapping.originalIcs = action.remoteEvent.calendarData;
     if (!action.existingMapping.href.isEmpty()
         && action.existingMapping.href != mapping.href

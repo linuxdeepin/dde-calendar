@@ -3755,15 +3755,60 @@ TEST(CalDavIntegration, ProcessesOutboxCreateModifyConflictRetryAndDelete)
     EXPECT_TRUE(server.requests().last().body.contains("RECURRENCE-ID"));
 
     server.setResponseStatus(412);
+    server.setResponseStatusForMethod("GET", 200);
+    const QByteArray conflictTarget =
+        QStringLiteral("/calendars/user/%1.ics").arg(scheduleID).toUtf8();
+    const QByteArray remoteConflictIcs = QStringLiteral(
+        "BEGIN:VCALENDAR\r\nVERSION:2.0\r\n"
+        "BEGIN:VEVENT\r\nUID:%1\r\nDTSTART:20260831T120000Z\r\n"
+        "DTEND:20260831T130000Z\r\nSUMMARY:Mock event\r\nEND:VEVENT\r\n"
+        "BEGIN:VEVENT\r\nUID:%1\r\nRECURRENCE-ID:20260831T120000Z\r\n"
+        "DTSTART:20260831T140000Z\r\nDTEND:20260831T150000Z\r\n"
+        "SUMMARY:Remote exception\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n")
+        .arg(scheduleID).toUtf8();
+    server.setResponseEtag(QByteArray());
+    QByteArray mismatchedRemoteIcs = remoteConflictIcs;
+    mismatchedRemoteIcs.replace("UID:" + scheduleID.toUtf8(), "UID:unexpected-remote-event");
+    server.setResponseBodyForTarget(conflictTarget, mismatchedRemoteIcs);
     ASSERT_TRUE(DCalDavOutboxEnqueuer::enqueue(
         &accountManagerDatabase, account->accountID(), schedule,
         DCalDavOutboxEnqueuer::ModifyChange));
     ASSERT_TRUE(processOutbox(result));
     EXPECT_FALSE(result.success);
-    const DCalDavOutboxItem conflict = accountManagerDatabase.getCalDavOutboxItem(
-        account->accountID(), scheduleID);
-    EXPECT_EQ(DCalDavOutboxItem::ConflictFailure, conflict.failureType);
-    EXPECT_FALSE(conflict.conflictIcs.isEmpty());
+    EXPECT_EQ(DCalDavOutboxItem::ConflictFailure,
+              accountManagerDatabase.getCalDavOutboxItem(
+                  account->accountID(), scheduleID).failureType);
+    EXPECT_EQ(QStringLiteral("Updated event with exception"),
+              localDatabase.getScheduleByScheduleID(scheduleID)->summary());
+
+    server.setResponseBodyForTarget(conflictTarget, remoteConflictIcs);
+    ASSERT_TRUE(DCalDavOutboxEnqueuer::enqueue(
+        &accountManagerDatabase, account->accountID(), schedule,
+        DCalDavOutboxEnqueuer::ModifyChange));
+    ASSERT_TRUE(processOutbox(result));
+    ASSERT_TRUE(result.success);
+    EXPECT_EQ(1, result.serverVersionAppliedCount);
+    EXPECT_TRUE(accountManagerDatabase.getCalDavOutboxItem(
+        account->accountID(), scheduleID).operationID.isEmpty());
+    const DSchedule::Ptr serverVersion = localDatabase.getScheduleByScheduleID(scheduleID);
+    ASSERT_TRUE(serverVersion);
+    EXPECT_EQ(QStringLiteral("Mock event"), serverVersion->summary());
+    const DCalDavEventMappingInfo resolvedMapping =
+        accountManagerDatabase.getCalDavEventMappingByLocalScheduleID(
+            account->accountID(), scheduleID);
+    EXPECT_TRUE(resolvedMapping.originalIcs.contains(QStringLiteral("SUMMARY:Mock event")));
+    EXPECT_TRUE(resolvedMapping.originalIcs.contains(QStringLiteral("RECURRENCE-ID")));
+    EXPECT_TRUE(resolvedMapping.etag.isEmpty());
+    QSqlQuery storedScheduleQuery(QSqlDatabase::database(localDatabase.getConnectionName()));
+    ASSERT_TRUE(storedScheduleQuery.prepare("SELECT ics FROM schedules WHERE scheduleID = ?"));
+    storedScheduleQuery.addBindValue(scheduleID);
+    ASSERT_TRUE(storedScheduleQuery.exec());
+    ASSERT_TRUE(storedScheduleQuery.next());
+    const QString storedRemoteIcs = storedScheduleQuery.value(0).toString();
+    EXPECT_TRUE(storedRemoteIcs.contains(QStringLiteral("RECURRENCE-ID")));
+    EXPECT_TRUE(storedRemoteIcs.contains(QStringLiteral("SUMMARY:Remote exception")));
+    EXPECT_TRUE(storedRemoteIcs.contains(QStringLiteral("UID:%1").arg(scheduleID)));
+    server.clearResponseStatusForMethod("GET");
 
     // A conflict snapshot fetch is a separate network request.  A transient
     // failure there must schedule a retry instead of permanently blocking the
@@ -3802,6 +3847,8 @@ TEST(CalDavIntegration, ProcessesOutboxCreateModifyConflictRetryAndDelete)
 
     // Manual retry bypasses the deadline and records the actual request.
     server.setResponseStatus(204);
+    server.setResponseStatusForMethod("GET", 200);
+    server.setResponseEtag("\"mock-etag-4\"");
     ASSERT_TRUE(processOutbox(result, true));
     EXPECT_TRUE(result.success);
     EXPECT_TRUE(result.requestAttempted);
@@ -3810,7 +3857,7 @@ TEST(CalDavIntegration, ProcessesOutboxCreateModifyConflictRetryAndDelete)
     ASSERT_TRUE(DCalDavOutboxEnqueuer::enqueue(
         &accountManagerDatabase, account->accountID(), schedule,
         DCalDavOutboxEnqueuer::DeleteChange));
-    EXPECT_EQ(QStringLiteral("\"mock-etag-3\""),
+    EXPECT_EQ(QStringLiteral("\"mock-etag-4\""),
               accountManagerDatabase.getCalDavOutboxItem(
                   account->accountID(), scheduleID).baseEtag);
     ASSERT_TRUE(processOutbox(result));
@@ -3823,6 +3870,6 @@ TEST(CalDavIntegration, ProcessesOutboxCreateModifyConflictRetryAndDelete)
     ASSERT_GE(server.requests().size(), 5);
     const MockCalDavServer::Request &deleteRequest = server.requests().last();
     EXPECT_EQ(QByteArray("DELETE"), deleteRequest.method);
-    EXPECT_EQ(QByteArray("\"mock-etag-3\""),
+    EXPECT_EQ(QByteArray("\"mock-etag-4\""),
               headerValue(deleteRequest.headers, "If-Match"));
 }

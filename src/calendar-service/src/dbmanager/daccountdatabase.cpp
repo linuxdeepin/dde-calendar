@@ -72,9 +72,16 @@ QString DAccountDataBase::createSchedule(const DSchedule::Ptr &schedule)
 
 bool DAccountDataBase::updateSchedule(const DSchedule::Ptr &schedule)
 {
+    return schedule.isNull()
+        ? false
+        : updateScheduleWithIcs(schedule, DSchedule::toIcsString(schedule));
+}
+
+bool DAccountDataBase::updateScheduleWithIcs(const DSchedule::Ptr &schedule, const QString &ics)
+{
     bool resbool = false;
     if (!schedule.isNull()) {
-        qCDebug(ServiceLogger) << "Updating schedule:" << schedule->summary() 
+        qCDebug(ServiceLogger) << "Updating schedule:" << schedule->summary()
                               << "ID:" << schedule->schedulingID();
         SqliteQuery query(m_database);
         QString strSql("UPDATE schedules                                                  \
@@ -91,7 +98,7 @@ bool DAccountDataBase::updateSchedule(const DSchedule::Ptr &schedule)
             query.addBindValue(schedule->hasEnabledAlarms());
             query.addBindValue(pinyinsearch::getPinPinSearch()->CreatePinyin(schedule->summary()));
             query.addBindValue(schedule->lunnar());
-            query.addBindValue(DSchedule::toIcsString(schedule));
+            query.addBindValue(ics);
             query.addBindValue(schedule->fileName());
             query.addBindValue(dtToString(schedule->lastModified()));
             query.addBindValue(QString());

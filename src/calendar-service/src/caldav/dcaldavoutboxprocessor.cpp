@@ -100,10 +100,28 @@ QString parseEtag(const QByteArray &xml)
     while (!reader.atEnd()) {
         reader.readNext();
         if (reader.isStartElement() && reader.name() == QStringLiteral("getetag")) {
-            return reader.readElementText(QXmlStreamReader::SkipChildElements);
+            return reader.readElementText(QXmlStreamReader::SkipChildElements).trimmed();
         }
     }
     return QString();
+}
+
+bool isStandardEtag(const QString &etag)
+{
+    const QString normalized = etag.trimmed();
+    return normalized == QStringLiteral("*")
+        || normalized.startsWith(QStringLiteral("\""))
+        || normalized.startsWith(QStringLiteral("W/\""));
+}
+
+QByteArray ifMatchValue(const QString &etag)
+{
+    const QByteArray normalized = etag.trimmed().toUtf8();
+    if (normalized.isEmpty() || normalized == "*" || normalized.startsWith('\"')
+        || normalized.startsWith("W/\"")) {
+        return normalized;
+    }
+    return QByteArray("\"") + normalized + QByteArray("\"");
 }
 
 QString icsForRemoteWrite(const DSchedule::Ptr &schedule,
@@ -143,6 +161,73 @@ QString icsForRemoteWrite(const DSchedule::Ptr &schedule,
     localIcs.insert(calendarEnd, detachedEvents.join(QStringLiteral("\r\n"))
                     + QStringLiteral("\r\n"));
     return localIcs;
+}
+
+} // namespace
+
+namespace {
+
+bool applyServerConflictSnapshot(DAccountDataBase *localDatabase,
+                                 DAccountManagerDataBase *accountManagerDatabase,
+                                 const DCalDavOutboxItem &item,
+                                 const DSchedule::Ptr &serverSchedule,
+                                 const QString &serverIcs,
+                                 const QByteArray &etag)
+{
+    if (localDatabase == nullptr || accountManagerDatabase == nullptr
+        || serverSchedule.isNull() || serverIcs.isEmpty()) {
+        return false;
+    }
+    const DSchedule::Ptr localSchedule = localDatabase->getScheduleByScheduleID(item.localScheduleID);
+    DCalDavEventMappingInfo mapping = accountManagerDatabase->getCalDavEventMappingByLocalScheduleID(
+        item.accountID, item.localScheduleID);
+    if (localSchedule.isNull() || mapping.href.isEmpty() || mapping.uid.isEmpty()
+        || serverSchedule->uid() != mapping.uid) {
+        return false;
+    }
+
+    serverSchedule->setUid(item.localScheduleID);
+    serverSchedule->setScheduleTypeID(localSchedule->scheduleTypeID());
+    serverSchedule->setCreated(localSchedule->created());
+    QString localIcs = serverIcs;
+    const QRegularExpression uidLine(QStringLiteral("(^|\\r?\\n)UID:[^\\r\\n]+"),
+                                    QRegularExpression::CaseInsensitiveOption);
+    localIcs.replace(uidLine, QStringLiteral("\\1UID:") + item.localScheduleID);
+    mapping.originalIcs = serverIcs;
+    mapping.etag = QString::fromUtf8(etag).trimmed();
+
+    SqlTransactionLocker transaction(
+        {localDatabase->getConnectionName(), DDataBase::NameAccountManager});
+    if (!transaction.isValid()) {
+        qCWarning(ServiceLogger) << "Unable to start transaction for CalDAV conflict resolution.";
+        return false;
+    }
+    if (!localDatabase->updateScheduleWithIcs(serverSchedule, localIcs)
+        || !accountManagerDatabase->upsertCalDavEventMapping(mapping)
+        || !accountManagerDatabase->deleteCalDavOutboxItemIfCurrent(item)) {
+        transaction.rollback();
+        qCWarning(ServiceLogger) << "Unable to persist server version for CalDAV conflict.";
+        return false;
+    }
+    if (transaction.commit()) {
+        return true;
+    }
+
+    if (!transaction.hasPartialCommit()
+        || !transaction.committedConnectionNames().contains(localDatabase->getConnectionName())) {
+        qCWarning(ServiceLogger) << "Unable to commit server version for CalDAV conflict.";
+        return false;
+    }
+
+    SqlTransactionLocker repairTransaction({DDataBase::NameAccountManager});
+    const bool repaired = repairTransaction.isValid()
+        && accountManagerDatabase->upsertCalDavEventMapping(mapping)
+        && accountManagerDatabase->deleteCalDavOutboxItemIfCurrent(item)
+        && repairTransaction.commit();
+    if (!repaired) {
+        qCWarning(ServiceLogger) << "Unable to repair CalDAV conflict metadata after partial commit.";
+    }
+    return repaired;
 }
 
 } // namespace
@@ -322,7 +407,7 @@ void DCalDavOutboxProcessor::sendDeleteRequest(const DCalDavOutboxItem &item,
     request.username = m_request.username;
     request.password = m_request.password;
     if (!item.baseEtag.isEmpty()) {
-        request.headers.insert("If-Match", item.baseEtag.toUtf8());
+        request.headers.insert("If-Match", ifMatchValue(item.baseEtag));
     }
     m_result.requestAttempted = true;
     m_transport.send(request, [this, item, resourceUrl](const DCalDavTransport::Response &response) {
@@ -470,15 +555,27 @@ void DCalDavOutboxProcessor::processItem(const DCalDavOutboxItem &item)
         return;
     }
 
-    if (item.operationType == DCalDavOutboxItem::ModifyOperation && item.baseEtag.isEmpty()) {
-        fetchWriteEtag(item, resourceUrl);
-        return;
+    if (item.operationType == DCalDavOutboxItem::ModifyOperation) {
+        if (item.baseEtag.isEmpty()) {
+            // Never turn an unknown baseline into the current remote version
+            // and then overwrite that version with the local payload.
+            fetchConflictSnapshot(item, resourceUrl);
+            return;
+        }
+        if (!isStandardEtag(item.baseEtag)) {
+            // Some CalDAV providers return an unquoted ETag and do not enforce
+            // If-Match reliably. Check the remote version before sending local
+            // data so a stale local edit cannot overwrite the server version.
+            fetchRemoteEtag(item, resourceUrl);
+            return;
+        }
     }
 
     sendWriteRequest(item, resourceUrl, item.baseEtag.toUtf8());
 }
 
-void DCalDavOutboxProcessor::fetchWriteEtag(const DCalDavOutboxItem &item, const QUrl &resourceUrl)
+void DCalDavOutboxProcessor::fetchRemoteEtag(const DCalDavOutboxItem &item,
+                                              const QUrl &resourceUrl)
 {
     DCalDavTransport::Request request;
     request.url = resourceUrl;
@@ -496,17 +593,21 @@ void DCalDavOutboxProcessor::fetchWriteEtag(const DCalDavOutboxItem &item, const
             processCurrentItemOrAdvance(item);
             return;
         }
-        const QByteArray etag = isSuccessful(response.httpStatus)
-            ? parseEtag(response.body).trimmed().toUtf8() : QByteArray();
-        if (etag.isEmpty()) {
-            DCalDavTransport::Response failure = response;
-            if (failure.httpStatus == 0) {
-                failure.httpStatus = 412;
-            }
-            recordFailure(item, failure);
+        if (!isSuccessful(response.httpStatus)) {
+            recordFailure(item, response);
             return;
         }
-        sendWriteRequest(item, resourceUrl, etag);
+        const QString remoteEtag = parseEtag(response.body);
+        if (remoteEtag.isEmpty()) {
+            // Without a remote version, do not risk a local overwrite.
+            fetchConflictSnapshot(item, resourceUrl);
+            return;
+        }
+        if (remoteEtag != item.baseEtag.trimmed()) {
+            fetchConflictSnapshot(item, resourceUrl);
+            return;
+        }
+        sendWriteRequest(item, resourceUrl, item.baseEtag.toUtf8());
     });
 }
 
@@ -549,7 +650,7 @@ void DCalDavOutboxProcessor::sendWriteRequest(const DCalDavOutboxItem &item,
     if (item.operationType == DCalDavOutboxItem::CreateOperation) {
         request.headers.insert("If-None-Match", "*");
     } else {
-        request.headers.insert("If-Match", etag);
+        request.headers.insert("If-Match", ifMatchValue(QString::fromUtf8(etag)));
     }
 
     m_result.requestAttempted = true;
@@ -653,6 +754,21 @@ void DCalDavOutboxProcessor::fetchConflictSnapshot(const DCalDavOutboxItem &item
             updated.serverIcs.clear();
         }
         const bool hasServerSnapshot = !updated.serverIcs.isEmpty();
+        if (hasServerSnapshot && item.operationType == DCalDavOutboxItem::ModifyOperation) {
+            if (applyServerConflictSnapshot(
+                    m_request.localDatabase, m_request.accountManagerDatabase, item,
+                    serverSchedule, updated.serverIcs, response.etag)) {
+                ++m_result.serverVersionAppliedCount;
+                ++m_result.processedCount;
+                ++m_itemIndex;
+                processNext();
+                return;
+            }
+            if (m_result.errorMessage.isEmpty()) {
+                m_result.errorMessage = QStringLiteral(
+                    "Failed to apply the server version for a CalDAV conflict.");
+            }
+        }
         if (!hasServerSnapshot) {
             // Keep this as a resolvable conflict so the user can still choose
             // the local version when the server returned no usable object.
@@ -805,7 +921,7 @@ void DCalDavOutboxProcessor::completeSuccess(const DCalDavOutboxItem &item, cons
         DSchedule::Ptr remoteSchedule(new DSchedule(*schedule));
         remoteSchedule->setUid(mapping.uid);
         mapping.href = resourceUrl.toString();
-        mapping.etag = QString::fromUtf8(etag);
+        mapping.etag = QString::fromUtf8(etag).trimmed();
         mapping.originalIcs = icsForRemoteWrite(remoteSchedule, mapping);
         if (!m_request.accountManagerDatabase->upsertCalDavEventMapping(mapping)) {
             finish(false, QStringLiteral("Failed to save CalDAV write mapping."));

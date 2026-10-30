@@ -37,6 +37,7 @@ public:
         DCalDavTransport::Response failureResponse;
         DCalDavErrorCode failureCode = DCalDavErrorCode::NoError;
         int processedCount = 0;
+        int serverVersionAppliedCount = 0;
         int retryScheduledCount = 0;
         int conflictRecordedCount = 0;
         DCalDavScheduleCreateError::Type createFailure = DCalDavScheduleCreateError::NoError;
@@ -71,7 +72,6 @@ private:
                            const DCalDavEventMappingInfo &mapping);
     void sendDeleteCalendarRequest(const DCalDavOutboxItem &item);
     void restoreCalendarDelete(const DCalDavOutboxItem &item);
-    void fetchWriteEtag(const DCalDavOutboxItem &item, const QUrl &resourceUrl);
     /**
      * @brief Processes one pending local-to-remote operation.
      * @param item Outbox item containing the operation and retry metadata.
@@ -85,6 +85,7 @@ private:
     void handleWriteResponse(const DCalDavOutboxItem &item, const QUrl &resourceUrl,
                              const DCalDavTransport::Response &response);
     void fetchEtag(const DCalDavOutboxItem &item, const QUrl &resourceUrl);
+    void fetchRemoteEtag(const DCalDavOutboxItem &item, const QUrl &resourceUrl);
     void fetchConflictSnapshot(const DCalDavOutboxItem &item, const QUrl &resourceUrl);
     void completeSuccess(const DCalDavOutboxItem &item, const QUrl &resourceUrl,
                          const QByteArray &etag);

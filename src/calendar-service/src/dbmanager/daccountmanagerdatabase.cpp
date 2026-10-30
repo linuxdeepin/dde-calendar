@@ -1758,7 +1758,7 @@ bool DAccountManagerDataBase::upsertCalDavEventMapping(const DCalDavEventMapping
     updateQuery.addBindValue(mapping.localScheduleID);
     updateQuery.addBindValue(mapping.calendarID);
     updateQuery.addBindValue(mapping.uid);
-    updateQuery.addBindValue(mapping.etag);
+    updateQuery.addBindValue(mapping.etag.trimmed());
     updateQuery.addBindValue(mapping.originalIcs);
     updateQuery.addBindValue(mapping.accountID);
     updateQuery.addBindValue(mapping.href);
@@ -1782,7 +1782,7 @@ bool DAccountManagerDataBase::upsertCalDavEventMapping(const DCalDavEventMapping
     insertQuery.addBindValue(mapping.calendarID);
     insertQuery.addBindValue(mapping.uid);
     insertQuery.addBindValue(mapping.href);
-    insertQuery.addBindValue(mapping.etag);
+    insertQuery.addBindValue(mapping.etag.trimmed());
     insertQuery.addBindValue(mapping.originalIcs);
     if (!insertQuery.exec()) {
         qCWarning(ServiceLogger) << "Failed to insert CalDAV event mapping:" << insertQuery.lastError().text();
