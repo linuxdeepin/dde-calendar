@@ -5,19 +5,19 @@
 #ifndef TEST_DAYHUANGLIVIEW_H
 #define TEST_DAYHUANGLIVIEW_H
 
-//#include <QObject>
-//#include <dayWidget/dayhuangliview.h>
-//#include <gtest/gtest.h>
+#include <QObject>
+#include <gtest/gtest.h>
+#include "dayWidget/dayhuangliview.h"
 
-//class test_dayhuangliview : public QObject
-//    , public ::testing::Test
-//{
-//public:
-//    test_dayhuangliview();
-//    ~test_dayhuangliview();
+class test_dayhuangliview : public QObject
+    , public ::testing::Test
+{
+public:
+    test_dayhuangliview();
+    ~test_dayhuangliview();
 
-//protected:
-//    CDayHuangLiLabel *mDayHuangLiLabel = nullptr;
-//};
+protected:
+    CDayHuangLiLabel *mDayHuangLiLabel = nullptr;
+};
 
 #endif // TEST_DAYHUANGLIVIEW_H

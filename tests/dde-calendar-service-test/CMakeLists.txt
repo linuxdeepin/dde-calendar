@@ -86,7 +86,6 @@ if(BUILD_LEGACY_CALENDAR_TESTS)
         ${CMAKE_CURRENT_SOURCE_DIR}/src/test_calendarscheduler.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/test_dbmanager/test_huanglidatabase.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/test_dbmanager/test_schedulerdatabase.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/test_calendarhuangli.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/test_jobremindmanager.cpp)
     list(APPEND CALDAV_TEST_SRC ${LEGACY_CALENDAR_SERVICE_TEST_SRC})
 

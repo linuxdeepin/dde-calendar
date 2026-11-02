@@ -157,6 +157,11 @@ void MockCalDavServer::setInvalidSyncTokenOnce(bool enabled)
     m_invalidSyncTokenOnce = enabled;
 }
 
+void MockCalDavServer::setForbiddenSyncTokenOnce(bool enabled)
+{
+    m_forbiddenSyncTokenOnce = enabled;
+}
+
 void MockCalDavServer::setResponseDelay(int milliseconds)
 {
     m_responseDelay = qMax(0, milliseconds);
@@ -249,6 +254,20 @@ void MockCalDavServer::sendResponse(QSslSocket *socket, const QByteArray &method
             "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
             "<d:error xmlns:d=\"DAV:\"><d:valid-sync-token/></d:error>";
         const QByteArray response = "HTTP/1.1 409 Conflict\r\n"
+            "Content-Type: application/xml\r\nContent-Length: "
+            + QByteArray::number(body.size()) + "\r\nConnection: close\r\n\r\n" + body;
+        socket->write(response);
+        socket->disconnectFromHost();
+        return;
+    }
+    const bool forbiddenSyncToken = m_forbiddenSyncTokenOnce && method == "REPORT"
+        && requestBody.contains("sync-collection");
+    if (forbiddenSyncToken) {
+        m_forbiddenSyncTokenOnce = false;
+        const QByteArray body =
+            "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+            "<d:error xmlns:d=\"DAV:\"><d:valid-sync-token/></d:error>";
+        const QByteArray response = "HTTP/1.1 403 Forbidden\r\n"
             "Content-Type: application/xml\r\nContent-Length: "
             + QByteArray::number(body.size()) + "\r\nConnection: close\r\n\r\n" + body;
         socket->write(response);

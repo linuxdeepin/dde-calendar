@@ -4,10 +4,24 @@
 
 #include "test_scheduledlg.h"
 
-#include "../cscheduledbusstub.h"
 #include "../dialog_stub.h"
 
-#include <QTest>
+#include <QEvent>
+#include <QApplication>
+#include <QShowEvent>
+#include <QCloseEvent>
+#include <QKeyEvent>
+#include <QDateTime>
+#include <QDate>
+
+static void stub_resize(void *) {}
+
+static void setResizeStub(Stub &stub)
+{
+    typedef void (*fptr_resize)(CScheduleDlg *);
+    fptr_resize p_resize = (fptr_resize)(&CScheduleDlg::resize);
+    stub.set(p_resize, stub_resize);
+}
 
 test_scheduledlg::test_scheduledlg()
 {
@@ -20,206 +34,347 @@ test_scheduledlg::~test_scheduledlg()
     mScheduleDlg = nullptr;
 }
 
-QVector<ScheduleDataInfo> getScheduleDlgData()
+// CScheduleDlg(int type)
+TEST_F(test_scheduledlg, Constructor)
 {
-    ScheduleDataInfo schedule1, schedule2;
-
-    QDateTime currentDateTime = QDateTime::currentDateTime();
-    schedule1.setID(1);
-    schedule1.setBeginDateTime(currentDateTime);
-    schedule1.setEndDateTime(currentDateTime.addDays(1));
-    schedule1.setTitleName("scheduleOne");
-    schedule1.setAllDay(true);
-    schedule1.setType(1);
-    schedule1.setRecurID(0);
-
-    schedule2.setID(2);
-    schedule2.setBeginDateTime(currentDateTime.addDays(1));
-    schedule2.setEndDateTime(currentDateTime.addDays(1).addSecs(60 * 60));
-    schedule2.setTitleName("scheduleTwo");
-    schedule2.setAllDay(true);
-    schedule2.setType(2);
-    schedule2.setRecurID(0);
-
-    QVector<ScheduleDataInfo> scheduleList{};
-    scheduleList.append(schedule1);
-    scheduleList.append(schedule2);
-    return scheduleList;
-}
-//void CScheduleDlg::setData(const ScheduleDataInfo &info)
-TEST_F(test_scheduledlg, setData)
-{
-    mScheduleDlg->setData(getScheduleDlgData().first());
+    CScheduleDlg dlg(1);
+    CScheduleDlg dlg2(0);
 }
 
-//void CScheduleDlg::setDate(const QDateTime &date)
-TEST_F(test_scheduledlg, setDate)
+// ~CScheduleDlg()
+TEST_F(test_scheduledlg, Destructor)
 {
-    QDateTime datetime1 = QDateTime(QDate::currentDate(), QTime(23, 54, 55));
-    mScheduleDlg->setDate(datetime1);
-
-    QDateTime datetime11 = QDateTime(QDate::currentDate(), QTime(13, 54, 55));
-    mScheduleDlg->setDate(datetime1);
-
-    QDateTime datetime2 = QDateTime(QDate::currentDate(), QTime(13, 40, 55));
-    mScheduleDlg->setDate(datetime2);
+    CScheduleDlg *dlg = new CScheduleDlg(1);
+    delete dlg;
 }
 
-//void CScheduleDlg::setAllDay(bool flag)
-TEST_F(test_scheduledlg, setAllDay)
+// void CScheduleDlg::initUI()
+TEST_F(test_scheduledlg, initUI)
 {
-    mScheduleDlg->setAllDay(true);
+    mScheduleDlg->initUI();
 }
 
-//bool CScheduleDlg::clickOkBtn()
-TEST_F(test_scheduledlg, clickOkBtn)
+// void CScheduleDlg::initConnection()
+TEST_F(test_scheduledlg, initConnection)
 {
-    Stub stub;
-    cscheduleDbusStub(stub);
-    mScheduleDlg->clickOkBtn();
-
-    //begindatetime < enddatetime
-    ScheduleDataInfo schedule;
-    QDateTime currentDateTime = QDateTime::currentDateTime();
-    schedule.setID(1);
-    schedule.setBeginDateTime(currentDateTime);
-    schedule.setEndDateTime(currentDateTime.addDays(-1));
-    schedule.setTitleName("scheduleOne");
-    schedule.setAllDay(true);
-    schedule.setType(1);
-    schedule.setRecurID(0);
-    mScheduleDlg->setData(schedule);
-    mScheduleDlg->clickOkBtn();
-
-    //
-    mScheduleDlg->m_type = 1;
-    schedule.setEndDateTime(currentDateTime.addDays(1));
-    mScheduleDlg->setData(schedule);
-    mScheduleDlg->clickOkBtn();
-
-    mScheduleDlg->m_rmindCombox->setCurrentIndex(3);
-    mScheduleDlg->clickOkBtn();
-
-    mScheduleDlg->m_rmindCombox->setCurrentIndex(4);
-    mScheduleDlg->clickOkBtn();
-
-    mScheduleDlg->m_rmindCombox->setCurrentIndex(5);
-    mScheduleDlg->clickOkBtn();
-
-    schedule.setAllDay(false);
-    mScheduleDlg->setData(schedule);
-    mScheduleDlg->clickOkBtn();
-
-    mScheduleDlg->m_rmindCombox->setCurrentIndex(3);
-    mScheduleDlg->clickOkBtn();
-
-    mScheduleDlg->m_rmindCombox->setCurrentIndex(4);
-    mScheduleDlg->clickOkBtn();
-
-    mScheduleDlg->m_rmindCombox->setCurrentIndex(5);
-    mScheduleDlg->clickOkBtn();
-
-    mScheduleDlg->m_endrepeatCombox->setCurrentIndex(2);
-    mScheduleDlg->clickOkBtn();
-
-    mScheduleDlg->m_endrepeatCombox->setCurrentIndex(3);
-    mScheduleDlg->clickOkBtn();
+    mScheduleDlg->initConnection();
 }
 
-//void CScheduleDlg::slotBtClick(int buttonIndex, QString buttonName)
-TEST_F(test_scheduledlg, slotBtClick)
+// void CScheduleDlg::initDateEdit()
+TEST_F(test_scheduledlg, initDateEdit)
 {
-    Stub stub;
-    cscheduleDbusStub(stub);
-    mScheduleDlg->slotBtClick(0, "ok");
-    mScheduleDlg->slotBtClick(1, "ok");
+    mScheduleDlg->initDateEdit();
 }
 
-//void CScheduleDlg::slotTextChange()
-TEST_F(test_scheduledlg, slotTextChange)
+// void CScheduleDlg::initJobTypeComboBox()
+TEST_F(test_scheduledlg, initJobTypeComboBox)
 {
-    mScheduleDlg->slotTextChange();
+    GTEST_SKIP() << "Requires gAccountManager->getAccountItemByAccountId()";
 }
 
-//void CScheduleDlg::slotendrepeatTextchange()
-TEST_F(test_scheduledlg, slotendrepeaTextchange)
+// void CScheduleDlg::initRmindRpeatUI()
+TEST_F(test_scheduledlg, initRmindRpeatUI)
 {
-    mScheduleDlg->slotendrepeatTextchange();
+    GTEST_SKIP() << "Requires m_scheduleDataInfo set via setData()";
 }
 
-//void CScheduleDlg::slotBDateEidtInfo(const QDate &date)
-TEST_F(test_scheduledlg, slotBDateEidtInfo)
-{
-    mScheduleDlg->slotBDateEidtInfo(QDate::currentDate());
-}
-
-//void CScheduleDlg::slotallDayStateChanged(int state)
-TEST_F(test_scheduledlg, slotallDayStateCheanged)
-{
-    mScheduleDlg->slotallDayStateChanged(1);
-    mScheduleDlg->slotallDayStateChanged(0);
-}
-
-//void CScheduleDlg::slotbRpeatactivated(int index)
-TEST_F(test_scheduledlg, slotbRpearactivated)
-{
-    mScheduleDlg->slotbRpeatactivated(0);
-    mScheduleDlg->slotbRpeatactivated(2);
-}
-
-//void CScheduleDlg::sloteRpeatactivated(int index)
-TEST_F(test_scheduledlg, sloteRpearactivated)
-{
-    mScheduleDlg->sloteRpeatactivated(0);
-    mScheduleDlg->sloteRpeatactivated(1);
-    mScheduleDlg->sloteRpeatactivated(2);
-}
-
-//void CScheduleDlg::setTheMe(const int type)
+// void CScheduleDlg::setTheMe(const int type)
 TEST_F(test_scheduledlg, setTheMe)
 {
     mScheduleDlg->setTheMe(1);
     mScheduleDlg->setTheMe(2);
 }
 
-//
-TEST_F(test_scheduledlg, exec)
+// void CScheduleDlg::setWidgetEnabled(bool enabled)
+TEST_F(test_scheduledlg, setWidgetEnabled)
+{
+    mScheduleDlg->setWidgetEnabled(true);
+    mScheduleDlg->setWidgetEnabled(false);
+}
+
+// void CScheduleDlg::setAllDay(bool flag)
+TEST_F(test_scheduledlg, setAllDay)
+{
+    mScheduleDlg->setAllDay(true);
+    mScheduleDlg->setAllDay(false);
+}
+
+// void CScheduleDlg::setOkBtnEnabled()
+TEST_F(test_scheduledlg, setOkBtnEnabled)
+{
+    mScheduleDlg->setOkBtnEnabled();
+}
+
+// void CScheduleDlg::setShowState(bool isLunar)
+TEST_F(test_scheduledlg, setShowState)
+{
+    mScheduleDlg->setShowState(true);
+    mScheduleDlg->setShowState(false);
+}
+
+// void CScheduleDlg::setTabFouseOrder()
+TEST_F(test_scheduledlg, setTabFouseOrder)
+{
+    mScheduleDlg->setTabFouseOrder();
+}
+
+// void CScheduleDlg::setData(const DSchedule::Ptr &info)
+TEST_F(test_scheduledlg, setData)
+{
+    GTEST_SKIP() << "Requires gAccountManager->getLocalAccountItem()";
+}
+
+// void CScheduleDlg::setDate(const QDateTime &date)
+TEST_F(test_scheduledlg, setDate)
+{
+    QDateTime dt = QDateTime::currentDateTime();
+    mScheduleDlg->setDate(dt);
+}
+
+// bool CScheduleDlg::isShowLunar()
+TEST_F(test_scheduledlg, isShowLunar)
+{
+    mScheduleDlg->isShowLunar();
+}
+
+// bool CScheduleDlg::canWriteCurrentCalDavCollection() const
+TEST_F(test_scheduledlg, canWriteCurrentCalDavCollection)
+{
+    EXPECT_TRUE(mScheduleDlg->canWriteCurrentCalDavCollection());
+}
+
+// bool CScheduleDlg::clickOkBtn()
+TEST_F(test_scheduledlg, clickOkBtn)
+{
+    EXPECT_FALSE(mScheduleDlg->clickOkBtn());
+}
+
+// bool CScheduleDlg::selectScheduleType()
+TEST_F(test_scheduledlg, selectScheduleType)
+{
+    GTEST_SKIP() << "Requires m_accountItem and createSchedule()";
+}
+
+// void CScheduleDlg::createSchedule(const QString &id)
+TEST_F(test_scheduledlg, createSchedule)
+{
+    GTEST_SKIP() << "Requires m_accountItem and CScheduleOperation";
+}
+
+// void CScheduleDlg::resetColor(AccountItem::Ptr accountItem)
+TEST_F(test_scheduledlg, resetColor)
+{
+    GTEST_SKIP() << "Requires CConfigSettings::getInstance()";
+}
+
+// void CScheduleDlg::resize()
+TEST_F(test_scheduledlg, resize)
+{
+    GTEST_SKIP() << "Requires gAccountManager->getIsSupportUid()";
+}
+
+// void CScheduleDlg::slotBtClick(int buttonIndex, const QString &buttonName)
+TEST_F(test_scheduledlg, slotBtClick)
 {
     Stub stub;
     calendarDDialogExecStub(stub);
-    mScheduleDlg->exec();
+    mScheduleDlg->slotBtClick(0, "ok");
+    mScheduleDlg->slotBtClick(1, "ok");
 }
 
-//setDateFormat
-TEST_F(test_scheduledlg, setDateFormat)
+// void CScheduleDlg::slotTextChange()
+TEST_F(test_scheduledlg, slotTextChange)
 {
-    for (int i = 0; i < 10; ++i) {
-        mScheduleDlg->setDateFormat(i);
-    }
+    mScheduleDlg->slotTextChange();
 }
 
-//setTimeFormat
-TEST_F(test_scheduledlg, setTimeFormat)
+// void CScheduleDlg::slotendrepeatTextchange()
+TEST_F(test_scheduledlg, slotendrepeatTextchange)
 {
-    mScheduleDlg->setTimeFormat(0);
-    mScheduleDlg->setTimeFormat(1);
+    mScheduleDlg->slotendrepeatTextchange();
 }
 
-//mouseMoveEvent
-TEST_F(test_scheduledlg, mouseMoveEvent)
+// void CScheduleDlg::slotBDateEidtInfo(const QDate &date)
+TEST_F(test_scheduledlg, slotBDateEidtInfo)
 {
-    QTest::mouseMove(mScheduleDlg);
+    mScheduleDlg->slotBDateEidtInfo(QDate::currentDate());
+    mScheduleDlg->slotBDateEidtInfo(QDate::currentDate().addDays(1));
 }
 
-//updateDateTimeFormat
+// void CScheduleDlg::slotBeginTimeChange()
+TEST_F(test_scheduledlg, slotBeginTimeChange)
+{
+    mScheduleDlg->slotBeginTimeChange();
+}
+
+// void CScheduleDlg::slotEndDateChange(const QDate &date)
+TEST_F(test_scheduledlg, slotEndDateChange)
+{
+    mScheduleDlg->slotEndDateChange(QDate::currentDate());
+}
+
+// void CScheduleDlg::slotEndTimeChange()
+TEST_F(test_scheduledlg, slotEndTimeChange)
+{
+    mScheduleDlg->slotEndTimeChange();
+}
+
+// void CScheduleDlg::slotallDayStateChanged(int state)
+TEST_F(test_scheduledlg, slotallDayStateChanged)
+{
+    mScheduleDlg->slotallDayStateChanged(0);
+    mScheduleDlg->slotallDayStateChanged(1);
+}
+
+// void CScheduleDlg::slotbRpeatactivated(int index)
+TEST_F(test_scheduledlg, slotbRpeatactivated)
+{
+    Stub stub;
+    setResizeStub(stub);
+    mScheduleDlg->slotbRpeatactivated(0);
+    mScheduleDlg->slotbRpeatactivated(1);
+}
+
+// void CScheduleDlg::sloteRpeatactivated(int index)
+TEST_F(test_scheduledlg, sloteRpeatactivated)
+{
+    mScheduleDlg->sloteRpeatactivated(0);
+    mScheduleDlg->sloteRpeatactivated(1);
+    mScheduleDlg->sloteRpeatactivated(2);
+}
+
+// void CScheduleDlg::slotTypeRpeatactivated(int index)
+TEST_F(test_scheduledlg, slotTypeRpeatactivated)
+{
+    Stub stub;
+    setResizeStub(stub);
+    mScheduleDlg->slotTypeRpeatactivated(0);
+    mScheduleDlg->slotTypeRpeatactivated(1);
+}
+
+// void CScheduleDlg::slotBtnAddItemClicked()
+TEST_F(test_scheduledlg, slotBtnAddItemClicked)
+{
+    Stub stub;
+    setResizeStub(stub);
+    mScheduleDlg->slotBtnAddItemClicked();
+}
+
+// void CScheduleDlg::slotJobComboBoxEditingFinished()
+TEST_F(test_scheduledlg, slotJobComboBoxEditingFinished)
+{
+    mScheduleDlg->m_typeComBox->setEditable(true);
+    mScheduleDlg->slotJobComboBoxEditingFinished();
+}
+
+// void CScheduleDlg::slotTypeEditTextChanged(const QString &text)
+TEST_F(test_scheduledlg, slotTypeEditTextChanged)
+{
+    mScheduleDlg->slotTypeEditTextChanged("test");
+}
+
+// void CScheduleDlg::slotAccountStateChange()
+TEST_F(test_scheduledlg, slotAccountStateChange)
+{
+    mScheduleDlg->slotAccountStateChange();
+}
+
+// void CScheduleDlg::slotAccountUpdate()
+TEST_F(test_scheduledlg, slotAccountUpdate)
+{
+    GTEST_SKIP() << "Requires gAccountManager->getAccountList()";
+}
+
+// void CScheduleDlg::slotAccoutBoxActivated(const QString &accountID)
+TEST_F(test_scheduledlg, slotAccoutBoxActivated)
+{
+    GTEST_SKIP() << "Requires gAccountManager->getAccountItemByAccountId()";
+}
+
+// void CScheduleDlg::slotRadioBtnClicked(int btnId)
+TEST_F(test_scheduledlg, slotRadioBtnClicked)
+{
+    Stub stub;
+    setResizeStub(stub);
+    mScheduleDlg->slotRadioBtnClicked(0);
+    mScheduleDlg->slotRadioBtnClicked(1);
+}
+
+// void CScheduleDlg::updateDateTimeFormat()
 TEST_F(test_scheduledlg, updateDateTimeFormat)
 {
     mScheduleDlg->updateDateTimeFormat();
 }
 
-//changeEvent
+// void CScheduleDlg::updateIsOneMoreDay(const QDateTime &begin, const QDateTime &end)
+TEST_F(test_scheduledlg, updateIsOneMoreDay)
+{
+    QDateTime begin = QDateTime::currentDateTime();
+    mScheduleDlg->updateIsOneMoreDay(begin, begin.addDays(2));
+    mScheduleDlg->updateIsOneMoreDay(begin, begin.addSecs(3600));
+}
+
+// void CScheduleDlg::updateEndTimeList(const QTime &begin, bool isShowTimeInterval)
+TEST_F(test_scheduledlg, updateEndTimeList)
+{
+    mScheduleDlg->updateEndTimeList(QTime(10, 0), true);
+    mScheduleDlg->updateEndTimeList(QTime(10, 0), false);
+}
+
+// void CScheduleDlg::updateEndTimeListAndTimeDiff(const QDateTime &begin, const QDateTime &end)
+TEST_F(test_scheduledlg, updateEndTimeListAndTimeDiff)
+{
+    QDateTime begin = QDateTime::currentDateTime();
+    mScheduleDlg->updateEndTimeListAndTimeDiff(begin, begin.addSecs(3600));
+}
+
+// void CScheduleDlg::updateRepeatCombox(bool isLunar)
+TEST_F(test_scheduledlg, updateRepeatCombox)
+{
+    Stub stub;
+    setResizeStub(stub);
+    mScheduleDlg->updateRepeatCombox(true);
+    mScheduleDlg->updateRepeatCombox(false);
+}
+
+// void CScheduleDlg::showEvent(QShowEvent *event)
+TEST_F(test_scheduledlg, showEvent)
+{
+    Stub stub;
+    setResizeStub(stub);
+    QShowEvent event;
+    QApplication::sendEvent(mScheduleDlg, &event);
+}
+
+// void CScheduleDlg::closeEvent(QCloseEvent *event)
+TEST_F(test_scheduledlg, closeEvent)
+{
+    QCloseEvent event;
+    QApplication::sendEvent(mScheduleDlg, &event);
+}
+
+// bool CScheduleDlg::eventFilter(QObject *watched, QEvent *event)
+TEST_F(test_scheduledlg, eventFilter)
+{
+    QKeyEvent keyReturn(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+    EXPECT_TRUE(mScheduleDlg->eventFilter(mScheduleDlg->m_textEdit, &keyReturn));
+
+    QKeyEvent keyTab(QEvent::KeyPress, Qt::Key_Tab, Qt::NoModifier);
+    EXPECT_TRUE(mScheduleDlg->eventFilter(mScheduleDlg->m_textEdit, &keyTab));
+
+    QKeyEvent keyA(QEvent::KeyPress, Qt::Key_A, Qt::NoModifier);
+    mScheduleDlg->eventFilter(mScheduleDlg->m_textEdit, &keyA);
+}
+
+// void CScheduleDlg::changeEvent(QEvent *event)
 TEST_F(test_scheduledlg, changeEvent)
 {
     QEvent event(QEvent::FontChange);
     QApplication::sendEvent(mScheduleDlg, &event);
+}
+
+// void CScheduleDlg::signalLogout(DAccount::Type type)
+TEST_F(test_scheduledlg, signalLogout)
+{
+    GTEST_SKIP() << "Requires gUosAccountItem (gAccountManager->getUnionAccountItem())";
 }

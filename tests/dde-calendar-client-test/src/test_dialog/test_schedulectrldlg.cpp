@@ -6,6 +6,8 @@
 
 #include <QEvent>
 #include <QApplication>
+#include <QWidget>
+#include <QLabel>
 
 test_schedulectrldlg::test_schedulectrldlg()
 {
@@ -48,8 +50,8 @@ TEST_F(test_schedulectrldlg, addsuggestButton)
 //QAbstractButton *CScheduleCtrlDlg::addWaringButton(QString btName, bool type)
 TEST_F(test_schedulectrldlg, addWaringButton)
 {
-    mScheduleCtrlDlg->addsuggestButton("schedule", true);
-    mScheduleCtrlDlg->addsuggestButton("schedule", false);
+    mScheduleCtrlDlg->addWaringButton("schedule", true);
+    mScheduleCtrlDlg->addWaringButton("schedule", false);
 }
 
 //void CScheduleCtrlDlg::setText(QString str)
@@ -68,6 +70,27 @@ TEST_F(test_schedulectrldlg, setInfomativeText)
 TEST_F(test_schedulectrldlg, clickButton)
 {
     mScheduleCtrlDlg->clickButton();
+}
+
+//void CScheduleCtrlDlg::setPaletteTextColor(QWidget *widget, QColor textColor)
+TEST_F(test_schedulectrldlg, setPaletteTextColor)
+{
+    QLabel *label = new QLabel();
+    mScheduleCtrlDlg->setPaletteTextColor(label, QColor(255, 0, 0));
+    mScheduleCtrlDlg->setPaletteTextColor(nullptr, QColor(255, 0, 0));
+    delete label;
+}
+
+//void CScheduleCtrlDlg::initConnection()
+TEST_F(test_schedulectrldlg, initConnection)
+{
+    mScheduleCtrlDlg->initConnection();
+}
+
+//void CScheduleCtrlDlg::initUI()
+TEST_F(test_schedulectrldlg, initUI)
+{
+    mScheduleCtrlDlg->initUI();
 }
 
 //changeEvent
