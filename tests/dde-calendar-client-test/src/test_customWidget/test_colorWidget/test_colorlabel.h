@@ -5,20 +5,30 @@
 #ifndef TEST_COLORLABEL_H
 #define TEST_COLORLABEL_H
 
-//#include <colorWidget/colorlabel.h>
-//#include <QObject>
-//#include <QTest>
-//#include <gtest/gtest.h>
+#include "customWidget/colorWidget/colorlabel.h"
+#include <QObject>
+#include <QTest>
+#include <gtest/gtest.h>
 
-//class test_colorlabel : public QObject, public::testing::Test
-//{
-//    Q_OBJECT
-//public:
-//    explicit test_colorlabel(QObject *parent = nullptr);
+class test_colorlabel : public QObject, public::testing::Test
+{
+    Q_OBJECT
+public:
+    test_colorlabel() {}
 
-//signals:
+    virtual void SetUp()
+    {
+        mWidget = new ColorLabel();
+        mWidget->resize(100, 100);
+    }
 
-//public slots:
-//};
+    virtual void TearDown()
+    {
+        delete mWidget;
+        mWidget = nullptr;
+    }
+protected:
+    ColorLabel *mWidget = nullptr;
+};
 
 #endif // TEST_COLORLABEL_H

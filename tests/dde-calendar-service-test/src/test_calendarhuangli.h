@@ -9,6 +9,8 @@
 #include "gtest/gtest.h"
 #include <QObject>
 
+class Stub;
+
 class test_calendarhuangli : public QObject, public::testing::Test
 {
 public:
@@ -16,6 +18,7 @@ public:
     ~test_calendarhuangli();
 protected:
     CalendarHuangLi *calendarHuangLi = nullptr;
+    Stub *m_stub = nullptr;
 };
 
 #endif // TEST_CALENDARHUANGLI_H
