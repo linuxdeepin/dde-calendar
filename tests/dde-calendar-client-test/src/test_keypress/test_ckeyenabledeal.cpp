@@ -9,6 +9,8 @@
 #include "view/graphicsItem/cweekdaybackgrounditem.h"
 #include "../dialog_stub.h"
 #include "view/graphicsItem/scheduleitem.h"
+#include "view/graphicsItem/draginfoitem.h"
+#include "dschedule.h"
 
 #include <QGraphicsView>
 
@@ -31,17 +33,6 @@ void test_CKeyEnableDeal::TearDown()
 {
 }
 
-TEST_F(test_CKeyEnableDeal, focusItemDeal_Back)
-{
-    enableDeal->dealEvent();
-}
-
-TEST_F(test_CKeyEnableDeal, focusItemDeal_Back_addDay)
-{
-    itemDate = QDate::currentDate().addDays(1);
-    enableDeal->dealEvent();
-}
-
 CFocusItem *focusItem = nullptr;
 
 CFocusItem *getFocusItem_stub()
@@ -49,11 +40,39 @@ CFocusItem *getFocusItem_stub()
     return focusItem;
 }
 
+DSchedule::Ptr getData_stub(void *obj)
+{
+    Q_UNUSED(obj)
+    return DSchedule::Ptr(new DSchedule());
+}
+
+TEST_F(test_CKeyEnableDeal, focusItemDeal_Back)
+{
+    focusItem = new CSceneBackgroundItem(CSceneBackgroundItem::OnMonthView);
+    stub.getStub().set(ADDR(CSceneBackgroundItem, getFocusItem), getFocusItem_stub);
+    focusItemType = CFocusItem::CBACK;
+    enableDeal->dealEvent();
+    delete focusItem;
+    focusItem = nullptr;
+}
+
+TEST_F(test_CKeyEnableDeal, focusItemDeal_Back_addDay)
+{
+    itemDate = QDate::currentDate().addDays(1);
+    focusItem = new CSceneBackgroundItem(CSceneBackgroundItem::OnMonthView);
+    stub.getStub().set(ADDR(CSceneBackgroundItem, getFocusItem), getFocusItem_stub);
+    focusItemType = CFocusItem::CBACK;
+    enableDeal->dealEvent();
+    delete focusItem;
+    focusItem = nullptr;
+}
+
 TEST_F(test_CKeyEnableDeal, focusItemDeal_Item)
 {
     QRectF rect(0, 0, 100, 100);
     focusItem = new CScheduleItem(rect);
     stub.getStub().set(ADDR(CSceneBackgroundItem, getFocusItem), getFocusItem_stub);
+    stub.getStub().set(ADDR(DragInfoItem, getData), getData_stub);
     focusItemType = CFocusItem::CITEM;
     enableDeal->dealEvent();
     delete focusItem;
@@ -62,6 +81,17 @@ TEST_F(test_CKeyEnableDeal, focusItemDeal_Item)
 
 TEST_F(test_CKeyEnableDeal, focusItemDeal_Other)
 {
+    focusItem = new CSceneBackgroundItem(CSceneBackgroundItem::OnMonthView);
+    stub.getStub().set(ADDR(CSceneBackgroundItem, getFocusItem), getFocusItem_stub);
     focusItemType = CFocusItem::COTHER;
+    enableDeal->dealEvent();
+    delete focusItem;
+    focusItem = nullptr;
+}
+
+TEST_F(test_CKeyEnableDeal, focusItemDeal_NullFocusItem)
+{
+    focusItem = nullptr;
+    stub.getStub().set(ADDR(CSceneBackgroundItem, getFocusItem), getFocusItem_stub);
     enableDeal->dealEvent();
 }

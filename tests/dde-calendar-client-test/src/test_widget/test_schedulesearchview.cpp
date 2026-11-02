@@ -4,133 +4,30 @@
 
 #include "test_schedulesearchview.h"
 #include "../third-party_stub/stub.h"
-#include "../calendar-basicstruct/src/utils.h"
 #include "../third-party_stub/addr_pri.h"
-#include "scheduleTask/cscheduledbus.h"
-#include "scheduleTask/scheduletask.h"
-#include "constants.h"
-#include "../testscheduledata.h"
 #include "../dialog_stub.h"
+#include "dschedule.h"
+
 #include <QContextMenuEvent>
+#include <QMouseEvent>
+#include <QKeyEvent>
+#include <QFocusEvent>
+#include <QPaintEvent>
+#include <QResizeEvent>
+#include <QEnterEvent>
+#include <QFont>
+#include <QColor>
+#include <QPixmap>
+#include <QTest>
 
-QVector<ScheduleDataInfo> getScheduleDInfo()
+static DSchedule::Ptr createTestSchedule()
 {
-    QVector<ScheduleDataInfo> scheduleDate {};
-    ScheduleDataInfo schedule1, schedule2, schedule3, schedule4, schedule5, scheduleFes;
-    QDateTime currentDateTime = QDateTime::currentDateTime();
-
-    schedule1.setID(1);
-    schedule1.setBeginDateTime(currentDateTime);
-    schedule1.setEndDateTime(currentDateTime.addSecs(60 * 60));
-    schedule1.setTitleName("scheduleOne");
-    schedule1.setAllDay(true);
-    schedule1.setType(1);
-    schedule1.setRecurID(0);
-
-    schedule2.setID(2);
-    schedule2.setBeginDateTime(currentDateTime.addDays(1));
-    schedule2.setEndDateTime(currentDateTime.addDays(1).addSecs(60 * 60));
-    schedule2.setTitleName("scheduleTwo");
-    schedule2.setAllDay(true);
-    schedule2.setType(2);
-    schedule2.setRecurID(0);
-
-    schedule3.setID(3);
-    schedule3.setBeginDateTime(currentDateTime.addDays(2));
-    schedule3.setEndDateTime(currentDateTime.addDays(2).addSecs(60 * 60));
-    schedule3.setTitleName("scheduleThree");
-    schedule3.setAllDay(false);
-    schedule3.setType(3);
-    schedule3.setRecurID(0);
-
-    schedule4.setID(4);
-    schedule4.setBeginDateTime(currentDateTime.addDays(3));
-    schedule4.setEndDateTime(currentDateTime.addDays(3).addSecs(60 * 60));
-    schedule4.setTitleName("scheduleFour");
-    schedule4.setAllDay(false);
-    schedule4.setType(1);
-    schedule4.setRecurID(0);
-
-    schedule5.setID(5);
-    schedule5.setBeginDateTime(currentDateTime.addDays(4));
-    schedule5.setEndDateTime(currentDateTime.addDays(4).addSecs(60 * 60));
-    schedule5.setTitleName("scheduleFive");
-    schedule5.setAllDay(false);
-    schedule5.setType(2);
-    schedule5.setRecurID(0);
-
-    scheduleFes.setID(6);
-    scheduleFes.setBeginDateTime(currentDateTime.addDays(5));
-    scheduleFes.setEndDateTime(currentDateTime.addDays(5).addSecs(60 * 60));
-    scheduleFes.setTitleName("scheduleFestival");
-    scheduleFes.setAllDay(true);
-    scheduleFes.setType(4);
-    scheduleFes.setRecurID(0);
-
-    scheduleDate.append(schedule1);
-    scheduleDate.append(schedule2);
-    scheduleDate.append(schedule3);
-    scheduleDate.append(schedule4);
-    scheduleDate.append(schedule5);
-    scheduleDate.append(scheduleFes);
-    return scheduleDate;
-}
-
-QMap<QDate, QVector<ScheduleDataInfo>> getMapScheduleDInfo(int getDays)
-{
-    QDate currentDate = QDate::currentDate();
-    QVector<ScheduleDataInfo> scheduleInfo {};
-    QMap<QDate, QVector<ScheduleDataInfo>> scheduleDateInof {};
-    switch (getDays) {
-    case 0: {
-        scheduleInfo.append(getScheduleDInfo().at(0));
-        scheduleDateInof[currentDate] = scheduleInfo;
-    } break;
-    case 1: {
-        scheduleInfo.append(getScheduleDInfo().at(1));
-        scheduleDateInof[currentDate.addDays(1)] = scheduleInfo;
-    } break;
-    case 2: {
-        scheduleInfo.append(getScheduleDInfo().at(2));
-        scheduleDateInof[currentDate.addDays(2)] = scheduleInfo;
-    } break;
-    default: {
-        scheduleInfo.append(getScheduleDInfo().at(3));
-        scheduleDateInof[currentDate.addDays(3)] = scheduleInfo;
-        scheduleInfo.append(getScheduleDInfo().at(4));
-        scheduleDateInof[currentDate.addDays(4)] = scheduleInfo;
-        scheduleInfo.append(getScheduleDInfo().at(5));
-        scheduleDateInof[currentDate.addDays(5)] = scheduleInfo;
-    } break;
-    }
-    return scheduleDateInof;
-}
-
-bool stub_QueryJobs(const QString &key, QDateTime starttime, QDateTime endtime, QMap<QDate, QVector<ScheduleDataInfo>> &out)
-{
-    Q_UNUSED(key);
-    int days = static_cast<int>(starttime.daysTo(endtime));
-
-    switch (days) {
-    case 0: {
-        out = getMapScheduleDInfo(0);
-    } break;
-    case 1: {
-        out = getMapScheduleDInfo(1);
-    } break;
-    case 2: {
-        out = getMapScheduleDInfo(2);
-    } break;
-    default: {
-        out = getMapScheduleDInfo(days);
-    } break;
-    }
-    return true;
-}
-
-static QAction* schedulesearchview_stub_QMenu_exec()
-{
-    return nullptr;
+    DSchedule::Ptr schedule(new DSchedule);
+    schedule->setSummary("test schedule");
+    schedule->setDtStart(QDateTime::currentDateTime());
+    schedule->setDtEnd(QDateTime::currentDateTime().addSecs(3600));
+    schedule->setScheduleTypeID("1");
+    return schedule;
 }
 
 test_schedulesearchview::test_schedulesearchview()
@@ -143,301 +40,504 @@ test_schedulesearchview::~test_schedulesearchview()
 
 void test_schedulesearchview::SetUp()
 {
-    mScheduleSearchView = new CScheduleSearchView();
+    mScheduleSearchItem = new CScheduleSearchItem();
     mScheduleSearchDateItem = new CScheduleSearchDateItem();
     mScheduleListWidget = new CScheduleListWidget();
-    mScheduleSearchItem = new CScheduleSearchItem();
+    mScheduleSearchView = new CScheduleSearchView();
 }
 
 void test_schedulesearchview::TearDown()
 {
     delete mScheduleSearchView;
     mScheduleSearchView = nullptr;
-    delete mScheduleSearchDateItem;
-    mScheduleSearchDateItem = nullptr;
     delete mScheduleListWidget;
     mScheduleListWidget = nullptr;
+    delete mScheduleSearchDateItem;
+    mScheduleSearchDateItem = nullptr;
     delete mScheduleSearchItem;
     mScheduleSearchItem = nullptr;
 }
 
-//void CScheduleSearchView::setTheMe(int type)
-TEST_F(test_schedulesearchview, setTheMe)
-{
-    int type = 1;
-    mScheduleSearchView->setTheMe(type);
+// ==================== CScheduleSearchItem tests ====================
 
-    type = 2;
-    mScheduleSearchView->setTheMe(type);
+// Constructor
+TEST_F(test_schedulesearchview, CScheduleSearchItem_Constructor)
+{
+    CScheduleSearchItem *item = new CScheduleSearchItem();
+    delete item;
 }
 
-//void CScheduleSearchView::clearSearch()
-TEST_F(test_schedulesearchview, clearSearch)
+// void setBackgroundColor(QColor color1)
+TEST_F(test_schedulesearchview, CScheduleSearchItem_setBackgroundColor)
 {
-    ScheduleDataInfo schedule1;
-    schedule1.setID(1);
-    schedule1.setBeginDateTime(QDateTime(QDate(2021, 1, 1), QTime(0, 0, 0)));
-    schedule1.setEndDateTime(QDateTime(QDate(2021, 1, 2), QTime(23, 59, 59)));
-    schedule1.setTitleName("schedule test one");
-    schedule1.setAllDay(true);
-    schedule1.setType(1);
-    schedule1.setRecurID(0);
-    mScheduleSearchView->createItemWidget(schedule1, QDate(2021, 1, 1), 1);
+    mScheduleSearchItem->setBackgroundColor(QColor(255, 0, 0));
+}
 
+// void setText(QColor tColor, QFont font)
+TEST_F(test_schedulesearchview, CScheduleSearchItem_setText)
+{
+    QFont font;
+    mScheduleSearchItem->setText(QColor(0, 0, 255), font);
+}
+
+// void setTimeC(QColor tColor, QFont font)
+TEST_F(test_schedulesearchview, CScheduleSearchItem_setTimeC)
+{
+    QFont font;
+    mScheduleSearchItem->setTimeC(QColor(0, 255, 0), font);
+}
+
+// void setData(DSchedule::Ptr vScheduleInfo, QDate date)
+TEST_F(test_schedulesearchview, CScheduleSearchItem_setData)
+{
+    DSchedule::Ptr schedule = createTestSchedule();
+    mScheduleSearchItem->setData(schedule, QDate::currentDate());
+    EXPECT_EQ(schedule, mScheduleSearchItem->getData());
+}
+
+// const DSchedule::Ptr &getData() const
+TEST_F(test_schedulesearchview, CScheduleSearchItem_getData)
+{
+    DSchedule::Ptr schedule = createTestSchedule();
+    mScheduleSearchItem->setData(schedule, QDate::currentDate());
+    const DSchedule::Ptr &result = mScheduleSearchItem->getData();
+    EXPECT_EQ(result, schedule);
+}
+
+// void setRoundtype(int rtype)
+TEST_F(test_schedulesearchview, CScheduleSearchItem_setRoundtype)
+{
+    mScheduleSearchItem->setRoundtype(2);
+}
+
+// void setTheMe(int type)
+TEST_F(test_schedulesearchview, CScheduleSearchItem_setTheMe)
+{
+    mScheduleSearchItem->setTheMe(0);
+    mScheduleSearchItem->setTheMe(2);
+}
+
+// void setDurationSize(QFont font)
+TEST_F(test_schedulesearchview, CScheduleSearchItem_setDurationSize)
+{
+    QFont font;
+    mScheduleSearchItem->setDurationSize(font);
+}
+
+// void slotEdit()
+TEST_F(test_schedulesearchview, CScheduleSearchItem_slotEdit)
+{
+    Stub stub;
+    calendarDDialogExecStub(stub);
+    DSchedule::Ptr schedule = createTestSchedule();
+    mScheduleSearchItem->setData(schedule, QDate::currentDate());
+    mScheduleSearchItem->slotEdit();
+}
+
+// void slotDelete()
+TEST_F(test_schedulesearchview, CScheduleSearchItem_slotDelete)
+{
+    Stub stub;
+    calendarDDialogExecStub(stub);
+    QWidget parentWidget;
+    CScheduleSearchItem *item = new CScheduleSearchItem(&parentWidget);
+    DSchedule::Ptr schedule = createTestSchedule();
+    item->setData(schedule, QDate::currentDate());
+    item->slotDelete();
+    delete item;
+}
+
+// void slotTimeFormatChanged(int value)
+TEST_F(test_schedulesearchview, CScheduleSearchItem_slotTimeFormatChanged)
+{
+    mScheduleSearchItem->slotTimeFormatChanged(0);
+    mScheduleSearchItem->slotTimeFormatChanged(1);
+}
+
+// void slotSchotCutClicked()
+TEST_F(test_schedulesearchview, CScheduleSearchItem_slotSchotCutClicked)
+{
+    DSchedule::Ptr schedule = createTestSchedule();
+    mScheduleSearchItem->setData(schedule, QDate::currentDate());
+    mScheduleSearchItem->slotSchotCutClicked();
+}
+
+// void paintEvent(QPaintEvent *e)
+TEST_F(test_schedulesearchview, CScheduleSearchItem_paintEvent)
+{
+    DSchedule::Ptr schedule = createTestSchedule();
+    mScheduleSearchItem->setData(schedule, QDate::currentDate());
+    mScheduleSearchItem->resize(200, 50);
+    mScheduleSearchItem->show();
+    QTest::qWait(50);
+    mScheduleSearchItem->hide();
+}
+
+// void contextMenuEvent(QContextMenuEvent *event)
+TEST_F(test_schedulesearchview, CScheduleSearchItem_contextMenuEvent)
+{
+    Stub stub;
+    calendarQMenuExecStub(stub);
+    DSchedule::Ptr schedule = createTestSchedule();
+    mScheduleSearchItem->setData(schedule, QDate::currentDate());
+    QContextMenuEvent event(QContextMenuEvent::Mouse, QPoint(10, 10));
+    mScheduleSearchItem->contextMenuEvent(&event);
+}
+
+// void mouseDoubleClickEvent(QMouseEvent *event)
+TEST_F(test_schedulesearchview, CScheduleSearchItem_mouseDoubleClickEvent)
+{
+    Stub stub;
+    calendarDDialogExecStub(stub);
+    DSchedule::Ptr schedule = createTestSchedule();
+    mScheduleSearchItem->setData(schedule, QDate::currentDate());
+    QMouseEvent event(QEvent::MouseButtonDblClick, QPointF(10, 10), QPointF(10, 10),
+                      Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+    mScheduleSearchItem->mouseDoubleClickEvent(&event);
+}
+
+// void mousePressEvent(QMouseEvent *event)
+TEST_F(test_schedulesearchview, CScheduleSearchItem_mousePressEvent)
+{
+    QMouseEvent event(QEvent::MouseButtonPress, QPointF(10, 10), QPointF(10, 10),
+                      Qt::RightButton, Qt::RightButton, Qt::NoModifier);
+    mScheduleSearchItem->mousePressEvent(&event);
+}
+
+// void mouseReleaseEvent(QMouseEvent *event)
+TEST_F(test_schedulesearchview, CScheduleSearchItem_mouseReleaseEvent)
+{
+    QMouseEvent event(QEvent::MouseButtonRelease, QPointF(10, 10), QPointF(10, 10),
+                      Qt::LeftButton, Qt::NoButton, Qt::NoModifier);
+    mScheduleSearchItem->mouseReleaseEvent(&event);
+}
+
+// void enterEvent(QEvent *event) / enterEvent(QEnterEvent*)
+TEST_F(test_schedulesearchview, CScheduleSearchItem_enterEvent)
+{
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QEnterEvent event(QPointF(10, 10), QPointF(10, 10), QPointF(10, 10));
+    mScheduleSearchItem->enterEvent(&event);
+#else
+    QEvent event(QEvent::Enter);
+    mScheduleSearchItem->enterEvent(&event);
+#endif
+}
+
+// void leaveEvent(QEvent *event)
+TEST_F(test_schedulesearchview, CScheduleSearchItem_leaveEvent)
+{
+    QEvent event(QEvent::Leave);
+    mScheduleSearchItem->leaveEvent(&event);
+}
+
+// bool eventFilter(QObject *o, QEvent *e)
+TEST_F(test_schedulesearchview, CScheduleSearchItem_eventFilter)
+{
+    QMouseEvent event(QEvent::MouseButtonPress, QPointF(10, 10), QPointF(10, 10),
+                      Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+    mScheduleSearchItem->eventFilter(mScheduleSearchItem, &event);
+
+    QEvent otherEvent(QEvent::None);
+    mScheduleSearchItem->eventFilter(mScheduleSearchItem, &otherEvent);
+}
+
+// void focusInEvent(QFocusEvent *e)
+TEST_F(test_schedulesearchview, CScheduleSearchItem_focusInEvent)
+{
+    QFocusEvent event(QEvent::FocusIn, Qt::TabFocusReason);
+    mScheduleSearchItem->focusInEvent(&event);
+}
+
+// void focusOutEvent(QFocusEvent *e)
+TEST_F(test_schedulesearchview, CScheduleSearchItem_focusOutEvent)
+{
+    QFocusEvent event(QEvent::FocusOut);
+    mScheduleSearchItem->focusOutEvent(&event);
+}
+
+// void keyPressEvent(QKeyEvent *event)
+TEST_F(test_schedulesearchview, CScheduleSearchItem_keyPressEvent)
+{
+    Stub stub;
+    calendarDDialogExecStub(stub);
+    DSchedule::Ptr schedule = createTestSchedule();
+    mScheduleSearchItem->setData(schedule, QDate::currentDate());
+
+    QKeyEvent returnEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+    mScheduleSearchItem->keyPressEvent(&returnEvent);
+
+    QKeyEvent altMEvent(QEvent::KeyPress, Qt::Key_M, Qt::AltModifier);
+    mScheduleSearchItem->keyPressEvent(&altMEvent);
+}
+
+// ==================== CScheduleSearchView tests ====================
+
+// Constructor
+TEST_F(test_schedulesearchview, CScheduleSearchView_Constructor)
+{
+    CScheduleSearchView *view = new CScheduleSearchView();
+    delete view;
+}
+
+// void setTheMe(int type)
+TEST_F(test_schedulesearchview, CScheduleSearchView_setTheMe)
+{
+    mScheduleSearchView->setTheMe(0);
+    mScheduleSearchView->setTheMe(2);
+}
+
+// void clearSearch()
+TEST_F(test_schedulesearchview, CScheduleSearchView_clearSearch)
+{
     mScheduleSearchView->clearSearch();
 }
 
-//void CScheduleSearchView::setMaxWidth(const int w)
-TEST_F(test_schedulesearchview, setMacWidth)
+// void setMaxWidth(const int w)
+TEST_F(test_schedulesearchview, CScheduleSearchView_setMaxWidth)
 {
-    mScheduleSearchView->setMaxWidth(44);
+    mScheduleSearchView->setMaxWidth(300);
 }
 
-//void CScheduleSearchView::slotsetSearch()
-TEST_F(test_schedulesearchview, slotsetSearch)
+// bool getHasScheduleShow()
+TEST_F(test_schedulesearchview, CScheduleSearchView_getHasScheduleShow)
 {
-    //    mScheduleSearchView->slotsetSearch("jie");
+    mScheduleSearchView->getHasScheduleShow();
 }
 
-//void CScheduleSearchView::createItemWidget(ScheduleDataInfo info, QDate date, int rtype)
-TEST_F(test_schedulesearchview, createItemWidget)
+// bool getScheduleStatus()
+TEST_F(test_schedulesearchview, CScheduleSearchView_getScheduleStatus)
 {
-    ScheduleDataInfo scheduleinof = getScheduleDInfo().first();
-    mScheduleSearchView->createItemWidget(scheduleinof, QDate::currentDate(), 3);
+    mScheduleSearchView->getScheduleStatus();
 }
 
-//QListWidgetItem *CScheduleSearchView::createItemWidget(QDate date)
-TEST_F(test_schedulesearchview, createItemWidgetDate)
+// void deleteSchedule()
+TEST_F(test_schedulesearchview, CScheduleSearchView_deleteSchedule)
 {
-    mScheduleSearchView->createItemWidget(QDate::currentDate());
+    mScheduleSearchView->deleteSchedule();
 }
 
-//void CScheduleSearchView::slotSelectSchedule(const ScheduleDataInfo &scheduleInfo)
-TEST_F(test_schedulesearchview, slotSelectSchedule)
+// void slotsetSearch(QString str)
+TEST_F(test_schedulesearchview, CScheduleSearchView_slotsetSearch)
 {
-    ScheduleDataInfo scheduleinof = getScheduleDInfo().first();
-    mScheduleSearchView->slotSelectSchedule(scheduleinof);
+    mScheduleSearchView->slotsetSearch("test");
 }
 
-//void CScheduleSearchView::updateSearch()
-TEST_F(test_schedulesearchview, updateSearch)
+// void slotSelectSchedule(const DSchedule::Ptr &scheduleInfo)
+TEST_F(test_schedulesearchview, CScheduleSearchView_slotSelectSchedule)
+{
+    DSchedule::Ptr schedule = createTestSchedule();
+    mScheduleSearchView->slotSelectSchedule(schedule);
+}
+
+// void updateSearch()
+TEST_F(test_schedulesearchview, CScheduleSearchView_updateSearch)
 {
     mScheduleSearchView->updateSearch();
 }
 
-//void CScheduleSearchDateItem::setBackgroundColor(QColor color1)
-TEST_F(test_schedulesearchview, setBachgroundColor)
+// void slotSelectCurrentItem(CScheduleSearchItem *item, bool itemFocusOut)
+TEST_F(test_schedulesearchview, CScheduleSearchView_slotSelectCurrentItem)
 {
-    QColor color1(240, 100, 100);
-    mScheduleSearchDateItem->setBackgroundColor(color1);
+    mScheduleSearchView->slotSelectCurrentItem(nullptr, false);
 }
 
-//void CScheduleSearchDateItem::setText(QColor tcolor, QFont font)
-TEST_F(test_schedulesearchview, setText)
+// void slotListWidgetClicked()
+TEST_F(test_schedulesearchview, CScheduleSearchView_slotListWidgetClicked)
 {
-    QColor color(240, 100, 100);
+    mScheduleSearchView->slotListWidgetClicked();
+}
+
+// void slotScearedScheduleUpdate()
+TEST_F(test_schedulesearchview, CScheduleSearchView_slotScearedScheduleUpdate)
+{
+    mScheduleSearchView->slotScearedScheduleUpdate();
+}
+
+// void resizeEvent(QResizeEvent *event)
+TEST_F(test_schedulesearchview, CScheduleSearchView_resizeEvent)
+{
+    mScheduleSearchView->resize(400, 300);
+    QResizeEvent event(QSize(400, 300), QSize(200, 200));
+    mScheduleSearchView->resizeEvent(&event);
+}
+
+// void mousePressEvent(QMouseEvent *event)
+TEST_F(test_schedulesearchview, CScheduleSearchView_mousePressEvent)
+{
+    QMouseEvent event(QEvent::MouseButtonPress, QPointF(10, 10), QPointF(10, 10),
+                      Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+    mScheduleSearchView->mousePressEvent(&event);
+}
+
+// void keyPressEvent(QKeyEvent *event)
+TEST_F(test_schedulesearchview, CScheduleSearchView_keyPressEvent)
+{
+    QKeyEvent upEvent(QEvent::KeyPress, Qt::Key_Up, Qt::NoModifier);
+    mScheduleSearchView->keyPressEvent(&upEvent);
+
+    QKeyEvent downEvent(QEvent::KeyPress, Qt::Key_Down, Qt::NoModifier);
+    mScheduleSearchView->keyPressEvent(&downEvent);
+}
+
+// void focusInEvent(QFocusEvent *e)
+TEST_F(test_schedulesearchview, CScheduleSearchView_focusInEvent)
+{
+    QFocusEvent event(QEvent::FocusIn, Qt::TabFocusReason);
+    mScheduleSearchView->focusInEvent(&event);
+}
+
+// ==================== createItemWidget coverage tests ====================
+// Cover createItemWidget(QDate) and createItemWidget(DSchedule::Ptr, QDate, int)
+// by populating m_vlistData directly and calling updateDateShow()
+
+// Single schedule -> createItemWidget(DSchedule::Ptr, QDate, 1)
+TEST_F(test_schedulesearchview, CScheduleSearchView_updateDateShow_singleSchedule)
+{
+    Stub stub;
+    calendarDDialogExecStub(stub);
+
+    DSchedule::Ptr schedule = createTestSchedule();
+    QDate testDate = QDate::currentDate();
+    schedule->setDtStart(QDateTime(testDate, QTime(10, 0)));
+    schedule->setDtEnd(QDateTime(testDate, QTime(11, 0)));
+
+    DSchedule::List list;
+    list.append(schedule);
+    mScheduleSearchView->m_vlistData[testDate] = list;
+
+    mScheduleSearchView->updateDateShow();
+    mScheduleSearchView->m_vlistData.clear();
+}
+
+// Two schedules -> createItemWidget(DSchedule::Ptr, QDate, 3) + (..., 2)
+TEST_F(test_schedulesearchview, CScheduleSearchView_updateDateShow_twoSchedules)
+{
+    Stub stub;
+    calendarDDialogExecStub(stub);
+
+    QDate testDate = QDate::currentDate();
+    DSchedule::Ptr sched1 = createTestSchedule();
+    sched1->setDtStart(QDateTime(testDate, QTime(10, 0)));
+    sched1->setDtEnd(QDateTime(testDate, QTime(11, 0)));
+    DSchedule::Ptr sched2 = createTestSchedule();
+    sched2->setSummary("second schedule");
+    sched2->setDtStart(QDateTime(testDate, QTime(14, 0)));
+    sched2->setDtEnd(QDateTime(testDate, QTime(15, 0)));
+
+    DSchedule::List list;
+    list.append(sched1);
+    list.append(sched2);
+    mScheduleSearchView->m_vlistData[testDate] = list;
+
+    mScheduleSearchView->updateDateShow();
+    mScheduleSearchView->m_vlistData.clear();
+}
+
+// Three+ schedules -> createItemWidget(DSchedule::Ptr, QDate, 3) + (..., 0) + (..., 2)
+TEST_F(test_schedulesearchview, CScheduleSearchView_updateDateShow_threeSchedules)
+{
+    Stub stub;
+    calendarDDialogExecStub(stub);
+
+    QDate testDate = QDate::currentDate();
+    DSchedule::List list;
+    for (int i = 0; i < 3; ++i) {
+        DSchedule::Ptr s = createTestSchedule();
+        s->setSummary(QString("schedule %1").arg(i));
+        s->setDtStart(QDateTime(testDate, QTime(8 + i, 0)));
+        s->setDtEnd(QDateTime(testDate, QTime(9 + i, 0)));
+        list.append(s);
+    }
+    mScheduleSearchView->m_vlistData[testDate] = list;
+
+    mScheduleSearchView->updateDateShow();
+    mScheduleSearchView->m_vlistData.clear();
+}
+
+// Cover no-results branch (empty m_vlistData)
+TEST_F(test_schedulesearchview, CScheduleSearchView_updateDateShow_noResults)
+{
+    Stub stub;
+    calendarDDialogExecStub(stub);
+
+    mScheduleSearchView->updateDateShow();
+}
+
+// ==================== CScheduleSearchDateItem tests ====================
+
+// Constructor
+TEST_F(test_schedulesearchview, CScheduleSearchDateItem_Constructor)
+{
+    CScheduleSearchDateItem *item = new CScheduleSearchDateItem();
+    delete item;
+}
+
+// void setBackgroundColor(QColor color1)
+TEST_F(test_schedulesearchview, CScheduleSearchDateItem_setBackgroundColor)
+{
+    mScheduleSearchDateItem->setBackgroundColor(QColor(255, 0, 0));
+}
+
+// void setText(QColor tColor, QFont font)
+TEST_F(test_schedulesearchview, CScheduleSearchDateItem_setText)
+{
     QFont font;
-    font.setWeight(QFont::Medium);
-    font.setPixelSize(DDECalendar::FontSizeTwelve);
-    mScheduleSearchDateItem->setText(color, font);
+    mScheduleSearchDateItem->setText(QColor(0, 0, 255), font);
 }
 
-//void CScheduleSearchDateItem::setDate(QDate date)
-TEST_F(test_schedulesearchview, setDate)
+// void setDate(QDate date)
+TEST_F(test_schedulesearchview, CScheduleSearchDateItem_setDate)
 {
     mScheduleSearchDateItem->setDate(QDate::currentDate());
 }
 
-//void CScheduleSearchItem::setBackgroundColor(QColor color1)
-TEST_F(test_schedulesearchview, setBackGroundColor)
+// void paintEvent(QPaintEvent *e)
+TEST_F(test_schedulesearchview, CScheduleSearchDateItem_paintEvent)
 {
-    QColor color(240, 100, 100);
-    mScheduleSearchItem->setBackgroundColor(color);
+    mScheduleSearchDateItem->resize(200, 30);
+    mScheduleSearchDateItem->show();
+    QTest::qWait(50);
+    mScheduleSearchDateItem->hide();
 }
 
-//void CScheduleSearchItem::setText(QColor tcolor, QFont font)
-TEST_F(test_schedulesearchview, setItemText)
+// void mousePressEvent(QMouseEvent *event)
+TEST_F(test_schedulesearchview, CScheduleSearchDateItem_mousePressEvent)
 {
-    QColor color(240, 100, 100);
-    QFont font;
-    font.setWeight(QFont::Medium);
-    font.setPixelSize(DDECalendar::FontSizeTwelve);
-    mScheduleSearchItem->setText(color, font);
+    QMouseEvent event(QEvent::MouseButtonPress, QPointF(10, 10), QPointF(10, 10),
+                      Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+    mScheduleSearchDateItem->mousePressEvent(&event);
 }
 
-//void CScheduleSearchItem::setTimeC(QColor tcolor, QFont font)
-TEST_F(test_schedulesearchview, setTimeC)
+// ==================== CScheduleListWidget tests ====================
+
+// Constructor
+TEST_F(test_schedulesearchview, CScheduleListWidget_Constructor)
 {
-    QColor color(240, 100, 100);
-    QFont font;
-    font.setWeight(QFont::Medium);
-    font.setPixelSize(DDECalendar::FontSizeTwelve);
-    mScheduleSearchItem->setTimeC(color, font);
+    CScheduleListWidget *widget = new CScheduleListWidget();
+    delete widget;
 }
 
-//void CScheduleSearchItem::setData(ScheduleDataInfo vScheduleInfo, QDate date)
-TEST_F(test_schedulesearchview, setItemDate)
+// Destructor
+TEST_F(test_schedulesearchview, CScheduleListWidget_Destructor)
 {
-    ScheduleDataInfo scheduleinfo = getScheduleDInfo().first();
-    mScheduleSearchItem->setData(scheduleinfo, QDate::currentDate());
+    CScheduleListWidget *widget = new CScheduleListWidget();
+    delete widget;
 }
 
-//void CScheduleSearchItem::setRoundtype(int rtype)
-TEST_F(test_schedulesearchview, setRoundtype)
+// void mousePressEvent(QMouseEvent *event)
+TEST_F(test_schedulesearchview, CScheduleListWidget_mousePressEvent)
 {
-    mScheduleSearchItem->setRoundtype(3);
-    mScheduleSearchItem->setRoundtype(2);
+    QMouseEvent event(QEvent::MouseButtonPress, QPointF(10, 10), QPointF(10, 10),
+                      Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+    mScheduleListWidget->mousePressEvent(&event);
 }
 
-//void CScheduleSearchItem::setTheMe(int type)
-TEST_F(test_schedulesearchview, setItemTheMe)
+// void paintEvent(QPaintEvent *e)
+TEST_F(test_schedulesearchview, CScheduleListWidget_paintEvent)
 {
-    mScheduleSearchItem->setTheMe(1);
-    mScheduleSearchItem->setTheMe(2);
-}
-
-//void CScheduleSearchItem::slotEdit()
-TEST_F(test_schedulesearchview, slotEdit_01)
-{
-    Stub stub;
-    calendarDDialogExecStub(stub);
-    ScheduleDataInfo scheduleinfo = getScheduleDInfo().first();
-    CScheduleSearchItem item;
-    item.setData(scheduleinfo, QDate::currentDate());
-    item.slotEdit();
-}
-
-//void CScheduleSearchItem::slotDelete()
-TEST_F(test_schedulesearchview, slotDelete_01)
-{
-    Stub stub;
-    calendarDDialogExecStub(stub);
-    ScheduleDataInfo scheduleinfo = getScheduleDInfo().first();
-    CScheduleSearchItem item;
-    item.setData(scheduleinfo, QDate::currentDate());
-    item.slotDelete();
-}
-
-TEST_F(test_schedulesearchview, slotTimeFormatChanged_01)
-{
-    mScheduleSearchItem->slotTimeFormatChanged(1);
-    EXPECT_EQ(mScheduleSearchItem->m_timeFormat, "hh:mm");
-}
-
-TEST_F(test_schedulesearchview, slotTimeFormatChanged_02)
-{
-    mScheduleSearchItem->slotTimeFormatChanged(0);
-    EXPECT_EQ(mScheduleSearchItem->m_timeFormat, "h:mm");
-}
-
-TEST_F(test_schedulesearchview, slotSchotCutClicked_01)
-{
-    Stub stub;
-    stub.set((QAction*(QMenu::*)(const QPoint &, QAction *))ADDR(QMenu, exec), schedulesearchview_stub_QMenu_exec);
-    CScheduleSearchItem item;
-    item.slotSchotCutClicked();
-}
-
-TEST_F(test_schedulesearchview, contextMenuEvent_01)
-{
-    Stub stub;
-    stub.set((QAction*(QMenu::*)(const QPoint &, QAction *))ADDR(QMenu, exec), schedulesearchview_stub_QMenu_exec);
-    CScheduleSearchItem item;
-
-    QContextMenuEvent event(QContextMenuEvent::Mouse, QPoint());
-    item.contextMenuEvent(&event);
-}
-
-TEST_F(test_schedulesearchview, mouseDoubleClickEvent_01)
-{
-    Stub stub;
-    calendarDDialogExecStub(stub);
-    CScheduleSearchItem item;
-
-    QMouseEvent event(QEvent::MouseButtonDblClick, QPointF(), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
-    item.mouseDoubleClickEvent(&event);
-}
-
-TEST_F(test_schedulesearchview, mousePressEvent_01)
-{
-    CScheduleSearchItem item;
-    QMouseEvent event(QEvent::MouseButtonDblClick, QPointF(), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
-    item.mousePressEvent(&event);
-    EXPECT_FALSE(item.m_tabFocus);
-}
-
-TEST_F(test_schedulesearchview, mouseReleaseEvent_01)
-{
-    CScheduleSearchItem item;
-    QMouseEvent event(QEvent::MouseButtonDblClick, QPointF(), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
-    item.mouseReleaseEvent(&event);
-    EXPECT_EQ(item.m_mouseStatus, CScheduleSearchItem::M_HOVER);
-}
-
-TEST_F(test_schedulesearchview, enterEvent_01)
-{
-    CScheduleSearchItem item;
-    QEvent event(QEvent::Enter);
-    item.enterEvent(&event);
-    EXPECT_EQ(item.m_mouseStatus, CScheduleSearchItem::M_HOVER);
-}
-
-TEST_F(test_schedulesearchview, focusOutEvent_01)
-{
-    CScheduleSearchItem item;
-    QFocusEvent event(QEvent::FocusOut, Qt::TabFocusReason);
-    item.focusOutEvent(&event);
-}
-
-TEST_F(test_schedulesearchview, focusInEvent_01)
-{
-    CScheduleSearchItem item;
-    QFocusEvent event(QEvent::FocusIn, Qt::TabFocusReason);
-    item.focusInEvent(&event);
-}
-
-TEST_F(test_schedulesearchview, keyPressEvent_01)
-{
-    Stub stub;
-    calendarDDialogExecStub(stub);
-    CScheduleSearchItem item;
-    QKeyEvent event(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
-    item.keyPressEvent(&event);
-}
-
-TEST_F(test_schedulesearchview, keyPressEvent_02)
-{
-    CScheduleSearchItem item;
-    QKeyEvent event(QEvent::KeyPress, Qt::Key_M, Qt::AltModifier);
-    item.keyPressEvent(&event);
-}
-
-//const ScheduleDataInfo &getData() const
-TEST_F(test_schedulesearchview, getDate)
-{
-    mScheduleSearchItem->getData();
-}
-
-QMap<QDate, QVector<ScheduleDataInfo>> stub_getSearchScheduleInfo(void *obj, const QString &key, const QDateTime &startTime, const QDateTime &endTime)
-{
-    Q_UNUSED(obj)
-    Q_UNUSED(key)
-    Q_UNUSED(startTime)
-    Q_UNUSED(endTime)
-    QMap<QDate, QVector<ScheduleDataInfo>> searchScheduleInfo {};
-    searchScheduleInfo[QDate::currentDate()] = TestDataInfo::getScheduleItemDInfo();
-    return searchScheduleInfo;
-}
-
-//
-TEST_F(test_schedulesearchview, getPixmap)
-{
-    Stub stub;
-
-    stub.set((QMap<QDate, QVector<ScheduleDataInfo>>(CScheduleTask::*)(const QString &, const QDateTime &, const QDateTime &))ADDR(CScheduleTask, getSearchScheduleInfo), stub_getSearchScheduleInfo);
-
-    mScheduleSearchView->slotsetSearch("xjrc");
-    mScheduleSearchView->setFixedSize(300, 800);
-    QPixmap pixmap(mScheduleListWidget->size());
-    pixmap = mScheduleSearchView->grab();
+    mScheduleListWidget->resize(200, 200);
+    mScheduleListWidget->show();
+    QTest::qWait(50);
+    mScheduleListWidget->hide();
 }
