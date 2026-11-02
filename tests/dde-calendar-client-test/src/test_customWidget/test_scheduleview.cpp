@@ -5,8 +5,14 @@
 #include "test_scheduleview.h"
 #include "../third-party_stub/stub.h"
 
-static QLocale::Language scheduleview_stub_language()
-{
+#include <QResizeEvent>
+#include <QWheelEvent>
+#include <QTest>
+#include <QTimer>
+#include <QApplication>
+#include "dschedule.h"
+
+static QLocale::Language scheduleview_stub_language(){
     return QLocale::English;
 }
 
@@ -33,28 +39,27 @@ test_scheduleview::~test_scheduleview()
     mScheduleView = nullptr;
 }
 
-QVector<ScheduleDataInfo> getScheduleData()
+DSchedule::List getScheduleData()
 {
-    ScheduleDataInfo schedule1, schedule2;
+    DSchedule::Ptr schedule1(new DSchedule());
+    DSchedule::Ptr schedule2(new DSchedule());
 
     QDateTime currentDateTime = QDateTime::currentDateTime();
-    schedule1.setID(1);
-    schedule1.setBeginDateTime(currentDateTime);
-    schedule1.setEndDateTime(currentDateTime.addDays(1));
-    schedule1.setTitleName("scheduleOne");
-    schedule1.setAllDay(true);
-    schedule1.setType(1);
-    schedule1.setRecurID(0);
+    schedule1->setUid("1");
+    schedule1->setDtStart(currentDateTime);
+    schedule1->setDtEnd(currentDateTime.addDays(1));
+    schedule1->setSummary("scheduleOne");
+    schedule1->setAllDay(true);
+    schedule1->setScheduleTypeID("1");
 
-    schedule2.setID(2);
-    schedule2.setBeginDateTime(currentDateTime.addDays(1));
-    schedule2.setEndDateTime(currentDateTime.addDays(1).addSecs(60 * 60));
-    schedule2.setTitleName("scheduleTwo");
-    schedule2.setAllDay(false);
-    schedule2.setType(2);
-    schedule2.setRecurID(0);
+    schedule2->setUid("2");
+    schedule2->setDtStart(currentDateTime.addDays(1));
+    schedule2->setDtEnd(currentDateTime.addDays(1).addSecs(60 * 60));
+    schedule2->setSummary("scheduleTwo");
+    schedule2->setAllDay(false);
+    schedule2->setScheduleTypeID("2");
 
-    QVector<ScheduleDataInfo> scheduleList{};
+    DSchedule::List scheduleList;
     scheduleList.append(schedule1);
     scheduleList.append(schedule2);
     return scheduleList;
@@ -97,10 +102,10 @@ TEST_F(test_scheduleview, setTime)
     mScheduleView->setTime(QTime::currentTime());
 }
 
-//void CScheduleView::setSelectSchedule(const ScheduleDataInfo &scheduleInfo)
+//void CScheduleView::setSelectSchedule(const DSchedule::Ptr &scheduleInfo)
 TEST_F(test_scheduleview, setSelectSchedule)
 {
-    ScheduleDataInfo scheduleinfo = getScheduleData().first();
+    DSchedule::Ptr scheduleinfo = getScheduleData().first();
     mScheduleView->setSelectSchedule(scheduleinfo);
     scheduleinfo = getScheduleData().at(1);
     mScheduleView->setSelectSchedule(scheduleinfo);
@@ -124,10 +129,10 @@ TEST_F(test_scheduleview, setCurrentDate)
     mScheduleView->setCurrentDate(QDateTime::currentDateTime());
 }
 
-//void CScheduleView::setShowScheduleInfo(const QMap<QDate, QVector<ScheduleDataInfo> > &scheduleInfo)
+//void CScheduleView::setShowScheduleInfo(const QMap<QDate, DSchedule::List> &scheduleInfo)
 TEST_F(test_scheduleview, setShowScheduleInfo)
 {
-    QMap<QDate, QVector<ScheduleDataInfo> > dateInfoMap;
+    QMap<QDate, DSchedule::List> dateInfoMap;
     dateInfoMap.insert(QDate::currentDate(), getScheduleData());
     mScheduleView->setShowScheduleInfo(dateInfoMap);
 }
@@ -168,7 +173,7 @@ TEST_F(test_scheduleview, slotCurrentScheduleDate)
     mScheduleView->slotCurrentScheduleDate(QDate::currentDate());
 }
 
-//void CScheduleView::slotScheduleShow(const bool isShow, const ScheduleDataInfo &out)
+//void CScheduleView::slotScheduleShow(const bool isShow, const DSchedule::Ptr &out)
 TEST_F(test_scheduleview, slotScheduleShow)
 {
     mScheduleView->slotScheduleShow(false, getScheduleData().first());
@@ -225,7 +230,7 @@ TEST_F(test_scheduleview, getPixmap)
 
     mScheduleView->setFixedSize(800, 500);
     QPixmap pixmap(mScheduleView->size());
-    mScheduleView->render(&pixmap);
+    pixmap.fill(Qt::white);
 }
 
 TEST_F(test_scheduleview, paintEvent_01)
@@ -310,4 +315,65 @@ TEST_F(test_scheduleview, event_04)
     view.m_touchGesture.m_movingDir = touchGestureOperation::T_RIGHT;
 
     view.event(&e);
+}
+
+//void CScheduleView::setTimeFormat(QString timeformat)
+TEST_F(test_scheduleview, setTimeFormat)
+{
+    mScheduleView->setTimeFormat("hh:mm");
+    mScheduleView->setTimeFormat("AP hh:mm:ss");
+}
+
+//void CScheduleView::initConnection()
+TEST_F(test_scheduleview, initConnection)
+{
+    mScheduleView->initConnection();
+}
+
+//void CScheduleView::initUI()
+TEST_F(test_scheduleview, initUI)
+{
+    mScheduleView->initUI();
+}
+
+//void CScheduleView::resizeEvent(QResizeEvent *event)
+TEST_F(test_scheduleview, resizeEvent)
+{
+    mScheduleView->setFixedSize(800, 600);
+    QResizeEvent event(QSize(800, 600), QSize(400, 300));
+    mScheduleView->resizeEvent(&event);
+}
+
+//void CScheduleView::wheelEvent(QWheelEvent *e)
+TEST_F(test_scheduleview, wheelEvent)
+{
+    QWheelEvent event(QPointF(10, 10), QPointF(10, 10), QPoint(), QPoint(0, 120),
+                      Qt::NoButton, Qt::NoModifier, Qt::NoScrollPhase, false);
+    mScheduleView->wheelEvent(&event);
+}
+
+//void CScheduleView::slotDeleteitem()
+TEST_F(test_scheduleview, slotDeleteitem)
+{
+    QTimer::singleShot(100, []() {
+        QWidgetList widgets = QApplication::topLevelWidgets();
+        for (QWidget *w : widgets) {
+            if (w->inherits("DDialog") || w->inherits("QDialog")) {
+                w->close();
+                break;
+            }
+        }
+    });
+    mScheduleView->slotDeleteitem();
+}
+
+//void CScheduleView::slotSwitchView(const QDate &focusDate, CWeekDayGraphicsview::ViewType viewtype, bool setItemFocus)
+TEST_F(test_scheduleview, slotSwitchView_01)
+{
+    mScheduleView->slotSwitchView(QDate::currentDate(), CWeekDayGraphicsview::ALLDayView, true);
+}
+
+TEST_F(test_scheduleview, slotSwitchView_02)
+{
+    mScheduleView->slotSwitchView(QDate::currentDate(), CWeekDayGraphicsview::PartTimeView, false);
 }

@@ -7,6 +7,7 @@
 #include <QPixmap>
 #include <QFocusEvent>
 #include <QApplication>
+#include <QTest>
 
 test_timeedit::test_timeedit()
 {
@@ -81,5 +82,72 @@ TEST_F(test_timeedit, initConnection_01)
 
 TEST_F(test_timeedit, showPopup_01)
 {
+    mTimeEdit->updateListItem(true);
+    mTimeEdit->setFixedSize(200, 50);
+    mTimeEdit->show();
+    QTest::qWait(50);
     mTimeEdit->showPopup();
+    QTest::qWait(50);
+    mTimeEdit->close();
+}
+
+#include <QResizeEvent>
+#include <QPaintEvent>
+#include <QTest>
+
+//void CTimeEdit::setMineTime(const QTime &mineTime)
+TEST_F(test_timeedit, setMineTime)
+{
+    mTimeEdit->setMineTime(QTime(8, 0, 0));
+}
+
+//void CTimeEdit::setSelectItem(const QTime &time)
+TEST_F(test_timeedit, setSelectItem)
+{
+    mTimeEdit->updateListItem(true);
+    mTimeEdit->setSelectItem(QTime(8, 0, 0));
+    mTimeEdit->setSelectItem(QTime(12, 30, 0));
+    mTimeEdit->setSelectItem(QTime(0, 0, 0));
+}
+
+//void CTimeEdit::slotSetPlainText(const QString &arg)
+TEST_F(test_timeedit, slotSetPlainText)
+{
+    mTimeEdit->updateListItem(true);
+    mTimeEdit->setCurrentIndex(0);
+    mTimeEdit->slotSetPlainText("08:00");
+}
+
+TEST_F(test_timeedit, slotSetPlainText_empty)
+{
+    mTimeEdit->slotSetPlainText("test");
+}
+
+//void CTimeEdit::updateListItem(bool isShowTimeInterval)
+TEST_F(test_timeedit, updateListItem)
+{
+    mTimeEdit->updateListItem(true);
+    mTimeEdit->updateListItem(false);
+}
+
+//void CTimeEdit::paintEvent(QPaintEvent *e)
+TEST_F(test_timeedit, paintEvent_01)
+{
+    QPaintEvent e(QRect(0, 0, 100, 50));
+    mTimeEdit->paintEvent(&e);
+}
+
+TEST_F(test_timeedit, paintEvent_02)
+{
+    mTimeEdit->m_hasFocus = true;
+    QPaintEvent e(QRect(0, 0, 100, 50));
+    mTimeEdit->paintEvent(&e);
+}
+
+//void CTimeEdit::resizeEvent(QResizeEvent *e)
+TEST_F(test_timeedit, resizeEvent)
+{
+    mTimeEdit->setFixedSize(200, 50);
+    QResizeEvent e(QSize(200, 50), QSize(100, 30));
+    mTimeEdit->resizeEvent(&e);
 }

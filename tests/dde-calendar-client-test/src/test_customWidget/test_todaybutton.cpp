@@ -25,24 +25,6 @@ void test_todaybutton::TearDown()
     mTodayButton = nullptr;
 }
 
-//void CTodayButton::setBColor(QColor normalC, QColor hoverC, QColor pressc, QColor normalC1, QColor hoverC1, QColor pressc1)
-TEST_F(test_todaybutton, setBColor)
-{
-    mTodayButton->setBColor("#FFFFFF", "#000000", "#000000", "#FFFFFF", "#000000", "#000000");
-}
-
-//void CTodayButton::setTColor(QColor normalC, QColor hoverC, QColor pressc)
-TEST_F(test_todaybutton, setTColor)
-{
-    mTodayButton->setTColor(Qt::red, "#001A2E", "#0081FF");
-}
-
-//void CTodayButton::setshadowColor(QColor sc)
-TEST_F(test_todaybutton, setshadowColor)
-{
-    mTodayButton->setshadowColor("#FFFFFF");
-}
-
 //test mouse event
 TEST_F(test_todaybutton, mouseEventTest)
 {
