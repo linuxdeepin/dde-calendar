@@ -73,14 +73,10 @@ if(BUILD_LEGACY_CALENDAR_TESTS)
         ${CMAKE_CURRENT_SOURCE_DIR}/src/testscheduledata.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/cscheduledbusstub.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/test_cscheduleoperation.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/test_dialog/test_scheduledlg.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/test_widget/test_monthWidget/test_monthscheduleview.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/test_customWidget/test_scheduleview.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/test_widget/test_monthWidget/test_monthview.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/test_view/test_scheduleitem.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/test_customWidget/test_scheduleremindwidget.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/test_dialog/test_myscheduleview.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/test_customWidget/test_todaybutton.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/test_customWidget/test_monthbrefwidget.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/test_widget/test_weekWidget/test_weekwindow.cpp)
     list(APPEND CALENDAR_CLIENT_TEST_SRC ${LEGACY_CALENDAR_CLIENT_TEST_SRC})

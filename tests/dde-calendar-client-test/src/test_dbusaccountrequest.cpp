@@ -569,7 +569,7 @@ TEST(DbusAccountRequestTest, CompleteEmptyScheduleSearchQuery_EmitsEmptyResult)
     ASSERT_EQ(spy.count(), 1);
     const auto arguments = spy.takeFirst();
     ASSERT_EQ(arguments.size(), 1);
-    EXPECT_TRUE(arguments.at(0).value<QMap<QDate, DSchedule::List>>().isEmpty());
+    EXPECT_TRUE((arguments.at(0).value<QMap<QDate, DSchedule::List>>().isEmpty()));
 }
 
 // ---- slotDbusCall: scheduleTypeUpdate signal ----

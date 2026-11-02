@@ -40,6 +40,7 @@ public:
     void setResponseEtag(const QByteArray &etag);
     void setCalendarQueryReturnsCalendarData(bool enabled);
     void setInvalidSyncTokenOnce(bool enabled);
+    void setForbiddenSyncTokenOnce(bool enabled);
     void setResponseDelay(int milliseconds);
     void setRedirectLocation(const QByteArray &location);
 
@@ -62,6 +63,7 @@ private:
     QByteArray m_responseEtag;
     bool m_calendarQueryReturnsCalendarData = true;
     bool m_invalidSyncTokenOnce = false;
+    bool m_forbiddenSyncTokenOnce = false;
     int m_responseDelay = 0;
     QByteArray m_redirectLocation;
     QList<Request> m_requests;
