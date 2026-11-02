@@ -9,6 +9,7 @@
 #include "view/cgraphicsscene.h"
 #include "keypress/calldaykeyrightdeal.h"
 #include "view/graphicsItem/cweekdaybackgrounditem.h"
+#include "view/graphicsItem/cscenebackgrounditem.h"
 #include "keypressstub.h"
 
 test_CAllDayKeyRightDeal::test_CAllDayKeyRightDeal(QObject *parent)
@@ -23,4 +24,16 @@ TEST(RightHandle_test, test_CAllDayKeyRightDeal)
     CAllDayKeyRightDeal alldayRightDeal(scene);
     alldayRightDeal.dealEvent();
     delete scene;
+}
+
+TEST(RightHandle_test, test_CAllDayKeyRightDeal_WithRightItem)
+{
+    KeyPressStub stub;
+    CGraphicsScene *scene = new CGraphicsScene();
+    SceneBackgroundItem_rightItem = new CSceneBackgroundItem(CSceneBackgroundItem::OnMonthView);
+    CAllDayKeyRightDeal alldayRightDeal(scene);
+    alldayRightDeal.dealEvent();
+    delete scene;
+    delete SceneBackgroundItem_rightItem;
+    SceneBackgroundItem_rightItem = nullptr;
 }

@@ -8,6 +8,11 @@
 #include <QObject>
 #include <widget/touchgestureoperation.h>
 #include <gtest/gtest.h>
+#include <QGestureEvent>
+#include <QTapGesture>
+#include <QPanGesture>
+#include <QMouseEvent>
+#include <QEvent>
 
 class test_touchgestureoperation : public ::QObject
     , public ::testing::Test

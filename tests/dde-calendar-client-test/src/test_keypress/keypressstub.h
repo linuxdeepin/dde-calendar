@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2019 - 2026 UnionTech Software Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2026 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -7,13 +7,12 @@
 
 #include "../third-party_stub/stub.h"
 #include "view/graphicsItem/cfocusitem.h"
-#include "view/graphicsItem/cscenebackgrounditem.h"
 #include "view/graphicsItem/cweekdaybackgrounditem.h"
 
 #include <QObject>
-#include <QDate>
 
 class QGraphicsItem;
+class CSceneBackgroundItem;
 class KeyPressStub
 {
 public:
@@ -25,6 +24,7 @@ private:
     Stub stub;
 };
 
+// 基础桩全局量（master / V-6616 / V-6617 共用）
 extern bool itemFocus;
 extern bool scene_activeSwitching;
 extern bool WeekDayBackgroundItem_hasNextItem;
@@ -33,20 +33,29 @@ extern QGraphicsItem *SceneCurrentItem;
 extern CFocusItem::CItemType focusItemType;
 extern QDate itemDate;
 
-// Additional globals for branch coverage
+// V-6616 引入
+extern CSceneBackgroundItem *SceneBackgroundItem_leftItem;
+extern CSceneBackgroundItem *SceneBackgroundItem_rightItem;
+extern CSceneBackgroundItem *SceneBackgroundItem_downItem;
+
+// V-6617 引入
+extern CSceneBackgroundItem *leftItem;
+extern CSceneBackgroundItem *rightItem;
+extern bool setCurrentFocusItemCalled;
+extern bool setPrePageCalled;
+extern bool setNextPageCalled;
+
+// master 原有分支覆盖全局量
 extern CSceneBackgroundItem *upItemResult;
 extern CFocusItem *nextFocusItemResult;
-extern bool setCurrentFocusItemCalled;
 extern QGraphicsItem *setCurrentFocusItemArg;
-extern bool setPrePageCalled;
 extern QDate setPrePageDate;
 extern bool signalSwitchViewCalled;
 extern QDate signalSwitchViewDate;
 extern bool setActiveSwitchingCalled;
 extern bool setActiveSwitchingValue;
 
-// Test subclass that overrides virtual methods to avoid stub library limitations
-// with virtual method patching on GCC/x86_64 (PMF is 16 bytes, addrof() truncates to 8)
+// 既有测试依赖的虚函数重写子类（GCC/x86_64 PMF 截断问题用子类绕过）
 class TestBackgroundItem : public CWeekDayBackgroundItem
 {
 public:
