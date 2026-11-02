@@ -6,6 +6,7 @@
 #define DCALDAVCALENDARINFO_H
 
 #include <QString>
+#include <QStringList>
 #include <QVector>
 
 class DCalDavCalendarInfo
@@ -19,6 +20,7 @@ public:
     QString displayName;
     QString color;
     QString scheduleTypeID;
+    QStringList supportedComponents;
     QString syncToken;
     bool initialSyncCompleted = false;
     int privileges = 0;

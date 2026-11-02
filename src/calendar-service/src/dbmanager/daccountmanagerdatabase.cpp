@@ -1071,7 +1071,7 @@ DCalDavCalendarInfo::List DAccountManagerDataBase::getCalDavCalendarList(const Q
 
     SqliteQuery query(m_database);
     if (!query.prepare("SELECT calendarID, accountID, href, displayName, color, scheduleTypeID, privileges, privilegesKnown, syncToken, "
-                       "initialSyncCompleted, enabled "
+                       "initialSyncCompleted, enabled, supportedComponents "
                        "FROM caldavCalendar WHERE accountID = ? ORDER BY calendarID")) {
         qCWarning(ServiceLogger) << "Failed to prepare CalDAV calendar query:" << query.lastError().text();
         return calendars;
@@ -1095,6 +1095,8 @@ DCalDavCalendarInfo::List DAccountManagerDataBase::getCalDavCalendarList(const Q
         calendar.syncToken = query.value("syncToken").toString();
         calendar.initialSyncCompleted = query.value("initialSyncCompleted").toBool();
         calendar.enabled = query.value("enabled").toBool();
+        calendar.supportedComponents = query.value("supportedComponents").toString().split(
+            QLatin1Char(','), Qt::SkipEmptyParts);
         calendars.append(calendar);
     }
     return calendars;
@@ -1110,7 +1112,7 @@ DCalDavCalendarInfo DAccountManagerDataBase::getCalDavCalendarByScheduleTypeID(
 
     SqliteQuery query(m_database);
     if (!query.prepare("SELECT calendarID, accountID, href, displayName, color, scheduleTypeID, privileges, privilegesKnown, "
-                       "syncToken, initialSyncCompleted, enabled FROM caldavCalendar "
+                       "syncToken, initialSyncCompleted, enabled, supportedComponents FROM caldavCalendar "
                        "WHERE accountID = ? AND scheduleTypeID = ? AND enabled = 1")) {
         return calendar;
     }
@@ -1130,6 +1132,8 @@ DCalDavCalendarInfo DAccountManagerDataBase::getCalDavCalendarByScheduleTypeID(
     calendar.syncToken = query.value("syncToken").toString();
     calendar.initialSyncCompleted = query.value("initialSyncCompleted").toBool();
     calendar.enabled = query.value("enabled").toBool();
+    calendar.supportedComponents = query.value("supportedComponents").toString().split(
+        QLatin1Char(','), Qt::SkipEmptyParts);
     return calendar;
 }
 
@@ -1143,7 +1147,7 @@ DCalDavCalendarInfo DAccountManagerDataBase::getCalDavCalendarByScheduleTypeIDIn
 
     SqliteQuery query(m_database);
     if (!query.prepare("SELECT calendarID, accountID, href, displayName, color, scheduleTypeID, privileges, privilegesKnown, "
-                       "syncToken, initialSyncCompleted, enabled FROM caldavCalendar "
+                       "syncToken, initialSyncCompleted, enabled, supportedComponents FROM caldavCalendar "
                        "WHERE accountID = ? AND scheduleTypeID = ?")) {
         return calendar;
     }
@@ -1163,6 +1167,8 @@ DCalDavCalendarInfo DAccountManagerDataBase::getCalDavCalendarByScheduleTypeIDIn
     calendar.syncToken = query.value("syncToken").toString();
     calendar.initialSyncCompleted = query.value("initialSyncCompleted").toBool();
     calendar.enabled = query.value("enabled").toBool();
+    calendar.supportedComponents = query.value("supportedComponents").toString().split(
+        QLatin1Char(','), Qt::SkipEmptyParts);
     return calendar;
 }
 
@@ -1176,7 +1182,7 @@ DCalDavCalendarInfo DAccountManagerDataBase::getCalDavCalendarByIDIncludingDisab
 
     SqliteQuery query(m_database);
     if (!query.prepare("SELECT calendarID, accountID, href, displayName, color, scheduleTypeID, privileges, privilegesKnown, "
-                       "syncToken, initialSyncCompleted, enabled FROM caldavCalendar "
+                       "syncToken, initialSyncCompleted, enabled, supportedComponents FROM caldavCalendar "
                        "WHERE accountID = ? AND calendarID = ?")) {
         return calendar;
     }
@@ -1196,6 +1202,8 @@ DCalDavCalendarInfo DAccountManagerDataBase::getCalDavCalendarByIDIncludingDisab
     calendar.syncToken = query.value("syncToken").toString();
     calendar.initialSyncCompleted = query.value("initialSyncCompleted").toBool();
     calendar.enabled = query.value("enabled").toBool();
+    calendar.supportedComponents = query.value("supportedComponents").toString().split(
+        QLatin1Char(','), Qt::SkipEmptyParts);
     return calendar;
 }
 
@@ -1271,7 +1279,8 @@ bool DAccountManagerDataBase::upsertCalDavCalendar(const DCalDavCalendarInfo &ca
 
     SqliteQuery updateQuery(m_database);
     if (!updateQuery.prepare("UPDATE caldavCalendar SET accountID = ?, href = ?, displayName = ?, color = ?, scheduleTypeID = ?, "
-                             "privileges = ?, privilegesKnown = ?, syncToken = ?, initialSyncCompleted = ?, enabled = ? WHERE calendarID = ?")) {
+                             "privileges = ?, privilegesKnown = ?, syncToken = ?, initialSyncCompleted = ?, enabled = ?, "
+                             "supportedComponents = COALESCE(?, '') WHERE calendarID = ?")) {
         qCWarning(ServiceLogger) << "Failed to prepare CalDAV calendar update:" << updateQuery.lastError().text();
         return false;
     }
@@ -1285,6 +1294,7 @@ bool DAccountManagerDataBase::upsertCalDavCalendar(const DCalDavCalendarInfo &ca
     updateQuery.addBindValue(calendar.syncToken);
     updateQuery.addBindValue(calendar.initialSyncCompleted ? 1 : 0);
     updateQuery.addBindValue(calendar.enabled ? 1 : 0);
+    updateQuery.addBindValue(calendar.supportedComponents.join(QLatin1Char(',')));
     updateQuery.addBindValue(calendar.calendarId);
     if (!updateQuery.exec()) {
         qCWarning(ServiceLogger) << "Failed to update CalDAV calendar:" << updateQuery.lastError().text();
@@ -1297,8 +1307,8 @@ bool DAccountManagerDataBase::upsertCalDavCalendar(const DCalDavCalendarInfo &ca
     SqliteQuery insertQuery(m_database);
     if (!insertQuery.prepare("INSERT INTO caldavCalendar "
                              "(calendarID, accountID, href, displayName, color, scheduleTypeID, privileges, privilegesKnown, syncToken, "
-                             "initialSyncCompleted, enabled) "
-                             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+                             "initialSyncCompleted, enabled, supportedComponents) "
+                             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, COALESCE(?, ''))")) {
         qCWarning(ServiceLogger) << "Failed to prepare CalDAV calendar insert:" << insertQuery.lastError().text();
         return false;
     }
@@ -1313,6 +1323,7 @@ bool DAccountManagerDataBase::upsertCalDavCalendar(const DCalDavCalendarInfo &ca
     insertQuery.addBindValue(calendar.syncToken);
     insertQuery.addBindValue(calendar.initialSyncCompleted ? 1 : 0);
     insertQuery.addBindValue(calendar.enabled ? 1 : 0);
+    insertQuery.addBindValue(calendar.supportedComponents.join(QLatin1Char(',')));
     if (!insertQuery.exec()) {
         qCWarning(ServiceLogger) << "Failed to insert CalDAV calendar:" << insertQuery.lastError().text();
         return false;
@@ -1907,6 +1918,22 @@ void DAccountManagerDataBase::createDB()
                     "ALTER TABLE caldavCalendar ADD COLUMN initialSyncCompleted INTEGER NOT NULL DEFAULT 0")) {
                 qCWarning(ServiceLogger) << "Failed to migrate CalDAV initial sync column:"
                                           << initialSyncColumnQuery.lastError().text();
+            }
+            bool hasSupportedComponents = false;
+            SqliteQuery supportedComponentsQuery(m_database);
+            if (supportedComponentsQuery.exec("PRAGMA table_info(caldavCalendar)")) {
+                while (supportedComponentsQuery.next()) {
+                    if (supportedComponentsQuery.value("name").toString()
+                        == QStringLiteral("supportedComponents")) {
+                        hasSupportedComponents = true;
+                        break;
+                    }
+                }
+            }
+            if (!hasSupportedComponents && !supportedComponentsQuery.exec(
+                    "ALTER TABLE caldavCalendar ADD COLUMN supportedComponents TEXT NOT NULL DEFAULT ''")) {
+                qCWarning(ServiceLogger) << "Failed to migrate CalDAV supported components column:"
+                                          << supportedComponentsQuery.lastError().text();
             }
         }
 

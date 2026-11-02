@@ -7,6 +7,7 @@
 
 #include <QByteArray>
 #include <QString>
+#include <QStringList>
 #include <QVector>
 #include <QXmlStreamReader>
 
@@ -20,6 +21,7 @@ public:
     QString readElementText(QXmlStreamReader::ReadElementTextBehaviour behavior);
 
     QString name() const;
+    QString attribute(const QString &name) const;
     bool atEnd() const;
     bool hasError() const;
     QString errorString() const;
@@ -47,6 +49,7 @@ public:
         QString href;
         QString displayName;
         QString color;
+        QStringList supportedComponents;
         int privileges = NoPrivilege;
         bool privilegesKnown = false;
     };

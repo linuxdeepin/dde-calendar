@@ -410,8 +410,7 @@ void SidebarAccountItemWidget::resetRearIconButton()
             m_syncIconButton->setVisible(underMouse());
             m_syncIconButton->setEnabled(!running && !pendingDelete);
             m_warningLabel->hide();
-            m_syncIconButton->setToolTip(pendingDelete ? tr("Deleting...")
-                                                         : (running ? tr("Syncing...") : tr("Sync")));
+            m_syncIconButton->setToolTip((pendingDelete || running) ? tr("Syncing...") : tr("Sync"));
         }
         updateTitleToolTip(m_titleLabel);
         return;
