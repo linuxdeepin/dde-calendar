@@ -665,7 +665,7 @@ TEST(CalDavAccountRegistrar, CancelWithoutNotifyClearsStateWithoutCallback)
     DCalDavAccountRegistrar registrar;
 
     registrar.m_running = true;
-    registrar.m_password = QStringLiteral("secret");
+    registrar.m_password = QStringLiteral("pass");
     bool callbackInvoked = false;
     registrar.m_callback = [&](const DCalDavAccountRegistrar::Result &) {
         callbackInvoked = true;
@@ -806,7 +806,7 @@ TEST(CalDavAccountRegistrar, StartWithCredentialReaderSuccessCallsDiscovery)
     request.accountManagerDatabase = &managerDatabase;
     request.jobManager = &jobManager;
     request.credentialReader = [](const QString &, QString &password, QString *) {
-        password = QStringLiteral("test-password");
+        password = QStringLiteral("secret");
         return true;
     };
 
@@ -838,7 +838,7 @@ TEST(CalDavAccountRegistrar, CancelWithNotifyInvokesCallback)
     DCalDavAccountRegistrar registrar;
 
     registrar.m_running = true;
-    registrar.m_password = QStringLiteral("secret");
+    registrar.m_password = QStringLiteral("pass");
     bool callbackInvoked = false;
     DCalDavAccountRegistrar::Result callbackResult;
     registrar.m_callback = [&](const DCalDavAccountRegistrar::Result &result) {
