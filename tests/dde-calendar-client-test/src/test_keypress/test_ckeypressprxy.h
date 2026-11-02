@@ -5,26 +5,17 @@
 #ifndef TEST_CKEYPRESSPRXY_H
 #define TEST_CKEYPRESSPRXY_H
 
-//#include "configsettings.h"
-//#include "gtest/gtest.h"
-//#include "ckeypressprxy.h"
+#include <QObject>
 
-//#include <QObject>
-//#include <QSharedPointer>
+class test_CKeyPressPrxy : public QObject
+{
+    Q_OBJECT
+public:
+    explicit test_CKeyPressPrxy(QObject *parent = nullptr);
 
-//class test_CKeyPressPrxy : public QObject
-//    , public ::testing::Test
-//{
-//    Q_OBJECT
-//public:
-//    test_CKeyPressPrxy();
+signals:
 
-//signals:
-
-//public slots:
-
-//public:
-//    QSharedPointer<CKeyPressPrxy> keyPressPrxy;
-//};
+public slots:
+};
 
 #endif // TEST_CKEYPRESSPRXY_H

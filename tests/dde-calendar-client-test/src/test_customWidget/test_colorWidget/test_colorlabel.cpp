@@ -2,100 +2,174 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-//#include "test_colorlabel.h"
+#include "test_colorlabel.h"
 
-//test_colorlabel::test_colorlabel(QObject *parent) : QObject(parent)
-//{
+#include <QMouseEvent>
+#include <QPaintEvent>
+#include <QSignalSpy>
 
-//}
+TEST_F(test_colorlabel, constructor)
+{
+    EXPECT_NE(mWidget, nullptr);
+    EXPECT_EQ(mWidget->m_hue, 0);
+    EXPECT_FALSE(mWidget->m_pressed);
+    EXPECT_FALSE(mWidget->m_entered);
+}
 
-//TEST_F(test_colorlabel, getColor_001)
-//{
-//    ColorLabel *colorLabel = new ColorLabel();
-//    EXPECT_EQ(colorLabel->getColor(0, 0, 0).name(), "#000000");
-//    EXPECT_EQ(colorLabel->getColor(1, 0.5, 0.5).name(), "#3f7e7f");;
-//    EXPECT_EQ(colorLabel->getColor(1, 0.2, 0.5).name(), "#667f7f");
-//    EXPECT_EQ(colorLabel->getColor(1, 0.1, 0.9).name(), "#cee5e5");
-//    EXPECT_EQ(colorLabel->getColor(1, 0.3, 0.4).name(), "#476566");
-//    EXPECT_EQ(colorLabel->getColor(2, 0.5, 0.5).name(), "#3f7d7f");
-//    EXPECT_EQ(colorLabel->getColor(0.5, 0.5, 0.5).name(), "#3f7e7f");
-//    EXPECT_EQ(colorLabel->getColor(5, 0.5, 0.5).name(), "#3f7a7f");
-//    EXPECT_EQ(colorLabel->getColor(1, 0.5, 0.5).name(), "#3f7e7f");
-//    EXPECT_EQ(colorLabel->getColor(10, 0, 0).name(), "#000000");
-//    EXPECT_EQ(colorLabel->getColor(60, 0, 0).name(), "#000000");
-//    EXPECT_EQ(colorLabel->getColor(120, 0, 0).name(), "#000000");
-//    EXPECT_EQ(colorLabel->getColor(180, 0, 0).name(), "#000000");
-//    EXPECT_EQ(colorLabel->getColor(241, 0, 0).name(), "#000000");
-//    EXPECT_EQ(colorLabel->getColor(305, 0, 0).name(), "#000000");
-//    EXPECT_EQ(colorLabel->getColor(360, 0, 0).name(), "#000000");
-//    delete colorLabel;
-//}
+TEST_F(test_colorlabel, getColor_hi0)
+{
+    EXPECT_EQ(mWidget->getColor(0, 0, 0).name(), "#000000");
+    QColor c = mWidget->getColor(10, 0.5, 0.5);
+    EXPECT_TRUE(c.isValid());
+}
 
-//TEST_F(test_colorlabel, setHue_001)
-//{
-//    ColorLabel *colorLabel = new ColorLabel();
-//    colorLabel->setHue(1);
-//    EXPECT_EQ(1, colorLabel->m_hue);
-//    colorLabel->setHue(5);
-//    EXPECT_EQ(5, colorLabel->m_hue);
-//    colorLabel->setHue(100);
-//    EXPECT_EQ(100, colorLabel->m_hue);
-//    delete colorLabel;
-//}
+TEST_F(test_colorlabel, getColor_hi1)
+{
+    QColor c = mWidget->getColor(70, 0.5, 0.5);
+    EXPECT_TRUE(c.isValid());
+}
 
-//TEST_F(test_colorlabel, pickColor)
-//{
-//    ColorLabel *colorLabel = new ColorLabel();
-//    colorLabel->pickColor(QPoint(), 0);
-//    delete colorLabel;
-//}
+TEST_F(test_colorlabel, getColor_hi2)
+{
+    QColor c = mWidget->getColor(130, 0.5, 0.5);
+    EXPECT_TRUE(c.isValid());
+}
 
-//TEST_F(test_colorlabel, paintEvent_001)
-//{
-//    ColorLabel *colorLabel = new ColorLabel();
-//    QPaintEvent *e = new QPaintEvent(QRect());
-//    colorLabel->m_entered = true;
-//    colorLabel->paintEvent(e);
-//    colorLabel->m_entered = false;
-//    colorLabel->paintEvent(e);
-//    delete e;
-//    delete colorLabel;
-//}
+TEST_F(test_colorlabel, getColor_hi3)
+{
+    QColor c = mWidget->getColor(190, 0.5, 0.5);
+    EXPECT_TRUE(c.isValid());
+}
 
-//TEST_F(test_colorlabel, mousePressEvent_001)
-//{
-//    ColorLabel *colorLabel = new ColorLabel();
-//    QMouseEvent *e = new QMouseEvent(QEvent::MouseMove, QPointF(), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
-//    colorLabel->mousePressEvent(e);
-//    EXPECT_TRUE(colorLabel->m_pressed);
-//    delete e;
-//    delete colorLabel;
-//}
+TEST_F(test_colorlabel, getColor_hi4)
+{
+    QColor c = mWidget->getColor(250, 0.5, 0.5);
+    EXPECT_TRUE(c.isValid());
+}
 
-//TEST_F(test_colorlabel, mouseMoveEvent)
-//{
-//    ColorLabel *colorLabel = new ColorLabel();
-//    QMouseEvent *e = new QMouseEvent(QEvent::MouseMove, QPointF(), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
-//    colorLabel->mouseMoveEvent(e);
-//    EXPECT_TRUE(colorLabel->m_entered);
-//    delete e;
-//    delete colorLabel;
-//}
+TEST_F(test_colorlabel, getColor_hi5)
+{
+    QColor c = mWidget->getColor(310, 0.5, 0.5);
+    EXPECT_TRUE(c.isValid());
+}
 
-//TEST_F(test_colorlabel, mouseReleaseEvent_001)
-//{
-//    ColorLabel *colorLabel = new ColorLabel();
-//    QMouseEvent *e = new QMouseEvent(QEvent::MouseMove, QPointF(), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
-//    colorLabel->mouseReleaseEvent(e);
-//    EXPECT_FALSE(colorLabel->m_pressed);
-//    delete e;
-//    delete colorLabel;
-//}
+TEST_F(test_colorlabel, getColor_boundary)
+{
+    EXPECT_EQ(mWidget->getColor(0, 0, 0).name(), "#000000");
+    EXPECT_EQ(mWidget->getColor(60, 0, 0).name(), "#000000");
+    EXPECT_EQ(mWidget->getColor(120, 0, 0).name(), "#000000");
+    EXPECT_EQ(mWidget->getColor(180, 0, 0).name(), "#000000");
+    EXPECT_EQ(mWidget->getColor(241, 0, 0).name(), "#000000");
+    EXPECT_EQ(mWidget->getColor(305, 0, 0).name(), "#000000");
+    EXPECT_EQ(mWidget->getColor(360, 0, 0).name(), "#000000");
+}
 
-//TEST_F(test_colorlabel, pickColorCursor_001)
-//{
-//    ColorLabel *colorLabel = new ColorLabel();
-//    QCursor cursor = colorLabel->pickColorCursor();
-//    EXPECT_NE(cursor, QCursor());
-//    delete colorLabel;
-//}
+TEST_F(test_colorlabel, setHue)
+{
+    mWidget->setHue(1);
+    EXPECT_EQ(mWidget->m_hue, 1);
+    mWidget->setHue(5);
+    EXPECT_EQ(mWidget->m_hue, 5);
+    mWidget->setHue(100);
+    EXPECT_EQ(mWidget->m_hue, 100);
+}
+
+TEST_F(test_colorlabel, pickColor_valid_pos_not_picked)
+{
+    QSignalSpy spy(mWidget, &ColorLabel::signalPreViewColor);
+    mWidget->pickColor(QPoint(10, 10), false);
+    EXPECT_EQ(spy.count(), 1);
+}
+
+TEST_F(test_colorlabel, pickColor_valid_pos_picked)
+{
+    QSignalSpy spy(mWidget, &ColorLabel::signalpickedColor);
+    mWidget->pickColor(QPoint(10, 10), true);
+    EXPECT_EQ(spy.count(), 1);
+}
+
+TEST_F(test_colorlabel, pickColor_invalid_pos)
+{
+    QSignalSpy spyPreview(mWidget, &ColorLabel::signalPreViewColor);
+    QSignalSpy spyPicked(mWidget, &ColorLabel::signalpickedColor);
+    mWidget->pickColor(QPoint(200, 200), false);
+    EXPECT_EQ(spyPreview.count(), 0);
+    EXPECT_EQ(spyPicked.count(), 0);
+}
+
+TEST_F(test_colorlabel, paintEvent_entered)
+{
+    mWidget->m_entered = true;
+    QPaintEvent e(mWidget->rect());
+    mWidget->paintEvent(&e);
+}
+
+TEST_F(test_colorlabel, paintEvent_not_entered)
+{
+    mWidget->m_entered = false;
+    QPaintEvent e(mWidget->rect());
+    mWidget->paintEvent(&e);
+}
+
+TEST_F(test_colorlabel, mousePressEvent)
+{
+    QMouseEvent e(QEvent::MouseButtonPress, QPointF(10, 10), QPointF(10, 10),
+                  Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+    mWidget->mousePressEvent(&e);
+    EXPECT_TRUE(mWidget->m_pressed);
+}
+
+TEST_F(test_colorlabel, mouseMoveEvent_inside)
+{
+    QMouseEvent e(QEvent::MouseMove, QPointF(10, 10), QPointF(10, 10),
+                  Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+    mWidget->mouseMoveEvent(&e);
+    EXPECT_TRUE(mWidget->m_entered);
+}
+
+TEST_F(test_colorlabel, mouseMoveEvent_outside)
+{
+    QMouseEvent e(QEvent::MouseMove, QPointF(200, 200), QPointF(200, 200),
+                  Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+    mWidget->mouseMoveEvent(&e);
+    EXPECT_FALSE(mWidget->m_entered);
+}
+
+TEST_F(test_colorlabel, mouseReleaseEvent_pressed_inside)
+{
+    mWidget->m_pressed = true;
+    QSignalSpy spy(mWidget, &ColorLabel::clicked);
+    QMouseEvent e(QEvent::MouseButtonRelease, QPointF(10, 10), QPointF(10, 10),
+                  Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+    mWidget->mouseReleaseEvent(&e);
+    EXPECT_FALSE(mWidget->m_pressed);
+    EXPECT_EQ(spy.count(), 1);
+}
+
+TEST_F(test_colorlabel, mouseReleaseEvent_pressed_outside)
+{
+    mWidget->m_pressed = true;
+    QSignalSpy spy(mWidget, &ColorLabel::clicked);
+    QMouseEvent e(QEvent::MouseButtonRelease, QPointF(200, 200), QPointF(200, 200),
+                  Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+    mWidget->mouseReleaseEvent(&e);
+    EXPECT_FALSE(mWidget->m_pressed);
+    EXPECT_EQ(spy.count(), 0);
+}
+
+TEST_F(test_colorlabel, mouseReleaseEvent_not_pressed)
+{
+    mWidget->m_pressed = false;
+    QSignalSpy spy(mWidget, &ColorLabel::clicked);
+    QMouseEvent e(QEvent::MouseButtonRelease, QPointF(10, 10), QPointF(10, 10),
+                  Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+    mWidget->mouseReleaseEvent(&e);
+    EXPECT_FALSE(mWidget->m_pressed);
+    EXPECT_EQ(spy.count(), 0);
+}
+
+TEST_F(test_colorlabel, pickColorCursor)
+{
+    QCursor cursor = mWidget->pickColorCursor();
+    EXPECT_FALSE(cursor.pixmap().isNull());
+}

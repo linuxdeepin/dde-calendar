@@ -16,11 +16,40 @@ test_CKeyLeftDeal::test_CKeyLeftDeal(QObject *parent)
 {
 }
 
-TEST(LeftHandle_test, test_CKeyLeftDeal)
+TEST(LeftHandle_test, Constructor)
 {
-    KeyPressStub stub;
     CGraphicsScene *scene = new CGraphicsScene();
     CKeyLeftDeal leftDeal(scene);
-    leftDeal.dealEvent();
+    EXPECT_EQ(leftDeal.getKey(), Qt::Key_Left);
+    delete scene;
+}
+
+TEST(LeftHandle_test, DealEvent_LeftItemNotNull)
+{
+    KeyPressStub stub;
+    leftItem = dynamic_cast<CSceneBackgroundItem *>(SceneCurrentItem);
+    setCurrentFocusItemCalled = false;
+
+    CGraphicsScene *scene = new CGraphicsScene();
+    CKeyLeftDeal leftDeal(scene);
+    bool result = leftDeal.dealEvent();
+    EXPECT_TRUE(result);
+    EXPECT_TRUE(setCurrentFocusItemCalled);
+    delete scene;
+
+    leftItem = nullptr;
+}
+
+TEST(LeftHandle_test, DealEvent_LeftItemNull)
+{
+    KeyPressStub stub;
+    leftItem = nullptr;
+    setPrePageCalled = false;
+
+    CGraphicsScene *scene = new CGraphicsScene();
+    CKeyLeftDeal leftDeal(scene);
+    bool result = leftDeal.dealEvent();
+    EXPECT_TRUE(result);
+    EXPECT_TRUE(setPrePageCalled);
     delete scene;
 }
