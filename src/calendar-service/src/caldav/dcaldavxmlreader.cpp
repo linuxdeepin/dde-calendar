@@ -79,6 +79,11 @@ QString DCalDavXmlStreamReader::name() const
     return m_reader.name().toString();
 }
 
+QString DCalDavXmlStreamReader::attribute(const QString &name) const
+{
+    return m_reader.attributes().value(name).toString();
+}
+
 bool DCalDavXmlStreamReader::atEnd() const
 {
     return m_reader.atEnd();
@@ -113,6 +118,7 @@ struct DiscoveryProperties
     QString calendarHomeSetHref;
     QString displayName;
     QString color;
+    QStringList supportedComponents;
     int privileges = DCalDavXmlReader::NoPrivilege;
     bool privilegesKnown = false;
     bool isCalendar = false;
@@ -196,6 +202,16 @@ void readProperty(DCalDavXmlStreamReader &reader, DiscoveryProperties &propertie
         } else if (name == QStringLiteral("current-user-privilege-set")) {
             properties.privilegesKnown = true;
             readPrivilegeSet(reader, properties.privileges);
+        } else if (name == QStringLiteral("supported-calendar-component-set")) {
+            while (reader.readNextStartElement()) {
+                if (reader.name() == QStringLiteral("comp")) {
+                    const QString component = reader.attribute(QStringLiteral("name")).trimmed();
+                    if (!component.isEmpty() && !properties.supportedComponents.contains(component)) {
+                        properties.supportedComponents.append(component);
+                    }
+                }
+                reader.skipCurrentElement();
+            }
         } else {
             reader.skipCurrentElement();
         }
@@ -218,6 +234,11 @@ void mergeProperties(const DiscoveryProperties &source,
     }
     if (!source.color.isEmpty()) {
         collection.color = source.color;
+    }
+    for (const QString &component : source.supportedComponents) {
+        if (!collection.supportedComponents.contains(component)) {
+            collection.supportedComponents.append(component);
+        }
     }
     if (source.isCalendar) {
         isCalendar = true;
@@ -327,7 +348,9 @@ bool DCalDavXmlReader::parseDiscovery(const QByteArray &xml, DiscoveryResult &re
     for (const CalendarCollection &collection : parsed.calendarCollections) {
         if (collection.href.size() > kMaximumPropertyLength
             || collection.displayName.size() > kMaximumPropertyLength
-            || collection.color.size() > kMaximumPropertyLength) {
+            || collection.color.size() > kMaximumPropertyLength
+            || collection.supportedComponents.size() > 32
+            || collection.supportedComponents.join(QLatin1Char(',')).size() > kMaximumPropertyLength) {
             if (errorMessage != nullptr) {
                 *errorMessage = QStringLiteral("DAV calendar collection contains oversized properties.");
             }

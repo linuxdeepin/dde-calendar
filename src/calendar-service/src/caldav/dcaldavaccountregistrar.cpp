@@ -422,6 +422,7 @@ bool DCalDavAccountRegistrar::persistCalendars(const DCalDavXmlReader::Discovery
         calendar.displayName = collection.displayName;
         calendar.color = collection.color;
         calendar.scheduleTypeID = scheduleTypeID;
+        calendar.supportedComponents = collection.supportedComponents;
         calendar.privileges = collection.privilegesKnown
             ? collection.privileges
             : (DCalDavXmlReader::ReadPrivilege | DCalDavXmlReader::WritePrivilege);

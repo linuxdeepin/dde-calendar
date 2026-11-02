@@ -24,6 +24,7 @@
 #include "dcaldavsyncjobmanager.h"
 #include "dcaldavsyncstatusmapper.h"
 #include "dcaldavxmlreader.h"
+#include "dcaldavscheduletypefilter.h"
 #include "mock_caldav_server.h"
 #include "ddatabase.h"
 #include "daccountdatabase.h"
@@ -222,6 +223,44 @@ TEST(CalDavSchema, CreatesTablesIdempotently)
         database.close();
     }
     QSqlDatabase::removeDatabase(connectionName);
+}
+
+TEST(CalDavSchema, MigratesCalendarSupportedComponentsColumn)
+{
+    QTemporaryDir directory;
+    ASSERT_TRUE(directory.isValid());
+
+    const QString databasePath = directory.filePath(QStringLiteral("account-manager.db"));
+    const QString legacyConnection = QStringLiteral("caldav-legacy-schema-test");
+    {
+        QSqlDatabase legacyDatabase = QSqlDatabase::addDatabase("QSQLITE", legacyConnection);
+        legacyDatabase.setDatabaseName(databasePath);
+        ASSERT_TRUE(legacyDatabase.open());
+        QSqlQuery query(legacyDatabase);
+        ASSERT_TRUE(query.exec(QStringLiteral(
+            "CREATE TABLE caldavCalendar (calendarID TEXT NOT NULL PRIMARY KEY, accountID TEXT NOT NULL, "
+            "href TEXT NOT NULL, displayName TEXT, color TEXT, scheduleTypeID TEXT, privileges INTEGER NOT NULL DEFAULT 0, "
+            "privilegesKnown INTEGER NOT NULL DEFAULT 0, syncToken TEXT, initialSyncCompleted INTEGER NOT NULL DEFAULT 0, "
+            "enabled INTEGER NOT NULL DEFAULT 1, UNIQUE(accountID, href))")));
+        legacyDatabase.close();
+    }
+    QSqlDatabase::removeDatabase(legacyConnection);
+
+    DAccountManagerDataBase database;
+    database.setDBPath(databasePath);
+    database.setLoaclDB(directory.filePath(QStringLiteral("local.db")));
+    database.initDBData();
+
+    QSqlDatabase migratedDatabase = QSqlDatabase::database(database.getConnectionName());
+    ASSERT_TRUE(migratedDatabase.isOpen());
+    QSqlQuery columns(migratedDatabase);
+    ASSERT_TRUE(columns.exec(QStringLiteral("PRAGMA table_info(caldavCalendar)")));
+    bool foundSupportedComponents = false;
+    while (columns.next()) {
+        foundSupportedComponents |= columns.value(QStringLiteral("name")).toString()
+            == QStringLiteral("supportedComponents");
+    }
+    EXPECT_TRUE(foundSupportedComponents);
 }
 
 TEST(CalDavScheduleSyncNotification, PersistsUntilSuccessfullyRemoved)
@@ -950,8 +989,30 @@ TEST(CalDavDiscovery, BuildsSecureDiscoveryRequests)
         serverUrl, QStringLiteral("user"), QStringLiteral("password"));
     EXPECT_EQ(QByteArray("1"), collectionsRequest.headers.value("Depth"));
     EXPECT_TRUE(collectionsRequest.body.contains("calendar-color"));
+    EXPECT_TRUE(collectionsRequest.body.contains("supported-calendar-component-set"));
     EXPECT_TRUE(DCalDavTransport::isSecureUrl(request.url));
     EXPECT_FALSE(DCalDavTransport::isSecureUrl(QUrl(QStringLiteral("http://example.com"))));
+}
+
+TEST(CalDavXmlReader, ParsesSupportedCalendarComponents)
+{
+    const QByteArray xml = R"(
+        <d:multistatus xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:caldav">
+          <d:response><d:href>/cal/</d:href>
+            <d:propstat><d:prop>
+              <d:resourcetype><d:collection/><c:calendar/></d:resourcetype>
+              <c:supported-calendar-component-set>
+                <c:comp name="VEVENT"/><c:comp name="VTODO"/><c:comp name="VEVENT"/>
+              </c:supported-calendar-component-set>
+            </d:prop><d:status>HTTP/1.1 200 OK</d:status></d:propstat>
+          </d:response>
+        </d:multistatus>)";
+    DCalDavXmlReader::DiscoveryResult result;
+    QString errorMessage;
+    ASSERT_TRUE(DCalDavXmlReader::parseDiscovery(xml, result, &errorMessage)) << errorMessage.toStdString();
+    ASSERT_EQ(1, result.calendarCollections.size());
+    EXPECT_EQ((QStringList{QStringLiteral("VEVENT"), QStringLiteral("VTODO")}),
+              result.calendarCollections.first().supportedComponents);
 }
 
 TEST(CalDavTransport, NormalizesAndRestrictsUrls)
@@ -1509,6 +1570,81 @@ TEST(CalDavAccountStatus, UsesDiscoveredCalendarWritePrivileges)
     EXPECT_FALSE(statuses.first().supportsWrite);
 }
 
+TEST(CalDavScheduleTypeFilter, RemovesUnsupportedWeComTypesButKeepsQQMailTypes)
+{
+    QTemporaryDir directory;
+    ASSERT_TRUE(directory.isValid());
+
+    DAccountManagerDataBase database;
+    database.setDBPath(directory.filePath(QStringLiteral("account-manager.db")));
+    database.setLoaclDB(directory.filePath(QStringLiteral("local.db")));
+    database.initDBData();
+
+    const QString accountID = QStringLiteral("account-filter-test");
+    const QStringList typeIDs {
+        QStringLiteral("type-event"),
+        QStringLiteral("type-task"),
+        QStringLiteral("type-readonly-event"),
+        QStringLiteral("type-noncalendar"),
+        QStringLiteral("type-missing-calendar"),
+    };
+    const QStringList calendarIDs {
+        QStringLiteral("calendar-event"),
+        QStringLiteral("calendar-task"),
+        QStringLiteral("calendar-readonly-event"),
+        QStringLiteral("calendar-noncalendar"),
+    };
+    const QList<QStringList> components {
+        {QStringLiteral("VEVENT")},
+        {QStringLiteral("VTODO")},
+        {QStringLiteral("VEVENT")},
+        {QStringLiteral("VEVENT")},
+    };
+    const QList<int> privileges {
+        DCalDavXmlReader::ReadPrivilege | DCalDavXmlReader::WritePrivilege,
+        DCalDavXmlReader::ReadPrivilege | DCalDavXmlReader::WritePrivilege,
+        DCalDavXmlReader::ReadPrivilege,
+        DCalDavXmlReader::ReadPrivilege | DCalDavXmlReader::WritePrivilege,
+    };
+
+    DScheduleType::List types;
+    for (int i = 0; i < typeIDs.size(); ++i) {
+        DScheduleType::Ptr type(new DScheduleType(accountID));
+        type->setTypeID(typeIDs.at(i));
+        type->setTypeName(typeIDs.at(i));
+        type->setDisplayName(typeIDs.at(i));
+        type->setDescription(i == 3 ? QStringLiteral("CalDAV category")
+                                    : QStringLiteral("CalDAV calendar"));
+        types.append(type);
+
+        if (i >= calendarIDs.size()) {
+            continue;
+        }
+        DCalDavCalendarInfo calendar;
+        calendar.calendarId = calendarIDs.at(i);
+        calendar.accountId = accountID;
+        calendar.href = QStringLiteral("https://dav.example/%1/").arg(calendar.calendarId);
+        calendar.scheduleTypeID = typeIDs.at(i);
+        calendar.supportedComponents = components.at(i);
+        calendar.privileges = privileges.at(i);
+        ASSERT_TRUE(database.upsertCalDavCalendar(calendar));
+    }
+
+    DScheduleType::List weComTypes = types;
+    DCalDavScheduleTypeFilter::filter(DCalDavProviderProfile::Provider_WeCom,
+                                      accountID, weComTypes, &database);
+    ASSERT_EQ(1, weComTypes.size());
+    EXPECT_EQ(typeIDs.first(), weComTypes.first()->typeID());
+
+    DScheduleType::List qqMailTypes = types;
+    DCalDavScheduleTypeFilter::filter(DCalDavProviderProfile::Provider_QQMail,
+                                      accountID, qqMailTypes, &database);
+    ASSERT_EQ(types.size(), qqMailTypes.size());
+    for (int i = 0; i < typeIDs.size(); ++i) {
+        EXPECT_EQ(typeIDs.at(i), qqMailTypes.at(i)->typeID());
+    }
+}
+
 TEST(CalDavRepository, PersistsCalendarTokenAndAccountStatus)
 {
     QTemporaryDir directory;
@@ -1545,6 +1681,7 @@ TEST(CalDavRepository, PersistsCalendarTokenAndAccountStatus)
     calendar.href = QStringLiteral("https://dav.qq.com/calendar/1/");
     calendar.displayName = QStringLiteral("Calendar");
     calendar.scheduleTypeID = QStringLiteral("type-1");
+    calendar.supportedComponents = QStringList() << QStringLiteral("VEVENT");
     calendar.privileges = DCalDavXmlReader::ReadPrivilege;
     calendar.privilegesKnown = true;
     ASSERT_TRUE(database.upsertCalDavCalendar(calendar));
@@ -1553,6 +1690,23 @@ TEST(CalDavRepository, PersistsCalendarTokenAndAccountStatus)
     ASSERT_EQ(1, calendars.size());
     EXPECT_EQ(calendar.href, calendars.first().href);
     EXPECT_EQ(calendar.scheduleTypeID, calendars.first().scheduleTypeID);
+    EXPECT_EQ(calendar.supportedComponents, calendars.first().supportedComponents);
+    DCalDavCalendarInfo calendarWithoutComponents = calendar;
+    calendarWithoutComponents.supportedComponents.clear();
+    ASSERT_TRUE(database.upsertCalDavCalendar(calendarWithoutComponents));
+    calendars = database.getCalDavCalendarList(QStringLiteral("account-1"));
+    ASSERT_EQ(1, calendars.size());
+    EXPECT_TRUE(calendars.first().supportedComponents.isEmpty());
+    calendarWithoutComponents.calendarId = QStringLiteral("calendar-empty-components");
+    calendarWithoutComponents.href = QStringLiteral("https://dav.qq.com/calendar/empty-components/");
+    ASSERT_TRUE(database.upsertCalDavCalendar(calendarWithoutComponents));
+    EXPECT_TRUE(database.getCalDavCalendarByIDIncludingDisabled(
+                      QStringLiteral("account-1"), QStringLiteral("calendar-empty-components"))
+                      .supportedComponents.isEmpty());
+    calendar.supportedComponents = QStringList() << QStringLiteral("VEVENT");
+    ASSERT_TRUE(database.upsertCalDavCalendar(calendar));
+    calendars = database.getCalDavCalendarList(QStringLiteral("account-1"));
+    EXPECT_EQ(calendar.supportedComponents, calendars.first().supportedComponents);
     EXPECT_EQ(calendar.privileges, calendars.first().privileges);
     EXPECT_TRUE(calendars.first().privilegesKnown);
     EXPECT_FALSE(calendars.first().initialSyncCompleted);
@@ -1570,8 +1724,27 @@ TEST(CalDavRepository, PersistsCalendarTokenAndAccountStatus)
     const DCalDavCalendarInfo calendarByType = database.getCalDavCalendarByScheduleTypeID(
         QStringLiteral("account-1"), QStringLiteral("type-1"));
     EXPECT_EQ(calendar.calendarId, calendarByType.calendarId);
+    EXPECT_EQ(calendar.supportedComponents, calendarByType.supportedComponents);
     EXPECT_TRUE(calendarByType.privilegesKnown);
     EXPECT_TRUE(calendarByType.initialSyncCompleted);
+
+    DCalDavCalendarInfo optimisticWriteCalendar;
+    optimisticWriteCalendar.calendarId = QStringLiteral("calendar-optimistic-write");
+    optimisticWriteCalendar.accountId = QStringLiteral("account-1");
+    optimisticWriteCalendar.href = QStringLiteral("https://dav.qq.com/calendar/optimistic-write/");
+    optimisticWriteCalendar.scheduleTypeID = QStringLiteral("type-optimistic-write");
+    optimisticWriteCalendar.supportedComponents = QStringList() << QStringLiteral("VEVENT");
+    optimisticWriteCalendar.privileges = DCalDavXmlReader::ReadPrivilege
+        | DCalDavXmlReader::WritePrivilege;
+    optimisticWriteCalendar.privilegesKnown = false;
+    ASSERT_TRUE(database.upsertCalDavCalendar(optimisticWriteCalendar));
+    const DCalDavCalendarInfo persistedOptimisticWriteCalendar =
+        database.getCalDavCalendarByScheduleTypeID(QStringLiteral("account-1"),
+                                                    QStringLiteral("type-optimistic-write"));
+    EXPECT_EQ(optimisticWriteCalendar.supportedComponents,
+              persistedOptimisticWriteCalendar.supportedComponents);
+    EXPECT_FALSE(persistedOptimisticWriteCalendar.privilegesKnown);
+    EXPECT_TRUE(persistedOptimisticWriteCalendar.privileges & DCalDavXmlReader::WritePrivilege);
 
     const QDateTime syncTime = QDateTime::fromString(QStringLiteral("2026-08-10T12:00:00Z"), Qt::ISODate);
     ASSERT_TRUE(database.updateCalDavSyncStatus(QStringLiteral("account-1"), 2, syncTime, QString()));

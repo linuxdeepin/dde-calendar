@@ -162,6 +162,7 @@ const QString DDataBase::sql_create_caldavCalendar =
     " syncToken TEXT,"
     " initialSyncCompleted INTEGER NOT NULL DEFAULT 0,"
     " enabled INTEGER NOT NULL DEFAULT 1,"
+    " supportedComponents TEXT NOT NULL DEFAULT '',"
     " UNIQUE(accountID, href))";
 
 //CalDAV 远端日程映射

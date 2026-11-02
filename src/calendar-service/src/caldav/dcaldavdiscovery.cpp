@@ -87,7 +87,7 @@ DCalDavTransport::Request DCalDavDiscovery::calendarCollectionsRequest(const QUr
                    "<d:propfind xmlns:d=\"DAV:\" xmlns:c=\"urn:ietf:params:xml:ns:caldav\" "
                    "xmlns:ical=\"http://apple.com/ns/ical/\">"
                    "<d:prop><d:resourcetype/><d:displayname/><ical:calendar-color/>"
-                   "<d:current-user-privilege-set/></d:prop>"
+                   "<d:current-user-privilege-set/><c:supported-calendar-component-set/></d:prop>"
                    "</d:propfind>";
     return request;
 }

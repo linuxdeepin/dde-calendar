@@ -27,6 +27,7 @@
 #include "dcaldavcategoryinfo.h"
 #include "dcaldavprofile.h"
 #include "dcaldavxmlreader.h"
+#include "dcaldavscheduletypefilter.h"
 
 #include <QDir>
 #include <QFile>
@@ -230,6 +231,15 @@ QString DAccountModule::getScheduleTypeList()
 {
     qCDebug(ServiceLogger) << "Getting schedule type list for account:" << m_account->accountID();
     DScheduleType::List typeList = m_accountDB->getScheduleTypeList();
+    if (m_account->accountType() == DAccount::Account_CalDav
+        && m_calDavAccountManagerDatabase != nullptr) {
+        DCalDavAccountInfo calDavAccountInfo;
+        if (m_calDavAccountManagerDatabase->getCalDavAccountInfo(m_account->accountID(), calDavAccountInfo)) {
+            DCalDavScheduleTypeFilter::filter(
+                static_cast<DCalDavProviderProfile::ProviderType>(calDavAccountInfo.providerType),
+                m_account->accountID(), typeList, m_calDavAccountManagerDatabase);
+        }
+    }
     //排序
     std::sort(typeList.begin(), typeList.end());
     QString typeListStr;
