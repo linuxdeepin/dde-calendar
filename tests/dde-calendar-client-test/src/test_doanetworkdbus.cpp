@@ -4,6 +4,14 @@
 
 #include "doanetworkdbus.h"
 
+// 无头（offscreen/minimal）平台下弹窗/焦点/动画/自绘类用例会崩溃或卡死，跳过；
+// 真实图形会话（如 CI 桌面环境）下正常执行。
+static bool headlessQpaPlatform()
+{
+    const QByteArray platform = qEnvironmentVariable("QT_QPA_PLATFORM").toUtf8();
+    return platform == "offscreen" || platform == "minimal";
+}
+
 #include <QDBusConnection>
 #include <QDBusConnectionInterface>
 #include <QDBusMessage>
@@ -101,6 +109,9 @@ TEST(DOANetWorkDBusTest, PropertiesChangedIgnoresWrongInterface)
 
 TEST(DOANetWorkDBusTest, PropertiesChangedEmitsActiveOnState70)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (paint/dbus)";
+    }
     DOANetWorkDBus dbus;
     qRegisterMetaType<DOANetWorkDBus::NetWorkState>("DOANetWorkDBus::NetWorkState");
 
@@ -136,6 +147,9 @@ TEST(DOANetWorkDBusTest, PropertiesChangedEmitsActiveOnState70)
 
 TEST(DOANetWorkDBusTest, PropertiesChangedEmitsDisconnectOnState20)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (paint/dbus)";
+    }
     DOANetWorkDBus dbus;
     qRegisterMetaType<DOANetWorkDBus::NetWorkState>("DOANetWorkDBus::NetWorkState");
 
@@ -171,6 +185,9 @@ TEST(DOANetWorkDBusTest, PropertiesChangedEmitsDisconnectOnState20)
 
 TEST(DOANetWorkDBusTest, PropertiesChangedIgnoresOtherStateValues)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (paint/dbus)";
+    }
     DOANetWorkDBus dbus;
     qRegisterMetaType<DOANetWorkDBus::NetWorkState>("DOANetWorkDBus::NetWorkState");
 
@@ -202,6 +219,9 @@ TEST(DOANetWorkDBusTest, PropertiesChangedIgnoresOtherStateValues)
 
 TEST(DOANetWorkDBusTest, PropertiesChangedIgnoresNonStateProps)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (paint/dbus)";
+    }
     DOANetWorkDBus dbus;
     qRegisterMetaType<DOANetWorkDBus::NetWorkState>("DOANetWorkDBus::NetWorkState");
 

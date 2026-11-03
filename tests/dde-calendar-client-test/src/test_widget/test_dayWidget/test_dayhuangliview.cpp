@@ -3,6 +3,14 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 #include <QTest>
 
+// 无头（offscreen/minimal）平台下弹窗/焦点/动画/自绘类用例会崩溃或卡死，跳过；
+// 真实图形会话（如 CI 桌面环境）下正常执行。
+static bool headlessQpaPlatform()
+{
+    const QByteArray platform = qEnvironmentVariable("QT_QPA_PLATFORM").toUtf8();
+    return platform == "offscreen" || platform == "minimal";
+}
+
 #include "test_dayhuangliview.h"
 
 test_dayhuangliview::test_dayhuangliview()
@@ -57,6 +65,9 @@ TEST_F(test_dayhuangliview, setHuangLiText_empty)
 //void CDayHuangLiLabel::paintEvent(QPaintEvent *e)
 TEST_F(test_dayhuangliview, paintEvent)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (paint/interaction)";
+    }
     mDayHuangLiLabel->setFixedSize(200, 50);
     mDayHuangLiLabel->setbackgroundColor(QColor(100, 100, 255));
     mDayHuangLiLabel->setTextInfo(QColor(0, 0, 0), QFont());

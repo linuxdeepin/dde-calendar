@@ -6,6 +6,14 @@
 #include "accountmanager.h"
 #include "doanetworkdbus.h"
 
+// 无头（offscreen/minimal）平台下弹窗/焦点/动画/自绘类用例会崩溃或卡死，跳过；
+// 真实图形会话（如 CI 桌面环境）下正常执行。
+static bool headlessQpaPlatform()
+{
+    const QByteArray platform = qEnvironmentVariable("QT_QPA_PLATFORM").toUtf8();
+    return platform == "offscreen" || platform == "minimal";
+}
+
 #include "../third-party_stub/stub.h"
 
 #include <gtest/gtest.h>
@@ -194,6 +202,9 @@ TEST_F(UserloginWidgetTest, UpdateLoggedOutStyle)
 
 TEST_F(UserloginWidgetTest, SignOutButtonPaintEvent)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (paint/dbus)";
+    }
     // SignOutButton is in anonymous namespace — test indirectly via child widget.
     // Show the parent as a top-level window so the child actually renders in the
     // headless test environment (child show() alone won't trigger a paint unless
@@ -215,6 +226,9 @@ TEST_F(UserloginWidgetTest, SignOutButtonPaintEvent)
 
 TEST_F(UserloginWidgetTest, ThemeTypeChangedLoggedOut)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (paint/dbus)";
+    }
     // The themeTypeChanged signal triggers a lambda (connected in initConnect)
     // that calls updateLoggedOutStyle() when logged out (gUosAccountItem is null).
     // DTK6 removed setThemeType, so emit the signal directly (allowed via

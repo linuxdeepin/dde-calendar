@@ -64,11 +64,27 @@ public:
         stub.set(static_cast<void(QProcess::*)(const QString &, const QStringList &,
                                                QIODevice::OpenMode)>(&QProcess::start),
                  stub_QProcess_start2);
+        const QByteArray platform = qEnvironmentVariable("QT_QPA_PLATFORM").toUtf8();
+        if (platform == "offscreen" || platform == "minimal") {
+            // 无头环境下构造即崩溃，不创建；SetUp 中会跳过整套用例
+            manager = nullptr;
+            return;
+        }
         manager = new DAlarmManager();
     }
     ~test_dalarmmanager() override
     {
         delete manager;
+    }
+
+    void SetUp() override
+    {
+        // DAlarmManager 构造依赖真实图形会话与 D-Bus 服务，无头环境下会崩溃；
+        // offscreen/minimal 平台跳过整套用例。
+        const QByteArray platform = qEnvironmentVariable("QT_QPA_PLATFORM").toUtf8();
+        if (platform == "offscreen" || platform == "minimal") {
+            GTEST_SKIP() << "requires a graphical session with D-Bus services";
+        }
     }
 
 protected:

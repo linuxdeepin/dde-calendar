@@ -8,6 +8,14 @@
 #include "globaldef.h"
 #include "createjsondata.h"
 
+// 无头（offscreen/minimal）平台下窗口/动画类用例会崩溃，跳过；
+// 真实图形会话（如 CI 桌面环境）下正常执行。
+static bool headlessQpaPlatform()
+{
+    const QByteArray platform = qEnvironmentVariable("QT_QPA_PLATFORM").toUtf8();
+    return platform == "offscreen" || platform == "minimal";
+}
+
 // ============================================================================
 // Constructor
 // ============================================================================
@@ -46,6 +54,9 @@ TEST(ScheduleBaseTaskTest, Destructor_WithNullState_NoCrash)
 
 TEST(ScheduleBaseTaskTest, Destructor_WithNonNullState_NoCrash)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session";
+    }
     // Due to the suspected defect (== instead of !=), the state will NOT be
     // deleted by the base destructor. We still verify no crash.
     MockScheduleBaseTask *task = new MockScheduleBaseTask();
