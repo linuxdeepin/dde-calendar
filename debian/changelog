@@ -1,3 +1,16 @@
+dde-calendar (6.6.5) unstable; urgency=medium
+
+  * feat(caldav): filter WeCom schedule types by supported components
+  * fix(caldav): limit schedule queries to the synced rolling window
+  * fix(caldav): harden outbox conflict handling and etag normalization
+  * fix(sidebar): adjust warning icon color and add elide spacing
+  * fix(weekwidget): set 50% opacity for week title text
+  * fix(test): replace DApplication with QCoreApplication to prevent test hang
+  * fix: enable BUILD_TESTING in UT script
+  * feat(test): add ut-summary.json generation for test results and coverage
+
+ -- Wang Yu <wangyu@uniontech.com>  Tue, 03 Nov 2026 10:16:05 +0800
+
 dde-calendar (6.6.4) unstable; urgency=medium
 
   * fix(dayview): use DTK palette colors for text
