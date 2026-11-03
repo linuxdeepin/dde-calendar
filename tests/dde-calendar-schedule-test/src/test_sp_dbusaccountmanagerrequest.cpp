@@ -192,11 +192,10 @@ TEST(SpDbusAccountManagerRequestTest, ClientIsShow_SendsCall)
     EXPECT_TRUE(guard.svc.calledMethods.contains(QStringLiteral("calendarIsShow")));
 }
 
-// ---- slotCallFinished error path (no service registered) ----
+// ---- slotCallFinished error path (always errors, regardless of bus state) ----
 
 TEST(SpDbusAccountManagerRequestTest, SlotCallFinished_ErrorPath)
 {
-    // No BusGuard: calls will error because the service is not registered.
     if (!QDBusConnection::sessionBus().isConnected())
         GTEST_SKIP() << "Session bus not available";
 
@@ -207,7 +206,13 @@ TEST(SpDbusAccountManagerRequestTest, SlotCallFinished_ErrorPath)
         callbackInvoked = true;
         callbackCode = msg.code;
     });
-    request.getCalendarGeneralSettings();
+    // Call a method no Calendar service implements so the reply is always a D-Bus
+    // error: ServiceUnknown when the service name is unregistered, UnknownMethod
+    // when it is owned (e.g. a real service on a shared CI session bus). Relying
+    // on the service being absent is not deterministic, see the sibling
+    // SlotCallFinished_ErrorPath test in test_sp_dbusaccountrequest.cpp.
+    // -fno-access-control allows calling protected asyncCall.
+    request.asyncCall(QStringLiteral("methodThatNeverExistsForErrorPath"));
     pumpEvents(2000);
     // Error path: callback should have been invoked with ret=1
     EXPECT_TRUE(callbackInvoked);
