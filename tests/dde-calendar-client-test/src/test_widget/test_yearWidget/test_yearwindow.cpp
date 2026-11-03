@@ -8,6 +8,14 @@
 #include "calendarglobalenv.h"
 #include "constants.h"
 
+// 无头（offscreen/minimal）平台下窗口/绘制/交互类用例会崩溃或卡死，整文件跳过；
+// 真实图形会话（如 CI 桌面环境）下正常执行。
+static bool headlessQpaPlatform()
+{
+    const QByteArray platform = qEnvironmentVariable("QT_QPA_PLATFORM").toUtf8();
+    return platform == "offscreen" || platform == "minimal";
+}
+
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include <QKeyEvent>
@@ -22,6 +30,12 @@
 
 test_yearwindow::test_yearwindow()
 {
+    const QByteArray platform = qEnvironmentVariable("QT_QPA_PLATFORM").toUtf8();
+    if (platform == "offscreen" || platform == "minimal") {
+        // 无头环境下窗口构造即崩溃；各用例体中已配置 GTEST_SKIP
+        mYearWindow = nullptr;
+        return;
+    }
     CalendarGlobalEnv::getGlobalEnv()->registerKey(DDECalendar::CursorPointKey, QPoint(20, 20));
     mYearWindow = new CYearWindow();
     // Let the deferred setYearData timer fire
@@ -38,11 +52,17 @@ test_yearwindow::~test_yearwindow()
 
 TEST_F(test_yearwindow, constructor)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     ASSERT_NE(mYearWindow, nullptr);
 }
 
 TEST_F(test_yearwindow, destructor)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     CYearWindow *win = new CYearWindow();
     QCoreApplication::processEvents();
     delete win;
@@ -51,11 +71,17 @@ TEST_F(test_yearwindow, destructor)
 // initUI / initConnection — called by constructor, exercise explicitly
 TEST_F(test_yearwindow, initUI)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     mYearWindow->initUI();
 }
 
 TEST_F(test_yearwindow, initConnection)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     mYearWindow->initConnection();
 }
 
@@ -63,6 +89,9 @@ TEST_F(test_yearwindow, initConnection)
 
 TEST_F(test_yearwindow, setTheMe)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     mYearWindow->setTheMe(0);
     mYearWindow->setTheMe(1);
     mYearWindow->setTheMe(2);
@@ -72,6 +101,9 @@ TEST_F(test_yearwindow, setTheMe)
 
 TEST_F(test_yearwindow, setSearchWFlag)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     mYearWindow->setSearchWFlag(true);
     mYearWindow->setSearchWFlag(false);
 }
@@ -80,6 +112,9 @@ TEST_F(test_yearwindow, setSearchWFlag)
 
 TEST_F(test_yearwindow, setYearData)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     mYearWindow->setYearData();
 }
 
@@ -87,6 +122,9 @@ TEST_F(test_yearwindow, setYearData)
 
 TEST_F(test_yearwindow, updateShowDate)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     mYearWindow->updateShowDate(true);
     mYearWindow->updateShowDate(false);
 }
@@ -95,6 +133,9 @@ TEST_F(test_yearwindow, updateShowDate)
 
 TEST_F(test_yearwindow, updateShowSchedule)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     mYearWindow->updateShowSchedule();
 }
 
@@ -102,6 +143,9 @@ TEST_F(test_yearwindow, updateShowSchedule)
 
 TEST_F(test_yearwindow, updateShowLunar)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     mYearWindow->updateShowLunar();
 }
 
@@ -109,6 +153,9 @@ TEST_F(test_yearwindow, updateShowLunar)
 
 TEST_F(test_yearwindow, updateSearchScheduleInfo)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     mYearWindow->updateSearchScheduleInfo();
 }
 
@@ -116,6 +163,9 @@ TEST_F(test_yearwindow, updateSearchScheduleInfo)
 
 TEST_F(test_yearwindow, setSelectSearchScheduleInfo)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     DSchedule::Ptr ptr(new DSchedule());
     ptr->setSummary("test schedule");
     mYearWindow->setSelectSearchScheduleInfo(ptr);
@@ -125,16 +175,25 @@ TEST_F(test_yearwindow, setSelectSearchScheduleInfo)
 
 TEST_F(test_yearwindow, slotprev)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     mYearWindow->slotprev();
 }
 
 TEST_F(test_yearwindow, slotnext)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     mYearWindow->slotnext();
 }
 
 TEST_F(test_yearwindow, slottoday)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     mYearWindow->slottoday();
 }
 
@@ -142,6 +201,9 @@ TEST_F(test_yearwindow, slottoday)
 
 TEST_F(test_yearwindow, switchYear)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     mYearWindow->switchYear(1);
     mYearWindow->switchYear(-1);
 }
@@ -150,6 +212,9 @@ TEST_F(test_yearwindow, switchYear)
 
 TEST_F(test_yearwindow, onLunarInfoReady)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     CaHuangLiDayInfo info;
     // pass current select date so the method does not early-return
     mYearWindow->onLunarInfoReady(mYearWindow->getSelectDate(), info);
@@ -161,6 +226,9 @@ TEST_F(test_yearwindow, onLunarInfoReady)
 
 TEST_F(test_yearwindow, setLunarShow)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     mYearWindow->setLunarShow();
 }
 
@@ -168,6 +236,9 @@ TEST_F(test_yearwindow, setLunarShow)
 
 TEST_F(test_yearwindow, slotSetScheduleHide)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     mYearWindow->slotSetScheduleHide();
 }
 
@@ -175,6 +246,9 @@ TEST_F(test_yearwindow, slotSetScheduleHide)
 
 TEST_F(test_yearwindow, slotMousePress)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     CalendarGlobalEnv::getGlobalEnv()->reviseValue(DDECalendar::CursorPointKey, QPoint(20, 20));
     QDate currentDate = QDate::currentDate();
     mYearWindow->slotMousePress(currentDate, 0);
@@ -189,6 +263,9 @@ TEST_F(test_yearwindow, slotMousePress)
 
 TEST_F(test_yearwindow, wheelEvent)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     // Vertical scroll down (y < 0 → slotnext)
     QWheelEvent wheelDown(QPointF(10, 10), QPointF(10, 10), QPoint(0, 0),
                           QPoint(0, -120), Qt::NoButton, Qt::NoModifier,
@@ -212,6 +289,9 @@ TEST_F(test_yearwindow, wheelEvent)
 
 TEST_F(test_yearwindow, eventFilter)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     // Today button — MouseButtonPress
     QMouseEvent mousePress(QEvent::MouseButtonPress, QPointF(5, 5),
                            Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
@@ -238,6 +318,9 @@ TEST_F(test_yearwindow, eventFilter)
 
 TEST_F(test_yearwindow, mousePressEvent)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     // Synthesized touch event — records m_touchBeginPoint
     QMouseEvent synthPress(QEvent::MouseButtonPress, QPointF(10, 10),
                            QPointF(10, 10), QPointF(10, 10),
@@ -255,6 +338,9 @@ TEST_F(test_yearwindow, mousePressEvent)
 
 TEST_F(test_yearwindow, resizeEvent)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     QResizeEvent resizeEvent(QSize(400, 300), mYearWindow->size());
     QApplication::sendEvent(mYearWindow, &resizeEvent);
 }
@@ -263,6 +349,9 @@ TEST_F(test_yearwindow, resizeEvent)
 
 TEST_F(test_yearwindow, mouseMoveEvent)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     // Synthesized touch move — early return
     QMouseEvent synthMove(QEvent::MouseMove, QPointF(15, 15),
                           QPointF(15, 15), QPointF(15, 15),
@@ -280,6 +369,9 @@ TEST_F(test_yearwindow, mouseMoveEvent)
 
 TEST_F(test_yearwindow, mouseReleaseEvent)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     // Set m_touchState = 2 (as if tap gesture updated) to exercise
     // the calculateAzimuthAngle path in mouseReleaseEvent
     mYearWindow->m_touchState = 2;
@@ -312,6 +404,9 @@ TEST_F(test_yearwindow, mouseReleaseEvent)
 
 TEST_F(test_yearwindow, event_gesture)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     QTapGesture tap;
     tap.d_func()->state = Qt::GestureStarted;
     QList<QGesture *> gestures;
@@ -322,6 +417,9 @@ TEST_F(test_yearwindow, event_gesture)
 
 TEST_F(test_yearwindow, event_nonGesture)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     QEvent moveEvent(QEvent::Move);
     mYearWindow->event(&moveEvent);
 }
@@ -330,6 +428,9 @@ TEST_F(test_yearwindow, event_nonGesture)
 
 TEST_F(test_yearwindow, gestureEvent)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     QTapGesture tap;
     tap.d_func()->state = Qt::GestureStarted;
     QPanGesture pan;
@@ -346,6 +447,9 @@ TEST_F(test_yearwindow, gestureEvent)
 
 TEST_F(test_yearwindow, tapGestureTriggered)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     QTapGesture tap;
 
     tap.d_func()->state = Qt::NoGesture;
@@ -368,6 +472,9 @@ TEST_F(test_yearwindow, tapGestureTriggered)
 
 TEST_F(test_yearwindow, panTriggered)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     // GestureFinished with upward offset → T_TOP → slotnext
     QPanGesture panUp;
     panUp.d_func()->state = Qt::GestureFinished;
@@ -396,6 +503,9 @@ TEST_F(test_yearwindow, panTriggered)
 
 TEST_F(test_yearwindow, calculateAzimuthAngle)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     QPointF origin(0, 0);
 
     // T_TOP — upward (angle ≈ -90°)
@@ -423,6 +533,9 @@ TEST_F(test_yearwindow, calculateAzimuthAngle)
 
 TEST_F(test_yearwindow, yearFrame_constructor)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     YearFrame *yf = new YearFrame();
     ASSERT_NE(yf, nullptr);
     delete yf;
@@ -430,12 +543,18 @@ TEST_F(test_yearwindow, yearFrame_constructor)
 
 TEST_F(test_yearwindow, yearFrame_setShowDate)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     YearFrame yf;
     yf.setShowDate(QDate(2021, 6, 15));
 }
 
 TEST_F(test_yearwindow, yearFrame_setLunarYearDate)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     YearFrame yf;
     yf.setLunarYearDate();
     yf.setLunarYearDate("农历辛丑年");
@@ -443,6 +562,9 @@ TEST_F(test_yearwindow, yearFrame_setLunarYearDate)
 
 TEST_F(test_yearwindow, yearFrame_setDateHasScheduleSign)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     YearFrame yf;
     yf.setShowDate(QDate(2021, 6, 15));
     QSet<QDate> scheduleSet;
@@ -452,6 +574,9 @@ TEST_F(test_yearwindow, yearFrame_setDateHasScheduleSign)
 
 TEST_F(test_yearwindow, yearFrame_setTheMe)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     YearFrame yf;
     yf.setTheMe(0);
     yf.setTheMe(1);
@@ -460,6 +585,9 @@ TEST_F(test_yearwindow, yearFrame_setTheMe)
 
 TEST_F(test_yearwindow, yearFrame_setSearchSchedule)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     YearFrame yf;
     yf.setShowDate(QDate(2021, 6, 15));
     QSet<QDate> searchSet;
@@ -469,6 +597,9 @@ TEST_F(test_yearwindow, yearFrame_setSearchSchedule)
 
 TEST_F(test_yearwindow, yearFrame_setViewFocus)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     YearFrame yf;
     yf.setShowDate(QDate(2021, 6, 15));
     // Valid index
@@ -481,6 +612,9 @@ TEST_F(test_yearwindow, yearFrame_setViewFocus)
 
 TEST_F(test_yearwindow, yearFrame_getViewFocusIndex)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     YearFrame yf;
     // Default should be -1
     EXPECT_EQ(yf.getViewFocusIndex(), -1);
@@ -488,6 +622,9 @@ TEST_F(test_yearwindow, yearFrame_getViewFocusIndex)
 
 TEST_F(test_yearwindow, yearFrame_eventFilter)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (window/paint/interaction)";
+    }
     YearFrame yf;
     yf.setShowDate(QDate(2021, 6, 15));
     QEvent event(QEvent::FocusIn);

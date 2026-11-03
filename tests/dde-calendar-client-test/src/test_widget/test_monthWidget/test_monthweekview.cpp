@@ -6,6 +6,14 @@
 #include "scheduledatamanage.h"
 #include "constants.h"
 
+// 无头（offscreen/minimal）平台下弹窗/焦点/动画/自绘类用例会崩溃或卡死，跳过；
+// 真实图形会话（如 CI 桌面环境）下正常执行。
+static bool headlessQpaPlatform()
+{
+    const QByteArray platform = qEnvironmentVariable("QT_QPA_PLATFORM").toUtf8();
+    return platform == "offscreen" || platform == "minimal";
+}
+
 #include <gtest/gtest.h>
 #include <QApplication>
 #include <QDate>
@@ -113,6 +121,9 @@ TEST(MonthWeekViewTest, ResizeEvent)
 
 TEST(MonthWeekViewTest, PaintEvent)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (paint/interaction)";
+    }
     CMonthWeekView view;
     view.resize(700, 50);
     view.show();

@@ -10,6 +10,14 @@
 #include <QKeyEvent>
 #include <QMouseEvent>
 
+// 无头（offscreen/minimal）平台下弹窗/焦点/动画/自绘类用例会崩溃或卡死，跳过；
+// 真实图形会话（如 CI 桌面环境）下正常执行。
+static bool headlessQpaPlatform()
+{
+    const QByteArray platform = qEnvironmentVariable("QT_QPA_PLATFORM").toUtf8();
+    return platform == "offscreen" || platform == "minimal";
+}
+
 static QVector<QDate> dayMonthviewGetDayList()
 {
     QVector<QDate> dateList;
@@ -169,6 +177,9 @@ TEST_F(test_daymonthview, view_wheelEvent)
 //void CDayMonthView::paintEvent(QPaintEvent *e)
 TEST_F(test_daymonthview, view_paintEvent)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (paint/interaction)";
+    }
     mDayMonthView->setSearchFlag(false);
     mDayMonthView->setFixedSize(400, 300);
     mDayMonthView->show();
@@ -211,6 +222,9 @@ TEST_F(test_daymonthview, widget_setHasScheduleFlag)
 //void CDayMonthWidget::cellClicked(QWidget *cell)
 TEST_F(test_daymonthview, widget_cellClicked)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (paint/interaction)";
+    }
     mDayMonthWidget->setShowDate(dayMonthviewGetDayList(), QDate::currentDate(), QDate::currentDate());
     mDayMonthWidget->setFixedSize(400, 250);
     // Trigger paintEvent via eventFilter for each cell to populate internal state
@@ -294,6 +308,9 @@ TEST_F(test_daymonthview, widget_resizeEvent)
 //void CDayMonthWidget::eventFilter(QObject *o, QEvent *e)
 TEST_F(test_daymonthview, widget_eventFilter)
 {
+    if (headlessQpaPlatform()) {
+        GTEST_SKIP() << "requires a graphical session (paint/interaction)";
+    }
     mDayMonthWidget->setShowDate(dayMonthviewGetDayList(), QDate::currentDate(), QDate::currentDate());
     mDayMonthWidget->setFixedSize(400, 250);
     mDayMonthWidget->show();
