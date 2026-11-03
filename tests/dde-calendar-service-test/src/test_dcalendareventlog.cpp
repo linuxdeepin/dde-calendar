@@ -66,15 +66,17 @@ TEST(DCalendarEventLog, MapsValidationFailureReasonsAccordingToProtocol)
 
 TEST(DCalendarEventLog, MapsUnsupportedValidationErrorToOther)
 {
-    constexpr std::array<DCalDavValidationError::Type, 2> invalidErrors = {{
-        DCalDavValidationError::NoError,
-        static_cast<DCalDavValidationError::Type>(-1),
+    constexpr std::array<int, 2> invalidErrorCodes = {{
+        static_cast<int>(DCalDavValidationError::NoError),
+        -1,
     }};
-
-    for (const auto validationError : invalidErrors) {
+    // 以 int 迭代、调用处就地转换，避免把超范围的值存入枚举对象
+    // （UBSan: load of value not valid for type）。
+    for (const int code : invalidErrorCodes) {
         EXPECT_EQ(QStringLiteral("other"),
-                  DCalendarEventLog::validationFailureReason(validationError))
-            << "validation error: " << static_cast<int>(validationError);
+                  DCalendarEventLog::validationFailureReason(
+                      static_cast<DCalDavValidationError::Type>(code)))
+            << "validation error: " << code;
     }
 }
 

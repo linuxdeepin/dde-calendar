@@ -4,6 +4,7 @@
 
 #include "gtest/gtest.h"
 #include "dbustimedate.h"
+#include "dbus_call_stub.h"
 
 #include <QSignalSpy>
 #include <QDBusMessage>
@@ -20,6 +21,8 @@
 
 TEST(DBusTimedateTest, Constructor_DoesNotCrashWithoutDBus)
 {
+    // “无 timedate 服务返回默认值”依赖环境；桩掉 D-Bus 调用确定性复现。
+    ScopedDbusUnavailable noDbus;
     // The constructor connects to DBus signals and calls getHasDateTimeFormat().
     // Without a timedate service, it should still construct without crashing.
     DBusTimedate *timedate = nullptr;
@@ -39,6 +42,8 @@ TEST(DBusTimedateTest, Constructor_DoesNotCrashWithoutDBus)
 
 TEST(DBusTimedateTest, ShortTimeFormat_DefaultIs4)
 {
+    // “无 timedate 服务返回默认值”依赖环境；桩掉 D-Bus 调用确定性复现。
+    ScopedDbusUnavailable noDbus;
     DBusTimedate timedate;
     // Without DBus service, m_hasDateTimeFormat is false → returns 4
     EXPECT_EQ(timedate.shortTimeFormat(), 4);
@@ -48,6 +53,8 @@ TEST(DBusTimedateTest, ShortTimeFormat_DefaultIs4)
 
 TEST(DBusTimedateTest, ShortDateFormat_DefaultIs1)
 {
+    // “无 timedate 服务返回默认值”依赖环境；桩掉 D-Bus 调用确定性复现。
+    ScopedDbusUnavailable noDbus;
     DBusTimedate timedate;
     EXPECT_EQ(timedate.shortDateFormat(), 1);
 }
@@ -56,6 +63,8 @@ TEST(DBusTimedateTest, ShortDateFormat_DefaultIs1)
 
 TEST(DBusTimedateTest, WeekBegins_DefaultIsMonday)
 {
+    // “无 timedate 服务返回默认值”依赖环境；桩掉 D-Bus 调用确定性复现。
+    ScopedDbusUnavailable noDbus;
     DBusTimedate timedate;
     EXPECT_EQ(timedate.weekBegins(), Qt::Monday);
 }

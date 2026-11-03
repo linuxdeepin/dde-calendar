@@ -9,6 +9,7 @@
 #include "daccountmanagerdatabase.h"
 #include "dcalendargeneralsettings.h"
 #include "units.h"
+#include "dbus_call_stub.h"
 
 #include <QDateTime>
 #include <QJsonDocument>
@@ -945,6 +946,8 @@ TEST_F(TestDAccountManageModule, RegisterCalDavAccount_NonExistentInMap_NoCrash)
 
 TEST_F(TestDAccountManageModule, NotifyCalDavScheduleSyncResult_InvalidDBus_ReturnsFalse)
 {
+    // “无效 D-Bus 返回 false”依赖环境；桩掉 D-Bus 调用确定性复现。
+    ScopedDbusUnavailable noDbus;
     DCalDavTransport::Response response;
     bool result = s_module->notifyCalDavScheduleSyncResult(
         "nonexistent-account-id", true, DCalDavErrorCode::NoError, response);

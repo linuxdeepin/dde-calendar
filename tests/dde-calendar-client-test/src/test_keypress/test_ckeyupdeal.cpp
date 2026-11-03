@@ -16,6 +16,8 @@ void test_CKeyUpDeal::SetUp()
 {
     delete SceneCurrentItem;
     SceneCurrentItem = new TestBackgroundItem();
+    // getDate() 为基类内联函数无法打桩，统一设置真实日期供各用例覆盖。
+    static_cast<TestBackgroundItem *>(SceneCurrentItem)->setDate(QDate(2026, 1, 15));
     calendarDDialogExecStub(stub.getStub());
     scene = QSharedPointer<CGraphicsScene>(new CGraphicsScene());
     upDeal = QSharedPointer<CKeyUpDeal>(new CKeyUpDeal(scene.get()));

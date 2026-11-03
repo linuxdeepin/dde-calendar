@@ -14,6 +14,7 @@
 #include <QWidget>
 
 #include <gtest/gtest.h>
+#include "dbus_call_stub.h"
 
 namespace {
 
@@ -233,6 +234,9 @@ TEST(CalendarAdaptorTest, CreateSchedule_MissingStartTime_ReturnsEmpty)
 
 TEST(CalendarAdaptorTest, CreateSchedule_ValidJson_NoAccount_ReturnsEmpty)
 {
+    // “无后端服务→无账户”的假设依赖环境；CI/开发机上存在真实日历服务时账户存在。
+    // 桩掉 D-Bus 调用确定性模拟“无服务”。
+    ScopedDbusUnavailable noDbus;
     MockCalendarParent parent;
     CalendarAdaptor adaptor(&parent);
     QString json = QStringLiteral(R"({"title":"Test","startTime":"2026-01-15T10:00:00"})");
@@ -294,6 +298,9 @@ TEST(CalendarAdaptorTest, ModifySchedule_UpdateInvalidJson_ReturnsFalse)
 
 TEST(CalendarAdaptorTest, ModifySchedule_Delete_NoAccount_ReturnsFalse)
 {
+    // “无后端服务→无账户”的假设依赖环境；CI/开发机上存在真实日历服务时账户存在。
+    // 桩掉 D-Bus 调用确定性模拟“无服务”。
+    ScopedDbusUnavailable noDbus;
     MockCalendarParent parent;
     CalendarAdaptor adaptor(&parent);
     EXPECT_FALSE(adaptor.ModifySchedule(QStringLiteral("sched-1"), QStringLiteral("delete"), QString()));
@@ -301,6 +308,9 @@ TEST(CalendarAdaptorTest, ModifySchedule_Delete_NoAccount_ReturnsFalse)
 
 TEST(CalendarAdaptorTest, ModifySchedule_Update_NoAccount_ReturnsFalse)
 {
+    // “无后端服务→无账户”的假设依赖环境；CI/开发机上存在真实日历服务时账户存在。
+    // 桩掉 D-Bus 调用确定性模拟“无服务”。
+    ScopedDbusUnavailable noDbus;
     MockCalendarParent parent;
     CalendarAdaptor adaptor(&parent);
     QString json = QStringLiteral(R"({"title":"Updated"})");

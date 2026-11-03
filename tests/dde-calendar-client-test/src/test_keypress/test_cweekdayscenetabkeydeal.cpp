@@ -19,6 +19,9 @@ void test_CWeekDaySceneTabKeyDeal::SetUp()
 {
     delete SceneCurrentItem;
     SceneCurrentItem = new TestBackgroundItem();
+    // getDate() 为基类内联函数无法打桩，直接用真实 setter 设置日期，
+    // 断言经 signalSwitchView 桩记录的日期即可端到端验证。
+    static_cast<TestBackgroundItem *>(SceneCurrentItem)->setDate(QDate(2026, 6, 15));
     calendarDDialogExecStub(stub.getStub());
     scene = QSharedPointer<CGraphicsScene>(new CGraphicsScene());
     view = QSharedPointer<QGraphicsView>(new QGraphicsView());
