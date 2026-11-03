@@ -95,6 +95,15 @@ if(BUILD_LEGACY_CALENDAR_TESTS)
     list(APPEND CALDAV_TEST_SRC ${LEGACY_CALENDAR_SERVICE_SRC})
 endif()
 
+# pinyinsearch 依赖资源 :/pinyin.dict（生产 service 二进制已嵌入），
+# 测试目标同样需要嵌入，否则拼音相关用例因词表为空而失败。
+if(COMMAND QT_ADD_RESOURCES_MACRO)
+    QT_ADD_RESOURCES_MACRO(CALDAV_TEST_SRC ${APP_QRC})
+else()
+    include(${CMAKE_SOURCE_DIR}/cmake/qt-version-macros.cmake)
+    QT_ADD_RESOURCES_MACRO(CALDAV_TEST_SRC ${APP_QRC})
+endif()
+
 add_executable(${APP_BIN_NAME}
     ${CALDAV_TEST_SRC}
     ${CALDAV_SERVICE_SRC}

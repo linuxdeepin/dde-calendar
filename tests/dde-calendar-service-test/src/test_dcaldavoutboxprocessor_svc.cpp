@@ -415,7 +415,7 @@ TEST(CalDavOutboxProcessorSvc, FetchEtagWhenServerOmitsEtagHeader)
     EXPECT_FALSE(mapping.etag.isEmpty());
 }
 
-TEST(CalDavOutboxProcessorSvc, FetchWriteEtagForModifyWithEmptyBaseEtag)
+TEST(CalDavOutboxProcessorSvc, ModifyWithEmptyBaseEtagRecordsConflictAndKeepsLocal)
 {
     OutboxTestEnv env;
     ASSERT_TRUE(env.init());
@@ -453,10 +453,17 @@ TEST(CalDavOutboxProcessorSvc, FetchWriteEtagForModifyWithEmptyBaseEtag)
         env.account->accountID(), scheduleID);
     EXPECT_TRUE(item.baseEtag.isEmpty());
 
-    // Process — fetchWriteEtag sends PROPFIND, gets etag, then sendWriteRequest
+    // 现行生产策略：Modify 且 baseEtag 为空时，不会自动拉取远端最新版本作为
+    // 基线覆盖，而是转入冲突快照处理；当服务端未返回可用快照时，保留本地
+    // 版本并记录一个可由用户选择的冲突（dcaldavoutboxprocessor.cpp 中
+    // "Never turn an unknown baseline into the current remote version"）。
     ASSERT_TRUE(env.processOutbox(result));
-    ASSERT_TRUE(result.success);
+    EXPECT_FALSE(result.success);
     EXPECT_TRUE(result.requestAttempted);
+    EXPECT_EQ(1, result.conflictRecordedCount);
+    EXPECT_TRUE(result.errorMessage.contains(QLatin1String("conflict snapshot is empty")));
+    // 本地日程必须保留（keep the local version）
+    EXPECT_FALSE(env.localDatabase->getScheduleByScheduleID(scheduleID).isNull());
 }
 
 TEST(CalDavOutboxProcessorSvc, ProcessMissingScheduleConvertsToDeleteWhenMappingExists)

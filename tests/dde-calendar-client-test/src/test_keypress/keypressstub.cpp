@@ -50,8 +50,9 @@ CFocusItem::CItemType getItemType_stub()
 }
 
 // CGraphicsScene stub
-void setActiveSwitching_stub(bool activeSwitching)
+void setActiveSwitching_stub(void *obj, bool activeSwitching)
 {
+    Q_UNUSED(obj)
     scene_activeSwitching = activeSwitching;
     setActiveSwitchingCalled = true;
     setActiveSwitchingValue = activeSwitching;
@@ -63,8 +64,9 @@ QGraphicsItem *getCurrentFocusItem_stub(void *obj)
     return SceneCurrentItem;
 }
 
-void signalSwitchView_stub(const QDate &focusDate, bool setItemFocus = false)
+void signalSwitchView_stub(void *obj, const QDate &focusDate, bool setItemFocus)
 {
+    Q_UNUSED(obj)
     Q_UNUSED(focusDate);
     Q_UNUSED(setItemFocus);
     signalSwitchViewCalled = true;

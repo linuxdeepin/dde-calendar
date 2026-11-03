@@ -620,8 +620,11 @@ static bool stub_SyncDataDownload(SyncFileManage * /*self*/, const QString &uid,
 }
 
 static int g_stub_duid_retcode = 0;
-static int stub_downloadUidData(bool &isInitSyncData, SyncFileManage &fileManger)
+static int stub_downloadUidData(void *self, bool &isInitSyncData, SyncFileManage &fileManger)
 {
+    // 首参必须为 this 占位（Stub 库以函数指针方式调用成员，this 占据第一个参数槽），
+    // 否则参数整体左移，isInitSyncData 会错误绑定到 this 并写坏对象内存。
+    Q_UNUSED(self)
     isInitSyncData = false;
     return g_stub_duid_retcode;
 }

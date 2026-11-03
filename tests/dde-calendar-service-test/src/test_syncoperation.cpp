@@ -4,6 +4,9 @@
 #include "syncoperation.h"
 
 #include <gtest/gtest.h>
+#include <memory>
+
+#include "dbus_call_stub.h"
 
 #include <QDBusMessage>
 #include <QDBusArgument>
@@ -17,6 +20,9 @@ class SyncoperationTest : public testing::Test
 protected:
     void SetUp() override
     {
+        // “WithoutDbus”类用例依赖“同步服务不存在”的环境；CI 会话里真实存在
+        // com.deepin.sync.Daemon，故统一桩掉 D-Bus 调用使其确定性失败。
+        m_noDbus = std::unique_ptr<ScopedDbusUnavailable>(new ScopedDbusUnavailable());
         m_op = new Syncoperation();
     }
     void TearDown() override
@@ -25,6 +31,7 @@ protected:
         m_op = nullptr;
     }
     Syncoperation *m_op = nullptr;
+    std::unique_ptr<ScopedDbusUnavailable> m_noDbus;
 };
 
 // ---- Syncoperation::Syncoperation (constructor) ----

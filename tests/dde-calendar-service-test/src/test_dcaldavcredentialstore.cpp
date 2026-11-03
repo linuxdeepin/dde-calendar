@@ -4,6 +4,7 @@
 
 #include "gtest/gtest.h"
 #include "dcaldavcredentialstore.h"
+#include "dbus_call_stub.h"
 
 #include <QString>
 #include <QObject>
@@ -229,6 +230,9 @@ TEST(DCalDavCredentialStoreTest, DeletePasswordAsync_InvalidCredentialRef_NullCa
 
 TEST(DCalDavCredentialStoreTest, StorePassword_NoSecretService_ReturnsFalse)
 {
+    // CI 会话里存在真实 Secret Service 会让写入成功；桩掉 D-Bus 调用
+    // 确定性模拟“无 Secret Service”。
+    ScopedDbusUnavailable noDbus;
     QString credentialRef;
     QString errorMsg;
     // Without a Secret Service running, storePassword should fail gracefully
