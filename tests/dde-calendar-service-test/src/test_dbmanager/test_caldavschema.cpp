@@ -1714,12 +1714,12 @@ TEST(CalDavRepository, PersistsCalendarTokenAndAccountStatus)
     ASSERT_TRUE(database.updateCalDavCalendarInitialSyncCompleted(
         QStringLiteral("calendar-1"), true));
     calendars = database.getCalDavCalendarList(QStringLiteral("account-1"));
-    ASSERT_EQ(1, calendars.size());
+    ASSERT_EQ(2, calendars.size());
     EXPECT_TRUE(calendars.first().initialSyncCompleted);
 
     ASSERT_TRUE(database.updateCalDavCalendarSyncToken(QStringLiteral("calendar-1"), QStringLiteral("token-2")));
     calendars = database.getCalDavCalendarList(QStringLiteral("account-1"));
-    ASSERT_EQ(1, calendars.size());
+    ASSERT_EQ(2, calendars.size());
     EXPECT_EQ(QStringLiteral("token-2"), calendars.first().syncToken);
     const DCalDavCalendarInfo calendarByType = database.getCalDavCalendarByScheduleTypeID(
         QStringLiteral("account-1"), QStringLiteral("type-1"));
@@ -1988,7 +1988,7 @@ TEST(CalDavAccountSync, FailsWhenSkippedResourceRecordsCannotBeLoaded)
     calendar.href = QStringLiteral("https://caldav.example.test/calendars/user/");
     calendar.displayName = QStringLiteral("Calendar");
     calendar.scheduleTypeID = QStringLiteral("schedule-type-1");
-    calendar.syncToken = QStringLiteral("sync-token-123");
+    calendar.syncToken = QStringLiteral("old-token");
     calendar.enabled = true;
     ASSERT_TRUE(accountManagerDatabase.upsertCalDavCalendar(calendar));
 
@@ -2722,7 +2722,7 @@ TEST(CalDavIntegration, DetectsRemoteDeletionWithoutSyncTokenOutsideQueryRange)
     request.calendarUrl = calendarUrl;
     request.username = QStringLiteral("user");
     request.password = QStringLiteral("pass");
-    request.syncToken = QStringLiteral("sync-token-123");
+    request.syncToken = QString();
     request.initialSyncCompleted = true;
     request.referenceTime = QDateTime(QDate(2026, 8, 31), QTime(0, 0), Qt::UTC);
 
