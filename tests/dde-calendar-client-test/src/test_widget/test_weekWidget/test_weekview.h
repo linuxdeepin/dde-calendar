@@ -5,19 +5,44 @@
 #ifndef TEST_WEEKVIEW_H
 #define TEST_WEEKVIEW_H
 
-//#include "weekWidget/weekview.h"
-//#include "gtest/gtest.h"
-//#include <QObject>
+#include "weekWidget/weekview.h"
+#include "gtest/gtest.h"
+#include <QObject>
 
-//class test_weekview : public QObject
-//    , public ::testing::Test
-//{
-//public:
-//    test_weekview();
-//    ~test_weekview();
+static int testGetWeekNumOfYear(const QDate &)
+{
+    return 1;
+}
 
-//protected:
-//    CWeekView *mWeekView = nullptr;
-//};
+class test_weekview : public ::testing::Test
+{
+protected:
+    void SetUp() override
+    {
+        mWeekView = new CWeekView(&testGetWeekNumOfYear);
+    }
+    void TearDown() override
+    {
+        delete mWeekView;
+        mWeekView = nullptr;
+    }
+    CWeekView *mWeekView = nullptr;
+};
+
+// Separate fixture for CWeekNumWidget (needs function pointer in constructor)
+class test_weeknumwidget : public ::testing::Test
+{
+protected:
+    void SetUp() override
+    {
+        mWeekNumWidget = new CWeekNumWidget(&testGetWeekNumOfYear, nullptr);
+    }
+    void TearDown() override
+    {
+        delete mWeekNumWidget;
+        mWeekNumWidget = nullptr;
+    }
+    CWeekNumWidget *mWeekNumWidget = nullptr;
+};
 
 #endif // TEST_WEEKVIEW_H

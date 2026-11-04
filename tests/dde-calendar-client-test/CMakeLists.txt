@@ -77,8 +77,7 @@ if(BUILD_LEGACY_CALENDAR_TESTS)
         ${CMAKE_CURRENT_SOURCE_DIR}/src/test_widget/test_monthWidget/test_monthview.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/test_view/test_scheduleitem.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/test_customWidget/test_scheduleremindwidget.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/test_customWidget/test_monthbrefwidget.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/test_widget/test_weekWidget/test_weekwindow.cpp)
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/test_customWidget/test_monthbrefwidget.cpp)
     list(APPEND CALENDAR_CLIENT_TEST_SRC ${LEGACY_CALENDAR_CLIENT_TEST_SRC})
 
     file(GLOB_RECURSE CALENDAR_CLIENT_SRC ${APP_CLIENT_DIR}/src/*.cpp)
