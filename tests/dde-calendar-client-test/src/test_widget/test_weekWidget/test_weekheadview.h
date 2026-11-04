@@ -5,19 +5,23 @@
 #ifndef TEST_WEEKHEADVIEW_H
 #define TEST_WEEKHEADVIEW_H
 
-//#include "weekWidget/weekheadview.h"
-//#include "gtest/gtest.h"
-//#include <QObject>
+#include "weekWidget/weekheadview.h"
+#include "gtest/gtest.h"
+#include <QObject>
 
-//class test_weekheadview : public QObject
-//    , public ::testing::Test
-//{
-//public:
-//    test_weekheadview();
-//    ~test_weekheadview();
-
-//protected:
-//    CWeekHeadView *mWeekHeadView = nullptr;
-//};
+class test_weekheadview : public ::testing::Test
+{
+protected:
+    void SetUp() override
+    {
+        mWeekHeadView = new CWeekHeadView();
+    }
+    void TearDown() override
+    {
+        delete mWeekHeadView;
+        mWeekHeadView = nullptr;
+    }
+    CWeekHeadView *mWeekHeadView = nullptr;
+};
 
 #endif // TEST_WEEKHEADVIEW_H

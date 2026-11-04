@@ -5,28 +5,18 @@
 #ifndef TEST_SCHEDULETYPEEDITDLG_H
 #define TEST_SCHEDULETYPEEDITDLG_H
 
-//#include "scheduletypeeditdlg.h"
-//#include <QObject>
-//#include <QTest>
-//#include <gtest/gtest.h>
+#include <QObject>
+#include <gtest/gtest.h>
+#include "dialog/scheduletypeeditdlg.h"
 
-//class test_scheduletypeeditdlg: public::testing::Test
-//{
-//public:
-//    test_scheduletypeeditdlg();
-
-//    virtual void SetUp()
-//    {
-//        mWidget = new ScheduleTypeEditDlg();
-//    }
-
-//    virtual void TearDown()
-//    {
-//        delete mWidget;
-//        mWidget = nullptr;
-//    }
-//protected:
-//    ScheduleTypeEditDlg *mWidget = nullptr;
-//};
+class test_scheduletypeeditdlg : public QObject, public testing::Test
+{
+public:
+    test_scheduletypeeditdlg();
+    ~test_scheduletypeeditdlg();
+protected:
+    ScheduleTypeEditDlg *mDlgNew = nullptr;
+    ScheduleTypeEditDlg *mDlgImport = nullptr;
+};
 
 #endif // TEST_SCHEDULETYPEEDITDLG_H
