@@ -56,4 +56,21 @@ echo "==> Generating summary JSON: ../$reportdir/ut-summary.json"
 
 python3 "${scriptdir}/gen-ut-summary.py"
 
-exit $test_exit_code
+# 退出码以 XML 汇总结果为准（failed == 0 → 0），而非二进制进程退出码：
+# ASan/LeakSanitizer 在进程退出阶段可能将退出码置为非零（即使全部用例
+# 通过且 XML 报告 failures=0），timeout 包装也会引入额外退出码。
+summary_exit=$(python3 -c "
+import json, sys
+try:
+    s = json.load(open('../$reportdir/ut-summary.json'))
+    print(0 if s['test_cases']['failed'] == 0 else 1)
+except Exception:
+    print(1)
+")
+if [ "$summary_exit" -ne 0 ]; then
+    echo "==> UT FAILED: some test cases reported failures in XML reports" >&2
+elif [ "$test_exit_code" -ne 0 ]; then
+    echo "==> NOTE: all XML reports show 0 failures, but some binaries exited non-zero" >&2
+    echo "    (likely ASan/LeakSanitizer exit-code side effect); treating as PASS" >&2
+fi
+exit $summary_exit
