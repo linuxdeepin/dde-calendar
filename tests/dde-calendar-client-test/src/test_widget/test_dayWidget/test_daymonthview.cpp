@@ -236,7 +236,18 @@ TEST_F(test_daymonthview, widget_cellClicked)
 //void CDayMonthWidget::setSelectedCell(int index)
 TEST_F(test_daymonthview, widget_setSelectedCell)
 {
-    mDayMonthWidget->setShowDate(dayMonthviewGetDayList(), QDate::currentDate(), QDate::currentDate());
+    // 固定基准日期构造网格：setSelectedCell 对“已选中”的索引不发信号
+    // （signalChangeSelectDate 早退分支），若用 currentDate 布局，“今天”所在格
+    // 恰好等于被选索引时（如 2026-11-05 落在索引 10）spy 计数为 0，属于
+    // 日期依赖。2026-06-01 为周一，网格从 6/1 开始，选中日 6/15 位于索引 14，
+    // 与 10/20 均不相同，断言恒定成立。
+    QVector<QDate> dateList;
+    const QDate firstOfMonth(2026, 6, 1);
+    for (int i = 0; i < 42; ++i) {
+        dateList.append(firstOfMonth.addDays(i));
+    }
+    const QDate selectDate(2026, 6, 15);
+    mDayMonthWidget->setShowDate(dateList, selectDate, selectDate);
     QSignalSpy spy(mDayMonthWidget, &CDayMonthWidget::signalChangeSelectDate);
     mDayMonthWidget->setSelectedCell(10);
     EXPECT_GT(spy.count(), 0);
