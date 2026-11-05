@@ -17,7 +17,11 @@
 #include <QSignalSpy>
 #include <QTimer>
 
+#include "../third-party_stub/stub.h"
 #include <gtest/gtest.h>
+
+#include <QElapsedTimer>
+#include <QDBusConnectionInterface>
 
 namespace {
 
@@ -84,6 +88,23 @@ inline void pumpEvents(int ms = 500)
     QTimer::singleShot(ms, &loop, &QEventLoop::quit);
     loop.exec();
 }
+
+// 泵事件直到条件满足或超时
+template <typename Predicate>
+inline bool pumpUntil(Predicate pred, int timeoutMs = 3000, int stepMs = 100)
+{
+    QElapsedTimer timer;
+    timer.start();
+    while (!pred()) {
+        if (timer.elapsed() >= timeoutMs)
+            return false;
+        pumpEvents(stepMs);
+    }
+    return true;
+}
+
+
+
 
 } // namespace
 
@@ -187,9 +208,19 @@ TEST(SpDbusAccountManagerRequestTest, ClientIsShow_SendsCall)
     if (!guard.ensure()) GTEST_SKIP() << "Session bus unavailable or service owned";
 
     DbusAccountManagerRequest request;
+    // QDBusAbstractInterface 的首次调用会先做一次接口内省往返，该次调用的
+    // 方法消息会被吞掉（CI 真实会话总线与本地 offscreen 均复现）。先以一次
+    // 预热调用完成内省，再触发被测行为，其消息才会真正送达 mock 服务。
+    {
+        QList<QVariant> warmArgs; warmArgs << true;
+        static_cast<QDBusAbstractInterface &>(request)
+            .callWithArgumentList(QDBus::NoBlock, QStringLiteral("calendarIsShow"), warmArgs);
+    }
     request.clientIsShow(true);
-    pumpEvents(200);
-    EXPECT_TRUE(guard.svc.calledMethods.contains(QStringLiteral("calendarIsShow")));
+    const bool delivered = pumpUntil(
+        [&guard] { return guard.svc.calledMethods.contains(QStringLiteral("calendarIsShow")); },
+        3000);
+    EXPECT_TRUE(delivered);
 }
 
 // ---- slotCallFinished error path (always errors, regardless of bus state) ----
@@ -198,6 +229,14 @@ TEST(SpDbusAccountManagerRequestTest, SlotCallFinished_ErrorPath)
 {
     if (!QDBusConnection::sessionBus().isConnected())
         GTEST_SKIP() << "Session bus not available";
+    // 本用例前提是“日历服务未注册”；开发机等真实会话里若已有
+    // com.deepin.dataserver.Calendar 在线，调用会成功返回而非走错误分支，
+    // 此时前提不成立，跳过（CI 无该服务，正常执行）。
+    if (QDBusConnection::sessionBus().interface()
+            && QDBusConnection::sessionBus().interface()->isServiceRegistered(
+                   QString::fromUtf8(kCalendarService))) {
+        GTEST_SKIP() << "calendar service registered; error-path premise unavailable";
+    }
 
     DbusAccountManagerRequest request;
     bool callbackInvoked = false;
@@ -214,6 +253,13 @@ TEST(SpDbusAccountManagerRequestTest, SlotCallFinished_ErrorPath)
     // -fno-access-control allows calling protected asyncCall.
     request.asyncCall(QStringLiteral("methodThatNeverExistsForErrorPath"));
     pumpEvents(2000);
+    // 前提复核：若等待期间有真实日历服务抢注了服务名（与 mock 注销存在
+    // 毫秒级竞态，调用会得到成功回复而非错误），则前提失效，跳过。
+    if (QDBusConnection::sessionBus().interface()
+            && QDBusConnection::sessionBus().interface()->isServiceRegistered(
+                   QString::fromUtf8(kCalendarService))) {
+        GTEST_SKIP() << "calendar service registered during wait; premise unavailable";
+    }
     // Error path: callback should have been invoked with ret=1
     EXPECT_TRUE(callbackInvoked);
     EXPECT_EQ(callbackCode, 1);
