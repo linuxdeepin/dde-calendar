@@ -10,6 +10,10 @@
 
 #include <QVBoxLayout>
 #include <QSignalSpy>
+#include <QDBusConnection>
+#include <QDBusError>
+#include <QDBusMessage>
+#include <QProcess>
 
 // Stub for DScheduleDataManager::getInstance
 DScheduleDataManager *stub_getInstance()
@@ -301,15 +305,49 @@ TEST_F(CreateScheduleWidgetTest, GetCreatScheduleFromDbus_WithStub)
 
 // slotItemPress - stub external deps (QProcess, QDBus)
 // This test verifies the method runs without crash
+namespace {
+// slotItemPress 会用 dbus-send 真实拉起日历窗口（RaiseWindow）并向真实
+// com.deepin.dde.calendar.fjack 服务同步发起 OpenSchedule 调用。在 CI 真实
+// 桌面会话上会产生真实副作用并可能长时间阻塞直至超时，必须打桩隔离。
+bool stub_startDetached(const QString &program, const QStringList &arguments,
+                        const QString &workingDirectory, qint64 *pid)
+{
+    Q_UNUSED(program)
+    Q_UNUSED(arguments)
+    Q_UNUSED(workingDirectory)
+    Q_UNUSED(pid)
+    return true;
+}
+
+QDBusMessage stub_dbusSessionCall(void * /*self*/, const QDBusMessage &, QDBus::CallMode)
+{
+    return QDBusMessage::createError(QDBusError::ServiceUnknown,
+                                     QStringLiteral("stub: service unavailable"));
+}
+} // namespace
+
 TEST_F(CreateScheduleWidgetTest, SlotItemPress_RunsWithoutCrash)
 {
+    Stub stub;
+    // startDetached 是静态成员且有默认参数，取 4 参完整签名消除重载歧义
+    {
+        typedef bool (*detachedPtr)(const QString &, const QStringList &,
+                                    const QString &, qint64 *);
+        detachedPtr detachedFn = &QProcess::startDetached;
+        stub.set(detachedFn, stub_startDetached);
+    }
+    {
+        typedef QDBusMessage (*fptr)(void *, const QDBusMessage &, QDBus::CallMode);
+        fptr callPtr = (fptr)(&QDBusConnection::call);
+        stub.set(callPtr, stub_dbusSessionCall);
+    }
+
     createSchedulewidget w;
     DSchedule::Ptr info(new DSchedule());
     info->setSummary("Test");
     info->setUid("test-uid");
 
-    // slotItemPress calls QProcess::startDetached, QThread::msleep, DBus
-    // These are hard to stub at function level, but they won't crash in offscreen mode
+    // QProcess 已打桩、D-Bus 同步调用已打桩，剩余逻辑（msleep/序列化）正常执行
     w.slotItemPress(info);
     SUCCEED();
 }

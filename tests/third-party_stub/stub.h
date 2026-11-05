@@ -116,16 +116,20 @@
     #define REPLACE_FAR(t, fn, fn_stub)\
         *fn = 0x49;\
         *(fn + 1) = 0xbb;\
-        *(long long *)(fn + 2) = (long long)fn_stub;\
+        /* fn+2 is not 8-byte aligned: a direct long long store trips UBSan */\
+        const long long t_far_addr = (long long)fn_stub;\
+        std::memcpy(fn + 2, &t_far_addr, sizeof(t_far_addr));\
         *(fn + 10) = 0x41;\
         *(fn + 11) = 0xff;\
-        *(fn + 12) = 0xe3;\
+        *(fn + 12) = 0xe3\
         //CACHEFLUSH((char *)fn, CODESIZE);
 
     //5 byte(jmp rel32)
     #define REPLACE_NEAR(t, fn, fn_stub)\
         *fn = 0xE9;\
-        *(int *)(fn + 1) = (int)(fn_stub - fn - CODESIZE_MIN);\
+        /* fn+1 is not 4-byte aligned: a direct int store trips UBSan */\
+        const int t_near_offset = (int)(fn_stub - fn - CODESIZE_MIN);\
+        std::memcpy(fn + 1, &t_near_offset, sizeof(t_near_offset))\
         //CACHEFLUSH((char *)fn, CODESIZE);
 #endif
 
