@@ -184,6 +184,32 @@ TEST(CalDavProviderProfile, ProvidesExpectedDefaults)
     EXPECT_TRUE(other.serverUrlEditable);
 }
 
+TEST(CalDavReminder, SoftDeletedScheduleIsExcludedFromReminderQuery)
+{
+    QTemporaryDir directory;
+    ASSERT_TRUE(directory.isValid());
+    DAccount::Ptr account(new DAccount(DAccount::Account_Local));
+    account->setAccountID(QStringLiteral("reminder-soft-delete-account"));
+    DAccountDataBase database(account);
+    database.setDBPath(directory.filePath(QStringLiteral("local.db")));
+    database.initDBData();
+
+    DSchedule::Ptr schedule(new DSchedule);
+    schedule->setSummary(QStringLiteral("reminder soft delete"));
+    schedule->setScheduleTypeID(QStringLiteral("reminder-type"));
+    schedule->setDtStart(QDateTime(QDate(2026, 11, 6), QTime(10, 0)));
+    schedule->setDtEnd(QDateTime(QDate(2026, 11, 6), QTime(11, 0)));
+    schedule->setAlarmType(DSchedule::Alarm_Begin);
+    ASSERT_FALSE(database.createSchedule(schedule).isEmpty());
+
+    DSchedule::List reminders = database.getRemindSchedule();
+    ASSERT_EQ(1, reminders.size());
+    EXPECT_EQ(schedule->uid(), reminders.first()->uid());
+
+    ASSERT_TRUE(database.deleteScheduleByScheduleID(schedule->uid()));
+    EXPECT_TRUE(database.getRemindSchedule().isEmpty());
+}
+
 TEST(CalDavSchema, CreatesTablesIdempotently)
 {
     QTemporaryDir directory;
