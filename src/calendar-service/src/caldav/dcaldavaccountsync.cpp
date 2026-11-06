@@ -7,10 +7,268 @@
 #include "daccountdatabase.h"
 #include "daccountmanagerdatabase.h"
 #include "dcaldavaccountstatus.h"
+#include "dcaldavprofile.h"
 #include "dcaldaveventreconciler.h"
 #include "dcaldavretrypolicy.h"
 #include "dcaldavsyncstatusmapper.h"
 #include "commondef.h"
+#include "ddatabase.h"
+
+#include <QHash>
+#include <QList>
+#include <QSet>
+#include <QStringList>
+
+#include <algorithm>
+#include <climits>
+
+namespace {
+
+struct IcsComponent {
+    QString name;
+    QStringList properties;
+    QList<IcsComponent> children;
+};
+
+QString canonicalIcsComponent(const IcsComponent &component)
+{
+    QStringList parts = component.properties;
+    parts.sort();
+    QStringList children;
+    for (const IcsComponent &child : component.children) {
+        children.append(canonicalIcsComponent(child));
+    }
+    children.sort();
+    parts.append(children);
+    return component.name + QLatin1Char('{') + parts.join(QLatin1Char('\n')) + QLatin1Char('}');
+}
+
+QString remoteEventSignature(const QString &calendarData)
+{
+    QString normalized = calendarData;
+    normalized.replace(QStringLiteral("\r\n"), QStringLiteral("\n"));
+    QStringList unfoldedLines;
+    for (const QString &line : normalized.split(QLatin1Char('\n'))) {
+        if ((line.startsWith(QLatin1Char(' ')) || line.startsWith(QLatin1Char('\t')))
+            && !unfoldedLines.isEmpty()) {
+            unfoldedLines.last().append(line.mid(1));
+        } else if (!line.isEmpty()) {
+            unfoldedLines.append(line);
+        }
+    }
+
+    IcsComponent root;
+    QList<IcsComponent *> stack {&root};
+    for (const QString &line : unfoldedLines) {
+        const QString upperLine = line.toUpper();
+        if (upperLine.startsWith(QStringLiteral("BEGIN:"))) {
+            IcsComponent child;
+            child.name = line.mid(6).trimmed().toUpper();
+            stack.constLast()->children.append(child);
+            stack.append(&stack.constLast()->children.last());
+            continue;
+        }
+        if (upperLine.startsWith(QStringLiteral("END:"))) {
+            const QString name = line.mid(4).trimmed().toUpper();
+            if (stack.size() <= 1 || stack.constLast()->name != name) {
+                return QString();
+            }
+            stack.removeLast();
+            continue;
+        }
+        if (stack.size() <= 1 || stack.constLast() == nullptr) {
+            continue;
+        }
+
+        const qsizetype colon = line.indexOf(QLatin1Char(':'));
+        if (colon <= 0) {
+            return QString();
+        }
+        const QString propertyName = line.left(colon).section(QLatin1Char(';'), 0, 0).toUpper();
+        const bool inEvent = std::any_of(stack.cbegin(), stack.cend(), [](const IcsComponent *component) {
+            return component != nullptr && component->name == QStringLiteral("VEVENT");
+        });
+        if (inEvent && (propertyName == QStringLiteral("DTSTAMP")
+                        || propertyName == QStringLiteral("CREATED")
+                        || propertyName == QStringLiteral("LAST-MODIFIED"))) {
+            continue;
+        }
+        if (inEvent && propertyName == QStringLiteral("TRANSP")
+            && line.compare(QStringLiteral("TRANSP:OPAQUE"), Qt::CaseInsensitive) == 0) {
+            continue;
+        }
+        if (inEvent && propertyName == QStringLiteral("X-KDE-KCALCORE-ENABLED")
+            && line.compare(QStringLiteral("X-KDE-KCALCORE-ENABLED:TRUE"), Qt::CaseInsensitive) == 0) {
+            continue;
+        }
+        const QString propertyHead = line.left(colon);
+        const QString normalizedHead = propertyName + propertyHead.mid(propertyName.size());
+        stack.constLast()->properties.append(normalizedHead + line.mid(colon));
+    }
+    if (stack.size() != 1) {
+        return QString();
+    }
+
+    QStringList events;
+    QStringList timeZones;
+    for (const IcsComponent &calendar : root.children) {
+        for (const IcsComponent &child : calendar.children) {
+            if (child.name == QStringLiteral("VEVENT")) {
+                events.append(canonicalIcsComponent(child));
+            } else if (child.name == QStringLiteral("VTIMEZONE")) {
+                timeZones.append(canonicalIcsComponent(child));
+            }
+        }
+    }
+    if (events.isEmpty()) {
+        return QString();
+    }
+    events.sort();
+    timeZones.sort();
+    return timeZones.join(QLatin1Char('\n')) + QLatin1Char('\n')
+        + events.join(QLatin1Char('\n'));
+}
+
+DCalDavEventMappingInfo::List accountMappings(
+    const QString &accountID, const QVector<DCalDavAccountSync::CalendarRequest> &calendars,
+    DAccountManagerDataBase *database)
+{
+    DCalDavEventMappingInfo::List mappings;
+    QSet<QString> includedCalendarIDs;
+    for (const DCalDavAccountSync::CalendarRequest &calendar : calendars) {
+        const DCalDavEventMappingInfo::List calendarMappings = database->getCalDavEventMappingList(
+            accountID, calendar.calendar.calendarId);
+        mappings.append(calendarMappings);
+        includedCalendarIDs.insert(calendar.calendar.calendarId);
+    }
+
+    DCalDavAccountInfo accountInfo;
+    if (database->getCalDavAccountInfo(accountID, accountInfo)) {
+        for (const DCalDavCalendarInfo &calendar : database->getCalDavCalendarList(accountID)) {
+            const bool isQQAggregate = DCalDavProviderProfile::isQQMailAggregateCalendar(
+                DCalDavProviderProfile::Provider_QQMail, accountInfo.username,
+                QUrl(calendar.href));
+            if (includedCalendarIDs.contains(calendar.calendarId)
+                || !isQQAggregate) {
+                continue;
+            }
+            mappings.append(database->getCalDavEventMappingList(accountID, calendar.calendarId));
+        }
+    }
+    return mappings;
+}
+
+bool hasEquivalentMappingInOtherCalendar(
+    const DCalDavCalendarQuery::RemoteEvent &remoteEvent, const QString &calendarID,
+    const DCalDavEventMappingInfo::List &mappings)
+{
+    if (remoteEvent.deleted || remoteEvent.uid.isEmpty()) {
+        return false;
+    }
+    const QString signature = remoteEventSignature(remoteEvent.calendarData);
+    if (signature.isEmpty()) {
+        return false;
+    }
+    for (const DCalDavEventMappingInfo &mapping : mappings) {
+        if (mapping.calendarID != calendarID && mapping.uid == remoteEvent.uid
+            && remoteEventSignature(mapping.originalIcs) == signature) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool removeDuplicateMappings(const QString &accountID,
+                             const QVector<DCalDavAccountSync::CalendarRequest> &calendars,
+                             DAccountDataBase *localDatabase,
+                             DAccountManagerDataBase *accountManagerDatabase,
+                             int *removedCount)
+{
+    const DCalDavEventMappingInfo::List mappings = accountMappings(
+        accountID, calendars, accountManagerDatabase);
+    QHash<QString, DCalDavEventMappingInfo> canonicalBySignature;
+    QHash<QString, int> calendarOrder;
+    for (int index = 0; index < calendars.size(); ++index) {
+        calendarOrder.insert(calendars.at(index).calendar.calendarId, index);
+    }
+
+    for (const DCalDavEventMappingInfo &mapping : mappings) {
+        if (mapping.uid.isEmpty()) {
+            continue;
+        }
+        const QString signature = remoteEventSignature(mapping.originalIcs);
+        if (signature.isEmpty()) {
+            continue;
+        }
+        const QString key = mapping.uid + QLatin1Char('\n') + signature;
+        const auto existing = canonicalBySignature.constFind(key);
+        if (existing == canonicalBySignature.cend()) {
+            canonicalBySignature.insert(key, mapping);
+            continue;
+        }
+        if (existing->calendarID == mapping.calendarID) {
+            continue;
+        }
+
+        const bool existingIsTombstone = localDatabase->isScheduleDeletedByScheduleID(
+            existing->localScheduleID);
+        const bool mappingIsTombstone = localDatabase->isScheduleDeletedByScheduleID(
+            mapping.localScheduleID);
+        const int existingOrder = calendarOrder.value(existing->calendarID, INT_MAX);
+        const int mappingOrder = calendarOrder.value(mapping.calendarID, INT_MAX);
+        const bool mappingIsCanonical = existingIsTombstone != mappingIsTombstone
+            ? existingIsTombstone
+            : mappingOrder < existingOrder;
+        const DCalDavEventMappingInfo canonical = mappingIsCanonical ? mapping : existing.value();
+        const DCalDavEventMappingInfo duplicate = mappingIsCanonical ? existing.value() : mapping;
+        if (!accountManagerDatabase->getCalDavOutboxItem(accountID, duplicate.localScheduleID)
+                 .operationID.isEmpty()) {
+            continue;
+        }
+        if (localDatabase->isScheduleDeletedByScheduleID(duplicate.localScheduleID)) {
+            canonicalBySignature.insert(key, canonical);
+            continue;
+        }
+        const bool sharesLocalSchedule = duplicate.localScheduleID == existing->localScheduleID;
+        SqlTransactionLocker transaction(
+            {localDatabase->getConnectionName(), DDataBase::NameAccountManager});
+        if (!transaction.isValid()) {
+            return false;
+        }
+        const bool localDeleted = sharesLocalSchedule
+            || localDatabase->deleteScheduleByScheduleID(duplicate.localScheduleID);
+        const bool mappingRemoved = sharesLocalSchedule;
+        const bool mappingUpdated = localDeleted
+            && (!mappingRemoved
+                || accountManagerDatabase->deleteCalDavEventMapping(accountID, duplicate.href));
+        if (!localDeleted || !mappingUpdated) {
+            transaction.rollback();
+            return false;
+        }
+        if (!transaction.commit()) {
+            bool repaired = false;
+            if (transaction.hasPartialCommit()
+                && transaction.committedConnectionNames().contains(localDatabase->getConnectionName())
+                && mappingRemoved) {
+                SqlTransactionLocker repairTransaction({DDataBase::NameAccountManager});
+                repaired = repairTransaction.isValid()
+                    && accountManagerDatabase->deleteCalDavEventMapping(accountID, duplicate.href)
+                    && repairTransaction.commit();
+            } else if (transaction.hasPartialCommit()
+                       && transaction.committedConnectionNames().contains(localDatabase->getConnectionName())) {
+                repaired = true;
+            }
+            if (!repaired) {
+                return false;
+            }
+        }
+        ++(*removedCount);
+        canonicalBySignature.insert(key, canonical);
+    }
+    return true;
+}
+
+} // namespace
 
 DCalDavAccountSync::DCalDavAccountSync(QObject *parent)
     : QObject(parent)
@@ -52,6 +310,7 @@ void DCalDavAccountSync::start(const Request &request, const Callback &callback)
     m_callback = callback;
     m_result = Result();
     m_calendarIndex = 0;
+    m_providerType = -1;
     m_successfulCalendarCount = 0;
     m_permissionDeniedCalendarCount = 0;
     m_lastPermissionDeniedError.clear();
@@ -66,7 +325,18 @@ void DCalDavAccountSync::start(const Request &request, const Callback &callback)
     DCalDavAccountInfo accountInfo;
     if (request.accountManagerDatabase->getCalDavAccountInfo(request.accountID, accountInfo)) {
         m_request.retryCount = accountInfo.retryCount;
+        m_providerType = accountInfo.providerType;
     }
+
+    int duplicateCount = 0;
+    if (m_providerType == DCalDavProviderProfile::Provider_QQMail
+        && !removeDuplicateMappings(m_request.accountID, m_request.calendars,
+                                    m_request.localDatabase, m_request.accountManagerDatabase,
+                                    &duplicateCount)) {
+        finish(false, QStringLiteral("Failed to remove duplicate QQ Mail calendar entries."));
+        return;
+    }
+    m_result.deletedCount += duplicateCount;
 
     if (!request.accountManagerDatabase->updateCalDavSyncStatus(
             request.accountID, DCalDavSyncStatus::Running, QDateTime(), QString())) {
@@ -214,10 +484,50 @@ void DCalDavAccountSync::syncNextCalendar()
                                  << "endpoint:" << DCalDavTransport::urlForLog(QUrl(calendar.calendar.href))
                                  << "remoteEventCount:" << syncResult.remoteEvents.size();
 
+        DCalDavCalendarQuery::RemoteEventList remoteEvents = syncResult.remoteEvents;
+        if (m_providerType == DCalDavProviderProfile::Provider_QQMail) {
+            const DCalDavEventMappingInfo::List allMappings = accountMappings(
+                m_request.accountID, m_request.calendars, m_request.accountManagerDatabase);
+            DAccountDataBase *localDatabase = m_request.localDatabase;
+            remoteEvents.erase(
+                std::remove_if(remoteEvents.begin(), remoteEvents.end(),
+                               [&calendar, &allMappings, localDatabase](
+                                   const DCalDavCalendarQuery::RemoteEvent &event) {
+                    if (event.href.isEmpty() || event.deleted) {
+                        return false;
+                    }
+                    const bool hasDeletedUidInCalendar = !event.uid.isEmpty()
+                        && std::any_of(allMappings.cbegin(), allMappings.cend(),
+                                       [&event, &calendar, localDatabase](
+                            const DCalDavEventMappingInfo &mapping) {
+                            return mapping.calendarID == calendar.calendar.calendarId
+                                && mapping.uid == event.uid
+                                && localDatabase->isScheduleDeletedByScheduleID(
+                                    mapping.localScheduleID);
+                        });
+                    if (hasDeletedUidInCalendar) {
+                        return true;
+                    }
+                    const auto mappingHere = std::find_if(
+                        allMappings.cbegin(), allMappings.cend(), [&event, &calendar](
+                            const DCalDavEventMappingInfo &mapping) {
+                            return mapping.calendarID == calendar.calendar.calendarId
+                                && mapping.href == event.href;
+                        });
+                    if (mappingHere != allMappings.cend()) {
+                        return localDatabase->isScheduleDeletedByScheduleID(
+                            mappingHere->localScheduleID);
+                    }
+                    return hasEquivalentMappingInOtherCalendar(event,
+                                                               calendar.calendar.calendarId,
+                                                               allMappings);
+                }), remoteEvents.end());
+        }
+
         DCalDavEventReconciler::ActionList actions;
         QString errorMessage;
         if (!DCalDavEventReconciler::buildActions(
-                syncResult.remoteEvents, existingMappings, actions, &errorMessage)) {
+                remoteEvents, existingMappings, actions, &errorMessage)) {
             fail(errorMessage);
             return;
         }

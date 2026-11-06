@@ -473,7 +473,7 @@ DSchedule::List DAccountDataBase::getRemindSchedule()
 {
     QString strSql("SELECT  scheduleID, scheduleTypeID, summary, description, allDay, dtStart, dtEnd, isAlarm,  \
                    titlePinyin, isLunar, ics, fileName, dtCreate, dtUpdate, dtDelete, isDeleted                 \
-                   FROM schedules WHERE  isAlarm =1;");
+                   FROM schedules WHERE isAlarm = 1 AND isDeleted = 0;");
     SqliteQuery query(m_database);
     DSchedule::List scheduleList;
     if (query.prepare(strSql)) {

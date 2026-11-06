@@ -9,6 +9,7 @@
 #include "daccountdatabase.h"
 #include "daccountmanagerdatabase.h"
 #include "dcaldavcredentialstore.h"
+#include "dcaldavprofile.h"
 #include "dcaldavcolorallocator.h"
 #include "dcaldavsyncjobmanager.h"
 #include "dcaldavrecoveryitem.h"
@@ -387,8 +388,11 @@ bool DCalDavAccountRegistrar::persistCalendars(const DCalDavXmlReader::Discovery
         // Some CalDAV servers omit current-user-privilege-set even though the
         // authenticated user can write. Try writes optimistically in that
         // case; an explicit privilege response without write remains read-only.
-        const bool writable = !collection.privilegesKnown
-            || (collection.privileges & DCalDavXmlReader::WritePrivilege);
+        const bool qqAggregate = DCalDavProviderProfile::isQQMailAggregateCalendar(
+            static_cast<DCalDavProviderProfile::ProviderType>(m_request.account.providerType),
+            m_request.account.username, href);
+        const bool writable = !qqAggregate && (!collection.privilegesKnown
+            || (collection.privileges & DCalDavXmlReader::WritePrivilege));
         if (scheduleTypeID.isEmpty()) {
             scheduleTypeID = createCalendarScheduleType(
                 m_request.localDatabase, m_request.account.accountId, calendarID,
@@ -423,10 +427,12 @@ bool DCalDavAccountRegistrar::persistCalendars(const DCalDavXmlReader::Discovery
         calendar.color = collection.color;
         calendar.scheduleTypeID = scheduleTypeID;
         calendar.supportedComponents = collection.supportedComponents;
-        calendar.privileges = collection.privilegesKnown
-            ? collection.privileges
-            : (DCalDavXmlReader::ReadPrivilege | DCalDavXmlReader::WritePrivilege);
-        calendar.privilegesKnown = collection.privilegesKnown;
+        calendar.privileges = qqAggregate
+            ? DCalDavXmlReader::ReadPrivilege
+            : (collection.privilegesKnown
+                   ? collection.privileges
+                   : (DCalDavXmlReader::ReadPrivilege | DCalDavXmlReader::WritePrivilege));
+        calendar.privilegesKnown = qqAggregate || collection.privilegesKnown;
         calendar.syncToken = syncToken;
         calendar.initialSyncCompleted = initialSyncCompleted;
         calendar.enabled = true;
@@ -437,10 +443,15 @@ bool DCalDavAccountRegistrar::persistCalendars(const DCalDavXmlReader::Discovery
             return false;
         }
 
-        DCalDavAccountSync::CalendarRequest calendarRequest;
-        calendarRequest.calendar = calendar;
-        calendarRequest.scheduleTypeID = calendar.scheduleTypeID;
-        syncRequest.calendars.append(calendarRequest);
+        if (!qqAggregate) {
+            DCalDavAccountSync::CalendarRequest calendarRequest;
+            calendarRequest.calendar = calendar;
+            calendarRequest.scheduleTypeID = calendar.scheduleTypeID;
+            syncRequest.calendars.append(calendarRequest);
+        } else {
+            qCInfo(ServiceLogger) << "Skipping QQ Mail aggregate calendar for event sync"
+                                  << "account:" << m_request.account.accountId;
+        }
         discoveredHrefs.insert(collection.href);
     }
 

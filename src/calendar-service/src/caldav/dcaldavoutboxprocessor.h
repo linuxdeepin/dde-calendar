@@ -84,6 +84,8 @@ private:
                           const QByteArray &etag);
     void handleWriteResponse(const DCalDavOutboxItem &item, const QUrl &resourceUrl,
                              const DCalDavTransport::Response &response);
+    void verifyMissingDeleteResource(const DCalDavOutboxItem &item, const QUrl &resourceUrl,
+                                     const DCalDavTransport::Response &deleteResponse);
     void fetchEtag(const DCalDavOutboxItem &item, const QUrl &resourceUrl);
     void fetchRemoteEtag(const DCalDavOutboxItem &item, const QUrl &resourceUrl);
     void fetchConflictSnapshot(const DCalDavOutboxItem &item, const QUrl &resourceUrl);
@@ -100,6 +102,7 @@ private:
     DCalDavOutboxItem::List m_items;
     Result m_result;
     int m_itemIndex = 0;
+    int m_providerType = -1;
     bool m_running = false;
 };
 

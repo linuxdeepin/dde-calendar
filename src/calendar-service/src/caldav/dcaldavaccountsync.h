@@ -82,6 +82,7 @@ private:
     Callback m_callback;
     Result m_result;
     int m_calendarIndex = 0;
+    int m_providerType = -1;
     int m_successfulCalendarCount = 0;
     int m_permissionDeniedCalendarCount = 0;
     QString m_lastPermissionDeniedError;

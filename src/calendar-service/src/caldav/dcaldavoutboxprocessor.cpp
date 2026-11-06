@@ -17,6 +17,9 @@
 
 
 #include <QDateTime>
+#include <QHash>
+#include <QSet>
+#include <QTimeZone>
 
 #include <algorithm>
 #include <QUrl>
@@ -47,6 +50,13 @@ DCalDavErrorCode errorCodeForFailureType(DCalDavOutboxItem::FailureType failureT
         return DCalDavErrorCode::NoError;
     }
     return DCalDavErrorCode::Unknown;
+}
+
+bool responseIndicatesInvalidCalendarData(const DCalDavTransport::Response &response)
+{
+    const QByteArray body = response.body.toLower();
+    return body.contains("invalid recurrence rule") || body.contains("invalid icalendar")
+        || body.contains("invalid calendar data");
 }
 
 QString responseError(const DCalDavOutboxItem &item, const DCalDavTransport::Response &response)
@@ -94,6 +104,62 @@ DCalDavCalendarInfo calendarFor(const DCalDavOutboxItem &item, const DSchedule::
 }
 
 
+bool responseConfirmsMissingResource(const QByteArray &xml, const QUrl &resourceUrl)
+{
+    QXmlStreamReader reader(xml);
+    bool inResponse = false;
+    bool inPropstat = false;
+    QString responseHref;
+    int responseStatus = 0;
+    bool matchingResourceMissing = false;
+    while (!reader.atEnd()) {
+        reader.readNext();
+        if (reader.isStartElement() && reader.name() == QStringLiteral("response")
+            && reader.namespaceUri() == QStringLiteral("DAV:")) {
+            inResponse = true;
+            inPropstat = false;
+            responseHref.clear();
+            responseStatus = 0;
+        } else if (inResponse && reader.isStartElement()
+                   && reader.name() == QStringLiteral("propstat")
+                   && reader.namespaceUri() == QStringLiteral("DAV:")) {
+            inPropstat = true;
+        } else if (inResponse && reader.isStartElement()
+                   && reader.name() == QStringLiteral("href")
+                   && reader.namespaceUri() == QStringLiteral("DAV:")) {
+            responseHref = reader.readElementText(QXmlStreamReader::SkipChildElements).trimmed();
+        } else if (inResponse && reader.isStartElement()
+                   && reader.name() == QStringLiteral("status")
+                   && reader.namespaceUri() == QStringLiteral("DAV:")) {
+            const QString statusLine = reader.readElementText(QXmlStreamReader::SkipChildElements);
+            const int status = statusLine.section(QLatin1Char(' '), -1).toInt();
+            if (!inPropstat) {
+                responseStatus = status;
+            }
+        } else if (inResponse && reader.isEndElement()
+                   && reader.name() == QStringLiteral("propstat")
+                   && reader.namespaceUri() == QStringLiteral("DAV:")) {
+            inPropstat = false;
+        } else if (inResponse && reader.isEndElement()
+                   && reader.name() == QStringLiteral("response")
+                   && reader.namespaceUri() == QStringLiteral("DAV:")) {
+            const QUrl reportedUrl = resourceUrl.resolved(QUrl(responseHref));
+            const bool sameResource = !responseHref.isEmpty()
+                && reportedUrl.toString(QUrl::FullyEncoded)
+                    == resourceUrl.toString(QUrl::FullyEncoded);
+            if (sameResource) {
+                if (responseStatus == 404) {
+                    matchingResourceMissing = true;
+                } else {
+                    return false;
+                }
+            }
+            inResponse = false;
+        }
+    }
+    return !reader.hasError() && matchingResourceMissing;
+}
+
 QString parseEtag(const QByteArray &xml)
 {
     QXmlStreamReader reader(xml);
@@ -125,9 +191,84 @@ QByteArray ifMatchValue(const QString &etag)
 }
 
 QString icsForRemoteWrite(const DSchedule::Ptr &schedule,
-                          const DCalDavEventMappingInfo &mapping)
+                          const DCalDavEventMappingInfo &mapping, bool qqMail)
 {
-    QString localIcs = DSchedule::toIcsString(schedule);
+    DSchedule::Ptr remoteSchedule = schedule;
+
+    if (qqMail) {
+        remoteSchedule = DSchedule::Ptr(new DSchedule(*schedule));
+        if (!remoteSchedule->allDay()) {
+            const QTimeZone qqTimeZone = QTimeZone::fromSecondsAheadOfUtc(8 * 60 * 60);
+            const auto toQqTime = [&qqTimeZone](const QDateTime &dateTime) {
+                return dateTime.isValid() ? dateTime.toTimeZone(qqTimeZone) : dateTime;
+            };
+
+            remoteSchedule->setDtStart(toQqTime(remoteSchedule->dtStart()));
+            remoteSchedule->setDtEnd(toQqTime(remoteSchedule->dtEnd()));
+            if (remoteSchedule->recurrenceId().isValid()) {
+                remoteSchedule->setRecurrenceId(toQqTime(remoteSchedule->recurrenceId()));
+            }
+
+            if (remoteSchedule->recurs()) {
+                KCalendarCore::Recurrence *recurrence = remoteSchedule->recurrence();
+                QList<QDateTime> rDateTimes = recurrence->rDateTimes();
+                for (QDateTime &dateTime : rDateTimes) {
+                    dateTime = toQqTime(dateTime);
+                }
+                recurrence->setRDateTimes(rDateTimes);
+
+                QList<QDateTime> exDateTimes = recurrence->exDateTimes();
+                for (QDateTime &dateTime : exDateTimes) {
+                    dateTime = toQqTime(dateTime);
+                }
+                recurrence->setExDateTimes(exDateTimes);
+            }
+        }
+    }
+
+    QString localIcs = DSchedule::toIcsString(remoteSchedule);
+    QHash<QString, QString> originalTimeZones;
+
+    if (qqMail) {
+        // QQ Mail rejects KDE's historical VTIMEZONE recurrence rules with a
+        // misleading HTTP 403. Its server accepts the TZID without the block.
+        const QRegularExpression timezoneExpression(
+            QStringLiteral("BEGIN:VTIMEZONE\\r?\\n.*?END:VTIMEZONE\\r?\\n?"),
+            QRegularExpression::DotMatchesEverythingOption
+                | QRegularExpression::CaseInsensitiveOption);
+        const QRegularExpression timezoneIdExpression(
+            QStringLiteral("(?:^|\\r?\\n)TZID:([^\\r\\n]+)"),
+            QRegularExpression::CaseInsensitiveOption);
+        auto timezoneMatch = timezoneExpression.globalMatch(mapping.originalIcs);
+        while (timezoneMatch.hasNext()) {
+            const QString timezoneBlock = timezoneMatch.next().captured(0);
+            const QRegularExpressionMatch idMatch = timezoneIdExpression.match(timezoneBlock);
+            if (idMatch.hasMatch()) {
+                originalTimeZones.insert(idMatch.captured(1).trimmed(), timezoneBlock);
+            }
+        }
+        localIcs.remove(timezoneExpression);
+        const QRegularExpression tzidExpression(
+            QStringLiteral("(^|\\r?\\n)([^:\\r\\n]*;TZID=)(?:\"[^\"]+\"|[^:;\\r\\n]+)(?=;|:)"),
+            QRegularExpression::CaseInsensitiveOption);
+        localIcs.replace(tzidExpression,
+                         QStringLiteral("\\1\\2Xmail Custome Time"));
+
+        const QString qqTimeZone = QStringLiteral(
+            "BEGIN:VTIMEZONE\r\n"
+            "TZID:Xmail Custome Time\r\n"
+            "BEGIN:STANDARD\r\n"
+            "DTSTART:19700101T000000\r\n"
+            "TZOFFSETFROM:+0800\r\n"
+            "TZOFFSETTO:+0800\r\n"
+            "END:STANDARD\r\n"
+            "END:VTIMEZONE\r\n");
+        const qsizetype eventStart = localIcs.indexOf(QStringLiteral("BEGIN:VEVENT"));
+        if (eventStart >= 0) {
+            localIcs.insert(eventStart, qqTimeZone);
+        }
+    }
+
     if (mapping.originalIcs.isEmpty()) {
         return localIcs;
     }
@@ -158,8 +299,36 @@ QString icsForRemoteWrite(const DSchedule::Ptr &schedule,
     if (calendarEnd < 0) {
         return localIcs;
     }
-    localIcs.insert(calendarEnd, detachedEvents.join(QStringLiteral("\r\n"))
-                    + QStringLiteral("\r\n"));
+    QStringList detachedTimeZones;
+    const QRegularExpression tzidExpression(
+        QStringLiteral("(?:^|[;\\r\\n])TZID=(?:\"([^\"]+)\"|([^:;\\r\\n]+))"),
+        QRegularExpression::CaseInsensitiveOption);
+    QSet<QString> referencedTimeZones;
+    for (const QString &event : detachedEvents) {
+        auto tzidMatch = tzidExpression.globalMatch(event);
+        while (tzidMatch.hasNext()) {
+            const QRegularExpressionMatch match = tzidMatch.next();
+            referencedTimeZones.insert(match.captured(1).isEmpty()
+                                           ? match.captured(2).trimmed()
+                                           : match.captured(1).trimmed());
+        }
+    }
+    for (const QString &timezoneID : referencedTimeZones) {
+        if (timezoneID.compare(QStringLiteral("Xmail Custome Time"), Qt::CaseInsensitive) == 0) {
+            continue;
+        }
+        const auto timezone = originalTimeZones.constFind(timezoneID);
+        if (timezone != originalTimeZones.cend()) {
+            detachedTimeZones.append(timezone.value());
+        }
+    }
+    QString preservedData = detachedTimeZones.join(QStringLiteral("\r\n"));
+    if (!preservedData.isEmpty()) {
+        preservedData.append(QStringLiteral("\r\n"));
+    }
+    preservedData.append(detachedEvents.join(QStringLiteral("\r\n"))
+                         + QStringLiteral("\r\n"));
+    localIcs.insert(calendarEnd, preservedData);
     return localIcs;
 }
 
@@ -263,6 +432,7 @@ void DCalDavOutboxProcessor::start(const Request &request, const Callback &callb
     m_callback = callback;
     m_result = Result();
     m_itemIndex = 0;
+    m_providerType = -1;
     m_running = true;
     if (request.accountID.isEmpty() || request.username.isEmpty() || request.localDatabase == nullptr
         || request.accountManagerDatabase == nullptr) {
@@ -271,9 +441,13 @@ void DCalDavOutboxProcessor::start(const Request &request, const Callback &callb
     }
 
     DCalDavAccountInfo accountInfo;
-    if (!request.accountManagerDatabase->getCalDavAccountInfo(request.accountID, accountInfo)
-        || !DCalDavProviderProfile::forProvider(
-               static_cast<DCalDavProviderProfile::ProviderType>(accountInfo.providerType)).supportsWrite) {
+    if (!request.accountManagerDatabase->getCalDavAccountInfo(request.accountID, accountInfo)) {
+        finish(true);
+        return;
+    }
+    m_providerType = accountInfo.providerType;
+    if (!DCalDavProviderProfile::forProvider(
+            static_cast<DCalDavProviderProfile::ProviderType>(m_providerType)).supportsWrite) {
         finish(true);
         return;
     }
@@ -646,7 +820,10 @@ void DCalDavOutboxProcessor::sendWriteRequest(const DCalDavOutboxItem &item,
     request.contentType = "text/calendar; charset=utf-8";
     request.username = m_request.username;
     request.password = m_request.password;
-    request.body = icsForRemoteWrite(remoteSchedule, mapping).toUtf8();
+    request.body = icsForRemoteWrite(
+                       remoteSchedule, mapping,
+                       m_providerType == DCalDavProviderProfile::Provider_QQMail)
+                       .toUtf8();
     if (item.operationType == DCalDavOutboxItem::CreateOperation) {
         request.headers.insert("If-None-Match", "*");
     } else {
@@ -679,6 +856,12 @@ void DCalDavOutboxProcessor::handleWriteResponse(const DCalDavOutboxItem &item, 
         }
         return;
     }
+    if (item.operationType == DCalDavOutboxItem::DeleteOperation
+        && m_providerType == DCalDavProviderProfile::Provider_QQMail
+        && response.httpStatus == 400) {
+        verifyMissingDeleteResource(item, resourceUrl, response);
+        return;
+    }
     if (item.operationType == DCalDavOutboxItem::DeleteCalendarOperation
         && (response.httpStatus == 403 || response.httpStatus == 409
             || response.httpStatus == 412)) {
@@ -690,6 +873,40 @@ void DCalDavOutboxProcessor::handleWriteResponse(const DCalDavOutboxItem &item, 
         return;
     }
     recordFailure(item, response);
+}
+
+void DCalDavOutboxProcessor::verifyMissingDeleteResource(
+    const DCalDavOutboxItem &item, const QUrl &resourceUrl,
+    const DCalDavTransport::Response &deleteResponse)
+{
+    DCalDavTransport::Request request;
+    request.url = resourceUrl;
+    request.method = "PROPFIND";
+    request.contentType = "application/xml; charset=utf-8";
+    request.username = m_request.username;
+    request.password = m_request.password;
+    request.headers.insert("Depth", "0");
+    request.body = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+                   "<d:propfind xmlns:d=\"DAV:\"><d:prop><d:getetag/>"
+                   "</d:prop></d:propfind>";
+    m_transport.send(request, [this, item, resourceUrl, deleteResponse](
+                                   const DCalDavTransport::Response &probeResponse) {
+        if (!isCurrentItem(item)) {
+            processCurrentItemOrAdvance(item);
+            return;
+        }
+        const bool confirmedMissing = probeResponse.httpStatus == 404
+            || (probeResponse.httpStatus == 207
+                && responseConfirmsMissingResource(probeResponse.body, resourceUrl));
+        if (confirmedMissing) {
+            qCInfo(ServiceLogger) << "QQ Mail delete target is already absent; completing idempotently."
+                                  << "account:" << item.accountID
+                                  << "calendar:" << item.localScheduleID;
+            completeSuccess(item, resourceUrl, QByteArray());
+            return;
+        }
+        recordFailure(item, deleteResponse);
+    });
 }
 
 void DCalDavOutboxProcessor::fetchEtag(const DCalDavOutboxItem &item, const QUrl &resourceUrl)
@@ -922,7 +1139,8 @@ void DCalDavOutboxProcessor::completeSuccess(const DCalDavOutboxItem &item, cons
         remoteSchedule->setUid(mapping.uid);
         mapping.href = resourceUrl.toString();
         mapping.etag = QString::fromUtf8(etag).trimmed();
-        mapping.originalIcs = icsForRemoteWrite(remoteSchedule, mapping);
+        mapping.originalIcs = icsForRemoteWrite(
+            remoteSchedule, mapping, m_providerType == DCalDavProviderProfile::Provider_QQMail);
         if (!m_request.accountManagerDatabase->upsertCalDavEventMapping(mapping)) {
             finish(false, QStringLiteral("Failed to save CalDAV write mapping."));
             return;
@@ -951,8 +1169,12 @@ void DCalDavOutboxProcessor::recordFailure(const DCalDavOutboxItem &item,
     }
     DCalDavOutboxItem updated = item;
     m_result.failureResponse = response;
+    const bool invalidCalendarData = response.httpStatus == 403
+        && responseIndicatesInvalidCalendarData(response);
     if (m_result.failureCode == DCalDavErrorCode::NoError) {
-        m_result.failureCode = DCalDavSyncStatusMapper::errorCodeForFailure(response);
+        m_result.failureCode = invalidCalendarData
+            ? DCalDavErrorCode::Unknown
+            : DCalDavSyncStatusMapper::errorCodeForFailure(response);
         if (m_result.failureCode == DCalDavErrorCode::NoError) {
             m_result.failureCode = DCalDavErrorCode::Unknown;
         }
@@ -967,7 +1189,9 @@ void DCalDavOutboxProcessor::recordFailure(const DCalDavOutboxItem &item,
         updated.failureType = DCalDavOutboxItem::AuthenticationFailure;
         ++m_result.permanentFailureCount;
     } else if (response.httpStatus == 403) {
-        updated.failureType = DCalDavOutboxItem::PermissionFailure;
+        updated.failureType = invalidCalendarData
+            ? DCalDavOutboxItem::PermanentFailure
+            : DCalDavOutboxItem::PermissionFailure;
         ++m_result.permanentFailureCount;
     } else if ((response.httpStatus == 409 || response.httpStatus == 412)
                && item.operationType != DCalDavOutboxItem::DeleteCalendarOperation) {
@@ -986,7 +1210,8 @@ void DCalDavOutboxProcessor::recordFailure(const DCalDavOutboxItem &item,
     }
     const bool notifyCreateFailure = item.operationType == DCalDavOutboxItem::CreateOperation
         && (item.retryCount == 0 || m_request.forceRetry);
-    if (notifyCreateFailure && response.httpStatus == 403) {
+    if (notifyCreateFailure && response.httpStatus == 403
+        && !invalidCalendarData) {
         m_result.createFailure = DCalDavScheduleCreateError::PermissionDenied;
     } else if (notifyCreateFailure
                && (response.error == DCalDavTransport::NetworkUnavailable

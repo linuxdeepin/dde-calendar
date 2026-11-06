@@ -74,6 +74,21 @@ public:
         return url;
     }
 
+    static bool isQQMailAggregateCalendar(ProviderType type, const QString &username,
+                                         const QUrl &calendarUrl)
+    {
+        if (type != Provider_QQMail
+            || calendarUrl.host().compare(QStringLiteral("dav.qq.com"), Qt::CaseInsensitive) != 0) {
+            return false;
+        }
+        QString path = calendarUrl.path(QUrl::FullyDecoded);
+        while (path.endsWith(QLatin1Char('/'))) {
+            path.chop(1);
+        }
+        return path.compare(QStringLiteral("/calendar/") + username.trimmed(),
+                            Qt::CaseInsensitive) == 0;
+    }
+
     static ProviderType providerTypeForServerUrl(const QString &serverUrl, ProviderType fallback)
     {
         const QString host = QUrl(serverUrl).host().toLower();

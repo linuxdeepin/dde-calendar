@@ -21,6 +21,7 @@
 #include "dcaldavoutboxenqueuer.h"
 #include "dcaldavrecoveryhandler.h"
 #include "dcaldavaccountinfo.h"
+#include "dcaldavvalidationerror.h"
 #include "dcaldavcredentialstore.h"
 #include "dcaldavcalendarinfo.h"
 #include "dcaldavcalendardeletehelper.h"
@@ -33,7 +34,7 @@
 #include <QFile>
 #include <QJsonArray>
 #include <QJsonDocument>
-
+#include <algorithm>
 #include <memory>
 
 #define UPDATEREMINDJOBTIMEINTERVAL 1000 * 60 * 10 //提醒任务更新时间间隔毫秒数（10分钟）
@@ -49,6 +50,22 @@ bool isCalDavRemoteScheduleType(const DScheduleType &scheduleType)
 {
     return scheduleType.description() == QStringLiteral("CalDAV calendar")
         || scheduleType.description() == QStringLiteral("CalDAV category");
+}
+
+DCalDavCalendarInfo calDavCalendarForScheduleType(DAccountManagerDataBase *database,
+                                                  const QString &accountID,
+                                                  const QString &scheduleTypeID)
+{
+    DCalDavCalendarInfo calendar =
+        database->getCalDavCalendarByScheduleTypeIDIncludingDisabled(accountID, scheduleTypeID);
+    if (calendar.calendarId.isEmpty()) {
+        const DCalDavCategoryInfo category =
+            database->getCalDavCategoryMappingByScheduleTypeID(accountID, scheduleTypeID);
+        if (!category.calendarId.isEmpty()) {
+            calendar = database->getCalDavCalendarByIDIncludingDisabled(accountID, category.calendarId);
+        }
+    }
+    return calendar;
 }
 
 DCalDavCalendarInfo writableCalDavCalendar(DAccountManagerDataBase *database,
@@ -692,6 +709,36 @@ QString DAccountModule::createSchedule(const QString &scheduleInfo)
         if (m_calDavAccountManagerDatabase == nullptr) {
             return QString();
         }
+        DCalDavAccountInfo accountInfo;
+        const DCalDavCalendarInfo targetCalendar =
+            calDavCalendarForScheduleType(m_calDavAccountManagerDatabase,
+                                          m_account->accountID(), schedule->scheduleTypeID());
+        const bool haveAccountInfo = m_calDavAccountManagerDatabase->getCalDavAccountInfo(
+            m_account->accountID(), accountInfo);
+        const auto providerType = static_cast<DCalDavProviderProfile::ProviderType>(
+            accountInfo.providerType);
+        const DScheduleType::Ptr scheduleType =
+            m_accountDB->getScheduleTypeByID(schedule->scheduleTypeID());
+        const bool providerReadOnly = haveAccountInfo
+            && !DCalDavProviderProfile::forProvider(providerType).supportsWrite;
+        const bool scheduleTypeReadOnly = !scheduleType.isNull()
+            && !(scheduleType->privilege() & DScheduleType::Write);
+        const bool calendarReadOnly = !targetCalendar.calendarId.isEmpty()
+            && targetCalendar.privilegesKnown
+            && !(targetCalendar.privileges & DCalDavXmlReader::WritePrivilege);
+        if (providerReadOnly || scheduleTypeReadOnly || calendarReadOnly) {
+            qCWarning(ServiceLogger) << "Rejected local schedule creation in a read-only CalDAV calendar."
+                                     << "calendar:" << targetCalendar.displayName;
+            notifyCalDavScheduleCreateFailed(DCalDavScheduleCreateError::PermissionDenied);
+            return QString();
+        }
+        if (!targetCalendar.calendarId.isEmpty() && haveAccountInfo
+            && DCalDavProviderProfile::isQQMailAggregateCalendar(
+                providerType,
+                accountInfo.username, QUrl(targetCalendar.href))) {
+            qCWarning(ServiceLogger) << "Rejected schedule creation in QQ Mail aggregate calendar.";
+            return QString();
+        }
         schedule->setUid(DDataBase::createUuid());
         recoveryItem.accountID = m_account->accountID();
         recoveryItem.localScheduleID = schedule->uid();
@@ -1159,6 +1206,19 @@ void DAccountModule::updateRemindSchedules(bool isClear)
 
     //获取未提醒的日程相关信息
     DRemindData::List noRemindList = m_accountDB->getValidRemindJob();
+    for (auto reminder = noRemindList.begin(); reminder != noRemindList.end();) {
+        const QString scheduleID = (*reminder)->scheduleID();
+        if (m_accountDB->scheduleExistsByScheduleID(scheduleID)
+            && !m_accountDB->isScheduleDeletedByScheduleID(scheduleID)) {
+            ++reminder;
+            continue;
+        }
+        if ((*reminder)->notifyid() > 0) {
+            emit signalCloseNotification(static_cast<quint32>((*reminder)->notifyid()));
+        }
+        m_accountDB->deleteRemindInfoByAlarmID((*reminder)->alarmID());
+        reminder = noRemindList.erase(reminder);
+    }
 
     //获取每个账户下需要提醒的日程信息
     DRemindData::List accountRemind;

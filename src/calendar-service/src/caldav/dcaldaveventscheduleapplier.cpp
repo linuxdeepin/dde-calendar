@@ -201,6 +201,10 @@ bool DCalDavEventScheduleApplier::applyCreate(const Request &request,
     if (scheduleTypeID.isEmpty()) {
         return false;
     }
+    // Remote UIDs are only unique within a calendar collection. The local
+    // schedule table is shared by every collection, so give imported events a
+    // separate local key and keep the server UID in the event mapping.
+    schedule->setUid(DDataBase::createUuid());
     schedule->setScheduleTypeID(scheduleTypeID);
     schedule->setCreated(QDateTime::currentDateTime());
 

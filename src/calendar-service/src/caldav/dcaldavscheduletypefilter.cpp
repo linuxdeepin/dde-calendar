@@ -13,9 +13,19 @@ void DCalDavScheduleTypeFilter::filter(DCalDavProviderProfile::ProviderType prov
                                        DScheduleType::List &types,
                                        DAccountManagerDataBase *accountManagerDatabase)
 {
-    if (providerType != DCalDavProviderProfile::Provider_WeCom
-        || accountID.isEmpty() || accountManagerDatabase == nullptr) {
+    const bool weCom = providerType == DCalDavProviderProfile::Provider_WeCom;
+    const bool qqMail = providerType == DCalDavProviderProfile::Provider_QQMail;
+    if ((!weCom && !qqMail) || accountID.isEmpty() || accountManagerDatabase == nullptr) {
         return;
+    }
+
+    QString qqUsername;
+    if (qqMail) {
+        DCalDavAccountInfo accountInfo;
+        if (!accountManagerDatabase->getCalDavAccountInfo(accountID, accountInfo)) {
+            return;
+        }
+        qqUsername = accountInfo.username;
     }
 
     for (auto type = types.begin(); type != types.end();) {
@@ -27,12 +37,15 @@ void DCalDavScheduleTypeFilter::filter(DCalDavProviderProfile::ProviderType prov
         const DScheduleType::Ptr &scheduleType = *type;
         const DCalDavCalendarInfo calendar =
             accountManagerDatabase->getCalDavCalendarByScheduleTypeID(accountID, scheduleType->typeID());
-        const bool isWritableEventCalendar =
-            scheduleType->description() == QStringLiteral("CalDAV calendar")
+        const bool isQQAggregate = qqMail
+            && DCalDavProviderProfile::isQQMailAggregateCalendar(
+                providerType, qqUsername, QUrl(calendar.href));
+        const bool isWritableEventCalendar = weCom
+            && scheduleType->description() == QStringLiteral("CalDAV calendar")
             && !calendar.calendarId.isEmpty()
             && calendar.supportedComponents.contains(QStringLiteral("VEVENT"))
             && (calendar.privileges & DCalDavXmlReader::WritePrivilege);
-        if (!isWritableEventCalendar) {
+        if (isQQAggregate || (weCom && !isWritableEventCalendar)) {
             type = types.erase(type);
         } else {
             ++type;
