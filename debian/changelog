@@ -1,3 +1,9 @@
+dde-calendar (6.6.7) unstable; urgency=medium
+
+  * fix(caldav): handle QQ Mail aggregate calendar quirks and stale reminders
+
+ -- Wang Yu <wangyu@uniontech.com>  Fri, 06 Nov 2026 13:10:45 +0800
+
 dde-calendar (6.6.6) unstable; urgency=medium
 
   * chore: Update version to 6.6.6
