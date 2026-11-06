@@ -1,3 +1,19 @@
+dde-calendar (6.6.6) unstable; urgency=medium
+
+  * chore: Update version to 6.6.6
+  * test: fix dbus-dependent tests and derive UT exit code from XML results
+  * test: isolate slotItemPress external side effects and fix stub UBSan report
+  * feat(calendar): add 2027 Chinese holiday data
+  * test: fix date-dependent failure in daymonthview setSelectedCell test
+  * fix: center delete-schedule dialog by pre-exec height set
+  * test: add unit tests for client dialog and weekWidget modules
+  * test: fix environment-dependent SlotCallFinished_ErrorPath failure
+  * test: fix CI UT failures - crashes, stub isolation and env dependencies
+  * ci: run all unit test targets and enable full test suites in UT pipeline
+  * test: fix three failing CalDAV service test cases
+
+ -- zhanghongyuan <zhanghongyuan@uniontech.com>  Fri, 06 Nov 2026 10:22:53 +0800
+
 dde-calendar (6.6.5) unstable; urgency=medium
 
   * feat(caldav): filter WeCom schedule types by supported components
