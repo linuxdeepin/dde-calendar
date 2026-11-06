@@ -46,7 +46,7 @@ CScheduleDlg::CScheduleDlg(int type, QWidget *parent, const bool isAllDay)
 
     if (type == 1) {
         qCDebug(ClientLogger) << "Setting up new event dialog";
-        m_titleLabel->setText(tr("New Event"));
+        setTitle(tr("New Event"));
         m_beginDateEdit->setDate(QDate::currentDate());
         int hours = QTime::currentTime().hour();
         int minnutes = QTime::currentTime().minute() % DDECalendar::QuarterOfAnhourWithMinute;
@@ -60,16 +60,14 @@ CScheduleDlg::CScheduleDlg(int type, QWidget *parent, const bool isAllDay)
         m_endTimeEdit->setTime(QTime(hours, minnutes).addSecs(3600));
     } else {
         qCDebug(ClientLogger) << "Setting up edit event dialog";
-        m_titleLabel->setText(tr("Edit Event"));
+        setTitle(tr("Edit Event"));
     }
-    setFixedSize(dialog_width, 561);
+    setFixedSize(dialog_width, 591);
     if (!gAccountManager->getIsSupportUid()) {
         qCDebug(ClientLogger) << "UID not supported, adjusting dialog size";
-        setFixedSize(dialog_width, 561 - 36);
+        setFixedSize(dialog_width, 591 - 36);
     }
 
-    //焦点设置到输入框
-    m_textEdit->setFocus();
 }
 
 CScheduleDlg::~CScheduleDlg()
@@ -708,7 +706,7 @@ void CScheduleDlg::signalLogout(DAccount::Type type)
             qCDebug(ClientLogger) << "Switching to new event mode after account logout";
             m_accountComBox->setEnabled(true);
             m_type = 1;
-            m_titleLabel->setText(tr("New Event"));
+            setTitle(tr("New Event"));
         }
     }
 }
@@ -930,21 +928,13 @@ void CScheduleDlg::initUI()
             this,
             updateDialogIcon);
 
-    m_titleLabel = new QLabel(this);
-    QFont titlelabelF;
-    titlelabelF.setWeight(QFont::DemiBold);
-    titlelabelF.setPixelSize(17);
-    m_titleLabel->setFixedSize(148, 51);
-    m_titleLabel->setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
-    m_titleLabel->move(145, 0);
-    m_titleLabel->setFont(titlelabelF);
 
     setSpacing(0);
     QFont mlabelF;
     mlabelF.setWeight(QFont::Medium);
 
     QVBoxLayout *maintlayout = new QVBoxLayout;
-    maintlayout->setContentsMargins(0, 0, 0, 0);
+    maintlayout->setContentsMargins(0, 20, 0, 0);
     maintlayout->setSpacing(10);
     //帐户
     {
@@ -963,7 +953,7 @@ void CScheduleDlg::initUI()
         m_accountComBox = new DComboBox(this);
         m_accountComBox->setObjectName("AccountComBox");
         m_accountComBox->setAccessibleName("AccountComBox");
-        m_accountComBox->setFixedSize(350, item_Fixed_Height);
+        m_accountComBox->setFixedSize(370, item_Fixed_Height);
         hlayout->addWidget(aLabel);
         hlayout->addWidget(m_accountComBox);
         QWidget *widget = new QWidget;
@@ -995,7 +985,7 @@ void CScheduleDlg::initUI()
         //设置对象名称和辅助显示名称
         m_typeComBox->setObjectName("ScheduleTypeCombobox");
         m_typeComBox->setAccessibleName("ScheduleTypeCombobox");
-        m_typeComBox->setFixedSize(350, item_Fixed_Height);
+        m_typeComBox->setFixedSize(370, item_Fixed_Height);
 
         m_colorSeletorWideget = new ColorSeletorWidget();
         m_colorSeletorWideget->hide();
@@ -1025,13 +1015,13 @@ void CScheduleDlg::initUI()
         m_contentLabel->setFont(mlabelF);
         m_contentLabel->setToolTip(tr("Description"));
         m_contentLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-        m_contentLabel->setFixedSize(label_Fixed_Width, item_Fixed_Height);
+        m_contentLabel->setFixedSize(label_Fixed_Width, 25);
 
         m_textEdit = new DTextEdit(this);
         //设置对象名称和辅助显示名称
         m_textEdit->setObjectName("ScheduleTitleEdit");
         m_textEdit->setAccessibleName("ScheduleTitleEdit");
-        m_textEdit->setFixedSize(350, 86);
+        m_textEdit->setFixedSize(370, 86);
         m_textEdit->setAcceptRichText(false);
 
         m_textEdit->setPlaceholderText(tr("New Event"));
@@ -1042,16 +1032,20 @@ void CScheduleDlg::initUI()
         mpContentWidget->installEventFilter(this);
 
         contentLabellayout->addWidget(m_contentLabel, 0, Qt::AlignTop);
-        contentLabellayout->addWidget(m_textEdit);
+        contentLabellayout->addWidget(m_textEdit, 0, Qt::AlignTop);
         contentLabellayout->addStretch();
-        maintlayout->addLayout(contentLabellayout);
+        QWidget *contentWidget = new QWidget;
+        contentWidget->setLayout(contentLabellayout);
+        contentWidget->setContentsMargins(0, 0, 0, 0);
+        contentWidget->setFixedHeight(86);
+        maintlayout->addWidget(contentWidget);
     }
 
     //全天
     {
         QHBoxLayout *alldayLabellayout = new QHBoxLayout;
         alldayLabellayout->setSpacing(0);
-        alldayLabellayout->setContentsMargins(0, 0, 0, 0);
+        alldayLabellayout->setContentsMargins(0, 10, 0, 0);
         m_adllDayLabel = new QLabel(this);
         m_adllDayLabel->setToolTip(tr("All Day"));
         DFontSizeManager::instance()->bind(m_adllDayLabel, DFontSizeManager::T6);
@@ -1071,7 +1065,7 @@ void CScheduleDlg::initUI()
         alldayLabellayout->addWidget(m_allDayCheckbox);
         QWidget *widget = new QWidget;
         widget->setLayout(alldayLabellayout);
-        widget->setFixedHeight(25);
+        widget->setFixedHeight(35);
         maintlayout->addWidget(widget);
     }
 
@@ -1138,14 +1132,14 @@ void CScheduleDlg::initUI()
         //设置对象名称和辅助显示名称
         m_beginDateEdit->setObjectName("ScheduleBeginDateEdit");
         m_beginDateEdit->setAccessibleName("ScheduleBeginDateEdit");
-        m_beginDateEdit->setFixedSize(200, item_Fixed_Height);
+        m_beginDateEdit->setFixedSize(210, item_Fixed_Height);
         m_beginDateEdit->setCalendarPopup(true);
 
         m_beginTimeEdit = new CTimeEdit(this);
         //设置对象名称和辅助显示名称
         m_beginTimeEdit->setObjectName("ScheduleBeginTimeEdit");
         m_beginTimeEdit->setAccessibleName("ScheduleBeginTimeEdit");
-        m_beginTimeEdit->setFixedSize(140, item_Fixed_Height);
+        m_beginTimeEdit->setFixedSize(150, item_Fixed_Height);
 
         beginLabellayout->addWidget(m_beginTimeLabel);
         beginLabellayout->addWidget(m_beginDateEdit);
@@ -1179,14 +1173,14 @@ void CScheduleDlg::initUI()
         //设置对象名称和辅助显示名称
         m_endDateEdit->setObjectName("ScheduleEndDateEdit");
         m_endDateEdit->setAccessibleName("ScheduleEndDateEdit");
-        m_endDateEdit->setFixedSize(200, item_Fixed_Height);
+        m_endDateEdit->setFixedSize(210, item_Fixed_Height);
         m_endDateEdit->setCalendarPopup(true);
 
         m_endTimeEdit = new CTimeEdit(this);
         //设置对象名称和辅助显示名称
         m_endTimeEdit->setObjectName("ScheduleEndTimeEdit");
         m_endTimeEdit->setAccessibleName("ScheduleEndTimeEdit");
-        m_endTimeEdit->setFixedSize(140, item_Fixed_Height);
+        m_endTimeEdit->setFixedSize(150, item_Fixed_Height);
 
         enQLabellayout->addWidget(m_endTimeLabel);
         enQLabellayout->addWidget(m_endDateEdit);
@@ -1220,7 +1214,7 @@ void CScheduleDlg::initUI()
         //设置对象名称和辅助显示名称
         m_rmindCombox->setObjectName("RmindComboBox");
         m_rmindCombox->setAccessibleName("RmindComboBox");
-        m_rmindCombox->setFixedSize(200, item_Fixed_Height);
+        m_rmindCombox->setFixedSize(210, item_Fixed_Height);
         m_rmindCombox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         rminQLabellayout->addWidget(m_remindSetLabel);
         rminQLabellayout->addWidget(m_rmindCombox);
@@ -1250,7 +1244,7 @@ void CScheduleDlg::initUI()
         //设置对象名称和辅助显示名称
         m_beginrepeatCombox->setObjectName("BeginRepeatComboBox");
         m_beginrepeatCombox->setAccessibleName("BeginRepeatComboBox");
-        m_beginrepeatCombox->setFixedSize(200, item_Fixed_Height);
+        m_beginrepeatCombox->setFixedSize(210, item_Fixed_Height);
         m_beginrepeatCombox->addItem(tr("Never"));
         m_beginrepeatCombox->addItem(tr("Daily"));
         m_beginrepeatCombox->addItem(tr("Weekdays"));
@@ -1285,7 +1279,7 @@ void CScheduleDlg::initUI()
         //设置对象名称和辅助显示名称
         m_endrepeatCombox->setObjectName("EndRepeatComboBox");
         m_endrepeatCombox->setAccessibleName("EndRepeatComboBox");
-        m_endrepeatCombox->setFixedSize(200, item_Fixed_Height);
+        m_endrepeatCombox->setFixedSize(210, item_Fixed_Height);
         m_endrepeatCombox->addItem(tr("Never"));
         m_endrepeatCombox->addItem(tr("After"));
         m_endrepeatCombox->addItem(tr("On"));
@@ -1320,7 +1314,7 @@ void CScheduleDlg::initUI()
         m_endrepeattimesWidget->setAccessibleName("EndRepeatTimeWidget");
         m_endrepeattimesWidget->setLayout(endrepeattimeslayout);
         m_endrepeattimesWidget->setVisible(false);
-        m_endrepeattimesWidget->setFixedSize(140, item_Fixed_Height);
+        m_endrepeattimesWidget->setFixedSize(150, item_Fixed_Height);
         endrepeatLabellayout->addWidget(m_endrepeattimesWidget);
 
         m_endRepeatDate = new CDateEdit;
@@ -1328,7 +1322,7 @@ void CScheduleDlg::initUI()
         m_endRepeatDate->setObjectName("EndRepeatDateEdit");
         m_endRepeatDate->setAccessibleName("EndRepeatDateEdit");
         m_endRepeatDate->setCalendarPopup(true);
-        m_endRepeatDate->setFixedSize(140, item_Fixed_Height);
+        m_endRepeatDate->setFixedSize(150, item_Fixed_Height);
         m_endRepeatDate->setDate(QDate::currentDate());
         m_endRepeatDate->setDisplayFormat(m_dateFormat);
         m_endRepeatDate->setCurrentSectionIndex(2);
@@ -1353,7 +1347,9 @@ void CScheduleDlg::initUI()
     m_gwi = new DFrame(this);
     m_gwi->setFrameShape(QFrame::NoFrame);
     m_gwi->setLayout(maintlayout);
-    addContent(m_gwi, Qt::AlignCenter);
+    setContentLayoutContentsMargins(QMargins(10, 0, 10, 0));
+    addContent(m_gwi);
+    addSpacing(20);
     initDateEdit();
     if (m_type == 1)
         slotallDayStateChanged(0);
@@ -1362,7 +1358,7 @@ void CScheduleDlg::initUI()
     addButton(tr("Save", "button"), false, DDialog::ButtonRecommend);
     for (int i = 0; i < buttonCount(); i++) {
         QAbstractButton *button = getButton(i);
-        button->setFixedSize(189, 36);
+        button->setFixedSize(214, 36);
     }
 }
 
@@ -1793,7 +1789,7 @@ void CScheduleDlg::resize()
 
     //573: 默认界面高度, h: 新增控件高度
     qCDebug(ClientLogger) << "Setting dialog size:" << dialog_width << "x" << (573 + h);
-    setFixedSize(dialog_width, 573 + h);
+    setFixedSize(dialog_width, 603 + h);
 }
 
 bool CScheduleDlg::canWriteCurrentCalDavCollection() const
@@ -1818,6 +1814,7 @@ bool CScheduleDlg::canWriteCurrentCalDavCollection() const
     // privileges are validated by the service before it sends the remote PUT.
     return true;
 }
+
 
 void CScheduleDlg::setOkBtnEnabled()
 {
