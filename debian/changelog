@@ -1,3 +1,9 @@
+dde-calendar (6.6.9) unstable; urgency=medium
+
+  * fix(schedule-dialog): remove UID-based dialog height adjustment
+
+ -- Wang Yu <wangyu@uniontech.com>  Wed, 11 Nov 2026 14:32:10 +0800
+
 dde-calendar (6.6.8) unstable; urgency=medium
 
   * fix: hide UOS ID account in community edition
