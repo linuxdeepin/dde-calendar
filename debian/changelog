@@ -1,3 +1,11 @@
+dde-calendar (6.6.8) unstable; urgency=medium
+
+  * fix: hide UOS ID account in community edition
+  * fix(schedule-dialog): fix new event type button hover style
+  * fix(schedule-dialog): refine new event dialog UI
+
+ -- Wang Yu <wangyu@uniontech.com>  Wed, 11 Nov 2026 09:08:17 +0800
+
 dde-calendar (6.6.7) unstable; urgency=medium
 
   * fix(caldav): handle QQ Mail aggregate calendar quirks and stale reminders
