@@ -175,6 +175,10 @@ void CSettingDialog::initView()
 
     CalendarSettingSettings calendarSettings;
     calendarSettings.append(setting_account);
+    if (isCommunityEdition()) {
+        calendarSettings.removeGroup(QStringLiteral("setting_account"), QStringLiteral("account"));
+        m_uosLoginWidget->hide();
+    }
     calendarSettings.append(setting_base);
 
     calendarSettings.append(setting_general);
