@@ -63,10 +63,6 @@ CScheduleDlg::CScheduleDlg(int type, QWidget *parent, const bool isAllDay)
         setTitle(tr("Edit Event"));
     }
     setFixedSize(dialog_width, 591);
-    if (!gAccountManager->getIsSupportUid()) {
-        qCDebug(ClientLogger) << "UID not supported, adjusting dialog size";
-        setFixedSize(dialog_width, 591 - 36);
-    }
 
 }
 
@@ -1782,13 +1778,8 @@ void CScheduleDlg::resize()
         qCDebug(ClientLogger) << "Color selector widget visible, adding height";
         h += 18 + 10;
     }
-    if (!gAccountManager->getIsSupportUid()) {
-        qCDebug(ClientLogger) << "UID not supported, reducing height";
-        h -= 36;
-    }
-
-    //573: 默认界面高度, h: 新增控件高度
-    qCDebug(ClientLogger) << "Setting dialog size:" << dialog_width << "x" << (573 + h);
+    // h accounts for optional controls.
+    qCDebug(ClientLogger) << "Setting dialog size:" << dialog_width << "x" << (603 + h);
     setFixedSize(dialog_width, 603 + h);
 }
 
