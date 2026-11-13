@@ -267,6 +267,10 @@ TEST(CreateScheduleTaskTest, AnalysisRestDayDate_ReturnsTwoDates)
 // ============================================================================
 TEST(CreateScheduleTaskTest, GetNoneWeekNumDate_BeginTimeAfterCurrent)
 {
+    // 当前时间晩于 22:00 时，currentTime()+3600s 会跨到次日，
+    // “同一天且晩于当前”的前提不成立，跳过避免午夜误报
+    if (QTime::currentTime() > QTime(22, 0))
+        GTEST_SKIP() << "near midnight: +3600s would cross the day boundary";
     createScheduleTask task;
     // Set begin time with a time later than current time
     task.m_begintime = QDateTime(QDate::currentDate(), QTime::currentTime().addSecs(3600));
@@ -290,6 +294,9 @@ TEST(CreateScheduleTaskTest, GetNoneWeekNumDate_BeginTimeBeforeCurrent)
 // ============================================================================
 TEST(CreateScheduleTaskTest, GetNoneMonthNumDate_BeginTimeAfterCurrent)
 {
+    // 同上：22:00 后 +3600s 跨天，前提不成立
+    if (QTime::currentTime() > QTime(22, 0))
+        GTEST_SKIP() << "near midnight: +3600s would cross the day boundary";
     createScheduleTask task;
     task.m_begintime = QDateTime(QDate::currentDate(), QTime::currentTime().addSecs(3600));
     QVector<QDateTime> result = task.getNoneMonthNumDate();

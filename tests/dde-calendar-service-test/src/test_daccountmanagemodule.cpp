@@ -1108,3 +1108,33 @@ TEST_F(TestDAccountManageModule, SetTimeFormatTypeSource_EmitsSignal)
     // Restore
     s_module->setTimeFormatTypeSource(origSource);
 }
+
+// ---- ctor 连接的 CalDav 同步 lambda（直接 emit DCalDavSyncJobManager 的信号触发）----
+
+TEST_F(TestDAccountManageModule, CtorLambda_AccountSyncStateChanged_UpdatesStatus)
+{
+    // 触发 ctor 中连接 accountSyncStateChanged 的 lambda：
+    // Queued 分支写 DB 同步状态并 emit calDavAccountStatusChanged
+    QSignalSpy spy(s_module, &DAccountManageModule::calDavAccountStatusChanged);
+    EXPECT_NO_FATAL_FAILURE(
+        emit s_module->m_calDavSyncJobManager.accountSyncStateChanged(
+            "ut-manage-acc", DCalDavSyncStateMachine::Queued));
+    EXPECT_GE(spy.count(), 1);
+}
+
+TEST_F(TestDAccountManageModule, CtorLambda_AccountSyncDataChanged_NoAccount_NoCrash)
+{
+    // accountID 不在 m_accountModuleMap 中，lambda 内取空指针分支空转
+    EXPECT_NO_FATAL_FAILURE(
+        emit s_module->m_calDavSyncJobManager.accountSyncDataChanged("ut-no-such-acc"));
+}
+
+TEST_F(TestDAccountManageModule, CtorLambda_AccountSyncFinished_NoPending_NoCrash)
+{
+    // 一次 emit 触发 ctor 连接的两个 accountSyncFinished lambda：
+    // 无 pending 通知/无 discovery 触发时均短路返回
+    EXPECT_NO_FATAL_FAILURE(
+        emit s_module->m_calDavSyncJobManager.accountSyncFinished(
+            "ut-no-such-acc", true, QString(),
+            DCalDavTransport::Response{}, DCalDavErrorCode::NoError, false));
+}
