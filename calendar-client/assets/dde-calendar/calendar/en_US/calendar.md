@@ -97,7 +97,7 @@ On the Calendar interface, click ![side_menu](../common/side_menu.svg) to show o
 </tr>
 <tr>
    <td>Calendar Account</td>
-   <td>You can create events under a local account or network accounts, such as UOS ID. Local account is selected by default.</td>
+   <td>You can create events under a local account or network accounts, such as UOS/deepin ID. Local account is selected by default.</td>
 </tr>
 <tr>
    <td>Type</td>
@@ -252,20 +252,20 @@ On the main menu, you can manage settings, view the privacy policy, switch windo
 
 ### Manage
 
-Click ![icon_menu](../common/icon_menu.svg) > **Manage** to open the manage window, where you can sign in UOS ID to sync events and settings to the cloud, manage event types, and make general settings.
+Click ![icon_menu](../common/icon_menu.svg) > **Manage** to open the manage window, where you can sign in UOS/deepin ID to sync events and settings to the cloud, manage event types, and make general settings.
 
 ![manage](fig/manage.png)
 
 #### Manage Accounts and Sync
 
-Calendar supports sync events and settings to the cloud by UOS ID.
+Calendar supports sync events and settings to the cloud by UOS/deepin ID.
 
 > ![notes](../common/notes.svg) Notes: It is not available in old system versions and deepin system at present.
 
-**UOS ID Sign In and Sign Out**
+**UOS/deepin ID Sign In and Sign Out**
 
 1. On the Account Settings interface, click **Sign In**.
-2. In the pop-up window, sign into your UOS ID by entering your account and password, or SMS verification code, or scanning QR code with WeChat.
+2. In the pop-up window, sign into your UOS/deepin ID by entering your account and password, or SMS verification code, or scanning QR code with WeChat.
 3. When signed in, your avatar, account info and related items are shown. Click **Sign Out** if you want.
 
 **Sync Settings**
@@ -274,7 +274,7 @@ Calendar supports sync events and settings to the cloud by UOS ID.
 2. In the dropdown list of **Sync interval**, select the time interval for auto sync, or choose **Manual**.
 2. Click **Sync Now** to start syncing immediately.
 
-> ![notes](../common/notes.svg) Notes: To make sync settings available, you should turn on **UOS Cloud sync** in Control Center first.
+> ![notes](../common/notes.svg) Notes: To make sync settings available, you should turn on **UOS/deepin Cloud sync** in Control Center first.
 
 #### Manage Event Types
 
