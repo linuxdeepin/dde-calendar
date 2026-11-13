@@ -69,6 +69,13 @@ static QSharedPointer<QProcess> stub_DownloadFile(QString url, QString filename)
 
 // 捕获 updateFestivalList 内部创建的 QProcess，供测试体直接触发信号
 static QSharedPointer<QProcess> g_lastDownloadProc;
+// 捕获 lambda 内 qCWarning 输出的消息处理器（qInstallMessageHandler 只接受函数指针）
+static QStringList g_downloadErrorWarnings;
+static void downloadErrorHandler(QtMsgType type, const QMessageLogContext &, const QString &msg)
+{
+    if (type == QtWarningMsg && msg.contains("Download error for year"))
+        g_downloadErrorWarnings << msg;
+}
 
 static QSharedPointer<QProcess> stub_DownloadFile_capture(QString url, QString filename)
 {
@@ -247,8 +254,15 @@ TEST_F(DHuangLiDataBaseTest, UpdateFestivalList_DownloadError_TriggersReadyReadL
 
     ASSERT_TRUE(!g_lastDownloadProc.isNull());
     // Qt6 信号带 QPrivateSignal 私有参数；-fno-access-control 下可直接构造调用，
-    // 等价于 emit，同步触发 connect 的错误处理 lambda（无需事件循环）
+    // 等价于 emit，同步触发 connect 的错误处理 lambda（无需事件循环）。
+    // 用消息处理器捕获 lambda 内的 qCWarning 输出，验证 lambda 真被执行
+    // （若连接被移除/lambda 变空，此处会失败而不是静默通过）
+    g_downloadErrorWarnings.clear();
+    QtMessageHandler oldHandler = qInstallMessageHandler(downloadErrorHandler);
     EXPECT_NO_FATAL_FAILURE(g_lastDownloadProc->readyReadStandardError(QProcess::QPrivateSignal{}));
+    qInstallMessageHandler(oldHandler);
+    EXPECT_FALSE(g_downloadErrorWarnings.isEmpty())
+        << "readyReadStandardError 应触发错误处理 lambda 输出警告日志";
     EXPECT_EQ(db->m_settings.value("festivalUpdateDate").toString(),
               QDateTime::currentDateTime().toString("yyyy-MM-dd"));
 }

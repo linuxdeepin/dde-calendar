@@ -12,6 +12,7 @@
 #include <QObject>
 #include <QTemporaryDir>
 #include <QSqlDatabase>
+#include <algorithm>
 #include "units.h"
 #include <QFile>
 #include "dschedule.h"
@@ -304,20 +305,50 @@ TEST_F(test_daccountservice, GetDtLastUpdate)
 
 // ---------------------------------------------------------------------------
 // 构造函数中连接的三个 lambda（signalAccountState/signalSyncState/signalDtLastUpdate
-// → notifyPropertyChanged）：直接 emit 模块信号触发
+// → notifyPropertyChanged）：直接 emit 模块信号触发，并 stub 记录
+// notifyPropertyChanged 的实际调用作为可观察断言（避免“连接被删后测试仍过”）
 // ---------------------------------------------------------------------------
+
+static QStringList g_notifyPropertyChangedLog;
+static void stub_notifyPropertyChanged(void *obj, const QString &interface,
+                                       const QString &propertyName)
+{
+    Q_UNUSED(obj);
+    g_notifyPropertyChangedLog << interface + ":" + propertyName;
+}
 
 TEST_F(test_daccountservice, SignalAccountState_NotifiesPropertyChanged)
 {
+    Stub stub;
+    g_notifyPropertyChangedLog.clear();
+    stub.set(ADDR(DServiceBase, notifyPropertyChanged), stub_notifyPropertyChanged);
     EXPECT_NO_THROW(emit m_module->signalAccountState());
+    EXPECT_TRUE(std::any_of(g_notifyPropertyChangedLog.cbegin(), g_notifyPropertyChangedLog.cend(),
+                             [](const QString &s) { return s.endsWith(":accountState"); }))
+        << "lambda 应调用 notifyPropertyChanged(accountState)，实际: "
+        << g_notifyPropertyChangedLog.join(",").toStdString();
 }
 
 TEST_F(test_daccountservice, SignalSyncState_NotifiesPropertyChanged)
 {
+    Stub stub;
+    g_notifyPropertyChangedLog.clear();
+    stub.set(ADDR(DServiceBase, notifyPropertyChanged), stub_notifyPropertyChanged);
     EXPECT_NO_THROW(emit m_module->signalSyncState());
+    EXPECT_TRUE(std::any_of(g_notifyPropertyChangedLog.cbegin(), g_notifyPropertyChangedLog.cend(),
+                             [](const QString &s) { return s.endsWith(":syncState"); }))
+        << "lambda 应调用 notifyPropertyChanged(syncState)，实际: "
+        << g_notifyPropertyChangedLog.join(",").toStdString();
 }
 
 TEST_F(test_daccountservice, SignalDtLastUpdate_NotifiesPropertyChanged)
 {
+    Stub stub;
+    g_notifyPropertyChangedLog.clear();
+    stub.set(ADDR(DServiceBase, notifyPropertyChanged), stub_notifyPropertyChanged);
     EXPECT_NO_THROW(emit m_module->signalDtLastUpdate());
+    EXPECT_TRUE(std::any_of(g_notifyPropertyChangedLog.cbegin(), g_notifyPropertyChangedLog.cend(),
+                             [](const QString &s) { return s.endsWith(":dtLastUpdate"); }))
+        << "lambda 应调用 notifyPropertyChanged(dtLastUpdate)，实际: "
+        << g_notifyPropertyChangedLog.join(",").toStdString();
 }

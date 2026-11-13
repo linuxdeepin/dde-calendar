@@ -24,7 +24,12 @@ protected:
         // 此时 DServiceManager 构造内 registerService 失败会直接 exit(1)，
         // 导致整个测试进程退出且 gtest XML/gcov 数据丢失；
         // 名字被占时跳过（用例前提“进程启动时该名字未被注册”不成立）
-        if (QDBusConnection::sessionBus().interface()->isServiceRegistered(serviceBaseName))
+        // 无可用 session bus 时同样跳过：isServiceRegistered 无法报告已有
+        // 拥有者，构造会走 registerService 失败 → exit(1)
+        QDBusConnection bus = QDBusConnection::sessionBus();
+        if (!bus.isConnected())
+            GTEST_SKIP() << "no session bus available, cannot register service safely";
+        if (bus.interface()->isServiceRegistered(serviceBaseName))
             GTEST_SKIP() << "com.deepin.dataserver.Calendar already owned by another process";
         m_manager = new DServiceManager();
     }

@@ -81,13 +81,15 @@ void DHuangLiDataBase::updateFestivalList()
         auto url = QString("%1/%2.json").arg(HolidayUpdateURLPrefix).arg(year);
         qCDebug(ServiceLogger) << "Downloading festival data for year" << year << "from" << url << "to" << filename;
         auto process = DownloadFile(url, filename);
-        // 以 this 作为 context object：连接生命周期由 this 控制，避免
-        // “sender 持有 lambda、lambda 强引用捕获 sender”的循环引用泄漏；
-        // 进程结束后 deleteLater 及时释放 QProcess，连接随之断开
+        // 以 this 作为 context object：连接生命周期由 this 控制，打破
+        // “sender 持有 lambda、lambda 强引用捕获 sender”的循环引用；
+        // lambda 持 shared_ptr 保活下载中的进程，进程结束后随 db 析构回收。
+        // 注：不能用 deleteLater 释放——连接 functor 持有 sender 的 shared_ptr，
+        // deleteLater 触发析构时会断开连接、使计数归零，对正在析构的对象
+        // 二次 delete（double-free）
         connect(process.get(), &QProcess::readyReadStandardError, this, [process, year]() {
             qCWarning(ServiceLogger) << "Download error for year" << year << ":" << process->readAllStandardError();
         });
-        connect(process.get(), &QProcess::finished, process.get(), &QProcess::deleteLater);
     }
     qCDebug(ServiceLogger) << "Completed festival list update process";
 }

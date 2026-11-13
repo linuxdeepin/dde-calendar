@@ -6,6 +6,7 @@
 #include "dreminddata.h"
 #include "dschedule.h"
 #include "dbus/dbusnotify.h"
+#include "csystemdtimercontrol.h"
 
 #include "gtest/gtest.h"
 #include <QObject>
@@ -31,6 +32,13 @@ static void stub_QProcess_start2(const QString &program, const QStringList &argu
     Q_UNUSED(program);
     Q_UNUSED(arguments);
     Q_UNUSED(mode);
+}
+
+// 拦截 systemd 定时器初始化：构造会真删 ~/.config/systemd/user/ 下的日历
+// 单元文件并 enable/start 定时器，污染测试机真实环境，必须整体绕过
+static void stub_startCalendarServiceSystemdTimer(void *obj)
+{
+    Q_UNUSED(obj);
 }
 
 // Custom stub: returns a DBus reply with a valid quint32 so Notify() returns >= 0
@@ -63,6 +71,10 @@ public:
         stub.set(static_cast<void(QProcess::*)(const QString &, const QStringList &,
                                                QIODevice::OpenMode)>(&QProcess::start),
                  stub_QProcess_start2);
+        // 构造内 startCalendarServiceSystemdTimer 会删除真实用户 systemd 单元
+        // 文件（玲珑残留清理），必须拦截以免测试破坏环境
+        stub.set(ADDR(CSystemdTimerControl, startCalendarServiceSystemdTimer),
+                 stub_startCalendarServiceSystemdTimer);
         const QByteArray platform = qEnvironmentVariable("QT_QPA_PLATFORM").toUtf8();
         Q_UNUSED(platform);
         // offscreen 环境实测可安全构造：DBus 调用与 QProcess 均已被 stub 拦截，
