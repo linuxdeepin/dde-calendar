@@ -81,9 +81,13 @@ void DHuangLiDataBase::updateFestivalList()
         auto url = QString("%1/%2.json").arg(HolidayUpdateURLPrefix).arg(year);
         qCDebug(ServiceLogger) << "Downloading festival data for year" << year << "from" << url << "to" << filename;
         auto process = DownloadFile(url, filename);
-        connect(process.get(), &QProcess::readyReadStandardError, [process, year]() {
+        // 以 this 作为 context object：连接生命周期由 this 控制，避免
+        // “sender 持有 lambda、lambda 强引用捕获 sender”的循环引用泄漏；
+        // 进程结束后 deleteLater 及时释放 QProcess，连接随之断开
+        connect(process.get(), &QProcess::readyReadStandardError, this, [process, year]() {
             qCWarning(ServiceLogger) << "Download error for year" << year << ":" << process->readAllStandardError();
         });
+        connect(process.get(), &QProcess::finished, process.get(), &QProcess::deleteLater);
     }
     qCDebug(ServiceLogger) << "Completed festival list update process";
 }
