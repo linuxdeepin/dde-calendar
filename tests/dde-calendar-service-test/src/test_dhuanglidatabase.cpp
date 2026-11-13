@@ -67,6 +67,17 @@ static QSharedPointer<QProcess> stub_DownloadFile(QString url, QString filename)
     return QSharedPointer<QProcess>(new QProcess);
 }
 
+// 捕获 updateFestivalList 内部创建的 QProcess，供测试体直接触发信号
+static QSharedPointer<QProcess> g_lastDownloadProc;
+
+static QSharedPointer<QProcess> stub_DownloadFile_capture(QString url, QString filename)
+{
+    Q_UNUSED(url)
+    Q_UNUSED(filename)
+    g_lastDownloadProc = QSharedPointer<QProcess>::create();
+    return g_lastDownloadProc;
+}
+
 class DHuangLiDataBaseTest : public ::testing::Test {
 protected:
     QTemporaryDir tempDir;
@@ -221,6 +232,32 @@ TEST_F(DHuangLiDataBaseTest, UpdateFestivalListDownload)
     // After update, setting should be today's date
     QString today = QDateTime::currentDateTime().toString("yyyy-MM-dd");
     EXPECT_EQ(db->m_settings.value("festivalUpdateDate").toString(), today);
+}
+
+TEST_F(DHuangLiDataBaseTest, UpdateFestivalList_DownloadError_TriggersReadyReadLambda)
+{
+    // 用 capture 版 stub 替换 fixture 的 stub_DownloadFile，拿到内部 QProcess；
+    // 直接调用 protected 信号同步触发 connect 的错误处理 lambda（无需事件循环）
+    Stub stub2;
+    g_lastDownloadProc.clear();
+    stub2.set(DownloadFile, stub_DownloadFile_capture);
+
+    db->m_settings.setValue("festivalUpdateDate", "");
+    db->updateFestivalList();
+
+    ASSERT_TRUE(!g_lastDownloadProc.isNull());
+    // Qt6 信号带 QPrivateSignal 私有参数；-fno-access-control 下可直接构造调用，
+    // 等价于 emit，同步触发 connect 的错误处理 lambda（无需事件循环）
+    EXPECT_NO_FATAL_FAILURE(g_lastDownloadProc->readyReadStandardError(QProcess::QPrivateSignal{}));
+    EXPECT_EQ(db->m_settings.value("festivalUpdateDate").toString(),
+              QDateTime::currentDateTime().toString("yyyy-MM-dd"));
+}
+
+// 通过基类指针删除派生类对象，覆盖 DDataBase::~DDataBase 的 D0Ev（deleting dtor）入口
+TEST_F(DHuangLiDataBaseTest, DeletingThroughDDataBasePointer_CoversDeletingDtor)
+{
+    DDataBase *base = new DHuangLiDataBase();
+    EXPECT_NO_FATAL_FAILURE(delete base);
 }
 
 // ---- createDB ----

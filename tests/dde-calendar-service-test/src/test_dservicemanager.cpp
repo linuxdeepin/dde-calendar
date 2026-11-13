@@ -20,6 +20,12 @@ class DServiceManagerTest : public testing::Test
 protected:
     void SetUp() override
     {
+        // 外部真实 dde-calendar-service 进程可能已注册该名字（桌面会话常驻），
+        // 此时 DServiceManager 构造内 registerService 失败会直接 exit(1)，
+        // 导致整个测试进程退出且 gtest XML/gcov 数据丢失；
+        // 名字被占时跳过（用例前提“进程启动时该名字未被注册”不成立）
+        if (QDBusConnection::sessionBus().interface()->isServiceRegistered(serviceBaseName))
+            GTEST_SKIP() << "com.deepin.dataserver.Calendar already owned by another process";
         m_manager = new DServiceManager();
     }
     void TearDown() override

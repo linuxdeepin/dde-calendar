@@ -301,3 +301,23 @@ TEST_F(test_daccountservice, GetDtLastUpdate)
     QString result = m_service->getDtLastUpdate();
     EXPECT_NO_THROW(result);
 }
+
+// ---------------------------------------------------------------------------
+// 构造函数中连接的三个 lambda（signalAccountState/signalSyncState/signalDtLastUpdate
+// → notifyPropertyChanged）：直接 emit 模块信号触发
+// ---------------------------------------------------------------------------
+
+TEST_F(test_daccountservice, SignalAccountState_NotifiesPropertyChanged)
+{
+    EXPECT_NO_THROW(emit m_module->signalAccountState());
+}
+
+TEST_F(test_daccountservice, SignalSyncState_NotifiesPropertyChanged)
+{
+    EXPECT_NO_THROW(emit m_module->signalSyncState());
+}
+
+TEST_F(test_daccountservice, SignalDtLastUpdate_NotifiesPropertyChanged)
+{
+    EXPECT_NO_THROW(emit m_module->signalDtLastUpdate());
+}

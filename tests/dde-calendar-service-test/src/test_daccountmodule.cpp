@@ -24,6 +24,33 @@
 #include <QTextStream>
 #include <QSignalSpy>
 #include <QUuid>
+#include "service_stub.h"
+#include "../third-party_stub/stub.h"
+#include <QtDBus/QtDBus>
+
+// 拦截 QDBusAbstractInterface::callWithArgumentList：返回带 QString 参数的应答。
+// 相比 quint32 应答，QString 可被 QDBusAbstractInterface 构造期内部的
+// 服务注册查询正常解出，避免 QVariant::toString 解引用崩溃；
+// 同时阻止真实 DBus 通知/调用外发（测试环境无 Notification1/Calendar 服务）。
+static QDBusMessage stub_callWithArgumentList_module(QDBus::CallMode mode,
+                                                     const QString &method,
+                                                     const QList<QVariant> &args)
+{
+    Q_UNUSED(mode)
+    Q_UNUSED(method)
+    Q_UNUSED(args)
+    QDBusMessage reply;
+    reply.setArguments({QVariant(QStringLiteral("org.freedesktop.DBus"))});
+    return reply;
+}
+
+// 返回无效连接：用于 slotOpenCalendar 类用例（函数内部会构造 QDBusAbstractInterface，
+// 打桩 callWithArgumentList 会触发 QtDBus 构造期 QVariant 崩溃，改用无效连接绕过）
+static QDBusConnection stub_sessionBus_invalid()
+{
+    // 用不存在的连接名构造 → 返回 isConnected()==false 的无效连接
+    return QDBusConnection(QStringLiteral("ut-nonexistent-bus"));
+}
 
 // Test fixture for DAccountModule (Account_Local)
 class TestDAccountModule : public ::testing::Test
@@ -537,7 +564,11 @@ TEST_F(TestDAccountModule, GetFestivalSchedule_DateRange_ReturnsList)
 
 TEST_F(TestDAccountModule, RemindJob_WithExistingRemindData_NoCrash)
 {
-    GTEST_SKIP() << "Source defect: null ptr deref (getRemindData used before null check) + DBus notification hangs in test env";
+    // DB 中先播种真实提醒数据，getRemindData 返回有效对象，
+    // 不会触发“先解引用后判空”的缺陷路径；DBus 由 stub 拦截
+    Stub stub;
+    qDBusMessage_type_Stub(stub);
+    stub.set(ADDR(QDBusAbstractInterface, callWithArgumentList), stub_callWithArgumentList_module);
     QString typeID = createType();
     ASSERT_FALSE(typeID.isEmpty());
     QString scheduleID = createSchedule(typeID);
@@ -550,7 +581,10 @@ TEST_F(TestDAccountModule, RemindJob_WithExistingRemindData_NoCrash)
 
 TEST_F(TestDAccountModule, NotifyMsgHanding_OpenCalendar_NoCrash)
 {
-    GTEST_SKIP() << "Source defect: null ptr deref (getRemindData used before null check) + DBus notification hangs in test env";
+    // 不 stub callWithArgumentList：内部会构造 DbusUIOpenSchedule，
+    // 改将 sessionBus 置为无效连接，构造与 OpenSchedule 均安全空转且不外发真实消息
+    Stub stub;
+    stub.set(ADDR(QDBusConnection, sessionBus), stub_sessionBus_invalid);
     QString typeID = createType();
     ASSERT_FALSE(typeID.isEmpty());
     QString scheduleID = createSchedule(typeID);
@@ -561,7 +595,9 @@ TEST_F(TestDAccountModule, NotifyMsgHanding_OpenCalendar_NoCrash)
 
 TEST_F(TestDAccountModule, NotifyMsgHanding_RemindLater_NoCrash)
 {
-    GTEST_SKIP() << "Source defect: null ptr deref (getRemindData used before null check) + DBus notification hangs in test env";
+    Stub stub;
+    qDBusMessage_type_Stub(stub);
+    stub.set(ADDR(QDBusAbstractInterface, callWithArgumentList), stub_callWithArgumentList_module);
     QString typeID = createType();
     ASSERT_FALSE(typeID.isEmpty());
     QString scheduleID = createSchedule(typeID);
@@ -572,7 +608,9 @@ TEST_F(TestDAccountModule, NotifyMsgHanding_RemindLater_NoCrash)
 
 TEST_F(TestDAccountModule, NotifyMsgHanding_15MinLater_NoCrash)
 {
-    GTEST_SKIP() << "Source defect: null ptr deref (getRemindData used before null check) + DBus notification hangs in test env";
+    Stub stub;
+    qDBusMessage_type_Stub(stub);
+    stub.set(ADDR(QDBusAbstractInterface, callWithArgumentList), stub_callWithArgumentList_module);
     QString typeID = createType();
     ASSERT_FALSE(typeID.isEmpty());
     QString scheduleID = createSchedule(typeID);
@@ -583,7 +621,9 @@ TEST_F(TestDAccountModule, NotifyMsgHanding_15MinLater_NoCrash)
 
 TEST_F(TestDAccountModule, NotifyMsgHanding_1HourLater_NoCrash)
 {
-    GTEST_SKIP() << "Source defect: null ptr deref (getRemindData used before null check) + DBus notification hangs in test env";
+    Stub stub;
+    qDBusMessage_type_Stub(stub);
+    stub.set(ADDR(QDBusAbstractInterface, callWithArgumentList), stub_callWithArgumentList_module);
     QString typeID = createType();
     ASSERT_FALSE(typeID.isEmpty());
     QString scheduleID = createSchedule(typeID);
@@ -594,7 +634,9 @@ TEST_F(TestDAccountModule, NotifyMsgHanding_1HourLater_NoCrash)
 
 TEST_F(TestDAccountModule, NotifyMsgHanding_4HoursLater_NoCrash)
 {
-    GTEST_SKIP() << "Source defect: null ptr deref (getRemindData used before null check) + DBus notification hangs in test env";
+    Stub stub;
+    qDBusMessage_type_Stub(stub);
+    stub.set(ADDR(QDBusAbstractInterface, callWithArgumentList), stub_callWithArgumentList_module);
     QString typeID = createType();
     ASSERT_FALSE(typeID.isEmpty());
     QString scheduleID = createSchedule(typeID);
@@ -605,7 +647,9 @@ TEST_F(TestDAccountModule, NotifyMsgHanding_4HoursLater_NoCrash)
 
 TEST_F(TestDAccountModule, NotifyMsgHanding_NextDay_NoCrash)
 {
-    GTEST_SKIP() << "Source defect: null ptr deref (getRemindData used before null check) + DBus notification hangs in test env";
+    Stub stub;
+    qDBusMessage_type_Stub(stub);
+    stub.set(ADDR(QDBusAbstractInterface, callWithArgumentList), stub_callWithArgumentList_module);
     QString typeID = createType();
     ASSERT_FALSE(typeID.isEmpty());
     QString scheduleID = createSchedule(typeID);
@@ -616,7 +660,9 @@ TEST_F(TestDAccountModule, NotifyMsgHanding_NextDay_NoCrash)
 
 TEST_F(TestDAccountModule, NotifyMsgHanding_Advance1Day_NoCrash)
 {
-    GTEST_SKIP() << "Source defect: null ptr deref (getRemindData used before null check) + DBus notification hangs in test env";
+    Stub stub;
+    qDBusMessage_type_Stub(stub);
+    stub.set(ADDR(QDBusAbstractInterface, callWithArgumentList), stub_callWithArgumentList_module);
     QString typeID = createType();
     ASSERT_FALSE(typeID.isEmpty());
     QString scheduleID = createSchedule(typeID);
@@ -627,7 +673,9 @@ TEST_F(TestDAccountModule, NotifyMsgHanding_Advance1Day_NoCrash)
 
 TEST_F(TestDAccountModule, NotifyMsgHanding_DefaultDelete_NoCrash)
 {
-    GTEST_SKIP() << "Source defect: null ptr deref (getRemindData used before null check) + DBus notification hangs in test env";
+    Stub stub;
+    qDBusMessage_type_Stub(stub);
+    stub.set(ADDR(QDBusAbstractInterface, callWithArgumentList), stub_callWithArgumentList_module);
     QString typeID = createType();
     ASSERT_FALSE(typeID.isEmpty());
     QString scheduleID = createSchedule(typeID);
@@ -674,8 +722,10 @@ TEST_F(TestDAccountModule, ImportSchedule_ValidICS_ReturnsTrue)
 
 TEST_F(TestDAccountModule, ImportSchedule_WithCleanExists_ReturnsTrue)
 {
+    Stub stub;
+    qDBusMessage_type_Stub(stub);
+    stub.set(ADDR(QDBusAbstractInterface, callWithArgumentList), stub_callWithArgumentList_module);
     QString typeID = createType();
-    GTEST_SKIP() << "DBus notification hangs in test env";
     ASSERT_FALSE(typeID.isEmpty());
     QString scheduleID = createSchedule(typeID);
     ASSERT_FALSE(scheduleID.isEmpty());
@@ -700,8 +750,11 @@ TEST_F(TestDAccountModule, ImportSchedule_InvalidFile_ReturnsFalse)
 
 TEST_F(TestDAccountModule, SlotOpenCalendar_WithRemindData_NoCrash)
 {
+    // 不 stub callWithArgumentList：slotOpenCalendar 内部会构造
+    // DbusUIOpenSchedule（QDBusAbstractInterface），改将 sessionBus 置为无效连接
+    Stub stub;
+    stub.set(ADDR(QDBusConnection, sessionBus), stub_sessionBus_invalid);
     QString typeID = createType();
-    GTEST_SKIP() << "DBus notification hangs in test env";
     ASSERT_FALSE(typeID.isEmpty());
     QString scheduleID = createSchedule(typeID);
     ASSERT_FALSE(scheduleID.isEmpty());
@@ -713,8 +766,10 @@ TEST_F(TestDAccountModule, SlotOpenCalendar_WithRemindData_NoCrash)
 
 TEST_F(TestDAccountModule, CloseNotification_WithRemindData_NoCrash)
 {
+    Stub stub;
+    qDBusMessage_type_Stub(stub);
+    stub.set(ADDR(QDBusAbstractInterface, callWithArgumentList), stub_callWithArgumentList_module);
     QString typeID = createType();
-    GTEST_SKIP() << "DBus notification hangs in test env";
     ASSERT_FALSE(typeID.isEmpty());
     QString scheduleID = createSchedule(typeID);
     ASSERT_FALSE(scheduleID.isEmpty());

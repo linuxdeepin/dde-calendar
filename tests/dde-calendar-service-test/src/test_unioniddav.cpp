@@ -834,3 +834,11 @@ TEST(DUnionIDDav, SyncData)
     obj.syncData("acct1", "acctname", 0, DDataSyncBase::Sync_Upload);
     QTest::qSleep(100);
 }
+
+// 通过基类指针删除派生类对象，覆盖 DDataSyncBase::~DDataSyncBase 的 D0Ev（deleting dtor）入口
+TEST(DUnionIDDav, DeletingThroughDDataSyncBasePointer_CoversDeletingDtor)
+{
+    DDataSyncBase *base = new DUnionIDDav();
+    EXPECT_NO_FATAL_FAILURE(delete base);
+    QTest::qSleep(30);
+}
