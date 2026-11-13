@@ -14,6 +14,7 @@
 #include <gtest/gtest.h>
 #include <QTemporaryDir>
 #include <QSqlDatabase>
+#include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QDateTime>
 
@@ -87,6 +88,10 @@ protected:
             delete mgrDB;
             mgrDB = nullptr;
         }
+        // DAccountDataBase 以 accountID 作为 Qt SQL 连接名（固定 "ut-applier-account"），
+        // 主动释放连接避免用例间复用旧连接/残留状态
+        if (QSqlDatabase::contains("ut-applier-account"))
+            QSqlDatabase::removeDatabase("ut-applier-account");
         dir.reset();
     }
 
