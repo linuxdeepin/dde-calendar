@@ -10,6 +10,7 @@
 #include "accountmanager.h"
 #include "icalformat.h"
 #include "memorycalendar.h"
+#include "configsettings.h"
 
 
 #include <DStyle>
@@ -33,19 +34,21 @@ static const int RoleJobTypeLine = Qt::UserRole + 4;
 static const int OperationButtonsWidth = 90;
 
 namespace {
-QString lastIcsDirectory;
+static const char *const kLastIcsDirectory = "LastIcsDirectory";
 
 QString icsDialogDirectory()
 {
-    if (!lastIcsDirectory.isEmpty()) {
-        return lastIcsDirectory;
+    QString saved = gSetting->value(kLastIcsDirectory).toString();
+    if (!saved.isEmpty()) {
+        return saved;
     }
     return QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
 }
 
 void updateLastIcsDirectory(const QString &filePath)
 {
-    lastIcsDirectory = QFileInfo(filePath).absolutePath();
+    gSetting->setOption(kLastIcsDirectory, QFileInfo(filePath).absolutePath());
+    gSetting->sync();
 }
 
 bool isCalDavRemoteScheduleType(const DScheduleType &info)
