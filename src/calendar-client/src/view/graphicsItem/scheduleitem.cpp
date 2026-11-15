@@ -251,10 +251,7 @@ void CScheduleItem::paintBackground(QPainter *painter, const QRectF &rect, const
     }
 
     painter->save();
-    QColor sourceColor = QColor(m_vScheduleInfo->accountColor());
-    if (!sourceColor.isValid()) {
-        sourceColor = gdColor.orginalColor;
-    }
+    QColor sourceColor = gdColor.orginalColor;
     QPen pen(sourceColor);
     pen.setWidth(2);
     painter->setPen(pen);
