@@ -155,6 +155,6 @@ bool operator<(const DTypeColor::Ptr &tc1, const DTypeColor::Ptr &tc2)
         // qCDebug(CommonLogger) << "Comparing by dtCreate.";
         return tc1->dtCreate() < tc2->dtCreate();
     }
-    // qCDebug(CommonLogger) << "Defaulting to true in less-than comparison.";
-    return true;
+    // qCDebug(CommonLogger) << "Defaulting to false in less-than comparison.";
+    return false;
 }

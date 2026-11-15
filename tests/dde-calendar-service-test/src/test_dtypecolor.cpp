@@ -271,7 +271,7 @@ TEST_F(DTypeColorTest, OperatorLessThan_ByDtCreateWhenPrivilegeEqual_ReturnsTrue
     EXPECT_EQ(int(a->privilege()), int(b->privilege()));
     EXPECT_NE(a->dtCreate(), b->dtCreate());
 }
-TEST_F(DTypeColorTest, OperatorLessThan_WhenAllEqual_ReturnsTrue)
+TEST_F(DTypeColorTest, OperatorLessThan_WhenAllEqual_ReturnsFalse)
 {
     // Arrange
     DTypeColor::Ptr a(new DTypeColor);
@@ -282,7 +282,7 @@ TEST_F(DTypeColorTest, OperatorLessThan_WhenAllEqual_ReturnsTrue)
     // Act
     b->setDtCreate(QDateTime::fromString("2024-01-01T00:00:00", Qt::ISODate));
     // Assert
-    EXPECT_TRUE(operator<(a, b));
+    EXPECT_FALSE(operator<(a, b));
     EXPECT_EQ(int(a->privilege()), int(b->privilege()));
     EXPECT_EQ(a->dtCreate(), b->dtCreate());
 }
