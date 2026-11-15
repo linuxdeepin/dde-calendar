@@ -72,6 +72,7 @@ public:
 protected:
     void initView();
     void updateStatus() override;
+    void updateTitleColor();
 
 private:
     DScheduleType::Ptr m_scheduleType;
@@ -116,6 +117,8 @@ protected:
     void leaveEvent(QEvent *event) override;
     bool eventFilter(QObject *watched, QEvent *event) override;
     void updateWarningIcon();
+    void updateSyncIcon();
+    void updateTitleColor();
 
 private:
     AccountItem::Ptr m_accountItem;

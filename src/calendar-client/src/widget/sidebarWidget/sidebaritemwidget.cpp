@@ -191,6 +191,9 @@ void SidebarTypeItemWidget::initView()
     m_titleLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     m_titleLabel->setTextFormat(Qt::PlainText);
     m_titleLabel->setText(m_scheduleType->displayName());
+    updateTitleColor();
+    QObject::connect(DGuiApplicationHelper::instance(), &DGuiApplicationHelper::themeTypeChanged,
+                     this, [this]() { updateTitleColor(); });
 
     vLayout->addSpacing(2);
     vLayout->addWidget(m_checkBox);
@@ -215,6 +218,17 @@ void SidebarTypeItemWidget::updateStatus()
         }
         m_checkBox->setChecked(m_selectStatus);
     }
+}
+
+void SidebarTypeItemWidget::updateTitleColor()
+{
+    DGuiApplicationHelper::ColorType theme = DGuiApplicationHelper::instance()->themeType();
+    QColor textColor = (theme == DGuiApplicationHelper::DarkType)
+        ? QColor(255, 255, 255, 128)
+        : QColor(0, 0, 0, 128);
+    QPalette palette = m_titleLabel->palette();
+    palette.setColor(QPalette::WindowText, textColor);
+    m_titleLabel->setPalette(palette);
 }
 
 SidebarAccountItemWidget::SidebarAccountItemWidget(AccountItem::Ptr ptr, QWidget *parent)
@@ -261,17 +275,17 @@ void SidebarAccountItemWidget::initView()
     m_titleLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     m_titleLabel->setTextFormat(Qt::PlainText);
     m_titleLabel->setText(sidebarAccountTitle(m_accountItem));
+    updateTitleColor();
+    QObject::connect(DGuiApplicationHelper::instance(), &DGuiApplicationHelper::themeTypeChanged,
+                     this, [this]() { updateTitleColor(); });
 
     m_syncIconButton = new DIconButton(this);
     m_syncIconButton->setObjectName("SyncIconButton");
     m_syncIconButton->setAccessibleName("SyncIconButton");
     m_syncIconButton->setFlat(true);
     m_syncIconButton->setIcon(QIcon(":/icons/deepin/builtin/icons/icon_refresh.svg"));
-    m_syncIconButton->setFixedSize(QSize(20, 20));
-    qreal ratio = qApp->devicePixelRatio();
-    if (ratio == 1){
-        m_syncIconButton->setIconSize(QSize(10, 10));
-    }
+    m_syncIconButton->setFixedSize(QSize(24, 24));
+    m_syncIconButton->setIconSize(QSize(16, 16));
     m_syncIconButton->setFocusPolicy(Qt::NoFocus);
     m_syncIconButton->installEventFilter(this);
 
@@ -284,6 +298,9 @@ void SidebarAccountItemWidget::initView()
     updateWarningIcon();
     QObject::connect(DGuiApplicationHelper::instance(), &DGuiApplicationHelper::themeTypeChanged,
                      m_warningLabel, [this]() { updateWarningIcon(); });
+    updateSyncIcon();
+    QObject::connect(DGuiApplicationHelper::instance(), &DGuiApplicationHelper::themeTypeChanged,
+                     m_syncIconButton, [this]() { updateSyncIcon(); });
 
     hLayout->addWidget(m_headIconButton);
     hLayout->addWidget(m_titleLabel, 1);
@@ -368,6 +385,34 @@ void SidebarAccountItemWidget::updateWarningIcon()
     painter.fillRect(tintedPixmap.rect(), iconColor);
     painter.end();
     m_warningLabel->setPixmap(tintedPixmap);
+}
+
+void SidebarAccountItemWidget::updateSyncIcon()
+{
+    DGuiApplicationHelper::ColorType theme = DGuiApplicationHelper::instance()->themeType();
+    QColor iconColor = (theme == DGuiApplicationHelper::DarkType)
+        ? QColor(255, 255, 255, 153)
+        : QColor(0, 0, 0, 153);
+    QPixmap basePixmap = QIcon(":/icons/deepin/builtin/icons/icon_refresh.svg").pixmap(QSize(16, 16));
+    QPixmap tintedPixmap(basePixmap.size());
+    tintedPixmap.fill(Qt::transparent);
+    QPainter painter(&tintedPixmap);
+    painter.drawPixmap(0, 0, basePixmap);
+    painter.setCompositionMode(QPainter::CompositionMode_SourceIn);
+    painter.fillRect(tintedPixmap.rect(), iconColor);
+    painter.end();
+    m_syncIconButton->setIcon(QIcon(tintedPixmap));
+}
+
+void SidebarAccountItemWidget::updateTitleColor()
+{
+    DGuiApplicationHelper::ColorType theme = DGuiApplicationHelper::instance()->themeType();
+    QColor textColor = (theme == DGuiApplicationHelper::DarkType)
+        ? QColor(255, 255, 255, 128)
+        : QColor(0, 0, 0, 128);
+    QPalette palette = m_titleLabel->palette();
+    palette.setColor(QPalette::WindowText, textColor);
+    m_titleLabel->setPalette(palette);
 }
 
 bool SidebarAccountItemWidget::eventFilter(QObject *watched, QEvent *event)

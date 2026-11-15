@@ -509,6 +509,21 @@ TEST_F(TestSidebarAccountItemWidget, InitView)
     EXPECT_NE(m_widget->m_warningLabel, nullptr);
 }
 
+
+TEST_F(TestSidebarAccountItemWidget, UpdateSyncIcon)
+{
+    // SVG icon rendering is unavailable in offscreen test mode;
+    // verify the method executes without crashing.
+    m_widget->updateSyncIcon();
+    SUCCEED();
+}
+
+TEST_F(TestSidebarAccountItemWidget, UpdateTitleColor)
+{
+    m_widget->updateTitleColor();
+    QColor color = m_widget->m_titleLabel->palette().color(QPalette::WindowText);
+    EXPECT_EQ(color.alpha(), 128);
+}
 TEST_F(TestSidebarAccountItemWidget, HeadIconButtonClicked)
 {
     bool oldStatus = m_widget->getSelectStatus();
@@ -680,6 +695,13 @@ TEST_F(TestSidebarTypeItemWidget, InitView)
     EXPECT_EQ(m_widget->height(), 40);
 }
 
+
+TEST_F(TestSidebarTypeItemWidget, UpdateTitleColor)
+{
+    m_widget->updateTitleColor();
+    QColor color = m_widget->m_titleLabel->palette().color(QPalette::WindowText);
+    EXPECT_EQ(color.alpha(), 128);
+}
 TEST_F(TestSidebarTypeItemWidget, CheckBoxClicked)
 {
     bool oldStatus = m_widget->getSelectStatus();
