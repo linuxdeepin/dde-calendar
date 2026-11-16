@@ -264,7 +264,7 @@
 
 日曆支援透過UOS ID將日程數據及設定同步至雲端。
 
-> ![notes](../common/notes.svg) 說明：該功能暫不對老版本UOS系統開放。
+> ![notes](../common/notes.svg) 說明：該功能暫不對老版本UOS/deepin系統開放。
 
 **登錄和登出UOS ID**
 
