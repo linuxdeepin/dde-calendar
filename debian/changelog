@@ -1,3 +1,10 @@
+dde-calendar (6.5.44) unstable; urgency=medium
+
+  * chore: Update version to 6.5.44
+  * feat(calendar): add 2027 Chinese holiday data
+
+ -- zhanghongyuan <zhanghongyuan@uniontech.com>  Wed, 18 Nov 2026 12:00:17 +0800
+
 dde-calendar (6.5.43) unstable; urgency=medium
 
   * chore: Update version to 6.5.43
