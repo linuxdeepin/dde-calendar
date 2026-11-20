@@ -210,7 +210,7 @@ QString icsForRemoteWrite(const DSchedule::Ptr &schedule,
             }
 
             if (remoteSchedule->recurs()) {
-                KCalendarCore::Recurrence *recurrence = remoteSchedule->recurrence();
+                CalendarKernel::Recurrence *recurrence = remoteSchedule->recurrence();
                 QList<QDateTime> rDateTimes = recurrence->rDateTimes();
                 for (QDateTime &dateTime : rDateTimes) {
                     dateTime = toQqTime(dateTime);

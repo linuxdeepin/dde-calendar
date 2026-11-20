@@ -108,9 +108,9 @@ void DDE_Calendar::setAlarmByOldRemind(const DSchedule::Ptr &schedule, const QSt
     int remindNum = strList.at(0).toInt();
     //小于0表示不提醒
     if (remindNum >= 0) {
-        KCalendarCore::Alarm::Ptr alarm = KCalendarCore::Alarm::Ptr(new KCalendarCore::Alarm(schedule.data()));
+        CalendarKernel::Alarm::Ptr alarm = CalendarKernel::Alarm::Ptr(new CalendarKernel::Alarm(schedule.data()));
         alarm->setEnabled(true);
-        alarm->setType(KCalendarCore::Alarm::Display);
+        alarm->setType(CalendarKernel::Alarm::Display);
         alarm->setDisplayAlarm(schedule->summary());
 
         if (schedule->allDay()) {
@@ -121,11 +121,11 @@ void DDE_Calendar::setAlarmByOldRemind(const DSchedule::Ptr &schedule, const QSt
                 QTime time = QTime::fromString(strList.at(1), "hh:mm");
                 offset = time.hour() * 60 * 60 + time.second() * 60;
             }
-            KCalendarCore::Duration duration(-(24 * 60 * 60 * remindNum - offset));
+            CalendarKernel::Duration duration(-(24 * 60 * 60 * remindNum - offset));
             alarm->setStartOffset(duration);
         } else {
             qCDebug(CommonLogger) << "Setting alarm for timed event";
-            KCalendarCore::Duration duration(-(60 * remindNum));
+            CalendarKernel::Duration duration(-(60 * remindNum));
             alarm->setStartOffset(duration);
         }
         schedule->addAlarm(alarm);
@@ -240,9 +240,9 @@ void DDE_Calendar::setRRuleByOldRRule(const DSchedule::Ptr &schedule, const QStr
 {
     qCDebug(CommonLogger) << "DDE_Calendar::setRRuleByOldRRule, rrule:" << rrule;
     //重复规则
-    KCalendarCore::Recurrence *recurrence = schedule->recurrence();
-    KCalendarCore::ICalFormat ical;
-    KCalendarCore::RecurrenceRule *rule = new KCalendarCore::RecurrenceRule;
+    CalendarKernel::Recurrence *recurrence = schedule->recurrence();
+    CalendarKernel::ICalFormat ical;
+    CalendarKernel::RecurrenceRule *rule = new CalendarKernel::RecurrenceRule;
 
     if (ical.fromString(rule, rrule)) {
         recurrence->addRRule(rule);
@@ -252,7 +252,7 @@ void DDE_Calendar::setRRuleByOldRRule(const DSchedule::Ptr &schedule, const QStr
 void DDE_Calendar::setExDate(const DSchedule::Ptr &schedule, const QJsonArray &ignore)
 {
     qCDebug(CommonLogger) << "DDE_Calendar::setExDate, ignore count:" << ignore.size();
-    KCalendarCore::Recurrence *recurrence = schedule->recurrence();
+    CalendarKernel::Recurrence *recurrence = schedule->recurrence();
 
     foreach (auto ignoreTime, ignore) {
         if (schedule->allDay()) {

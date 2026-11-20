@@ -26,7 +26,7 @@ public:
         RRule_Year, //每年
     };
 
-    explicit LunarDateInfo(KCalendarCore::RecurrenceRule *rruleStr, const qint64 interval);
+    explicit LunarDateInfo(CalendarKernel::RecurrenceRule *rruleStr, const qint64 interval);
     /**
      * @brief getRRuleStartDate         获取重复农历日程开始时间(公历)集
      * @param beginDate                 查询的起始时间
@@ -83,7 +83,7 @@ private:
     bool addSolarMap(QMap<int, QDate> &solarMap, QDate &nextDate, int &count, const int addDays);
 
 private:
-    KCalendarCore::RecurrenceRule *m_recurenceRule;
+    CalendarKernel::RecurrenceRule *m_recurenceRule;
     LunnarRRule m_rruleType;
 
     //    stRRuleOptions m_options;

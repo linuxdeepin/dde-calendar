@@ -17,18 +17,28 @@ aux_source_directory(src BASESTRUCT_SRCS)
 aux_source_directory(src/huangliData BASESTRUCT_SRCS_HUANGLI)
 aux_source_directory(src/lunarandfestival BASESTRUCT_SRCS_NONGLI)
 aux_source_directory(src/pinyin BASESTRUCT_SRCS_PINYIN)
+aux_source_directory(calendarkernel BASESTRUCT_SRCS_CALENDARKERNEL)
+
+pkg_check_modules(3rd_lib REQUIRED libical)
 
 add_library(${PROJECT_NAME} STATIC ${BASESTRUCT_SRCS}
     ${BASESTRUCT_SRCS_HUANGLI}
     ${BASESTRUCT_SRCS_NONGLI}
     ${BASESTRUCT_SRCS_PINYIN}
+    ${BASESTRUCT_SRCS_CALENDARKERNEL}
 )
-target_include_directories(${PROJECT_NAME} PUBLIC ../../3rdparty/kcalendarcore/src)
+
+target_include_directories(${PROJECT_NAME} PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/calendarkernel
+)
 
 target_link_libraries(${PROJECT_NAME}
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::DBus
     Qt${QT_VERSION_MAJOR}::Sql
-    kcalendarcore
+    ${3rd_lib_LIBRARIES}
+    icalvcal
+    icalss
     Dtk${DTK_VERSION_MAJOR}::Core
 )

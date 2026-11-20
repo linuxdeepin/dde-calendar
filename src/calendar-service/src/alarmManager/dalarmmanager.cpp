@@ -163,7 +163,7 @@ int DAlarmManager::remindJob(const DRemindData::Ptr &remindData, const DSchedule
         return 0;
     }
 
-    KCalendarCore::Alarm::Ptr alarm = schedule->alarms().at(0);
+    CalendarKernel::Alarm::Ptr alarm = schedule->alarms().at(0);
     int nDays = -(alarm->startOffset().asDays());
     qCDebug(ServiceLogger) << "Alarm offset days:" << nDays;
 

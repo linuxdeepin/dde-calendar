@@ -48,16 +48,16 @@ TEST(DSchedule, CopyConstructor)
     EXPECT_EQ(original.dtEnd(), copy.dtEnd());
     // DEFECT: fileName, isMoved, compatibleID are NOT copied by the copy
     // constructor.  The compiler-generated copy constructor is shadowed by
-    // the DSchedule(const KCalendarCore::Event&) converting constructor,
+    // the DSchedule(const CalendarKernel::Event&) converting constructor,
     // which re-initialises these members to defaults.  See defects.json.
     EXPECT_NE(original.fileName(), copy.fileName());
     EXPECT_NE(original.isMoved(), copy.isMoved());
     EXPECT_NE(original.compatibleID(), copy.compatibleID());
 }
 
-TEST(DSchedule, ConstructorFromKCalendarCoreEvent)
+TEST(DSchedule, ConstructorFromCalendarKernelEvent)
 {
-    KCalendarCore::Event event;
+    CalendarKernel::Event event;
     event.setSummary(QStringLiteral("Base Event"));
     event.setDtStart(QDateTime(QDate(2025, 5, 1), QTime(9, 0, 0)));
     event.setDtEnd(QDateTime(QDate(2025, 5, 1), QTime(10, 0, 0)));
@@ -640,8 +640,8 @@ TEST(DSchedule, ExpendRecurrenceForDailyRecurringSchedule)
     // DEFECT: setRRuleType does not set the recurrence rule's start date,
     // so timesInInterval returns an empty list.  Set the start date
     // manually to exercise the expansion logic.  See defects.json.
-    KCalendarCore::Recurrence *rec = schedule->recurrence();
-    KCalendarCore::RecurrenceRule *rule = const_cast<KCalendarCore::RecurrenceRule *>(
+    CalendarKernel::Recurrence *rec = schedule->recurrence();
+    CalendarKernel::RecurrenceRule *rule = const_cast<CalendarKernel::RecurrenceRule *>(
         rec->defaultRRuleConst());
     if (rule) {
         rule->setStartDt(schedule->dtStart());

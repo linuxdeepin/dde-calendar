@@ -15,7 +15,6 @@ set(CMAKE_EXE_LINKER_FLAGS "-pie")
 set(APP_BIN_NAME "dde-calendar-schedule-test")
 set(APP_PLUGIN_DIR "${CMAKE_SOURCE_DIR}/src/schedule-plugin")
 set(APP_COMMON_DIR "${CMAKE_SOURCE_DIR}/src/calendar-common")
-set(APP_3PARTY_DIR "${CMAKE_SOURCE_DIR}/3rdparty/kcalendarcore")
 
 find_package(PkgConfig REQUIRED)
 find_package(Dtk${DTK_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widget)
@@ -39,7 +38,6 @@ set(LINK_LIBS
 
 include_directories(${APP_PLUGIN_DIR}/src)
 include_directories(${APP_COMMON_DIR}/src)
-include_directories(${APP_3PARTY_DIR}/src)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 include_directories(${CMAKE_SOURCE_DIR}/tests/third-party_stub)
 include_directories(${CMAKE_SOURCE_DIR}/tests/dde-calendar-schedule-plugin-test/src)  # test_helpers.h

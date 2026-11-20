@@ -11,7 +11,6 @@ set(APP_BIN_NAME "dde-calendar-schedule-plugin-test")
 
 set(SCHEDULE_PLUGIN_DIR "${CMAKE_SOURCE_DIR}/src/schedule-plugin")
 set(CALENDAR_COMMON_DIR "${CMAKE_SOURCE_DIR}/src/calendar-common")
-set(KCALENDARCORE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/kcalendarcore")
 
 find_package(PkgConfig REQUIRED)
 find_package(Dtk${DTK_VERSION_MAJOR} REQUIRED COMPONENTS Widget)
@@ -30,7 +29,6 @@ set(LINK_LIBS
 # Include paths
 include_directories(${SCHEDULE_PLUGIN_DIR}/src)
 include_directories(${CALENDAR_COMMON_DIR}/src)
-include_directories(${KCALENDARCORE_DIR}/src)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 include_directories(${CMAKE_SOURCE_DIR}/tests/third-party_stub)
 
