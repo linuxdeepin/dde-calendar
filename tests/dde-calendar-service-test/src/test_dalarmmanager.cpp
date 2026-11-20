@@ -122,7 +122,7 @@ protected:
                                         bool allDay = false,
                                         const QString &summary = "Test Schedule")
     {
-        KCalendarCore::Event event;
+        CalendarKernel::Event event;
         event.setSummary(summary);
         event.setDtStart(start);
         event.setDtEnd(end);
@@ -137,7 +137,7 @@ protected:
                                                const QDateTime &end,
                                                bool allDay = false)
     {
-        KCalendarCore::Event event;
+        CalendarKernel::Event event;
         event.setSummary("No Alarm Schedule");
         event.setDtStart(start);
         event.setDtEnd(end);

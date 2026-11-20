@@ -31,9 +31,9 @@ bool hasUsableRecurrence(const DSchedule::Ptr &schedule)
         return false;
     }
 
-    const KCalendarCore::Recurrence *recurrence = schedule->recurrence();
-    const KCalendarCore::RecurrenceRule *rule = recurrence->defaultRRuleConst();
-    if (rule != nullptr && rule->recurrenceType() != KCalendarCore::RecurrenceRule::rNone
+    const CalendarKernel::Recurrence *recurrence = schedule->recurrence();
+    const CalendarKernel::RecurrenceRule *rule = recurrence->defaultRRuleConst();
+    if (rule != nullptr && rule->recurrenceType() != CalendarKernel::RecurrenceRule::rNone
         && !rule->rrule().isEmpty()) {
         return true;
     }
@@ -44,7 +44,7 @@ bool hasUsableRecurrence(const DSchedule::Ptr &schedule)
 } // namespace
 
 DSchedule::DSchedule()
-    : KCalendarCore::Event()
+    : CalendarKernel::Event()
     , m_fileName("")
     , m_scheduleTypeID("")
     , m_compatibleID(0)
@@ -53,7 +53,7 @@ DSchedule::DSchedule()
 }
 
 DSchedule::DSchedule(const DSchedule &schedule)
-    : KCalendarCore::Event(schedule)
+    : CalendarKernel::Event(schedule)
     , m_fileName("")
     , m_scheduleTypeID("")
     , m_compatibleID(0)
@@ -63,13 +63,13 @@ DSchedule::DSchedule(const DSchedule &schedule)
     this->setAccountColor(schedule.accountColor());
 }
 
-DSchedule::DSchedule(const KCalendarCore::Event &event)
-    : KCalendarCore::Event(event)
+DSchedule::DSchedule(const CalendarKernel::Event &event)
+    : CalendarKernel::Event(event)
     , m_fileName("")
     , m_scheduleTypeID("")
     , m_compatibleID(0)
 {
-    // qCDebug(CommonLogger) << "DSchedule constructor from KCalendarCore::Event called for event:" << event.summary();
+    // qCDebug(CommonLogger) << "DSchedule constructor from CalendarKernel::Event called for event:" << event.summary();
 }
 
 DSchedule *DSchedule::clone() const
@@ -181,11 +181,11 @@ void DSchedule::setAlarmType(const DSchedule::AlarmType &alarmType)
     QMap<int, AlarmType>::const_iterator iter = alarmMap.constBegin();
     for (; iter != alarmMap.constEnd(); ++iter) {
         if (iter.value() == alarmType) {
-            KCalendarCore::Alarm::Ptr alarm = KCalendarCore::Alarm::Ptr(new KCalendarCore::Alarm(this));
+            CalendarKernel::Alarm::Ptr alarm = CalendarKernel::Alarm::Ptr(new CalendarKernel::Alarm(this));
             alarm->setEnabled(true);
-            alarm->setType(KCalendarCore::Alarm::Display);
+            alarm->setType(CalendarKernel::Alarm::Display);
             alarm->setDisplayAlarm(this->summary());
-            KCalendarCore::Duration duration(iter.key());
+            CalendarKernel::Duration duration(iter.key());
             alarm->setStartOffset(duration);
             addAlarm(alarm);
             qCDebug(CommonLogger) << "Added alarm with offset:" << iter.key() << "seconds";
@@ -198,9 +198,9 @@ DSchedule::AlarmType DSchedule::getAlarmType()
 {
     // qCDebug(CommonLogger) << "Getting alarm type for schedule:" << summary();
     AlarmType alarmType = allDay() ? Alarm_AllDay_None : Alarm_None;
-    KCalendarCore::Alarm::List alarmList = this->alarms();
+    CalendarKernel::Alarm::List alarmList = this->alarms();
     if (alarmList.size() > 0) {
-        KCalendarCore::Duration duration = alarmList.at(0)->startOffset();
+        CalendarKernel::Duration duration = alarmList.at(0)->startOffset();
         QMap<int, AlarmType> alarmMap = getAlarmMap();
         if (alarmMap.contains(duration.asSeconds())) {
             alarmType = alarmMap[duration.asSeconds()];
@@ -244,10 +244,10 @@ void DSchedule::setRRuleType(const DSchedule::RRuleType &rtype)
 
     if (!rules.isEmpty()) {
         // qCDebug(CommonLogger) << "Applying recurrence rule:" << rules;
-        KCalendarCore::Recurrence *recurrence = this->recurrence();
-        KCalendarCore::RecurrenceRule *rrule = new KCalendarCore::RecurrenceRule();
+        CalendarKernel::Recurrence *recurrence = this->recurrence();
+        CalendarKernel::RecurrenceRule *rrule = new CalendarKernel::RecurrenceRule();
 
-        KCalendarCore::ICalFormat ical;
+        CalendarKernel::ICalFormat ical;
         if (ical.fromString(rrule, rules)) {
             recurrence->addRRule(rrule);
         }
@@ -259,18 +259,18 @@ DSchedule::RRuleType DSchedule::getRRuleType()
     // qCDebug(CommonLogger) << "Getting RRule type for schedule:" << summary();
     RRuleType rtype = RRule_None;
     if (this->recurs()) {
-        KCalendarCore::RecurrenceRule *rrule = this->recurrence()->defaultRRuleConst();
+        CalendarKernel::RecurrenceRule *rrule = this->recurrence()->defaultRRuleConst();
         switch (rrule->recurrenceType()) {
-        case KCalendarCore::RecurrenceRule::rYearly: {
+        case CalendarKernel::RecurrenceRule::rYearly: {
             rtype = RRule_Year;
         } break;
-        case KCalendarCore::RecurrenceRule::rMonthly: {
+        case CalendarKernel::RecurrenceRule::rMonthly: {
             rtype = RRule_Month;
         } break;
-        case KCalendarCore::RecurrenceRule::rWeekly: {
+        case CalendarKernel::RecurrenceRule::rWeekly: {
             rtype = RRule_Week;
         } break;
-        case KCalendarCore::RecurrenceRule::rDaily: {
+        case CalendarKernel::RecurrenceRule::rDaily: {
             if (rrule->rrule().contains("BYDAY=MO,TU,WE,TH,FR")) {
                 rtype = RRule_Work;
             } else {
@@ -363,18 +363,18 @@ bool DSchedule::fromIcsString(Ptr &schedule, const QString &string)
 {
     // qCDebug(CommonLogger) << "Parsing schedule from ICS string:" << string;
     bool resBool = false;
-    KCalendarCore::ICalFormat icalformat;
+    CalendarKernel::ICalFormat icalformat;
     QTimeZone timezone = QDateTime::currentDateTime().timeZone();
-    KCalendarCore::MemoryCalendar::Ptr _cal(new KCalendarCore::MemoryCalendar(timezone));
+    CalendarKernel::MemoryCalendar::Ptr _cal(new CalendarKernel::MemoryCalendar(timezone));
     if (icalformat.fromString(_cal, string)) {
-        KCalendarCore::Event::List eventList = _cal->events();
+        CalendarKernel::Event::List eventList = _cal->events();
         if (!eventList.isEmpty()) {
             // A CalDAV resource may contain the master VEVENT followed by
             // detached exception VEVENTs. This model stores one schedule, so
             // prefer the master instead of relying on provider-specific event
             // ordering. EXDATE/RDATE data on the master remains intact.
-            KCalendarCore::Event::Ptr selectedEvent = eventList.first();
-            for (const KCalendarCore::Event::Ptr &event : eventList) {
+            CalendarKernel::Event::Ptr selectedEvent = eventList.first();
+            for (const CalendarKernel::Event::Ptr &event : eventList) {
                 if (!event->hasRecurrenceId()) {
                     selectedEvent = event;
                     break;
@@ -393,10 +393,10 @@ bool DSchedule::fromIcsString(Ptr &schedule, const QString &string)
 QString DSchedule::toIcsString(const DSchedule::Ptr &schedule)
 {
     // qCDebug(CommonLogger) << "Converting schedule to ICS string:" << schedule->summary();
-    KCalendarCore::ICalFormat icalformat;
-    KCalendarCore::MemoryCalendar::Ptr _cal(new KCalendarCore::MemoryCalendar(nullptr));
+    CalendarKernel::ICalFormat icalformat;
+    CalendarKernel::MemoryCalendar::Ptr _cal(new CalendarKernel::MemoryCalendar(nullptr));
     _cal->addEvent(schedule);
-    return icalformat.toString(_cal.staticCast<KCalendarCore::Calendar>());
+    return icalformat.toString(_cal.staticCast<CalendarKernel::Calendar>());
 }
 
 QMap<QDate, DSchedule::List> DSchedule::fromMapString(const QString &json)

@@ -166,10 +166,10 @@ static void applyScheduleUpdates(const DSchedule::Ptr &schedule, const QJsonObje
         int reminderMinutes = updateData["reminder"].toInt();
         schedule->clearAlarms();
         if (reminderMinutes > 0) {
-            KCalendarCore::Alarm::Ptr alarm = schedule->newAlarm();
-            alarm->setStartOffset(KCalendarCore::Duration(-reminderMinutes * 60));
+            CalendarKernel::Alarm::Ptr alarm = schedule->newAlarm();
+            alarm->setStartOffset(CalendarKernel::Duration(-reminderMinutes * 60));
             alarm->setEnabled(true);
-            alarm->setType(KCalendarCore::Alarm::Display);
+            alarm->setType(CalendarKernel::Alarm::Display);
         }
     }
 }
@@ -422,10 +422,10 @@ QString CalendarAdaptor::CreateSchedule(const QString &scheduleData)
         // Set reminder if provided
         int reminderMinutes = data["reminder"].toInt(0);
         if (reminderMinutes > 0) {
-            KCalendarCore::Alarm::Ptr alarm = schedule->newAlarm();
-            alarm->setStartOffset(KCalendarCore::Duration(-reminderMinutes * 60));
+            CalendarKernel::Alarm::Ptr alarm = schedule->newAlarm();
+            alarm->setStartOffset(CalendarKernel::Duration(-reminderMinutes * 60));
             alarm->setEnabled(true);
-            alarm->setType(KCalendarCore::Alarm::Display);
+            alarm->setType(CalendarKernel::Alarm::Display);
         }
 
         // Generate unique ID

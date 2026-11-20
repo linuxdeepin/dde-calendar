@@ -75,7 +75,6 @@ endmacro()
 option(WITH_AIASSISTANT_PLUGIN "Build with AI assistant (schedule-plugin) support" ON)
 option(BUILD_TESTING "Build dde-calendar tests" OFF)
 
-ADD_SUBDIRECTORY(3rdparty/kcalendarcore)
 ADD_SUBDIRECTORY(src/calendar-common)
 ADD_SUBDIRECTORY(src/calendar-client)
 ADD_SUBDIRECTORY(src/calendar-service)

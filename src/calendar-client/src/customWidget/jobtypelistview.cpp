@@ -335,9 +335,9 @@ void JobTypeListView::slotImportScheduleType()
     }
 
     // 从ics文件读取内置的基本信息
-    KCalendarCore::ICalFormat icalformat;
+    CalendarKernel::ICalFormat icalformat;
     QTimeZone timezone = QDateTime::currentDateTime().timeZone();
-    KCalendarCore::MemoryCalendar::Ptr cal(new KCalendarCore::MemoryCalendar(timezone));
+    CalendarKernel::MemoryCalendar::Ptr cal(new CalendarKernel::MemoryCalendar(timezone));
     // 先加载ICS文件内容，才能读取到自定义属性
     auto ok = icalformat.load(cal, filename);
     if (!ok) {

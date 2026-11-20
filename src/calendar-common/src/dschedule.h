@@ -13,7 +13,7 @@
 #include <QSharedPointer>
 
 //日程信息
-class DSchedule : public KCalendarCore::Event
+class DSchedule : public CalendarKernel::Event
 {
 public:
     //提醒规则
@@ -50,7 +50,7 @@ public:
 
     DSchedule();
     DSchedule(const DSchedule &schedule);
-    DSchedule(const KCalendarCore::Event &event);
+    DSchedule(const CalendarKernel::Event &event);
 
     DSchedule *clone() const override;
 

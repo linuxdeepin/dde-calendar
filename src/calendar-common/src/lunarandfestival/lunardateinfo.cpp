@@ -12,7 +12,7 @@
 //农历一年最少有363天
 const int LunarYearMiniDays = 353;
 
-LunarDateInfo::LunarDateInfo(KCalendarCore::RecurrenceRule *rruleStr, const qint64 interval)
+LunarDateInfo::LunarDateInfo(CalendarKernel::RecurrenceRule *rruleStr, const qint64 interval)
     : m_recurenceRule(rruleStr)
     , m_dateInterval(interval)
 {

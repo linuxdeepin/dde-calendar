@@ -1749,9 +1749,9 @@ void DAccountModule::slotDateUpdate(const DDataSyncBase::UpdateTypes updateType)
 bool DAccountModule::importSchedule(const QString &icsFilePath, const QString &typeID, const bool cleanExists)
 {
     qCDebug(ServiceLogger) << "Importing schedules from" << icsFilePath << "into type" << typeID << "Clean exists:" << cleanExists;
-    KCalendarCore::ICalFormat icalformat;
+    CalendarKernel::ICalFormat icalformat;
     QTimeZone timezone = QDateTime::currentDateTime().timeZone();
-    KCalendarCore::MemoryCalendar::Ptr cal(new KCalendarCore::MemoryCalendar(timezone));
+    CalendarKernel::MemoryCalendar::Ptr cal(new CalendarKernel::MemoryCalendar(timezone));
     auto ok = icalformat.load(cal, icsFilePath);
     if (!ok) {
         qCWarning(ServiceLogger) << "Failed to load ICS file:" << icsFilePath;
@@ -1796,7 +1796,7 @@ bool DAccountModule::exportSchedule(const QString &icsFilePath, const QString &t
 {
     qCDebug(ServiceLogger) << "Exporting schedules to" << icsFilePath << "from type" << typeID;
     auto typeInfo = m_accountDB->getScheduleTypeByID(typeID);
-    KCalendarCore::MemoryCalendar::Ptr cal(new KCalendarCore::MemoryCalendar(nullptr));
+    CalendarKernel::MemoryCalendar::Ptr cal(new CalendarKernel::MemoryCalendar(nullptr));
     // 附加扩展信息
     cal->setNonKDECustomProperty("X-DDE-CALENDAR-TYPE-ID", typeID);
     cal->setNonKDECustomProperty("X-DDE-CALENDAR-TYPE-NAME", typeInfo->displayName());
@@ -1809,6 +1809,6 @@ bool DAccountModule::exportSchedule(const QString &icsFilePath, const QString &t
         cal->addEvent(schedule);
     }
     qCDebug(ServiceLogger) << "Exporting" << cal->events().count() << "schedules.";
-    KCalendarCore::ICalFormat icalformat;
+    CalendarKernel::ICalFormat icalformat;
     return icalformat.save(cal, icsFilePath);
 }

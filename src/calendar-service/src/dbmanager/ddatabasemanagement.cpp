@@ -341,9 +341,9 @@ DSchedule::List DDataBaseManagement::queryOldJobData(QSqlDatabase &db, const boo
             if (!rrule.isEmpty()) {
                 qCDebug(ServiceLogger) << "Processing recurrence rule for schedule:" << schedule->summary();
                 //重复规则
-                KCalendarCore::Recurrence *recurrence = schedule->recurrence();
-                KCalendarCore::ICalFormat ical;
-                KCalendarCore::RecurrenceRule *rule = new KCalendarCore::RecurrenceRule;
+                CalendarKernel::Recurrence *recurrence = schedule->recurrence();
+                CalendarKernel::ICalFormat ical;
+                CalendarKernel::RecurrenceRule *rule = new CalendarKernel::RecurrenceRule;
 
                 if (ical.fromString(rule, query.value("r_rule").toString())) {
                     recurrence->addRRule(rule);
@@ -372,9 +372,9 @@ DSchedule::List DDataBaseManagement::queryOldJobData(QSqlDatabase &db, const boo
                 //小于0表示不提醒
                 if (remindNum >= 0) {
                     qCDebug(ServiceLogger) << "Setting up reminder with offset:" << remindNum;
-                    KCalendarCore::Alarm::Ptr alarm = KCalendarCore::Alarm::Ptr(new KCalendarCore::Alarm(schedule.data()));
+                    CalendarKernel::Alarm::Ptr alarm = CalendarKernel::Alarm::Ptr(new CalendarKernel::Alarm(schedule.data()));
                     alarm->setEnabled(true);
-                    alarm->setType(KCalendarCore::Alarm::Display);
+                    alarm->setType(CalendarKernel::Alarm::Display);
                     alarm->setDisplayAlarm(schedule->summary());
 
                     if (schedule->allDay()) {
@@ -385,11 +385,11 @@ DSchedule::List DDataBaseManagement::queryOldJobData(QSqlDatabase &db, const boo
                             QTime time = QTime::fromString(strList.at(1), "hh:mm");
                             offset = time.hour() * 60 * 60 + time.second() * 60;
                         }
-                        KCalendarCore::Duration duration(-(24 * 60 * 60 * remindNum - offset));
+                        CalendarKernel::Duration duration(-(24 * 60 * 60 * remindNum - offset));
                         alarm->setStartOffset(duration);
                     } else {
                         qCDebug(ServiceLogger) << "Setting timed reminder for schedule:" << schedule->summary();
-                        KCalendarCore::Duration duration(-(60 * remindNum));
+                        CalendarKernel::Duration duration(-(60 * remindNum));
                         alarm->setStartOffset(duration);
                     }
                     schedule->addAlarm(alarm);
