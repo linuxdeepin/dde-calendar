@@ -1176,17 +1176,17 @@
         <message>
             <location filename="../src/calendar-service/src/calendarDataManager/daccountmanagemodule.cpp" line="411"/>
             <source>Unable to connect to the server. Please check your network connection and server address.</source>
-            <translation type="unfinished"/>
+            <translation>Verbindung zum Server konnte nicht hergestellt werden. Bitte Netzwerk-Verbindung und Server-Adresse prüfen.</translation>
         </message>
         <message>
             <location filename="../src/calendar-service/src/calendarDataManager/daccountmanagemodule.cpp" line="414"/>
             <source>Sync failed, please try later</source>
-            <translation type="unfinished"/>
+            <translation>Synchronisierung fehlgeschlagen, bitte später erneut versuchen</translation>
         </message>
         <message>
             <location filename="../src/calendar-service/src/calendarDataManager/daccountmanagemodule.cpp" line="425"/>
             <source>Calendar</source>
-            <translation type="unfinished"/>
+            <translation>Kalender</translation>
         </message>
     </context>
     <context>
@@ -1194,7 +1194,7 @@
     <message>
         <location filename="../src/calendar-service/src/caldav/dcaldavaccountregistrar.cpp" line="60"/>
         <source>Calendar</source>
-        <translation type="unfinished"/>
+        <translation>Kalender</translation>
     </message>
     </context>
     <context>
@@ -1202,32 +1202,32 @@
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="37"/>
         <source>DingTalk</source>
-        <translation type="unfinished"/>
+        <translation>DingTalk</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="39"/>
         <source>WeCom</source>
-        <translation type="unfinished"/>
+        <translation>WeCom</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="41"/>
         <source>Tencent Meeting</source>
-        <translation type="unfinished"/>
+        <translation>Tencent Meeting</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="43"/>
         <source>QQ Mail</source>
-        <translation type="unfinished"/>
+        <translation>QQ Mail</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="45"/>
         <source>Feishu</source>
-        <translation type="unfinished"/>
+        <translation>Feishu</translation>
     </message>
     <message>
         <location filename="../src/calendar-common/src/dcaldavprofile.h" line="48"/>
         <source>Other CalDAV</source>
-        <translation type="unfinished"/>
+        <translation>Anderes CalDav</translation>
     </message>
     </context>
 </TS>
