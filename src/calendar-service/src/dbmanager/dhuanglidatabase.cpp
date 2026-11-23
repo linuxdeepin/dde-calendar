@@ -8,6 +8,7 @@
 #include "units.h"
 #include <QProcess>
 #include <QTimer>
+#include <QDir>
 
 #include <QDebug>
 #include <QSqlError>
@@ -73,23 +74,31 @@ void DHuangLiDataBase::updateFestivalList()
         return;
     }
     qCDebug(ServiceLogger) << "Updating festival data for date:" << festivalUpdateDate;
-    m_settings.setValue(HolidayUpdateDateSetKey, festivalUpdateDate);
+
+    QDir().mkpath(getAppCacheDir().path());
+
+    bool anySuccess = false;
     // 获取今年和明年的节假日数据
     for (auto i = 0; i < 2; i++) {
         auto year = now.date().year() + i;
         auto filename = getAppCacheDir().filePath(QString("%1.json").arg(year));
         auto url = QString("%1/%2.json").arg(HolidayUpdateURLPrefix).arg(year);
         qCDebug(ServiceLogger) << "Downloading festival data for year" << year << "from" << url << "to" << filename;
-        auto process = DownloadFile(url, filename);
-        // 以 this 作为 context object：连接生命周期由 this 控制，打破
-        // “sender 持有 lambda、lambda 强引用捕获 sender”的循环引用；
-        // lambda 持 shared_ptr 保活下载中的进程，进程结束后随 db 析构回收。
-        // 注：不能用 deleteLater 释放——连接 functor 持有 sender 的 shared_ptr，
-        // deleteLater 触发析构时会断开连接、使计数归零，对正在析构的对象
-        // 二次 delete（double-free）
-        connect(process.get(), &QProcess::readyReadStandardError, this, [process, year]() {
-            qCWarning(ServiceLogger) << "Download error for year" << year << ":" << process->readAllStandardError();
-        });
+        if (DownloadFile(url, filename)) {
+            qCDebug(ServiceLogger) << "Successfully downloaded festival data for year" << year;
+            anySuccess = true;
+            readJSONCache.remove(filename);
+        } else {
+            qCWarning(ServiceLogger) << "Failed to download festival data for year" << year;
+        }
+    }
+
+    // 至少一个年度下载成功才记录“今天已更新”，失败时下次重试
+    if (anySuccess) {
+        m_settings.setValue(HolidayUpdateDateSetKey, festivalUpdateDate);
+        m_settings.sync();
+    } else {
+        qCWarning(ServiceLogger) << "All festival downloads failed, will retry next time";
     }
     qCDebug(ServiceLogger) << "Completed festival list update process";
 }
@@ -99,31 +108,44 @@ QJsonArray DHuangLiDataBase::queryFestivalList(quint32 year, quint8 month)
 {
     qCDebug(ServiceLogger) << "Querying festival list for year:" << year << "month:" << month;
     QJsonArray dataset;
-    QFile file(QString("%1/%2.json").arg(HolidayDir).arg(year));
-    if (file.open(QIODevice::ReadOnly)) {
-        qCDebug(ServiceLogger) << "Successfully opened festival data file for year:" << year;
-        auto data = file.readAll();
-        file.close();
-        auto doc = QJsonDocument::fromJson(data);
-        auto daysArray = doc.object().value("days").toArray();
-        qCDebug(ServiceLogger) << "Processing" << daysArray.size() << "festival entries for year:" << year;
-        for (auto val : daysArray) {
-            auto day = val.toObject();
-            auto name = day.value("name").toString();
-            auto date = QDate::fromString(day.value("date").toString(), "yyyy-MM-dd");
-            auto isOffday = day.value("isOffDay").toBool();
-            if (quint32(date.year()) == year && quint32(date.month()) == month) {
-                qCDebug(ServiceLogger) << "Found matching festival entry:" << name << "date:" << date.toString() << "isOffDay:" << isOffday;
-                QJsonObject obj;
-                obj.insert("name", name);
-                obj.insert("date", date.toString("yyyy-MM-dd"));
-                obj.insert("status", isOffday ? 1 : 2);
-                dataset.append(obj);
+
+    // 优先使用缓存目录中的下载数据，无效时回退内置资源
+    QString filename = getAppCacheDir().filePath(QString("%1.json").arg(year));
+    bool useCached = false;
+    QFile cacheFile(filename);
+    if (cacheFile.exists() && cacheFile.open(QIODevice::ReadOnly)) {
+        const QByteArray data = cacheFile.readAll();
+        cacheFile.close();
+        if (!data.isEmpty()) {
+            QJsonParseError parseError;
+            const QJsonDocument cachedDoc = QJsonDocument::fromJson(data, &parseError);
+            if (parseError.error == QJsonParseError::NoError && cachedDoc.object().contains("days")) {
+                useCached = true;
+            } else {
+                qCWarning(ServiceLogger) << "Invalid cached festival data:" << filename;
             }
         }
-        file.close();
-    } else {
-        qCWarning(ServiceLogger) << "Failed to open festival data file for year:" << year;
+    }
+    if (!useCached) {
+        filename = QString("%1/%2.json").arg(HolidayDir).arg(year);
+    }
+
+    auto doc = readJSON(filename, true);
+    auto daysArray = doc.object().value("days").toArray();
+    qCDebug(ServiceLogger) << "Processing" << daysArray.size() << "festival entries for year:" << year;
+    for (auto val : daysArray) {
+        auto day = val.toObject();
+        auto name = day.value("name").toString();
+        auto date = QDate::fromString(day.value("date").toString(), "yyyy-MM-dd");
+        auto isOffday = day.value("isOffDay").toBool();
+        if (quint32(date.year()) == year && quint32(date.month()) == month) {
+            qCDebug(ServiceLogger) << "Found matching festival entry:" << name << "date:" << date.toString() << "isOffDay:" << isOffday;
+            QJsonObject obj;
+            obj.insert("name", name);
+            obj.insert("date", date.toString("yyyy-MM-dd"));
+            obj.insert("status", isOffday ? 1 : 2);
+            dataset.append(obj);
+        }
     }
     qCDebug(ServiceLogger) << "Found" << dataset.size() << "festival entries for year:" << year << "month:" << month;
     return dataset;

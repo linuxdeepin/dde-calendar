@@ -54,6 +54,7 @@ include(asan)
 
 set(CALDAV_SERVICE_SRC
     ${APP_SERVICE_DIR}/src/dbmanager/ddatabase.cpp
+    ${APP_SERVICE_DIR}/src/dbmanager/dhuanglidatabase.cpp
     ${APP_SERVICE_DIR}/src/dbmanager/daccountdatabase.cpp
     ${APP_SERVICE_DIR}/src/dbmanager/daccountmanagerdatabase.cpp
     ${APP_SERVICE_DIR}/src/alarmManager/dreminddata.cpp
@@ -66,6 +67,7 @@ set(CALDAV_TEST_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/src/test_dcalendareventlog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/test_dbmanager/test_caldavschema.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/test_dbmanager/test_dcaldavcalendardeletehelper.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_dbmanager/test_huangli_festival.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/mock_caldav_server.cpp
     ${CMAKE_SOURCE_DIR}/src/calendar-common/src/dcalendareventlog.cpp
 )
