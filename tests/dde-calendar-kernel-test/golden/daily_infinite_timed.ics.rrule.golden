@@ -1,0 +1,7 @@
+Event:daily-infinite-timed@dde-calendar
+  rrule:4
+  rruleStr:RRULE:FREQ=DAILY
+
+  duration:0
+  endDt:2024-01-01T09:00:00+08:00
+

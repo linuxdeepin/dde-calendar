@@ -231,7 +231,11 @@ void cancelScheduleTask::deleteRepeatSchedule(const DSchedule::Ptr &info, bool i
     if (isOnlyOne) {
         qCDebug(PluginLogger) << "Deleting single instance of repeat schedule";
         DSchedule::Ptr newschedule = DScheduleDataManager::getInstance()->queryScheduleByScheduleID(info->uid());
-        newschedule->recurrence()->addExDateTime(info->dtStart());
+        if (!newschedule) {
+            return;
+        }
+        const auto id = info->hasRecurrenceId() ? info->recurrenceId() : info->dtStart();
+        newschedule->recurrence()->addExDateTime(id);
         DScheduleDataManager::getInstance()->updateSchedule(newschedule);
     } else {
         if (info->recurrenceId().isValid() == 0) {
@@ -240,8 +244,13 @@ void cancelScheduleTask::deleteRepeatSchedule(const DSchedule::Ptr &info, bool i
         } else {
             qCDebug(PluginLogger) << "Modifying repeat schedule end date";
             DSchedule::Ptr newschedule = DScheduleDataManager::getInstance()->queryScheduleByScheduleID(info->uid());
-            newschedule->recurrence()->setDuration(0);
-            newschedule->recurrence()->setEndDateTime(info->dtStart().addDays(-1));
+            if (!newschedule) {
+                return;
+            }
+            const auto cutoff = info->recurrenceId();
+            newschedule->removeRecurrenceExceptionsFrom(cutoff);
+            newschedule->recurrence()->partitionDatesAt(cutoff);
+            newschedule->recurrence()->setEndDateTime(cutoff.addSecs(-1));
             DScheduleDataManager::getInstance()->updateSchedule(newschedule);
         }
     }
@@ -249,5 +258,25 @@ void cancelScheduleTask::deleteRepeatSchedule(const DSchedule::Ptr &info, bool i
 
 void cancelScheduleTask::deleteOrdinarySchedule(const DSchedule::Ptr &info)
 {
-    DScheduleDataManager::getInstance()->deleteScheduleByScheduleID(info->uid());
+    if (info->recurs()) {
+        deleteRepeatSchedule(info, true);
+        return;
+    }
+    auto manager = DScheduleDataManager::getInstance();
+    if (info->hasRecurrenceId()) {
+        const auto master = manager->queryScheduleByScheduleID(info->uid());
+        if (!master) {
+            return;
+        }
+        if (auto instance = master->recurrenceException(info->recurrenceId())) {
+            instance->setCancelled(true);
+            instance->setThisAndFuture(false);
+            manager->updateSchedule(instance);
+            return;
+        }
+        if (master->recurrenceId() != info->recurrenceId()) {
+            return;
+        }
+    }
+    manager->deleteScheduleByScheduleID(info->uid());
 }

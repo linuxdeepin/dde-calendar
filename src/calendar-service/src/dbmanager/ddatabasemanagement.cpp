@@ -4,16 +4,17 @@
 
 #include "ddatabasemanagement.h"
 
+#include <memory>
+
 #include "commondef.h"
 #include "ddatabase.h"
-#include "vcalformat.h"
 #include "daccountdatabase.h"
 #include "daccountmanagerdatabase.h"
 #include "units.h"
-#include "recurrence.h"
-#include "alarm.h"
-#include "icalformat.h"
-#include "memorycalendar.h"
+#include "repeatinfo.h"
+#include "remind.h"
+#include "icscodec.h"
+#include "memcalstore.h"
 
 #include <QStandardPaths>
 #include <QDir>
@@ -335,18 +336,18 @@ DSchedule::List DDataBaseManagement::queryOldJobData(QSqlDatabase &db, const boo
             if(haslunar){
                 bool isLunar = query.value("is_Lunar").toBool();
                 // qCDebug(ServiceLogger) << "Setting lunar info for schedule:" << schedule->summary() << "isLunar:" << isLunar;
-                schedule->setLunnar(isLunar);
+                schedule->setLunar(isLunar);
             }
             QString rrule = query.value("r_rule").toString();
             if (!rrule.isEmpty()) {
                 qCDebug(ServiceLogger) << "Processing recurrence rule for schedule:" << schedule->summary();
                 //重复规则
-                KCalendarCore::Recurrence *recurrence = schedule->recurrence();
-                KCalendarCore::ICalFormat ical;
-                KCalendarCore::RecurrenceRule *rule = new KCalendarCore::RecurrenceRule;
+                CalendarCore::RepeatInfo *recurrence = schedule->recurrence();
+                CalendarCore::IcsCodec ical;
+                auto rule = std::unique_ptr<CalendarCore::RRule>(new CalendarCore::RRule);
 
-                if (ical.fromString(rule, query.value("r_rule").toString())) {
-                    recurrence->addRRule(rule);
+                if (ical.fromString(rule.get(), query.value("r_rule").toString())) {
+                    recurrence->addRRule(rule.release());
                     qCDebug(ServiceLogger) << "Added recurrence rule for schedule:" << schedule->summary();
                 } else {
                     qCWarning(ServiceLogger) << "Failed to parse recurrence rule for schedule:" << schedule->summary();
@@ -372,9 +373,9 @@ DSchedule::List DDataBaseManagement::queryOldJobData(QSqlDatabase &db, const boo
                 //小于0表示不提醒
                 if (remindNum >= 0) {
                     qCDebug(ServiceLogger) << "Setting up reminder with offset:" << remindNum;
-                    KCalendarCore::Alarm::Ptr alarm = KCalendarCore::Alarm::Ptr(new KCalendarCore::Alarm(schedule.data()));
+                    CalendarCore::Remind::Ptr alarm = CalendarCore::Remind::Ptr::create();
                     alarm->setEnabled(true);
-                    alarm->setType(KCalendarCore::Alarm::Display);
+                    alarm->setType(CalendarCore::Remind::Display);
                     alarm->setDisplayAlarm(schedule->summary());
 
                     if (schedule->allDay()) {
@@ -385,11 +386,11 @@ DSchedule::List DDataBaseManagement::queryOldJobData(QSqlDatabase &db, const boo
                             QTime time = QTime::fromString(strList.at(1), "hh:mm");
                             offset = time.hour() * 60 * 60 + time.second() * 60;
                         }
-                        KCalendarCore::Duration duration(-(24 * 60 * 60 * remindNum - offset));
+                        CalendarCore::TimeSpan duration(-(qint64(86400) * remindNum - offset));
                         alarm->setStartOffset(duration);
                     } else {
                         qCDebug(ServiceLogger) << "Setting timed reminder for schedule:" << schedule->summary();
-                        KCalendarCore::Duration duration(-(60 * remindNum));
+                        CalendarCore::TimeSpan duration(-qint64(remindNum) * 60);
                         alarm->setStartOffset(duration);
                     }
                     schedule->addAlarm(alarm);

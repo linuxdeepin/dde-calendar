@@ -1,0 +1,12 @@
+Event:weekly-valarm-30m@dde-calendar
+Summary:Weekly with valarm 30min
+Count:8
+  2024-01-01T14:00:00+08:00|timed
+  2024-01-08T14:00:00+08:00|timed
+  2024-01-15T14:00:00+08:00|timed
+  2024-01-22T14:00:00+08:00|timed
+  2024-01-29T14:00:00+08:00|timed
+  2024-02-05T14:00:00+08:00|timed
+  2024-02-12T14:00:00+08:00|timed
+  2024-02-19T14:00:00+08:00|timed
+

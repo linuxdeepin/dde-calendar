@@ -1,0 +1,7 @@
+Event:weekly-byday-infinite-allday@dde-calendar
+  rrule:5
+  rruleStr:RRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR
+
+  duration:0
+  endDt:2024-01-01T00:00:00
+

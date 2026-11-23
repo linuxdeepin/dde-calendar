@@ -1,0 +1,9 @@
+Event:yearly-valarm-1d@dde-calendar
+Summary:Yearly with valarm 1day
+Count:5
+  2024-06-01|allday
+  2025-06-01|allday
+  2026-06-01|allday
+  2027-06-01|allday
+  2028-06-01|allday
+

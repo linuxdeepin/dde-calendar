@@ -129,7 +129,7 @@ bool restoreCalDavConflictSnapshot(const DAccountModule::Ptr &module,
     }
     const DSchedule::Ptr currentSchedule = database->getScheduleByScheduleID(item.localScheduleID);
     DSchedule::Ptr snapshot;
-    if (!DSchedule::fromIcsString(snapshot, item.conflictIcs) || snapshot.isNull()
+    if (!DSchedule::fromStoredIcsString(snapshot, item.conflictIcs) || snapshot.isNull()
         || currentSchedule.isNull()) {
         return false;
     }
@@ -177,7 +177,7 @@ bool applyServerSnapshotToLocal(const DAccountModule::Ptr &module,
     }
     const DSchedule::Ptr currentSchedule = database->getScheduleByScheduleID(item.localScheduleID);
     DSchedule::Ptr serverSchedule;
-    if (currentSchedule.isNull() || !DSchedule::fromIcsString(serverSchedule, item.serverIcs)
+    if (currentSchedule.isNull() || !DSchedule::fromStoredIcsString(serverSchedule, item.serverIcs)
         || serverSchedule.isNull()) {
         return false;
     }

@@ -70,12 +70,12 @@ QString userDisplayName(const QString &name, const QString &email)
     return displayName.isEmpty() ? userDisplayNamePart(email) : displayName;
 }
 
-QString personDisplayName(const KCalendarCore::Person &person)
+QString personDisplayName(const CalendarCore::Contact &person)
 {
     return userDisplayName(person.name(), person.email());
 }
 
-QString attendeeDisplayName(const KCalendarCore::Attendee &attendee)
+QString attendeeDisplayName(const CalendarCore::Participant &attendee)
 {
     return userDisplayName(attendee.name(), attendee.email());
 }
@@ -268,7 +268,7 @@ void CenterWidget::UpdateTextList()
     const QFontMetrics sourceMetrics(sourceFont);
     const QString organizer = personDisplayName(m_ScheduleInfo->organizer());
     QStringList attendees;
-    for (const KCalendarCore::Attendee &attendee : m_ScheduleInfo->attendees()) {
+    for (const CalendarCore::Participant &attendee : m_ScheduleInfo->attendees()) {
         const QString name = attendeeDisplayName(attendee);
         if (!name.isEmpty()) {
             attendees.append(name);

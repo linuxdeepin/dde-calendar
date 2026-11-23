@@ -22,10 +22,10 @@ public:
 
 public:
     explicit repeatScheduleWidget(Operation_type operation, Widget_type widgetype, bool tocreateBtn = true, QWidget *parent = nullptr);
-    void setSchedule(const DSchedule::Ptr &info);
+    void setSchedule(const DSchedule::Ptr &info, const QString &changeScopeText = {});
 
 private:
-    void initUI();
+    void initUI(const QString &changeScopeText);
 signals:
     void signalButtonCheckNum(int index, const QString &text, const int buttonCount);
 public slots:

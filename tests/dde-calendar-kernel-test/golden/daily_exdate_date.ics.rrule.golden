@@ -1,0 +1,7 @@
+Event:daily-exdate-date@dde-calendar
+  rrule:4
+  rruleStr:RRULE:FREQ=DAILY;COUNT=10
+
+  duration:0
+  endDt:2024-01-01T00:00:00
+

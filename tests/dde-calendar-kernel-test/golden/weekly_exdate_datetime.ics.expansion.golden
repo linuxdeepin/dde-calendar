@@ -1,0 +1,10 @@
+Event:weekly-exdate-datetime@dde-calendar
+Summary:Weekly with exdate (datetime)
+Count:6
+  2024-01-01T09:00:00+08:00|timed
+  2024-01-15T09:00:00+08:00|timed
+  2024-01-29T09:00:00+08:00|timed
+  2024-02-05T09:00:00+08:00|timed
+  2024-02-12T09:00:00+08:00|timed
+  2024-02-19T09:00:00+08:00|timed
+

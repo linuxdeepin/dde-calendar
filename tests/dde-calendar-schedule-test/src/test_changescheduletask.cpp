@@ -19,6 +19,7 @@
 #include "stub.h"
 #include <QDateTime>
 #include <QSignalSpy>
+#include <memory>
 
 static DSchedule::Ptr makeSch(const QDateTime &start, const QDateTime &end,
                                const QString &summary = "")
@@ -456,6 +457,47 @@ TEST(ChangeScheduleTaskTest, RepeatScheduleHandle_All)
     EXPECT_FALSE(reply.ttsMessage().isEmpty());
 }
 
+TEST(ChangeScheduleTaskTest, RepeatScheduleHandle_InvalidOccurrenceDoesNotWrite)
+{
+    const QDateTime start(QDate(2024, 1, 1), QTime(9, 0), Qt::UTC);
+    const auto original = makeSch(start, start.addSecs(3600));
+    auto rule = std::make_unique<CalendarCore::RRule>();
+    ASSERT_TRUE(rule->parse(QStringLiteral("FREQ=DAILY;BYHOUR=9;COUNT=100001")));
+    original->recurrence()->addRRule(rule.release());
+
+    Stub stub;
+    stub.set(ADDR(DScheduleDataManager, getInstance), stub_getInstance);
+    static DSchedule::Ptr stored;
+    stored = original;
+    stub.set(ADDR(DScheduleDataManager, queryScheduleByScheduleID), +[](DScheduleDataManager *, const QString &) {
+        return stored;
+    });
+    stub.set(ADDR(DScheduleDataManager, updateSchedule), +[](DScheduleDataManager *, const DSchedule::Ptr &) {
+        ADD_FAILURE() << "An invalid occurrence must not update the series";
+        return false;
+    });
+    stub.set(ADDR(DScheduleDataManager, createSchedule), +[](DScheduleDataManager *, const DSchedule::Ptr &) {
+        ADD_FAILURE() << "An invalid occurrence must not create a schedule";
+        return QString();
+    });
+
+    for (const auto &selected : {start.addDays(-1), start.addDays(100000)}) {
+        changeScheduleTask task;
+        auto *state = task.getCurrentState();
+        const auto data = CLocalData::Ptr::create();
+        const auto occurrence = DSchedule::Ptr::create(*original);
+        occurrence->setDtStart(selected);
+        data->setSelectInfo(occurrence);
+        data->setNewInfo(DSchedule::Ptr::create(*occurrence));
+        state->setLocalData(data);
+        auto reply = task.repeatScheduleHandle(occurrence, false);
+        EXPECT_FALSE(reply.ttsMessage().isEmpty());
+        EXPECT_EQ(state->getNextState(), nullptr);
+        EXPECT_EQ(original->recurrence()->duration(), 100001);
+    }
+    stored.clear();
+}
+
 // ============================================================================
 // confirwScheduleHandle
 // ============================================================================
@@ -680,4 +722,129 @@ TEST(ChangeScheduleTaskTest, CreateInquiryWidget)
     QWidget *w = task.createInquiryWidget(sch);
     EXPECT_NE(nullptr, w);
     delete w;
+}
+
+TEST(ChangeScheduleTaskTest, SplitsExceptionsOnlyAfterNewSeriesIsCreated)
+{
+    const QDateTime start(QDate(2024, 1, 1), QTime(9, 0), Qt::UTC);
+    static DSchedule::Ptr original;
+    original = makeSch(start, start.addSecs(3600));
+    original->setRRuleType(DSchedule::RRule_Day);
+    original->recurrence()->setDuration(5);
+    const auto extra = start.addDays(8);
+    original->recurrence()->addRDateTime(extra);
+    original->recurrence()->addExDateTime(start.addDays(3));
+    original->recurrence()->addExDate(start.addDays(4).date());
+    CalendarCore::CalEvent exception;
+    exception.setRecurrenceId(extra);
+    exception.setDtStart(start.addDays(3).addSecs(3600));
+    exception.setDtEnd(exception.dtStart().addSecs(3600));
+    original->setRecurrenceException(exception);
+
+    static DSchedule::Ptr created;
+    static DSchedule::Ptr truncated;
+    static bool createSucceeds;
+    Stub stub;
+    stub.set(ADDR(DScheduleDataManager, getInstance), stub_getInstance);
+    stub.set(ADDR(DScheduleDataManager, queryScheduleByScheduleID), +[](DScheduleDataManager *, const QString &) {
+        return original;
+    });
+    stub.set(ADDR(DScheduleDataManager, createSchedule), +[](DScheduleDataManager *, const DSchedule::Ptr &schedule) {
+        created = schedule;
+        return createSucceeds ? QStringLiteral("split-series") : QString();
+    });
+    stub.set(ADDR(DScheduleDataManager, updateSchedule), +[](DScheduleDataManager *, const DSchedule::Ptr &schedule) {
+        truncated = schedule;
+        return true;
+    });
+    const auto cutoff = start.addDays(1);
+    for (bool succeeds : {false, true}) {
+        createSucceeds = succeeds;
+        changeScheduleTask task;
+        const auto selection = makeSch(cutoff, cutoff.addSecs(3600));
+        selection->setRecurrenceId(cutoff);
+        selection->setRRuleType(DSchedule::RRule_Day);
+        const auto edited = makeSch(cutoff.addSecs(3600), cutoff.addSecs(7200));
+        edited->setRRuleType(DSchedule::RRule_Day);
+        edited->recurrence()->setDuration(5);
+        const auto data = CLocalData::Ptr::create();
+        data->setSelectInfo(selection);
+        data->setNewInfo(edited);
+        task.getCurrentState()->setLocalData(data);
+        EXPECT_EQ(task.changeAllInfo(selection), succeeds);
+        ASSERT_TRUE(created);
+        EXPECT_EQ(created->uid(), QStringLiteral("0"));
+        const auto movedId = extra.addSecs(3600);
+        EXPECT_TRUE(created->hasRecurrenceException(movedId));
+        EXPECT_EQ(created->recurrence()->rDateTimes(), QList<QDateTime>{movedId});
+        EXPECT_EQ(created->recurrence()->exDateTimes(), QList<QDateTime>{start.addDays(3).addSecs(3600)});
+        EXPECT_EQ(created->recurrence()->exDates(), QList<QDate>{start.addDays(4).date()});
+        EXPECT_EQ(bool(truncated), succeeds);
+        if (truncated) {
+            EXPECT_FALSE(truncated->hasRecurrenceExceptions());
+            EXPECT_TRUE(truncated->recurrence()->rDateTimes().isEmpty());
+            EXPECT_TRUE(truncated->recurrence()->exDateTimes().isEmpty());
+            EXPECT_TRUE(truncated->recurrence()->exDates().isEmpty());
+        }
+        EXPECT_TRUE(original->hasRecurrenceException(extra));
+        EXPECT_EQ(original->recurrence()->rDateTimes(), QList<QDateTime>{extra});
+        created.clear();
+        truncated.clear();
+    }
+    original.clear();
+}
+
+TEST(ChangeScheduleTaskTest, OffersBothEditScopesForAnOccurrenceInARange)
+{
+    const QDateTime start(QDate::currentDate().addDays(2), QTime(9, 0), Qt::UTC);
+    const auto selectedId = start.addDays(2);
+    static DSchedule::Ptr master;
+    master = makeSch(start, start.addSecs(3600));
+    master->setRRuleType(DSchedule::RRule_Day);
+    master->recurrence()->setDuration(5);
+    CalendarCore::CalEvent range;
+    range.setRecurrenceId(start.addDays(1));
+    range.setDtStart(range.recurrenceId().addSecs(7200));
+    range.setDtEnd(range.dtStart().addSecs(3600));
+    range.setThisAndFuture(true);
+    master->setRecurrenceException(range);
+    const auto selected = master->recurrenceException(selectedId);
+    ASSERT_TRUE(selected);
+    ASSERT_FALSE(selected->recurs());
+
+    static DSchedule::Ptr updated;
+    Stub stub;
+    stub.set(ADDR(DScheduleDataManager, getInstance), stub_getInstance);
+    stub.set(ADDR(DScheduleDataManager, queryScheduleByScheduleID), +[](DScheduleDataManager *, const QString &) {
+        return master;
+    });
+    stub.set(ADDR(DScheduleDataManager, updateSchedule), +[](DScheduleDataManager *, const DSchedule::Ptr &schedule) {
+        updated = schedule;
+        return true;
+    });
+    stub.set(ADDR(DScheduleDataManager, createSchedule), +[](DScheduleDataManager *, const DSchedule::Ptr &) {
+        ADD_FAILURE() << "A range edit must keep the UID of the series";
+        return QString();
+    });
+
+    changeScheduleTask task;
+    const auto data = CLocalData::Ptr::create();
+    data->setSelectInfo(selected);
+    data->setToTitleName(QStringLiteral("Edited occurrence"));
+    task.getCurrentState()->setLocalData(data);
+    Reply reply;
+    const std::unique_ptr<scheduleState> next(task.getNextStateBySelectScheduleInfo(selected, data, reply));
+    EXPECT_NE(dynamic_cast<repeatfeedbackstate *>(next.get()), nullptr);
+    EXPECT_TRUE(reply.ttsMessage().contains(QStringLiteral("以后的日程")));
+
+    for (bool onlyOne : {true, false}) {
+        ASSERT_TRUE(task.changeRepeatSchedule(selected, onlyOne));
+        ASSERT_TRUE(updated);
+        EXPECT_EQ(updated->uid(), master->uid());
+        EXPECT_EQ(updated->recurrenceId(), selectedId);
+        EXPECT_EQ(updated->summary(), QStringLiteral("Edited occurrence"));
+        EXPECT_EQ(updated->thisAndFuture(), !onlyOne);
+        updated.clear();
+    }
+    master.clear();
 }

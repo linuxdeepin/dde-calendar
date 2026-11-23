@@ -37,6 +37,7 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QProcess>
+#include <QRegularExpression>
 #include <QStandardPaths>
 #include <QSqlDatabase>
 #include <QSqlQuery>
@@ -184,6 +185,173 @@ TEST(CalDavProviderProfile, ProvidesExpectedDefaults)
     EXPECT_TRUE(other.serverUrlEditable);
 }
 
+TEST(ScheduleImport, RejectsEmptyReplacementAndRollsBackFailedInsertion)
+{
+    QTemporaryDir directory;
+    ASSERT_TRUE(directory.isValid());
+    const auto account = DAccount::Ptr::create(DAccount::Account_Local);
+    account->setAccountID(QStringLiteral("replace-schedule-import"));
+    DAccountDataBase database(account);
+    database.setDBPath(directory.filePath(QStringLiteral("local.db")));
+    database.initDBData();
+
+    const QString typeID = QStringLiteral("replaced-type");
+    const auto makeSchedule = [](const QString &type) {
+        auto schedule = DSchedule::Ptr::create();
+        schedule->setScheduleTypeID(type);
+        schedule->setSummary(QStringLiteral("Imported event"));
+        const QDateTime start(QDate(2024, 3, 9), QTime(9, 0), Qt::UTC);
+        schedule->setDtStart(start);
+        schedule->setDtEnd(start.addSecs(3600));
+        return schedule;
+    };
+    const auto originalID = database.createSchedule(makeSchedule(typeID));
+    ASSERT_FALSE(originalID.isEmpty());
+    const auto otherID = database.createSchedule(makeSchedule(QStringLiteral("other-type")));
+    ASSERT_FALSE(otherID.isEmpty());
+
+    EXPECT_FALSE(database.replaceSchedulesByScheduleTypeID(typeID, {}));
+    EXPECT_TRUE(database.scheduleExistsByScheduleID(originalID));
+
+    const auto replacement = makeSchedule(typeID);
+    const auto duplicate = makeSchedule(typeID);
+    duplicate->setUid(otherID);
+    EXPECT_FALSE(database.replaceSchedulesByScheduleTypeID(typeID, {replacement, duplicate}));
+    EXPECT_TRUE(database.scheduleExistsByScheduleID(originalID));
+    EXPECT_TRUE(database.scheduleExistsByScheduleID(otherID));
+    EXPECT_FALSE(database.scheduleExistsByScheduleID(replacement->uid()));
+
+    ASSERT_TRUE(database.replaceSchedulesByScheduleTypeID(typeID, {replacement}));
+    EXPECT_FALSE(database.scheduleExistsByScheduleID(originalID));
+    EXPECT_TRUE(database.scheduleExistsByScheduleID(replacement->uid()));
+    EXPECT_TRUE(database.scheduleExistsByScheduleID(otherID));
+}
+
+TEST(ScheduleDatabase, KeepsLegacyInvalidUntilVisibleInSearchAndReminders)
+{
+    QTemporaryDir directory;
+    ASSERT_TRUE(directory.isValid());
+    const auto account = DAccount::Ptr::create(DAccount::Account_Local);
+    account->setAccountID(QStringLiteral("invalid-stored-ics"));
+    DAccountDataBase database(account);
+    database.setDBPath(directory.filePath(QStringLiteral("local.db")));
+    database.initDBData();
+
+    const auto type = DScheduleType::Ptr::create(account->accountID());
+    type->setTypeName(QStringLiteral("Compatibility"));
+    type->setDisplayName(type->typeName());
+    type->setShowState(DScheduleType::Show);
+    const auto typeID = database.createScheduleType(type);
+    ASSERT_FALSE(typeID.isEmpty());
+    const auto makeSchedule = [&](const QString &uid) {
+        auto schedule = DSchedule::Ptr::create();
+        schedule->setUid(uid);
+        schedule->setScheduleTypeID(typeID);
+        schedule->setSummary(QStringLiteral("Compatibility check"));
+        schedule->setDtStart(QDateTime(QDate(2024, 3, 9), QTime(9, 0), Qt::UTC));
+        schedule->setDtEnd(schedule->dtStart().addSecs(3600));
+        schedule->setAlarmType(DSchedule::Alarm_Begin);
+        schedule->setRRuleType(DSchedule::RRule_Day);
+        return schedule;
+    };
+    const auto bad = makeSchedule(QStringLiteral("bad-rule"));
+    const auto good = makeSchedule(QStringLiteral("good-rule"));
+    ASSERT_EQ(database.createSchedule(bad), bad->uid());
+    ASSERT_EQ(database.createSchedule(good), good->uid());
+    ASSERT_TRUE(database.updateScheduleWithIcs(bad, QStringLiteral(
+        "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nBEGIN:VEVENT\r\nUID:bad-rule\r\n"
+        "DTSTART:20240309T090000Z\r\nRRULE:FREQ=DAILY;UNTIL=20240230T000000Z\r\n"
+        "BEGIN:VALARM\r\nACTION:DISPLAY\r\nTRIGGER:-PT15M\r\nEND:VALARM\r\n"
+        "END:VEVENT\r\nEND:VCALENDAR\r\n")));
+
+    const auto matching = database.querySchedulesByKey(good->summary());
+    ASSERT_EQ(matching.size(), 2);
+    EXPECT_EQ(database.querySchedulesByRRule({}, DSchedule::RRule_Day).size(), 2);
+    EXPECT_EQ(database.getRemindSchedule().size(), 2);
+    const auto restored = database.getScheduleByScheduleID(bad->uid());
+    ASSERT_TRUE(restored);
+    EXPECT_EQ(restored->recurrence()->duration(), -1);
+    EXPECT_EQ(restored->recurrence()->timesInInterval(restored->dtStart(), restored->dtStart().addDays(2)).size(), 3);
+    ASSERT_EQ(restored->alarms().size(), 1);
+    EXPECT_EQ(restored->alarms().first()->triggerTime(restored->dtStart(), restored->dtEnd()), restored->dtStart().addSecs(-900));
+    SqliteQuery query(database.getConnectionName());
+    ASSERT_TRUE(query.exec(QStringLiteral("SELECT ics FROM schedules WHERE scheduleID = 'bad-rule'")));
+    ASSERT_TRUE(query.next());
+    EXPECT_TRUE(query.value(0).toString().contains(QStringLiteral("UNTIL=20240230T000000Z")));
+}
+
+TEST(ScheduleDatabase, StoresAndExpandsDetachedOccurrencesWithTheMaster)
+{
+    QTemporaryDir directory;
+    ASSERT_TRUE(directory.isValid());
+    const auto account = DAccount::Ptr::create(DAccount::Account_Local);
+    account->setAccountID(QStringLiteral("detached-occurrences"));
+    DAccountDataBase database(account);
+    database.setDBPath(directory.filePath(QStringLiteral("local.db")));
+    database.initDBData();
+
+    DSchedule::Ptr schedule;
+    ASSERT_TRUE(DSchedule::fromIcsString(schedule, QStringLiteral(
+        "BEGIN:VCALENDAR\r\nVERSION:2.0\r\n"
+        "BEGIN:VEVENT\r\nUID:series\r\nRECURRENCE-ID:20240309T090000Z\r\n"
+        "DTSTART:20240312T110000Z\r\nDTEND:20240312T120000Z\r\nSUMMARY:Moved\r\n"
+        "BEGIN:VALARM\r\nACTION:DISPLAY\r\nTRIGGER:-PT15M\r\nEND:VALARM\r\nEND:VEVENT\r\n"
+        "BEGIN:VEVENT\r\nUID:series\r\nRECURRENCE-ID:20240310T090000Z\r\n"
+        "STATUS:CANCELLED\r\nEND:VEVENT\r\n"
+        "BEGIN:VEVENT\r\nUID:series\r\nDTSTART:20240309T090000Z\r\nDTEND:20240309T100000Z\r\n"
+        "RRULE:FREQ=DAILY;COUNT=3\r\nEXDATE:20240309T090000Z\r\nSUMMARY:Master\r\n"
+        "END:VEVENT\r\nEND:VCALENDAR\r\n")));
+    const auto type = DScheduleType::Ptr::create(account->accountID());
+    type->setTypeName(QStringLiteral("Imported events"));
+    type->setDisplayName(type->typeName());
+    type->setShowState(DScheduleType::Show);
+    const auto typeID = database.createScheduleType(type);
+    ASSERT_FALSE(typeID.isEmpty());
+    schedule->setUid(QStringLiteral("local-series-id"));
+    schedule->setScheduleTypeID(typeID);
+    ASSERT_EQ(database.createSchedule(schedule), schedule->uid());
+    const auto restored = database.getScheduleByScheduleID(schedule->uid());
+    ASSERT_TRUE(restored);
+    EXPECT_EQ(restored->summary(), QStringLiteral("Master"));
+    EXPECT_EQ(restored->recurrenceExceptions().size(), 2);
+    const auto reminders = database.getRemindSchedule();
+    ASSERT_EQ(reminders.size(), 1);
+    EXPECT_EQ(reminders.constFirst()->uid(), restored->uid());
+
+    const auto query = DScheduleQueryPar::Ptr::create();
+    query->setDtStart(QDateTime(QDate(2024, 3, 9), QTime(0, 0), Qt::UTC));
+    query->setDtEnd(QDateTime(QDate(2024, 3, 12), QTime(23, 59), Qt::UTC));
+    const auto days = DSchedule::convertSchedules(query, {restored});
+    EXPECT_TRUE(days.value(QDate(2024, 3, 9)).isEmpty());
+    EXPECT_TRUE(days.value(QDate(2024, 3, 10)).isEmpty());
+    ASSERT_EQ(days.value(QDate(2024, 3, 11)).size(), 1);
+    EXPECT_EQ(days.value(QDate(2024, 3, 11)).first()->summary(), QStringLiteral("Master"));
+    const auto moved = days.value(QDate(2024, 3, 12));
+    ASSERT_EQ(moved.size(), 1);
+    EXPECT_EQ(moved.first()->uid(), schedule->uid());
+    EXPECT_EQ(moved.first()->recurrenceId(), schedule->dtStart());
+    EXPECT_EQ(moved.first()->summary(), QStringLiteral("Moved"));
+    EXPECT_EQ(moved.first()->scheduleTypeID(), schedule->scheduleTypeID());
+    ASSERT_EQ(moved.first()->alarms().size(), 1);
+    EXPECT_EQ(moved.first()->alarms().first()->triggerTime(moved.first()->dtStart(), moved.first()->dtEnd()),
+              moved.first()->dtStart().addSecs(-900));
+
+    query->setKey(QStringLiteral("Moved"));
+    const auto matching = DSchedule::convertSchedules(query, database.querySchedulesByKey(query->key()));
+    ASSERT_EQ(matching.size(), 1);
+    ASSERT_EQ(matching.value(QDate(2024, 3, 12)).size(), 1);
+    EXPECT_EQ(matching.value(QDate(2024, 3, 12)).first()->summary(), QStringLiteral("Moved"));
+    query->setKey(QStringLiteral("Master"));
+    const auto masterMatches = DSchedule::convertSchedules(query, database.querySchedulesByKey(query->key()));
+    ASSERT_EQ(masterMatches.size(), 1);
+    EXPECT_EQ(masterMatches.value(QDate(2024, 3, 11)).size(), 1);
+
+    const auto exported = DSchedule::toIcsString(restored);
+    EXPECT_EQ(exported.count(QStringLiteral("UID:local-series-id\r\n")), 3);
+    EXPECT_TRUE(exported.contains(QStringLiteral("STATUS:CANCELLED\r\n")));
+    EXPECT_TRUE(exported.contains(QStringLiteral("RECURRENCE-ID:20240310T090000Z\r\n")));
+}
+
 TEST(CalDavReminder, SoftDeletedScheduleIsExcludedFromReminderQuery)
 {
     QTemporaryDir directory;
@@ -208,6 +376,34 @@ TEST(CalDavReminder, SoftDeletedScheduleIsExcludedFromReminderQuery)
 
     ASSERT_TRUE(database.deleteScheduleByScheduleID(schedule->uid()));
     EXPECT_TRUE(database.getRemindSchedule().isEmpty());
+}
+
+TEST(CalDavReminder, KeepsFutureSnoozesWithDifferentUtcOffsets)
+{
+    QTemporaryDir directory;
+    ASSERT_TRUE(directory.isValid());
+    const auto account = DAccount::Ptr::create(DAccount::Account_Local);
+    DAccountDataBase database(account);
+    database.setDBPath(directory.filePath(QStringLiteral("local.db")));
+    database.initDBData();
+
+    const auto now = QDateTime::currentDateTimeUtc();
+    const auto west = QTimeZone::fromSecondsAheadOfUtc(-10 * 3600);
+    const auto east = QTimeZone::fromSecondsAheadOfUtc(14 * 3600);
+    const auto future = DRemindData::Ptr::create();
+    future->setScheduleID(QStringLiteral("future"));
+    future->setDtRemind(now.addSecs(900).toTimeZone(west));
+    future->setRemindCount(1);
+    database.createRemindInfo(future);
+    const auto past = DRemindData::Ptr::create();
+    past->setScheduleID(QStringLiteral("past"));
+    past->setDtRemind(now.addSecs(-900).toTimeZone(east));
+    past->setRemindCount(1);
+    database.createRemindInfo(past);
+
+    const auto reminders = database.getValidRemindJob();
+    ASSERT_EQ(reminders.size(), 1);
+    EXPECT_EQ(reminders.first()->alarmID(), future->alarmID());
 }
 
 TEST(CalDavSchema, CreatesTablesIdempotently)
@@ -786,8 +982,10 @@ TEST(CalDavRecovery, RecoversCreateModifyAndDeleteAfterPartialCommit)
     DSchedule::Ptr modified = makeSchedule(QStringLiteral("modify"));
     ASSERT_FALSE(localDatabase.createSchedule(modified).isEmpty());
     ASSERT_TRUE(addMapping(modified));
-    ASSERT_TRUE(localDatabase.upsertCalDavRecoveryItem(
-        makeRecovery(modified, DCalDavRecoveryItem::ModifyOperation)));
+    auto legacyModify = makeRecovery(modified, DCalDavRecoveryItem::ModifyOperation);
+    const QRegularExpression productId(QStringLiteral("PRODID:[^\\r\\n]+(?:\\r?\\n[ \t][^\\r\\n]+)*"));
+    legacyModify.scheduleIcs.replace(productId, QStringLiteral("PRODID:-//Previous Calendar Codec//EN"));
+    ASSERT_TRUE(localDatabase.upsertCalDavRecoveryItem(legacyModify));
 
     // The local soft-delete committed, but its Delete outbox item did not.
     DSchedule::Ptr deleted = makeSchedule(QStringLiteral("delete"));
@@ -3846,11 +4044,17 @@ TEST(CalDavIntegration, ProcessesOutboxCreateModifyConflictRetryAndDelete)
     calendar.privileges = DCalDavXmlReader::ReadPrivilege | DCalDavXmlReader::WritePrivilege;
     ASSERT_TRUE(accountManagerDatabase.upsertCalDavCalendar(calendar));
 
-    DSchedule::Ptr schedule(new DSchedule);
+    DSchedule::Ptr schedule;
+    ASSERT_TRUE(DSchedule::fromIcsString(schedule, QStringLiteral(
+        "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nBEGIN:VEVENT\r\n"
+        "UID:mock-outbox-event\r\nDTSTART:20260831T120000Z\r\nDTEND:20260831T130000Z\r\n"
+        "SUMMARY:Mock outbox event\r\n"
+        "ATTACH;FMTTYPE=application/pdf:https://example.org/agenda.pdf\r\n"
+        "CONFERENCE;VALUE=URI:https://example.org/meeting\r\n"
+        "BEGIN:VALARM\r\nACTION:AUDIO\r\nTRIGGER:-PT10M\r\n"
+        "ATTACH:https://example.org/chime.au\r\nEND:VALARM\r\n"
+        "END:VEVENT\r\nEND:VCALENDAR\r\n")));
     schedule->setScheduleTypeID(type->typeID());
-    schedule->setSummary(QStringLiteral("Mock outbox event"));
-    schedule->setDtStart(QDateTime(QDate(2026, 8, 31), QTime(12, 0), Qt::UTC));
-    schedule->setDtEnd(QDateTime(QDate(2026, 8, 31), QTime(13, 0), Qt::UTC));
     ASSERT_FALSE(localDatabase.createSchedule(schedule).isEmpty());
     const QString scheduleID = schedule->uid();
     EXPECT_TRUE(localDatabase.scheduleExistsByScheduleID(scheduleID));
@@ -3911,6 +4115,8 @@ TEST(CalDavIntegration, ProcessesOutboxCreateModifyConflictRetryAndDelete)
         account->accountID(), permissionDeniedSchedule->uid()));
     server.setResponseStatus(204);
 
+    schedule = localDatabase.getScheduleByScheduleID(scheduleID);
+    ASSERT_FALSE(schedule.isNull());
     schedule->setSummary(QStringLiteral("Updated mock outbox event"));
     schedule->setLastModified(QDateTime::currentDateTimeUtc());
     ASSERT_TRUE(localDatabase.updateSchedule(schedule));
@@ -3924,9 +4130,14 @@ TEST(CalDavIntegration, ProcessesOutboxCreateModifyConflictRetryAndDelete)
         account->accountID(), scheduleID);
     EXPECT_EQ(QStringLiteral("\"mock-etag-2\""), mapping.etag);
     ASSERT_GE(server.requests().size(), 3);
-    EXPECT_EQ(QByteArray("\"mock-etag-1\""),
-              headerValue(server.requests().at(2).headers, "If-Match"));
-    EXPECT_TRUE(server.requests().at(2).body.contains("Updated mock outbox event"));
+    const auto updateRequest = server.requests().at(2);
+    EXPECT_EQ(QByteArray("PUT"), updateRequest.method);
+    EXPECT_EQ(QByteArray("\"mock-etag-1\""), headerValue(updateRequest.headers, "If-Match"));
+    EXPECT_TRUE(updateRequest.body.contains("SUMMARY:Updated mock outbox event\r\n"));
+    EXPECT_TRUE(updateRequest.body.contains(
+        "ATTACH;FMTTYPE=application/pdf:https://example.org/agenda.pdf\r\n"));
+    EXPECT_TRUE(updateRequest.body.contains("CONFERENCE;VALUE=URI:https://example.org/meeting\r\n"));
+    EXPECT_TRUE(updateRequest.body.contains("ATTACH:https://example.org/chime.au\r\n"));
 
     // Preserve detached recurrence exceptions when a local edit rewrites the
     // master VEVENT in a resource containing multiple VEVENT components.
@@ -3952,6 +4163,21 @@ TEST(CalDavIntegration, ProcessesOutboxCreateModifyConflictRetryAndDelete)
     ASSERT_TRUE(result.success);
     EXPECT_TRUE(server.requests().last().body.contains("Updated event with exception"));
     EXPECT_TRUE(server.requests().last().body.contains("RECURRENCE-ID"));
+
+    // A persisted, empty exception set is authoritative, even with a legacy snapshot.
+    schedule->setRecurrenceExceptionsStored(true);
+    ASSERT_TRUE(localDatabase.updateSchedule(schedule));
+    schedule = localDatabase.getScheduleByScheduleID(scheduleID);
+    ASSERT_TRUE(schedule);
+    ASSERT_TRUE(schedule->hasStoredRecurrenceExceptions());
+    ASSERT_FALSE(schedule->hasRecurrenceExceptions());
+    ASSERT_TRUE(DCalDavOutboxEnqueuer::enqueue(
+        &accountManagerDatabase, account->accountID(), schedule,
+        DCalDavOutboxEnqueuer::ModifyChange));
+    ASSERT_TRUE(processOutbox(result));
+    ASSERT_TRUE(result.success);
+    EXPECT_FALSE(server.requests().last().body.contains("RECURRENCE-ID"));
+    EXPECT_FALSE(server.requests().last().body.contains("X-DDE-RECURRENCE-EXCEPTIONS-STORED"));
 
     server.setResponseStatus(412);
     ASSERT_TRUE(DCalDavOutboxEnqueuer::enqueue(
@@ -4024,6 +4250,27 @@ TEST(CalDavIntegration, ProcessesOutboxCreateModifyConflictRetryAndDelete)
     EXPECT_EQ(QByteArray("DELETE"), deleteRequest.method);
     EXPECT_EQ(QByteArray("\"mock-etag-3\""),
               headerValue(deleteRequest.headers, "If-Match"));
+
+    accountInfo.providerType = DCalDavProviderProfile::Provider_QQMail;
+    ASSERT_TRUE(accountManagerDatabase.upsertCalDavAccountInfo(accountInfo));
+    ASSERT_TRUE(DSchedule::fromIcsString(schedule, QStringLiteral(
+        "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nBEGIN:VEVENT\r\nUID:qq-mixed-series\r\n"
+        "DTSTART:20260831T120000Z\r\nDTEND:20260831T130000Z\r\nRRULE:FREQ=DAILY;COUNT=2\r\n"
+        "SUMMARY:QQ mixed series\r\n"
+        "END:VEVENT\r\nBEGIN:VEVENT\r\nUID:qq-mixed-series\r\nRECURRENCE-ID:20260901T120000Z\r\n"
+        "DTSTART;VALUE=DATE:20260901\r\nDTEND;VALUE=DATE:20260902\r\n"
+        "END:VEVENT\r\nEND:VCALENDAR\r\n")));
+    schedule->setScheduleTypeID(type->typeID());
+    ASSERT_FALSE(localDatabase.createSchedule(schedule).isEmpty());
+    ASSERT_TRUE(DCalDavOutboxEnqueuer::enqueue(
+        &accountManagerDatabase, account->accountID(), schedule,
+        DCalDavOutboxEnqueuer::CreateChange));
+    ASSERT_TRUE(processOutbox(result));
+    ASSERT_TRUE(result.success);
+    const auto mixedBody = server.requests().last().body;
+    EXPECT_TRUE(mixedBody.contains("RECURRENCE-ID;TZID=Xmail Custome Time:20260901T200000\r\n"));
+    EXPECT_TRUE(mixedBody.contains("DTSTART;VALUE=DATE:20260901\r\n"));
+    EXPECT_TRUE(mixedBody.contains("DTEND;VALUE=DATE:20260902\r\n"));
 }
 
 TEST(CalDavIntegration, FallsBackToFullRangeOnForbiddenSyncToken)

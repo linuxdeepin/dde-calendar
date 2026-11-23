@@ -954,7 +954,7 @@ bool DragInfoGraphicsView::isCanDragge(const DSchedule::Ptr &info)
     //是否为节假日日程判断
     if (CScheduleOperation::isFestival(info))
         return false;
-    if (info->lunnar() && !QLocale::system().name().startsWith("zh_"))
+    if (info->lunar() && !QLocale::system().name().startsWith("zh_"))
         return false;
     //日程不可被修改
     if (CScheduleOperation::scheduleIsInvariant(info)) {

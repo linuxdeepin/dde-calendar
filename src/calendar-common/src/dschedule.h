@@ -5,7 +5,7 @@
 #ifndef DSCHEDULE_H
 #define DSCHEDULE_H
 
-#include "event.h"
+#include "calevent.h"
 #include "dschedulequerypar.h"
 
 #include <QString>
@@ -13,7 +13,7 @@
 #include <QSharedPointer>
 
 //日程信息
-class DSchedule : public KCalendarCore::Event
+class DSchedule : public CalendarCore::CalEvent
 {
 public:
     //提醒规则
@@ -50,7 +50,7 @@ public:
 
     DSchedule();
     DSchedule(const DSchedule &schedule);
-    DSchedule(const KCalendarCore::Event &event);
+    DSchedule(const CalendarCore::CalEvent &event);
 
     DSchedule *clone() const override;
 
@@ -90,7 +90,27 @@ public:
     static bool toJsonString(const DSchedule::Ptr &schedule, QString &json);
 
     static bool fromIcsString(DSchedule::Ptr &schedule, const QString &string);
+    static bool fromStoredIcsString(DSchedule::Ptr &schedule, const QString &string);
     static QString toIcsString(const DSchedule::Ptr &schedule);
+
+    // All detached instances share the master row and are serialized in its ICS.
+    void setRecurrenceException(const CalendarCore::CalEvent &event);
+    void updateRecurrenceException(const CalendarCore::CalEvent &event);
+    void clearRecurrenceExceptions();
+    bool hasRecurrenceOverride(const QDateTime &id) const;
+    bool hasRecurrenceRangeAt(const QDateTime &id) const;
+    bool hasRecurrenceException(const QDateTime &id) const;
+    bool hasRecurrenceExceptions() const { return !m_recurrenceExceptions.isEmpty(); }
+    bool hasStoredRecurrenceExceptions() const;
+    void setRecurrenceExceptionsStored(bool stored);
+    void pruneRecurrenceExceptionsAfter(const QDateTime &through);
+    void removeRecurrenceExceptionsFrom(const QDateTime &from);
+    bool inheritRecurrenceExceptions(const DSchedule &source, const QDateTime &from = {});
+    bool titleMatches(const QString &key) const;
+    CalendarCore::CalEvent::List recurrenceExceptions() const;
+    DSchedule::Ptr recurrenceException(const QDateTime &id) const;
+    DSchedule::List recurrenceExceptionsInInterval(const QDateTime &from, const QDateTime &through) const;
+    bool hasEnabledAlarms() const;
 
     //
     static QMap<QDate, DSchedule::List> fromMapString(const QString &json);
@@ -104,6 +124,11 @@ public:
     static QMap<QDate, DSchedule::List> fromQueryResult(const QString &query);
 
 private:
+    static bool parseIcsString(Ptr &schedule, const QString &string, bool existingData);
+    QList<QDateTime> recurrenceStarts(const QDateTime &from, const QDateTime &through) const;
+    Ptr makeOccurrence(const CalendarCore::CalEvent &event) const;
+    Ptr rangeContinuation(const CalendarCore::CalEvent &range, const QDateTime &from) const;
+    Ptr rangeOccurrence(const CalendarCore::CalEvent &range, const QDateTime &id) const;
     QMap<int, AlarmType> getAlarmMap();
 
 public:
@@ -120,6 +145,8 @@ public:
     void setcompatibleID(int compatibleID);
 
 private:
+    QMap<QDateTime, CalendarCore::CalEvent::Ptr> m_recurrenceExceptions;
+    QMap<QDateTime, CalendarCore::CalEvent::Ptr> m_recurrenceRanges;
     QString m_fileName; //日程对应文件名称
     //日程类型
     QString m_scheduleTypeID;

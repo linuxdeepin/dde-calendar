@@ -17,18 +17,31 @@ aux_source_directory(src BASESTRUCT_SRCS)
 aux_source_directory(src/huangliData BASESTRUCT_SRCS_HUANGLI)
 aux_source_directory(src/lunarandfestival BASESTRUCT_SRCS_NONGLI)
 aux_source_directory(src/pinyin BASESTRUCT_SRCS_PINYIN)
+pkg_check_modules(LIBICAL REQUIRED IMPORTED_TARGET libical>=3.0)
 
 add_library(${PROJECT_NAME} STATIC ${BASESTRUCT_SRCS}
     ${BASESTRUCT_SRCS_HUANGLI}
     ${BASESTRUCT_SRCS_NONGLI}
     ${BASESTRUCT_SRCS_PINYIN}
+    src/calendarcore/core/calstore.cpp
+    src/calendarcore/item/calevent.cpp
+    src/calendarcore/recurrence/rrule.cpp
+    src/calendarcore/recurrence/repeatinfo.cpp
+    src/calendarcore/ics/icscodec.cpp
 )
-target_include_directories(${PROJECT_NAME} PUBLIC ../../3rdparty/kcalendarcore/src)
+
+target_include_directories(${PROJECT_NAME} PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/calendarcore/core
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/calendarcore/item
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/calendarcore/recurrence
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/calendarcore/ics
+)
 
 target_link_libraries(${PROJECT_NAME}
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::DBus
     Qt${QT_VERSION_MAJOR}::Sql
-    kcalendarcore
+    PkgConfig::LIBICAL
     Dtk${DTK_VERSION_MAJOR}::Core
 )

@@ -38,12 +38,15 @@ public:
     static bool scheduleIsInvariant(const DSchedule::Ptr &schedule);
 
 private:
+    void showOccurrenceUnavailable();
+    int chooseRecurrenceEditScope(bool firstOccurrence);
+    void updateMasterSchedule(const DSchedule::Ptr &schedule);
     //修改重复日程
     bool changeRecurInfo(const DSchedule::Ptr &newinfo, const DSchedule::Ptr &oldinfo);
     //修改重复日程,仅修改此日程
     bool changeOnlyInfo(const DSchedule::Ptr &newinfo, const DSchedule::Ptr &oldinfo);
     //修改重复规则
-    void changeRepetitionRule(DSchedule::Ptr &newinfo, const DSchedule::Ptr &oldinfo);
+    void changeRepetitionRule(DSchedule::Ptr &newinfo, const DSchedule::Ptr &oldinfo, int occurrenceNumber);
 
     //农历每年闰月提示信息
     void lunarMessageDialogShow(const DSchedule::Ptr &newinfo);

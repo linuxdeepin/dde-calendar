@@ -12,12 +12,12 @@
 //农历一年最少有363天
 const int LunarYearMiniDays = 353;
 
-LunarDateInfo::LunarDateInfo(KCalendarCore::RecurrenceRule *rruleStr, const qint64 interval)
+LunarDateInfo::LunarDateInfo(const CalendarCore::RRule *rruleStr, const qint64 interval)
     : m_recurenceRule(rruleStr)
     , m_dateInterval(interval)
 {
     // qCDebug(CommonLogger) << "LunarDateInfo constructor called.";
-    m_rruleType = ParseRRule(m_recurenceRule->rrule());
+    m_rruleType = m_recurenceRule ? ParseRRule(m_recurenceRule->rrule()) : RRule_None;
 }
 
 QMap<int, QDate> LunarDateInfo::getRRuleStartDate(const QDate &beginDate, const QDate &endDate, const QDate &solarDate)

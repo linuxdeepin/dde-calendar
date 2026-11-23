@@ -1,0 +1,7 @@
+Event:daily-count-timed@dde-calendar
+  rrule:4
+  rruleStr:RRULE:FREQ=DAILY;COUNT=10
+
+  duration:0
+  endDt:2024-01-01T10:00:00+08:00
+

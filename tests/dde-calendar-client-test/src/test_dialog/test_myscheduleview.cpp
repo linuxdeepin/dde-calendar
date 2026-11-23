@@ -20,7 +20,7 @@ static DSchedule::Ptr createTestSchedule()
     schedule->setDtStart(dt);
     schedule->setDtEnd(dt.addDays(1));
     schedule->setAllDay(true);
-    schedule->setLunnar(false);
+    schedule->setLunar(false);
     schedule->setScheduleTypeID("1");
     return schedule;
 }

@@ -6,7 +6,7 @@
 #include "units.h"
 #include "dscheduletype.h"
 #include "dschedulequerypar.h"
-#include "memorycalendar.h"
+#include "memcalstore.h"
 #include "lunarandfestival/lunardateinfo.h"
 #include "lunarandfestival/lunarmanager.h"
 #include "dbus/dbusuiopenschedule.h"
@@ -30,6 +30,7 @@
 #include "dcaldavxmlreader.h"
 #include "dcaldavscheduletypefilter.h"
 
+#include <QHash>
 #include <QDir>
 #include <QFile>
 #include <QJsonArray>
@@ -832,6 +833,66 @@ bool DAccountModule::updateSchedule(const QString &scheduleInfo)
         qCWarning(ServiceLogger) << "Schedule to update was not found.";
         return false;
     }
+    const auto editedId = schedule->recurrenceId();
+    const bool editsFutureOccurrences = schedule->thisAndFuture();
+    const auto original = schedule->hasRecurrenceId() ? oldSchedule->recurrenceException(editedId) : DSchedule::Ptr();
+    const bool editingException = !original.isNull();
+    if (editedId.isValid() && !schedule->recurs() && !editingException && editedId != oldSchedule->recurrenceId()) {
+        qCWarning(ServiceLogger) << "Detached occurrence no longer exists for schedule:" << schedule->uid();
+        return false;
+    }
+    if (editingException) {
+        const bool cancelled = schedule->cancelled();
+        if (!cancelled) {
+            if (!schedule->dtStart().isValid() || !schedule->dtEnd().isValid() || schedule->dtEnd() < schedule->dtStart()) {
+                qCWarning(ServiceLogger) << "Invalid dates for detached occurrence of schedule:" << schedule->uid();
+                return false;
+            }
+            original->setSummary(schedule->summary());
+            original->setDescription(schedule->description());
+            if (!schedule->location().isNull()) {
+                original->setLocation(schedule->location());
+            }
+            original->setDtStart(schedule->dtStart());
+            original->setDtEnd(schedule->dtEnd());
+            const auto oldAlarms = original->alarms();
+            const auto newAlarms = schedule->alarms();
+            if (oldAlarms.size() != newAlarms.size()
+                || !std::equal(oldAlarms.cbegin(), oldAlarms.cend(), newAlarms.cbegin(), [](const auto &first, const auto &second) {
+                    return first->hasSameTrigger(*second);
+                })) {
+                original->clearAlarms();
+                for (const auto &alarm : newAlarms) {
+                    original->addAlarm(alarm);
+                }
+            }
+        }
+        original->setCancelled(cancelled);
+        original->setThisAndFuture(schedule->thisAndFuture());
+        original->setRevision(original->revision() + 1);
+        original->setLastModified(QDateTime::currentDateTimeUtc());
+        schedule = DSchedule::Ptr(oldSchedule->clone());
+        schedule->updateRecurrenceException(*original);
+    } else if (!schedule->hasRecurrenceId() && !schedule->hasStoredRecurrenceExceptions()
+               && oldSchedule->hasRecurrenceExceptions()) {
+        if (!schedule->inheritRecurrenceExceptions(*oldSchedule)) {
+            qCWarning(ServiceLogger) << "Cannot rebase detached occurrences of schedule:" << schedule->uid();
+            return false;
+        }
+    }
+    if (oldSchedule->hasStoredRecurrenceExceptions()) {
+        schedule->setRecurrenceExceptionsStored(true);
+    }
+    if (!editingException && schedule->hasRecurrenceExceptions() && !schedule->hasRecurrenceId()) {
+        const auto oldRule = oldSchedule->recurrence()->defaultRRuleConst();
+        const auto rule = schedule->recurrence()->defaultRRuleConst();
+        if (oldRule && rule
+            && (oldRule->duration() != rule->duration() || oldRule->rrule() != rule->rrule())) {
+            schedule->pruneRecurrenceExceptionsAfter(rule->endDt());
+        } else if (!rule && (oldRule || (oldSchedule->recurs() && !schedule->recurs()))) {
+            schedule->pruneRecurrenceExceptionsAfter(schedule->dtStart());
+        }
+    }
     schedule->setLastModified(QDateTime::currentDateTime());
     schedule->setRevision(schedule->revision() + 1);
 
@@ -865,50 +926,6 @@ bool DAccountModule::updateSchedule(const QString &scheduleInfo)
         }
     }
 
-    //如果旧日程为提醒日程
-    if (oldSchedule->alarms().size() > 0) {
-        qCDebug(ServiceLogger) << "Old schedule had alarms, checking for reminders to update/delete.";
-        //根据日程ID获取提醒日程信息
-        DRemindData::List remindList = m_accountDB->getRemindByScheduleID(schedule->schedulingID());
-
-        DRemindData::List deleteRemind;
-
-        //如果是重复日程且重复规则不一样
-        if ((schedule->recurs() || oldSchedule->recurs()) && *schedule->recurrence() != *oldSchedule->recurrence()) {
-            QDateTime dtEnd = schedule->dtStart();
-            for (int i = remindList.size() - 1; i >= 0; --i) {
-                dtEnd = dtEnd > remindList.at(i)->dtStart() ? dtEnd : remindList.at(i)->dtStart();
-            }
-
-            if (remindList.size() > 0) {
-                //获取新日程的重复时间
-                QList<QDateTime> dtList = schedule->recurrence()->timesInInterval(schedule->dtStart(), dtEnd);
-                foreach (auto remind, remindList) {
-                    //如果生成的开始时间列表内不包含提醒日程的开始时间，则表示该重复日程被删除
-                    if (!dtList.contains(remind->dtStart())) {
-                        //如果改日程已经提醒，且通知弹框未操作
-                        if (remind->notifyid() > 0) {
-                            emit signalCloseNotification(static_cast<quint64>(remind->notifyid()));
-                            deleteRemind.append(remind);
-                        } else if (remind->dtRemind() > QDateTime::currentDateTime()) {
-                            //删除没有触发的提醒日程
-                            deleteRemind.append(remind);
-                        }
-                    }
-                }
-            }
-        } else {
-            qCDebug(ServiceLogger) << "Not a repeat schedule";
-            //不是重复日程
-            if (remindList.size() > 0 && remindList.at(0)->notifyid() > 0) {
-                deleteRemind.append(remindList.at(0));
-            }
-        }
-        for (int i = 0; i < deleteRemind.size(); ++i) {
-            m_accountDB->deleteRemindInfoByAlarmID(deleteRemind.at(i)->alarmID());
-        }
-    }
-
     bool ok = m_accountDB->updateSchedule(schedule);
     if (!ok) {
         if (calDavTransaction) {
@@ -918,11 +935,6 @@ bool DAccountModule::updateSchedule(const QString &scheduleInfo)
             m_accountDB->deleteCalDavRecoveryItem(m_account->accountID(), schedule->uid());
         }
         return false;
-    }
-
-    //如果存在提醒
-    if (oldSchedule->alarms().size() > 0 || schedule->alarms().size() > 0) {
-        updateRemindSchedules(false);
     }
 
     //根据账户类型分别记录旧网络同步任务或 CalDAV Outbox。
@@ -968,6 +980,77 @@ bool DAccountModule::updateSchedule(const QString &scheduleInfo)
     if (hasRecoveryItem
         && !m_accountDB->deleteCalDavRecoveryItem(m_account->accountID(), schedule->uid())) {
         qCWarning(ServiceLogger) << "Failed to clear completed CalDAV update recovery record.";
+    }
+    //如果旧日程为提醒日程
+    if (oldSchedule->hasEnabledAlarms()) {
+        qCDebug(ServiceLogger) << "Old schedule had alarms, checking for reminders to update/delete.";
+        //根据日程ID获取提醒日程信息
+        DRemindData::List remindList = m_accountDB->getRemindByScheduleID(schedule->schedulingID());
+
+        DRemindData::List deleteRemind;
+
+        if (editingException) {
+            for (const auto &remind : remindList) {
+                const auto id = remind->recurrenceId();
+                bool changed = id == editedId;
+                if (editsFutureOccurrences && id.isValid() && id >= editedId) {
+                    const auto previous = oldSchedule->hasRecurrenceOverride(id)
+                        ? oldSchedule->recurrenceException(id) : oldSchedule;
+                    const auto updated = schedule->recurrenceException(id);
+                    const auto previousAlarm = previous ? previous->firstEnabledAlarm() : CalendarCore::Remind::Ptr();
+                    const auto updatedAlarm = updated ? updated->firstEnabledAlarm() : CalendarCore::Remind::Ptr();
+                    changed = !updatedAlarm || !previousAlarm
+                        || updated->dtStart() != remind->dtStart() || updated->dtEnd() != remind->dtEnd()
+                        || !updatedAlarm->hasSameTrigger(*previousAlarm);
+                }
+                if (changed) {
+                    if (remind->notifyid() > 0) {
+                        emit signalCloseNotification(static_cast<quint64>(remind->notifyid()));
+                    }
+                    deleteRemind.append(remind);
+                }
+            }
+        //如果是重复日程且重复规则不一样
+        } else if ((schedule->recurs() || oldSchedule->recurs()) && *schedule->recurrence() != *oldSchedule->recurrence()) {
+            QDateTime dtEnd = schedule->dtStart();
+            for (int i = remindList.size() - 1; i >= 0; --i) {
+                dtEnd = dtEnd > remindList.at(i)->dtStart() ? dtEnd : remindList.at(i)->dtStart();
+            }
+
+            if (remindList.size() > 0) {
+                //获取新日程的重复时间
+                QList<QDateTime> dtList = schedule->recurrence()->timesInInterval(schedule->dtStart(), dtEnd);
+                foreach (auto remind, remindList) {
+                    //如果生成的开始时间列表内不包含提醒日程的开始时间，则表示该重复日程被删除
+                    const auto exception = schedule->recurrenceException(remind->recurrenceId());
+                    if (!dtList.contains(remind->dtStart()) && !exception) {
+                        //如果改日程已经提醒，且通知弹框未操作
+                        if (remind->notifyid() > 0) {
+                            emit signalCloseNotification(static_cast<quint64>(remind->notifyid()));
+                            deleteRemind.append(remind);
+                        } else if (remind->dtRemind() > QDateTime::currentDateTime()) {
+                            //删除没有触发的提醒日程
+                            deleteRemind.append(remind);
+                        }
+                    }
+                }
+            }
+        } else {
+            qCDebug(ServiceLogger) << "Not a repeat schedule";
+            //不是重复日程
+            if (remindList.size() > 0 && remindList.at(0)->notifyid() > 0) {
+                deleteRemind.append(remindList.at(0));
+            }
+        }
+        for (const auto &reminder : deleteRemind) {
+            reminder->setAccountID(m_account->accountID());
+            m_accountDB->deleteRemindInfoByAlarmID(reminder->alarmID());
+        }
+        m_alarm->notifyJobsChanged(deleteRemind);
+    }
+
+    if (oldSchedule->hasEnabledAlarms() || schedule->hasEnabledAlarms()) {
+        updateRemindSchedules(false);
     }
     emit signalScheduleUpdate();
     return ok;
@@ -1160,8 +1243,12 @@ DSchedule::List DAccountModule::getRemindScheduleList(const QDateTime &dtStart, 
     QMap<QDate, DSchedule::List>::const_iterator iter = scheduleMap.constBegin();
     for (; iter != scheduleMap.constEnd(); ++iter) {
         foreach (auto schedule, iter.value()) {
-            if (schedule->alarms().size() > 0
-                    && schedule->alarms()[0]->time() >= dtStart && schedule->alarms()[0]->time() <= dtEnd) {
+            const auto alarm = schedule->firstEnabledAlarm();
+            if (!alarm) {
+                continue;
+            }
+            const auto trigger = alarm->triggerTime(schedule->dtStart(), schedule->dtEnd());
+            if (trigger.isValid() && trigger >= dtStart && trigger <= dtEnd) {
                 scheduleList.append(schedule);
             }
         }
@@ -1226,13 +1313,14 @@ void DAccountModule::updateRemindSchedules(bool isClear)
 
     DSchedule::List scheduleList = getRemindScheduleList(dtStart, dtEnd);
     foreach (auto &remind, scheduleList) {
+        const auto trigger = remind->firstEnabledAlarm()->triggerTime(remind->dtStart(), remind->dtEnd());
         DRemindData::Ptr existingRemind;
         bool hasTriggeredRemind = false;
         if (!isClear) {
             const DRemindData::List existingReminds = m_accountDB->getRemindByScheduleID(remind->uid());
             foreach (const auto &storedRemind, existingReminds) {
                 if (storedRemind->recurrenceId() != remind->recurrenceId()
-                        || storedRemind->dtRemind() != remind->alarms()[0]->time()) {
+                        || storedRemind->dtRemind() != trigger) {
                     continue;
                 }
                 if (storedRemind->notifyid() > 0) {
@@ -1264,7 +1352,7 @@ void DAccountModule::updateRemindSchedules(bool isClear)
             existingRemind->setDtEnd(remind->dtEnd());
             existingRemind->setRecurrenceId(remind->recurrenceId());
             //由于获取的都是需要提醒的日程,所以日程的提醒列表size必然是大于0的
-            existingRemind->setDtRemind(remind->alarms()[0]->time());
+            existingRemind->setDtRemind(trigger);
             existingRemind->setNotifyid(0);
             existingRemind->setRemindCount(0);
             newRemindList.append(existingRemind);
@@ -1310,12 +1398,12 @@ void DAccountModule::notifyMsgHanding(const QString &alarmID, const qint32 opera
 {
     qCDebug(ServiceLogger) << "Handling notification message for alarm:" << alarmID << "operation:" << operationNum;
     DRemindData::Ptr remindData = m_accountDB->getRemindData(alarmID);
-    remindData->setAccountID(m_account->accountID());
     //如果相应的日程被删除,则不做处理
     if (remindData.isNull()) {
         qCDebug(ServiceLogger) << "Remind data is null, skipping notification handling";
         return;
     }
+    remindData->setAccountID(m_account->accountID());
     //如果为稍后提醒操作则需要更新对应的重复次数和提醒时间
     qint64 Minute = 60 * 1000;
     qint64 Hour = Minute * 60;
@@ -1345,13 +1433,25 @@ void DAccountModule::notifyMsgHanding(const QString &alarmID, const qint32 opera
     } break;
     case 4: { //提前1天提醒
         DSchedule::Ptr schedule = getScheduleByRemind(remindData);
+        if (!schedule) {
+            m_accountDB->deleteRemindInfoByAlarmID(alarmID);
+            return;
+        }
         //TODO:如果是重复日程是否需要修改所有日程的提醒？还是只修改此日程？
         if (schedule->allDay()) {
             schedule->setAlarmType(DSchedule::Alarm_15Min_Front);
         } else {
             schedule->setAlarmType(DSchedule::Alarm_1Day_Front);
         }
-        m_accountDB->updateSchedule(schedule);
+        const auto master = m_accountDB->getScheduleByScheduleID(remindData->scheduleID());
+        if (master && master->hasRecurrenceException(schedule->recurrenceId())) {
+            QString json;
+            if (!DSchedule::toJsonString(schedule, json) || !updateSchedule(json)) {
+                return;
+            }
+        } else if (!m_accountDB->updateSchedule(schedule)) {
+            return;
+        }
         //删除对应提醒任务数据
         m_accountDB->deleteRemindInfoByAlarmID(alarmID);
         emit signalScheduleUpdate();
@@ -1369,8 +1469,15 @@ void DAccountModule::remindJob(const QString &alarmID)
 {
     qCDebug(ServiceLogger) << "Executing remind job for alarm:" << alarmID;
     DRemindData::Ptr remindData = m_accountDB->getRemindData(alarmID);
+    if (!remindData) {
+        return;
+    }
     remindData->setAccountID(m_account->accountID());
     DSchedule::Ptr schedule = getScheduleByRemind(remindData);
+    if (!schedule) {
+        m_accountDB->deleteRemindInfoByAlarmID(alarmID);
+        return;
+    }
 
     int notifyid = m_alarm->remindJob(remindData, schedule);
     remindData->setNotifyid(notifyid);
@@ -1450,12 +1557,26 @@ QMap<QDate, DSchedule::List> DAccountModule::getScheduleTimesOn(const QDateTime 
     }
 
     foreach (auto &schedule, scheduleList) {
+        if (schedule->cancelled() && !schedule->hasRecurrenceId()) {
+            continue;
+        }
+        for (const auto &exception : schedule->recurrenceExceptionsInInterval(dtStart, dtEnd)) {
+            const auto startDay = exception->dtStart().date();
+            const auto endDay = extend ? qMin(exception->dtEnd().date(), dtEnd.date()) : startDay;
+            const auto firstDay = extend ? qMax(startDay, dtStart.date()) : startDay;
+            for (auto day = firstDay; day <= endDay && day.isValid(); day = day.addDays(1)) {
+                m_scheduleMap[day].append(exception);
+            }
+        }
+        if (schedule->cancelled()) {
+            continue;
+        }
         //获取日程的开始结束时间差
         qint64 interval = schedule->dtStart().secsTo(schedule->dtEnd());
         //如果存在重复日程
         if (schedule->recurs()) {
             //如果为农历日程
-            if (schedule->lunnar()) {
+            if (schedule->lunar() && schedule->recurrence()->defaultRRuleConst()) {
                 //农历重复日程计算
                 LunarDateInfo lunardate(schedule->recurrence()->defaultRRuleConst(), interval);
 
@@ -1468,7 +1589,8 @@ QMap<QDate, DSchedule::List> DAccountModule::getScheduleTimesOn(const QDateTime 
                 for (; iter != ruleStartDate.constEnd(); iter++) {
                     recurDateTime.setDate(iter.value());
                     //如果在忽略时间列表中,则忽略
-                    if (schedule->recurrence()->exDateTimes().contains(recurDateTime))
+                    if (schedule->hasRecurrenceOverride(recurDateTime)
+                        || schedule->recurrence()->exDateTimes().contains(recurDateTime))
                         continue;
                     copyEnd = recurDateTime.addSecs(interval);
                     DSchedule::Ptr newSchedule = DSchedule::Ptr(new DSchedule(*schedule.data()));
@@ -1502,7 +1624,8 @@ QMap<QDate, DSchedule::List> DAccountModule::getScheduleTimesOn(const QDateTime 
             if(schedule->allDay()){
                 queryDtStart.setTime(QTime(0,0,0));
             }
-            if (!(schedule->dtEnd() < queryDtStart || schedule->dtStart() > dtEnd)) {
+            if (!schedule->hasRecurrenceException(schedule->dtStart())
+                && !(schedule->dtEnd() < queryDtStart || schedule->dtStart() > dtEnd)) {
                 if (extend && schedule->isMultiDay()) {
                     //需要扩展的天数
                     int extenddays = static_cast<int>(schedule->dtStart().daysTo(schedule->dtEnd()));
@@ -1566,6 +1689,9 @@ void DAccountModule::extendRecurrence(DSchedule::Map &scheduleMap, const DSchedu
         qint64 interval = schedule->dtStart().secsTo(schedule->dtEnd());
         QList<QDateTime> dtList = schedule->recurrence()->timesInInterval(queryDtStart, dtEnd);
         foreach (auto &dt, dtList) {
+            if (schedule->hasRecurrenceOverride(dt)) {
+                continue;
+            }
             QDateTime scheduleDtEnd = dt.addSecs(interval);
             DSchedule::Ptr newSchedule = DSchedule::Ptr(schedule->clone());
             newSchedule->setDtStart(dt);
@@ -1608,6 +1734,9 @@ DSchedule::Ptr DAccountModule::getScheduleByRemind(const DRemindData::Ptr &remin
 {
     // qCDebug(ServiceLogger) << "Getting schedule by reminder data for schedule ID:" << remindData->scheduleID();
     DSchedule::Ptr schedule = m_accountDB->getScheduleByScheduleID(remindData->scheduleID());
+    if (schedule && schedule->hasRecurrenceOverride(remindData->recurrenceId())) {
+        return schedule->recurrenceException(remindData->recurrenceId());
+    }
     if (!schedule.isNull() && schedule->dtStart() != remindData->dtStart()) {
         schedule->setDtStart(remindData->dtStart());
         schedule->setDtEnd(remindData->dtEnd());
@@ -1686,8 +1815,9 @@ void DAccountModule::slotOpenCalendar(const QString &alarmID)
     }
     DSchedule::Ptr schedule = getScheduleByRemind(remindData);
     QString scheduleStr;
-    DSchedule::toJsonString(schedule, scheduleStr);
-    openCalendar.OpenSchedule(scheduleStr);
+    if (DSchedule::toJsonString(schedule, scheduleStr)) {
+        openCalendar.OpenSchedule(scheduleStr);
+    }
     //删除对应提醒任务数据
     m_accountDB->deleteRemindInfoByAlarmID(alarmID);
 }
@@ -1749,46 +1879,95 @@ void DAccountModule::slotDateUpdate(const DDataSyncBase::UpdateTypes updateType)
 bool DAccountModule::importSchedule(const QString &icsFilePath, const QString &typeID, const bool cleanExists)
 {
     qCDebug(ServiceLogger) << "Importing schedules from" << icsFilePath << "into type" << typeID << "Clean exists:" << cleanExists;
-    KCalendarCore::ICalFormat icalformat;
+    CalendarCore::IcsCodec icalformat;
     QTimeZone timezone = QDateTime::currentDateTime().timeZone();
-    KCalendarCore::MemoryCalendar::Ptr cal(new KCalendarCore::MemoryCalendar(timezone));
-    auto ok = icalformat.load(cal, icsFilePath);
+    CalendarCore::MemCalStore::Ptr cal(new CalendarCore::MemCalStore(timezone));
+    QString diagnostic;
+    auto ok = icalformat.load(cal, icsFilePath, &diagnostic);
     if (!ok) {
-        qCWarning(ServiceLogger) << "Failed to load ICS file:" << icsFilePath;
+        qCWarning(ServiceLogger) << "Failed to load ICS file:" << icsFilePath << diagnostic;
         return false;
     }
-    auto events = cal->events();
-    if (cleanExists) {
-        qCDebug(ServiceLogger) << "Cleaning existing schedules for type:" << typeID;
-        ok = m_accountDB->deleteSchedulesByScheduleTypeID(typeID, true);
-        if (!ok) {
-            qCWarning(ServiceLogger) << "Failed to clean existing schedules for type:" << typeID;
+    const auto events = cal->events();
+    if (events.isEmpty()) {
+        qCWarning(ServiceLogger) << "No events to import from ICS file:" << icsFilePath;
+        return false;
+    }
+
+    CalendarCore::CalEvent::List selectedEvents;
+    selectedEvents.reserve(events.size());
+    QHash<QString, qsizetype> indices;
+    QMultiHash<QString, CalendarCore::CalEvent::Ptr> exceptions;
+    for (const auto &event : events) {
+        const QString id = event->schedulingID();
+        const auto existing = indices.constFind(id);
+        if (existing == indices.cend()) {
+            indices.insert(id, selectedEvents.size());
+            selectedEvents.append(event);
+            continue;
+        }
+
+        auto &selected = selectedEvents[existing.value()];
+        if (selected->uid() != event->uid() || (!selected->hasRecurrenceId() && !event->hasRecurrenceId())) {
+            qCWarning(ServiceLogger) << "Cannot import conflicting calendar events with schedule ID:" << id;
             return false;
         }
-    };
+        if (event->hasRecurrenceId()) {
+            exceptions.insert(id, event);
+        } else {
+            exceptions.insert(id, selected);
+            selected = event;
+        }
+    }
+
+    DSchedule::List schedules;
+    schedules.reserve(selectedEvents.size());
+    for (const auto &event : selectedEvents) {
+        if (!event->dtStart().isValid() || !event->dtEnd().isValid() || event->dtEnd() < event->dtStart()) {
+            qCWarning(ServiceLogger) << "Cannot import schedule with invalid dates:" << event->schedulingID();
+            return false;
+        }
+        auto schedule = DSchedule::Ptr(new DSchedule(*event));
+        schedule->setScheduleTypeID(typeID);
+        for (const auto &exception : exceptions.values(event->schedulingID())) {
+            if (!exception->cancelled() && (!exception->dtStart().isValid() || !exception->dtEnd().isValid()
+                || exception->dtEnd() < exception->dtStart())) {
+                qCWarning(ServiceLogger) << "Cannot import a detached occurrence with invalid dates:" << event->uid();
+                return false;
+            }
+            schedule->setRecurrenceException(*exception);
+        }
+        schedules.append(schedule);
+    }
+    if (cleanExists) {
+        if (!m_accountDB->replaceSchedulesByScheduleTypeID(typeID, schedules)) {
+            qCWarning(ServiceLogger) << "Failed to replace schedules for type:" << typeID;
+            return false;
+        }
+        emit signalScheduleUpdate();
+        return true;
+    }
+
     int importedCount = 0;
-    foreach (auto event, events) {
-        auto data = event.data();
-        auto sch = DSchedule::Ptr(new DSchedule(*data));
-        sch->setScheduleTypeID(typeID);
+    for (const auto &sch : schedules) {
         QString scheduleID = m_accountDB->createSchedule(sch);
         if (!scheduleID.isEmpty()) {
             importedCount++;
-            qCDebug(ServiceLogger) << "Successfully imported schedule:" << data->summary()
-                                   << "Start:" << data->dtStart().toString()
+            qCDebug(ServiceLogger) << "Successfully imported schedule:" << sch->summary()
+                                   << "Start:" << sch->dtStart().toString()
                                    << "ID:" << scheduleID;
         } else {
-            qCWarning(ServiceLogger) << "Failed to import schedule:" << data->summary()
-                                     << "Start:" << data->dtStart().toString();
+            qCWarning(ServiceLogger) << "Failed to import schedule:" << sch->summary()
+                                     << "Start:" << sch->dtStart().toString();
         }
-    };
-    qCInfo(ServiceLogger) << "Import completed: " << importedCount << " out of " << events.size() << " events successfully imported for type " << typeID;
-    if (importedCount == 0 && !events.isEmpty()) {
-        qCWarning(ServiceLogger) << "WARNING: No schedules were successfully imported, despite having " << events.size() << " events in ICS file: " << icsFilePath;
+    }
+    qCInfo(ServiceLogger) << "Import completed: " << importedCount << " out of " << schedules.size() << " events successfully imported for type " << typeID;
+    if (importedCount == 0) {
+        qCWarning(ServiceLogger) << "WARNING: No schedules were successfully imported, despite having " << schedules.size() << " events in ICS file: " << icsFilePath;
     }
     // 发送日程更新信号
     emit signalScheduleUpdate();
-    return importedCount > 0 || events.isEmpty(); // 如果没有事件或者至少导入了一个事件，则认为成功
+    return importedCount > 0;
 }
 
 // 导出日程
@@ -1796,7 +1975,7 @@ bool DAccountModule::exportSchedule(const QString &icsFilePath, const QString &t
 {
     qCDebug(ServiceLogger) << "Exporting schedules to" << icsFilePath << "from type" << typeID;
     auto typeInfo = m_accountDB->getScheduleTypeByID(typeID);
-    KCalendarCore::MemoryCalendar::Ptr cal(new KCalendarCore::MemoryCalendar(nullptr));
+    CalendarCore::MemCalStore::Ptr cal(new CalendarCore::MemCalStore(nullptr));
     // 附加扩展信息
     cal->setNonKDECustomProperty("X-DDE-CALENDAR-TYPE-ID", typeID);
     cal->setNonKDECustomProperty("X-DDE-CALENDAR-TYPE-NAME", typeInfo->displayName());
@@ -1806,9 +1985,16 @@ bool DAccountModule::exportSchedule(const QString &icsFilePath, const QString &t
     auto ids = m_accountDB->getScheduleIDListByTypeID(typeID);
     foreach (auto id, ids) {
         auto schedule = m_accountDB->getScheduleByScheduleID(id);
+        if (!schedule) {
+            continue;
+        }
+        schedule->setRecurrenceExceptionsStored(false);
         cal->addEvent(schedule);
+        for (const auto &exception : schedule->recurrenceExceptions()) {
+            cal->addEvent(exception);
+        }
     }
     qCDebug(ServiceLogger) << "Exporting" << cal->events().count() << "schedules.";
-    KCalendarCore::ICalFormat icalformat;
+    CalendarCore::IcsCodec icalformat;
     return icalformat.save(cal, icsFilePath);
 }

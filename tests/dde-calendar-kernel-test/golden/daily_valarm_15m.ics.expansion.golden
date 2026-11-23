@@ -1,0 +1,9 @@
+Event:daily-valarm-15m@dde-calendar
+Summary:Daily with valarm 15min
+Count:5
+  2024-01-01T09:00:00+08:00|timed
+  2024-01-02T09:00:00+08:00|timed
+  2024-01-03T09:00:00+08:00|timed
+  2024-01-04T09:00:00+08:00|timed
+  2024-01-05T09:00:00+08:00|timed
+

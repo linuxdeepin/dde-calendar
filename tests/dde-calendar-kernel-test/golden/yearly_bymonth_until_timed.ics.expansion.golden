@@ -1,0 +1,9 @@
+Event:yearly-bymonth-until-timed@dde-calendar
+Summary:Yearly bymonth until timed (New Year)
+Count:5
+  2024-01-01T00:00:00+08:00|timed
+  2025-01-01T00:00:00+08:00|timed
+  2026-01-01T00:00:00+08:00|timed
+  2027-01-01T00:00:00+08:00|timed
+  2028-01-01T00:00:00+08:00|timed
+

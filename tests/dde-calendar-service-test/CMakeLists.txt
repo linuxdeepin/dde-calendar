@@ -38,7 +38,6 @@ SUBDIRLIST(COMMON_SRC_DIRS ${CMAKE_SOURCE_DIR}/src/calendar-common/src)
 foreach(subdir ${COMMON_SRC_DIRS})
     include_directories(${CMAKE_SOURCE_DIR}/src/calendar-common/src/${subdir})
 endforeach()
-include_directories(${CMAKE_SOURCE_DIR}/3rdparty/kcalendarcore/src)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 SUBDIRLIST(SERVICE_SRC_DIRS ${APP_SERVICE_DIR}/src)

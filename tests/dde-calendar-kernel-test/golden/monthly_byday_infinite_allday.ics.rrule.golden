@@ -1,0 +1,7 @@
+Event:monthly-byday-infinite-allday@dde-calendar
+  rrule:6
+  rruleStr:RRULE:FREQ=MONTHLY;BYDAY=1MO
+
+  duration:0
+  endDt:2024-01-01T00:00:00
+

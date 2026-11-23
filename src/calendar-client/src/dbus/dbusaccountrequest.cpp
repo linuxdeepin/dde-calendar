@@ -429,6 +429,21 @@ void DbusAccountRequest::slotCallFinished(CDBusPendingCallWatcher *call)
             QString scheduleTypeId = reply.argumentAt<0>();
             qCDebug(ClientLogger) << "Created schedule type with ID:" << scheduleTypeId;
             msg = scheduleTypeId;
+        } else if (call->getmember() == "createSchedule") {
+            const QDBusPendingReply<QString> reply = *call;
+            if (reply.isError()) {
+                ret = 1;
+            } else {
+                msg = reply.value();
+            }
+        } else if (call->getmember() == "importSchedule" || call->getmember() == "deleteScheduleTypeByID") {
+            const QDBusPendingReply<bool> reply = *call;
+            if (reply.isError()) {
+                ret = 1;
+                qCWarning(ClientLogger) << "Invalid response to" << call->getmember() << reply.error().message();
+            } else {
+                msg = reply.value();
+            }
         } else if (call->getmember() == "updateScheduleTypeShowState") {
             //更新日程类型显示状态结束
             qCDebug(ClientLogger) << "Processing update schedule type show state response for path:" << this->path();

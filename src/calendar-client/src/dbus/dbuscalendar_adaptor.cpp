@@ -130,6 +130,15 @@ static QDBusInterfacePtr getLocalAccountInterface()
     return QDBusInterfacePtr::create("", "", "", QDBusConnection::sessionBus());
 }
 
+static bool validReminder(const QJsonObject &data)
+{
+    if (!data.contains("reminder")) {
+        return true;
+    }
+    const int minutes = data.value("reminder").toInt(-1);
+    return minutes >= 0 && minutes <= 7 * 24 * 60;
+}
+
 // Apply JSON update fields to an existing schedule.
 // Shared by both cache fast-path and backend fallback-path.
 static void applyScheduleUpdates(const DSchedule::Ptr &schedule, const QJsonObject &updateData)
@@ -166,10 +175,10 @@ static void applyScheduleUpdates(const DSchedule::Ptr &schedule, const QJsonObje
         int reminderMinutes = updateData["reminder"].toInt();
         schedule->clearAlarms();
         if (reminderMinutes > 0) {
-            KCalendarCore::Alarm::Ptr alarm = schedule->newAlarm();
-            alarm->setStartOffset(KCalendarCore::Duration(-reminderMinutes * 60));
+            CalendarCore::Remind::Ptr alarm = schedule->newAlarm();
+            alarm->setStartOffset(CalendarCore::TimeSpan(-qint64(reminderMinutes) * 60));
             alarm->setEnabled(true);
-            alarm->setType(KCalendarCore::Alarm::Display);
+            alarm->setType(CalendarCore::Remind::Display);
         }
     }
 }
@@ -214,9 +223,7 @@ static QJsonObject scheduleToJson(const DSchedule::Ptr &schedule)
     obj["scheduleType"] = scheduleType;
 
     // Add reminder info
-    auto alarms = schedule->alarms();
-    if (!alarms.isEmpty()) {
-        auto alarm = alarms.first();
+    if (const auto alarm = schedule->firstEnabledAlarm()) {
         obj["reminderMinutes"] = -alarm->startOffset().asSeconds() / 60;
     } else {
         obj["reminderMinutes"] = 0;
@@ -226,9 +233,10 @@ static QJsonObject scheduleToJson(const DSchedule::Ptr &schedule)
     if (schedule->recurs()) {
         QJsonObject recurrence;
         auto rrule = schedule->recurrence();
-        recurrence["type"] = static_cast<int>(rrule->recurrenceType());
-        recurrence["frequency"] = rrule->frequency();
-        if (rrule->duration() != -1) {
+        recurrence["type"] = static_cast<int>(rrule->periodType());
+        const bool hasRule = rrule->defaultRRuleConst() != nullptr;
+        recurrence["frequency"] = hasRule ? rrule->frequency() : 1;
+        if (hasRule && rrule->duration() != -1) {
             recurrence["duration"] = rrule->duration();
         }
         if (rrule->endDateTime().isValid()) {
@@ -385,6 +393,10 @@ QString CalendarAdaptor::CreateSchedule(const QString &scheduleData)
 
         // Set basic information
         QString title = data["title"].toString();
+        if (!validReminder(data)) {
+            qCWarning(ClientLogger) << "Invalid reminder offset in schedule creation";
+            return {};
+        }
         QString description = data["description"].toString();
         QString startTimeStr = data["startTime"].toString();
         QString endTimeStr = data["endTime"].toString();
@@ -422,10 +434,10 @@ QString CalendarAdaptor::CreateSchedule(const QString &scheduleData)
         // Set reminder if provided
         int reminderMinutes = data["reminder"].toInt(0);
         if (reminderMinutes > 0) {
-            KCalendarCore::Alarm::Ptr alarm = schedule->newAlarm();
-            alarm->setStartOffset(KCalendarCore::Duration(-reminderMinutes * 60));
+            CalendarCore::Remind::Ptr alarm = schedule->newAlarm();
+            alarm->setStartOffset(CalendarCore::TimeSpan(-qint64(reminderMinutes) * 60));
             alarm->setEnabled(true);
-            alarm->setType(KCalendarCore::Alarm::Display);
+            alarm->setType(CalendarCore::Remind::Display);
         }
 
         // Generate unique ID
@@ -518,6 +530,11 @@ bool CalendarAdaptor::ModifySchedule(const QString &scheduleId,
             QJsonDocument doc = QJsonDocument::fromJson(data.toUtf8(), &error);
 
             if (error.error != QJsonParseError::NoError || !doc.isObject()) {
+                return false;
+            }
+
+            if (!validReminder(doc.object())) {
+                qCWarning(ClientLogger) << "Invalid reminder offset in schedule update";
                 return false;
             }
 
@@ -781,10 +798,12 @@ QString CalendarAdaptor::GetReminders(int hours)
                 auto alarms = schedule->alarms();
                 if (!alarms.isEmpty()) {
                     for (const auto &alarm : alarms) {
-                        QDateTime alarmTime =
-                            schedule->dtStart().addSecs(alarm->startOffset().asSeconds());
+                        if (!alarm->enabled()) {
+                            continue;
+                        }
+                        const auto alarmTime = alarm->triggerTime(schedule->dtStart(), schedule->dtEnd());
 
-                        if (alarmTime >= now && alarmTime <= endTime) {
+                        if (alarmTime.isValid() && alarmTime >= now && alarmTime <= endTime) {
                             QJsonObject reminder;
                             reminder["scheduleId"] = schedule->uid();
                             reminder["title"] = schedule->summary();

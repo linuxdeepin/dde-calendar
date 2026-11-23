@@ -1,0 +1,7 @@
+Event:monthly-rdate@dde-calendar
+  rrule:6
+  rruleStr:RRULE:FREQ=MONTHLY;COUNT=6;BYMONTHDAY=15
+
+  duration:0
+  endDt:2024-01-15T11:00:00+08:00
+

@@ -46,7 +46,7 @@ QString DAccountDataBase::createSchedule(const DSchedule::Ptr &schedule)
             query.addBindValue(dtToString(schedule->dtEnd()));
             query.addBindValue(schedule->hasEnabledAlarms());
             query.addBindValue(pinyinsearch::getPinPinSearch()->CreatePinyin(schedule->summary()));
-            query.addBindValue(schedule->lunnar());
+            query.addBindValue(schedule->lunar());
             query.addBindValue(DSchedule::toIcsString(schedule));
             query.addBindValue(schedule->fileName());
             query.addBindValue(dtToString(schedule->created()));
@@ -97,7 +97,7 @@ bool DAccountDataBase::updateScheduleWithIcs(const DSchedule::Ptr &schedule, con
             query.addBindValue(dtToString(schedule->dtEnd()));
             query.addBindValue(schedule->hasEnabledAlarms());
             query.addBindValue(pinyinsearch::getPinPinSearch()->CreatePinyin(schedule->summary()));
-            query.addBindValue(schedule->lunnar());
+            query.addBindValue(schedule->lunar());
             query.addBindValue(ics);
             query.addBindValue(schedule->fileName());
             query.addBindValue(dtToString(schedule->lastModified()));
@@ -132,7 +132,7 @@ DSchedule::Ptr DAccountDataBase::getScheduleByScheduleID(const QString &schedule
             if (query.next()) {
                 const QString ics = query.value("ics").toString();
                 DSchedule::Ptr parsedSchedule;
-                if (DSchedule::fromIcsString(parsedSchedule, ics) && !parsedSchedule.isNull()) {
+                if (DSchedule::fromStoredIcsString(parsedSchedule, ics) && !parsedSchedule.isNull()) {
                     parsedSchedule->setScheduleTypeID(query.value("scheduleTypeID").toString());
                     schedule = parsedSchedule;
                 } else {
@@ -306,6 +306,30 @@ bool DAccountDataBase::deleteScheduleByScheduleID(const QString &scheduleID, con
     return resBool;
 }
 
+bool DAccountDataBase::replaceSchedulesByScheduleTypeID(const QString &typeID, const DSchedule::List &schedules)
+{
+    if (schedules.isEmpty()) {
+        return false;
+    }
+    for (const auto &schedule : schedules) {
+        if (!schedule || schedule->scheduleTypeID() != typeID
+            || !schedule->dtStart().isValid() || !schedule->dtEnd().isValid()) {
+            return false;
+        }
+    }
+
+    SqlTransactionLocker transaction({getConnectionName()});
+    if (!transaction.isValid() || !deleteSchedulesByScheduleTypeID(typeID, true)) {
+        return false;
+    }
+    for (const auto &schedule : schedules) {
+        if (createSchedule(schedule).isEmpty()) {
+            return false;
+        }
+    }
+    return transaction.commit();
+}
+
 bool DAccountDataBase::deleteSchedulesByScheduleTypeID(const QString &typeID, const int isDeleted)
 {
     QString strSql;
@@ -356,7 +380,7 @@ DSchedule::List DAccountDataBase::getScheduleListByTypeID(const QString &typeID)
         if (query.exec()) {
             while (query.next()) {
                 DSchedule::Ptr schedule;
-                if (DSchedule::fromIcsString(schedule, query.value("ics").toString())
+                if (DSchedule::fromStoredIcsString(schedule, query.value("ics").toString())
                     && !schedule.isNull()) {
                     schedule->setScheduleTypeID(query.value("scheduleTypeID").toString());
                     scheduleList.append(schedule);
@@ -377,41 +401,49 @@ DSchedule::List DAccountDataBase::getScheduleListByTypeID(const QString &typeID)
 DSchedule::List DAccountDataBase::querySchedulesByKey(const QString &key)
 {
     DSchedule::List scheduleList;
-    QString strSql("SELECT s.scheduleID, s.scheduleTypeID, s.summary, s.description, s.allDay, s.dtStart, s.dtEnd,   \
-             s.isAlarm,s.titlePinyin,s.isLunar, s.ics, s.fileName, s.dtCreate, s.dtUpdate, s.dtDelete, s.isDeleted      \
-               FROM  schedules s  inner join scheduleType st WHERE s.isDeleted = 0 and st.showState =1 and s.scheduleTypeID  = st.typeID ");
-    //如果关键字不为空，添加查询条件
-    pinyinsearch *psearch = pinyinsearch::getPinPinSearch();
-    QMap<QString, QString> sqlBindValue;
-    QString strKey = key.trimmed();
-    if (psearch->CanQueryByPinyin(key)) {
-        //可以按照拼音查询
-        QString pinyin = psearch->CreatePinyinQuery(strKey.toLower());
-        strSql += QString("and ( instr(UPPER(s.summary), UPPER(:key)) OR s.titlePinyin LIKE :pinyin )");
-        sqlBindValue[":key"] = key;
-        sqlBindValue[":pinyin"] = pinyin;
-    } else if (!key.isEmpty()) {
-        //按照key查询
-        strSql += QString(" and instr(UPPER(s.summary), UPPER(:key))");
-        sqlBindValue[":key"] = key;
+    QString predicate = QStringLiteral("1");
+    QMap<QString, QString> bindings;
+    if (!key.isEmpty()) {
+        predicate = QStringLiteral("instr(UPPER(s.summary), UPPER(:key))");
+        bindings.insert(QStringLiteral(":key"), key);
+        if (pinyinsearch::CanQueryByPinyin(key)) {
+            predicate += QStringLiteral(" OR s.titlePinyin LIKE :pinyin");
+            bindings.insert(QStringLiteral(":pinyin"), pinyinsearch::getPinPinSearch()->CreatePinyinQuery(key.trimmed().toLower()));
+        }
     }
-
-    strSql.append(QString(" order by :strsort "));
-    sqlBindValue[":strsort"] = "s.dtStart asc";
+    QString sql = QStringLiteral(
+        "SELECT s.scheduleTypeID, s.ics, (%1) AS masterMatches FROM schedules s "
+        "JOIN scheduleType st ON s.scheduleTypeID = st.typeID WHERE s.isDeleted = 0 AND st.showState = 1").arg(predicate);
+    if (!key.isEmpty()) {
+        sql += QStringLiteral(" AND ((%1) OR instr(UPPER(s.ics), 'RECURRENCE-ID'))").arg(predicate);
+    }
+    sql += QStringLiteral(" ORDER BY s.dtStart ASC");
 
     SqliteQuery query(m_database);
-    if (query.prepare(strSql)) {
-        for (auto iter = sqlBindValue.constBegin(); iter != sqlBindValue.constEnd(); iter++) {
+    if (query.prepare(sql)) {
+        for (auto iter = bindings.constBegin(); iter != bindings.constEnd(); iter++) {
             query.bindValue(iter.key(), iter.value());
         }
 
         if (query.exec()) {
             while (query.next()) {
                 DSchedule::Ptr schedule;
-                QString &&icsStr = query.value("ics").toString();
-                DSchedule::fromIcsString(schedule, icsStr);
-                schedule->setScheduleTypeID(query.value("scheduleTypeID").toString());
-                scheduleList.append(schedule);
+                if (DSchedule::fromStoredIcsString(schedule, query.value("ics").toString())) {
+                    if (!query.value("masterMatches").toBool()) {
+                        bool instanceMatches = false;
+                        for (const auto &event : schedule->recurrenceExceptions()) {
+                            if (!event->cancelled() && DSchedule(*event).titleMatches(key)) {
+                                instanceMatches = true;
+                                break;
+                            }
+                        }
+                        if (!instanceMatches) {
+                            continue;
+                        }
+                    }
+                    schedule->setScheduleTypeID(query.value("scheduleTypeID").toString());
+                    scheduleList.append(schedule);
+                }
             }
         } else {
             qCWarning(ServiceLogger) << Q_FUNC_INFO << query.lastError();
@@ -443,9 +475,10 @@ DSchedule::List DAccountDataBase::querySchedulesByRRule(const QString &key, cons
 
         if (query.exec()) {
             while (query.next()) {
-                DSchedule::Ptr schedule = DSchedule::Ptr(new DSchedule);
-                QString &&icsStr = query.value("ics").toString();
-                DSchedule::fromIcsString(schedule, icsStr);
+                DSchedule::Ptr schedule;
+                if (!DSchedule::fromStoredIcsString(schedule, query.value("ics").toString())) {
+                    continue;
+                }
                 schedule->setScheduleTypeID(query.value("scheduleTypeID").toString());
                 DSchedule::RRuleType rRuleType = schedule->getRRuleType();
                 //如果存在重复规则
@@ -479,10 +512,10 @@ DSchedule::List DAccountDataBase::getRemindSchedule()
     if (query.prepare(strSql)) {
         if (query.exec()) {
             while (query.next()) {
-                DSchedule::Ptr schedule = DSchedule::Ptr(new DSchedule);
-                QString &&icsStr = query.value("ics").toString();
-                DSchedule::fromIcsString(schedule, icsStr);
-                scheduleList.append(schedule);
+                DSchedule::Ptr schedule;
+                if (DSchedule::fromStoredIcsString(schedule, query.value("ics").toString())) {
+                    scheduleList.append(schedule);
+                }
             }
         } else {
             qCWarning(ServiceLogger) << Q_FUNC_INFO << query.lastError();
@@ -1041,7 +1074,7 @@ DRemindData::Ptr DAccountDataBase::getRemindData(const QString &alarmID)
 DRemindData::List DAccountDataBase::getValidRemindJob()
 {
     QString strSql("SELECT alarmID,scheduleID, recurID, remindCount, notifyID, dtRemind, dtStart, dtEnd \
-                   FROM remindTask WHERE  dtRemind > ? ;");
+                   FROM remindTask WHERE julianday(dtRemind) > julianday(?);");
     SqliteQuery query(m_database);
     DRemindData::List remindList;
     if (query.prepare(strSql)) {

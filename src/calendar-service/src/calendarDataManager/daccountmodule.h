@@ -10,8 +10,8 @@
 #include "dschedule.h"
 #include "dalarmmanager.h"
 #include "ddatasyncbase.h"
-#include "icalformat.h"
-#include "memorycalendar.h"
+#include "icscodec.h"
+#include "memcalstore.h"
 
 #include <QObject>
 #include <QSharedPointer>

@@ -1,0 +1,7 @@
+Event:weekly-byday-until-timed@dde-calendar
+  rrule:5
+  rruleStr:RRULE:FREQ=WEEKLY;UNTIL=20240331T235959Z;BYDAY=MO,WE,FR
+
+  duration:0
+  endDt:2024-01-01T15:00:00+08:00
+

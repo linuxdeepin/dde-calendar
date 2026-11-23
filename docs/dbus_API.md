@@ -31,6 +31,10 @@ QuerySchedules(query: string) → (result: string)
 #### Returns
 JSON string containing schedule list and metadata.
 
+`startTime` and `endTime` include an offset for events with an explicit time
+zone. During ICS import, timed events without a time zone are interpreted in
+the local time zone and retain that zone on export.
+
 #### Response Format
 
 **Single Day Query:**
