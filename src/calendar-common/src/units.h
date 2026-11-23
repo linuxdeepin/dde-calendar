@@ -50,7 +50,7 @@ bool isChineseEnv();
 QString getHomeConfigPath();
 QDir getAppConfigDir();
 QDir getAppCacheDir();
-QSharedPointer<QProcess> DownloadFile(QString url, QString filename);
+bool DownloadFile(const QString &url, const QString &filename);
 
 //时间转换
 QDateTime dtConvert(const QDateTime &datetime);

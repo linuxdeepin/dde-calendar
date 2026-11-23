@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.7)
 project(commondata)
 
 find_package(PkgConfig REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core DBus Sql)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core DBus Sql Network)
 find_package(Dtk${DTK_VERSION_MAJOR} REQUIRED Core)
 
 set(CMAKE_CXX_STANDARD 11)
@@ -42,6 +42,7 @@ target_link_libraries(${PROJECT_NAME}
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::DBus
     Qt${QT_VERSION_MAJOR}::Sql
+    Qt${QT_VERSION_MAJOR}::Network
     PkgConfig::LIBICAL
     Dtk${DTK_VERSION_MAJOR}::Core
 )

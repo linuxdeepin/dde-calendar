@@ -218,39 +218,32 @@ TEST_F(UnitsTest, GetAppCacheDir_Default_ReturnsNonEmpty)
     EXPECT_FALSE(dir.absolutePath().isEmpty());
     EXPECT_TRUE(dir.absolutePath().contains("/"));
 }
-TEST_F(UnitsTest, DownloadFile_UnreachableUrl_ReturnsNonNullProc)
+TEST_F(UnitsTest, DownloadFile_UnreachableUrl_ReturnsFalse)
 {
     // Arrange
-    // DownloadFile spawns wget asynchronously and returns the QProcess handle;
-    // the function must return a non-null process without crashing.
-    QString tmpPath = QCoreApplication::applicationDirPath() + "/ut_download_target";
-    // Act
-    auto proc = DownloadFile(QStringLiteral("http://127.0.0.1:9/no-such-file"), tmpPath);
-    // Assert
-    EXPECT_TRUE(proc);
-    if (proc) {
-        proc->kill();
-        proc->waitForFinished(3000);
-    }
+    // DownloadFile downloads synchronously via Qt Network; an unreachable
+    // address must return false without creating the target file.
+    QString tmpPath = QDir::tempPath() + "/ut_download_target";
     QFile::remove(tmpPath);
-    EXPECT_NE(proc.data(), nullptr);
+    // Act
+    bool ok = DownloadFile(QStringLiteral("http://127.0.0.1:9/no-such-file"), tmpPath);
+    // Assert
+    EXPECT_FALSE(ok);
+    EXPECT_FALSE(QFile::exists(tmpPath));
+    QFile::remove(tmpPath);
 }
-TEST_F(UnitsTest, DownloadFile_EmptyUrl_ReturnsNonNullProc)
+TEST_F(UnitsTest, DownloadFile_EmptyUrl_ReturnsFalse)
 {
     // Arrange
-    // Even with an empty URL the function returns a process handle (wget may
-    // fail quickly); verify no crash and the handle is non-null.
-    QString tmpPath = QCoreApplication::applicationDirPath() + "/ut_download_empty";
-    // Act
-    auto proc = DownloadFile(QString(), tmpPath);
-    // Assert
-    EXPECT_TRUE(proc);
-    if (proc) {
-        proc->kill();
-        proc->waitForFinished(3000);
-    }
+    // An empty URL is invalid and must fail synchronously.
+    QString tmpPath = QDir::tempPath() + "/ut_download_empty";
     QFile::remove(tmpPath);
-    EXPECT_NE(proc.data(), nullptr);
+    // Act
+    bool ok = DownloadFile(QString(), tmpPath);
+    // Assert
+    EXPECT_FALSE(ok);
+    EXPECT_FALSE(QFile::exists(tmpPath));
+    QFile::remove(tmpPath);
 }
 TEST_F(UnitsTest, WithinTimeFrame_CurrentDate_ReturnsBool)
 {

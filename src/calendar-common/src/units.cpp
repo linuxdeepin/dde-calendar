@@ -6,6 +6,14 @@
 #include "commondef.h"
 #include <QDir>
 #include <QProcess>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
+#include <QEventLoop>
+#include <QTimer>
+#include <QFile>
+#include <QSaveFile>
+#include <QUrl>
 
 #include <QTimeZone>
 #include <QStandardPaths>
@@ -93,13 +101,49 @@ QDir getAppCacheDir()
     return QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
 }
 
-QSharedPointer<QProcess> DownloadFile(QString url, QString filename)
+bool DownloadFile(const QString &url, const QString &filename)
 {
     qCDebug(CommonLogger) << "Downloading file from" << url << "to" << filename;
-    auto process = QSharedPointer<QProcess>::create();
-    process->setEnvironment({"LANGUAGE=en"});
-    process->start("wget", { "-c", "-N", "-O", filename, url });
-    return process;
+
+    QNetworkAccessManager manager;
+    QNetworkRequest request{QUrl(url)};
+#if QT_VERSION >= QT_VERSION_CHECK(5, 9, 0)
+    request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
+                         QNetworkRequest::NoLessSafeRedirectPolicy);
+#endif
+
+    QNetworkReply *reply = manager.get(request);
+    QEventLoop loop;
+    QTimer timer;
+    timer.setSingleShot(true);
+    QObject::connect(reply, &QNetworkReply::finished, &loop, &QEventLoop::quit);
+    QObject::connect(&timer, &QTimer::timeout, &loop, [&loop, reply]() {
+        reply->abort();
+        loop.quit();
+    });
+    timer.start(15000);
+    loop.exec();
+
+    if (reply->error() != QNetworkReply::NoError) {
+        qCWarning(CommonLogger) << "Download failed:" << url << reply->errorString();
+        reply->deleteLater();
+        return false;
+    }
+
+    const QByteArray data = reply->readAll();
+    reply->deleteLater();
+
+    // QSaveFile 提交时原子替换，失败时保留原有缓存
+    QSaveFile file(filename);
+    if (!file.open(QIODevice::WriteOnly)) {
+        qCWarning(CommonLogger) << "Cannot open download file:" << filename;
+        return false;
+    }
+    if (file.write(data) != data.size() || !file.commit()) {
+        qCWarning(CommonLogger) << "Failed to write downloaded data to" << filename;
+        return false;
+    }
+    return true;
 }
 
 bool withinTimeFrame(const QDate &date)
