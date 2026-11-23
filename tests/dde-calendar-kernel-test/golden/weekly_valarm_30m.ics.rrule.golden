@@ -1,0 +1,7 @@
+Event:weekly-valarm-30m@dde-calendar
+  rrule:5
+  rruleStr:RRULE:FREQ=WEEKLY;COUNT=8;BYDAY=MO
+
+  duration:0
+  endDt:2024-01-01T15:00:00+08:00
+

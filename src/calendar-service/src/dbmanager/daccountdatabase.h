@@ -43,6 +43,7 @@ public:
     QStringList getScheduleIDListByTypeID(const QString &typeID);
     DSchedule::List getScheduleListByTypeID(const QString &typeID);
     bool deleteScheduleByScheduleID(const QString &scheduleID, const int isDeleted = 0);
+    bool replaceSchedulesByScheduleTypeID(const QString &typeID, const DSchedule::List &schedules);
     bool deleteSchedulesByScheduleTypeID(const QString &typeID, const int isDeleted = 0);
     bool restoreSchedulesByScheduleTypeID(const QString &typeID);
     //根据关键字查询一定范围内的日程

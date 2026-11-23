@@ -739,6 +739,26 @@ TEST_F(TestDAccountModule, ImportSchedule_WithCleanExists_ReturnsTrue)
     EXPECT_TRUE(module->importSchedule(icsPath, typeID, true));
 }
 
+TEST_F(TestDAccountModule, ImportSchedule_WithNoEventsKeepsExistingSchedules)
+{
+    const QString typeID = createType();
+    ASSERT_FALSE(typeID.isEmpty());
+    const QString scheduleID = createSchedule(typeID);
+    ASSERT_FALSE(scheduleID.isEmpty());
+
+    for (const auto &content : {QByteArray("BEGIN:VCALENDAR\r\nVERSION:2.0\r\nEND:VCALENDAR\r\n"),
+                                QByteArray("BEGIN:VCALENDAR\r\nVERSION:2.0\r\nBEGIN:VTODO\r\n"
+                                           "UID:task\r\nEND:VTODO\r\nEND:VCALENDAR\r\n")}) {
+        QTemporaryFile file;
+        ASSERT_TRUE(file.open());
+        ASSERT_EQ(file.write(content), content.size());
+        const auto path = file.fileName();
+        file.close();
+        EXPECT_FALSE(module->importSchedule(path, typeID, true));
+        EXPECT_TRUE(module->m_accountDB->scheduleExistsByScheduleID(scheduleID));
+    }
+}
+
 TEST_F(TestDAccountModule, ImportSchedule_InvalidFile_ReturnsFalse)
 {
     QString typeID = createType();

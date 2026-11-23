@@ -24,7 +24,7 @@
 // 7. 异常路径 EXPECT_THROW 精确匹配: [x] N/A — 无异常
 // 8. 负面场景有专门用例: [x] (invalid date range, out-of-frame, RRule_None)
 // 9. 负面用例验证强异常安全: [x] N/A — 无异常
-// 10. stub_ext vs gMock 选择正确: [x] N/A — 依赖 KCalendarCore RecurrenceRule
+// 10. stub_ext vs gMock 选择正确: [x] N/A — 依赖 CalendarCore RRule
 
 #include <gtest/gtest.h>
 #include <QtGlobal>
@@ -34,7 +34,7 @@
 #include "lunardateinfo.h"
 #include "lunarcalendar.h"
 #include "lunarandfestival.h"
-#include "recurrencerule.h"
+#include "rrule.h"
 
 // ═══════════════════════════════════════════════════════════════
 // Branch list:
@@ -59,16 +59,16 @@ protected:
         LunarCalendar::LogOffEmptyData();
     }
 
-    // Helper: create a RecurrenceRule with given FREQ string and duration
-    KCalendarCore::RecurrenceRule *makeRule(const QString &freq, int duration = 0)
+    // Helper: create a RRule with given FREQ string and duration
+    CalendarCore::RRule *makeRule(const QString &freq, int duration = 0)
     {
-        KCalendarCore::RecurrenceRule *rule = new KCalendarCore::RecurrenceRule();
-        rule->setRRule(freq);
+        CalendarCore::RRule *rule = new CalendarCore::RRule();
+        EXPECT_TRUE(rule->parse(freq));
         rule->setDuration(duration);
         if (freq.contains("YEARLY")) {
-            rule->setRecurrenceType(KCalendarCore::RecurrenceRule::rYearly);
+            rule->setPeriodType(CalendarCore::RRule::rYearly);
         } else if (freq.contains("MONTHLY")) {
-            rule->setRecurrenceType(KCalendarCore::RecurrenceRule::rMonthly);
+            rule->setPeriodType(CalendarCore::RRule::rMonthly);
         }
         return rule;
     }
@@ -78,7 +78,7 @@ protected:
 TEST_F(LunarDateInfoTest, Constructor_WithMonthlyRuleSetsRRuleType)
 {
     // Arrange
-    KCalendarCore::RecurrenceRule *rule = makeRule("FREQ=MONTHLY");
+    CalendarCore::RRule *rule = makeRule("FREQ=MONTHLY");
     // Act
     LunarDateInfo info(rule, 30);
     // Assert
@@ -89,7 +89,7 @@ TEST_F(LunarDateInfoTest, Constructor_WithMonthlyRuleSetsRRuleType)
 TEST_F(LunarDateInfoTest, Constructor_WithYearlyRuleSetsRRuleType)
 {
     // Arrange
-    KCalendarCore::RecurrenceRule *rule = makeRule("FREQ=YEARLY");
+    CalendarCore::RRule *rule = makeRule("FREQ=YEARLY");
     // Act
     LunarDateInfo info(rule, 365);
     // Assert
@@ -100,7 +100,7 @@ TEST_F(LunarDateInfoTest, Constructor_WithYearlyRuleSetsRRuleType)
 TEST_F(LunarDateInfoTest, Constructor_WithUnknownRuleSetsNone)
 {
     // Arrange
-    KCalendarCore::RecurrenceRule *rule = makeRule("FREQ=DAILY");
+    CalendarCore::RRule *rule = makeRule("FREQ=DAILY");
     // Act
     LunarDateInfo info(rule, 1);
     // Assert
@@ -111,7 +111,7 @@ TEST_F(LunarDateInfoTest, Constructor_WithUnknownRuleSetsNone)
 TEST_F(LunarDateInfoTest, ParseRRule_MonthlyReturnsRRuleMonth)
 {
     // Arrange
-    KCalendarCore::RecurrenceRule *rule = makeRule("FREQ=MONTHLY");
+    CalendarCore::RRule *rule = makeRule("FREQ=MONTHLY");
     LunarDateInfo info(rule, 30);
     // Act
     LunarDateInfo::LunnarRRule result = info.ParseRRule("FREQ=MONTHLY");
@@ -122,7 +122,7 @@ TEST_F(LunarDateInfoTest, ParseRRule_MonthlyReturnsRRuleMonth)
 TEST_F(LunarDateInfoTest, ParseRRule_YearlyReturnsRRuleYear)
 {
     // Arrange
-    KCalendarCore::RecurrenceRule *rule = makeRule("FREQ=YEARLY");
+    CalendarCore::RRule *rule = makeRule("FREQ=YEARLY");
     LunarDateInfo info(rule, 365);
     // Act
     LunarDateInfo::LunnarRRule result = info.ParseRRule("FREQ=YEARLY");
@@ -133,7 +133,7 @@ TEST_F(LunarDateInfoTest, ParseRRule_YearlyReturnsRRuleYear)
 TEST_F(LunarDateInfoTest, ParseRRule_UnknownFreqReturnsNone)
 {
     // Arrange
-    KCalendarCore::RecurrenceRule *rule = makeRule("FREQ=WEEKLY");
+    CalendarCore::RRule *rule = makeRule("FREQ=WEEKLY");
     LunarDateInfo info(rule, 7);
     // Act
     LunarDateInfo::LunnarRRule result = info.ParseRRule("FREQ=WEEKLY;INTERVAL=1");
@@ -145,7 +145,7 @@ TEST_F(LunarDateInfoTest, ParseRRule_UnknownFreqReturnsNone)
 TEST_F(LunarDateInfoTest, getRRuleStartDate_InvalidRangeReturnsEmpty)
 {
     // Arrange — endDate < beginDate
-    KCalendarCore::RecurrenceRule *rule = makeRule("FREQ=MONTHLY", 3);
+    CalendarCore::RRule *rule = makeRule("FREQ=MONTHLY", 3);
     LunarDateInfo info(rule, 30);
     QDate begin(2024, 12, 31);
     QDate end(2024, 1, 1);
@@ -159,7 +159,7 @@ TEST_F(LunarDateInfoTest, getRRuleStartDate_InvalidRangeReturnsEmpty)
 TEST_F(LunarDateInfoTest, getRRuleStartDate_SolarDateAfterEndDateReturnsEmpty)
 {
     // Arrange — solarDate > endDate
-    KCalendarCore::RecurrenceRule *rule = makeRule("FREQ=MONTHLY", 3);
+    CalendarCore::RRule *rule = makeRule("FREQ=MONTHLY", 3);
     LunarDateInfo info(rule, 30);
     QDate begin(2024, 1, 1);
     QDate end(2024, 6, 30);
@@ -173,7 +173,7 @@ TEST_F(LunarDateInfoTest, getRRuleStartDate_SolarDateAfterEndDateReturnsEmpty)
 TEST_F(LunarDateInfoTest, getRRuleStartDate_MonthlyRuleReturnsNonEmpty)
 {
     // Arrange
-    KCalendarCore::RecurrenceRule *rule = makeRule("FREQ=MONTHLY", 3);
+    CalendarCore::RRule *rule = makeRule("FREQ=MONTHLY", 3);
     LunarDateInfo info(rule, 30);
     QDate begin(2024, 1, 1);
     QDate end(2024, 12, 31);
@@ -187,7 +187,7 @@ TEST_F(LunarDateInfoTest, getRRuleStartDate_MonthlyRuleReturnsNonEmpty)
 TEST_F(LunarDateInfoTest, getRRuleStartDate_YearlyRuleReturnsNonEmpty)
 {
     // Arrange
-    KCalendarCore::RecurrenceRule *rule = makeRule("FREQ=YEARLY", 2);
+    CalendarCore::RRule *rule = makeRule("FREQ=YEARLY", 2);
     LunarDateInfo info(rule, 365);
     QDate begin(2024, 1, 1);
     QDate end(2026, 12, 31);
@@ -202,7 +202,7 @@ TEST_F(LunarDateInfoTest, getRRuleStartDate_YearlyRuleReturnsNonEmpty)
 TEST_F(LunarDateInfoTest, isWithinTimeFrame_WithinRangeReturnsTrue)
 {
     // Arrange
-    KCalendarCore::RecurrenceRule *rule = makeRule("FREQ=MONTHLY");
+    CalendarCore::RRule *rule = makeRule("FREQ=MONTHLY");
     LunarDateInfo info(rule, 30);
     info.m_queryStartDate = QDate(2024, 1, 1);
     info.m_queryEndDate = QDate(2024, 12, 31);
@@ -216,7 +216,7 @@ TEST_F(LunarDateInfoTest, isWithinTimeFrame_WithinRangeReturnsTrue)
 TEST_F(LunarDateInfoTest, isWithinTimeFrame_OutsideRangeReturnsFalse)
 {
     // Arrange
-    KCalendarCore::RecurrenceRule *rule = makeRule("FREQ=MONTHLY");
+    CalendarCore::RRule *rule = makeRule("FREQ=MONTHLY");
     LunarDateInfo info(rule, 30);
     info.m_queryStartDate = QDate(2024, 1, 1);
     info.m_queryEndDate = QDate(2024, 12, 31);
@@ -231,7 +231,7 @@ TEST_F(LunarDateInfoTest, isWithinTimeFrame_OutsideRangeReturnsFalse)
 TEST_F(LunarDateInfoTest, addSolarMap_WithinRangeAddsToMap)
 {
     // Arrange
-    KCalendarCore::RecurrenceRule *rule = makeRule("FREQ=MONTHLY", 5);
+    CalendarCore::RRule *rule = makeRule("FREQ=MONTHLY", 5);
     LunarDateInfo info(rule, 30);
     info.m_queryStartDate = QDate(2024, 1, 1);
     info.m_queryEndDate = QDate(2024, 12, 31);
@@ -252,7 +252,7 @@ TEST_F(LunarDateInfoTest, addSolarMap_DurationLimitReachedReturnsTrue)
 {
     // Arrange — duration=1 means only 1 occurrence (count reaches 1, duration-1=0 < 1 is false... 
     // actually duration>0 && duration-1 < count: duration=1, count becomes 1, 0<1 → true)
-    KCalendarCore::RecurrenceRule *rule = makeRule("FREQ=MONTHLY", 1);
+    CalendarCore::RRule *rule = makeRule("FREQ=MONTHLY", 1);
     LunarDateInfo info(rule, 30);
     info.m_queryStartDate = QDate(2024, 1, 1);
     info.m_queryEndDate = QDate(2024, 12, 31);
@@ -270,7 +270,7 @@ TEST_F(LunarDateInfoTest, addSolarMap_DurationLimitReachedReturnsTrue)
 TEST_F(LunarDateInfoTest, addSolarMap_OutsideRangeDoesNotAddButAdvances)
 {
     // Arrange
-    KCalendarCore::RecurrenceRule *rule = makeRule("FREQ=MONTHLY", 10);
+    CalendarCore::RRule *rule = makeRule("FREQ=MONTHLY", 10);
     LunarDateInfo info(rule, 30);
     info.m_queryStartDate = QDate(2024, 1, 1);
     info.m_queryEndDate = QDate(2024, 6, 30);
@@ -289,7 +289,7 @@ TEST_F(LunarDateInfoTest, addSolarMap_OutsideRangeDoesNotAddButAdvances)
 TEST_F(LunarDateInfoTest, getNextMonthLunarDay_ReturnsMatchingLunarInfo)
 {
     // Arrange
-    KCalendarCore::RecurrenceRule *rule = makeRule("FREQ=MONTHLY", 5);
+    CalendarCore::RRule *rule = makeRule("FREQ=MONTHLY", 5);
     LunarDateInfo info(rule, 30);
     LunarCalendar *cal = LunarCalendar::GetLunarCalendar(2024);
     lunarInfo startInfo = cal->SolarDayToLunarDay(1, 15);
@@ -303,7 +303,7 @@ TEST_F(LunarDateInfoTest, getNextMonthLunarDay_ReturnsMatchingLunarInfo)
 TEST_F(LunarDateInfoTest, getNextMonthLunarDay_AdjustsWhenDayMismatch)
 {
     // Arrange — use a date where lunar day may mismatch (e.g., month with 30 days → next month has 29)
-    KCalendarCore::RecurrenceRule *rule = makeRule("FREQ=MONTHLY", 5);
+    CalendarCore::RRule *rule = makeRule("FREQ=MONTHLY", 5);
     LunarDateInfo info(rule, 30);
     LunarCalendar *cal = LunarCalendar::GetLunarCalendar(2024);
     lunarInfo startInfo = cal->SolarDayToLunarDay(1, 30);
@@ -318,7 +318,7 @@ TEST_F(LunarDateInfoTest, getNextMonthLunarDay_AdjustsWhenDayMismatch)
 TEST_F(LunarDateInfoTest, getAllNextMonthLunarDayBySolar_ReturnsNonEmptyMap)
 {
     // Arrange
-    KCalendarCore::RecurrenceRule *rule = makeRule("FREQ=MONTHLY", 3);
+    CalendarCore::RRule *rule = makeRule("FREQ=MONTHLY", 3);
     LunarDateInfo info(rule, 30);
     info.m_queryStartDate = QDate(2024, 1, 1);
     info.m_queryEndDate = QDate(2024, 12, 31);
@@ -332,7 +332,7 @@ TEST_F(LunarDateInfoTest, getAllNextMonthLunarDayBySolar_ReturnsNonEmptyMap)
 TEST_F(LunarDateInfoTest, getAllNextMonthLunarDayBySolar_RespectsDurationLimit)
 {
     // Arrange — duration=2 should cap the number of occurrences
-    KCalendarCore::RecurrenceRule *rule = makeRule("FREQ=MONTHLY", 2);
+    CalendarCore::RRule *rule = makeRule("FREQ=MONTHLY", 2);
     LunarDateInfo info(rule, 30);
     info.m_queryStartDate = QDate(2024, 1, 1);
     info.m_queryEndDate = QDate(2025, 12, 31);
@@ -347,7 +347,7 @@ TEST_F(LunarDateInfoTest, getAllNextMonthLunarDayBySolar_RespectsDurationLimit)
 TEST_F(LunarDateInfoTest, getAllNextYearLunarDayBySolar_ReturnsNonEmptyMap)
 {
     // Arrange
-    KCalendarCore::RecurrenceRule *rule = makeRule("FREQ=YEARLY", 2);
+    CalendarCore::RRule *rule = makeRule("FREQ=YEARLY", 2);
     LunarDateInfo info(rule, 365);
     info.m_queryStartDate = QDate(2024, 1, 1);
     info.m_queryEndDate = QDate(2026, 12, 31);
@@ -361,7 +361,7 @@ TEST_F(LunarDateInfoTest, getAllNextYearLunarDayBySolar_ReturnsNonEmptyMap)
 TEST_F(LunarDateInfoTest, getAllNextYearLunarDayBySolar_RespectsDurationLimit)
 {
     // Arrange — duration=1 should cap at 1 occurrence
-    KCalendarCore::RecurrenceRule *rule = makeRule("FREQ=YEARLY", 1);
+    CalendarCore::RRule *rule = makeRule("FREQ=YEARLY", 1);
     LunarDateInfo info(rule, 365);
     info.m_queryStartDate = QDate(2024, 1, 1);
     info.m_queryEndDate = QDate(2030, 12, 31);
@@ -376,7 +376,7 @@ TEST_F(LunarDateInfoTest, getAllNextYearLunarDayBySolar_RespectsDurationLimit)
 TEST_F(LunarDateInfoTest, getRRuleStartDate_NoneRuleReturnsEmptyMap)
 {
     // Arrange — FREQ=DAILY → RRule_None, switch hits default → empty map
-    KCalendarCore::RecurrenceRule *rule = makeRule("FREQ=DAILY");
+    CalendarCore::RRule *rule = makeRule("FREQ=DAILY");
     LunarDateInfo info(rule, 1);
     QDate beginDate(2024, 1, 1);
     QDate endDate(2024, 12, 31);
@@ -391,7 +391,7 @@ TEST_F(LunarDateInfoTest, getRRuleStartDate_NoneRuleReturnsEmptyMap)
 // BRANCH_A: same month, same leap, startLunarInfo.LunarDay + intervalDay > LunarMonthDays
 TEST_F(LunarDateInfoTest, getAllNextYearLunarDayBySolar_BranchA_DayExceedsMonthDays)
 {
-    KCalendarCore::RecurrenceRule *rule = makeRule("FREQ=YEARLY", 0);
+    CalendarCore::RRule *rule = makeRule("FREQ=YEARLY", 0);
     rule->setEndDt(QDateTime(QDate(2060, 12, 31), QTime(23, 59, 59)));
     LunarDateInfo info(rule, 365);
     info.m_queryStartDate = QDate(2015, 1, 1);
@@ -404,7 +404,7 @@ TEST_F(LunarDateInfoTest, getAllNextYearLunarDayBySolar_BranchA_DayExceedsMonthD
 // BRANCH_C: same month, IsLeap mismatch, startLunarInfo.IsLeap=true
 TEST_F(LunarDateInfoTest, getAllNextYearLunarDayBySolar_BranchC_StartIsLeapMismatch)
 {
-    KCalendarCore::RecurrenceRule *rule = makeRule("FREQ=YEARLY", 0);
+    CalendarCore::RRule *rule = makeRule("FREQ=YEARLY", 0);
     rule->setEndDt(QDateTime(QDate(2060, 12, 31), QTime(23, 59, 59)));
     LunarDateInfo info(rule, 365);
     info.m_queryStartDate = QDate(2015, 1, 1);
@@ -417,7 +417,7 @@ TEST_F(LunarDateInfoTest, getAllNextYearLunarDayBySolar_BranchC_StartIsLeapMisma
 // BRANCH_D: same month, IsLeap mismatch, info.IsLeap=true
 TEST_F(LunarDateInfoTest, getAllNextYearLunarDayBySolar_BranchD_InfoIsLeapMismatch)
 {
-    KCalendarCore::RecurrenceRule *rule = makeRule("FREQ=YEARLY", 0);
+    CalendarCore::RRule *rule = makeRule("FREQ=YEARLY", 0);
     rule->setEndDt(QDateTime(QDate(2060, 12, 31), QTime(23, 59, 59)));
     LunarDateInfo info(rule, 365);
     info.m_queryStartDate = QDate(2015, 1, 1);
@@ -430,7 +430,7 @@ TEST_F(LunarDateInfoTest, getAllNextYearLunarDayBySolar_BranchD_InfoIsLeapMismat
 // BRANCH_E2: startLunarInfo.LunarMonthName < info.LunarMonthName, offsetMonth == 1
 TEST_F(LunarDateInfoTest, getAllNextYearLunarDayBySolar_BranchE2_OffsetMonthOne)
 {
-    KCalendarCore::RecurrenceRule *rule = makeRule("FREQ=YEARLY", 0);
+    CalendarCore::RRule *rule = makeRule("FREQ=YEARLY", 0);
     rule->setEndDt(QDateTime(QDate(2060, 12, 31), QTime(23, 59, 59)));
     LunarDateInfo info(rule, 365);
     info.m_queryStartDate = QDate(2015, 1, 1);
@@ -444,7 +444,7 @@ TEST_F(LunarDateInfoTest, getAllNextYearLunarDayBySolar_BranchE2_OffsetMonthOne)
 TEST_F(LunarDateInfoTest, getAllNextYearLunarDayBySolar_ScanManyDates)
 {
     // Scan a wide range of dates to exercise different lunar calendar branches
-    KCalendarCore::RecurrenceRule *rule = makeRule("FREQ=YEARLY", 0);
+    CalendarCore::RRule *rule = makeRule("FREQ=YEARLY", 0);
     rule->setEndDt(QDateTime(QDate(2060, 12, 31), QTime(23, 59, 59)));
     LunarDateInfo info(rule, 365);
     info.m_queryStartDate = QDate(2000, 1, 1);

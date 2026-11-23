@@ -211,7 +211,7 @@ void DCalDavRecoveryHandler::recover(DAccountDataBase *localDatabase,
             continue;
         }
         DSchedule::Ptr recoveredSchedule;
-        if (!DSchedule::fromIcsString(recoveredSchedule, item.scheduleIcs)
+        if (!DSchedule::fromStoredIcsString(recoveredSchedule, item.scheduleIcs)
             || recoveredSchedule.isNull()) {
             // CREATE and DELETE recovery only need the persisted resource
             // address. Do not discard a compensating DELETE merely because an
@@ -258,14 +258,14 @@ void DCalDavRecoveryHandler::recover(DAccountDataBase *localDatabase,
             if (exists && !deleted && mappingRestored) {
                 const DSchedule::Ptr current =
                     localDatabase->getScheduleByScheduleID(item.localScheduleID);
-                recovered = !current.isNull()
-                    && DSchedule::toIcsString(current) == item.scheduleIcs
-                    && DCalDavOutboxEnqueuer::enqueue(
+                if (current) {
+                    // Records written before a codec upgrade can have a different
+                    // wire representation. Compare both snapshots using the active codec.
+                    const bool matches = DSchedule::toIcsString(current)
+                        == DSchedule::toIcsString(recoveredSchedule);
+                    recovered = !matches || DCalDavOutboxEnqueuer::enqueue(
                         accountManagerDatabase, item.accountID, current,
                         DCalDavOutboxEnqueuer::ModifyChange);
-                if (!recovered && !current.isNull()
-                    && DSchedule::toIcsString(current) != item.scheduleIcs) {
-                    recovered = true;
                 }
             }
             break;

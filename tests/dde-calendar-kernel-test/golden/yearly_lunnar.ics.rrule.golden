@@ -1,0 +1,7 @@
+Event:yearly-lunnar@dde-calendar
+  rrule:7
+  rruleStr:RRULE:FREQ=YEARLY
+
+  duration:0
+  endDt:2024-02-10T00:00:00
+

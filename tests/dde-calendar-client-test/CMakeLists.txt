@@ -7,7 +7,6 @@ ADD_COMPILE_OPTIONS(-fno-access-control)
 
 set(APP_CLIENT_DIR "${CMAKE_SOURCE_DIR}/src/calendar-client")
 set(APP_COMMON_DIR "${CMAKE_SOURCE_DIR}/src/calendar-common")
-set(APP_3PARTY_DIR "${CMAKE_SOURCE_DIR}/3rdparty/kcalendarcore")
 set(APP_BIN_NAME "dde-calendar-test")
 set(PROJECT_NAME_TEST ${APP_BIN_NAME})
 
@@ -26,7 +25,6 @@ set(CMAKE_EXE_LINKER_FLAGS "-pie")
 include_directories(${APP_CLIENT_DIR}/src)
 include_directories(${APP_CLIENT_DIR}/src/dbus)
 include_directories(${APP_COMMON_DIR}/src)
-include_directories(${APP_3PARTY_DIR}/src)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 QT_INCLUDE_GUI_PRIVATE_DIRS()
@@ -82,10 +80,8 @@ if(BUILD_LEGACY_CALENDAR_TESTS)
 
     file(GLOB_RECURSE CALENDAR_CLIENT_SRC ${APP_CLIENT_DIR}/src/*.cpp)
     file(GLOB_RECURSE CALENDAR_COMMON_SRC ${APP_COMMON_DIR}/src/*.cpp)
-    file(GLOB_RECURSE CALENDAR_3PARTY_SRC ${APP_3PARTY_DIR}/src/*.cpp)
     list(REMOVE_ITEM CALENDAR_CLIENT_SRC ${APP_CLIENT_DIR}/src/main.cpp)
     list(REMOVE_ITEM CALENDAR_COMMON_SRC ${APP_COMMON_DIR}/src/main.cpp)
-    list(REMOVE_ITEM CALENDAR_3PARTY_SRC ${APP_3PARTY_DIR}/src/main.cpp)
 
     # 生成 settingdialog.h 依赖的 D-Bus 接口（与生产 CMakeLists 同款）
     set_source_files_properties(${APP_CLIENT_DIR}/src/dbus/org.deepin.dde.ControlCenter.xml
@@ -96,7 +92,6 @@ if(BUILD_LEGACY_CALENDAR_TESTS)
     list(APPEND CALENDAR_CLIENT_TEST_SRC
         ${CALENDAR_CLIENT_SRC}
         ${CALENDAR_COMMON_SRC}
-        ${CALENDAR_3PARTY_SRC}
         ${GENERATED_CLIENT_DBUS_SRC})
 endif()
 

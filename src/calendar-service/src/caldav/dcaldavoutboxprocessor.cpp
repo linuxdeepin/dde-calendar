@@ -197,20 +197,31 @@ QString icsForRemoteWrite(const DSchedule::Ptr &schedule,
 
     if (qqMail) {
         remoteSchedule = DSchedule::Ptr(new DSchedule(*schedule));
-        if (!remoteSchedule->allDay()) {
-            const QTimeZone qqTimeZone = QTimeZone::fromSecondsAheadOfUtc(8 * 60 * 60);
-            const auto toQqTime = [&qqTimeZone](const QDateTime &dateTime) {
-                return dateTime.isValid() ? dateTime.toTimeZone(qqTimeZone) : dateTime;
-            };
-
-            remoteSchedule->setDtStart(toQqTime(remoteSchedule->dtStart()));
-            remoteSchedule->setDtEnd(toQqTime(remoteSchedule->dtEnd()));
-            if (remoteSchedule->recurrenceId().isValid()) {
-                remoteSchedule->setRecurrenceId(toQqTime(remoteSchedule->recurrenceId()));
+        const QTimeZone qqTimeZone = QTimeZone::fromSecondsAheadOfUtc(8 * 60 * 60);
+        const auto toQqTime = [&qqTimeZone](const QDateTime &dateTime) {
+            return dateTime.isValid() ? dateTime.toTimeZone(qqTimeZone) : dateTime;
+        };
+        const auto convertEvent = [&](CalendarCore::CalEvent &event) {
+            if (!event.allDay()) {
+                const auto end = event.dtEnd();
+                event.setDtStart(toQqTime(event.dtStart()));
+                event.setDtEnd(toQqTime(end));
             }
+            // A detached event's dates can use a different value type from its recurrence ID.
+            if (event.hasRecurrenceId() && !event.recurrenceIdIsDateOnly()) {
+                event.setRecurrenceId(toQqTime(event.recurrenceId()), false);
+            }
+        };
+        convertEvent(*remoteSchedule);
+        const auto exceptions = remoteSchedule->recurrenceExceptions();
+        for (const auto &exception : exceptions) {
+            convertEvent(*exception);
+            remoteSchedule->setRecurrenceException(*exception);
+        }
 
+        if (!remoteSchedule->allDay()) {
             if (remoteSchedule->recurs()) {
-                KCalendarCore::Recurrence *recurrence = remoteSchedule->recurrence();
+                CalendarCore::RepeatInfo *recurrence = remoteSchedule->recurrence();
                 QList<QDateTime> rDateTimes = recurrence->rDateTimes();
                 for (QDateTime &dateTime : rDateTimes) {
                     dateTime = toQqTime(dateTime);
@@ -226,6 +237,11 @@ QString icsForRemoteWrite(const DSchedule::Ptr &schedule,
         }
     }
 
+    const bool storedExceptions = remoteSchedule->hasStoredRecurrenceExceptions();
+    if (storedExceptions) {
+        remoteSchedule = DSchedule::Ptr(remoteSchedule->clone());
+        remoteSchedule->setRecurrenceExceptionsStored(false);
+    }
     QString localIcs = DSchedule::toIcsString(remoteSchedule);
     QHash<QString, QString> originalTimeZones;
 
@@ -269,7 +285,7 @@ QString icsForRemoteWrite(const DSchedule::Ptr &schedule,
         }
     }
 
-    if (mapping.originalIcs.isEmpty()) {
+    if (mapping.originalIcs.isEmpty() || storedExceptions) {
         return localIcs;
     }
 

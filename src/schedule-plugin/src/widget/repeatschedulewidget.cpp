@@ -15,14 +15,14 @@ repeatScheduleWidget::repeatScheduleWidget(repeatScheduleWidget::Operation_type 
 {
 }
 
-void repeatScheduleWidget::setSchedule(const DSchedule::Ptr &info)
+void repeatScheduleWidget::setSchedule(const DSchedule::Ptr &info, const QString &changeScopeText)
 {
     m_scheduleInfo.clear();
     m_scheduleInfo.append(info);
-    initUI();
+    initUI(changeScopeText);
 }
 
-void repeatScheduleWidget::initUI()
+void repeatScheduleWidget::initUI(const QString &changeScopeText)
 {
     m_scheduleitemwidget = new scheduleitemwidget(this);
     QVBoxLayout *mainlayout = new QVBoxLayout();
@@ -49,7 +49,7 @@ void repeatScheduleWidget::initUI()
                 button->addbutton(ONLY_DELETE_THIS_BUTTON_STRING, true, buttonwidget::ButtonWarning);
             } else {
                 button->addbutton(CANCEL_BUTTON_STRING);
-                button->addbutton(CHANGE_ALL_BUTTON_STRING);
+                button->addbutton(changeScopeText.isEmpty() ? QStringLiteral(CHANGE_ALL_BUTTON_STRING) : changeScopeText);
                 button->addbutton(CHANGE_ONLYL_BUTTON_STRING, true, buttonwidget::ButtonRecommend);
             }
         } break;

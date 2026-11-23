@@ -79,11 +79,11 @@ void changeScheduleTask::slotButtonCheckNum(int index, const QString &text, cons
     }
     if (buttonCount == 3) {
         if (index == 1) {
-            qCDebug(PluginLogger) << "Processing single instance repeat schedule change";
+            qCDebug(PluginLogger) << "Processing recurring schedule scope change";
             reply = repeatScheduleHandle(currentState->getLocalData()->SelectInfo(), false);
         }
         if (index == 2) {
-            qCDebug(PluginLogger) << "Processing all instances repeat schedule change";
+            qCDebug(PluginLogger) << "Processing single instance repeat schedule change";
             reply = repeatScheduleHandle(currentState->getLocalData()->SelectInfo(), true);
         }
     }
@@ -157,8 +157,12 @@ Reply changeScheduleTask::InitState(const JsonData *jsonData, bool isUpdateState
 
 Reply changeScheduleTask::repeatScheduleHandle(const DSchedule::Ptr &info, bool isOnlyOne)
 {
-    changeRepeatSchedule(info, isOnlyOne);
     Reply reply;
+    if (!changeRepeatSchedule(info, isOnlyOne)) {
+        const QString message = tr("The selected occurrence could not be identified. The schedule was not changed.");
+        REPLY_ONLY_TTS(reply, message, message, true);
+        return reply;
+    }
     REPLY_ONLY_TTS(reply, CONFIRM_CHANGE_TTS, CONFIRM_CHANGE_TTS, true);
     scheduleState *nextState = new queryScheduleState(this);
     scheduleState *currentState = getCurrentState();
@@ -192,10 +196,10 @@ Reply changeScheduleTask::confirmInfo(bool isOK)
     }
 }
 
-QWidget *changeScheduleTask::createRepeatWidget(const DSchedule::Ptr &info)
+QWidget *changeScheduleTask::createRepeatWidget(const DSchedule::Ptr &info, bool editRange)
 {
     repeatScheduleWidget *repeatWidget = new repeatScheduleWidget(repeatScheduleWidget::Operation_Change, repeatScheduleWidget::Widget_Repeat);
-    repeatWidget->setSchedule(info);
+    repeatWidget->setSchedule(info, editRange ? QStringLiteral("修改此日程及以后的日程") : QString());
     connect(repeatWidget, &repeatScheduleWidget::signalButtonCheckNum, this, &changeScheduleTask::slotButtonCheckNum);
     return repeatWidget;
 }
@@ -244,7 +248,10 @@ scheduleState *changeScheduleTask::getNextStateBySelectScheduleInfo(const DSched
         //需要显示的窗口
         qCDebug(PluginLogger) << "Schedule change is within normal range";
         QWidget *_showWidget;
-        if (info->getRRuleType() == DSchedule::RRule_None) {
+        const auto master = info->hasRecurrenceId() && !info->recurs()
+            ? DScheduleDataManager::getInstance()->queryScheduleByScheduleID(info->uid()) : DSchedule::Ptr();
+        const bool editRange = master && master->recurs() && master->hasRecurrenceRangeAt(info->recurrenceId());
+        if (info->getRRuleType() == DSchedule::RRule_None && !editRange) {
             qCDebug(PluginLogger) << "Creating confirm widget for non-recurring schedule";
             m_TTSMessage = CONFIRM_SCHEDULE_CHANGE_TTS;
             m_DisplyMessage = CONFIRM_SCHEDULE_CHANGE_TTS;
@@ -253,9 +260,10 @@ scheduleState *changeScheduleTask::getNextStateBySelectScheduleInfo(const DSched
             nextState = new confirwFeedbackState(this);
         } else {
             qCDebug(PluginLogger) << "Creating repeat widget for recurring schedule";
-            m_TTSMessage = REPEST_SCHEDULE_CHANGE_TTS;
-            m_DisplyMessage = REPEST_SCHEDULE_CHANGE_TTS;
-            _showWidget = createRepeatWidget(currentState->getLocalData()->getNewInfo());
+            m_TTSMessage = editRange ? QStringLiteral("要仅修改当前日程，还是修改此日程及以后的日程？")
+                                     : QStringLiteral(REPEST_SCHEDULE_CHANGE_TTS);
+            m_DisplyMessage = m_TTSMessage;
+            _showWidget = createRepeatWidget(currentState->getLocalData()->getNewInfo(), editRange);
             //设置下一个状态为重复日程确认状态
             nextState = new repeatfeedbackstate(this);
         }
@@ -278,7 +286,11 @@ scheduleState *changeScheduleTask::getNextStateBySelectScheduleInfo(const DSched
 bool changeScheduleTask::getNewInfo()
 {
     scheduleState *currentState = getCurrentState();
-    DSchedule::Ptr m_NewInfo = currentState->getLocalData()->SelectInfo();
+    const auto selected = currentState->getLocalData()->SelectInfo();
+    if (!selected) {
+        return false;
+    }
+    DSchedule::Ptr m_NewInfo(selected->clone());
     if (!currentState->getLocalData()->getToTitleName().isEmpty()) {
         qCDebug(PluginLogger) << "Updating schedule title";
         m_NewInfo->setSummary(currentState->getLocalData()->getToTitleName());
@@ -361,32 +373,62 @@ bool changeScheduleTask::getNewInfo()
     return changeDateTimeIsInNormalRange(m_NewInfo);
 }
 
-void changeScheduleTask::changeRepeatSchedule(const DSchedule::Ptr &info, bool isOnlyOne)
+bool changeScheduleTask::changeRepeatSchedule(const DSchedule::Ptr &info, bool isOnlyOne)
 {
-    if (isOnlyOne) {
-        changeOnlyInfo(info);
-    } else {
-        changeAllInfo(info);
-    }
+    return isOnlyOne ? changeOnlyInfo(info) : changeAllInfo(info);
 }
 
-void changeScheduleTask::changeOnlyInfo(const DSchedule::Ptr &info)
+bool changeScheduleTask::updateDetachedOccurrence(const DSchedule &occurrence, bool thisAndFuture)
 {
-    Q_UNUSED(info)
+    const auto edited = getCurrentState()->getLocalData()->getNewInfo();
+    auto schedule = DSchedule::Ptr(edited->clone());
+    schedule->setAllDay(occurrence.allDay());
+    schedule->setRecurrenceId(occurrence.recurrenceId(), occurrence.recurrenceIdIsDateOnly());
+    schedule->setThisAndFuture(thisAndFuture);
+    schedule->clearRepeat();
+    schedule->clearRecurrenceExceptions();
+    return DScheduleDataManager::getInstance()->updateSchedule(schedule);
+}
+
+bool changeScheduleTask::changeOnlyInfo(const DSchedule::Ptr &info)
+{
     scheduleState *currentState = getCurrentState();
     DSchedule::Ptr newschedule = currentState->getLocalData()->getNewInfo();
-    //原始信息
-    DSchedule::Ptr updatescheduleData = DScheduleDataManager::getInstance()->queryScheduleByScheduleID(newschedule->uid());
-    updatescheduleData->recurrence()->addExDateTime(newschedule->dtStart());
-    newschedule->setRRuleType(DSchedule::RRule_None);
-    newschedule->setUid(DScheduleDataManager::getInstance()->createSchedule(newschedule));
-    DScheduleDataManager::getInstance()->updateSchedule(updatescheduleData);
+    const auto updatescheduleData = DScheduleDataManager::getInstance()->queryScheduleByScheduleID(newschedule->uid());
+    if (!updatescheduleData) {
+        return false;
+    }
+    if (const auto occurrence = updatescheduleData->recurrenceException(info->recurrenceId())) {
+        return updateDetachedOccurrence(*occurrence, false);
+    }
+    if (info->hasRecurrenceId() && !info->recurs() && updatescheduleData->recurs()) {
+        return false;
+    }
+    newschedule->clearRepeat();
+    newschedule->clearRecurrenceExceptions();
+    newschedule->setSchedulingID(QString(), QStringLiteral("0"));
+    newschedule->setRecurrenceId({});
+    const auto createdId = DScheduleDataManager::getInstance()->createSchedule(newschedule);
+    if (createdId.isEmpty()) {
+        return false;
+    }
+    newschedule->setUid(createdId);
+    const auto id = info->hasRecurrenceId() ? info->recurrenceId() : info->dtStart();
+    updatescheduleData->recurrence()->addExDateTime(id);
+    return DScheduleDataManager::getInstance()->updateSchedule(updatescheduleData);
 }
 
-void changeScheduleTask::changeAllInfo(const DSchedule::Ptr &info)
+bool changeScheduleTask::changeAllInfo(const DSchedule::Ptr &info)
 {
     scheduleState *currentState = getCurrentState();
     DSchedule::Ptr newinfo = currentState->getLocalData()->getNewInfo();
+    if (info->hasRecurrenceId() && !info->recurs()) {
+        const auto master = DScheduleDataManager::getInstance()->queryScheduleByScheduleID(info->uid());
+        if (master && master->recurs() && master->hasRecurrenceRangeAt(info->recurrenceId())) {
+            const auto occurrence = master->recurrenceException(info->recurrenceId());
+            return occurrence && updateDetachedOccurrence(*occurrence, true);
+        }
+    }
     if (info->getRRuleType() == DSchedule::RRule_None) {
         qCDebug(PluginLogger) << "Updating non-recurring schedule";
         DSchedule::Ptr schedule = newinfo;
@@ -395,55 +437,77 @@ void changeScheduleTask::changeAllInfo(const DSchedule::Ptr &info)
         //获取原始日程信息
         DSchedule::Ptr updatescheduleData = DScheduleDataManager::getInstance()->queryScheduleByScheduleID(info->uid());
         //第几次重复日程
-        int repetNum = DSchedule::numberOfRepetitions(updatescheduleData, newinfo->dtStart());
+        const auto cutoff = info->hasRecurrenceId() ? info->recurrenceId() : info->dtStart();
+        int repetNum = DSchedule::numberOfRepetitions(updatescheduleData, cutoff);
         qCDebug(PluginLogger) << "Processing repeat schedule change - Repetition number:" << repetNum;
+        if (repetNum <= 0) {
+            qCWarning(PluginLogger) << "Cannot identify the selected occurrence of schedule:" << info->uid();
+            return false;
+        }
         if (repetNum == 1) {
             //如果为第一个
             qCDebug(PluginLogger) << "Updating first instance of repeat schedule";
+            newinfo->clearRecurrenceExceptions();
             DScheduleDataManager::getInstance()->updateSchedule(newinfo);
         } else {
             //如果不是第一个
+            updatescheduleData = DSchedule::Ptr(updatescheduleData->clone());
+            newinfo->setSchedulingID(QString(), QStringLiteral("0"));
+            newinfo->setRecurrenceId({});
+            if (!newinfo->inheritRecurrenceExceptions(*updatescheduleData, cutoff)) {
+                return false;
+            }
+            updatescheduleData->removeRecurrenceExceptionsFrom(cutoff);
+            updatescheduleData->recurrence()->partitionDatesAt(cutoff, newinfo->recurrence());
             if (newinfo->recurrence()->duration() > 1) {
                 qCDebug(PluginLogger) << "Adjusting repeat schedule duration";
                 int duration = newinfo->recurrence()->duration() - repetNum + 1;
                 //结束于次数
-                if (duration < 2) {
+                if (duration < 2 && !newinfo->recurrence()->hasAdditionalRecurrenceData()) {
                     newinfo->setRRuleType(DSchedule::RRule_None);
                 } else {
                     newinfo->recurrence()->setDuration(duration);
                 }
                 //修改原始日程，如果原始日程剩余的重复次数为1，则修改为普通日程
                 updatescheduleData->recurrence()->setDuration(repetNum - 1);
-                if (updatescheduleData->recurrence()->duration() == 1) {
+                if (updatescheduleData->recurrence()->duration() == 1 && !updatescheduleData->recurrence()->hasAdditionalRecurrenceData()) {
                     updatescheduleData->setRRuleType(DSchedule::RRule_None);
                 }
             } else if (newinfo->recurrence()->duration() == 0) {
                 //结束于时间
                 qCDebug(PluginLogger) << "Adjusting repeat schedule end date";
-                if (newinfo->dtStart().date() == newinfo->recurrence()->endDateTime().date()) {
+                if (newinfo->dtStart().date() == newinfo->recurrence()->endDateTime().date()
+                    && !newinfo->recurrence()->hasAdditionalRecurrenceData()) {
                     newinfo->setRRuleType(DSchedule::RRule_None);
                 }
-                updatescheduleData->recurrence()->setEndDate(newinfo->dtStart().date().addDays(-1));
-                if (updatescheduleData->dtStart().date() == updatescheduleData->recurrence()->endDate()) {
+                updatescheduleData->recurrence()->setEndDateTime(cutoff.addSecs(-1));
+                if (updatescheduleData->dtStart().date() == updatescheduleData->recurrence()->endDate()
+                    && !updatescheduleData->recurrence()->hasAdditionalRecurrenceData()) {
                     updatescheduleData->setRRuleType(DSchedule::RRule_None);
                 }
             } else {
                 //永不
                 qCDebug(PluginLogger) << "Adjusting infinite repeat schedule";
-                updatescheduleData->recurrence()->setEndDate(newinfo->dtStart().date().addDays(-1));
-                if (updatescheduleData->dtStart().date() == updatescheduleData->recurrence()->endDate()) {
+                updatescheduleData->recurrence()->setEndDateTime(cutoff.addSecs(-1));
+                if (updatescheduleData->dtStart().date() == updatescheduleData->recurrence()->endDate()
+                    && !updatescheduleData->recurrence()->hasAdditionalRecurrenceData()) {
                     updatescheduleData->setRRuleType(DSchedule::RRule_None);
                 }
             }
-            DScheduleDataManager::getInstance()->createSchedule(newinfo);
+            if (DScheduleDataManager::getInstance()->createSchedule(newinfo).isEmpty()) {
+                return false;
+            }
             //修改原始日程
             DScheduleDataManager::getInstance()->updateSchedule(updatescheduleData);
         }
     }
+    return true;
 }
 
 void changeScheduleTask::changeOrdinarySchedule(const DSchedule::Ptr &info)
 {
+    info->setThisAndFuture(false);
+    info->clearRecurrenceExceptions();
     DScheduleDataManager::getInstance()->updateSchedule(info);
 }
 

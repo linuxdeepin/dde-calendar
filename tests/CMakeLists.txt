@@ -13,6 +13,8 @@ ADD_SUBDIRECTORY(dde-calendar-schedule-test)
 ADD_SUBDIRECTORY(dde-calendar-schedule-plugin-test)
 # schedule-plugin dbus 单元测试目标（来自 V-6639）
 ADD_SUBDIRECTORY(dde-schedule-dbus-test)
+# calendarcore 对拍测试目标（来自 V-8627，含 KERNEL_GOLDEN_GEN 开关）
+ADD_SUBDIRECTORY(dde-calendar-kernel-test)
 
 include_directories(third-party_stub)
 
@@ -24,5 +26,6 @@ add_custom_command(TARGET test
     COMMAND ${CMAKE_BINARY_DIR}/tests/dde-calendar-schedule-test/dde-calendar-schedule-test
     COMMAND ${CMAKE_BINARY_DIR}/tests/dde-calendar-schedule-plugin-test/dde-calendar-schedule-plugin-test
     COMMAND ${CMAKE_BINARY_DIR}/tests/dde-schedule-dbus-test/dde-schedule-dbus-test
+    COMMAND ${CMAKE_BINARY_DIR}/tests/dde-calendar-kernel-test/dde-calendar-kernel-test
     COMMAND echo " =================== TEST END ==================== "
     )

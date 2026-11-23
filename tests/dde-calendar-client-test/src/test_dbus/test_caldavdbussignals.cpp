@@ -52,6 +52,10 @@ class AccountSignalService : public QObject
 
 signals:
     void calDavScheduleCreateFailed(int createFailure);
+
+public slots:
+    bool importSchedule(const QString &, const QString &, bool) { return false; }
+    bool deleteScheduleTypeByID(const QString &) { return true; }
 };
 
 } // namespace
@@ -199,6 +203,48 @@ TEST(CalDavDbusSignals, CompletesSyncRefreshOnlyForSyncEvent)
 
     bus.unregisterObject(QString::fromLatin1(kAccountManagerPath));
     bus.unregisterService(QStringLiteral("com.deepin.dataserver.Calendar"));
+}
+
+TEST(CalendarImportDbus, DeliversBackendResultForImportAndCleanup)
+{
+    QDBusConnection bus = QDBusConnection::sessionBus();
+    if (!bus.isConnected()) {
+        GTEST_SKIP() << "Session DBus is unavailable";
+    }
+    const QString serviceName = QStringLiteral("com.deepin.dataserver.Calendar");
+    if (!bus.registerService(serviceName)) {
+        GTEST_SKIP() << "Calendar DBus service is already owned";
+    }
+
+    AccountSignalService service;
+    const auto path = QString::fromLatin1(kAccountPath);
+    ASSERT_TRUE(bus.registerObject(path, &service, QDBusConnection::ExportAllSlots));
+    DbusAccountRequest request(path, QString::fromLatin1(kAccountInterface));
+    QEventLoop loop;
+    QTimer timeout;
+    timeout.setSingleShot(true);
+    QObject::connect(&timeout, &QTimer::timeout, &loop, &QEventLoop::quit);
+
+    const auto typeID = QStringLiteral("new-type");
+    for (bool cleanUp : {false, true}) {
+        CallMessge result{-1, {}};
+        request.setCallbackFunc([&](CallMessge reply) {
+            result = reply;
+            loop.quit();
+        });
+        if (cleanUp) {
+            request.deleteScheduleTypeByID(typeID);
+        } else {
+            request.importSchedule(QStringLiteral("calendar.ics"), typeID, true);
+        }
+        timeout.start(2000);
+        loop.exec();
+        timeout.stop();
+        EXPECT_EQ(result.code, 0);
+        EXPECT_EQ(result.msg, QVariant(cleanUp));
+    }
+    bus.unregisterObject(path);
+    bus.unregisterService(serviceName);
 }
 
 #include "test_caldavdbussignals.moc"

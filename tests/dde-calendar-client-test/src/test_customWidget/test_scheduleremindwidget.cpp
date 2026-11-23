@@ -241,15 +241,15 @@ TEST_F(test_scheduleremindwidget, centerWidget_updateTextList_withAttendees)
     schedule->setAllDay(false);
 
     // Set organizer with a long name to trigger text wrapping in wrapDetailText
-    schedule->setOrganizer(KCalendarCore::Person(
+    schedule->setOrganizer(CalendarCore::Contact(
         QStringLiteral("Organizer With A Very Long Display Name That Wraps"),
         QStringLiteral("organizer@example.com")));
 
     // Add multiple attendees with long names to trigger wrapping + attendeeDisplayName
-    schedule->addAttendee(KCalendarCore::Attendee(
+    schedule->addAttendee(CalendarCore::Participant(
         QStringLiteral("Alice With A Very Long Attendee Name For Wrapping"),
         QStringLiteral("alice@example.com")));
-    schedule->addAttendee(KCalendarCore::Attendee(
+    schedule->addAttendee(CalendarCore::Participant(
         QStringLiteral("Bob"),
         QStringLiteral("bob@example.com")));
 
@@ -274,10 +274,10 @@ TEST_F(test_scheduleremindwidget, centerWidget_updateTextList_longSummary_toolTi
     schedule->setDtEnd(QDateTime::currentDateTime().addSecs(3600));
     schedule->setAllDay(false);
 
-    schedule->setOrganizer(KCalendarCore::Person(
+    schedule->setOrganizer(CalendarCore::Contact(
         QStringLiteral("Org"),
         QStringLiteral("org@example.com")));
-    schedule->addAttendee(KCalendarCore::Attendee(
+    schedule->addAttendee(CalendarCore::Participant(
         QStringLiteral("Att"),
         QStringLiteral("att@example.com")));
 

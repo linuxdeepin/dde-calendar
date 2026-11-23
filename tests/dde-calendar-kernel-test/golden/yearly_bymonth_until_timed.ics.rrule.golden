@@ -1,0 +1,7 @@
+Event:yearly-bymonth-until-timed@dde-calendar
+  rrule:7
+  rruleStr:RRULE:FREQ=YEARLY;UNTIL=20300101T000000Z;BYMONTH=1
+
+  duration:0
+  endDt:2024-01-01T23:59:59+08:00
+

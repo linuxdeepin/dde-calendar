@@ -27,7 +27,7 @@ public slots:
 
 private:
     scheduleState *getCurrentState();
-    QWidget *createRepeatWidget(const DSchedule::Ptr &info);
+    QWidget *createRepeatWidget(const DSchedule::Ptr &info, bool editRange = false);
     QWidget *createConfirmWidget(const DSchedule::Ptr &info);
     QWidget *createInquiryWidget(const DSchedule::Ptr &info);
 
@@ -46,9 +46,10 @@ private:
      */
     bool getNewInfo();
 
-    void changeRepeatSchedule(const DSchedule::Ptr &info, bool isOnlyOne);
-    void changeOnlyInfo(const DSchedule::Ptr &info);
-    void changeAllInfo(const DSchedule::Ptr &info);
+    bool changeRepeatSchedule(const DSchedule::Ptr &info, bool isOnlyOne);
+    bool changeOnlyInfo(const DSchedule::Ptr &info);
+    bool updateDetachedOccurrence(const DSchedule &occurrence, bool thisAndFuture);
+    bool changeAllInfo(const DSchedule::Ptr &info);
     void changeOrdinarySchedule(const DSchedule::Ptr &info);
     /**
      * @brief changeDateTimeIsInRange   判断修改的日期在正确的时间范围内

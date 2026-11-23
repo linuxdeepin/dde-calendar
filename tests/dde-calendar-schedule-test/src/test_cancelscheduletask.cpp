@@ -306,6 +306,43 @@ TEST(CancelScheduleTaskTest, DeleteOrdinarySchedule)
 // ============================================================================
 // slotButtonCheckNum
 // ============================================================================
+TEST(CancelScheduleTaskTest, DeletesOnlyTheSelectedRDateOccurrence)
+{
+    const QDateTime start(QDate(2024, 1, 1), QTime(9, 0), Qt::UTC);
+    static DSchedule::Ptr master;
+    master = makeSch(start, start.addSecs(3600));
+    const auto selectedId = start.addDays(2);
+    const auto remaining = start.addDays(3);
+    master->recurrence()->addRDateTime(selectedId);
+    master->recurrence()->addRDateTime(remaining);
+    const auto selection = DSchedule::Ptr(master->clone());
+    selection->setDtStart(selectedId);
+    selection->setRecurrenceId(selectedId);
+
+    static DSchedule::Ptr updated;
+    Stub stub;
+    stub.set(ADDR(DScheduleDataManager, getInstance), stub_getInstance);
+    stub.set(ADDR(DScheduleDataManager, queryScheduleByScheduleID), +[](DScheduleDataManager *, const QString &) {
+        return master;
+    });
+    stub.set(ADDR(DScheduleDataManager, updateSchedule), +[](DScheduleDataManager *, const DSchedule::Ptr &schedule) {
+        updated = schedule;
+        return true;
+    });
+    stub.set(ADDR(DScheduleDataManager, deleteScheduleByScheduleID), +[](DScheduleDataManager *, const QString &) {
+        ADD_FAILURE() << "Deleting one RDATE must keep the series";
+        return false;
+    });
+
+    cancelScheduleTask task;
+    task.deleteOrdinarySchedule(selection);
+    ASSERT_TRUE(updated);
+    const auto starts = updated->recurrence()->timesInInterval(start, remaining);
+    EXPECT_EQ(starts, (QList<QDateTime>{start, remaining}));
+    updated.clear();
+    master.clear();
+}
+
 TEST(CancelScheduleTaskTest, SlotButtonCheckNum_ButtonCount2_Index1)
 {
     cancelScheduleTask task;

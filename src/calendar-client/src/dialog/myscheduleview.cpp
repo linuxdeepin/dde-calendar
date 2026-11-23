@@ -130,7 +130,7 @@ void CMyScheduleView::slotAutoFeed(const QFont &font)
     m_scheduleLabel->setFixedHeight(m_scheduleLabelH);
 
     QString timeName = m_timeLabel->text();
-    if (m_scheduleInfo->lunnar()) {
+    if (m_scheduleInfo->lunar()) {
         const int separatorIndex = timeName.indexOf(QLatin1String("~"));
         if (separatorIndex > 0) {
             QString singleLineTime = timeName;
@@ -294,7 +294,7 @@ QString CMyScheduleView::getDataByFormat(const QDate &date, QString format)
 {
     qCDebug(ClientLogger) << "Getting formatted date for:" << date << "with format:" << format;
     QString name = date.toString(format);
-    if (m_scheduleInfo->lunnar()) {
+    if (m_scheduleInfo->lunar()) {
         //接入农历时间
         name += gLunarManager->getHuangLiShortName(date);
         qCDebug(ClientLogger) << "Added lunar calendar info to date:" << name;

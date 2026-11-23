@@ -156,14 +156,12 @@ void DAlarmManager::remindLater(const DRemindData::Ptr &remindData, const int op
 
 int DAlarmManager::remindJob(const DRemindData::Ptr &remindData, const DSchedule::Ptr &schedule)
 {
-    qCDebug(ServiceLogger) << "Processing remind job for schedule:" << schedule->uid();
-    //如果没有提醒
-    if (schedule->alarms().size() == 0) {
-        qCWarning(ServiceLogger) << "Remind job failed - No alarms found for schedule:" << schedule->uid();
+    const auto alarm = schedule ? schedule->firstEnabledAlarm() : CalendarCore::Remind::Ptr();
+    if (!alarm) {
+        qCWarning(ServiceLogger) << "Remind job failed - No enabled alarm found";
         return 0;
     }
-
-    KCalendarCore::Alarm::Ptr alarm = schedule->alarms().at(0);
+    qCDebug(ServiceLogger) << "Processing remind job for schedule:" << schedule->uid();
     int nDays = -(alarm->startOffset().asDays());
     qCDebug(ServiceLogger) << "Alarm offset days:" << nDays;
 

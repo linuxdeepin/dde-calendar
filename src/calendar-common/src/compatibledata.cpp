@@ -4,8 +4,10 @@
 
 #include "compatibledata.h"
 #include "units.h"
-#include "icalformat.h"
+#include "icscodec.h"
 #include "commondef.h"
+
+#include <memory>
 
 #include <QJsonObject>
 #include <QJsonDocument>
@@ -33,13 +35,15 @@ QJsonObject JobToObject(const DSchedule::Ptr &job)
     obj.insert("AllDay", job->allDay());
     obj.insert("Start", dtToString(job->dtStart()));
     obj.insert("End", dtToString(job->dtEnd()));
-    obj.insert("RRule", job->recurrence()->defaultRRule()->rrule());
+    const auto rule = job->recurrence()->defaultRRuleConst();
+    obj.insert("RRule", rule ? rule->rrule() : QString());
     obj.insert("Remind", DDE_Calendar::getOldRemindByAlarm(job->getAlarmType()));
 
     //将QString类型转换为QJsonArray类型，方便前端解析
     QJsonArray _ignoreJsonArray;
-    for (int i = 0; i < job->recurrence()->exDateTimes().count(); i++) {
-        _ignoreJsonArray.append(dtToString(job->recurrence()->exDateTimes().at(i)));
+    const auto excluded = job->recurrence()->exDateTimes();
+    for (const auto &dateTime : excluded) {
+        _ignoreJsonArray.append(dtToString(dateTime));
     }
     obj.insert("Ignore", _ignoreJsonArray);
     //TODO:
@@ -108,9 +112,9 @@ void DDE_Calendar::setAlarmByOldRemind(const DSchedule::Ptr &schedule, const QSt
     int remindNum = strList.at(0).toInt();
     //小于0表示不提醒
     if (remindNum >= 0) {
-        KCalendarCore::Alarm::Ptr alarm = KCalendarCore::Alarm::Ptr(new KCalendarCore::Alarm(schedule.data()));
+        CalendarCore::Remind::Ptr alarm = CalendarCore::Remind::Ptr::create();
         alarm->setEnabled(true);
-        alarm->setType(KCalendarCore::Alarm::Display);
+        alarm->setType(CalendarCore::Remind::Display);
         alarm->setDisplayAlarm(schedule->summary());
 
         if (schedule->allDay()) {
@@ -121,11 +125,11 @@ void DDE_Calendar::setAlarmByOldRemind(const DSchedule::Ptr &schedule, const QSt
                 QTime time = QTime::fromString(strList.at(1), "hh:mm");
                 offset = time.hour() * 60 * 60 + time.second() * 60;
             }
-            KCalendarCore::Duration duration(-(24 * 60 * 60 * remindNum - offset));
+            CalendarCore::TimeSpan duration(-(qint64(86400) * remindNum - offset));
             alarm->setStartOffset(duration);
         } else {
             qCDebug(CommonLogger) << "Setting alarm for timed event";
-            KCalendarCore::Duration duration(-(60 * remindNum));
+            CalendarCore::TimeSpan duration(-qint64(remindNum) * 60);
             alarm->setStartOffset(duration);
         }
         schedule->addAlarm(alarm);
@@ -240,19 +244,21 @@ void DDE_Calendar::setRRuleByOldRRule(const DSchedule::Ptr &schedule, const QStr
 {
     qCDebug(CommonLogger) << "DDE_Calendar::setRRuleByOldRRule, rrule:" << rrule;
     //重复规则
-    KCalendarCore::Recurrence *recurrence = schedule->recurrence();
-    KCalendarCore::ICalFormat ical;
-    KCalendarCore::RecurrenceRule *rule = new KCalendarCore::RecurrenceRule;
+    CalendarCore::RepeatInfo *recurrence = schedule->recurrence();
+    CalendarCore::IcsCodec ical;
+    auto rule = std::unique_ptr<CalendarCore::RRule>(new CalendarCore::RRule);
 
-    if (ical.fromString(rule, rrule)) {
-        recurrence->addRRule(rule);
+    if (ical.fromString(rule.get(), rrule)) {
+        recurrence->addRRule(rule.release());
+    } else {
+        qCWarning(CommonLogger) << "Invalid legacy recurrence rule for schedule:" << schedule->uid() << rrule;
     }
 }
 
 void DDE_Calendar::setExDate(const DSchedule::Ptr &schedule, const QJsonArray &ignore)
 {
     qCDebug(CommonLogger) << "DDE_Calendar::setExDate, ignore count:" << ignore.size();
-    KCalendarCore::Recurrence *recurrence = schedule->recurrence();
+    CalendarCore::RepeatInfo *recurrence = schedule->recurrence();
 
     foreach (auto ignoreTime, ignore) {
         if (schedule->allDay()) {

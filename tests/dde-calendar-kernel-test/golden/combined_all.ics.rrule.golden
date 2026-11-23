@@ -1,0 +1,7 @@
+Event:combined-all@dde-calendar
+  rrule:5
+  rruleStr:RRULE:FREQ=WEEKLY;COUNT=20;BYDAY=MO,WE,FR
+
+  duration:0
+  endDt:2024-01-01T10:00:00+08:00
+

@@ -124,7 +124,7 @@ void CScheduleDlg::setData(const DSchedule::Ptr &info)
 
     m_currentDate = info->dtStart();
     m_EndDate = info->dtEnd();
-    if (info->lunnar()) {
+    if (info->lunar()) {
         qCDebug(ClientLogger) << "Setting lunar calendar mode";
         m_lunarRadioBtn->click();
     } else {
@@ -135,9 +135,9 @@ void CScheduleDlg::setData(const DSchedule::Ptr &info)
     updateEndTimeListAndTimeDiff(m_currentDate, m_EndDate);
     slotallDayStateChanged(info->allDay());
     //根据是否为农历更新重复选项
-    updateRepeatCombox(info->lunnar());
+    updateRepeatCombox(info->lunar());
     initRmindRpeatUI();
-    setShowState(info->lunnar());
+    setShowState(info->lunar());
 }
 
 void CScheduleDlg::setDate(const QDateTime &date)
@@ -272,12 +272,12 @@ bool CScheduleDlg::createSchedule(const QString &scheduleTypeId)
     switch (m_calendarCategoryRadioGroup->checkedId()) {
     case 1:
         //农历日程
-        schedule->setLunnar(true);
+        schedule->setLunar(true);
         qCDebug(ClientLogger) << "Setting lunar calendar schedule";
         break;
     default:
         //公历日程
-        schedule->setLunnar(false);
+        schedule->setLunar(false);
         qCDebug(ClientLogger) << "Setting solar calendar schedule";
         break;
     }
@@ -318,7 +318,7 @@ bool CScheduleDlg::createSchedule(const QString &scheduleTypeId)
 
     //设置重复规则
     DSchedule::RRuleType rruleType;
-    if (schedule->lunnar()) {
+    if (schedule->lunar()) {
         //0:从不 1:每月 2:每年
         if (m_beginrepeatCombox->currentIndex() == 1) {
             rruleType = DSchedule::RRule_Month;
@@ -1515,7 +1515,7 @@ void CScheduleDlg::initRmindRpeatUI()
     }
 
     //重复规则
-    if (m_scheduleDataInfo->lunnar()) {
+    if (m_scheduleDataInfo->lunar()) {
         qCDebug(ClientLogger) << "Setting repeat rule for lunar event";
         //如果为农历
         switch (m_scheduleDataInfo->getRRuleType()) {

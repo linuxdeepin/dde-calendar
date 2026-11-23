@@ -44,7 +44,7 @@ CScheduleOperation::CScheduleOperation(const QString &scheduleTypeID, QWidget *p
 bool CScheduleOperation::createSchedule(const DSchedule::Ptr &scheduleInfo)
 {
     //如果为农历且重复类型为每年
-    if (scheduleInfo->lunnar() && scheduleInfo->getRRuleType() == DSchedule::RRule_Year) {
+    if (scheduleInfo->lunar() && scheduleInfo->getRRuleType() == DSchedule::RRule_Year) {
         qCDebug(ClientLogger) << "Showing lunar message dialog for yearly lunar schedule";
         lunarMessageDialogShow(scheduleInfo);
     }
@@ -59,11 +59,39 @@ bool CScheduleOperation::createSchedule(const DSchedule::Ptr &scheduleInfo)
  */
 bool CScheduleOperation::changeSchedule(const DSchedule::Ptr &newInfo, const DSchedule::Ptr &oldInfo)
 {
+    if (oldInfo->hasRecurrenceId() && !oldInfo->recurs()) {
+        const auto master = m_accountItem->getScheduleByScheduleID(oldInfo->uid());
+        const auto occurrence = master ? master->recurrenceException(oldInfo->recurrenceId()) : DSchedule::Ptr();
+        if (!master || (!occurrence
+                        && master->recurrenceId() != oldInfo->recurrenceId())) {
+            showOccurrenceUnavailable();
+            return false;
+        }
+        if (occurrence) {
+            bool thisAndFuture = false;
+            if (master->recurs() && master->hasRecurrenceRangeAt(oldInfo->recurrenceId())) {
+                const int button = chooseRecurrenceEditScope(false);
+                if (button != 1 && button != 2) {
+                    return false;
+                }
+                thisAndFuture = button == 1;
+            }
+            auto exception = DSchedule::Ptr(newInfo->clone());
+            exception->setAllDay(occurrence->allDay());
+            exception->setRecurrenceId(occurrence->recurrenceId(), occurrence->recurrenceIdIsDateOnly());
+            exception->setThisAndFuture(thisAndFuture);
+            exception->clearRepeat();
+            exception->clearRecurrenceExceptions();
+            m_accountItem->updateSchedule(exception);
+            return true;
+        }
+    }
+
     bool _result {false};
 
     if (newInfo->getRRuleType() == DSchedule::RRule_None && newInfo->getRRuleType() == oldInfo->getRRuleType()) {
         qCDebug(ClientLogger) << "Updating non-recurring schedule";
-        m_accountItem->updateSchedule(newInfo);
+        updateMasterSchedule(newInfo);
         _result = true;
     } else {
         //如果切换了全天状态则提醒是否修改全部
@@ -84,7 +112,7 @@ bool CScheduleOperation::changeSchedule(const DSchedule::Ptr &newInfo, const DSc
                 //更新日程
                 qCDebug(ClientLogger) << "User confirmed changing all occurrences";
                 showLunarMessageDialog(newInfo, oldInfo);
-                m_accountItem->updateSchedule(newInfo);
+                updateMasterSchedule(newInfo);
                 _result = true;
             }
         } else if (newInfo->getRRuleType() != oldInfo->getRRuleType()) {
@@ -103,7 +131,7 @@ bool CScheduleOperation::changeSchedule(const DSchedule::Ptr &newInfo, const DSc
                 //更新日程
                 qCDebug(ClientLogger) << "User confirmed changing all occurrences";
                 showLunarMessageDialog(newInfo, oldInfo);
-                m_accountItem->updateSchedule(newInfo);
+                updateMasterSchedule(newInfo);
                 _result = true;
             }
         } else {
@@ -134,7 +162,7 @@ bool CScheduleOperation::deleteSchedule(const DSchedule::Ptr &scheduleInfo)
             return false;
         } else if (msgBox.clickButton() == 1) {
             qCDebug(ClientLogger) << "User confirmed schedule deletion";
-            m_accountItem->deleteScheduleByID(scheduleInfo->uid());
+            deleteOnlyInfo(scheduleInfo);
             _restuleBool = true;
         }
     } else {
@@ -144,6 +172,11 @@ bool CScheduleOperation::deleteSchedule(const DSchedule::Ptr &scheduleInfo)
         int num = DSchedule::numberOfRepetitions(primevalSchedule, scheduleInfo->dtStart());
         qCDebug(ClientLogger) << "Deleting recurring schedule, occurrence number:" << num;
         
+        if (num <= 0) {
+            showOccurrenceUnavailable();
+            qCWarning(ClientLogger) << "Cannot determine occurrence number for recurring schedule deletion";
+            return false;
+        }
         if (num == 1) {
             CScheduleCtrlDlg msgBox(m_widget);
             msgBox.setText(tr("You are deleting an event."));
@@ -184,10 +217,10 @@ bool CScheduleOperation::deleteSchedule(const DSchedule::Ptr &scheduleInfo)
                 //修改重复规则
                 qCDebug(ClientLogger) << "User confirmed deleting this and future occurrences";
                 QList<QDateTime> &&exDt = primevalSchedule->recurrence()->exDateTimes();
-                changeRepetitionRule(primevalSchedule, scheduleInfo);
+                changeRepetitionRule(primevalSchedule, scheduleInfo, num);
                 //如果修改后的日程为普通日程且忽略列表内包含日程开始时间则删除该日程
                 if (primevalSchedule->getRRuleType() == DSchedule::RRule_None
-                        && exDt.contains(primevalSchedule->dtStart())) {
+                        && !primevalSchedule->hasRecurrenceExceptions() && exDt.contains(primevalSchedule->dtStart())) {
                     //删除日程
                     qCDebug(ClientLogger) << "Deleting modified schedule as it became non-recurring";
                     m_accountItem->deleteScheduleByID(primevalSchedule->uid());
@@ -222,12 +255,34 @@ void CScheduleOperation::deleteOnlyInfo(const DSchedule::Ptr &scheduleInfo)
         return;
     }
     
+    if (scheduleInfo->hasRecurrenceId() && !scheduleInfo->recurs()) {
+        const auto master = m_accountItem->getScheduleByScheduleID(scheduleInfo->uid());
+        const auto occurrence = master ? master->recurrenceException(scheduleInfo->recurrenceId()) : DSchedule::Ptr();
+        if (!master || (!occurrence
+                        && master->recurrenceId() != scheduleInfo->recurrenceId())) {
+            showOccurrenceUnavailable();
+            return;
+        }
+        if (occurrence) {
+            auto cancelled = DSchedule::Ptr(scheduleInfo->clone());
+            cancelled->setCancelled(true);
+            cancelled->setThisAndFuture(false);
+            m_accountItem->updateSchedule(cancelled);
+            return;
+        }
+    }
+
     //如果为普通日程则删除
     if (scheduleInfo->recurs()) {
         //仅删除此日程
         qCDebug(ClientLogger) << "Adding exception date for recurring schedule";
         DSchedule::Ptr newschedule = m_accountItem->getScheduleByScheduleID(scheduleInfo->uid());
-        newschedule->recurrence()->addExDateTime(scheduleInfo->dtStart());
+        if (!newschedule) {
+            showOccurrenceUnavailable();
+            return;
+        }
+        const auto id = scheduleInfo->hasRecurrenceId() ? scheduleInfo->recurrenceId() : scheduleInfo->dtStart();
+        newschedule->recurrence()->addExDateTime(id);
         m_accountItem->updateSchedule(newschedule);
     } else {
         qCDebug(ClientLogger) << "Deleting non-recurring schedule";
@@ -246,25 +301,21 @@ bool CScheduleOperation::changeRecurInfo(const DSchedule::Ptr &newinfo, const DS
     //如果为重复类型第一个
     // 获取原始数据
     DSchedule::Ptr primevalScheduleData = m_accountItem->getScheduleByScheduleID(oldinfo->uid());
-    int primevalDuration = primevalScheduleData->recurrence()->duration();
     int num = DSchedule::numberOfRepetitions(primevalScheduleData, oldinfo->dtStart());
-    qCDebug(ClientLogger) << "Recurring schedule occurrence number:" << num << "duration:" << primevalDuration;
+    qCDebug(ClientLogger) << "Recurring schedule occurrence number:" << num;
 
+    if (num <= 0) {
+        showOccurrenceUnavailable();
+        qCWarning(ClientLogger) << "Cannot determine occurrence number for recurring schedule modification";
+        return false;
+    }
+    const int primevalDuration = primevalScheduleData->recurrence()->duration();
+    const int button = chooseRecurrenceEditScope(num == 1);
     if (num == 1) {
-        CScheduleCtrlDlg msgBox(m_widget);
-        msgBox.setText(tr("You are changing a repeating event."));
-        msgBox.setInformativeText(
-            tr("Do you want to change only this occurrence of the event, or all "
-               "occurrences?"));
-        msgBox.addPushButton(tr("Cancel", "button"));
-        msgBox.addPushButton(tr("All"));
-        msgBox.addsuggestButton(tr("Only This Event"));
-        msgBox.exec();
-
-        if (msgBox.clickButton() == 0) {
+        if (button == 0) {
             qCDebug(ClientLogger) << "User cancelled recurring schedule change";
             _result = false;
-        } else if (msgBox.clickButton() == 1) {
+        } else if (button == 1) {
             //修改所有日程
             //如果此重复日程只有它一个则将修改为普通日程
             qCDebug(ClientLogger) << "User confirmed changing all occurrences";
@@ -276,59 +327,45 @@ bool CScheduleOperation::changeRecurInfo(const DSchedule::Ptr &newinfo, const DS
                 QDateTime dtEnd(_scheduleDataInfo->recurrence()->endDateTime().date(),_scheduleDataInfo->dtStart().time());
                 _scheduleDataInfo->recurrence()->setEndDateTime(dtEnd);
             }
-            m_accountItem->updateSchedule(_scheduleDataInfo);
+            updateMasterSchedule(_scheduleDataInfo);
             _result = true;
-        } else if (msgBox.clickButton() == 2) {
+        } else if (button == 2) {
             //仅修改此日程
             qCDebug(ClientLogger) << "User confirmed changing only this occurrence";
             _result = changeOnlyInfo(newinfo, oldinfo);
         }
     } else {
-        CScheduleCtrlDlg msgBox(m_widget);
-        msgBox.setText(tr("You are changing a repeating event."));
-        msgBox.setInformativeText(
-            tr("Do you want to change only this occurrence of the event, or this and "
-               "all future occurrences?"));
-        msgBox.addPushButton(tr("Cancel", "button"));
-        msgBox.addPushButton(tr("All Future Events"));
-        msgBox.addsuggestButton(tr("Only This Event"));
-        msgBox.exec();
-
-        if (msgBox.clickButton() == 0) {
+        if (button == 0) {
             qCDebug(ClientLogger) << "User cancelled recurring schedule change";
             _result = false;
-        } else if (msgBox.clickButton() == 1) {
-            // 根据id获取日程并修改
-            //修改重复规则
+        } else if (button == 1) {
             qCDebug(ClientLogger) << "User confirmed changing this and future occurrences";
-            QList<QDateTime> &&exDt = primevalScheduleData->recurrence()->exDateTimes();
-            changeRepetitionRule(primevalScheduleData, oldinfo);
-            //如果修改后的日程为普通日程且忽略列表内包含日程开始时间则删除该日程
-            if (primevalScheduleData->getRRuleType() == DSchedule::RRule_None
-                    &&exDt.contains(primevalScheduleData->dtStart())) {
-                //删除日程
-                qCDebug(ClientLogger) << "Deleting modified schedule as it became non-recurring";
-                m_accountItem->deleteScheduleByID(primevalScheduleData->uid());
-            } else {
-                //更新日程
-                qCDebug(ClientLogger) << "Updating modified recurring schedule";
-                m_accountItem->updateSchedule(primevalScheduleData);
+            const auto cutoff = oldinfo->hasRecurrenceId() ? oldinfo->recurrenceId() : oldinfo->dtStart();
+            DSchedule::Ptr newschedule(newinfo->clone());
+            newschedule->setSchedulingID(QString(), QStringLiteral("0"));
+            newschedule->setRecurrenceId({});
+            if (!newschedule->inheritRecurrenceExceptions(*primevalScheduleData, cutoff)) {
+                showOccurrenceUnavailable();
+                return false;
             }
 
-            //创建日程
-            DSchedule::Ptr newschedule(newinfo->clone());
+            const auto exDates = primevalScheduleData->recurrence()->exDateTimes();
+            primevalScheduleData->recurrence()->partitionDatesAt(cutoff, newschedule->recurrence());
+            changeRepetitionRule(primevalScheduleData, oldinfo, num);
+            const bool removeOriginal = primevalScheduleData->getRRuleType() == DSchedule::RRule_None
+                && !primevalScheduleData->hasRecurrenceExceptions() && exDates.contains(primevalScheduleData->dtStart());
+
             if (primevalDuration > 0) {
                 //如果结束与次数
                 int newDuration = primevalDuration - num + 1;
                 //如果重复次数大于1
-                if (newDuration > 1) {
+                if (newDuration > 1 || newschedule->recurrence()->hasAdditionalRecurrenceData()) {
                     qCDebug(ClientLogger) << "Setting new recurrence duration:" << newDuration;
                     newschedule->recurrence()->setDuration(newDuration);
                 } else {
                     qCDebug(ClientLogger) << "Converting to non-recurring schedule";
                     newschedule->setRRuleType(DSchedule::RRule_None);
                 }
-                newschedule->setRecurrenceId(QDateTime());
             } else if (primevalDuration ==0) {
                 //结束于日期
                 QDateTime dtEnd(newschedule->recurrence()->endDateTime().date(),newschedule->dtStart().time());
@@ -338,13 +375,23 @@ bool CScheduleOperation::changeRecurInfo(const DSchedule::Ptr &newinfo, const DS
 
             //创建新日程
             //如果为农历且重复类型为每年
-            if (newschedule->lunnar() && DSchedule::RRule_Year == newschedule->getRRuleType()) {
+            if (newschedule->lunar() && DSchedule::RRule_Year == newschedule->getRRuleType()) {
                 qCDebug(ClientLogger) << "Showing lunar message dialog for yearly lunar schedule";
                 lunarMessageDialogShow(newschedule);
             }
-            m_accountItem->createSchedule(newschedule);
+            m_accountItem->createSchedule(newschedule, [account = m_accountItem, primevalScheduleData, removeOriginal](CallMessge result) {
+                if (result.code != 0 || result.msg.toString().isEmpty()) {
+                    qCWarning(ClientLogger) << "Could not create the new recurring series";
+                    return;
+                }
+                if (removeOriginal) {
+                    account->deleteScheduleByID(primevalScheduleData->uid());
+                } else {
+                    account->updateSchedule(primevalScheduleData);
+                }
+            });
             _result = true;
-        } else if (msgBox.clickButton() == 2) {
+        } else if (button == 2) {
             qCDebug(ClientLogger) << "User confirmed changing only this occurrence";
             _result = changeOnlyInfo(newinfo, oldinfo);
         }
@@ -362,8 +409,10 @@ bool CScheduleOperation::changeOnlyInfo(const DSchedule::Ptr &newinfo, const DSc
     qCDebug(ClientLogger) << "Changing only this occurrence of schedule:" << oldinfo->uid();
     //修改日程
     DSchedule::Ptr newschedule(newinfo->clone());
-    newschedule->setRRuleType(DSchedule::RRule_None);
-    newschedule->setRecurrenceId(QDateTime());
+    newschedule->clearRepeat();
+    newschedule->clearRecurrenceExceptions();
+    newschedule->setRecurrenceId({});
+    newschedule->setSchedulingID(QString(), QStringLiteral("0"));
     //创建日程
     m_accountItem->createSchedule(newschedule);
 
@@ -380,14 +429,16 @@ bool CScheduleOperation::changeOnlyInfo(const DSchedule::Ptr &newinfo, const DSc
  * @param newinfo
  * @param oldinfo
  */
-void CScheduleOperation::changeRepetitionRule(DSchedule::Ptr &newinfo, const DSchedule::Ptr &oldinfo)
+void CScheduleOperation::changeRepetitionRule(DSchedule::Ptr &newinfo, const DSchedule::Ptr &oldinfo, int occurrenceNumber)
 {
-    int num = DSchedule::numberOfRepetitions(newinfo, oldinfo->dtStart());
+    const auto cutoff = oldinfo->hasRecurrenceId() ? oldinfo->recurrenceId() : oldinfo->dtStart();
+    newinfo->removeRecurrenceExceptionsFrom(cutoff);
+    newinfo->recurrence()->partitionDatesAt(cutoff);
     //修改重复规则
     if (newinfo->recurrence()->duration() > 0) {
         //如果为结束与次数则修改结束次数
-        int duration = num - 1;
-        if (duration > 1) {
+        int duration = occurrenceNumber - 1;
+        if (duration > 1 || newinfo->recurrence()->hasAdditionalRecurrenceData()) {
             qCDebug(ClientLogger) << "Setting new recurrence duration:" << duration;
             newinfo->recurrence()->setDuration(duration);
         } else {
@@ -397,11 +448,44 @@ void CScheduleOperation::changeRepetitionRule(DSchedule::Ptr &newinfo, const DSc
         }
     } else {
         //如果该日程结束类型为永不和结束于日期则修改结束日期
-        qCDebug(ClientLogger) << "Setting end date to:" << oldinfo->dtStart().addDays(-1);
-        newinfo->recurrence()->setDuration(0);
-        QDateTime dtEnd(oldinfo->dtStart().addDays(-1));
-        newinfo->recurrence()->setEndDateTime(dtEnd);
+        const auto end = cutoff.addSecs(-1);
+        qCDebug(ClientLogger) << "Setting recurrence end to:" << end;
+        newinfo->recurrence()->setEndDateTime(end);
     }
+}
+
+void CScheduleOperation::updateMasterSchedule(const DSchedule::Ptr &schedule)
+{
+    if (!schedule->hasStoredRecurrenceExceptions()) {
+        m_accountItem->updateSchedule(schedule);
+        return;
+    }
+    // The service rebases the stored exceptions using the new master dates.
+    const auto master = DSchedule::Ptr(schedule->clone());
+    master->clearRecurrenceExceptions();
+    m_accountItem->updateSchedule(master);
+}
+
+int CScheduleOperation::chooseRecurrenceEditScope(bool firstOccurrence)
+{
+    CScheduleCtrlDlg dialog(m_widget);
+    dialog.setText(tr("You are changing a repeating event."));
+    dialog.setInformativeText(firstOccurrence
+        ? tr("Do you want to change only this occurrence of the event, or all occurrences?")
+        : tr("Do you want to change only this occurrence of the event, or this and all future occurrences?"));
+    dialog.addPushButton(tr("Cancel", "button"));
+    dialog.addPushButton(firstOccurrence ? tr("All") : tr("All Future Events"));
+    dialog.addsuggestButton(tr("Only This Event"));
+    dialog.exec();
+    return dialog.clickButton();
+}
+
+void CScheduleOperation::showOccurrenceUnavailable()
+{
+    DCalendarDDialog prompt(m_widget);
+    prompt.setMessage(tr("The selected occurrence could not be identified. The schedule was not changed."));
+    prompt.addButton(tr("OK", "button"), true, DDialog::ButtonNormal);
+    prompt.exec();
 }
 
 void CScheduleOperation::lunarMessageDialogShow(const DSchedule::Ptr &newinfo)
@@ -429,10 +513,10 @@ void CScheduleOperation::showLunarMessageDialog(const DSchedule::Ptr &newinfo, c
 {
     //在阴历每年重复情况下如果修改了开始时间或重复规则
     //农历日程重复每年闰月是否提示
-    if (newinfo->lunnar() && DSchedule::RRule_Year == newinfo->getRRuleType()) {
+    if (newinfo->lunar() && DSchedule::RRule_Year == newinfo->getRRuleType()) {
         if (oldinfo->dtStart().date() != newinfo->dtStart().date()
             || oldinfo->getRRuleType() != newinfo->getRRuleType()
-            || oldinfo->lunnar() != newinfo->lunnar()) {
+            || oldinfo->lunar() != newinfo->lunar()) {
             //判断是否为闰月
             lunarMessageDialogShow(newinfo);
         }

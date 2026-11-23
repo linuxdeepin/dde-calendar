@@ -8,8 +8,8 @@
 #include "scheduletypeeditdlg.h"
 #include "schedulectrldlg.h"
 #include "accountmanager.h"
-#include "icalformat.h"
-#include "memorycalendar.h"
+#include "icscodec.h"
+#include "memcalstore.h"
 
 
 #include <DStyle>
@@ -334,18 +334,28 @@ void JobTypeListView::slotImportScheduleType()
         return;
     }
 
+    const auto showImportError = [this](const QString &message) {
+        CScheduleCtrlDlg dialog(this);
+        dialog.setText(tr("Could not import calendar events"));
+        dialog.setInformativeText(message);
+        dialog.addPushButton(tr("OK", "button"), true);
+        dialog.exec();
+    };
+
     // 从ics文件读取内置的基本信息
-    KCalendarCore::ICalFormat icalformat;
-    QTimeZone timezone = QDateTime::currentDateTime().timeZone();
-    KCalendarCore::MemoryCalendar::Ptr cal(new KCalendarCore::MemoryCalendar(timezone));
-    // 先加载ICS文件内容，才能读取到自定义属性
-    auto ok = icalformat.load(cal, filename);
-    if (!ok) {
-        qCWarning(ClientLogger) << "can not load ics file from" << filename;
+    CalendarCore::IcsCodec icalformat;
+    CalendarCore::MemCalStore::Ptr cal(new CalendarCore::MemCalStore(QTimeZone::systemTimeZone()));
+    QString diagnostic;
+    if (!icalformat.load(cal, filename, &diagnostic)) {
+        qCWarning(ClientLogger) << "Cannot load ICS file:" << filename << diagnostic;
+        showImportError(tr("The selected file could not be read as a calendar."));
+        return;
+    }
+    if (cal->events().isEmpty()) {
+        showImportError(tr("The selected file contains no calendar events."));
         return;
     }
 
-    auto typeID = cal->nonKDECustomProperty("X-DDE-CALENDAR-TYPE-ID");
     auto typeName = cal->nonKDECustomProperty("X-DDE-CALENDAR-TYPE-NAME");
     auto typeColor = cal->nonKDECustomProperty("X-DDE-CALENDAR-TYPE-COLOR");
 
@@ -376,6 +386,7 @@ void JobTypeListView::slotImportScheduleType()
     type->setColorCode(typeColor);
     type->setDisplayName(typeName);
 
+    QString typeID;
     QEventLoop event;
     // 创建日程类型
     account->createJobType(type, [&event, &typeID](CallMessge msg) {
@@ -392,18 +403,45 @@ void JobTypeListView::slotImportScheduleType()
         QTimer::singleShot(1000, &event, &QEventLoop::quit);
     });
 
-    // 等待日程创建完毕
     event.exec();
-    // 导入ics文件
-    if (!typeID.isEmpty()) {
-        qCDebug(ClientLogger) << "Importing ICS file:" << filename << "to type:" << typeID;
-        account->importSchedule(filename, typeID, true, [&event](CallMessge msg) {
+    if (typeID.isEmpty()) {
+        m_waitDialog->hide();
+        showImportError(tr("The event type could not be created."));
+        return;
+    }
+
+    CallMessge importResult{};
+    account->importSchedule(filename, typeID, true, [&event, &importResult](CallMessge result) {
+        importResult = result;
+        event.quit();
+    });
+    event.exec();
+    if (importResult.code == 0 && importResult.msg.toBool()) {
+        m_waitDialog->hide();
+        return;
+    }
+
+    QString errorMessage;
+    if (importResult.code == 0 && importResult.msg.isValid()) {
+        // A false response means the replacement transaction did not commit.
+        bool removed = false;
+        account->deleteScheduleTypeByID(typeID, [&event, &removed](CallMessge result) {
+            removed = result.code == 0 && result.msg.toBool();
             event.quit();
         });
-        // 等待导入完毕
         event.exec();
-        m_waitDialog->hide();
+        if (removed) {
+            errorMessage = tr("The calendar service could not import the events in the selected file.");
+        } else {
+            qCWarning(ClientLogger) << "Could not remove event type after failed import:" << typeID;
+            errorMessage = tr("The import failed and the new event type could not be removed.");
+        }
+    } else {
+        // A transport error can occur after the server commits the import.
+        errorMessage = tr("The import result could not be confirmed. Check the new event type before retrying.");
     }
+    m_waitDialog->hide();
+    showImportError(errorMessage);
 }
 
 void JobTypeListView::slotExportScheduleType()
