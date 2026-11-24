@@ -1,3 +1,14 @@
+dde-calendar (6.6.10) unstable; urgency=medium
+
+  * feat: add calendarkernel
+  * i18n: Translate dde-calendar-service_en_US.ts in sq
+  * i18n: Translate dde-calendar_en_US.ts in sq
+  * fix(huangli): avoid double-free risk in download error handler
+  * test: expand service and schedule unit test coverage
+  * fix(huangli): break reference cycle in festival download lambda
+
+ -- Wang Yu <wangyu@uniontech.com>  Tue, 24 Nov 2026 15:11:34 +0800
+
 dde-calendar (6.6.9) unstable; urgency=medium
 
   * fix(schedule-dialog): remove UID-based dialog height adjustment
