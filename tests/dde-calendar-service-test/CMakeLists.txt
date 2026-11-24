@@ -69,6 +69,10 @@ set(CALDAV_TEST_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/src/mock_caldav_server.cpp
     ${CMAKE_SOURCE_DIR}/src/calendar-common/src/dcalendareventlog.cpp
 )
+# graph-ut-writer: register recurrence exception test suite
+list(APPEND CALDAV_TEST_SRC
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/test_dschedule_recurrence.cpp
+)
 
 if(BUILD_LEGACY_CALENDAR_TESTS)
     file(GLOB_RECURSE LEGACY_CALENDAR_SERVICE_TEST_SRC
