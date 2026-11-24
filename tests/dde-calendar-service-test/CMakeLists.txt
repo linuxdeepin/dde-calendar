@@ -90,6 +90,9 @@ if(BUILD_LEGACY_CALENDAR_TESTS)
         ${CMAKE_CURRENT_SOURCE_DIR}/src/test_dbmanager/test_huanglidatabase.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/test_dbmanager/test_schedulerdatabase.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/test_jobremindmanager.cpp)
+    # graph-ut-writer: test_compatibledata.cpp 引用已移除的 CalendarCore::RepeatInfo::rRules()，排除编译
+    list(REMOVE_ITEM LEGACY_CALENDAR_SERVICE_TEST_SRC
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/test_compatibledata.cpp)
     list(APPEND CALDAV_TEST_SRC ${LEGACY_CALENDAR_SERVICE_TEST_SRC})
 
     file(GLOB_RECURSE LEGACY_CALENDAR_SERVICE_SRC
