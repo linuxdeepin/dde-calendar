@@ -113,12 +113,15 @@ void CDynamicIcon::setIcon()
 {
     // qCDebug(ClientLogger) << "CDynamicIcon::setIcon - Setting application icon";
     QIcon icon(this->getPixmap());
-    qApp->setProductIcon(icon);
+    // productIcon 决定关于弹窗左侧显示的应用图标，使用主题图标使其跟随图标主题变化；
+    // 窗口图标（任务栏）仍用动态日期图标。
+    QIcon themedIcon = QIcon::fromTheme(QStringLiteral("dde-calendar"));
+    qApp->setProductIcon(themedIcon);
     qApp->setWindowIcon(icon);
 
     if (qApp->aboutDialog() != nullptr) {
         // qCDebug(ClientLogger) << "Setting about dialog icon";
-        qApp->aboutDialog()->setProductIcon(icon);
+        qApp->aboutDialog()->setProductIcon(themedIcon);
     }
 
     if (m_Titlebar != nullptr) {
