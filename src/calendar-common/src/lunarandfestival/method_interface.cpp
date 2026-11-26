@@ -8,6 +8,9 @@
 #include <QtMath>
 #include <QDebug>
 
+#include <cmath>
+#include <limits>
+
 /**
  * @brief GetLunarMonthName 获取当天的农历月名称
  * @param lunarmonthname 阴历月份
@@ -17,6 +20,10 @@
 QString GetLunarMonthName(int lunarmonthname, bool isleap)
 {
     // qCDebug(CommonLogger) << "Getting lunar month name for month:" << lunarmonthname << "isLeap:" << isleap;
+    // 农历月份取值范围为 1~12，非法输入直接返回空，避免数组越界
+    if (lunarmonthname < 1 || lunarmonthname > lunarMonthNames.size()) {
+        return "";
+    }
     QString monthname = lunarMonthNames[lunarmonthname - 1];
     if (isleap) {
         return "闰" + monthname + "月";
@@ -32,6 +39,10 @@ QString GetLunarMonthName(int lunarmonthname, bool isleap)
 QString GetLunarDayName(int lundayname)
 {
     // qCDebug(CommonLogger) << "Getting lunar day name for day:" << lundayname;
+    // 农历日取值范围为 1~30，非法输入直接返回空，避免数组越界
+    if (lundayname < 1 || lundayname > lunarDayNames.size()) {
+        return "";
+    }
     return lunarDayNames[lundayname - 1];
 }
 
@@ -81,7 +92,16 @@ QString GetSolarTermName(int order)
 QString GetTianGanDiZhi(int num)
 {
     // qCDebug(CommonLogger) << "Getting TianGanDiZhi for num:" << num;
-    return TianGan[num % 10] + DiZhi[num % 12];
+    // 天干以 10 为周期、地支以 12 为周期，负数取模要归一化到非负下标
+    qint64 ganIndex = qint64(num) % TianGan.size();
+    if (ganIndex < 0) {
+        ganIndex += TianGan.size();
+    }
+    qint64 zhiIndex = qint64(num) % DiZhi.size();
+    if (zhiIndex < 0) {
+        zhiIndex += DiZhi.size();
+    }
+    return TianGan[int(ganIndex)] + DiZhi[int(zhiIndex)];
 }
 
 /**
@@ -93,7 +113,9 @@ QString GetTianGanDiZhi(int num)
 QString GetGanZhiMonth(int year, int monthzhi)
 {
     // qCDebug(CommonLogger) << "Getting GanZhi month for year:" << year << "monthzhi:" << monthzhi;
-    return GetTianGanDiZhi((year - 1900) * 12 + monthzhi + 12);
+    // 用 qint64 计算避免 year 极值时 int 溢出，60 为天干地支的最小公共周期
+    qint64 num = (qint64(year) - 1900) * 12 + monthzhi + 12;
+    return GetTianGanDiZhi(int(num % 60));
 }
 
 /**
@@ -104,7 +126,9 @@ QString GetGanZhiMonth(int year, int monthzhi)
 QString GetGanZhiYear(int lunaryear)
 {
     // qCDebug(CommonLogger) << "Getting GanZhi year for lunar year:" << lunaryear;
-    return GetTianGanDiZhi(lunaryear - 1864);
+    // 用 qint64 计算避免 lunaryear 极值时 int 溢出，60 为天干地支的最小公共周期
+    qint64 num = qint64(lunaryear) - 1864;
+    return GetTianGanDiZhi(int(num % 60));
 }
 
 /**
@@ -131,7 +155,12 @@ QString GetGanZhiDay(int year, int month, int day)
 QString GetYearZodiac(int lunaryear)
 {
     // qCDebug(CommonLogger) << "Getting year zodiac for lunar year:" << lunaryear;
-    return Animals[(lunaryear - 4) % 12];
+    // 生肖以 12 为周期，负数取模要归一化到非负下标
+    qint64 index = (qint64(lunaryear) - 4) % Animals.size();
+    if (index < 0) {
+        index += Animals.size();
+    }
+    return Animals[int(index)];
 }
 
 QVector<double> get25SolarTermJDs(int year, int start)
@@ -141,6 +170,10 @@ QVector<double> get25SolarTermJDs(int year, int start)
     // year 年份
     // start 起始的节气
     // 返回 25 个节气的 儒略日北京时间
+    // 起始节气序号范围为 0~23，非法输入返回空
+    if (start < 0 || start > 23) {
+        return QVector<double>();
+    }
     int stOrder = start;
     QVector<double> list;
 
@@ -269,7 +302,12 @@ double NewtonIteration(double angle, double x0, bool IsGetSolarTermJD)
     //此函数原是传入的匿名函数，这里用bool用作区分，后续可以优化
     const double Epsilon = 1e-7;
     const double Delta = 5e-6;
-    double x;
+    // 迭代上限，防止 Inf/NaN 或导数为 0 时无法收敛导致死循环
+    const int MaxIterations = 100;
+    double x = x0;
+    if (!qIsFinite(angle) || !qIsFinite(x0)) {
+        return x;
+    }
     auto func = [angle](double x) -> double {
         return ModPi(GetEarthEclipticLongitudeForSun(x) - angle);
     };
@@ -282,7 +320,7 @@ double NewtonIteration(double angle, double x0, bool IsGetSolarTermJD)
         // return ModPi(GetEarthEclipticLongitudeForSun(x) - GetMoonEclipticLongitudeEC(x));
     };
 
-    while (1) {
+    for (int i = 0; i < MaxIterations; i++) {
         x = x0;
         double fx, fpx;
         if (IsGetSolarTermJD) {
@@ -298,7 +336,14 @@ double NewtonIteration(double angle, double x0, bool IsGetSolarTermJD)
             // 导数
             fpx = (func1(x + Delta) - func1(x - Delta)) / Delta / 2;
         }
+        // 导数为 0 或中间结果非有限值时无法继续迭代
+        if (!qIsFinite(fx) || !qIsFinite(fpx) || qFuzzyIsNull(fpx)) {
+            break;
+        }
         x0 = x - fx / fpx;
+        if (!qIsFinite(x0)) {
+            break;
+        }
         if (qAbs(x0 - x) <= Epsilon) {
             break;
         }
@@ -308,10 +353,15 @@ double NewtonIteration(double angle, double x0, bool IsGetSolarTermJD)
 
 double ModPi(double r)
 {
-    while (r < -M_PI) {
-        r += M_PI * 2;
+    // 非有限值（NaN/Inf）无法通过加减 2π 归一化，直接返回 0，避免死循环
+    if (!qIsFinite(r)) {
+        return 0.0;
     }
-    while (r > M_PI) {
+    // fmod 一次取模即可，避免 while 循环在超大角度上长时间运行
+    r = std::fmod(r, M_PI * 2);
+    if (r < -M_PI) {
+        r += M_PI * 2;
+    } else if (r > M_PI) {
         r -= M_PI * 2;
     }
     return r;
@@ -342,6 +392,10 @@ double DmsToRadians(int d, int m, int s)
 double GetSolarTermJD(int year, int order)
 {
     // qCDebug(CommonLogger) << "Getting solar term JD for year:" << year << "order:" << order;
+    // 节气序号范围为 0~23，非法输入返回 0，避免 order+1 溢出和无意义计算
+    if (order < 0 || order > 23) {
+        return 0.0;
+    }
     const double RADIANS_PER_TERM = M_PI / 12.0;
     double angle = double(order) * RADIANS_PER_TERM;
     int month = ((order + 1) / 2 + 2) % 12 + 1;
@@ -367,6 +421,10 @@ bool IsLeapYear(int year)
 int GetSolarMonthDays(int year, int month)
 {
     // qCDebug(CommonLogger) << "Getting solar month days for:" << year << month;
+    // 月份取值范围为 1~12，非法输入直接返回 0，避免数组越界
+    if (month < 1 || month > monthDays.size()) {
+        return 0;
+    }
     if (month == 2 && IsLeapYear(year)) {
         return 29;
     } else {
@@ -380,17 +438,21 @@ int GetSolarMonthDays(int year, int month)
 int GetWeekday(int y, int m, int d)
 {
     // qCDebug(CommonLogger) << "Getting weekday for:" << y << m << d;
-    if (m <= 2) {
-        y -= 1;
-        m += 12;
+    // 全部用 qint64 运算，避免年月日取极值时 int 溢出
+    qint64 yy = y;
+    qint64 mm = m;
+    qint64 dd = d;
+    if (mm <= 2) {
+        yy -= 1;
+        mm += 12;
     }
-    int c = int(y / 100);
-    y = y % 100;
-    int w = (d + 13 * (m + 1) / 5 + y + (y / 4) + (c / 4) - 2 * c - 1) % 7;
+    qint64 c = yy / 100;
+    yy = yy % 100;
+    qint64 w = (dd + 13 * (mm + 1) / 5 + yy + (yy / 4) + (c / 4) - 2 * c - 1) % 7;
     if (w < 0) {
         w += 7;
     }
-    return w;
+    return int(w);
 }
 
 // GetDeltaT 计算地球时和UTC的时差，算法摘自
@@ -687,11 +749,14 @@ double ToRadians(double degrees)
 double Mod2Pi(double r)
 {
     // qCDebug(CommonLogger) << "Running Mod2Pi on:" << r;
-    while (r < 0) {
-        r += M_PI * 2;
+    // 非有限值（NaN/Inf）无法通过加减 2π 归一化，直接返回 0，避免死循环
+    if (!qIsFinite(r)) {
+        return 0.0;
     }
-    while (r > 2 * M_PI) {
-        r -= M_PI * 2;
+    // fmod 一次取模即可，避免 while 循环在超大角度上长时间运行
+    r = std::fmod(r, M_PI * 2);
+    if (r < 0) {
+        r += M_PI * 2;
     }
     return r;
 }
@@ -838,10 +903,20 @@ double ToJulianDateHMS(int year, int month, int day, int hour, int minute, doubl
 int ToJulianDate(int year, int month, int day)
 {
     // qCDebug(CommonLogger) << "Converting to Julian Date:" << year << month << day;
-    int a = (14 - month) / 12;
-    int y = year + 4800 - a;
-    int m = month + 12 * a - 3;
-    return day + (153 * m + 2) / 5 + 365 * y + y / 4 - y / 100 + y / 400 - 32045;
+    // 用 qint64 计算，避免年月日取极值时 int 溢出
+    const qint64 a = (14 - qint64(month)) / 12;
+    const qint64 y = qint64(year) + 4800 - a;
+    const qint64 m = qint64(month) + 12 * a - 3;
+    const qint64 jdn = qint64(day) + (153 * m + 2) / 5 + 365 * y + y / 4 - y / 100 + y / 400 - 32045;
+
+    // 结果超出 int 表示范围时饱和，正常日期范围内不会发生
+    if (jdn > std::numeric_limits<int>::max()) {
+        return std::numeric_limits<int>::max();
+    }
+    if (jdn < std::numeric_limits<int>::min()) {
+        return std::numeric_limits<int>::min();
+    }
+    return int(jdn);
 }
 
 double coefficient()

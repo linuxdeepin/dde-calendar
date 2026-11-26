@@ -163,14 +163,18 @@ void LunarCalendar::calcLeapMonth()
 qint32 LunarCalendar::getSolarTermInfo(qint32 month, qint32 day) const
 {
     // qCDebug(CommonLogger) << "Getting solar term info for:" << month << day;
-    int index = 2 * month - 1;
+    // 月份必须为 1~12，且索引成对落在 SolarTermTimes 内，避免非法月份越界读取
+    const qint64 index = qint64(2) * month - 1;
+    if (index < 0 || index + 1 >= SolarTermTimes.size()) {
+        return -1;
+    }
     qint32 SolarTerm = -1;
-    QDateTime dt1 = SolarTermTimes[index];
-    QDateTime dt2 = SolarTermTimes[index + 1];
+    QDateTime dt1 = SolarTermTimes[int(index)];
+    QDateTime dt2 = SolarTermTimes[int(index) + 1];
     if (dt1.date().day() == day) {
-        SolarTerm = (index + DongZhi) % 24;
+        SolarTerm = int((index + DongZhi) % 24);
     } else if (dt2.date().day() == day) {
-        SolarTerm = (index + 1 + DongZhi) % 24;
+        SolarTerm = int((index + 1 + DongZhi) % 24);
     }
     // qCDebug(CommonLogger) << "Solar term found:" << SolarTerm;
     return SolarTerm;

@@ -21,6 +21,8 @@
 #include <QDBusAbstractInterface>
 #include <QProcess>
 
+#include <climits>
+
 // ---------------------------------------------------------------------------
 // Stub helpers
 // ---------------------------------------------------------------------------
@@ -512,4 +514,30 @@ TEST_F(test_dalarmmanager, GetRemindBody_NonAllDayMultiDay)
     DSchedule::Ptr schedule = makeSchedule(DSchedule::Alarm_Begin, start, end, false, "NonAllDay Multi");
     QString result = manager->getRemindBody(schedule);
     EXPECT_TRUE(result.contains("NonAllDay Multi"));
+}
+
+// 模糊测试问题（Bug 383485）：提醒次数极值时不能发生整数溢出
+TEST_F(test_dalarmmanager, GetRemindLaterDuration_ExtremeCount_NoOverflow)
+{
+    qint64 duration = 0;
+
+    // 第一次提醒：10 分钟
+    EXPECT_FALSE(manager->getRemindLaterDuration(1, duration));
+    EXPECT_EQ(qint64(10 * 60 * 1000), duration);
+
+    // 次数异常按第一次提醒处理：10 分钟，不会出现负时长
+    EXPECT_FALSE(manager->getRemindLaterDuration(0, duration));
+    EXPECT_EQ(qint64(10 * 60 * 1000), duration);
+    EXPECT_FALSE(manager->getRemindLaterDuration(-1, duration));
+    EXPECT_EQ(qint64(10 * 60 * 1000), duration);
+
+    // 第 11 次为 60 分钟，达到上限
+    EXPECT_TRUE(manager->getRemindLaterDuration(11, duration));
+    EXPECT_EQ(qint64(60 * 60 * 1000), duration);
+
+    // 极值次数不能溢出：INT_MAX 封顶 1 小时，INT_MIN 归一为第一次提醒
+    EXPECT_TRUE(manager->getRemindLaterDuration(INT_MAX, duration));
+    EXPECT_EQ(qint64(60 * 60 * 1000), duration);
+    EXPECT_FALSE(manager->getRemindLaterDuration(INT_MIN, duration));
+    EXPECT_EQ(qint64(10 * 60 * 1000), duration);
 }

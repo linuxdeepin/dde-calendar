@@ -76,3 +76,17 @@ TEST_F(test_dhuangliservice, GetLunarMonthCalendar)
     EXPECT_TRUE(m1.mDays || !m1.mDays);
     EXPECT_TRUE(m2.mDays || !m2.mDays);
 }
+
+// PMS 383485 C01：非法月份必须在 D-Bus 边界被拒绝，不能进入农历计算
+TEST_F(test_dhuangliservice, InvalidMonthRejected)
+{
+    const quint32 invalidMonths[] = {0, 13, 999};
+    for (quint32 month : invalidMonths) {
+        EXPECT_TRUE(m_service->getFestivalMonth(2020, month).isEmpty()
+                    || m_service->getFestivalMonth(2020, month) == "[]");
+        EXPECT_TRUE(m_service->getHuangLiDay(2020, month, 1).isEmpty());
+        EXPECT_TRUE(m_service->getHuangLiMonth(2020, month, true).isEmpty());
+        EXPECT_TRUE(m_service->getLunarInfoBySolar(2020, month, 1).mLunarDayName.isEmpty());
+        EXPECT_TRUE(m_service->getLunarMonthCalendar(2020, month, true).mCaLunarDayInfo.isEmpty());
+    }
+}

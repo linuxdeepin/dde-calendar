@@ -108,6 +108,10 @@ void DDE_Calendar::setAlarmByOldRemind(const DSchedule::Ptr &schedule, const QSt
     qCDebug(CommonLogger) << "DDE_Calendar::setAlarmByOldRemind, remind:" << remind;
     //提醒规则
     QStringList strList = remind.split(";", QT_SKIP_EMPTY_PARTS);
+    // 空字符串或纯分隔符会得到空列表，需先判断，避免 at(0) 越界
+    if (strList.isEmpty()) {
+        return;
+    }
 
     int remindNum = strList.at(0).toInt();
     //小于0表示不提醒
@@ -123,7 +127,8 @@ void DDE_Calendar::setAlarmByOldRemind(const DSchedule::Ptr &schedule, const QSt
             int offset = 0;
             if (strList.size() > 1) {
                 QTime time = QTime::fromString(strList.at(1), "hh:mm");
-                offset = time.hour() * 60 * 60 + time.second() * 60;
+                // "hh:mm" 格式的分钟分量用 minute() 取，避免提醒时间提前触发
+                offset = time.hour() * 60 * 60 + time.minute() * 60;
             }
             CalendarCore::TimeSpan duration(-(qint64(86400) * remindNum - offset));
             alarm->setStartOffset(duration);

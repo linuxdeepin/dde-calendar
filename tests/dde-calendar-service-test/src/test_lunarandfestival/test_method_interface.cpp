@@ -3,9 +3,14 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "test_method_interface.h"
+#include "lunarmanager.h"
+#include "lunarcalendar.h"
 #include <QVector>
 #include <QDebug>
 #include <QtGlobal>
+#include <QtMath>
+
+#include <climits>
 
 test_method_interface::test_method_interface()
 {
@@ -553,4 +558,121 @@ TEST_F(test_method_interface, festivalForFatherAndMother_otherMonth)
     // Other months return empty
     QString result = festivalForFatherAndMother(2020, 7, 1);
     assert("" == result);
+}
+
+// 以下用例为模糊测试问题（Bug 383485）补充：非法/极值输入不能越界、溢出或死循环
+TEST_F(test_method_interface, BoundaryLunarName)
+{
+    // 月份越界返回空串
+    EXPECT_TRUE(GetLunarMonthName(0).isEmpty());
+    EXPECT_TRUE(GetLunarMonthName(13).isEmpty());
+    EXPECT_TRUE(GetLunarMonthName(INT_MIN).isEmpty());
+    EXPECT_TRUE(GetLunarMonthName(INT_MAX).isEmpty());
+
+    // 日期越界返回空串
+    EXPECT_TRUE(GetLunarDayName(0).isEmpty());
+    EXPECT_TRUE(GetLunarDayName(31).isEmpty());
+    EXPECT_TRUE(GetLunarDayName(INT_MIN).isEmpty());
+    EXPECT_TRUE(GetLunarDayName(INT_MAX).isEmpty());
+
+    // 正常值不受影响
+    EXPECT_EQ(QString("正月"), GetLunarMonthName(1));
+    EXPECT_EQ(QString("三十"), GetLunarDayName(30));
+}
+
+TEST_F(test_method_interface, BoundaryGanZhiAndZodiac)
+{
+    // 负数、极值取模后下标仍需合法
+    EXPECT_FALSE(GetTianGanDiZhi(INT_MIN).isEmpty());
+    EXPECT_FALSE(GetTianGanDiZhi(INT_MAX).isEmpty());
+    EXPECT_FALSE(GetTianGanDiZhi(-1).isEmpty());
+    EXPECT_FALSE(GetGanZhiYear(INT_MIN).isEmpty());
+    EXPECT_FALSE(GetGanZhiMonth(INT_MAX, INT_MAX).isEmpty());
+    EXPECT_FALSE(GetYearZodiac(INT_MIN).isEmpty());
+    EXPECT_FALSE(GetYearZodiac(INT_MAX).isEmpty());
+    EXPECT_FALSE(GetYearZodiac(-1).isEmpty());
+
+    // 正常值不受影响
+    EXPECT_EQ(QString("庚子"), GetGanZhiYear(2020));
+    EXPECT_EQ(QString("戊子"), GetGanZhiMonth(2020, 12));
+    EXPECT_EQ(QString("鼠"), GetYearZodiac(2020));
+}
+
+TEST_F(test_method_interface, BoundaryWeekdayAndJulianDate)
+{
+    const int years[] = {INT_MIN, -1, 0, 2020, INT_MAX};
+    const int months[] = {INT_MIN, -1, 0, 1, 2, 12, 13, INT_MAX};
+    for (int y : years) {
+        for (int m : months) {
+            int weekday = GetWeekday(y, m, 1);
+            EXPECT_GE(weekday, 0);
+            EXPECT_LE(weekday, 6);
+        }
+        // 极值日期不能触发整数溢出
+        ToJulianDate(y, INT_MIN, INT_MIN);
+        ToJulianDate(y, 1, 1);
+        ToJulianDate(y, 13, 40);
+
+        // 非法月份返回 0，不能数组越界
+        EXPECT_EQ(0, GetSolarMonthDays(y, 0));
+        EXPECT_EQ(0, GetSolarMonthDays(y, 13));
+    }
+
+    // 正常日期结果不变
+    EXPECT_EQ(6, GetWeekday(2020, 2, 29));
+    EXPECT_EQ(2458929, ToJulianDate(2020, 3, 20));
+}
+
+TEST_F(test_method_interface, BoundaryNewtonIteration)
+{
+    // Inf/NaN 输入不能死循环
+    EXPECT_FALSE(qIsFinite(NewtonIteration(qInf(), qInf(), true)));
+    EXPECT_TRUE(qIsFinite(NewtonIteration(qQNaN(), 0, true)));
+    EXPECT_FALSE(qIsFinite(NewtonIteration(0, qInf(), false)));
+
+    // 超大参数不能在 while 循环中长时间运行
+    EXPECT_TRUE(qIsFinite(NewtonIteration(0, 1e300, true)));
+    EXPECT_TRUE(qIsFinite(ModPi(1e300)));
+    EXPECT_TRUE(qIsFinite(Mod2Pi(-1e300)));
+
+    // 非有限值归一化为 0
+    EXPECT_DOUBLE_EQ(0.0, ModPi(qInf()));
+    EXPECT_DOUBLE_EQ(0.0, Mod2Pi(qQNaN()));
+}
+
+// 非法月份不能生成 month=14/-1 的伪日期并传给下游（PMS 383485 C01）
+TEST_F(test_method_interface, BoundarySolarMonthCalendar_InvalidMonth_ReturnsEmpty)
+{
+    SolarMonthInfo month0 = GetSolarMonthCalendar(2021, 0, true);
+    SolarMonthInfo month13 = GetSolarMonthCalendar(2021, 13, true);
+    EXPECT_TRUE(month0.Datas.isEmpty());
+    EXPECT_TRUE(month13.Datas.isEmpty());
+    EXPECT_EQ(0, month0.Days);
+    EXPECT_EQ(0, month13.Days);
+
+    LunarMonthInfo lunar13 = GetLunarMonthCalendar(2021, 13, true);
+    EXPECT_TRUE(lunar13.Datas.isEmpty());
+    EXPECT_EQ(0, lunar13.Days);
+}
+
+// 非法月份不能越界读取 SolarTermTimes（PMS 383485 C01）
+TEST_F(test_method_interface, BoundarySolarTermInfo_InvalidMonth_ReturnsInvalid)
+{
+    LunarCalendar *calendar = LunarCalendar::GetLunarCalendar(2021);
+    ASSERT_NE(nullptr, calendar);
+    EXPECT_EQ(-1, calendar->SolarDayToLunarDay(0, 1).SolarTerm);
+    EXPECT_EQ(-1, calendar->SolarDayToLunarDay(13, 1).SolarTerm);
+    EXPECT_EQ(-1, calendar->SolarDayToLunarDay(INT_MIN, 1).SolarTerm);
+    EXPECT_EQ(-1, calendar->SolarDayToLunarDay(INT_MAX, 1).SolarTerm);
+}
+
+// 节气序号越界时不能溢出或无意义计算
+TEST_F(test_method_interface, BoundarySolarTermJD_InvalidOrder_ReturnsZero)
+{
+    EXPECT_DOUBLE_EQ(0.0, GetSolarTermJD(2020, -1));
+    EXPECT_DOUBLE_EQ(0.0, GetSolarTermJD(2020, 24));
+    EXPECT_DOUBLE_EQ(0.0, GetSolarTermJD(2020, INT_MAX));
+    EXPECT_DOUBLE_EQ(0.0, GetSolarTermJD(2020, INT_MIN));
+    EXPECT_TRUE(get25SolarTermJDs(2020, -1).isEmpty());
+    EXPECT_TRUE(get25SolarTermJDs(2020, 24).isEmpty());
 }

@@ -15,6 +15,8 @@
 #include <QDateTime>
 #include <QSignalSpy>
 
+#include <climits>
+
 static DSchedule::Ptr makeSch(const QDateTime &start, const QDateTime &end,
                                const QString &summary = "")
 {
@@ -1496,4 +1498,35 @@ TEST(CreateScheduleTaskTest, SchedulePress_InvalidDateTimeInMultiRound)
 
     delete task.m_widget;
     task.m_widget = nullptr;
+}
+
+// 模糊测试问题（Bug 383485）：非法周数/日期不能生成超长日期序列或溢出
+TEST(CreateScheduleTaskTest, AnalysisEveryWeekDate_InvalidWeekNumbers_ReturnsEmpty)
+{
+    createScheduleTask task;
+    EXPECT_TRUE(task.analysisEveryWeekDate({0}).isEmpty());
+    EXPECT_TRUE(task.analysisEveryWeekDate({8}).isEmpty());
+    EXPECT_TRUE(task.analysisEveryWeekDate({INT_MIN}).isEmpty());
+    EXPECT_TRUE(task.analysisEveryWeekDate({INT_MAX}).isEmpty());
+    EXPECT_TRUE(task.analysisEveryWeekDate({INT_MIN, INT_MAX}).isEmpty());
+    EXPECT_TRUE(task.analysisEveryWeekDate({1, 31}).isEmpty());
+}
+
+TEST(CreateScheduleTaskTest, AnalysisEveryMonthDate_InvalidDays_ReturnsEmpty)
+{
+    createScheduleTask task;
+    EXPECT_TRUE(task.analysisEveryMonthDate({0}).isEmpty());
+    EXPECT_TRUE(task.analysisEveryMonthDate({32}).isEmpty());
+    EXPECT_TRUE(task.analysisEveryMonthDate({INT_MIN}).isEmpty());
+    EXPECT_TRUE(task.analysisEveryMonthDate({INT_MAX}).isEmpty());
+    EXPECT_TRUE(task.analysisEveryMonthDate({INT_MIN, INT_MAX}).isEmpty());
+}
+
+TEST(CreateScheduleTaskTest, GetWeekAllDateTime_InvalidRange_ReturnsEmpty)
+{
+    createScheduleTask task;
+    // 循环次数上限为 7，非法范围不再生成日期
+    EXPECT_TRUE(task.getWeekAllDateTime(QDate::currentDate(), 1, INT_MAX).isEmpty());
+    EXPECT_TRUE(task.getWeekAllDateTime(QDate::currentDate(), INT_MIN, 7).isEmpty());
+    EXPECT_EQ(7, task.getWeekAllDateTime(QDate::currentDate(), 1, 7).size());
 }
