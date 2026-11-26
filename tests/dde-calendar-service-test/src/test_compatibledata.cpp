@@ -205,8 +205,10 @@ TEST(CompatibleDataTest, SetRRuleByOldRRule_ValidRRule)
     // A valid ICal recurrence rule string
     QString rrule = "FREQ=DAILY;INTERVAL=1";
     DDE_Calendar::setRRuleByOldRRule(schedule, rrule);
-    // The recurrence should have at least one rrule
-    EXPECT_GE(schedule->recurrence()->rRules().count(), 1);
+    // The recurrence should have at least one rrule; RepeatInfo exposes the
+    // default rule pointer instead of the rule list (defaultRRuleConst() is
+    // null exactly when no rrule was added).
+    EXPECT_NE(schedule->recurrence()->defaultRRuleConst(), nullptr);
 }
 
 TEST(CompatibleDataTest, SetRRuleByOldRRule_InvalidRRule)
@@ -214,7 +216,7 @@ TEST(CompatibleDataTest, SetRRuleByOldRRule_InvalidRRule)
     DSchedule::Ptr schedule(new DSchedule);
     DDE_Calendar::setRRuleByOldRRule(schedule, "invalid-rrule");
     // Invalid rule should not add anything
-    EXPECT_EQ(schedule->recurrence()->rRules().count(), 0);
+    EXPECT_EQ(schedule->recurrence()->defaultRRuleConst(), nullptr);
 }
 
 // ============ setExDate ============

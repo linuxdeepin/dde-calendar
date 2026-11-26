@@ -60,29 +60,21 @@ static QDir stub_getAppCacheDir()
     return QDir(g_testAppConfigPath);
 }
 
-static QSharedPointer<QProcess> stub_DownloadFile(QString url, QString filename)
+// DownloadFile 现行签名返回 bool（Qt Network 同步下载，见 units.cpp）；
+// stub 必须与之完全一致，否则按调用约定读到的是未定义返回值
+static bool stub_DownloadFile(const QString &url, const QString &filename)
 {
     Q_UNUSED(url)
     Q_UNUSED(filename)
-    return QSharedPointer<QProcess>(new QProcess);
+    return true;
 }
 
-// 捕获 updateFestivalList 内部创建的 QProcess，供测试体直接触发信号
-static QSharedPointer<QProcess> g_lastDownloadProc;
-// 捕获 lambda 内 qCWarning 输出的消息处理器（qInstallMessageHandler 只接受函数指针）
-static QStringList g_downloadErrorWarnings;
-static void downloadErrorHandler(QtMsgType type, const QMessageLogContext &, const QString &msg)
-{
-    if (type == QtWarningMsg && msg.contains("Download error for year"))
-        g_downloadErrorWarnings << msg;
-}
-
-static QSharedPointer<QProcess> stub_DownloadFile_capture(QString url, QString filename)
+// 模拟下载失败：返回 false，updateFestivalList 的 if(DownloadFile(...)) 走失败分支
+static bool stub_DownloadFile_null(const QString &url, const QString &filename)
 {
     Q_UNUSED(url)
     Q_UNUSED(filename)
-    g_lastDownloadProc = QSharedPointer<QProcess>::create();
-    return g_lastDownloadProc;
+    return false;
 }
 
 class DHuangLiDataBaseTest : public ::testing::Test {
@@ -241,29 +233,19 @@ TEST_F(DHuangLiDataBaseTest, UpdateFestivalListDownload)
     EXPECT_EQ(db->m_settings.value("festivalUpdateDate").toString(), today);
 }
 
-TEST_F(DHuangLiDataBaseTest, UpdateFestivalList_DownloadError_TriggersReadyReadLambda)
+TEST_F(DHuangLiDataBaseTest, UpdateFestivalList_DownloadFailed_KeepsRetryState)
 {
-    // 用 capture 版 stub 替换 fixture 的 stub_DownloadFile，拿到内部 QProcess；
-    // 直接调用 protected 信号同步触发 connect 的错误处理 lambda（无需事件循环）
+    // Current updateFestivalList treats a null DownloadFile result as a
+    // download failure (qCWarning "Failed to download festival data for
+    // year") and leaves festivalUpdateDate unset so the update retries
+    // next time. Simulate total download failure and verify that state.
     Stub stub2;
-    g_lastDownloadProc.clear();
-    stub2.set(DownloadFile, stub_DownloadFile_capture);
+    stub2.set(DownloadFile, stub_DownloadFile_null);
 
     db->m_settings.setValue("festivalUpdateDate", "");
     db->updateFestivalList();
 
-    ASSERT_TRUE(!g_lastDownloadProc.isNull());
-    // Qt6 信号带 QPrivateSignal 私有参数；-fno-access-control 下可直接构造调用，
-    // 等价于 emit，同步触发 connect 的错误处理 lambda（无需事件循环）。
-    // 用消息处理器捕获 lambda 内的 qCWarning 输出，验证 lambda 真被执行
-    // （若连接被移除/lambda 变空，此处会失败而不是静默通过）
-    g_downloadErrorWarnings.clear();
-    QtMessageHandler oldHandler = qInstallMessageHandler(downloadErrorHandler);
-    EXPECT_NO_FATAL_FAILURE(g_lastDownloadProc->readyReadStandardError(QProcess::QPrivateSignal{}));
-    qInstallMessageHandler(oldHandler);
-    EXPECT_FALSE(g_downloadErrorWarnings.isEmpty())
-        << "readyReadStandardError 应触发错误处理 lambda 输出警告日志";
-    EXPECT_EQ(db->m_settings.value("festivalUpdateDate").toString(),
+    EXPECT_NE(db->m_settings.value("festivalUpdateDate").toString(),
               QDateTime::currentDateTime().toString("yyyy-MM-dd"));
 }
 
