@@ -61,6 +61,10 @@ SolarMonthInfo GetSolarMonthCalendar(qint32 year, qint32 month, bool fill)
 {
     qCDebug(CommonLogger) << "Getting solar month calendar for:" << year << month << "with fill:" << fill;
     SolarMonthInfo solarMonth;
+    // 月份取值范围为 1~12，非法输入返回空结果，避免 month=13/-1 等伪日期继续传到下游
+    if (month < 1 || month > 12) {
+        return solarMonth;
+    }
     int weekday = GetWeekday(year, month);
     int daycount = GetSolarMonthDays(year, month);
     // 本月的数据

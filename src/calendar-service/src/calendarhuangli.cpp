@@ -30,6 +30,10 @@ QString CalendarHuangLi::getHuangLiDay(quint32 year, quint32 month, quint32 day)
     stLunarDayInfo lunardayinfo = SolarToLunar(static_cast<qint32>(year), static_cast<qint32>(month), static_cast<qint32>(day));
     //获取宜忌信息
     QList<stHuangLi> hllist = m_database->queryHuangLiByDays(viewdate);
+    // 数据库无对应记录时直接返回空，避免解引用空列表
+    if (hllist.isEmpty()) {
+        return "";
+    }
     //将黄历信息保存到CaHuangLiDayInfo
     qCDebug(ServiceLogger) << "Populating HuangLi day info structure";
     hldayinfo.mSuit = hllist.begin()->Suit;
@@ -62,8 +66,10 @@ QString CalendarHuangLi::getHuangLiMonth(quint32 year, quint32 month, bool fill)
     qCDebug(ServiceLogger) << "Processing" << lunarmonth.Datas.size() << "days for month";
     for (int i = 0; i < lunarmonth.Datas.size(); ++i) {
         CaHuangLiDayInfo hldayinfo;
-        hldayinfo.mAvoid = hllist.at(i).Avoid;
-        hldayinfo.mSuit = hllist.at(i).Suit;
+        // 数据库记录数可能少于日历天数，越界时使用空记录
+        const stHuangLi hl = hllist.value(i);
+        hldayinfo.mAvoid = hl.Avoid;
+        hldayinfo.mSuit = hl.Suit;
         stLunarDayInfo lunardayinfo = lunarmonth.Datas.at(i);
         hldayinfo.mGanZhiYear = lunardayinfo.GanZhiYear;
         hldayinfo.mGanZhiMonth = lunardayinfo.GanZhiMonth;

@@ -580,7 +580,13 @@ QVector<QDateTime> createScheduleTask::getWeekAllDateTime(QDate BeginDate, int f
 {
     QVector<QDateTime> beginDateTime;
 
-    for (int i = 0; i < secondWeekNum - firstWeekNum + 1; i ++) {
+    // 周数范围为 1~7，循环次数用 qint64 计算并限制上限，避免非法输入导致超长循环
+    qint64 days = qint64(secondWeekNum) - firstWeekNum + 1;
+    if (days <= 0 || days > 7) {
+        return beginDateTime;
+    }
+
+    for (qint64 i = 0; i < days; i++) {
         m_begintime.setDate(BeginDate.addDays(i));
         beginDateTime.append(m_begintime);
     }
@@ -681,6 +687,14 @@ QVector<QDateTime> createScheduleTask::analysisEveryWeekDate(QVector<int> dateRa
 {
     QVector<QDateTime> beginDateTime {};
 
+    // 周数取值范围为 1~7（周一至周日），非法输入不生成日程，
+    // 避免下游 getWeekAllDateTime 生成超长日期序列或发生整数溢出
+    for (int weekNum : dateRange) {
+        if (weekNum < 1 || weekNum > 7) {
+            return beginDateTime;
+        }
+    }
+
     switch (dateRange.size()) {
     case 0: {
         //每周重复日程，没有具体周数
@@ -705,6 +719,14 @@ QVector<QDateTime> createScheduleTask::analysisEveryWeekDate(QVector<int> dateRa
 QVector<QDateTime> createScheduleTask::analysisEveryMonthDate(QVector<int> dateRange)
 {
     QVector<QDateTime> beginDateTime {};
+
+    // 日期取值范围为 1~31，非法输入不生成日程，
+    // 避免下游按首尾日期循环时生成超长序列或发生整数溢出
+    for (int dayNum : dateRange) {
+        if (dayNum < 1 || dayNum > 31) {
+            return beginDateTime;
+        }
+    }
 
     switch (dateRange.size()) {
     case 0: {

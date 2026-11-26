@@ -332,7 +332,12 @@ int DAlarmManager::getRemindLaterDuration(int count, qint64 &duration)
 {
     qCDebug(ServiceLogger) << "Calculating remind later duration for count:" << count;
     bool bmax = false;
-    duration = (10 + ((count - 1) * 5)) * Minute; //下一次提醒距离现在的时间间隔，单位毫秒
+    // 次数异常时按第一次提醒处理，既防 count 极值溢出，也避免负时长把提醒设到过去
+    if (count < 1) {
+        count = 1;
+    }
+    // 用 qint64 计算，避免 (count - 1) * 5 * Minute 在 int 上溢出
+    duration = (10 + (qint64(count) - 1) * 5) * Minute; //下一次提醒距离现在的时间间隔，单位毫秒
     if (duration >= Hour) {
         bmax = true;
         duration = Hour;

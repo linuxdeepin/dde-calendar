@@ -249,3 +249,49 @@ TEST(CompatibleDataTest, SetExDate_EmptyArray)
     DDE_Calendar::setExDate(schedule, ignore);
     EXPECT_EQ(schedule->recurrence()->exDates().count(), 0);
 }
+
+// 模糊测试问题（Bug 383485）：空/非法 remind 字符串不能越界或溢出
+TEST(CompatibleDataTest, SetAlarmByOldRemind_EmptyOrInvalidRemind_NoCrash)
+{
+    const QStringList reminds = {
+        QString(),
+        ";",
+        ";;;",
+        "abc",
+        "0;bad",
+        "0;09:30",
+        "2147483647"
+    };
+
+    for (const QString &remind : reminds) {
+        for (bool allDay : {false, true}) {
+            DSchedule::Ptr schedule(new DSchedule);
+            schedule->setAllDay(allDay);
+            schedule->setSummary("Boundary");
+            DDE_Calendar::setAlarmByOldRemind(schedule, remind);
+        }
+    }
+
+    // 空字符串、纯分隔符不产生提醒
+    for (const QString &remind : {QString(), QString(";")}) {
+        DSchedule::Ptr schedule(new DSchedule);
+        schedule->setAllDay(false);
+        DDE_Calendar::setAlarmByOldRemind(schedule, remind);
+        EXPECT_EQ(schedule->alarms().count(), 0);
+    }
+
+    // 保持既有语义：无法解析的提醒按 0 处理，仍产生提醒
+    DSchedule::Ptr invalidSchedule(new DSchedule);
+    invalidSchedule->setAllDay(false);
+    DDE_Calendar::setAlarmByOldRemind(invalidSchedule, "abc");
+    EXPECT_EQ(invalidSchedule->alarms().count(), 1);
+
+    // 全天提醒按真实分钟触发：1 天前 09:30 = 提前 86400 - 34200 = 52200 秒
+    DSchedule::Ptr schedule(new DSchedule);
+    schedule->setAllDay(true);
+    schedule->setSummary("AllDay");
+    DDE_Calendar::setAlarmByOldRemind(schedule, "1;09:30");
+    ASSERT_EQ(schedule->alarms().count(), 1);
+    EXPECT_EQ(schedule->alarms().first()->startOffset().asSeconds(),
+              -(qint64(86400) - 9 * 3600 - 30 * 60));
+}

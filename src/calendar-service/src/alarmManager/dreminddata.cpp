@@ -128,7 +128,10 @@ void DRemindData::updateRemindTimeByCount()
     qCDebug(ServiceLogger) << "Updating remind time by count. Current count:" << m_remindCount;
     qint64 Minute = 60 * 1000;
     qint64 Hour = Minute * 60;
-    qint64 duration = (10 + ((m_remindCount - 1) * 5)) * Minute; //下一次提醒距离现在的时间间隔，单位毫秒
+    // 次数异常时按第一次提醒处理，既防溢出也避免负时长把提醒设到过去
+    int count = m_remindCount < 1 ? 1 : m_remindCount;
+    // 用 qint64 计算，避免 (count - 1) * 5 在 int 上溢出
+    qint64 duration = (10 + (qint64(count) - 1) * 5) * Minute; //下一次提醒距离现在的时间间隔，单位毫秒
     if (duration >= Hour) {
         qCDebug(ServiceLogger) << "Duration is greater than or equal to one hour, setting to one hour";
         duration = Hour;

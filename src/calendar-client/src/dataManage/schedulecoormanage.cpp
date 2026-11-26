@@ -256,16 +256,20 @@ QDateTime CScheduleCoorManage::getDate(QPointF pos)
 {
     qCDebug(ClientLogger) << "Getting date from position:" << pos;
     QDateTime begintime;
-    qint64 day = static_cast<qint64>((1.0 * pos.x() / m_width) * m_totalDay);
-
-    if (day < 0) {
-        qCDebug(ClientLogger) << "Day out of range (negative), adjusting to 0";
-        day = 0;
-    } else if (day >= m_totalDay) {
-        qCDebug(ClientLogger) << "Day out of range (too large), adjusting to max";
-        day = m_totalDay - 1;
+    // 坐标非有限值或绘图区域无效时返回无效时间，避免 NaN/Inf 转整数触发未定义行为
+    if (!qIsFinite(pos.x()) || !qIsFinite(pos.y()) || m_width <= 0 || m_height <= 0 || m_totalDay <= 0) {
+        return begintime;
     }
-    int time = static_cast<int>((1.0 * pos.y() / m_height) * 86400.0);
+
+    // 先在 double 域内夹到有效范围，再转换为整数
+    double dayValue = (1.0 * pos.x() / m_width) * m_totalDay;
+    dayValue = qBound(0.0, dayValue, double(m_totalDay - 1));
+    qint64 day = static_cast<qint64>(dayValue);
+
+    double timeValue = (1.0 * pos.y() / m_height) * 86400.0;
+    // 夹取到合法日内秒数范围 [0, 86399]，既避免超范围转换的未定义行为，也保证时间合法
+    timeValue = qBound(0.0, timeValue, 86399.0);
+    int time = static_cast<int>(timeValue);
     int hours = time / 3600;
     int minutes = (time - 3600 * hours) / 60;
     int secss = time - 3600 * hours - 60 * minutes;
@@ -280,15 +284,15 @@ QDateTime CScheduleCoorManage::getDate(QPointF pos)
 QDate CScheduleCoorManage::getsDate(QPointF pos)
 {
     qCDebug(ClientLogger) << "Getting date from position:" << pos;
-    qint64 day = static_cast<qint64>((1.0 * pos.x() / m_width) * m_totalDay);
-
-    if (day < 0) {
-        qCDebug(ClientLogger) << "Day out of range (negative), adjusting to 0";
-        day = 0;
-    } else if (day >= m_totalDay) {
-        qCDebug(ClientLogger) << "Day out of range (too large), adjusting to max";
-        day = m_totalDay - 1;
+    // 坐标非有限值或绘图区域无效时返回无效日期，避免 NaN/Inf 转整数触发未定义行为
+    if (!qIsFinite(pos.x()) || m_width <= 0 || m_totalDay <= 0) {
+        return QDate();
     }
+
+    // 先在 double 域内夹到有效范围，再转换为整数
+    double dayValue = (1.0 * pos.x() / m_width) * m_totalDay;
+    dayValue = qBound(0.0, dayValue, double(m_totalDay - 1));
+    qint64 day = static_cast<qint64>(dayValue);
     QDate date = m_begindate.addDays(day);
 
     qCDebug(ClientLogger) << "Calculated date:" << date.toString();
