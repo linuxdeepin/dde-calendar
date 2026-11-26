@@ -55,11 +55,12 @@ static QString stub_getHomeConfigPath()
 }
 
 // ---- Stub for free function DownloadFile (prevents network access) ----
-static QSharedPointer<QProcess> stub_DownloadFile(QString url, QString filename)
+// DownloadFile 现行签名返回 bool（Qt Network 同步下载），stub 必须与之完全一致
+static bool stub_DownloadFile(const QString &url, const QString &filename)
 {
     Q_UNUSED(url)
     Q_UNUSED(filename)
-    return QSharedPointer<QProcess>(new QProcess);
+    return true;
 }
 
 class DDataBaseManagementTest : public ::testing::Test {

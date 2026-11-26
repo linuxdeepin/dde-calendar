@@ -28,11 +28,12 @@ static QDir stub_getAppCacheDir()
     return QDir(g_huangliTestConfigPath);
 }
 
-static QSharedPointer<QProcess> stub_huangliDownloadFile(QString url, QString filename)
+// DownloadFile 现行签名返回 bool（Qt Network 同步下载），stub 必须与之完全一致
+static bool stub_huangliDownloadFile(const QString &url, const QString &filename)
 {
     Q_UNUSED(url)
     Q_UNUSED(filename)
-    return QSharedPointer<QProcess>(new QProcess);
+    return true;
 }
 
 test_calendarhuangli::test_calendarhuangli()
