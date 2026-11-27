@@ -32,8 +32,8 @@ namespace {
 constexpr int kContentTop = 4;
 constexpr int kMinTextRectWidth = 165;
 constexpr int kMaxTextRectWidth = 191;
-constexpr int kMinContentWidth = 207;
-constexpr int kContentWidthPadding = 35;
+constexpr int kMinContentWidth = 205;
+constexpr int kContentWidthPadding = 40;
 constexpr int kTimeFrameHeight = 17;
 constexpr int kTimeTitleSpacing = 6;
 constexpr int kTitleFrameHeight = 17;
@@ -186,7 +186,7 @@ void CenterWidget::setData(const DSchedule::Ptr &vScheduleInfo, const CSchedules
     qCDebug(ClientLogger) << "CenterWidget::setData for schedule:" << vScheduleInfo->uid();
     m_ScheduleInfo = vScheduleInfo;
     gdcolor = gcolor;
-    textfont.setPixelSize(DDECalendar::FontSizeTwelve);
+    textfont.setPixelSize(DDECalendar::FontSizeFourteen);
     m_organizerLabel = QCoreApplication::translate("CMyScheduleView", "Organizer");
     m_attendeeLabel = QCoreApplication::translate("CMyScheduleView", "Attendees");
     m_organizerLines.clear();
@@ -235,12 +235,12 @@ void CenterWidget::setTheMe(const int type)
         timeColor = QColor("#FFFFFF");
         timeColor.setAlphaF(0.6);
         textColor = QColor("#FFFFFF");
-        textColor.setAlphaF(0.7);
+        textColor.setAlphaF(0.6);
     } else {
         timeColor = QColor("#000000");
         timeColor.setAlphaF(0.6);
         textColor = QColor("#000000");
-        textColor.setAlphaF(0.7);
+        textColor.setAlphaF(0.6);
     }
     update();
 }
@@ -409,7 +409,7 @@ void CenterWidget::paintEvent(QPaintEvent *e)
     // qCDebug(ClientLogger) << "CenterWidget::paintEvent";
     Q_UNUSED(e);
     int diam = 8;
-    int x = 40 - 13;
+    int x = 20;
     QFont timeFont;
     timeFont.setPixelSize(DDECalendar::FontSizeTwelve);
     timeFont.setWeight(QFont::Normal);
@@ -478,13 +478,17 @@ void CenterWidget::paintEvent(QPaintEvent *e)
         if (hasParticipantInfo) {
             QColor dividerColor = timeColor;
             dividerColor.setAlphaF(0.15);
-            painter.setPen(dividerColor);
+            QPen dividerPen(dividerColor);
+            dividerPen.setWidthF(1.0);
+            painter.setPen(dividerPen);
             const int dividerY = detailY + kDetailDividerOffset;
             painter.drawLine(x, dividerY, x + textRectWidth, dividerY);
         }
 
         painter.setFont(sourceFont);
-        painter.setPen(timeColor);
+        QColor sourceColor = timeColor;
+        sourceColor.setAlphaF(0.4);
+        painter.setPen(sourceColor);
         const int sourceY = detailY + sourceSpacing;
         const QFontMetrics sourceMetrics(sourceFont);
         const int sourceFrameHeight = sourceMetrics.lineSpacing() + 2;
