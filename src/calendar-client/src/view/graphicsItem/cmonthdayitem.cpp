@@ -79,7 +79,7 @@ void CMonthDayItem::setTheMe(int type)
     } else if (type == 2) {
         // qCDebug(ClientLogger) << "Setting dark theme colors";
         m_dayNumColor = QColor(255, 255, 255, 204);
-        m_dayNumCurrentColor = "#B8D3FF";
+        m_dayNumCurrentColor = "#FFFFFF";
 
         m_LunerColor = QColor(255, 255, 255, 102);
 

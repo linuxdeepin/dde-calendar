@@ -514,7 +514,7 @@ void CMonthRect::setTheMe(int type)
         QColor framecolor = Qt::black;
         framecolor.setAlphaF(0.5);
         m_backgrounddefaultColor = framecolor;
-        m_currentDayTextColor = "#C0C6D4";
+        m_currentDayTextColor = "#FFFFFF";
         m_backgroundcurrentDayColor = CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
         m_fillColor = "#FFFFFF";
         m_fillColor.setAlphaF(0.05);

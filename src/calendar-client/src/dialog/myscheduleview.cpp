@@ -113,21 +113,25 @@ void CMyScheduleView::slotAutoFeed(const QFont &font)
 
     const int maxLineCount = qMax(1, kMaxContentHeight / lineHeight);
     const bool isElided = strList.count() > maxLineCount;
-    if (isElided) {
-        strList = strList.mid(0, maxLineCount);
-        strList.last() = fm.elidedText(strList.last(),
-                                       Qt::ElideRight, titleWidth);
-    }
     resultStr = strList.join(QLatin1Char('\n'));
     m_scheduleLabel->setToolTip(isElided ? strText : QString());
 
     const int contentHeight = qMax(17, strList.count() * lineHeight);
     m_scheduleLabelH = qMin(contentHeight, kMaxContentHeight);
     area->setFixedHeight(m_scheduleLabelH);
-    area->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    if (isElided) {
+        area->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    } else {
+        area->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    }
     area->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_scheduleLabel->setText(resultStr);
-    m_scheduleLabel->setFixedHeight(m_scheduleLabelH);
+    m_scheduleLabel->setFixedHeight(contentHeight);
+    if (isElided) {
+        m_scheduleLabel->setContentsMargins(0, 8, 0, 8);
+    } else {
+        m_scheduleLabel->setContentsMargins(0, 0, 0, 0);
+    }
 
     QString timeName = m_timeLabel->text();
     if (m_scheduleInfo->lunar()) {

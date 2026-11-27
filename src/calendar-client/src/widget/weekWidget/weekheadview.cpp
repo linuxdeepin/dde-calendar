@@ -111,7 +111,7 @@ void CWeekHeadView::setTheMe(int type)
 
         m_defaultTextColor = "#FFFFFF";
         m_defaultTextColor.setAlphaF(0.7);
-        m_currentDayTextColor = "#C0C6D4";
+        m_currentDayTextColor = "#FFFFFF";
         m_defaultLunarColor = "#6886BA";
 
         m_currentMonthColor = "#000000";

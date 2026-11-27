@@ -214,7 +214,7 @@ void CWeekNumWidget::setTheMe(int type)
         m_defaultTextColor.setAlphaF(0.7);
         m_backgrounddefaultColor = "#FFFFFF";
         m_backgrounddefaultColor.setAlphaF(0.05);
-        m_currentDayTextColor = "#B8D3FF";
+        m_currentDayTextColor = "#FFFFFF";
         m_backgroundcurrentDayColor = CScheduleDataManage::getScheduleDataManage()->getSystemActiveColor();
         m_fillColor = "#000000";
         m_fillColor.setAlphaF(0.05);

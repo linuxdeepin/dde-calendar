@@ -513,7 +513,7 @@ void CDayMonthWidget::setTheMe(int type)
     } else if (type == 2) {
         qCDebug(ClientLogger) << "Applying dark theme";
         m_defaultTextColor = DGuiApplicationHelper::instance()->applicationPalette().windowText().color();
-        m_selectedTextColor = "#B8D3FF";
+        m_selectedTextColor = "#FFFFFF";
         m_notCurrentTextColor = "#C0C6D4";
         m_notCurrentTextColor.setAlphaF(0.5);
         m_ceventColor = QColor(204, 77, 3);
