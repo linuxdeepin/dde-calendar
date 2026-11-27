@@ -268,7 +268,7 @@ Click ![icon_menu](../common/icon_menu.svg) > **Manage** to:
 
 Sync schedule data and settings to cloud via UOS ID.
 
-> ![notes](../common/notes.svg) Note: Not available on older UOS versions.
+> ![notes](../common/notes.svg) Note: Not available on older UOS/deepin versions.
 
 **Logging In/Out**
 
