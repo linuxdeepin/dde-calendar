@@ -15,6 +15,7 @@ Build-Depends:
  libdtk6widget-dev,
  libdtk6core-dev,
  libgtest-dev,
+ libgmock-dev,
  libical-dev,
  libgcrypt20-dev
 Standards-Version: 4.3.0
