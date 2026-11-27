@@ -501,6 +501,7 @@ void AccountManager::downloadByAccountID(const QString &accountID, CallbackFunc 
         };
         m_dbusRequest->setCallbackFunc(callback);
         m_dbusRequest->requestCalDavManualSync(accountID, requestID);
+        emit signalSyncNum();
         return;
     } else {
         if (account && account->getAccount()
